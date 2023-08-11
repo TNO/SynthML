@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AnnotatedUmlTransformer
+Bundle-SymbolicName: nl.tno.pokayoke.transform.annotateduml
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.uml2;bundle-version="5.5.3",
+ org.eclipse.uml2.uml.resources;bundle-version="5.5.0"
+Bundle-Vendor: TNO-ESI
+Automatic-Module-Name: nl.tno.pokayoke.transform.annotateduml
+Bundle-RequiredExecutionEnvironment: JavaSE-17
