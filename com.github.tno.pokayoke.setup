@@ -209,7 +209,7 @@
   <setupTask
       xsi:type="setup:EclipseIniTask"
       option="-Doomph.redirection.com.github.tno.pokayoke.git"
-      value="=https://github.com/TNO/PokaYoke/raw/${scope.project.stream.name}/com.github.tno.pokayoke.setup->${com.github.tno.pokayoke.git.clone.location|uri}/com.github.tno.pokayoke.setup"
+      value="=https://github.com/TNO/PokaYoke/raw/${scope.project.stream.name}/com.github.tno.pokayoke.setup?oomph_form=b'login'#/->${com.github.tno.pokayoke.git.clone.location|uri}/com.github.tno.pokayoke.setup"
       vm="true">
     <description>Set an Oomph redirection system property to redirect the bootstrap location of this setup to its location in the Git clone.</description>
   </setupTask>
