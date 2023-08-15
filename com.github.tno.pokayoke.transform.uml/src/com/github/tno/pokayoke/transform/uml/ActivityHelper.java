@@ -1,4 +1,4 @@
-package com.tno.pokayoke.transform.uml;
+package com.github.tno.pokayoke.transform.uml;
 
 import java.util.List;
 import java.util.Map;

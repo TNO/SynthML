@@ -1,4 +1,4 @@
-package com.tno.pokayoke.transform.uml;
+package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
 import java.util.ArrayList;
