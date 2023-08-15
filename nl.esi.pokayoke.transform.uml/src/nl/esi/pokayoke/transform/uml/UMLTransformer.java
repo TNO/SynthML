@@ -121,12 +121,12 @@ public class UMLTransformer {
 		// Transform all opaque action nodes of 'activity'.
 		for (ActivityNode node : new LinkedHashSet<>(activity.getNodes())) {
 			if (node instanceof OpaqueAction) {
-				transformOpaqugeAction(activityClass, activity, (OpaqueAction) node);
+				transformOpaqueAction(activityClass, activity, (OpaqueAction) node);
 			}
 		}
 	}
 
-	private void transformOpaqugeAction(Class activityClass, Activity activity, OpaqueAction action) {
+	private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action) {
 		// Extract the guard and effect of 'action', to be encoded later.
 		String guard = null;
 		String effect = null;
