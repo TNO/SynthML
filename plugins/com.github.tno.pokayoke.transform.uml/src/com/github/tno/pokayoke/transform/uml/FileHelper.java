@@ -18,7 +18,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class FileHelper {
-    static final UMLFactory factory = UMLFactory.eINSTANCE;
+    static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
     private FileHelper() {
     }
@@ -61,7 +61,7 @@ public class FileHelper {
      * @return The loaded primitive type.
      */
     public static PrimitiveType loadPrimitiveType(String name) {
-        Package umlLibrary = (Package)loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
+        Package umlLibrary = loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
         return (PrimitiveType)umlLibrary.getOwnedType(name);
     }
 

@@ -52,16 +52,16 @@ public class UMLTransformer {
         Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
 
         // Create the signal for acquiring the lock.
-        acquireSignal = FileHelper.factory.createSignal();
+        acquireSignal = FileHelper.FACTORY.createSignal();
         acquireSignal.setName("acquire");
-        Property acquireParameter = FileHelper.factory.createProperty();
+        Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
         acquireParameter.setType(FileHelper.loadPrimitiveType("String"));
         acquireSignal.getOwnedAttributes().add(acquireParameter);
         lockClass.getNestedClassifiers().add(acquireSignal);
 
         // Create the signal event for 'acquireSignal' to trigger on.
-        SignalEvent acquireEvent = FileHelper.factory.createSignalEvent();
+        SignalEvent acquireEvent = FileHelper.FACTORY.createSignalEvent();
         acquireEvent.setSignal(acquireSignal);
         acquireEvent.setVisibility(VisibilityKind.PUBLIC_LITERAL);
         model.getPackagedElements().add(acquireEvent);
@@ -76,11 +76,11 @@ public class UMLTransformer {
         Class contextClass = (Class)model.getMember("Context");
 
         // Create the static property containing the current owner of the lock.
-        Property activeProperty = FileHelper.factory.createProperty();
+        Property activeProperty = FileHelper.FACTORY.createProperty();
         activeProperty.setIsStatic(true);
         activeProperty.setName("active");
         activeProperty.setType(FileHelper.loadPrimitiveType("String"));
-        LiteralString activePropertyDefaultValue = FileHelper.factory.createLiteralString();
+        LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
         activePropertyDefaultValue.setValue("");
         activeProperty.setDefaultValue(activePropertyDefaultValue);
         contextClass.getOwnedAttributes().add(activeProperty);
@@ -88,7 +88,7 @@ public class UMLTransformer {
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new LinkedHashSet<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity) {
-                transformActivity(contextClass, (Activity)behavior);
+                transformActivity((Activity)behavior);
             }
         }
 
@@ -105,7 +105,7 @@ public class UMLTransformer {
         contextClass.setClassifierBehavior(mainActivity);
     }
 
-    private void transformActivity(Class classMember, Activity activity) {
+    private void transformActivity(Activity activity) {
         ActivityHelper.removeIrrelevantInformation(activity);
 
         // Create a separate class in which all new behaviors for 'activity' are stored.
@@ -147,7 +147,7 @@ public class UMLTransformer {
         activityClass.getOwnedBehaviors().add(actionActivity);
 
         // Define the call behavior action that replaces 'action' in 'activity'.
-        CallBehaviorAction replacementActionNode = FileHelper.factory.createCallBehaviorAction();
+        CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
         replacementActionNode.setActivity(activity);
         replacementActionNode.setBehavior(actionActivity);
         replacementActionNode.setName(action.getName());
