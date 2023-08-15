@@ -1,4 +1,4 @@
-package nl.esi.pokayoke.transform.annotateduml;
+package nl.esi.pokayoke.transform.uml;
 
 import java.util.List;
 import java.util.Map;
