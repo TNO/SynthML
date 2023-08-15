@@ -3,8 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Poka Yoke UML Transformer
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.uml2;bundle-version="5.5.3",
+Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
  org.eclipse.uml2.uml.resources;bundle-version="5.5.0"
 Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: com.github.tno.pokayoke.transform.uml
