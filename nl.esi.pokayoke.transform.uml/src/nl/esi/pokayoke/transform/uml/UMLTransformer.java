@@ -28,7 +28,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
  * etc., to valid and executable UML, in the sense that all such annotations are
  * translated to valid UML. The annotation language is assumed to be Python.
  */
-public class AnnotatedUMLTransformer {
+public class UMLTransformer {
 
 	private Signal acquireSignal;
 
@@ -36,13 +36,13 @@ public class AnnotatedUMLTransformer {
 
 	private final Map<Activity, Activity> preconditions = new LinkedHashMap<>();
 
-	public AnnotatedUMLTransformer(Model model) {
+	public UMLTransformer(Model model) {
 		this.model = model;
 	}
 
 	public static void transformFile(String sourcePath, String targetPath) throws IOException {
 		Model model = FileHelper.loadModel(sourcePath);
-		new AnnotatedUMLTransformer(model).transformModel();
+		new UMLTransformer(model).transformModel();
 		FileHelper.storeModel(model, targetPath);
 	}
 
