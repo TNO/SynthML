@@ -1,3 +1,4 @@
+
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
@@ -17,69 +18,69 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class FileHelper {
-	static final UMLFactory factory = UMLFactory.eINSTANCE;
+    static final UMLFactory factory = UMLFactory.eINSTANCE;
 
-	private FileHelper() {
-	}
+    private FileHelper() {
+    }
 
-	/**
-	 * Loads an UML model.
-	 * 
-	 * @param pathName The path name of the UML model.
-	 * @return The loaded model.
-	 */
-	public static Model loadModel(String pathName) {
-		// Initialize an UML resource set to load the UML model.
-		ResourceSet resourceSet = new ResourceSetImpl();
-		UMLResourcesUtil.init(resourceSet);
+    /**
+     * Loads an UML model.
+     *
+     * @param pathName The path name of the UML model.
+     * @return The loaded model.
+     */
+    public static Model loadModel(String pathName) {
+        // Initialize an UML resource set to load the UML model.
+        ResourceSet resourceSet = new ResourceSetImpl();
+        UMLResourcesUtil.init(resourceSet);
 
-		// Load the UML model.
-		URI fileURI = URI.createFileURI(pathName);
-		Resource res = resourceSet.getResource(fileURI, true);
-		Model umlModel = (Model) res.getContents().get(0);
+        // Load the UML model.
+        URI fileURI = URI.createFileURI(pathName);
+        Resource res = resourceSet.getResource(fileURI, true);
+        Model umlModel = (Model)res.getContents().get(0);
 
-		return umlModel;
-	}
+        return umlModel;
+    }
 
-	/**
-	 * Loads an UML package.
-	 * 
-	 * @param uri The URI of the UML model.
-	 * @return The loaded package.
-	 */
-	public static Package loadPackage(URI uri) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		Resource resource = resourceSet.getResource(uri, true);
-		return (Package) EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
-	}
+    /**
+     * Loads an UML package.
+     *
+     * @param uri The URI of the UML model.
+     * @return The loaded package.
+     */
+    public static Package loadPackage(URI uri) {
+        ResourceSet resourceSet = new ResourceSetImpl();
+        Resource resource = resourceSet.getResource(uri, true);
+        return (Package)EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
+    }
 
-	/**
-	 * Loads a primitive UML type, e.g., 'Boolean' or 'String'.
-	 * 
-	 * @param name Then name of the primitive type to load.
-	 * @return The loaded primitive type.
-	 */
-	public static PrimitiveType loadPrimitiveType(String name) {
-		Package umlLibrary = (Package) loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
-		return (PrimitiveType) umlLibrary.getOwnedType(name);
-	}
+    /**
+     * Loads a primitive UML type, e.g., 'Boolean' or 'String'.
+     *
+     * @param name Then name of the primitive type to load.
+     * @return The loaded primitive type.
+     */
+    public static PrimitiveType loadPrimitiveType(String name) {
+        Package umlLibrary = (Package)loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
+        return (PrimitiveType)umlLibrary.getOwnedType(name);
+    }
 
-	/**
-	 * Stores {@code model} to {@code pathName}.
-	 * 
-	 * @param model    The model to store.
-	 * @param pathName The path to store {@code model}.
-	 * @throws IOException Thrown in case the model could not be saved.
-	 */
-	public static void storeModel(Model model, String pathName) throws IOException {
-		// Initialize an UML resource set to store the model.
-		ResourceSet resourceSet = new ResourceSetImpl();
-		UMLResourcesUtil.init(resourceSet);
+    /**
+     * Stores {@code model} to {@code pathName}.
+     *
+     * @param model The model to store.
+     * @param pathName The path to store {@code model}.
+     * @throws IOException Thrown in case the model could not be saved.
+     */
+    public static void storeModel(Model model, String pathName) throws IOException {
+        // Initialize an UML resource set to store the model.
+        ResourceSet resourceSet = new ResourceSetImpl();
+        UMLResourcesUtil.init(resourceSet);
 
-		// Store the model.
-		URI uri = URI.createFileURI(pathName);
-		Resource resource = resourceSet.createResource(uri);
-		resource.getContents().add(model);
-		resource.save(Collections.EMPTY_MAP);
-	}
+        // Store the model.
+        URI uri = URI.createFileURI(pathName);
+        Resource resource = resourceSet.createResource(uri);
+        resource.getContents().add(model);
+        resource.save(Collections.EMPTY_MAP);
+    }
 }
