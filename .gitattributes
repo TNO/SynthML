@@ -1,0 +1,10 @@
+# Set the default behavior, convert to native line endings on checkout.
+* text=auto
+
+# Declare files that will always have certain line endings on checkout.
+*.bash text eol=lf
+*.sh text eol=lf
+
+# Denote all files that are truly binary.
+*.class     binary
+*.jar       binary
