@@ -1,5 +1,13 @@
 # Setting up a Poka Yoke development environment
 
+## Prerequisites
+
+Before setting up the development environment:
+
+* GitHub should correctly be set up regarding SSH keys (in order to check out the repository using SSH).
+
+## Setup
+
 Use the following steps to set up an Eclipse development environment for Poka Yoke development:
 
 * Download the Eclipse Installer, from https://eclipse.org/downloads.
