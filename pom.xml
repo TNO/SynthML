@@ -4,7 +4,7 @@
 
     <groupId>com.github.tno.pokayoke</groupId>
     <artifactId>com.github.tno.pokayoke.root</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>PokaYoke</name>
@@ -56,7 +56,7 @@
                 </configuration>
             </plugin>
 			
-			<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.2.1</version>
