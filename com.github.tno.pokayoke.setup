@@ -219,6 +219,9 @@
         rootFolder="${com.github.tno.pokayoke.git.clone.location}"
         locateNestedProjects="true"/>
   </setupTask>
+  <setupTask
+      xsi:type="pde:TargetPlatformTask"
+      name="PokaYoke Target Platform"/>
   <stream name="main"
       label="main"/>
   <logicalProjectContainer

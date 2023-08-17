@@ -12,11 +12,9 @@
     <description>Poka Yoke</description>
 
     <properties>
-        <google.guava.version>30.1-jre</google.guava.version>
-        <google.guava.version.minimum>27.1</google.guava.version.minimum>
         <java.version>11</java.version>
-        <junit.version>5.9.2</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tycho.version>2.6.0</tycho.version>
     </properties>
 
     <organization>
@@ -81,6 +79,71 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+			
+			<!-- Enable Tycho. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho.version}</version>
+
+                <!-- Enable extensions. -->
+                <extensions>true</extensions>
+            </plugin>
+			
+            <!-- Configure Java compiler. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-compiler-plugin</artifactId>
+                <version>${tycho.version}</version>
+            </plugin>
+
+            <!-- Enable and configure target platform. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <!-- Configure target platform file. -->
+                    <target>
+                        <file>
+                            ${maven.multiModuleProjectDirectory}/releng/org.eclipse.escet.releng.target/org.eclipse.escet.releng.target.target
+                        </file>
+                    </target>
+
+                    <!-- Let JustJ handle the execution environment. -->
+                    <!-- See https://www.eclipse.org/justj/?page=documentation for more information. -->
+                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-11</executionEnvironment>
+
+                    <!-- Configure environments. -->
+                    <!-- Determines which environment specific bundles will be in target platform. -->
+                    <!-- Also determines the products to build. -->
+                    <environments>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>aarch64</arch>
+                        </environment>
+                    </environments>
+
+                    <!-- For building and using Maven plugins during the build. -->
+                    <pomDependencies>consider</pomDependencies>
+                </configuration>
             </plugin>
         </plugins>
     </build>
