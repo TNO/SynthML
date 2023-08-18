@@ -15,7 +15,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>com.github.tno.pokayoke.transform.uml</module>
         <module>org.eclipse.escet.cif.parser</module>
     </modules>
 </project>
