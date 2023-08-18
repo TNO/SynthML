@@ -6,16 +6,11 @@
 
   <parent>
     <groupId>com.github.tno.pokayoke</groupId>
-    <artifactId>com.github.tno.pokayoke.root</artifactId>
+    <artifactId>com.github.tno.pokayoke.plugins.root</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>com.github.tno.pokayoke.plugins.root</artifactId>
+  <artifactId>org.eclipse.escet.cif.parser</artifactId>
 
   <packaging>pom</packaging>
-
-  <modules>
-    <module>com.github.tno.pokayoke.transform.uml</module>
-	<module>org.eclipse.escet.cif.parser</module>
-  </modules>
 </project>
