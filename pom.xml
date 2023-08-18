@@ -82,16 +82,13 @@
                 <configuration>
                     <!-- Configure target platform file. -->
                     <target>
-                        <file>
-                            ${maven.multiModuleProjectDirectory}/releng/com.github.tno.pokayoke.releng.target/com.github.tno.pokayoke.releng.target.target
-                        </file>
+                        <file>${maven.multiModuleProjectDirectory}/releng/com.github.tno.pokayoke.releng.target/com.github.tno.pokayoke.releng.target.target</file>
                     </target>
 
                     <!-- Let JustJ handle the execution environment. -->
                     <!-- See https://www.eclipse.org/justj/?page=documentation
                     for more information. -->
-                    <executionEnvironment>
-                        org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
                     <!-- Configure environments. -->
                     <!-- Determines which environment specific bundles will be
