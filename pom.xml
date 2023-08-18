@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.tno.pokayoke</groupId>
@@ -20,10 +22,10 @@
     <organization>
         <name>TNO</name>
     </organization>
-	
-	<modules>
-		<module>plugins</module>
-	</modules>
+
+    <modules>
+        <module>plugins</module>
+    </modules>
 
     <build>
         <plugins>
@@ -49,11 +51,12 @@
                 <version>3.3.0</version>
                 <configuration>
                     <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestFile>
+                            ${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
             </plugin>
-			
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -80,8 +83,8 @@
                     </execution>
                 </executions>
             </plugin>
-			
-			<!-- Enable Tycho. -->
+
+            <!-- Enable Tycho. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
@@ -90,7 +93,7 @@
                 <!-- Enable extensions. -->
                 <extensions>true</extensions>
             </plugin>
-			
+
             <!-- Configure Java compiler. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -112,11 +115,14 @@
                     </target>
 
                     <!-- Let JustJ handle the execution environment. -->
-                    <!-- See https://www.eclipse.org/justj/?page=documentation for more information. -->
-                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+                    <!-- See https://www.eclipse.org/justj/?page=documentation
+                    for more information. -->
+                    <executionEnvironment>
+                        org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
                     <!-- Configure environments. -->
-                    <!-- Determines which environment specific bundles will be in target platform. -->
+                    <!-- Determines which environment specific bundles will be
+                    in target platform. -->
                     <!-- Also determines the products to build. -->
                     <environments>
                         <environment>
