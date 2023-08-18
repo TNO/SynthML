@@ -227,7 +227,9 @@ end
 
 
 @main Specification: org.eclipse.escet.cif.parser.CifParser;
+
 @start Expression: org.eclipse.escet.cif.parser.CifExpressionParser;
+@start Update: org.eclipse.escet.cif.parser.CifUpdateParser;
 
 @hooks org.eclipse.escet.cif.parser.CifParserHooks;
 

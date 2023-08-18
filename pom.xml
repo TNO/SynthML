@@ -15,6 +15,7 @@
 
     <properties>
         <java.version>17</java.version>
+        <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
     </properties>
@@ -72,6 +73,23 @@
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
+            </plugin>
+
+            <!-- Configure packaging of JARs. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-packaging-plugin</artifactId>
+                <version>${tycho.version}</version>
+
+                <configuration>
+                    <!-- Use property-based fixed qualifier for all plugins/features/etc. -->
+                    <forceContextQualifier>${pokayoke.version.qualifier}</forceContextQualifier>
+
+                    <!-- Disable Maven descriptors in JAR bundles. -->
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
             </plugin>
 
             <!-- Enable and configure target platform. -->
