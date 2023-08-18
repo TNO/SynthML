@@ -83,7 +83,7 @@
                     <!-- Configure target platform file. -->
                     <target>
                         <file>
-                            ${maven.multiModuleProjectDirectory}/releng/org.eclipse.escet.releng.target/org.eclipse.escet.releng.target.target
+                            ${maven.multiModuleProjectDirectory}/releng/com.github.tno.pokayoke.releng.target/com.github.tno.pokayoke.releng.target.target
                         </file>
                     </target>
 
