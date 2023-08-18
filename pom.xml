@@ -12,9 +12,9 @@
     <description>Poka Yoke</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>2.6.0</tycho.version>
+        <tycho.version>4.0.1</tycho.version>
     </properties>
 
     <organization>
@@ -113,7 +113,7 @@
 
                     <!-- Let JustJ handle the execution environment. -->
                     <!-- See https://www.eclipse.org/justj/?page=documentation for more information. -->
-                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-11</executionEnvironment>
+                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
                     <!-- Configure environments. -->
                     <!-- Determines which environment specific bundles will be in target platform. -->
