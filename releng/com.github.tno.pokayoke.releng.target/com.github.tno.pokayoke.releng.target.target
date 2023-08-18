@@ -15,6 +15,10 @@
             <repository location="https://download.eclipse.org/escet/v0.10/update-site/"/>
             <unit id="org.eclipse.escet.cif.feature.feature.group" version="0.10.0.v20230630-074208"/>
             <unit id="org.eclipse.escet.cif.feature.source.feature.group" version="0.10.0.v20230630-074208"/>
+            <unit id="org.eclipse.escet.common.feature.feature.group" version="0.10.0.v20230630-074208"/>
+            <unit id="org.eclipse.escet.common.feature.source.feature.group" version="0.10.0.v20230630-074208"/>
+            <unit id="org.eclipse.escet.setext.feature.feature.group" version="0.10.0.v20230630-074208"/>
+            <unit id="org.eclipse.escet.setext.feature.source.feature.group" version="0.10.0.v20230630-074208"/>
         </location>
     </locations>
 </target>
