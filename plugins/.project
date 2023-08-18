@@ -21,12 +21,11 @@
             <type>10</type>
             <matcher>
                 <id>org.eclipse.ui.ide.multiFilter</id>
-                <arguments>
-                    1.0-name-matches-false-false-com.github.tno.pokayoke.*</arguments>
+                <arguments>1.0-name-matches-false-false-com.github.tno.pokayoke.*</arguments>
             </matcher>
         </filter>
         <filter>
-            <id>1681400530032</id>
+            <id>1681400530031</id>
             <name></name>
             <type>10</type>
             <matcher>
