@@ -25,6 +25,7 @@
 
     <modules>
         <module>plugins</module>
+        <module>releng</module>
     </modules>
 
     <build>
