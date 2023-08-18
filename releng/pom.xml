@@ -6,10 +6,15 @@
 
     <parent>
         <groupId>com.github.tno.pokayoke</groupId>
-        <artifactId>com.github.tno.pokayoke.releng.root</artifactId>
+        <artifactId>com.github.tno.pokayoke.root</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>com.github.tno.pokayoke.releng.target</artifactId>
-    <packaging>eclipse-target-definition</packaging>
+    <artifactId>com.github.tno.pokayoke.releng.root</artifactId>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>com.github.tno.pokayoke.releng.target</module>
+    </modules>
 </project>
