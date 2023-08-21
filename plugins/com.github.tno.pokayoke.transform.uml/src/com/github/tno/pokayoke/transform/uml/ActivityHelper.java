@@ -63,6 +63,46 @@ public class ActivityHelper {
         initToOuterMergeFlow.setSource(initNode);
         initToOuterMergeFlow.setTarget(outerMergeNode);
 
+        // Define the node that first waits for the guard to be true without locking, for improved performance.
+        OpaqueAction checkGuardNode = FileHelper.FACTORY.createOpaqueAction();
+        checkGuardNode.setActivity(activity);
+        checkGuardNode.getBodies().add(guard);
+        checkGuardNode.getLanguages().add("Python");
+        OutputPin checkGuardOutput = checkGuardNode.createOutputValue("doesGuardHold",
+                FileHelper.loadPrimitiveType("Boolean"));
+
+        // Define the control flow between 'outerMergeNode' and 'checkGuardNode'.
+        ControlFlow outerMergeToCheckGuardFlow = FileHelper.FACTORY.createControlFlow();
+        outerMergeToCheckGuardFlow.setActivity(activity);
+        outerMergeToCheckGuardFlow.setSource(outerMergeNode);
+        outerMergeToCheckGuardFlow.setTarget(checkGuardNode);
+
+        // Define the decision node that checks whether the guard holds.
+        DecisionNode checkGuardDecisionNode = FileHelper.FACTORY.createDecisionNode();
+        checkGuardDecisionNode.setActivity(activity);
+
+        // Define the control flow from 'checkGuardNode' to 'checkGuardDecisionNode'.
+        ControlFlow checkGuardToDecisionFlow = FileHelper.FACTORY.createControlFlow();
+        checkGuardToDecisionFlow.setActivity(activity);
+        checkGuardToDecisionFlow.setSource(checkGuardNode);
+        checkGuardToDecisionFlow.setTarget(checkGuardDecisionNode);
+
+        // Define the object flow between 'checkGuardNode' and 'checkGuardDecisionNode'.
+        ObjectFlow checkGuardToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
+        checkGuardToDecisionObjFlow.setActivity(activity);
+        checkGuardToDecisionObjFlow.setSource(checkGuardOutput);
+        checkGuardToDecisionObjFlow.setTarget(checkGuardDecisionNode);
+
+        // Define the control flow from 'checkGuardDecisionNode' to 'outerMergeNode'.
+        ControlFlow checkGuardDecisionToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
+        checkGuardDecisionToOuterMergeFlow.setActivity(activity);
+        checkGuardDecisionToOuterMergeFlow.setSource(checkGuardDecisionNode);
+        checkGuardDecisionToOuterMergeFlow.setTarget(outerMergeNode);
+        OpaqueExpression decisionToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
+        decisionToMergeGuard.getBodies().add("else");
+        decisionToMergeGuard.getLanguages().add("Python");
+        checkGuardDecisionToOuterMergeFlow.setGuard(decisionToMergeGuard);
+
         // Define the acquire signal send action.
         SendSignalAction sendAcquireNode = FileHelper.FACTORY.createSendSignalAction();
         sendAcquireNode.setActivity(activity);
@@ -84,11 +124,15 @@ public class ActivityHelper {
         requesterValueLiteral.setValue(activityRequesterId.toString());
         requesterValueNode.setValue(requesterValueLiteral);
 
-        // Define the control flow from 'outerMergeNode' to 'requesterValueNode'.
-        ControlFlow mergeToRequesterFlow = FileHelper.FACTORY.createControlFlow();
-        mergeToRequesterFlow.setActivity(activity);
-        mergeToRequesterFlow.setSource(outerMergeNode);
-        mergeToRequesterFlow.setTarget(requesterValueNode);
+        // Define the control flow from 'checkGuardDecisionNode' to 'requesterValueNode'.
+        ControlFlow checkGuardDecisionToRequesterValueFlow = FileHelper.FACTORY.createControlFlow();
+        checkGuardDecisionToRequesterValueFlow.setActivity(activity);
+        checkGuardDecisionToRequesterValueFlow.setSource(checkGuardDecisionNode);
+        checkGuardDecisionToRequesterValueFlow.setTarget(requesterValueNode);
+        OpaqueExpression decisionToFinalGuard = FileHelper.FACTORY.createOpaqueExpression();
+        decisionToFinalGuard.getBodies().add(checkGuardOutput.getName());
+        decisionToFinalGuard.getLanguages().add("Python");
+        checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
 
         // Define the object flow from 'requesterValueNode' to 'sendAcquireNode'.
         ObjectFlow requesterObjectFlow = FileHelper.FACTORY.createObjectFlow();
@@ -427,89 +471,6 @@ public class ActivityHelper {
         }
 
         return newActivity;
-    }
-
-    // TODO remove this function. There should be only one concept, which is atomic execution.
-    /**
-     * Creates an activity that waits until {@code guard} is true before it finalizes. The waiting mechanism is
-     * implemented by means of a busy loop (i.e., polling).
-     *
-     * @param guard A Boolean Python expression.
-     * @return The created activity.
-     */
-    public static Activity createWaitingActivity(String guard) {
-        // Create the activity.
-        Activity activity = FileHelper.FACTORY.createActivity();
-
-        // Define the initial node.
-        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
-        initNode.setActivity(activity);
-
-        // Define the merge node.
-        MergeNode mergeNode = FileHelper.FACTORY.createMergeNode();
-        mergeNode.setActivity(activity);
-
-        // Define the control flow between 'initNode' and 'mergeNode'.
-        ControlFlow initToMergeFlow = FileHelper.FACTORY.createControlFlow();
-        initToMergeFlow.setActivity(activity);
-        initToMergeFlow.setSource(initNode);
-        initToMergeFlow.setTarget(mergeNode);
-
-        // Define the action that checks whether the guard holds.
-        OpaqueAction checkGuardNode = FileHelper.FACTORY.createOpaqueAction();
-        checkGuardNode.setActivity(activity);
-        checkGuardNode.getBodies().add(guard);
-        checkGuardNode.getLanguages().add("Python");
-        OutputPin checkGuardOutput = checkGuardNode.createOutputValue("doesGuardHold",
-                FileHelper.loadPrimitiveType("Boolean"));
-
-        // Define the control flow between 'mergeNode' and 'checkGuardNode'.
-        ControlFlow mergeToCheckGuardFlow = FileHelper.FACTORY.createControlFlow();
-        mergeToCheckGuardFlow.setActivity(activity);
-        mergeToCheckGuardFlow.setSource(mergeNode);
-        mergeToCheckGuardFlow.setTarget(checkGuardNode);
-
-        // Define the decision node.
-        DecisionNode decisionNode = FileHelper.FACTORY.createDecisionNode();
-        decisionNode.setActivity(activity);
-
-        // Define the control flow from 'checkGuardNode' to 'decisionNode'.
-        ControlFlow checkGuardToDecisionFlow = FileHelper.FACTORY.createControlFlow();
-        checkGuardToDecisionFlow.setActivity(activity);
-        checkGuardToDecisionFlow.setSource(checkGuardNode);
-        checkGuardToDecisionFlow.setTarget(decisionNode);
-
-        // Define the object flow between 'checkGuardNode' and 'decisionNode'.
-        ObjectFlow checkGuardToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
-        checkGuardToDecisionObjFlow.setActivity(activity);
-        checkGuardToDecisionObjFlow.setSource(checkGuardOutput);
-        checkGuardToDecisionObjFlow.setTarget(decisionNode);
-
-        // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
-        finalNode.setActivity(activity);
-
-        // Define the control flow from 'decisionNode' to 'finalNode'.
-        ControlFlow decisionToFinalFlow = FileHelper.FACTORY.createControlFlow();
-        decisionToFinalFlow.setActivity(activity);
-        decisionToFinalFlow.setSource(decisionNode);
-        decisionToFinalFlow.setTarget(finalNode);
-        OpaqueExpression decisionToFinalGuard = FileHelper.FACTORY.createOpaqueExpression();
-        decisionToFinalGuard.getBodies().add(checkGuardOutput.getName());
-        decisionToFinalGuard.getLanguages().add("Python");
-        decisionToFinalFlow.setGuard(decisionToFinalGuard);
-
-        // Define the control flow from 'decisionNode' to 'mergeNode'.
-        ControlFlow decisionToMergeFlow = FileHelper.FACTORY.createControlFlow();
-        decisionToMergeFlow.setActivity(activity);
-        decisionToMergeFlow.setSource(decisionNode);
-        decisionToMergeFlow.setTarget(mergeNode);
-        OpaqueExpression decisionToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
-        decisionToMergeGuard.getBodies().add("else");
-        decisionToMergeGuard.getLanguages().add("Python");
-        decisionToMergeFlow.setGuard(decisionToMergeGuard);
-
-        return activity;
     }
 
     /**

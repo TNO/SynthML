@@ -134,7 +134,8 @@ public class UMLTransformer {
                 .map(precondition -> expressionParser.parseString(precondition, "")).collect(Collectors.toList());
 
         String combinedPythonPrecondition = translator.translateExpressions(parsedPreconditions);
-        Activity preconditionActivity = ActivityHelper.createWaitingActivity(combinedPythonPrecondition);
+        Activity preconditionActivity = ActivityHelper.createAtomicActivity(combinedPythonPrecondition, "pass",
+                acquireSignal);
         preconditionActivity.setName("precondition");
         activityClass.getOwnedBehaviors().add(preconditionActivity);
         preconditions.put(activity, preconditionActivity);
