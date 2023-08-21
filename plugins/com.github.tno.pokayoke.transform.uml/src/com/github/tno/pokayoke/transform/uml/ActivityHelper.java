@@ -1,18 +1,14 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
-import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.FinalNode;
-import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.InputPin;
 import org.eclipse.uml2.uml.LiteralString;
@@ -385,92 +381,6 @@ public class ActivityHelper {
         decisionToInnerMergeFlow.setGuard(decisionToInnerMergeGuard);
 
         return activity;
-    }
-
-    // TODO remove this function. The main activity should be part of the main model.
-    /**
-     * Creates a "main" activity that continuously calls all activities from {@code activities} in parallel, and also
-     * puts a call to {@code lockHandler} in parallel.
-     *
-     * @param activities The activities to continuously call in parallel.
-     * @param preconditions The preconditions of all activities in {@code activities}.
-     * @param lockHandler The activity that encodes the lock handler.
-     * @return The created precondition activity.
-     */
-    public static Activity createMainActivity(List<Activity> activities, Map<Activity, Activity> preconditions,
-            Activity lockHandler)
-    {
-        // Create the new activity that puts 'activities' in parallel.
-        Activity newActivity = FileHelper.FACTORY.createActivity();
-
-        // Define the initial node.
-        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
-        initNode.setActivity(newActivity);
-
-        // Define the fork node.
-        ForkNode forkNode = FileHelper.FACTORY.createForkNode();
-        forkNode.setActivity(newActivity);
-
-        // Define the control flow from 'initNode' to 'forkNode'.
-        ControlFlow initToFork = FileHelper.FACTORY.createControlFlow();
-        initToFork.setActivity(newActivity);
-        initToFork.setSource(initNode);
-        initToFork.setTarget(forkNode);
-
-        // Define the action that calls the lock handler.
-        CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
-        lockHandlerNode.setActivity(newActivity);
-        lockHandlerNode.setBehavior(lockHandler);
-
-        // Define the control flow from 'forkNode' to 'lockHandlerNode'.
-        ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
-        forkToLockHandlerFlow.setActivity(newActivity);
-        forkToLockHandlerFlow.setSource(forkNode);
-        forkToLockHandlerFlow.setTarget(lockHandlerNode);
-
-        // Define a forked behavior call for every activity in 'activities'.
-        for (Activity activity: activities) {
-            // Define the merge node.
-            MergeNode mergeNode = FileHelper.FACTORY.createMergeNode();
-            mergeNode.setActivity(newActivity);
-
-            // Define the control flow from 'forkNode' to 'mergeNode'.
-            ControlFlow forkToMergeFlow = FileHelper.FACTORY.createControlFlow();
-            forkToMergeFlow.setActivity(newActivity);
-            forkToMergeFlow.setSource(forkNode);
-            forkToMergeFlow.setTarget(mergeNode);
-
-            // Define the action that calls the 'preconditionActivity'.
-            CallBehaviorAction preconditionCallNode = FileHelper.FACTORY.createCallBehaviorAction();
-            preconditionCallNode.setActivity(newActivity);
-            preconditionCallNode.setBehavior(preconditions.get(activity));
-
-            // Define the control flow from 'mergeNode' to 'preconditionCallNode'.
-            ControlFlow mergeToPreFlow = FileHelper.FACTORY.createControlFlow();
-            mergeToPreFlow.setActivity(newActivity);
-            mergeToPreFlow.setSource(mergeNode);
-            mergeToPreFlow.setTarget(preconditionCallNode);
-
-            // Define the call behavior action that calls 'activity'.
-            CallBehaviorAction activityCallNode = FileHelper.FACTORY.createCallBehaviorAction();
-            activityCallNode.setActivity(newActivity);
-            activityCallNode.setBehavior(activity);
-            activityCallNode.setName(activity.getName());
-
-            // Define the control flow from 'preconditionCallNode' to 'activityCallNode'.
-            ControlFlow preToActivityCallFlow = FileHelper.FACTORY.createControlFlow();
-            preToActivityCallFlow.setActivity(newActivity);
-            preToActivityCallFlow.setSource(preconditionCallNode);
-            preToActivityCallFlow.setTarget(activityCallNode);
-
-            // Define the control flow from 'activityCallNode' to 'mergeNode'.
-            ControlFlow activityCallToMergeEdge = FileHelper.FACTORY.createControlFlow();
-            activityCallToMergeEdge.setActivity(newActivity);
-            activityCallToMergeEdge.setSource(activityCallNode);
-            activityCallToMergeEdge.setTarget(mergeNode);
-        }
-
-        return newActivity;
     }
 
     /**

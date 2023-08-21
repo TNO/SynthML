@@ -2,11 +2,8 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.CifExpressionParser;
@@ -18,10 +15,11 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
-import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
@@ -33,15 +31,11 @@ import org.eclipse.uml2.uml.VisibilityKind;
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
-    private Signal acquireSignal;
-
     private final CifExpressionParser expressionParser = new CifExpressionParser();
 
     private final Model model;
 
-    private final ModelTyping modelTyping;
-
-    private final Map<Activity, Activity> preconditions = new LinkedHashMap<>();
+    private final ModelTyping typing;
 
     private final CifToPythonTranslator translator;
 
@@ -49,8 +43,8 @@ public class UMLTransformer {
 
     public UMLTransformer(Model model) {
         this.model = model;
-        this.modelTyping = new ModelTyping(this.model);
-        this.translator = new CifToPythonTranslator(this.modelTyping);
+        this.typing = new ModelTyping(this.model);
+        this.translator = new CifToPythonTranslator(this.typing);
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
@@ -66,7 +60,7 @@ public class UMLTransformer {
         Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
 
         // Create the signal for acquiring the lock.
-        acquireSignal = FileHelper.FACTORY.createSignal();
+        Signal acquireSignal = FileHelper.FACTORY.createSignal();
         acquireSignal.setName("acquire");
         Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
@@ -89,7 +83,7 @@ public class UMLTransformer {
 
         Class contextClass = (Class)model.getMember("Context");
 
-        // Create the static property containing the current owner of the lock.
+        // Create the static property that indicates the current owner of the lock (if any).
         Property activeProperty = FileHelper.FACTORY.createProperty();
         activeProperty.setIsStatic(true);
         activeProperty.setName("active");
@@ -102,53 +96,58 @@ public class UMLTransformer {
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new LinkedHashSet<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity) {
-                transformActivity((Activity)behavior);
+                transformActivity((Activity)behavior, acquireSignal);
             }
         }
 
-        // 3. Create a 'main' activity.
+        // 3. Transform the classifier behavior (i.e., main activity) of the 'Context' class.
 
-        // Get all activity behaviors of 'context'.
-        List<Activity> activities = contextClass.getOwnedBehaviors().stream().filter(b -> b instanceof Activity)
-                .map(b -> (Activity)b).collect(Collectors.toCollection(ArrayList::new));
+        // Obtain the main activity.
+        Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
 
-        // Define a new activity that calls all 'activities' in parallel.
-        Activity mainActivity = ActivityHelper.createMainActivity(activities, preconditions, lockHandlerActivity);
-        mainActivity.setName("main");
-        contextClass.getOwnedBehaviors().add(mainActivity);
-        contextClass.setClassifierBehavior(mainActivity);
+        if (!mainActivity.getName().equals("main")) {
+            throw new RuntimeException("Expected a main activity diagram.");
+        }
+
+        // Obtain the single fork node that 'mainActivity' should have.
+        List<ForkNode> forkNodes = mainActivity.getNodes().stream().filter(n -> n instanceof ForkNode)
+                .map(n -> (ForkNode)n).collect(Collectors.toList());
+
+        if (forkNodes.size() != 1) {
+            throw new RuntimeException("Expected the main activity diagram to have exactly one fork node.");
+        }
+
+        ForkNode forkNode = forkNodes.get(0);
+
+        // Define the action that calls the lock handler.
+        CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
+        lockHandlerNode.setActivity(mainActivity);
+        lockHandlerNode.setBehavior(lockHandlerActivity);
+
+        // Define the control flow from 'forkNode' to 'lockHandlerNode'.
+        ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
+        forkToLockHandlerFlow.setActivity(mainActivity);
+        forkToLockHandlerFlow.setSource(forkNode);
+        forkToLockHandlerFlow.setTarget(lockHandlerNode);
     }
 
-    private void transformActivity(Activity activity) {
+    private void transformActivity(Activity activity, Signal acquireSignal) {
         ActivityHelper.removeIrrelevantInformation(activity);
 
         // Create a separate class in which all new behaviors for 'activity' are stored.
         Class activityClass = (Class)model.createPackagedElement(activity.getName(), UMLPackage.eINSTANCE.getClass_());
 
-        // Define the activity that encodes the precondition of 'activity'.
-        List<AExpression> parsedPreconditions = activity.getPreconditions().stream()
-                .map(constraint -> constraint.getSpecification())
-                .filter(specification -> specification instanceof OpaqueExpression)
-                .map(specification -> (OpaqueExpression)specification)
-                .flatMap(specification -> specification.getBodies().stream())
-                .map(precondition -> expressionParser.parseString(precondition, "")).collect(Collectors.toList());
-
-        String combinedPythonPrecondition = translator.translateExpressions(parsedPreconditions);
-        Activity preconditionActivity = ActivityHelper.createAtomicActivity(combinedPythonPrecondition, "pass",
-                acquireSignal);
-        preconditionActivity.setName("precondition");
-        activityClass.getOwnedBehaviors().add(preconditionActivity);
-        preconditions.put(activity, preconditionActivity);
-
         // Transform all opaque action nodes of 'activity'.
         for (ActivityNode node: new LinkedHashSet<>(activity.getNodes())) {
             if (node instanceof OpaqueAction) {
-                transformOpaqueAction(activityClass, activity, (OpaqueAction)node);
+                transformOpaqueAction(activityClass, activity, (OpaqueAction)node, acquireSignal);
             }
         }
     }
 
-    private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action) {
+    private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action,
+            Signal acquireSignal)
+    {
         // Extract the guard of 'action', to be encoded later.
         // If 'action' has at least one body, then parse the first body, which is assumed to be its guard.
         String guard = "True";
