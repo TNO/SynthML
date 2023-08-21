@@ -17,6 +17,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+// TODO improve JavaDoc a bit
+
 public class FileHelper {
     static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 

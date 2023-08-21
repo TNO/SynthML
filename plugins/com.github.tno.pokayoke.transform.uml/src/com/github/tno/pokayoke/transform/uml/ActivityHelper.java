@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.uml;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
@@ -39,9 +38,9 @@ public class ActivityHelper {
 
     /**
      * Creates an activity that waits until {@code guard} becomes {@code true} and then executes {@code effect}. The
-     * evaluation (attempt) of {@code guard} and execution of {@code effect} happen together atomically.
+     * evaluation of {@code guard} and possible execution of {@code effect} happen together atomically.
      *
-     * @param guard A Python expression returning a boolean.
+     * @param guard A Python boolean expression.
      * @param effect A Python program.
      * @param acquire The signal for acquiring the lock.
      * @return The created activity that executes atomically.
@@ -344,8 +343,9 @@ public class ActivityHelper {
         return activity;
     }
 
+    // TODO remove this function. The main activity should be part of the main model.
     /**
-     * Creates a "main" activity that continuously call all activities from {@code activities} in parallel, and also
+     * Creates a "main" activity that continuously calls all activities from {@code activities} in parallel, and also
      * puts a call to {@code lockHandler} in parallel.
      *
      * @param activities The activities to continuously call in parallel.
@@ -429,26 +429,7 @@ public class ActivityHelper {
         return newActivity;
     }
 
-    /**
-     * Creates an activity that waits until the precondition of {@code activity} becomes true.
-     *
-     * @param activity The activity to create the precondition activity for.
-     * @return The created precondition activity.
-     */
-    public static Activity createPreconditionActivityFor(Activity activity) {
-        // Determine the precondition of 'activity'.
-        String precondition = activity.getPreconditions().stream().map(c -> c.getSpecification())
-                .filter(s -> s instanceof OpaqueExpression).map(s -> (OpaqueExpression)s)
-                .flatMap(s -> s.getBodies().stream()).collect(Collectors.joining(" and "));
-
-        if (precondition.isEmpty()) {
-            precondition = "True";
-        }
-
-        // Create a waiting activity that waits on 'precondition'.
-        return createWaitingActivity(precondition);
-    }
-
+    // TODO remove this function. There should be only one concept, which is atomic execution.
     /**
      * Creates an activity that waits until {@code guard} is true before it finalizes. The waiting mechanism is
      * implemented by means of a busy loop (i.e., polling).
