@@ -57,7 +57,7 @@ public class ActivityHelper {
         initToOuterMergeFlow.setSource(initNode);
         initToOuterMergeFlow.setTarget(outerMergeNode);
 
-        // Define the node that first waits for the guard to be true without locking, for improved performance.
+        // Define the node used to repeatedly check whether the guard holds, without locking, for improved performance.
         OpaqueAction checkGuardNode = FileHelper.FACTORY.createOpaqueAction();
         checkGuardNode.setActivity(activity);
         checkGuardNode.getBodies().add(guard);
