@@ -15,11 +15,11 @@ import com.google.common.base.Verify;
 
 /** Collects basic typing information from a {@link Model model} that can be queried. */
 public class ModelTyping {
+    private final Model model;
+
     private final Map<String, Enumeration> enums = new LinkedHashMap<>();
 
     private final Map<String, EnumerationLiteral> enumLiterals = new LinkedHashMap<>();
-
-    private final Model model;
 
     private final Map<String, Property> variables = new LinkedHashMap<>();
 

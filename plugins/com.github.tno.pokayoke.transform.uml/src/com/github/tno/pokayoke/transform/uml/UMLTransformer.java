@@ -33,13 +33,13 @@ import com.google.common.base.Verify;
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
-    private final CifExpressionParser expressionParser = new CifExpressionParser();
-
     private final Model model;
 
     private final ModelTyping typing;
 
     private final CifToPythonTranslator translator;
+
+    private final CifExpressionParser expressionParser = new CifExpressionParser();
 
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
