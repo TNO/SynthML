@@ -114,7 +114,7 @@ public class UMLTransformer {
                 .map(n -> (ForkNode)n).collect(Collectors.toList());
 
         if (forkNodes.size() != 1) {
-            throw new RuntimeException("Expected the main activity diagram to have exactly one fork node.");
+            throw new RuntimeException("Expected the 'main' activity diagram to have exactly one fork node.");
         }
 
         ForkNode forkNode = forkNodes.get(0);
