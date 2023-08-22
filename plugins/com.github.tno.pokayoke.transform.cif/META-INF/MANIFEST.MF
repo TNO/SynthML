@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Poka Yoke CIF Transformer
-Bundle-SymbolicName: com.github.tno.pokayoke.transform.cif
+Bundle-SymbolicName: com.github.tno.pokayoke.transform.common
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
  org.eclipse.uml2.uml.resources;bundle-version="5.5.0",

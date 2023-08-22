@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.github.tno.pokayoke.transform.cif;
+package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -10,13 +10,15 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
-/**
- *
- */
 public class FileHelper {
     static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
@@ -43,6 +45,29 @@ public class FileHelper {
     }
 
     /**
+     * Loads an UML package.
+     *
+     * @param uri The URI of the UML model.
+     * @return The loaded package.
+     */
+    public static Package loadPackage(URI uri) {
+        ResourceSet resourceSet = new ResourceSetImpl();
+        Resource resource = resourceSet.getResource(uri, true);
+        return (Package)EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
+    }
+
+    /**
+     * Loads a primitive UML type, e.g., 'Boolean' or 'String'.
+     *
+     * @param name Then name of the primitive type to load.
+     * @return The loaded primitive type.
+     */
+    public static PrimitiveType loadPrimitiveType(String name) {
+        Package umlLibrary = loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
+        return (PrimitiveType)umlLibrary.getOwnedType(name);
+    }
+
+    /**
      * Stores {@code model} to {@code pathName}.
      *
      * @param model The model to store.
@@ -54,12 +79,10 @@ public class FileHelper {
         ResourceSet resourceSet = new ResourceSetImpl();
         UMLResourcesUtil.init(resourceSet);
 
-
         // Store the model.
         URI uri = URI.createFileURI(pathName);
         Resource resource = resourceSet.createResource(uri);
         resource.getContents().add(model);
         resource.save(Collections.EMPTY_MAP);
     }
-
 }
