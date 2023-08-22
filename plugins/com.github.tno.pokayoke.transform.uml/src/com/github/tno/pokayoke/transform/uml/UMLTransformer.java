@@ -39,9 +39,9 @@ public class UMLTransformer {
 
     private final CifToPythonTranslator translator;
 
-    private final CifExpressionParser expressionParser = new CifExpressionParser();
-
     private final CifUpdateParser updateParser = new CifUpdateParser();
+
+    private final CifExpressionParser expressionParser = new CifExpressionParser();
 
     public UMLTransformer(Model model) {
         this.model = model;
