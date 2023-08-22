@@ -46,7 +46,7 @@ public class CifToPythonTranslator {
         } else if (expr instanceof AUnaryExpression) {
             return translateUnaryExpression((AUnaryExpression)expr);
         } else {
-            throw new RuntimeException("Unsupported expression.");
+            throw new RuntimeException("Unsupported expression: " + expr);
         }
     }
 
