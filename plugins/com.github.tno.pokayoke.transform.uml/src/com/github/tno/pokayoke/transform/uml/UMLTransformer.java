@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /**
@@ -56,6 +57,9 @@ public class UMLTransformer {
     }
 
     public void transformModel() {
+        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
+                "Expected the 'Lock' class to not already exist.");
+
         // 1. Define locking infrastructure.
 
         // Create a class for holding lock-related structure and behavior.
@@ -127,10 +131,15 @@ public class UMLTransformer {
     }
 
     private void transformActivity(Activity activity, Signal acquireSignal) {
+        String activityName = activity.getName();
+
+        Preconditions.checkArgument(model.getPackagedElement(activity.getName()) == null,
+                String.format("Expected the '%s' class to not already exist.", activityName));
+
         ActivityHelper.removeIrrelevantInformation(activity);
 
         // Create a separate class in which all new behaviors for 'activity' are stored.
-        Class activityClass = (Class)model.createPackagedElement(activity.getName(), UMLPackage.eINSTANCE.getClass_());
+        Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
 
         // Transform all opaque action nodes of 'activity'.
         for (ActivityNode node: new LinkedHashSet<>(activity.getNodes())) {
