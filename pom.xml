@@ -165,6 +165,42 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- The following is needed for generated source features that are part of an update site. -->
+            <!-- Tycho will warn about this if not configured. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <!-- Don't attach (default) metadata before the source-feature execution. -->
+                        <id>default-p2-metadata-default</id>
+                        <configuration>
+                            <attachP2Metadata>false</attachP2Metadata>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Do attach metadata after the source-feature execution. -->
+                        <id>attach-p2-metadata</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Use more recent Maven Plugin plugin. Otherwise building Maven plugins fails. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.8.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
