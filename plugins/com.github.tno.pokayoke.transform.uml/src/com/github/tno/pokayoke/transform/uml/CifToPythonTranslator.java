@@ -12,6 +12,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
+import com.google.common.base.Preconditions;
+
 /** Translates basic CIF expressions and updates to Python. */
 public class CifToPythonTranslator {
     private final ModelTyping modelTyping;
@@ -59,9 +61,7 @@ public class CifToPythonTranslator {
     }
 
     public String translateNameExpression(ANameExpression expr) {
-        if (expr.derivative) {
-            throw new RuntimeException("Expected a non-derivative name expression.");
-        }
+        Preconditions.checkArgument(!expr.derivative, "Expected a non-derivative name expression.");
 
         String name = expr.name.name;
 

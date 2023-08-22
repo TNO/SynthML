@@ -26,6 +26,8 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
+import com.google.common.base.Verify;
+
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
@@ -104,19 +106,12 @@ public class UMLTransformer {
 
         // Obtain the main activity.
         Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
-
-        if (!mainActivity.getName().equals("main")) {
-            throw new RuntimeException("Expected a main activity diagram.");
-        }
+        Verify.verify(mainActivity.getName().equals("main"), "Expected a 'main' activity diagram.");
 
         // Obtain the single fork node that 'mainActivity' should have.
         List<ForkNode> forkNodes = mainActivity.getNodes().stream().filter(n -> n instanceof ForkNode)
                 .map(n -> (ForkNode)n).collect(Collectors.toList());
-
-        if (forkNodes.size() != 1) {
-            throw new RuntimeException("Expected the 'main' activity diagram to have exactly one fork node.");
-        }
-
+        Verify.verify(forkNodes.size() == 1, "Expected the 'main' activity diagram to have exactly one fork node.");
         ForkNode forkNode = forkNodes.get(0);
 
         // Define the action that calls the lock handler.

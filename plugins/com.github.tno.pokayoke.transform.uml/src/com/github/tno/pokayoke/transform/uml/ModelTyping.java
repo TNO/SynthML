@@ -11,6 +11,8 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 
+import com.google.common.base.Verify;
+
 /** Collects basic typing information from a {@link Model model} that can be queried. */
 public class ModelTyping {
     private final Map<String, Enumeration> enums = new LinkedHashMap<>();
@@ -55,9 +57,7 @@ public class ModelTyping {
     }
 
     private void ensureUndeclared(String name) {
-        if (isDeclared(name)) {
-            throw new RuntimeException(String.format("Symbol %s already exists.", name));
-        }
+        Verify.verify(!isDeclared(name), String.format("Symbol %s already exists.", name));
     }
 
     private void populate() {
