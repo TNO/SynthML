@@ -45,7 +45,7 @@ public class FlattenUMLActivityDiagram {
         }
     }
     // Child behavior is the activity diagram that is being called by the call behavior action parentAction.
-    public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction CallBehaviorActionToReplace) {
+    public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // The activity is null then we already reached the leaf
         if (childBehavior == null)
             return;
@@ -59,19 +59,19 @@ public class FlattenUMLActivityDiagram {
         }
 
         // Relocating edges when CallBehaviorActionToReplace is not null
-        if (CallBehaviorActionToReplace != null) {
+        if (callBehaviorActionToReplace != null) {
             Activity tmp = EcoreUtil.copy(childBehavior);
 
             for (ActivityNode node: new LinkedHashSet<>(tmp.getNodes())) {
                 // Set the activity for the node
-                node.setActivity(CallBehaviorActionToReplace.getActivity());
+                node.setActivity(callBehaviorActionToReplace.getActivity());
 
                 // Set the activity for all the edges to the activity of the call behavior action to be replaced
                 for (ActivityEdge edge: new LinkedHashSet<>(node.getOutgoings())) {
-                    edge.setActivity(CallBehaviorActionToReplace.getActivity());
+                    edge.setActivity(callBehaviorActionToReplace.getActivity());
                 }
                 for (ActivityEdge edge: new LinkedHashSet<>(node.getIncomings())) {
-                    edge.setActivity(CallBehaviorActionToReplace.getActivity());
+                    edge.setActivity(callBehaviorActionToReplace.getActivity());
                 }
 
                 if (node instanceof InitialNode) {
@@ -80,7 +80,7 @@ public class FlattenUMLActivityDiagram {
 
                     for (ActivityEdge outgoingEdge: new LinkedHashSet<>(node.getOutgoings())) {
                         for (ActivityEdge inComingEdge: new LinkedHashSet<>(
-                                CallBehaviorActionToReplace.getIncomings()))
+                                callBehaviorActionToReplace.getIncomings()))
                         {
                             inComingEdge.setTarget(outgoingEdge.getTarget());
                         }
@@ -95,7 +95,7 @@ public class FlattenUMLActivityDiagram {
                     // behavior action to be replaced
                     for (ActivityEdge inComingEdge: new LinkedHashSet<>(node.getIncomings())) {
                         for (ActivityEdge outgoingEdge: new LinkedHashSet<>(
-                                CallBehaviorActionToReplace.getOutgoings()))
+                                callBehaviorActionToReplace.getOutgoings()))
                         {
                             outgoingEdge.setSource(inComingEdge.getSource());
                         }
@@ -108,7 +108,7 @@ public class FlattenUMLActivityDiagram {
                 }
             }
             // Destroy the call behavior action being replaced
-            CallBehaviorActionToReplace.destroy();
+            callBehaviorActionToReplace.destroy();
         }
     }
 
