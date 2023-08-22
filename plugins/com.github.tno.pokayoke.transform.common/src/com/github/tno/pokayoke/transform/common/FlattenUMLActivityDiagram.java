@@ -18,9 +18,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
-/**
- * Flatten nested UML activity diagrams.
- */
+/** Flatten nested UML activity diagrams. */
 public class FlattenUMLActivityDiagram {
     private final Model model;
 
@@ -45,25 +43,28 @@ public class FlattenUMLActivityDiagram {
         }
     }
 
-    /** Recursively flatten the activity diagram.
-     * @param childBehavior is the activity diagram to be flattened.
-     * @param callBehaviorActionToReplace is the call behavior action that calls the activity.
+    /**
+     * Recursively flatten the activity diagram.
+     *
+     * @param childBehavior The non-{@code null} activity diagram to be flattened.
+     * @param callBehaviorActionToReplace The call behavior action that calls the activity.
      */
     public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // If 'childBehavior' is null then the behavior of the call behavior action is unspecified. Flattening cannot be done.
-        if (childBehavior == null)
-            return;
+        if (childBehavior == null) {
+            throw new RuntimeException("Expected a non-null activity diagram.");
+        }
 
         for (ActivityNode node: new LinkedHashSet<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction) {
-                CallBehaviorAction actionNode = (CallBehaviorAction) node;
+                CallBehaviorAction actionNode = (CallBehaviorAction)node;
                 Behavior childDiagram = actionNode.getBehavior();
                 // Recursion to reach the leaf of the tree.
                 flattenActivityDiagram((Activity)childDiagram, actionNode);
             }
         }
 
-        // Relocating edges when 'CallBehaviorActionToReplace' is not null.
+        // Relocating edges when 'callBehaviorActionToReplace' is not null.
         if (callBehaviorActionToReplace != null) {
             Activity tmp = EcoreUtil.copy(childBehavior);
 
@@ -78,7 +79,7 @@ public class FlattenUMLActivityDiagram {
                 for (ActivityEdge edge: new LinkedHashSet<>(node.getIncomings())) {
                     edge.setActivity(callBehaviorActionToReplace.getActivity());
                 }
-                // Relocate all outgoing edges from the initial node to the node from which the control flows to the call behavior action to be replaced.
+                // Relocate all outgoing edges out of the initial node, to all incoming neighbors of the call behavior action that is replaced.
                 if (node instanceof InitialNode) {
                     for (ActivityEdge outgoingEdge: new LinkedHashSet<>(node.getOutgoings())) {
                         for (ActivityEdge inComingEdge: new LinkedHashSet<>(
@@ -92,16 +93,16 @@ public class FlattenUMLActivityDiagram {
                     // Destroy the initial node.
                     node.destroy();
                 }
-                // Relocate all incoming edges to the final node to the node receives control signal from the call behavior action to be replaced.
+                // Relocate all incoming edges into the final node, to all outgoing neighbors of the call behavior action that is replaced.
                 if (node instanceof ActivityFinalNode) {
-                    for (ActivityEdge inComingEdge: new LinkedHashSet<>(node.getIncomings())) {
+                    for (ActivityEdge incomingEdge: new LinkedHashSet<>(node.getIncomings())) {
                         for (ActivityEdge outgoingEdge: new LinkedHashSet<>(
                                 callBehaviorActionToReplace.getOutgoings()))
                         {
-                            outgoingEdge.setSource(inComingEdge.getSource());
+                            outgoingEdge.setSource(incomingEdge.getSource());
                         }
                         // Destroy the incoming edge of the final node.
-                        inComingEdge.destroy();
+                        incomingEdge.destroy();
                     }
                     // Destroy the final node.
                     node.destroy();
@@ -111,5 +112,4 @@ public class FlattenUMLActivityDiagram {
             callBehaviorActionToReplace.destroy();
         }
     }
-
 }

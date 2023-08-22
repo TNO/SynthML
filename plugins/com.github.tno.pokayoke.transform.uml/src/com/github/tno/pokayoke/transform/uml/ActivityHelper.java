@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

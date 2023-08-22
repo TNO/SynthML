@@ -9,3 +9,4 @@ Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.uml
+Import-Package: com.github.tno.pokayoke.transform.common

@@ -20,7 +20,7 @@ import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class FileHelper {
-    static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
+    public static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
     private FileHelper() {
     }
