@@ -11,9 +11,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 
-/**
- * Collects basic typing information from a {@link Model model} that can be queried.
- */
+/** Collects basic typing information from a {@link Model model} that can be queried. */
 public class ModelTyping {
     private final Map<String, Enumeration> enums = new LinkedHashMap<>();
 

@@ -25,9 +25,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
-/**
- * Helper class for creating various kinds of activities.
- */
+/** Helper class for creating various kinds of activities. */
 public class ActivityHelper {
     private ActivityHelper() {
     }

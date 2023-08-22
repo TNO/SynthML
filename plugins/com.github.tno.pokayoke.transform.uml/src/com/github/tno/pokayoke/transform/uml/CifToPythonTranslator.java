@@ -12,9 +12,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
-/**
- * Translates basic CIF expressions and updates to Python.
- */
+/** Translates basic CIF expressions and updates to Python. */
 public class CifToPythonTranslator {
     private final ModelTyping modelTyping;
 
