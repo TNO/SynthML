@@ -59,6 +59,10 @@ public class CifToPythonTranslator {
     }
 
     public String translateNameExpression(ANameExpression expr) {
+        if (expr.derivative) {
+            throw new RuntimeException("Expected a non-derivative name expression.");
+        }
+
         String name = expr.name.name;
 
         if (modelTyping.isEnumerationLiteral(name)) {
