@@ -95,8 +95,8 @@ public class UMLTransformer {
 
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new LinkedHashSet<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity) {
-                transformActivity((Activity)behavior, acquireSignal);
+            if (behavior instanceof Activity activity) {
+                transformActivity(activity, acquireSignal);
             }
         }
 
@@ -139,8 +139,8 @@ public class UMLTransformer {
 
         // Transform all opaque action nodes of 'activity'.
         for (ActivityNode node: new LinkedHashSet<>(activity.getNodes())) {
-            if (node instanceof OpaqueAction) {
-                transformOpaqueAction(activityClass, activity, (OpaqueAction)node, acquireSignal);
+            if (node instanceof OpaqueAction opaqueActionNode) {
+                transformOpaqueAction(activityClass, activity, opaqueActionNode, acquireSignal);
             }
         }
     }

@@ -36,14 +36,14 @@ public class CifToPythonTranslator {
     }
 
     public String translateExpression(AExpression expr) {
-        if (expr instanceof ABinaryExpression) {
-            return translateBinaryExpression((ABinaryExpression)expr);
-        } else if (expr instanceof ABoolExpression) {
-            return translateBoolExpression((ABoolExpression)expr);
-        } else if (expr instanceof ANameExpression) {
-            return translateNameExpression((ANameExpression)expr);
-        } else if (expr instanceof AUnaryExpression) {
-            return translateUnaryExpression((AUnaryExpression)expr);
+        if (expr instanceof ABinaryExpression binExpr) {
+            return translateBinaryExpression(binExpr);
+        } else if (expr instanceof ABoolExpression boolExpr) {
+            return translateBoolExpression(boolExpr);
+        } else if (expr instanceof ANameExpression nameExpr) {
+            return translateNameExpression(nameExpr);
+        } else if (expr instanceof AUnaryExpression unaryExpr) {
+            return translateUnaryExpression(unaryExpr);
         } else {
             throw new RuntimeException("Unsupported expression: " + expr);
         }
@@ -85,8 +85,8 @@ public class CifToPythonTranslator {
     }
 
     public String translateUpdate(AUpdate update) {
-        if (update instanceof AAssignmentUpdate) {
-            return translateAssignmentUpdate((AAssignmentUpdate)update);
+        if (update instanceof AAssignmentUpdate assignmentUpdate) {
+            return translateAssignmentUpdate(assignmentUpdate);
         } else {
             throw new RuntimeException("Unsupported update.");
         }

@@ -62,10 +62,10 @@ public class ModelTyping {
 
     private void populate() {
         for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class) {
-                populateFrom((Class)element);
-            } else if (element instanceof Enumeration) {
-                populateFrom((Enumeration)element);
+            if (element instanceof Class classElement) {
+                populateFrom(classElement);
+            } else if (element instanceof Enumeration enumElement) {
+                populateFrom(enumElement);
             } else {
                 throw new RuntimeException("Unsupported packaged element type.");
             }
