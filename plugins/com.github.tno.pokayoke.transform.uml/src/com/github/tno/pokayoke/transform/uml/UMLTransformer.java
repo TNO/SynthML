@@ -35,13 +35,13 @@ import com.google.common.base.Verify;
 public class UMLTransformer {
     private final Model model;
 
-    private final ModelTyping typing;
-
-    private final CifToPythonTranslator translator;
-
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
     private final CifExpressionParser expressionParser = new CifExpressionParser();
+
+    private final ModelTyping typing;
+
+    private final CifToPythonTranslator translator;
 
     public UMLTransformer(Model model) {
         this.model = model;
