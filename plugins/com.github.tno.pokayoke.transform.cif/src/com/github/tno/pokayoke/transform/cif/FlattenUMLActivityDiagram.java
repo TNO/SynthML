@@ -112,9 +112,4 @@ public class FlattenUMLActivityDiagram {
         }
     }
 
-    public static void main(String args[]) throws IOException {
-        String inputPath = "C:\\Users\\nanyang\\workspace\\NestedDiagram\\2023-08-21 - deadlock.uml";
-        String outputPath = "C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml";
-        transformFile(inputPath, outputPath);
-    }
 }
