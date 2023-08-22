@@ -174,6 +174,8 @@ public class UMLTransformer {
         // Define a new activity that encodes the behavior of 'action'.
         Activity actionActivity = ActivityHelper.createAtomicActivity(guard, effect, acquireSignal);
         actionActivity.setName(action.getName());
+        Verify.verify(activityClass.getOwnedBehavior(action.getName()) == null,
+                String.format("Expected the '%s' activity to not already exist.", action.getName()));
         activityClass.getOwnedBehaviors().add(actionActivity);
 
         // Define the call behavior action that replaces 'action' in 'activity'.
