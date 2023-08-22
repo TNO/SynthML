@@ -75,13 +75,11 @@ public class CifToPythonTranslator {
     }
 
     public String translateOperator(String operator) {
-        if (operator.equals("and") || operator.equals("or") || operator.equals("not")) {
-            return operator;
-        } else if (operator.equals("=")) {
-            return "==";
-        } else {
-            throw new RuntimeException("Unsupported operator.");
-        }
+        return switch (operator) {
+            case "and", "or", "not" -> operator;
+            case "=" -> "==";
+            default -> throw new RuntimeException("Unsupported operator.");
+        };
     }
 
     public String translateUnaryExpression(AUnaryExpression expr) {
