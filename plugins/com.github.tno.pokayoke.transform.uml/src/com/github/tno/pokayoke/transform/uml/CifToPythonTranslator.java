@@ -22,10 +22,6 @@ public class CifToPythonTranslator {
         this.modelTyping = modelTyping;
     }
 
-    public String translateAssignmentUpdate(AAssignmentUpdate update) {
-        return String.format("%s = %s", translateExpression(update.addressable), translateExpression(update.value));
-    }
-
     public String translateExpressions(Collection<AExpression> exprs) {
         String pythonExp = "True";
 
@@ -56,6 +52,14 @@ public class CifToPythonTranslator {
                 translateExpression(expr.right));
     }
 
+    public String translateOperator(String operator) {
+        return switch (operator) {
+            case "and", "or", "not" -> operator;
+            case "=" -> "==";
+            default -> throw new RuntimeException("Unsupported operator.");
+        };
+    }
+
     public String translateBoolExpression(ABoolExpression expr) {
         return expr.value ? "True" : "False";
     }
@@ -74,14 +78,6 @@ public class CifToPythonTranslator {
         }
     }
 
-    public String translateOperator(String operator) {
-        return switch (operator) {
-            case "and", "or", "not" -> operator;
-            case "=" -> "==";
-            default -> throw new RuntimeException("Unsupported operator.");
-        };
-    }
-
     public String translateUnaryExpression(AUnaryExpression expr) {
         return String.format("%s (%s)", translateOperator(expr.operator), translateExpression(expr.child));
     }
@@ -92,5 +88,9 @@ public class CifToPythonTranslator {
         } else {
             throw new RuntimeException("Unsupported update.");
         }
+    }
+
+    public String translateAssignmentUpdate(AAssignmentUpdate update) {
+        return String.format("%s = %s", translateExpression(update.addressable), translateExpression(update.value));
     }
 }
