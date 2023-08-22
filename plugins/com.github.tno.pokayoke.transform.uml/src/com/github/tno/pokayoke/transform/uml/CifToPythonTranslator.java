@@ -25,11 +25,11 @@ public class CifToPythonTranslator {
     }
 
     public String translateExpressions(Collection<AExpression> exprs) {
-        String pythonExp = exprs.stream().map(e -> "(" + translateExpression(e) + ")")
-                .collect(Collectors.joining(" and "));
+        String pythonExp = "True";
 
-        if (pythonExp.isEmpty()) {
-            pythonExp = "True";
+        if (!exprs.isEmpty()) {
+            pythonExp = exprs.stream().map(e -> "(" + translateExpression(e) + ")")
+                    .collect(Collectors.joining(" and "));
         }
 
         return pythonExp;
