@@ -57,10 +57,25 @@ public class UMLTransformer {
     }
 
     public void transformModel() {
-        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
-                "Expected the 'Lock' class to not already exist.");
+        // 1. Check whether 'model' has the expected structure and obtain relevant information from it.
 
-        // 1. Define locking infrastructure.
+        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
+                "Expected no packaged element named 'Lock' to already exist.");
+
+        // Obtain the single class that should be defined within 'model'.
+        List<Class> modelClasses = model.getPackagedElements().stream().filter(s -> s instanceof Class)
+                .map(s -> (Class)s).collect(Collectors.toList());
+        Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
+        Class contextClass = modelClasses.get(0);
+
+        // Obtain the activity that 'contextClass' should have as classifier behavior.
+        Preconditions.checkNotNull(contextClass.getClassifierBehavior(),
+                "Expected the single class within the model to have a classifier behavior.");
+        Preconditions.checkArgument(contextClass.getClassifierBehavior() instanceof Activity,
+                "Expected the classifier behavior of the single class within the model to be an activity.");
+        Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
+
+        // 2. Define locking infrastructure.
 
         // Create a class for holding lock-related structure and behavior.
         Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
@@ -85,9 +100,7 @@ public class UMLTransformer {
         lockHandlerActivity.setName("lockhandler");
         lockClass.getOwnedBehaviors().add(lockHandlerActivity);
 
-        // 2. Transform the 'Context' class.
-
-        Class contextClass = (Class)model.getMember("Context");
+        // 3. Transform 'contextClass'.
 
         // Create the static property that indicates the current owner of the lock (if any).
         Property activeProperty = FileHelper.FACTORY.createProperty();
@@ -106,11 +119,7 @@ public class UMLTransformer {
             }
         }
 
-        // 3. Transform the classifier behavior (i.e., main activity) of the 'Context' class.
-
-        // Obtain the main activity.
-        Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
-        Verify.verify(mainActivity.getName().equals("main"), "Expected a 'main' activity diagram.");
+        // 4. Transform the classifier behavior (i.e., main activity) of the 'Context' class.
 
         // Obtain the single fork node that 'mainActivity' should have.
         List<ForkNode> forkNodes = mainActivity.getNodes().stream().filter(n -> n instanceof ForkNode)
