@@ -2,7 +2,7 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,7 +113,7 @@ public class UMLTransformer {
         contextClass.getOwnedAttributes().add(activeProperty);
 
         // Transform all activity behaviors of 'contextClass'.
-        for (Behavior behavior: new LinkedHashSet<>(contextClass.getOwnedBehaviors())) {
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 transformActivity(activity, acquireSignal);
             }
@@ -151,7 +151,7 @@ public class UMLTransformer {
         Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
 
         // Transform all opaque action nodes of 'activity'.
-        for (ActivityNode node: new LinkedHashSet<>(activity.getNodes())) {
+        for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
                 transformOpaqueAction(activityClass, activity, opaqueActionNode, acquireSignal);
             }
@@ -194,12 +194,12 @@ public class UMLTransformer {
         replacementActionNode.setName(action.getName());
 
         // Relocate all incoming edges into 'action' to 'replacementAction'.
-        for (ActivityEdge edge: new LinkedHashSet<>(action.getIncomings())) {
+        for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
             edge.setTarget(replacementActionNode);
         }
 
         // Relocate all outgoing edges out of 'action' to 'replacementAction'.
-        for (ActivityEdge edge: new LinkedHashSet<>(action.getOutgoings())) {
+        for (ActivityEdge edge: new ArrayList<>(action.getOutgoings())) {
             edge.setSource(replacementActionNode);
         }
 
