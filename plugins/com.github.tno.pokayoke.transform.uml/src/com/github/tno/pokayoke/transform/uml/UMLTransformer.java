@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.uml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
@@ -69,7 +68,7 @@ public class UMLTransformer {
 
         // Obtain the single class that should be defined within the model.
         List<Class> modelClasses = model.getPackagedElements().stream().filter(s -> s instanceof Class)
-                .map(s -> (Class)s).collect(Collectors.toList());
+                .map(s -> (Class)s).toList();
         Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
         Class contextClass = modelClasses.get(0);
 
@@ -133,7 +132,7 @@ public class UMLTransformer {
 
         // Obtain the single initial node of the main activity.
         List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
-                .map(n -> (InitialNode)n).collect(Collectors.toList());
+                .map(n -> (InitialNode)n).toList();
         Preconditions.checkArgument(initialNodes.size() == 1,
                 "Expected the classified behavior of the class of the model to have exactly one initial node.");
         InitialNode initialNode = initialNodes.get(0);
@@ -190,12 +189,12 @@ public class UMLTransformer {
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
-                .map(b -> translator.translateExpression(b)).collect(Collectors.toList());
+                .map(b -> translator.translateExpression(b)).toList();
 
         // Extract the effects of the action, if any, to be encoded later.
         // Parse all bodies except the first one, all of which should be updates.
         List<String> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
-                .map(b -> translator.translateUpdate(b)).collect(Collectors.toList());
+                .map(b -> translator.translateUpdate(b)).toList();
 
         // Define a new activity that encodes the behavior of the action.
         Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
