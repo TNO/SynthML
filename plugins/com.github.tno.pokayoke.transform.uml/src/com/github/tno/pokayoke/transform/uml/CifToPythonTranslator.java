@@ -56,7 +56,7 @@ public class CifToPythonTranslator {
         return switch (operator) {
             case "and", "or", "not" -> operator;
             case "=" -> "==";
-            default -> throw new RuntimeException("Unsupported operator.");
+            default -> throw new RuntimeException("Unsupported operator: " + operator);
         };
     }
 
@@ -74,7 +74,7 @@ public class CifToPythonTranslator {
         } else if (modelTyping.isVariable(name)) {
             return name;
         } else {
-            throw new RuntimeException("Unsupported name expression.");
+            throw new RuntimeException("Unsupported name expression: " + expr);
         }
     }
 
@@ -86,7 +86,7 @@ public class CifToPythonTranslator {
         if (update instanceof AAssignmentUpdate assignmentUpdate) {
             return translateAssignmentUpdate(assignmentUpdate);
         } else {
-            throw new RuntimeException("Unsupported update.");
+            throw new RuntimeException("Unsupported update: " + update);
         }
     }
 

@@ -67,7 +67,7 @@ public class ModelTyping {
             } else if (element instanceof Enumeration enumElement) {
                 populateFrom(enumElement);
             } else {
-                throw new RuntimeException("Unsupported packaged element type.");
+                throw new RuntimeException("Unsupported packaged element type: " + element);
             }
         }
     }
