@@ -68,6 +68,11 @@ public class UMLTransformer {
         Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
         Class contextClass = modelClasses.get(0);
 
+        // Make sure the class does not contain an attribute named 'active'.
+        Preconditions.checkArgument(
+                contextClass.getOwnedAttributes().stream().noneMatch(a -> a.getName().equals("active")),
+                "Expected no attribute named 'active' to already exist in the single class of the model.");
+
         // Obtain the activity that the single class within the model should have, as classifier behavior.
         Preconditions.checkNotNull(contextClass.getClassifierBehavior(),
                 "Expected the single class within the model to have a classifier behavior.");
