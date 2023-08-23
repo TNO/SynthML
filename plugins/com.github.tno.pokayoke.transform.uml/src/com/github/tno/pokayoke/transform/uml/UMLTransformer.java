@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -126,18 +127,34 @@ public class UMLTransformer {
 
         // 4. Transform the classifier behavior (i.e., main activity) of the single class within the model.
 
-        // Obtain the single fork node that the main activity should have.
-        List<ForkNode> forkNodes = mainActivity.getNodes().stream().filter(n -> n instanceof ForkNode)
-                .map(n -> (ForkNode)n).collect(Collectors.toList());
-        Verify.verify(forkNodes.size() == 1, "Expected the 'main' activity diagram to have exactly one fork node.");
-        ForkNode forkNode = forkNodes.get(0);
+        // Obtain the single initial node of the main activity.
+        List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
+                .map(n -> (InitialNode)n).collect(Collectors.toList());
+        Preconditions.checkArgument(initialNodes.size() == 1,
+                "Expected the classified behavior of the class of the model to have exactly one initial node.");
+        InitialNode initialNode = initialNodes.get(0);
+
+        // Create a fork node to start the lock handler in parallel to the rest of the main activity diagram.
+        ForkNode forkNode = FileHelper.FACTORY.createForkNode();
+        forkNode.setActivity(mainActivity);
+
+        // Relocate all outgoing edges out of the initial node to go out of the fork node instead.
+        for (ActivityEdge edge: new ArrayList<>(initialNode.getOutgoings())) {
+            edge.setSource(forkNode);
+        }
+
+        // Add an edge between the initial node and the new fork node.
+        ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
+        initToForkFlow.setActivity(mainActivity);
+        initToForkFlow.setSource(initialNode);
+        initToForkFlow.setTarget(forkNode);
 
         // Define the action that calls the lock handler.
         CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
         lockHandlerNode.setActivity(mainActivity);
         lockHandlerNode.setBehavior(lockHandlerActivity);
 
-        // Define the control flow from the fork node to the lock handler node.
+        // Define the control flow from the new fork node to the node that calls the lock handler.
         ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
         forkToLockHandlerFlow.setActivity(mainActivity);
         forkToLockHandlerFlow.setSource(forkNode);
