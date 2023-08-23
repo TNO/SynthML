@@ -40,7 +40,7 @@ public class ActivityHelper {
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String guard, String effect, Signal acquire) {
-        // Define a new activity that encodes the 'guard' and 'effect'.
+        // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
 
         // Define the initial node.
@@ -51,7 +51,7 @@ public class ActivityHelper {
         MergeNode outerMergeNode = FileHelper.FACTORY.createMergeNode();
         outerMergeNode.setActivity(activity);
 
-        // Define the control flow from 'initNode' to 'outerMergeNode'.
+        // Define the control flow from the initial node to the outer merge node.
         ControlFlow initToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
         initToOuterMergeFlow.setActivity(activity);
         initToOuterMergeFlow.setSource(initNode);
@@ -65,7 +65,7 @@ public class ActivityHelper {
         OutputPin checkGuardOutput = checkGuardNode.createOutputValue("doesGuardHold",
                 FileHelper.loadPrimitiveType("Boolean"));
 
-        // Define the control flow between 'outerMergeNode' and 'checkGuardNode'.
+        // Define the control flow between the outer merge node and the node that checks the guard.
         ControlFlow outerMergeToCheckGuardFlow = FileHelper.FACTORY.createControlFlow();
         outerMergeToCheckGuardFlow.setActivity(activity);
         outerMergeToCheckGuardFlow.setSource(outerMergeNode);
@@ -75,19 +75,19 @@ public class ActivityHelper {
         DecisionNode checkGuardDecisionNode = FileHelper.FACTORY.createDecisionNode();
         checkGuardDecisionNode.setActivity(activity);
 
-        // Define the control flow from 'checkGuardNode' to 'checkGuardDecisionNode'.
+        // Define the control flow from the node that checks the guards to the decision node that checks the guard.
         ControlFlow checkGuardToDecisionFlow = FileHelper.FACTORY.createControlFlow();
         checkGuardToDecisionFlow.setActivity(activity);
         checkGuardToDecisionFlow.setSource(checkGuardNode);
         checkGuardToDecisionFlow.setTarget(checkGuardDecisionNode);
 
-        // Define the object flow between 'checkGuardNode' and 'checkGuardDecisionNode'.
+        // Define the object flow between the node that checks the guards to the decision node that checks the guard.
         ObjectFlow checkGuardToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         checkGuardToDecisionObjFlow.setActivity(activity);
         checkGuardToDecisionObjFlow.setSource(checkGuardOutput);
         checkGuardToDecisionObjFlow.setTarget(checkGuardDecisionNode);
 
-        // Define the control flow from 'checkGuardDecisionNode' to 'outerMergeNode'.
+        // Define the control flow from the decision node that checks the guard to the outer merge node.
         ControlFlow checkGuardDecisionToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
         checkGuardDecisionToOuterMergeFlow.setActivity(activity);
         checkGuardDecisionToOuterMergeFlow.setSource(checkGuardDecisionNode);
@@ -118,7 +118,7 @@ public class ActivityHelper {
         requesterValueLiteral.setValue(activityRequesterId.toString());
         requesterValueNode.setValue(requesterValueLiteral);
 
-        // Define the control flow from 'checkGuardDecisionNode' to 'requesterValueNode'.
+        // Define the control flow from the decision node that checks the guard to the requester value node.
         ControlFlow checkGuardDecisionToRequesterValueFlow = FileHelper.FACTORY.createControlFlow();
         checkGuardDecisionToRequesterValueFlow.setActivity(activity);
         checkGuardDecisionToRequesterValueFlow.setSource(checkGuardDecisionNode);
@@ -128,7 +128,7 @@ public class ActivityHelper {
         decisionToFinalGuard.getLanguages().add("Python");
         checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
 
-        // Define the object flow from 'requesterValueNode' to 'sendAcquireNode'.
+        // Define the object flow from the requester value node to the node that sends the acquire signal.
         ObjectFlow requesterObjectFlow = FileHelper.FACTORY.createObjectFlow();
         requesterObjectFlow.setActivity(activity);
         requesterObjectFlow.setSource(requesterValueOutput);
@@ -138,7 +138,7 @@ public class ActivityHelper {
         MergeNode innerMergeNode = FileHelper.FACTORY.createMergeNode();
         innerMergeNode.setActivity(activity);
 
-        // Define the control flow from 'sendAcquireNode' to 'innerMergeNode'.
+        // Define the control flow from the node that sends the acquire signal to the inner merge node.
         ControlFlow acquireToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
         acquireToInnerMergeFlow.setActivity(activity);
         acquireToInnerMergeFlow.setSource(sendAcquireNode);
@@ -152,7 +152,7 @@ public class ActivityHelper {
         OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
                 FileHelper.loadPrimitiveType("Boolean"));
 
-        // Define the control flow from 'innerMergeNode' to 'checkActiveNode'.
+        // Define the control flow from the inner merge node to the node that checks the active variable.
         ControlFlow innerMergeToCheckActiveFlow = FileHelper.FACTORY.createControlFlow();
         innerMergeToCheckActiveFlow.setActivity(activity);
         innerMergeToCheckActiveFlow.setSource(innerMergeNode);
@@ -162,19 +162,19 @@ public class ActivityHelper {
         DecisionNode innerDecisionNode = FileHelper.FACTORY.createDecisionNode();
         innerDecisionNode.setActivity(activity);
 
-        // Define the control flow from 'checkActiveNode' to 'innerDecisionNode'.
+        // Define the control flow from the node that checks the active variable to the inner decision node.
         ControlFlow checkActiveToInnerDecisionFlow = FileHelper.FACTORY.createControlFlow();
         checkActiveToInnerDecisionFlow.setActivity(activity);
         checkActiveToInnerDecisionFlow.setSource(checkActiveNode);
         checkActiveToInnerDecisionFlow.setTarget(innerDecisionNode);
 
-        // Define the object flow from 'checkActiveNode' to 'innerDecisionNode'.
+        // Define the object flow from the node that checks the active variable to the inner decision node.
         ObjectFlow checkActiveToInnerDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         checkActiveToInnerDecisionObjFlow.setActivity(activity);
         checkActiveToInnerDecisionObjFlow.setSource(checkActiveOutput);
         checkActiveToInnerDecisionObjFlow.setTarget(innerDecisionNode);
 
-        // Define the opaque action of 'activity' that encodes the guard and effect.
+        // Define the opaque action of the activity that encodes the guard and effect.
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
@@ -183,7 +183,7 @@ public class ActivityHelper {
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
                 FileHelper.loadPrimitiveType("Boolean"));
 
-        // Define the control flow from 'innerDecisionNode' to 'guardAndEffectNode'.
+        // Define the control flow from the inner decision node to the node that executes the guard and effect.
         ControlFlow innerDecisionToGuardAndEffectFlow = FileHelper.FACTORY.createControlFlow();
         innerDecisionToGuardAndEffectFlow.setActivity(activity);
         innerDecisionToGuardAndEffectFlow.setSource(innerDecisionNode);
@@ -193,7 +193,7 @@ public class ActivityHelper {
         innerDecisionToGuardAndEffectGuard.getLanguages().add("Python");
         innerDecisionToGuardAndEffectFlow.setGuard(innerDecisionToGuardAndEffectGuard);
 
-        // Define the control flow from 'innerDecisionNode' to 'innerMergeNode'.
+        // Define the control flow from the inner decision node to the node that executes the guard and effect.
         ControlFlow innerDecisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
         innerDecisionToInnerMergeFlow.setActivity(activity);
         innerDecisionToInnerMergeFlow.setSource(innerDecisionNode);
@@ -207,13 +207,13 @@ public class ActivityHelper {
         DecisionNode outerDecisionNode = FileHelper.FACTORY.createDecisionNode();
         outerDecisionNode.setActivity(activity);
 
-        // Define the control flow from 'guardAndEffectNode' to 'outerDecisionNode'.
+        // Define the control flow from the node that executes the guard and effect to the outer decision node.
         ControlFlow guardAndEffectToOuterDecisionFlow = FileHelper.FACTORY.createControlFlow();
         guardAndEffectToOuterDecisionFlow.setActivity(activity);
         guardAndEffectToOuterDecisionFlow.setSource(guardAndEffectNode);
         guardAndEffectToOuterDecisionFlow.setTarget(outerDecisionNode);
 
-        // Define the object flow from 'guardAndEffectNode' to 'outerDecisionNode'.
+        // Define the object flow from the node that executes the guard and effect to the outer decision node.
         ObjectFlow guardAndEffectToOuterDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         guardAndEffectToOuterDecisionObjFlow.setActivity(activity);
         guardAndEffectToOuterDecisionObjFlow.setSource(guardAndEffectOutput);
@@ -223,7 +223,7 @@ public class ActivityHelper {
         FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
-        // Define the control flow from 'outerDecisionNode' to 'finalNode'.
+        // Define the control flow from the outer decision node to the final node.
         ControlFlow outerDecisionToFinalFlow = FileHelper.FACTORY.createControlFlow();
         outerDecisionToFinalFlow.setActivity(activity);
         outerDecisionToFinalFlow.setSource(outerDecisionNode);
@@ -233,7 +233,7 @@ public class ActivityHelper {
         outerDecisionToFinalGuard.getLanguages().add("Python");
         outerDecisionToFinalFlow.setGuard(outerDecisionToFinalGuard);
 
-        // Define the control flow from 'outerDecisionNode' to 'outerMergeNode'.
+        // Define the control flow from the outer decision node to the outer merge node.
         ControlFlow outerDecisionToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
         outerDecisionToOuterMergeFlow.setActivity(activity);
         outerDecisionToOuterMergeFlow.setSource(outerDecisionNode);
@@ -268,7 +268,7 @@ public class ActivityHelper {
         MergeNode outerMergeNode = FileHelper.FACTORY.createMergeNode();
         outerMergeNode.setActivity(activity);
 
-        // Define the control flow between 'initNode' and 'outerMergeNode'.
+        // Define the control flow between the initial node and the outer merge node.
         ControlFlow initToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
         initToOuterMergeFlow.setActivity(activity);
         initToOuterMergeFlow.setSource(initNode);
@@ -284,7 +284,7 @@ public class ActivityHelper {
         acceptAcquireOutput.setIsOrdered(true);
         acceptAcquireOutput.setIsUnique(false);
 
-        // Define the control flow between 'outerMergeNode' and 'acceptAcquireNode'.
+        // Define the control flow between the outer merge node and the node that accepts acquire signals.
         ControlFlow mergeToAcceptAcquireFlow = FileHelper.FACTORY.createControlFlow();
         mergeToAcceptAcquireFlow.setActivity(activity);
         mergeToAcceptAcquireFlow.setSource(outerMergeNode);
@@ -298,13 +298,14 @@ public class ActivityHelper {
         OutputPin readRequesterOutput = readRequesterNode.createResult(acquireParameter.getName(),
                 FileHelper.loadPrimitiveType("String"));
 
-        // Define the object flow between 'acceptAcquireNode' and 'readRequesterNode'.
+        // Define the object flow between the node that accepts acquire signals and the node that reads the requester
+        // variable.
         ObjectFlow acceptAcquireToReadFlow = FileHelper.FACTORY.createObjectFlow();
         acceptAcquireToReadFlow.setActivity(activity);
         acceptAcquireToReadFlow.setSource(acceptAcquireOutput);
         acceptAcquireToReadFlow.setTarget(readRequesterInput);
 
-        // Define the action that updates the static 'active' variable.
+        // Define the action that updates the static active variable.
         OpaqueAction setActiveNode = FileHelper.FACTORY.createOpaqueAction();
         setActiveNode.setActivity(activity);
         InputPin setActiveInput = setActiveNode.createInputValue(acquireParameter.getName(),
@@ -312,7 +313,7 @@ public class ActivityHelper {
         setActiveNode.getBodies().add("active = " + acquireParameter.getName());
         setActiveNode.getLanguages().add("Python");
 
-        // Define the object flow between 'lockHandlerNode' and 'setActiveNode'.
+        // Define the object flow between the lock handler node and the node that sets the active variable.
         ObjectFlow readToSetActiveFlow = FileHelper.FACTORY.createObjectFlow();
         readToSetActiveFlow.setActivity(activity);
         readToSetActiveFlow.setSource(readRequesterOutput);
@@ -322,7 +323,7 @@ public class ActivityHelper {
         MergeNode innerMergeNode = FileHelper.FACTORY.createMergeNode();
         innerMergeNode.setActivity(activity);
 
-        // Define the control flow between 'setActiveNode' and 'innerMergeNode'.
+        // Define the control flow between the node that sets the active variable and the inner merge node.
         ControlFlow setActiveToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
         setActiveToInnerMergeFlow.setActivity(activity);
         setActiveToInnerMergeFlow.setSource(setActiveNode);
@@ -336,7 +337,7 @@ public class ActivityHelper {
         OutputPin checkReleasedOutput = checkReleasedNode.createOutputValue("isReleased",
                 FileHelper.loadPrimitiveType("Boolean"));
 
-        // Define the control flow from 'innerMergeNode' to 'checkReleasedNode'.
+        // Define the control flow from the inner merge node to the node that checks whether the lock has been released.
         ControlFlow innerMergeToCheckReleaseFlow = FileHelper.FACTORY.createControlFlow();
         innerMergeToCheckReleaseFlow.setActivity(activity);
         innerMergeToCheckReleaseFlow.setSource(innerMergeNode);
@@ -346,19 +347,19 @@ public class ActivityHelper {
         DecisionNode decisionNode = FileHelper.FACTORY.createDecisionNode();
         decisionNode.setActivity(activity);
 
-        // Define the control flow between 'checkReleasedNode' and 'decisionNode'.
+        // Define the control flow between the node that checks whether the lock has been released and the decision node.
         ControlFlow checkReleasedToDecisionFlow = FileHelper.FACTORY.createControlFlow();
         checkReleasedToDecisionFlow.setActivity(activity);
         checkReleasedToDecisionFlow.setSource(checkReleasedNode);
         checkReleasedToDecisionFlow.setTarget(decisionNode);
 
-        // Define the object flow between 'checkReleasedNode' and 'decisionNode'.
+        // Define the object flow between the node that checks whether the lock has been released and the decision node.
         ObjectFlow checkReleasedToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         checkReleasedToDecisionObjFlow.setActivity(activity);
         checkReleasedToDecisionObjFlow.setSource(checkReleasedOutput);
         checkReleasedToDecisionObjFlow.setTarget(decisionNode);
 
-        // Define the control flow between 'decisionNode' and 'outerMergeNode'.
+        // Define the control flow between the decision node and the outer merge node.
         ControlFlow decisionToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
         decisionToOuterMergeFlow.setActivity(activity);
         decisionToOuterMergeFlow.setSource(decisionNode);
@@ -368,7 +369,7 @@ public class ActivityHelper {
         decisionToWaitGuard.getLanguages().add("Python");
         decisionToOuterMergeFlow.setGuard(decisionToWaitGuard);
 
-        // Define the control flow between 'decisionNode' and 'innerMergeNode'.
+        // Define the control flow between the decision node and the inner merge node.
         ControlFlow decisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
         decisionToInnerMergeFlow.setActivity(activity);
         decisionToInnerMergeFlow.setSource(decisionNode);
