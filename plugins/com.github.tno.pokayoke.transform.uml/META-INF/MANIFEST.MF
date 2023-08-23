@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Poka Yoke Activity Diagram to UML Transformer
+Bundle-Name: Transformer from Poka Yoke Activity Diagrams to Executable Activity Diagrams
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
