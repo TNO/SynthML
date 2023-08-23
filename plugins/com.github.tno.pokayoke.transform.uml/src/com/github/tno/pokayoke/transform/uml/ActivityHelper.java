@@ -11,6 +11,8 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -389,14 +391,18 @@ public class ActivityHelper {
      * @param activity The activity to clean up.
      */
     public static void removeIrrelevantInformation(Activity activity) {
-        // Remove any weights from all edges.
+        // Remove any default weights from all edges.
         for (ActivityEdge edge: activity.getEdges()) {
-            edge.setWeight(null);
+            if (edge.getWeight() instanceof LiteralInteger literal && literal.getValue() == 0) {
+                edge.setWeight(null);
+            }
         }
 
-        // Remove the guards from all edges not coming out of decision nodes.
+        // Remove any default guards from all edges not coming out of decision nodes.
         for (ActivityEdge edge: activity.getEdges()) {
-            if (!(edge.getSource() instanceof DecisionNode)) {
+            if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
+                    && literal.isValue())
+            {
                 edge.setGuard(null);
             }
         }
