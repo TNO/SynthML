@@ -347,7 +347,8 @@ public class ActivityHelper {
         DecisionNode decisionNode = FileHelper.FACTORY.createDecisionNode();
         decisionNode.setActivity(activity);
 
-        // Define the control flow between the node that checks whether the lock has been released and the decision node.
+        // Define the control flow between the node that checks whether the lock has been released and the decision
+        // node.
         ControlFlow checkReleasedToDecisionFlow = FileHelper.FACTORY.createControlFlow();
         checkReleasedToDecisionFlow.setActivity(activity);
         checkReleasedToDecisionFlow.setSource(checkReleasedNode);
