@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
-import com.github.tno.pokayoke.transform.common.FileHelper;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +29,8 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
+
+import com.github.tno.pokayoke.transform.common.FileHelper;
 
 /**
  * Helper class for creating various kinds of activities.
