@@ -204,7 +204,6 @@ public class UMLTransformer {
         }
 
         // Remove the old action that is now replaced.
-        // TODO use 'action.destroy()' instead
-        action.setActivity(null);
+        action.destroy();
     }
 }
