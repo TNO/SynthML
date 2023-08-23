@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -37,6 +38,8 @@ import com.google.common.base.Verify;
 public class UMLTransformer {
     private final Model model;
 
+    private final String modelPath;
+
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
     private final CifExpressionParser expressionParser = new CifExpressionParser();
@@ -45,15 +48,16 @@ public class UMLTransformer {
 
     private final CifToPythonTranslator translator;
 
-    public UMLTransformer(Model model) {
+    public UMLTransformer(Model model, String modelPath) {
         this.model = model;
+        this.modelPath = modelPath;
         this.typing = new ModelTyping(this.model);
         this.translator = new CifToPythonTranslator(this.typing);
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new UMLTransformer(model).transformModel();
+        new UMLTransformer(model, sourcePath).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
@@ -188,7 +192,7 @@ public class UMLTransformer {
         String guard = "True";
 
         if (!action.getBodies().isEmpty()) {
-            AExpression cifGuard = expressionParser.parseString(action.getBodies().get(0), "");
+            AExpression cifGuard = parseExpression(action.getBodies().get(0));
             guard = translator.translateExpression(cifGuard);
         }
 
@@ -198,7 +202,7 @@ public class UMLTransformer {
 
         if (action.getBodies().size() > 1) {
             effect = "if guard:\n";
-            effect += action.getBodies().stream().skip(1).map(update -> updateParser.parseString(update, ""))
+            effect += action.getBodies().stream().skip(1).map(update -> parseUpdate(update))
                     .map(cifUpdate -> "\t" + translator.translateUpdate(cifUpdate)).collect(Collectors.joining("\n"));
         }
 
@@ -227,5 +231,13 @@ public class UMLTransformer {
 
         // Remove the old action that is now replaced.
         action.destroy();
+    }
+
+    private AExpression parseExpression(String expression) {
+        return expressionParser.parseString(expression, modelPath);
+    }
+
+    private AUpdate parseUpdate(String update) {
+        return updateParser.parseString(update, modelPath);
     }
 }
