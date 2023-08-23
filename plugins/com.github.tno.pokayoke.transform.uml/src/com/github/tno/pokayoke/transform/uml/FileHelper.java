@@ -24,13 +24,13 @@ public class FileHelper {
     }
 
     /**
-     * Loads an UML model.
+     * Loads a UML model.
      *
      * @param pathName The path name of the UML model.
      * @return The loaded model.
      */
     public static Model loadModel(String pathName) {
-        // Initialize an UML resource set to load the UML model.
+        // Initialize a UML resource set to load the UML model.
         ResourceSet resourceSet = new ResourceSetImpl();
         UMLResourcesUtil.init(resourceSet);
 
@@ -43,7 +43,7 @@ public class FileHelper {
     }
 
     /**
-     * Loads an UML package.
+     * Loads a UML package.
      *
      * @param uri The URI of the UML model.
      * @return The loaded package.
@@ -55,7 +55,7 @@ public class FileHelper {
     }
 
     /**
-     * Loads a primitive UML type, e.g., 'Boolean' or 'String'.
+     * Loads a primitive UML type, e.g., "Boolean" or "String".
      *
      * @param name Then name of the primitive type to load.
      * @return The loaded primitive type.
@@ -66,14 +66,14 @@ public class FileHelper {
     }
 
     /**
-     * Stores {@code model} to {@code pathName}.
+     * Stores the given model to the specified path.
      *
      * @param model The model to store.
-     * @param pathName The path to store {@code model}.
+     * @param pathName The path to store the input model.
      * @throws IOException Thrown in case the model could not be saved.
      */
     public static void storeModel(Model model, String pathName) throws IOException {
-        // Initialize an UML resource set to store the model.
+        // Initialize a UML resource set to store the model.
         ResourceSet resourceSet = new ResourceSetImpl();
         UMLResourcesUtil.init(resourceSet);
 
