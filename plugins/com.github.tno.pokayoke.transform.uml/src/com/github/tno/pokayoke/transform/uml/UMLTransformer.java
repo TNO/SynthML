@@ -175,9 +175,9 @@ public class UMLTransformer {
         String effect = "pass";
 
         if (action.getBodies().size() > 1) {
-            effect = action.getBodies().stream().skip(1).map(update -> updateParser.parseString(update, ""))
-                    .map(cifUpdate -> translator.translateUpdate(cifUpdate))
-                    .map(pythonUpdate -> "if guard: " + pythonUpdate).collect(Collectors.joining("\n"));
+            effect = "if guard:\n";
+            effect += action.getBodies().stream().skip(1).map(update -> updateParser.parseString(update, ""))
+                    .map(cifUpdate -> "\t" + translator.translateUpdate(cifUpdate)).collect(Collectors.joining("\n"));
         }
 
         // Define a new activity that encodes the behavior of 'action'.
