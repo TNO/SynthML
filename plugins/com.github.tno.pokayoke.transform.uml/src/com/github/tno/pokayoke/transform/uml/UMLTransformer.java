@@ -26,10 +26,6 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 
-
-
-
-
 /**
  * Transforms UML models that are annotated with guards, updates, preconditions, etc., to valid and executable UML, in
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be Python.

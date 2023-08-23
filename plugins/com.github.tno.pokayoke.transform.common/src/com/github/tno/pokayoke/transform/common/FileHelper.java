@@ -1,6 +1,4 @@
-/**
- *
- */
+
 package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;

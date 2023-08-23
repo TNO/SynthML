@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package com.github.tno.pokayoke.transform.common;
 
@@ -79,7 +76,8 @@ public class FlattenUMLActivityDiagram {
                 for (ActivityEdge edge: new LinkedHashSet<>(node.getIncomings())) {
                     edge.setActivity(callBehaviorActionToReplace.getActivity());
                 }
-                // Relocate all outgoing edges out of the initial node, to all incoming neighbors of the call behavior action that is replaced.
+                // Relocate all outgoing edges out of the initial node, to all incoming neighbors of the call behavior
+                // action that is replaced.
                 if (node instanceof InitialNode) {
                     for (ActivityEdge outgoingEdge: new LinkedHashSet<>(node.getOutgoings())) {
                         for (ActivityEdge inComingEdge: new LinkedHashSet<>(
