@@ -55,7 +55,7 @@ public class FileHelper {
     }
 
     /**
-     * Loads a primitive UML type, e.g., 'Boolean' or 'String'.
+     * Loads a primitive UML type, e.g., "Boolean" or "String".
      *
      * @param name Then name of the primitive type to load.
      * @return The loaded primitive type.
@@ -66,10 +66,10 @@ public class FileHelper {
     }
 
     /**
-     * Stores {@code model} to {@code pathName}.
+     * Stores the given model to the specified path.
      *
      * @param model The model to store.
-     * @param pathName The path to store {@code model}.
+     * @param pathName The path to store the input model.
      * @throws IOException Thrown in case the model could not be saved.
      */
     public static void storeModel(Model model, String pathName) throws IOException {

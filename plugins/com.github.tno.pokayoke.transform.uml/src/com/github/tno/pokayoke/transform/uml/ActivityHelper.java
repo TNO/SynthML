@@ -33,8 +33,8 @@ public class ActivityHelper {
     }
 
     /**
-     * Creates an activity that waits until {@code guard} becomes {@code true} and then executes {@code effect}. The
-     * evaluation of {@code guard} and possible execution of {@code effect} happen together atomically.
+     * Creates an activity that waits until the specified guard becomes {@code true} and then executes the specified
+     * effect. The evaluation of the guard and possible execution of the effect happen together atomically.
      *
      * @param guard A Python boolean expression.
      * @param effect A Python program.
@@ -249,8 +249,8 @@ public class ActivityHelper {
     }
 
     /**
-     * Creates an activity that handles lock acquisition, by listening for {@code acquireEvent} signal events and
-     * updating the shared variable 'active' accordingly.
+     * Creates an activity that handles lock acquisition, by listening for the specified acquire signal event and
+     * updating the shared variable 'active' accordingly, in a loop.
      *
      * @param acquireEvent The acquire signal event to listen to.
      * @return The created lock handling activity.
@@ -386,7 +386,7 @@ public class ActivityHelper {
     }
 
     /**
-     * Removes irrelevant and redundant information from {@code activity}, like edge weights or redundant edge guards.
+     * Removes irrelevant and redundant information from the given activity, like edge weights or redundant edge guards.
      *
      * @param activity The activity to clean up.
      */
