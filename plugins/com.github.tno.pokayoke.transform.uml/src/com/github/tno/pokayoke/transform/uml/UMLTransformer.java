@@ -187,27 +187,18 @@ public class UMLTransformer {
     private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action,
             Signal acquireSignal)
     {
-        // Extract the guard of the action, to be encoded later.
+        // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
-        String guard = "True";
+        List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
+                .map(b -> translator.translateExpression(b)).collect(Collectors.toList());
 
-        if (!action.getBodies().isEmpty()) {
-            AExpression cifGuard = parseExpression(action.getBodies().get(0));
-            guard = translator.translateExpression(cifGuard);
-        }
-
-        // Extract the effect (i.e., a list of updates) of the action, to be encoded later.
-        // If the action has at least two bodies, parse all bodies except the first one, all of which should be updates.
-        String effect = "pass";
-
-        if (action.getBodies().size() > 1) {
-            effect = "if guard:\n";
-            effect += action.getBodies().stream().skip(1).map(update -> parseUpdate(update))
-                    .map(cifUpdate -> "\t" + translator.translateUpdate(cifUpdate)).collect(Collectors.joining("\n"));
-        }
+        // Extract the effects of the action, if any, to be encoded later.
+        // Parse all bodies except the first one, all of which should be updates.
+        List<String> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
+                .map(b -> translator.translateUpdate(b)).collect(Collectors.toList());
 
         // Define a new activity that encodes the behavior of the action.
-        Activity actionActivity = ActivityHelper.createAtomicActivity(guard, effect, acquireSignal);
+        Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
         actionActivity.setName(action.getName());
         Verify.verify(activityClass.getOwnedBehavior(action.getName()) == null,
                 String.format("Expected the '%s' activity to not already exist.", action.getName()));

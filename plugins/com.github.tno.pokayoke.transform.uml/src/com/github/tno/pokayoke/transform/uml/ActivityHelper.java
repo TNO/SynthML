@@ -1,7 +1,9 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
@@ -36,12 +38,25 @@ public class ActivityHelper {
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes the specified
      * effect. The evaluation of the guard and possible execution of the effect happen together atomically.
      *
-     * @param guard A Python boolean expression.
-     * @param effect A Python program.
+     * @param guards A list of single-line Python boolean expressions.
+     * @param effects A list of single-line Python programs.
      * @param acquire The signal for acquiring the lock.
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(String guard, String effect, Signal acquire) {
+    public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire) {
+        // Combine all given guards into a single Python expression.
+        String guard = "True";
+        if (!guards.isEmpty()) {
+            guard = guards.stream().map(e -> "(" + e + ")").collect(Collectors.joining(" and "));
+        }
+
+        // Combine all given effects into a single Python program.
+        String effect = "pass";
+        if (!effects.isEmpty()) {
+            effect = "if guard:\n";
+            effect += effects.stream().map(e -> "\t" + e).collect(Collectors.joining("\n"));
+        }
+
         // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
 
