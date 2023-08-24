@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-=======
-/**
- *
- */
->>>>>>> 40d74c30a058b0ae594aad8e51d887140b76a697
 
 package com.github.tno.pokayoke.transform.common;
 
@@ -13,11 +7,7 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 
-<<<<<<< HEAD
 /** Utils that process UML activity diagrams. */
-=======
-/** Utils that process UML activity diagrams.*/
->>>>>>> 40d74c30a058b0ae594aad8e51d887140b76a697
 public class UMLActivityUtils {
     private UMLActivityUtils() {
     }
