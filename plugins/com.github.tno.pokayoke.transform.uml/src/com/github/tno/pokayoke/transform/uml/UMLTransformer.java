@@ -27,6 +27,8 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -170,7 +172,7 @@ public class UMLTransformer {
         Preconditions.checkArgument(model.getPackagedElement(activity.getName()) == null,
                 String.format("Expected the '%s' class to not already exist.", activityName));
 
-        ActivityHelper.removeIrrelevantInformation(activity);
+        UMLActivityUtils.removeIrrelevantInformation(activity);
 
         // Create a separate class in which all new behaviors for the activity are stored.
         Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
