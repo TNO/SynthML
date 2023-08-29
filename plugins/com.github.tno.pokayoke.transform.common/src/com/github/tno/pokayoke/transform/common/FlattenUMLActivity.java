@@ -19,16 +19,16 @@ import org.eclipse.uml2.uml.Model;
 import com.google.common.base.Verify;
 
 /** Flatten nested UML activity diagrams. */
-public class FlattenUMLActivityDiagram {
+public class FlattenUMLActivity {
     private final Model model;
 
-    public FlattenUMLActivityDiagram(Model model) {
+    public FlattenUMLActivity(Model model) {
         this.model = model;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivityDiagram(model).transformModel();
+        new FlattenUMLActivity(model).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
