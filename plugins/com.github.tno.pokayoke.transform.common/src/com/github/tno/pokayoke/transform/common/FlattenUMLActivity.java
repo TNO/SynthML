@@ -18,7 +18,7 @@ import org.eclipse.uml2.uml.Model;
 
 import com.google.common.base.Verify;
 
-/** Flatten nested UML activity diagrams. */
+/** Flatten nested UML activities. */
 public class FlattenUMLActivity {
     private final Model model;
 
@@ -38,31 +38,31 @@ public class FlattenUMLActivity {
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
-                flattenActivityDiagram(activity, null);
+                flattenActivity(activity, null);
                 UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
     }
 
     /**
-     * Recursively flatten the activity diagram.
+     * Recursively flatten the given activity.
      *
-     * @param childBehavior The non-{@code null} activity diagram to be flattened.
+     * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
-     *     when it is called to flatten the outer most activity diagram.
+     *     when it is called to flatten the outer most activity.
      */
-    public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
+    public void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior childDiagram = actionNode.getBehavior();
-                Verify.verify(childDiagram != null, String
+                Behavior actionBehavior = actionNode.getBehavior();
+                Verify.verify(actionBehavior != null, String
                         .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-                flattenActivityDiagram((Activity)childDiagram, actionNode);
+                flattenActivity((Activity)actionBehavior, actionNode);
             }
         }
 
-        // Replace the call behavior action with the content of this activity diagram, and connect it with proper edges.
+        // Replace the call behavior action with the content of this activity, and connect it with proper edges.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 

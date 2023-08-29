@@ -7,7 +7,7 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 
-/** Utils that process UML activity diagrams. */
+/** Utils that process UML activities. */
 public class UMLActivityUtils {
     private UMLActivityUtils() {
     }
