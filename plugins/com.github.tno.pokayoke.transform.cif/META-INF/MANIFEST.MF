@@ -6,10 +6,18 @@ Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
  org.eclipse.uml2.uml.resources;bundle-version="5.5.0",
  org.eclipse.escet.cif.parser;bundle-version="0.0.0",
+ org.eclipse.escet.setext.runtime;bundle-version="0.10.0",
  org.eclipse.escet.cif.metamodel,
  org.eclipse.escet.cif.metamodel.java,
  org.eclipse.emf.ecore,
- org.eclipse.uml2.uml
+ org.eclipse.uml2.uml,
+ org.eclipse.escet.cif.io,
+ org.eclipse.escet.common.box,
+ org.eclipse.escet.cif.common,
+ org.eclipse.escet.common.app.framework,
+ org.apache.commons.lang3,
+ org.eclipse.escet.cif.prettyprinter,
+ com.google.guava
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.cif
 Bundle-RequiredExecutionEnvironment: JavaSE-17
