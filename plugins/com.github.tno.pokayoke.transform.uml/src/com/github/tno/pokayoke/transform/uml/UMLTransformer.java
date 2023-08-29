@@ -139,7 +139,7 @@ public class UMLTransformer {
                 "Expected the classified behavior of the class of the model to have exactly one initial node.");
         InitialNode initialNode = initialNodes.get(0);
 
-        // Create a fork node to start the lock handler in parallel to the rest of the main activity diagram.
+        // Create a fork node to start the lock handler in parallel to the rest of the main activity.
         ForkNode forkNode = FileHelper.FACTORY.createForkNode();
         forkNode.setActivity(mainActivity);
 
