@@ -15,7 +15,7 @@ Use the following steps to set up an Eclipse development environment for Poka Yo
 * Switch to Advanced mode, using the hamburger menu.
 * Select `Eclipse Platform`, `2023-06` and `JRE 17.* - https://download.eclipse.org/justj/jres/17/updates/release/latest`.
 * Click `Next`.
-* Use the green plus button to add `X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
+* Use the green plus button to add `file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
   Choose `Catalog: Eclipse Projects` in the dropdown box.
 * Select `PokaYoke` and press `Next`.
 * Enable `Show all variables` and configure `Root install folder`, `Installation folder name`, `GitHub account full name` and `GitHub account email address`.
