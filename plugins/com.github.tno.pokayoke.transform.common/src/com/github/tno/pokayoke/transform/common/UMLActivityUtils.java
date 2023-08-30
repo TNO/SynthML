@@ -3,9 +3,16 @@ package com.github.tno.pokayoke.transform.common;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
+import org.eclipse.uml2.uml.MergeNode;
 
 /** Utils that process UML activity diagrams. */
 public class UMLActivityUtils {
@@ -32,6 +39,62 @@ public class UMLActivityUtils {
             {
                 edge.setGuard(null);
             }
+        }
+    }
+
+    public static void setNameForEdges(Activity activity) {
+        for (ActivityEdge edge: activity.getEdges()) {
+            String source = edge.getSource().getName();
+            String target = edge.getTarget().getName();
+            edge.setName("edge__from__" + source + "__to__" + target);
+        }
+    }
+
+    public static void setNameForNodes(Activity activity) {
+        int f = 0, m = 0, d = 0, j = 0;
+        for (ActivityNode node: activity.getNodes()) {
+            if (node instanceof ForkNode) {
+                node.setName("ForkNode" + String.valueOf(f));
+                f++;
+            }
+
+            if (node instanceof MergeNode) {
+                node.setName("MergeNode" + String.valueOf(m));
+                m++;
+            }
+
+            if (node instanceof DecisionNode) {
+                node.setName("DecisionNode" + String.valueOf(d));
+                d++;
+            }
+            if (node instanceof JoinNode) {
+                node.setName("JoinNode" + String.valueOf(j));
+                j++;
+            }
+
+            if (node instanceof InitialNode) {
+                node.setName("InitialNode");
+            }
+
+            if (node instanceof ActivityFinalNode) {
+                node.setName("ActivityFinalNode");
+            }
+        }
+    }
+
+    public static void setAbsoluteNameForNestedElements(CallBehaviorAction action, Activity activity) {
+        if (action != null) {
+            for (ActivityNode node: activity.getNodes()) {
+                node.setName(action.getName() + "__" + node.getName());
+            }
+        }
+    }
+
+    public static void setNameForBehaviorAction(CallBehaviorAction action) {
+        if (action != null) {
+            String parentName = action.getActivity().getName();
+            String childName = action.getBehavior().getName();
+            action.setName(parentName + "__" + childName);
         }
     }
 }

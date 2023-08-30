@@ -40,6 +40,8 @@ public class FlattenUMLActivityDiagram {
             if (behavior instanceof Activity activity) {
                 flattenActivityDiagram(activity, null);
                 UMLActivityUtils.removeIrrelevantInformation(activity);
+                // Set the name of edges in the flattened activity diagram.
+                UMLActivityUtils.setNameForEdges(activity);
             }
         }
     }
@@ -52,7 +54,15 @@ public class FlattenUMLActivityDiagram {
      *     when it is called to flatten the outer most activity diagram.
      */
     public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
+
+        // Set absolute name for the call behavior action
+        UMLActivityUtils.setNameForBehaviorAction(callBehaviorActionToReplace);
+        // Rename the merge, fork, decision, and join nodes in the activity diagram with numbering.
+        UMLActivityUtils.setNameForNodes(childBehavior);
+        // Rename nodes in the activity diagram with absolute name.
+        UMLActivityUtils.setAbsoluteNameForNestedElements(callBehaviorActionToReplace, childBehavior);
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
+
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
                 Behavior childDiagram = actionNode.getBehavior();
@@ -62,7 +72,8 @@ public class FlattenUMLActivityDiagram {
             }
         }
 
-        // Replace the call behavior action with the content of this activity diagram, and connect it with proper edges.
+        // Replace the call behavior action with the content of this activity diagram and
+        // connect it with proper edges.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
@@ -135,5 +146,10 @@ public class FlattenUMLActivityDiagram {
             // Destroy the call behavior action being replaced.
             callBehaviorActionToReplace.destroy();
         }
+    }
+
+    public static void main(String args[]) throws IOException {
+        transformFile("C:\\Users\\nanyang\\workspace\\NestedDiagram\\2023-08-21 - deadlock.uml",
+                "C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml");
     }
 }
