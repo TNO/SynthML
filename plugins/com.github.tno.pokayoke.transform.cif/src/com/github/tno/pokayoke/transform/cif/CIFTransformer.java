@@ -52,7 +52,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
 
-/** Transform flattened UML model into CIF model. */
+/** Transforms flattened UML model into CIF model. */
 public class CIFTransformer {
     private final Model model;
 
@@ -76,17 +76,17 @@ public class CIFTransformer {
         this.translator = new CifToCifTranslator(this.dataStore);
     }
 
-//    public static void transformFile(String sourcePath, String targetPath) throws IOException {
-//        Model model = FileHelper.loadModel(sourcePath);
-//        Specification spec = newSpecification();
-//        new CIFTransformer(model, spec, sourcePath).transformModel();
-//        try {
-//            AppEnv.registerSimple();
-//            CifWriter.writeCifSpec(spec, targetPath, Paths.get(targetPath).getParent().toString());
-//        } finally {
-//            AppEnv.unregisterApplication();
-//        }
-//    }
+    public static void transformFile(String sourcePath, String targetPath) {
+        Model model = FileHelper.loadModel(sourcePath);
+        Specification spec = newSpecification();
+        new CIFTransformer(model, spec, sourcePath).transformModel();
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(spec, targetPath, Paths.get(targetPath).getParent().toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+    }
 
     public void transformModel() {
         // Extract activities.
@@ -134,7 +134,7 @@ public class CIFTransformer {
             }
 
             if (node instanceof ForkNode) {
-                // Check there is only one incoming edge.
+                // Check if there is only one incoming edge.
                 Preconditions.checkArgument(node.getIncomings().size() == 1,
                         "Expected that fork node has only one incoming edge.");
                 // Get the automaton event.
@@ -153,7 +153,7 @@ public class CIFTransformer {
                 ActivityEdge incomingEdge = node.getIncomings().get(0);
                 DiscVariable edgeVariable = dataStore.getVariable(incomingEdge.getName());
 
-                // Add the guard to the edge.
+                // Add the evaluation of the edge variable as the guard of the edge.
                 autEdge.getGuards()
                         .add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
 
@@ -180,7 +180,7 @@ public class CIFTransformer {
                     Edge autEdge = newEdge();
                     location.getEdges().add(autEdge);
 
-                    // Define a new edge event add it to the edge.
+                    // Define a new edge event and add it to the edge.
                     EdgeEvent edgeEvent = newEdgeEvent();
                     edgeEvent.setEvent(newEventExpression(autEvent, null, null));
                     autEdge.getEvents().add(edgeEvent);
@@ -188,7 +188,7 @@ public class CIFTransformer {
                     // Extract the edge variable for the incoming edge.
                     DiscVariable edgeVariable = dataStore.getVariable(incomingEdge.getName());
 
-                    // Add the guard to the edge.
+                    // Add the evaluation of the edge variable as the guard of the edge.
                     autEdge.getGuards()
                             .add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
 
@@ -219,7 +219,7 @@ public class CIFTransformer {
                 edgeEvent.setEvent(newEventExpression(autEvent, null, null));
                 autEdge.getEvents().add(edgeEvent);
 
-                // Add all edge variables of the incoming edges to guard and set the value of them to false.
+                // Add the evaluation of all the edge variables of the incoming edges to guard and set the value of them to false.
                 List<Expression> guards = new ArrayList<>();
                 for (ActivityEdge incomingEdge: node.getIncomings()) {
                     // Extract the guard.
@@ -228,7 +228,7 @@ public class CIFTransformer {
                     // Set the value of the incoming edge variable to false.
                     autEdge.getUpdates().add(createAssignmentForEdgeVariable(edgeVariable, false));
                 }
-                // Set the guard.
+                // Set the guards with conjunction operator.
                 autEdge.getGuards().add(CifValueUtils.createConjunction(guards));
 
                 // Set the outgoing edge variables to true
@@ -284,7 +284,7 @@ public class CIFTransformer {
             }
 
             if (node instanceof DecisionNode) {
-                // Check if the DecisionNode node only has one incoming edge.
+                // Check if the decision node only has one incoming edge.
                 Preconditions.checkArgument(node.getIncomings().size() == 1,
                         "Expected that decision node has only one outgoing edge.");
 
@@ -357,20 +357,5 @@ public class CIFTransformer {
 
     private AUpdate parseUpdate(String update) {
         return updateParser.parseString(update, modelPath);
-    }
-
-    public static void main(String[] args) {
-        String sourcePath = "C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml";
-        String targetPath = "C:\\Users\\nanyang\\workspace\\CIFTransformer\\transformed\\transformed.cif";
-
-        Model model = FileHelper.loadModel(sourcePath);
-        Specification spec = newSpecification();
-        new CIFTransformer(model, spec, targetPath).transformModel();
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, targetPath, Paths.get(targetPath).getParent().toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
     }
 }

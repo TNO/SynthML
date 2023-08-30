@@ -33,7 +33,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
 import com.google.common.base.Preconditions;
 
-/** Translates basic CIF expressions and updates to Python. */
+/** Translates CIF text into CIF expression. */
 public class CifToCifTranslator {
     private final DataStore nameMapping;
 
@@ -56,7 +56,6 @@ public class CifToCifTranslator {
         } else if (expr instanceof ABoolExpression boolExpr) {
             return translateBoolExpression(boolExpr);
         } else if (expr instanceof ANameExpression nameExpr) {
-            // return null;
             return translateNameExpression(nameExpr);
         } else if (expr instanceof AUnaryExpression unaryExpr) {
             return translateUnaryExpression(unaryExpr);

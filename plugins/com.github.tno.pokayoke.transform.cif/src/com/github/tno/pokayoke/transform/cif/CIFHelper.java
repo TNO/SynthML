@@ -47,17 +47,17 @@ public class CIFHelper {
     }
 
     /**
-     * Initialize the automaton for the activity diagram. Add enumeration data, properties, event and edge variables to
-     * the automaton.
+     * Initialize an automaton for the activity diagram. Add enumeration data and boolean variables defined in the UML
+     * model. Add nodes as events and edge as as edge variables to the automaton.
      *
      * @param model The UML model to transform.
      * @param activity The main activity diagram in the model to transform.
-     * @param dataStore The name map.
+     * @param dataStore Where variables and events are stored.
      * @return Initialized automaton
      */
     public static Automaton initializeAutomaton(Model model, Activity activity, DataStore dataStore) {
         Automaton aut = newAutomaton();
-        // Transform enumeration data type and literal.
+        // Extract and transform enumeration.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration UMLEnumVariable) {
                 EnumDecl cifEnum = transformEnumerations(UMLEnumVariable, dataStore);
@@ -66,26 +66,28 @@ public class CIFHelper {
             }
         }
 
-        // Transform properties (data variables).
+        // Extract and transform properties (data variables).
         Class contextClass = (Class)model.getMember("Context");
         for (Property property: contextClass.getAllAttributes()) {
             String dataType = property.getType().getName();
+
             // Transform boolean variables.
             if (dataType.equals("Boolean")) {
                 validateNaming(property.getName());
                 DiscVariable cifBoolVariable = newDiscVariable(property.getName(), null, newBoolType(), null);
-                // The default value of attributes can be empty (null): https://www.omg.org/spec/FUML/1.5/PDF (page 32).
+                // The default value of attributes can be unspecified: https://www.omg.org/spec/FUML/1.5/PDF (page 32).
                 if (property.getDefaultValue() != null) {
                     cifBoolVariable.setValue(extractBoolVariableValue(property));
                 }
                 aut.getDeclarations().add(cifBoolVariable);
                 dataStore.addVariable(cifBoolVariable.getName(), cifBoolVariable);
             }
+
             // Transform the enum variable if its data type is a defined enumeration.
             if (dataStore.isEnumeration(dataType)) {
                 EnumType enumType = newEnumType(dataStore.getEnumeration(dataType), null);
                 DiscVariable cifEnumVariable = newDiscVariable(property.getName(), null, enumType, null);
-                // The default value of attributes can be empty (null): https://www.omg.org/spec/FUML/1.5/PDF (page 32).
+                // The default value of attributes can be unspecified: https://www.omg.org/spec/FUML/1.5/PDF (page 32).
                 if (property.getDefault() != null) {
                     cifEnumVariable.setValue(extractEnumLiteral(property, dataStore.getEnumeration(dataType)));
                 }
@@ -96,7 +98,7 @@ public class CIFHelper {
         }
 
         // Rename join, fork and merge node to make sure that each node has a unique name. This step can be removed if
-        // we could ensure unique names in the flattened model.
+        // we ensure unique names in the flattened model.
         renameJoinForkMergeNode(activity);
 
         // Create an edge variable (boolean) for each edge in the activity diagram.
@@ -122,7 +124,7 @@ public class CIFHelper {
             value.getValues().add(CifValueUtils.makeFalse());
             DiscVariable cifBoolVariable = newDiscVariable(edgeName, null, newBoolType(), value);
 
-            // Add this variable to the name map and the automaton
+            // Add this variable to the name map and the automaton.
             dataStore.addVariable(edgeName, cifBoolVariable);
             aut.getDeclarations().add(cifBoolVariable);
         }
@@ -156,8 +158,8 @@ public class CIFHelper {
     }
 
     public static void createEvents(Activity activity, Automaton aut, DataStore dataStore) {
+        // Define an event for each node and add them to the map and automaton.
         for (ActivityNode node: activity.getNodes()) {
-            // Define a new event and add it to the map and automaton
             validateNaming(node.getName());
             Event autEvent = newEvent();
             autEvent.setName(node.getName());
@@ -169,7 +171,8 @@ public class CIFHelper {
     public static EnumDecl transformEnumerations(Enumeration enumVariable, DataStore dataStore) {
         validateNaming(enumVariable.getName());
         EnumDecl cifEnumVariable = newEnumDecl(null, enumVariable.getName(), null);
-        // Iterate over enumeration literals
+
+        // Iterate over enumeration literals.
         for (EnumerationLiteral el: enumVariable.getOwnedLiterals()) {
             validateNaming(el.getName());
             EnumLiteral enumLiteral = newEnumLiteral(el.getName(), null);
