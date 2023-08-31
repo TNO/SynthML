@@ -1,18 +1,24 @@
 
 package com.github.tno.pokayoke.transform.common;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.MergeNode;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Property;
 
 /** Utils that process UML activity diagrams. */
 public class UMLActivityUtils {
@@ -95,6 +101,41 @@ public class UMLActivityUtils {
             String parentName = action.getActivity().getName();
             String childName = action.getBehavior().getName();
             action.setName(parentName + "__" + childName);
+        }
+    }
+
+    public static void renameActivity(Activity activity) {
+        for (ActivityEdge edge: activity.getEdges()) {
+            setNameWithID(edge);
+        }
+        for (ActivityNode node: activity.getNodes()) {
+            setNameWithID(node);
+        }
+    }
+
+    public static void renamePropertyAndEnumeration(Model model) {
+        setNameWithID(model);
+
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration enumeration) {
+                setNameWithID(enumeration);
+
+
+            } else if (member instanceof Class contextClass) {
+                for (Property property: contextClass.getAllAttributes()) {
+                    if (property.getName() != null) {
+                        setNameWithID(property);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void setNameWithID(NamedElement ob) {
+        if (ob.getName() != null) {
+            ob.setName(ob.getName() + "__" + ob.eResource().getURIFragment(ob));
+        } else {
+            ob.setName(ob.eResource().getURIFragment(ob));
         }
     }
 }

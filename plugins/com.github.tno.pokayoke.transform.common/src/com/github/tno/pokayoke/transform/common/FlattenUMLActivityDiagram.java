@@ -35,13 +35,14 @@ public class FlattenUMLActivityDiagram {
     public void transformModel() {
         // Extract activities.
         Class contextClass = (Class)model.getMember("Context");
+
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 flattenActivityDiagram(activity, null);
                 UMLActivityUtils.removeIrrelevantInformation(activity);
                 // Set the name of edges in the flattened activity diagram.
-                UMLActivityUtils.setNameForEdges(activity);
+         //       UMLActivityUtils.setNameForEdges(activity);
             }
         }
     }
@@ -55,13 +56,13 @@ public class FlattenUMLActivityDiagram {
      */
     public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
 
-        // Set absolute name for the call behavior action
-        UMLActivityUtils.setNameForBehaviorAction(callBehaviorActionToReplace);
-        // Rename the merge, fork, decision, and join nodes in the activity diagram with numbering.
-        UMLActivityUtils.setNameForNodes(childBehavior);
-        // Rename nodes in the activity diagram with absolute name.
-        UMLActivityUtils.setAbsoluteNameForNestedElements(callBehaviorActionToReplace, childBehavior);
-        // Depth-first recursion. Transform children first, for a bottom-up flattening.
+//        // Set absolute name for the call behavior action
+//        UMLActivityUtils.setNameForBehaviorAction(callBehaviorActionToReplace);
+//        // Rename the merge, fork, decision, and join nodes in the activity diagram with numbering.
+//        UMLActivityUtils.setNameForNodes(childBehavior);
+//        // Rename nodes in the activity diagram with absolute name.
+//        UMLActivityUtils.setAbsoluteNameForNestedElements(callBehaviorActionToReplace, childBehavior);
+//        // Depth-first recursion. Transform children first, for a bottom-up flattening.
 
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
@@ -76,6 +77,7 @@ public class FlattenUMLActivityDiagram {
         // connect it with proper edges.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
+
 
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
