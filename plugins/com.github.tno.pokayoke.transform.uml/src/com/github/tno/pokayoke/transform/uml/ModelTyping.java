@@ -61,8 +61,14 @@ public class ModelTyping {
     }
 
     private void populate() {
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class classElement) {
+        populateFrom(model);
+    }
+
+    private void populateFrom(Model modelElement) {
+        for (PackageableElement element: modelElement.getPackagedElements()) {
+            if (element instanceof Model childElement) {
+                populateFrom(childElement);
+            } else if (element instanceof Class classElement) {
                 populateFrom(classElement);
             } else if (element instanceof Enumeration enumElement) {
                 populateFrom(enumElement);

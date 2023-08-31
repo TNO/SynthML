@@ -9,6 +9,7 @@ import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.setext.runtime.exceptions.ParseException;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -21,6 +22,7 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
@@ -62,6 +64,26 @@ public class UMLTransformer {
         FileHelper.storeModel(model, targetPath);
     }
 
+    public static void main(String[] args) throws IOException {
+        if (args.length == 2) {
+            transformFile(args[0], args[1]);
+        } else {
+            System.out.println("Two arguments expected: sourcePath and targetPath");
+        }
+    }
+
+    private List<Class> getClasses(Model modelElement) {
+        List<Class> returnValue = new ArrayList<>();
+        for (PackageableElement element: modelElement.getPackagedElements()) {
+            if (element instanceof Model childElement) {
+                returnValue.addAll(getClasses(childElement));
+            } else if (element instanceof Class classElement) {
+                returnValue.add(classElement);
+            }
+        }
+        return returnValue;
+    }
+
     public void transformModel() {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
 
@@ -69,9 +91,9 @@ public class UMLTransformer {
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        List<Class> modelClasses = model.getPackagedElements().stream().filter(s -> s instanceof Class)
-                .map(s -> (Class)s).toList();
-        Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
+        List<Class> modelClasses = getClasses(model);
+        Preconditions.checkArgument(modelClasses.size() == 1,
+                "Expected the model to contain exactly one class, got " + modelClasses.size());
         Class contextClass = modelClasses.get(0);
 
         // Make sure the class does not contain an attribute named 'active'.
@@ -226,7 +248,12 @@ public class UMLTransformer {
     }
 
     private AExpression parseExpression(String expression) {
-        return expressionParser.parseString(expression, modelPath);
+        try {
+            return expressionParser.parseString(expression, modelPath);
+        } catch (ParseException pe) {
+            System.err.println("Parsing of \"" + expression + "\" failed.");
+            throw pe;
+        }
     }
 
     private AUpdate parseUpdate(String update) {
