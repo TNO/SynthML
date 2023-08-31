@@ -20,6 +20,9 @@ import com.google.common.base.Verify;
 
 /** Flatten nested UML activities. */
 public class FlattenUMLActivity {
+    private FlattenUMLActivity() {
+    }
+
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
         transformModel(model);
