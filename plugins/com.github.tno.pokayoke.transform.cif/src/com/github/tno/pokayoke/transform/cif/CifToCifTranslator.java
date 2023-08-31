@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package com.github.tno.pokayoke.transform.cif;
 
@@ -10,15 +7,16 @@ import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolExpres
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumLiteralExpression;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newUnaryExpression;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
+import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
+import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
@@ -33,21 +31,12 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
 import com.google.common.base.Preconditions;
 
-/** Translates CIF text into CIF expression. */
+/** Translates CIF expression texts into CIF expressions. */
 public class CifToCifTranslator {
-    private final DataStore nameMapping;
+    private final DataStore dataStore;
 
     public CifToCifTranslator(DataStore nameMapping) {
-        this.nameMapping = nameMapping;
-    }
-
-    public List<Object> translateExpressions(Collection<AExpression> exprs) {
-        List<Object> expressions = new ArrayList<>();
-        if (!exprs.isEmpty()) {
-            expressions = exprs.stream().map(e -> translateExpression(e)).collect(Collectors.toList());
-        }
-
-        return expressions;
+        this.dataStore = nameMapping;
     }
 
     public Expression translateExpression(AExpression expr) {
@@ -64,12 +53,12 @@ public class CifToCifTranslator {
         }
     }
 
-    public Expression translateBinaryExpression(ABinaryExpression expr) {
-        return newBinaryExpression(translateExpression(expr.left), translateBinaryOperator(expr.operator),
-                null, translateExpression(expr.right), null);
+    private Expression translateBinaryExpression(ABinaryExpression expr) {
+        return newBinaryExpression(translateExpression(expr.left), translateBinaryOperator(expr.operator), null,
+                translateExpression(expr.right), newBoolType());
     }
 
-    public BinaryOperator translateBinaryOperator(String operator) {
+    private BinaryOperator translateBinaryOperator(String operator) {
         return switch (operator) {
             case "and" -> BinaryOperator.CONJUNCTION;
             case "or" -> BinaryOperator.DISJUNCTION;
@@ -78,35 +67,38 @@ public class CifToCifTranslator {
         };
     }
 
-    public UnaryOperator translateUnaryOperator(String operator) {
+    private UnaryOperator translateUnaryOperator(String operator) {
         return switch (operator) {
             case "not" -> UnaryOperator.INVERSE;
             default -> throw new RuntimeException("Unsupported operator: " + operator);
         };
     }
 
-    public BoolExpression translateBoolExpression(ABoolExpression expr) {
+    private BoolExpression translateBoolExpression(ABoolExpression expr) {
         return expr.value ? newBoolExpression(null, newBoolType(), true)
                 : newBoolExpression(null, newBoolType(), false);
     }
 
-    public Expression translateNameExpression(ANameExpression expr) {
+    private Expression translateNameExpression(ANameExpression expr) {
         Preconditions.checkArgument(!expr.derivative, "Expected a non-derivative name expression.");
 
         String name = expr.name.name;
 
-        if (nameMapping.isEnumerationLiteral(name)) {
-            return newEnumLiteralExpression(nameMapping.getEnumerationLiteral(name), null, null);
-        } else if (nameMapping.isVariable(name)) {
-            return newDiscVariableExpression(null, EcoreUtil.copy(nameMapping.getVariable(name).getType()),
-                    nameMapping.getVariable(name));
+        if (dataStore.isEnumerationLiteral(name)) {
+            EnumLiteral enumLiteral = dataStore.getEnumerationLiteral(name);
+            EnumDecl enumDecl = dataStore.getEnumeration(enumLiteral);
+            return newEnumLiteralExpression(enumLiteral, null, newEnumType(enumDecl, null));
+        } else if (dataStore.isVariable(name)) {
+            return newDiscVariableExpression(null, EcoreUtil.copy(dataStore.getVariable(name).getType()),
+                    dataStore.getVariable(name));
         } else {
             throw new RuntimeException("Unsupported name expression: " + expr);
         }
     }
 
-    public Expression translateUnaryExpression(AUnaryExpression expr) {
-        return newUnaryExpression(translateExpression(expr.child), translateUnaryOperator(expr.operator), null, null);
+    private Expression translateUnaryExpression(AUnaryExpression expr) {
+        return newUnaryExpression(translateExpression(expr.child), translateUnaryOperator(expr.operator), null,
+                newBoolType());
     }
 
     public Assignment translateUpdate(AUpdate update) {
@@ -117,7 +109,7 @@ public class CifToCifTranslator {
         }
     }
 
-    public Assignment translateAssignmentUpdate(AAssignmentUpdate update) {
+    private Assignment translateAssignmentUpdate(AAssignmentUpdate update) {
         return newAssignment(translateExpression(update.addressable), null, translateExpression(update.value));
     }
 }

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Poka Yoke CIF Transformer 
+Bundle-Name: Transformer from Poka Yoke Activities to CIF
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.cif
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
@@ -23,4 +23,3 @@ Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.cif
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.cif
-
