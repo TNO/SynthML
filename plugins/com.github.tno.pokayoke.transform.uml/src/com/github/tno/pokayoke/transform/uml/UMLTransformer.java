@@ -58,12 +58,6 @@ public class UMLTransformer {
         this.translator = new CifToPythonTranslator(this.typing);
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Model model = FileHelper.loadModel(sourcePath);
-        new UMLTransformer(model, sourcePath).transformModel();
-        FileHelper.storeModel(model, targetPath);
-    }
-
     public static void main(String[] args) throws IOException {
         if (args.length == 2) {
             transformFile(args[0], args[1]);
@@ -72,13 +66,23 @@ public class UMLTransformer {
         }
     }
 
-    private List<Class> getClasses(Model modelElement) {
+    public static void transformFile(String sourcePath, String targetPath) throws IOException {
+        Model model = FileHelper.loadModel(sourcePath);
+        new UMLTransformer(model, sourcePath).transformModel();
+        FileHelper.storeModel(model, targetPath);
+    }
+
+    private List<Class> getNestedClassesOf(Model modelElement) {
         List<Class> returnValue = new ArrayList<>();
         for (PackageableElement element: modelElement.getPackagedElements()) {
             if (element instanceof Model childElement) {
-                returnValue.addAll(getClasses(childElement));
+                List<Class> childClasses = getNestedClassesOf(childElement);
+                returnValue.addAll(childClasses);
             } else if (element instanceof Class classElement) {
-                returnValue.add(classElement);
+                // element can be both Class and Activity
+                if (!(element instanceof Activity)) {
+                    returnValue.add(classElement);
+                }
             }
         }
         return returnValue;
@@ -91,7 +95,7 @@ public class UMLTransformer {
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        List<Class> modelClasses = getClasses(model);
+        List<Class> modelClasses = getNestedClassesOf(model);
         Preconditions.checkArgument(modelClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelClasses.size());
         Class contextClass = modelClasses.get(0);
