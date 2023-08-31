@@ -68,7 +68,8 @@ public class UMLTransformer {
         if (args.length == 2) {
             transformFile(args[0], args[1]);
         } else {
-            System.out.println("Two arguments expected: sourcePath and targetPath");
+            System.out.println("Exactly two arguments expected: a source path and a target path.");
+
         }
     }
 
