@@ -26,6 +26,8 @@ public class UMLActivityUtils {
         }
 
         // Remove any default guards from all edges not coming out of decision nodes.
+        // According to the document "Semantics of a Foundational Subset for Executable UML Models", version 1.5, page
+        // 40: "A guard is only allowed if the source of the edge is a DecisionNode" in fUML.
         for (ActivityEdge edge: activity.getEdges()) {
             if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
                     && literal.isValue())
