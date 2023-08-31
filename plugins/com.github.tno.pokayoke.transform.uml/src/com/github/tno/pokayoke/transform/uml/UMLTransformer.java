@@ -73,22 +73,6 @@ public class UMLTransformer {
         FileHelper.storeModel(model, targetPath);
     }
 
-    private List<Class> getNestedClassesOf(Model modelElement) {
-        List<Class> returnValue = new ArrayList<>();
-        for (PackageableElement element: modelElement.getPackagedElements()) {
-            if (element instanceof Model childElement) {
-                List<Class> childClasses = getNestedClassesOf(childElement);
-                returnValue.addAll(childClasses);
-            } else if (element instanceof Class classElement) {
-                // element can be both Class and Activity
-                if (!(element instanceof Activity)) {
-                    returnValue.add(classElement);
-                }
-            }
-        }
-        return returnValue;
-    }
-
     public void transformModel() {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
 
@@ -191,6 +175,22 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setActivity(mainActivity);
         forkToLockHandlerFlow.setSource(forkNode);
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
+    }
+
+    private List<Class> getNestedClassesOf(Model modelElement) {
+        List<Class> returnValue = new ArrayList<>();
+        for (PackageableElement element: modelElement.getPackagedElements()) {
+            if (element instanceof Model childElement) {
+                List<Class> childClasses = getNestedClassesOf(childElement);
+                returnValue.addAll(childClasses);
+            } else if (element instanceof Class classElement) {
+                // element can be both Class and Activity
+                if (!(element instanceof Activity)) {
+                    returnValue.add(classElement);
+                }
+            }
+        }
+        return returnValue;
     }
 
     private void transformActivity(Activity activity, Signal acquireSignal) {
