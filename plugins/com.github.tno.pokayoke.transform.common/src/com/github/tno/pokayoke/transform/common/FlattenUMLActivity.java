@@ -20,19 +20,13 @@ import com.google.common.base.Verify;
 
 /** Flatten nested UML activities. */
 public class FlattenUMLActivity {
-    private final Model model;
-
-    public FlattenUMLActivity(Model model) {
-        this.model = model;
-    }
-
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model).transformModel();
+        transformModel(model);
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transformModel() {
+    public static void transformModel(Model model) {
         // Extract activities.
         Class contextClass = (Class)model.getMember("Context");
         // Transform all activity behaviors of 'contextClass'.
@@ -51,7 +45,7 @@ public class FlattenUMLActivity {
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
      *     when it is called to flatten the outer most activity.
      */
-    public void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
+    public static void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
