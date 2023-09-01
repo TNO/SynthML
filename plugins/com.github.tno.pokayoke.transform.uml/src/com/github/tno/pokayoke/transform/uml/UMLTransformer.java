@@ -224,8 +224,8 @@ public class UMLTransformer {
         List<Class> returnValue = new ArrayList<>();
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Model modelElement) {
-                List<Class> childClasses = getNestedNonActivityClassesOf(modelElement);
-                returnValue.addAll(childClasses);
+                final List<Class> modelElementClasses = getNestedNonActivityClassesOf(modelElement);
+                returnValue.addAll(modelElementClasses);
             } else if (element instanceof Class classElement && !(element instanceof Activity)) {
                 returnValue.add(classElement);
             }
