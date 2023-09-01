@@ -15,7 +15,6 @@ import com.google.common.base.Verify;
 
 /** Collects basic typing information from a model that can be queried. */
 public class ModelTyping {
-
     private final Map<String, Enumeration> enums = new LinkedHashMap<>();
 
     private final Map<String, EnumerationLiteral> enumLiterals = new LinkedHashMap<>();
@@ -58,10 +57,10 @@ public class ModelTyping {
         Verify.verify(!isDeclared(name), String.format("Symbol %s already exists.", name));
     }
 
-    private void populateFrom(Model modelElement) {
-        for (PackageableElement element: modelElement.getPackagedElements()) {
-            if (element instanceof Model childElement) {
-                populateFrom(childElement);
+    private void populateFrom(Model model) {
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Model modelElement) {
+                populateFrom(modelElement);
             } else if (element instanceof Class classElement) {
                 populateFrom(classElement);
             } else if (element instanceof Enumeration enumElement) {
