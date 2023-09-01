@@ -32,13 +32,17 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
+    /** Class name for Lock.
+     *
+     */
+    private static final String LOCK_CLASS_NAME = "Lock";
+
     private final Model model;
 
     private final String modelPath;
@@ -75,7 +79,7 @@ public class UMLTransformer {
     public void transformModel() {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
 
-        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
+        Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
@@ -99,7 +103,7 @@ public class UMLTransformer {
         // 2. Define locking infrastructure.
 
         // Create a class for holding lock-related structure and behavior.
-        final Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
+        final Class lockClass = (Class)model.createPackagedElement(LOCK_CLASS_NAME, UMLPackage.eINSTANCE.getClass_());
 
         // Create the signal for acquiring the lock.
         final Signal acquireSignal = FileHelper.FACTORY.createSignal();
@@ -133,11 +137,9 @@ public class UMLTransformer {
         activeProperty.setDefaultValue(activePropertyDefaultValue);
         contextClass.getOwnedAttributes().add(activeProperty);
 
-        // Transform all activity behaviors of the single class within the model.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                transformActivity(activity, acquireSignal);
-            }
+        // Transform all activity behaviors within the model.
+        for (Activity activity: getNestedActivitiesOf(model)) {
+            transformActivity(activity, acquireSignal);
         }
 
         // 4. Transform the classifier behavior (i.e., main activity) of the single class within the model.
@@ -177,6 +179,45 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
     }
 
+    /** Get Nested Activities of the Model.
+     *
+     * @param model Model
+     * @return List containing the nested Activities of the provided model.
+     */
+    private List<Activity> getNestedActivitiesOf(Model model) {
+        List<Activity> returnValue = new ArrayList<>();
+        for (PackageableElement element: model.getPackagedElements()) {
+            // Since an element can have multiple types, we don't use else if.
+
+            if (element instanceof Model modelElement) {
+                List<Activity> childActivities = getNestedActivitiesOf(modelElement);
+                returnValue.addAll(childActivities);
+            }
+
+            if (element instanceof Activity activityElement) {
+                returnValue.add(activityElement);
+            }
+
+            if (element instanceof Class cls) {
+                // Skip Class generated for lock.
+                if (!cls.getName().equals(LOCK_CLASS_NAME)) {
+                    for (Behavior behavior: new ArrayList<>(cls.getOwnedBehaviors())) {
+                        if (behavior instanceof Activity activity) {
+                            returnValue.add(activity);
+                        }
+                    }
+                }
+            }
+        }
+        return returnValue;
+    }
+
+    /** Get Nested Classes Of Model.
+     * Activities are excluded (although an Activity is also a Class).
+     *
+     * @param model Model
+     * @return List containing the nested classes of the provided model.
+     */
     private List<Class> getNestedClassesOf(Model model) {
         List<Class> returnValue = new ArrayList<>();
         for (PackageableElement element: model.getPackagedElements()) {
@@ -201,20 +242,15 @@ public class UMLTransformer {
 
         UMLActivityUtils.removeIrrelevantInformation(activity);
 
-        // Create a separate class in which all new behaviors for the activity are stored.
-        Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
-
         // Transform all opaque action nodes of the activity.
         for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
-                transformOpaqueAction(activityClass, activity, opaqueActionNode, acquireSignal);
+                transformOpaqueAction(activity, opaqueActionNode, acquireSignal);
             }
         }
     }
 
-    private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action,
-            Signal acquireSignal)
-    {
+    private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
@@ -226,17 +262,14 @@ public class UMLTransformer {
                 .map(b -> translator.translateUpdate(b)).toList();
 
         // Define a new activity that encodes the behavior of the action.
-        Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
+        Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
         final String actionName = action.getName();
-        actionActivity.setName(actionName);
-        Verify.verify(activityClass.getOwnedBehavior(actionName) == null,
-                String.format("Expected the '%s' activity to not already exist.", actionName));
-        activityClass.getOwnedBehaviors().add(actionActivity);
+        newActivity.setName(actionName);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
         replacementActionNode.setActivity(activity);
-        replacementActionNode.setBehavior(actionActivity);
+        replacementActionNode.setBehavior(newActivity);
         replacementActionNode.setName(actionName);
 
         // Relocate all incoming edges into the action to the replacement action.
@@ -251,6 +284,7 @@ public class UMLTransformer {
 
         // Remove the old action that is now replaced.
         action.destroy();
+        activity.getOwnedBehaviors().add(newActivity);
     }
 
     private AExpression parseExpression(String expression) {
