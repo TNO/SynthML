@@ -79,10 +79,10 @@ public class UMLTransformer {
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        final List<Class> modelClasses = getNestedClassesOf(model);
-        Preconditions.checkArgument(modelClasses.size() == 1,
-                "Expected the model to contain exactly one class, got " + modelClasses.size());
-        final Class contextClass = modelClasses.get(0);
+        final List<Class> modelNestedClasses = getNestedClassesOf(model);
+        Preconditions.checkArgument(modelNestedClasses.size() == 1,
+                "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
+        final Class contextClass = modelNestedClasses.get(0);
 
         // Make sure the class does not contain an attribute named 'active'.
         Preconditions.checkArgument(
@@ -177,11 +177,11 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
     }
 
-    private List<Class> getNestedClassesOf(Model modelElement) {
+    private List<Class> getNestedClassesOf(Model model) {
         List<Class> returnValue = new ArrayList<>();
-        for (PackageableElement element: modelElement.getPackagedElements()) {
-            if (element instanceof Model childElement) {
-                List<Class> childClasses = getNestedClassesOf(childElement);
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Model modelElement) {
+                List<Class> childClasses = getNestedClassesOf(modelElement);
                 returnValue.addAll(childClasses);
             } else if (element instanceof Class classElement) {
                 // element can be both Class and Activity
@@ -194,9 +194,9 @@ public class UMLTransformer {
     }
 
     private void transformActivity(Activity activity, Signal acquireSignal) {
-        String activityName = activity.getName();
+        final String activityName = activity.getName();
 
-        Preconditions.checkArgument(model.getPackagedElement(activity.getName()) == null,
+        Preconditions.checkArgument(model.getPackagedElement(activityName) == null,
                 String.format("Expected the '%s' class to not already exist.", activityName));
 
         UMLActivityUtils.removeIrrelevantInformation(activity);
@@ -227,16 +227,17 @@ public class UMLTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
-        actionActivity.setName(action.getName());
-        Verify.verify(activityClass.getOwnedBehavior(action.getName()) == null,
-                String.format("Expected the '%s' activity to not already exist.", action.getName()));
+        final String actionName = action.getName();
+        actionActivity.setName(actionName);
+        Verify.verify(activityClass.getOwnedBehavior(actionName) == null,
+                String.format("Expected the '%s' activity to not already exist.", actionName));
         activityClass.getOwnedBehaviors().add(actionActivity);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
         replacementActionNode.setActivity(activity);
         replacementActionNode.setBehavior(actionActivity);
-        replacementActionNode.setName(action.getName());
+        replacementActionNode.setName(actionName);
 
         // Relocate all incoming edges into the action to the replacement action.
         for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
