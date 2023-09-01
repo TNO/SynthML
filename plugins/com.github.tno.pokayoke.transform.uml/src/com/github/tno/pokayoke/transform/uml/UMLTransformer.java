@@ -38,7 +38,8 @@ import com.google.common.base.Preconditions;
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
-    /** Class name for Lock.
+    /**
+     * Class name for Lock.
      *
      */
     private static final String LOCK_CLASS_NAME = "Lock";
@@ -83,7 +84,7 @@ public class UMLTransformer {
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        final List<Class> modelNestedClasses = getNestedClassesOf(model);
+        final List<Class> modelNestedClasses = getNestedNonActivityClassesOf(model);
         Preconditions.checkArgument(modelNestedClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         final Class contextClass = modelNestedClasses.get(0);
@@ -179,10 +180,11 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
     }
 
-    /** Get Nested Activities of the Model.
+    /**
+     * Get the nested activities of the model.
      *
      * @param model Model
-     * @return List containing the nested Activities of the provided model.
+     * @return List containing the nested activities of the provided model.
      */
     private List<Activity> getNestedActivitiesOf(Model model) {
         List<Activity> returnValue = new ArrayList<>();
@@ -212,23 +214,20 @@ public class UMLTransformer {
         return returnValue;
     }
 
-    /** Get Nested Classes Of Model.
-     * Activities are excluded (although an Activity is also a Class).
+    /**
+     * Get the nested classes that are not activities of the model.
      *
      * @param model Model
-     * @return List containing the nested classes of the provided model.
+     * @return List containing the nested classes that are not activities of the provided model.
      */
-    private List<Class> getNestedClassesOf(Model model) {
+    private List<Class> getNestedNonActivityClassesOf(Model model) {
         List<Class> returnValue = new ArrayList<>();
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Model modelElement) {
-                List<Class> childClasses = getNestedClassesOf(modelElement);
+                List<Class> childClasses = getNestedNonActivityClassesOf(modelElement);
                 returnValue.addAll(childClasses);
-            } else if (element instanceof Class classElement) {
-                // element can be both Class and Activity
-                if (!(element instanceof Activity)) {
-                    returnValue.add(classElement);
-                }
+            } else if (element instanceof Class classElement && !(element instanceof Activity)) {
+                returnValue.add(classElement);
             }
         }
         return returnValue;
@@ -291,6 +290,7 @@ public class UMLTransformer {
         try {
             return expressionParser.parseString(expression, modelPath);
         } catch (ParseException pe) {
+            // TODO see https://github.com/TNO/PokaYoke/issues/25
             System.err.println("Parsing of \"" + expression + "\" failed.");
             throw pe;
         }
