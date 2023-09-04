@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /** Flatten nested UML activity diagrams. */
@@ -33,51 +34,83 @@ public class FlattenUMLActivityDiagram {
     }
 
     public void transformModel() {
-        // Extract activities.
+        // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
+
+        // Clean the relevant info from edges so that double underscore does not exist in the default naming of
+        // the guards of edges.
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+            if (behavior instanceof Activity activity) {
+                UMLActivityUtils.removeIrrelevantInformation(activity);
+            }
+        }
+
+        // Check if double underscore is used in names of other model elements.
+        Preconditions.checkArgument(!UMLActivityUtils.isDoubleUnderscoreUsed(model),
+                "Double underscore exists in name of model elements.");
 
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
-                flattenActivityDiagram(activity, null);
+                transformActivity(activity, null, activity.getName(), activity.eResource().getURIFragment(activity));
+
+                // Clean again to remove the irrelevant info on the newly added edges.
                 UMLActivityUtils.removeIrrelevantInformation(activity);
-                // Set the name of edges in the flattened activity diagram.
-         //       UMLActivityUtils.setNameForEdges(activity);
             }
         }
+
+        // Make sure that the element names of the model is unique. Duplicated names are numbered.
+        UMLActivityUtils.ensureUniquenessOfNames(model);
     }
 
     /**
-     * Recursively flatten the activity diagram.
+     * Recursively transform the activity diagram, including flattening and renaming as well as adding a chain of IDs to
+     * each object comment for tracing the origin of the element in the original model.
      *
-     * @param childBehavior The non-{@code null} activity diagram to be flattened.
+     * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
-     *     when it is called to flatten the outer most activity diagram.
+     *     when it is called to flatten the outer most activity.
+     * @param absoluteName The absolute name of callBehaviorActionToReplace.
+     * @param absoluteId The absolute id of callBehaviorActionToReplace.
      */
-    public void flattenActivityDiagram(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
-
-//        // Set absolute name for the call behavior action
-//        UMLActivityUtils.setNameForBehaviorAction(callBehaviorActionToReplace);
-//        // Rename the merge, fork, decision, and join nodes in the activity diagram with numbering.
-//        UMLActivityUtils.setNameForNodes(childBehavior);
-//        // Rename nodes in the activity diagram with absolute name.
-//        UMLActivityUtils.setAbsoluteNameForNestedElements(callBehaviorActionToReplace, childBehavior);
-//        // Depth-first recursion. Transform children first, for a bottom-up flattening.
-
+    public void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace,
+            String absoluteName, String absoluteId)
+    {
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior childDiagram = actionNode.getBehavior();
-                Verify.verify(childDiagram != null, String
+                Behavior childActivity = actionNode.getBehavior();
+                Verify.verify(childActivity != null, String
                         .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-                flattenActivityDiagram((Activity)childDiagram, actionNode);
+
+                // Name the call behavior actions with numbering.
+                String absoluteNameOfCallBehaviorAction = UMLActivityUtils.getNameOfObject("CallBehaviorAction");
+
+                // Extract ID of the call behavior action
+                String idOfCallBehaviorAction = actionNode.eResource().getURIFragment(actionNode);
+
+                transformActivity((Activity)childActivity, actionNode, absoluteNameOfCallBehaviorAction,
+                        idOfCallBehaviorAction);
             }
         }
 
-        // Replace the call behavior action with the content of this activity diagram and
-        // connect it with proper edges.
+        // Check if the activity has been visited for naming. If not, set the name for nodes and edges.
+        if (!UMLActivityUtils.isNamed(childBehavior)) {
+            UMLActivityUtils.setNameForNodesAndEdges(childBehavior, absoluteName);
+        }
+
+        // Check if the activity has been visited for tracing. If not, add tracing comments for nodes and edges.
+        if (!UMLActivityUtils.isTraced(childBehavior)) {
+            UMLActivityUtils.setTracingCommentForNodesAndEdges(childBehavior, absoluteId);
+        }
+
+        // Replace the call behavior action with the content of this activity, append absolute name and id of this call
+        // behavior action to comments and connect it with proper edges.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
+            // Append the absolute name and ID of the call behavior action.
+            UMLActivityUtils.appendCallBehaviorActionName(childBehaviorCopy, absoluteName);
+            UMLActivityUtils.appendCallBehaviorActionID(childBehaviorCopy, absoluteId);
 
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
@@ -91,20 +124,29 @@ public class FlattenUMLActivityDiagram {
                     edge.setActivity(callBehaviorActionToReplace.getActivity());
                 }
 
-                // Create a new edge for every pair of an outgoing edge from the activity's initial node and an incoming
-                // edge to the call behavior action. The edges are properly connected and given the appropriate
-                // properties, like guards.
+                // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
+                // incoming edge to the call behavior action. The edges are properly connected and given the
+                // appropriate properties, like guards. Name and tracing comment for the new edges are set.
                 if (node instanceof InitialNode initialNode) {
+                    int i = 1;
                     for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
                         for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
                             ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
-                            // The guard of the new edge is set to the guard of the incoming edge of the call behavior
-                            // action. We ignore the guard of the outgoing edge of the initial node because the source
-                            // of this edge is not a decision node.
+
+                            // The guard of the new edge is set to the guard of the incoming edge of the call
+                            // behavior action. We ignore the guard of the outgoing edge of the initial node because
+                            // the source of this edge is not a decision node.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
                             newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+
+                            // Set name for the newly added edge.
+                            newEdge.setName(absoluteName + "__" + childBehavior.getName() + "__AddedIncomingEdge_"
+                                    + String.valueOf(i++));
+
+                            // Set tracing comment for the newly added edge.
+                            UMLActivityUtils.setTracingCommentForAddedEdges(incomingEdge, outgoingEdge, newEdge);
                         }
                     }
 
@@ -120,17 +162,26 @@ public class FlattenUMLActivityDiagram {
 
                 // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
-                // properties, like guards.
+                // properties, like guards. Name and tracing comment for the new edges are set.
                 if (node instanceof ActivityFinalNode finalNode) {
+                    int i = 1;
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {
                             ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
-                            // The guard of the new edge is set to the guard of the incoming edge of the final node. We
-                            // ignore the guard of the outgoing edge of the behavior action.
+
+                            // The guard of the new edge is set to the guard of the incoming edge of the final node.
+                            // We ignore the guard of the outgoing edge of the behavior action.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
                             newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+
+                            // Set name for the newly added edge.
+                            newEdge.setName(absoluteName + "__" + childBehavior.getName() + "__AddedOutgoingEdge_"
+                                    + String.valueOf(i++));
+
+                            // Set tracing comment for the newly added edge.
+                            UMLActivityUtils.setTracingCommentForAddedEdges(outgoingEdge, incomingEdge, newEdge);
                         }
                     }
 
@@ -148,10 +199,5 @@ public class FlattenUMLActivityDiagram {
             // Destroy the call behavior action being replaced.
             callBehaviorActionToReplace.destroy();
         }
-    }
-
-    public static void main(String args[]) throws IOException {
-        transformFile("C:\\Users\\nanyang\\workspace\\NestedDiagram\\2023-08-21 - deadlock.uml",
-                "C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml");
     }
 }
