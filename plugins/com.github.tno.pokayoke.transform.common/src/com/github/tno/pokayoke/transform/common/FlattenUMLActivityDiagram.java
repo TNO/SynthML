@@ -146,7 +146,7 @@ public class FlattenUMLActivityDiagram {
                                     + String.valueOf(i++));
 
                             // Set tracing comment for the newly added edge.
-                            UMLActivityUtils.setTracingCommentForAddedEdges(incomingEdge, outgoingEdge, newEdge);
+                            UMLActivityUtils.setTracingCommentForAddedEdge(incomingEdge, outgoingEdge, newEdge);
                         }
                     }
 
@@ -181,7 +181,7 @@ public class FlattenUMLActivityDiagram {
                                     + String.valueOf(i++));
 
                             // Set tracing comment for the newly added edge.
-                            UMLActivityUtils.setTracingCommentForAddedEdges(outgoingEdge, incomingEdge, newEdge);
+                            UMLActivityUtils.setTracingCommentForAddedEdge(outgoingEdge, incomingEdge, newEdge);
                         }
                     }
 

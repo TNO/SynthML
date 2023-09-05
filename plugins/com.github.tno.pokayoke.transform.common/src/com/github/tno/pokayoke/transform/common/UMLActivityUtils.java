@@ -180,7 +180,7 @@ public class UMLActivityUtils {
      *     the incoming edges of the activity final node.
      * @param newEdge It is the newly created edge for connecting the content of inner activity to the outer activity.
      */
-    public static void setTracingCommentForAddedEdges(ActivityEdge outerEdge, ActivityEdge innerEdge,
+    public static void setTracingCommentForAddedEdge(ActivityEdge outerEdge, ActivityEdge innerEdge,
             ActivityEdge newEdge)
     {
         String idOuterEdge = outerEdge.eResource().getURIFragment(outerEdge);
