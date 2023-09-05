@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.cif;
 
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAssignment;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAutomaton;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
@@ -14,6 +15,7 @@ import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newSpecificat
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -86,6 +88,9 @@ public class UmlActitityToCifTransformer {
     }
 
     public Specification transformModel() {
+        // Check if all elements in model have a CIF valid name.
+        CifHelper.validateNames(model);
+
         // Extract the context class.
         Class contextClass = (Class)model.getMember("Context");
 
@@ -111,7 +116,6 @@ public class UmlActitityToCifTransformer {
 
         // Transform all nodes and their connected edges.
         for (ActivityNode node: new LinkedHashSet<>(activity.getNodes())) {
-            System.out.println(node.eResource().getURIFragment(node));
             if (node instanceof ForkNode) {
                 // Check if there is only one incoming edge.
                 Preconditions.checkArgument(node.getIncomings().size() == 1,
@@ -165,7 +169,7 @@ public class UmlActitityToCifTransformer {
                     setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
                 }
 
-                // Set the outgoing edge variables to true
+                // Set the outgoing edge variables to true.
                 ActivityEdge outgoingEdge = node.getOutgoings().get(0);
                 updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
             } else if (node instanceof OpaqueAction action) {
@@ -245,7 +249,7 @@ public class UmlActitityToCifTransformer {
 
                     // Set all edge variable to false. According to UML specification, the execution of activity is
                     // terminated when the first activity final node is fired: https://www.omg.org/spec/UML/2.5.1/PDF
-                    // (page 430)
+                    // (page 430).
                     for (ActivityEdge edge: activity.getEdges()) {
                         // Set the incoming edge variable to false.
                         cifEdge.getUpdates()
@@ -262,6 +266,47 @@ public class UmlActitityToCifTransformer {
                     // this control flow is terminated. Other flows in the activity can still continue.
                     setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
                 }
+            }
+        }
+
+        // Create an automaton for each called activity.
+        Map<String, List<ActivityEdge>> actionToEdges = CifHelper
+                .extractMapFromCallBehaviorActionToBoundaryEdge(activity);
+        for (Map.Entry<String, List<ActivityEdge>> callBehaviorAction: actionToEdges.entrySet()) {
+            // Identify the events that signal the start of the activity.
+            List<ActivityNode> targets = CifHelper.identifyTargetssOfIncomingEdges(callBehaviorAction.getValue());
+
+            // Identify the events that signal the end of the activity.
+            List<ActivityNode> sources = CifHelper.identifySourcesOfOutgoingEdges(callBehaviorAction.getValue());
+
+            Automaton activityAut = newAutomaton();
+            activityAut.setName(callBehaviorAction.getKey());
+            spec.getComponents().add(activityAut);
+
+            // Create the two locations and add them to the automaton.
+            Location initialLoc = newLocation();
+            initialLoc.setName("startLoc");
+            initialLoc.getInitials().add(CifValueUtils.makeTrue());
+            initialLoc.getMarkeds().add(CifValueUtils.makeTrue());
+            activityAut.getLocations().add(initialLoc);
+            Location finalLoc = newLocation();
+            finalLoc.setName("endLoc");
+            activityAut.getLocations().add(finalLoc);
+
+            // Set edge for each event that signals the start of the activity.
+            for (ActivityNode target: targets) {
+                // Get the node event.
+                Event startEvent = dataStore.getEvent(target.getName());
+                Edge cifEdge = createCifEdgeAndEdgeEvent(initialLoc, startEvent);
+                cifEdge.setTarget(finalLoc);
+            }
+
+            // Set edge for each event that signals the end of the activity.
+            for (ActivityNode source: sources) {
+                // Get the node event.
+                Event endEvent = dataStore.getEvent(source.getName());
+                Edge cifEdge = createCifEdgeAndEdgeEvent(finalLoc, endEvent);
+                cifEdge.setTarget(initialLoc);
             }
         }
     }
@@ -308,10 +353,5 @@ public class UmlActitityToCifTransformer {
 
     private AUpdate parseUpdate(String update) {
         return updateParser.parseString(update, modelPath);
-    }
-
-    public static void main(String args[]) {
-        transformFile("C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml",
-                "C:\\Users\\nanyang\\workspace\\CIFTransformer\\transformed\\transformed.cif");
     }
 }

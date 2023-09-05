@@ -10,9 +10,6 @@ import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumLitera
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newUnaryExpression;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;

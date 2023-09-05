@@ -77,7 +77,4 @@ public class DataStore {
         events.put(name, variable);
     }
 
-    protected boolean isDeclared(String name) {
-        return isEnumeration(name) || isEnumerationLiteral(name) || isVariable(name);
-    }
 }
