@@ -20,16 +20,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /** Flatten nested UML activity diagrams. */
-public class FlattenUMLActivityDiagram {
+public class FlattenUMLActivity {
     private final Model model;
 
-    public FlattenUMLActivityDiagram(Model model) {
+    public FlattenUMLActivity(Model model) {
         this.model = model;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivityDiagram(model).transformModel();
+        new FlattenUMLActivity(model).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
@@ -45,21 +45,18 @@ public class FlattenUMLActivityDiagram {
             }
         }
 
-        // Check if double underscore is used in names of other model elements.
+        // Check if double underscore is used in the names of any model elements.
         Preconditions.checkArgument(!UMLActivityUtils.isDoubleUnderscoreUsed(model),
-                "Double underscore exists in name of model elements.");
+                "Expected double underscores to not be used in the names of model elements.");
 
         // Transform all activity behaviors of 'contextClass'.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 transformActivity(activity, null, activity.getName(), activity.eResource().getURIFragment(activity));
-
-                // Clean again to remove the irrelevant info on the newly added edges.
-                UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
 
-        // Make sure that the element names of the model is unique. Duplicated names are numbered.
+        // Make sure that the element names of the model are unique. Duplicated names are numbered.
         UMLActivityUtils.ensureUniquenessOfNames(model);
     }
 
@@ -71,21 +68,21 @@ public class FlattenUMLActivityDiagram {
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
      *     when it is called to flatten the outer most activity.
      * @param absoluteName The absolute name of callBehaviorActionToReplace.
-     * @param absoluteId The absolute id of callBehaviorActionToReplace.
+     * @param absoluteID The absolute ID of callBehaviorActionToReplace.
      */
     public void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace,
-            String absoluteName, String absoluteId)
+            String absoluteName, String absoluteID)
     {
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
                 Behavior childActivity = actionNode.getBehavior();
-                Verify.verify(childActivity != null, String
+                Verify.verifyNotNull(childActivity, String
                         .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
 
                 // Name the call behavior actions with numbering.
                 String absoluteNameOfCallBehaviorAction = UMLActivityUtils.getNameOfObject("CallBehaviorAction");
 
-                // Extract ID of the call behavior action
+                // Extract ID of the call behavior action.
                 String idOfCallBehaviorAction = actionNode.eResource().getURIFragment(actionNode);
 
                 transformActivity((Activity)childActivity, actionNode, absoluteNameOfCallBehaviorAction,
@@ -100,17 +97,17 @@ public class FlattenUMLActivityDiagram {
 
         // Check if the activity has been visited for tracing. If not, add tracing comments for nodes and edges.
         if (!UMLActivityUtils.isTraced(childBehavior)) {
-            UMLActivityUtils.setTracingCommentForNodesAndEdges(childBehavior, absoluteId);
+            UMLActivityUtils.setTracingCommentForNodesAndEdges(childBehavior, absoluteID);
         }
 
-        // Replace the call behavior action with the content of this activity, append absolute name and id of this call
+        // Replace the call behavior action with the content of this activity, append absolute name and ID of this call
         // behavior action to comments and connect it with proper edges.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
             // Append the absolute name and ID of the call behavior action.
             UMLActivityUtils.appendCallBehaviorActionName(childBehaviorCopy, absoluteName);
-            UMLActivityUtils.appendCallBehaviorActionID(childBehaviorCopy, absoluteId);
+            UMLActivityUtils.appendCallBehaviorActionID(childBehaviorCopy, absoluteID);
 
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
@@ -199,5 +196,10 @@ public class FlattenUMLActivityDiagram {
             // Destroy the call behavior action being replaced.
             callBehaviorActionToReplace.destroy();
         }
+    }
+
+    public static void main(String args[]) throws IOException {
+        transformFile("C:\\Users\\nanyang\\workspace\\NestedDiagram\\2023-08-21 - deadlock.uml",
+                "C:\\Users\\nanyang\\workspace\\NestedDiagram\\flattened_model.uml");
     }
 }

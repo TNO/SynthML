@@ -59,17 +59,16 @@ public class UMLActivityUtils {
     }
 
     /**
-     * Check if double underscore is used in the name of model elements.
+     * Checks if a double underscore is used in the name of any model elements.
      *
      * @param model The model to check.
-     * @return The result o the check.
+     * @return The result of the check.
      */
     public static boolean isDoubleUnderscoreUsed(Model model) {
         TreeIterator<EObject> iterator = model.eAllContents();
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement) {
-                NamedElement namedElement = (NamedElement)eObject;
+            if (eObject instanceof NamedElement namedElement) {
                 if (namedElement.getName() != null && namedElement.getName().contains("__")) {
                     return true;
                 }
@@ -82,7 +81,7 @@ public class UMLActivityUtils {
         // If the name of node has not been added, the concatenation of absolute name and the name of the node is
         // added to the comment. Otherwise, the absolute name is appended.
         String prefix = absoluteName + "__";
-        for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
+        for (ActivityNode node: childBehavior.getNodes()) {
             String name = prefix;
             if (node.getName() == null || node.getName().equals("")) {
                 name = name + getNameOfObject(node.eClass().getName());
@@ -111,40 +110,38 @@ public class UMLActivityUtils {
 
     public static void appendCallBehaviorActionName(Activity childBehavior, String absoluteName) {
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
-            String nodeName = absoluteName + "__" + node.getName();
-            node.setName(nodeName);
+            node.setName(absoluteName + "__" + node.getName());
         }
 
         for (ActivityEdge edge: new ArrayList<>(childBehavior.getEdges())) {
-            String edgeName = absoluteName + "__" + edge.getName();
-            edge.setName(edgeName);
+            edge.setName(absoluteName + "__" + edge.getName());
         }
     }
 
     public static void setTracingCommentForNodesAndEdges(Activity childBehavior, String absoluteID) {
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
-            // If a tracing comment has not been added, the concatenation of absolute id and the id of the node is added
-            // to the comment. Otherwise, the absolute id is appended to the comment.
+            // If a tracing comment has not been added, the concatenation of absolute ID and the ID of the node is added
+            // to the comment. Otherwise, the absolute ID is appended to the comment.
             if (node.getOwnedComments().size() == 0) {
-                Comment e = FileHelper.FACTORY.createComment();
-                e.setBody(absoluteID + "__" + node.eResource().getURIFragment(node));
-                node.getOwnedComments().add(e);
+                Comment comment = FileHelper.FACTORY.createComment();
+                comment.setBody(absoluteID + "__" + node.eResource().getURIFragment(node));
+                node.getOwnedComments().add(comment);
             } else {
-                for (Comment c: node.getOwnedComments()) {
-                    c.setBody(absoluteID + "__" + c.getBody());
+                for (Comment nodeComment: node.getOwnedComments()) {
+                    nodeComment.setBody(absoluteID + "__" + nodeComment.getBody());
                 }
             }
         }
         for (ActivityEdge edge: new ArrayList<>(childBehavior.getEdges())) {
-            // If a tracing comment has not been added, the concatenation of absolute id and the id of the edge is added
-            // to the comment. Otherwise, the absolute id is appended to the comment.
+            // If a tracing comment has not been added, the concatenation of absolute ID and the ID of the edge is added
+            // to the comment. Otherwise, the absolute ID is appended to the comment.
             if (edge.getOwnedComments().size() == 0) {
-                Comment e = FileHelper.FACTORY.createComment();
-                e.setBody(absoluteID + "__" + edge.eResource().getURIFragment(edge));
-                edge.getOwnedComments().add(e);
+                Comment comment = FileHelper.FACTORY.createComment();
+                comment.setBody(absoluteID + "__" + edge.eResource().getURIFragment(edge));
+                edge.getOwnedComments().add(comment);
             } else {
-                for (Comment c: edge.getOwnedComments()) {
-                    c.setBody(absoluteID + "__" + c.getBody());
+                for (Comment edgeComment: edge.getOwnedComments()) {
+                    edgeComment.setBody(absoluteID + "__" + edgeComment.getBody());
                 }
             }
         }
@@ -157,42 +154,42 @@ public class UMLActivityUtils {
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             int i = node.getOwnedComments().size();
             String idChain = id + "__" + node.getOwnedComments().get(i - 1).getBody();
-            Comment e = FileHelper.FACTORY.createComment();
-            e.setBody(idChain);
-            node.getOwnedComments().set(i - 1, e);
+            Comment comment = FileHelper.FACTORY.createComment();
+            comment.setBody(idChain);
+            node.getOwnedComments().set(i - 1, comment);
         }
 
         for (ActivityEdge edge: new ArrayList<>(childBehavior.getEdges())) {
             int i = edge.getOwnedComments().size();
             String idChain = id + "__" + edge.getOwnedComments().get(i - 1).getBody();
-            Comment e = FileHelper.FACTORY.createComment();
-            e.setBody(idChain);
-            edge.getOwnedComments().set(i - 1, e);
+            Comment comment = FileHelper.FACTORY.createComment();
+            comment.setBody(idChain);
+            edge.getOwnedComments().set(i - 1, comment);
         }
     }
 
     /**
      * Set tracing comment for a newly added edge that connect the content of an nested activity to the outer activity.
      *
-     * @param outerEdge It is the edge from the outer activity, connecting to the call behavior action. This could be
-     *     the incoming and outgoing edges of the call behavior action.
-     * @param innerEdge It is the edge inside the nested activity. This could be outgoing edges of the initial node or
-     *     the incoming edges of the activity final node.
-     * @param newEdge It is the newly created edge for connecting the content of inner activity to the outer activity.
+     * @param outerEdge The edge from the outer activity, connecting to the call behavior action. This could be the
+     *     incoming and outgoing edges of the call behavior action.
+     * @param innerEdge The edge inside the nested activity. This could be outgoing edges of the initial node or the
+     *     incoming edges of the activity final node.
+     * @param newEdge The newly created edge for connecting the content of inner activity to the outer activity.
      */
     public static void setTracingCommentForAddedEdge(ActivityEdge outerEdge, ActivityEdge innerEdge,
             ActivityEdge newEdge)
     {
         String idOuterEdge = outerEdge.eResource().getURIFragment(outerEdge);
-        Comment e2 = FileHelper.FACTORY.createComment();
-        e2.setBody(idOuterEdge);
-        newEdge.getOwnedComments().add(e2);
+        Comment comment1 = FileHelper.FACTORY.createComment();
+        comment1.setBody(idOuterEdge);
+        newEdge.getOwnedComments().add(comment1);
 
         int i = innerEdge.getOwnedComments().size();
         String idInnerEdge = innerEdge.getOwnedComments().get(i - 1).getBody();
-        Comment e1 = FileHelper.FACTORY.createComment();
-        e1.setBody(idInnerEdge);
-        newEdge.getOwnedComments().add(e1);
+        Comment comment2 = FileHelper.FACTORY.createComment();
+        comment2.setBody(idInnerEdge);
+        newEdge.getOwnedComments().add(comment2);
     }
 
     public static String getNameOfObject(String className) {
@@ -214,8 +211,7 @@ public class UMLActivityUtils {
         TreeIterator<EObject> iterator = model.eAllContents();
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement) {
-                NamedElement namedElement = (NamedElement)eObject;
+            if (eObject instanceof NamedElement namedElement) {
                 names.add(namedElement.getName());
                 int count = Collections.frequency(names, namedElement.getName());
                 if (count > 1) {
