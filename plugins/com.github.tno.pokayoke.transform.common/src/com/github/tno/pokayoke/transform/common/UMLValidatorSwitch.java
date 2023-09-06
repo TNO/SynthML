@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.common;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         // Visit all packaged elements and check (local) uniqueness of their names.
         Set<String> names = new LinkedHashSet<>();
 
-        for (PackageableElement element: model.getPackagedElements()) {
+        for (PackageableElement element: new ArrayList<>(model.getPackagedElements())) {
             Object visistedElement = doSwitch(element);
             Verify.verifyNotNull(visistedElement, "Unsupported packageable element: " + element);
             String elementName = element.getName();
@@ -73,7 +74,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         // Visit all class properties and check (local) uniqueness of their names.
         Set<String> names = new LinkedHashSet<>();
 
-        for (Property property: classElement.getOwnedAttributes()) {
+        for (Property property: new ArrayList<>(classElement.getOwnedAttributes())) {
             Object visitedProperty = doSwitch(property);
             Verify.verifyNotNull(visitedProperty, "Unsupported class property: " + property);
             String propertyName = property.getName();
@@ -82,7 +83,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         }
 
         // Visit all class behaviors and check (local) uniqueness of their names.
-        for (Behavior behavior: classElement.getOwnedBehaviors()) {
+        for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
             Object visitedBehavior = doSwitch(behavior);
             Verify.verifyNotNull(visitedBehavior, "Unsupported class behavior: " + behavior);
             String behaviorName = behavior.getName();
@@ -132,7 +133,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                 "Expected enumerations to have at least one literal.");
 
         // Visit all enumeration literals.
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+        for (EnumerationLiteral literal: new ArrayList<>(enumeration.getOwnedLiterals())) {
             Object visitedLiteral = doSwitch(literal);
             Verify.verifyNotNull(visitedLiteral, "Unsupported enumeration literal: " + literal);
         }
@@ -189,13 +190,13 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                 "Expected activities to have exactly one initial node.");
 
         // Visit all activity nodes.
-        for (ActivityNode node: activity.getNodes()) {
+        for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             Object visitedNode = doSwitch(node);
             Verify.verifyNotNull(visitedNode, "Unsupported activity node: " + node);
         }
 
         // Visit all activity edges.
-        for (ActivityEdge edge: activity.getEdges()) {
+        for (ActivityEdge edge: new ArrayList<>(activity.getEdges())) {
             Object visitedEdge = doSwitch(edge);
             Verify.verifyNotNull(visitedEdge, "Unsupported activity edge: " + edge);
         }

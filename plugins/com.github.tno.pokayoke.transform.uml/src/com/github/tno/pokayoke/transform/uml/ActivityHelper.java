@@ -164,7 +164,7 @@ public class ActivityHelper {
         // Define the node that checks whether the lock is granted.
         OpaqueAction checkActiveNode = FileHelper.FACTORY.createOpaqueAction();
         checkActiveNode.setActivity(activity);
-        checkActiveNode.getBodies().add("active == '" + activityRequesterId.toString() + "'");
+        checkActiveNode.getBodies().add("__active == '" + activityRequesterId.toString() + "'");
         checkActiveNode.getLanguages().add("Python");
         OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
                 FileHelper.loadPrimitiveType("Boolean"));
@@ -195,7 +195,7 @@ public class ActivityHelper {
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
-        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard, effect);
+        String guardAndEffectBody = String.format("guard = %s\n%s\n__active = ''\nisSuccessful = guard", guard, effect);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
                 FileHelper.loadPrimitiveType("Boolean"));
@@ -265,7 +265,7 @@ public class ActivityHelper {
 
     /**
      * Creates an activity that handles lock acquisition, by listening for the specified acquire signal event and
-     * updating the shared variable 'active' accordingly, in a loop.
+     * updating the shared variable '__active' accordingly, in a loop.
      *
      * @param acquireEvent The acquire signal event to listen to.
      * @return The created lock handling activity.
@@ -327,7 +327,7 @@ public class ActivityHelper {
         setActiveNode.setActivity(activity);
         InputPin setActiveInput = setActiveNode.createInputValue(acquireParameter.getName(),
                 FileHelper.loadPrimitiveType("String"));
-        setActiveNode.getBodies().add("active = " + acquireParameter.getName());
+        setActiveNode.getBodies().add("__active = " + acquireParameter.getName());
         setActiveNode.getLanguages().add("Python");
 
         // Define the object flow between the lock handler node and the node that sets the active variable.
@@ -349,7 +349,7 @@ public class ActivityHelper {
         // Define the action that checks whether the lock has been released.
         OpaqueAction checkReleasedNode = FileHelper.FACTORY.createOpaqueAction();
         checkReleasedNode.setActivity(activity);
-        checkReleasedNode.getBodies().add("active == ''");
+        checkReleasedNode.getBodies().add("__active == ''");
         checkReleasedNode.getLanguages().add("Python");
         OutputPin checkReleasedOutput = checkReleasedNode.createOutputValue("isReleased",
                 FileHelper.loadPrimitiveType("Boolean"));

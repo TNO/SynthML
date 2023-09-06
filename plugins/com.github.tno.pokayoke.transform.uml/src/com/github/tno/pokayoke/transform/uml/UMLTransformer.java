@@ -11,8 +11,6 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
-import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
@@ -30,21 +28,15 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.UMLValidatorSwitch;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 /**
- * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
- * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
+ * Transforms UML models that are annotated with guards, effects, etc., to valid and executable UML, in the sense that
+ * all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
     private final Model model;
 
     private final String modelPath;
-
-    private final CifUpdateParser updateParser = new CifUpdateParser();
-
-    private final CifExpressionParser expressionParser = new CifExpressionParser();
 
     private final ModelTyping typing;
 
@@ -59,173 +51,157 @@ public class UMLTransformer {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new UMLTransformer(model, sourcePath).transformModel();
+        new UMLTransformer(model, sourcePath).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transformModel() {
-        // 1. Check whether the model has the expected structure and obtain relevant information from it.
-        new UMLValidatorSwitch().doSwitch(model);
-
-        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
-                "Expected no packaged element named 'Lock' to already exist.");
-
-        // Obtain the single class that should be defined within the model.
-        List<Class> modelClasses = model.getPackagedElements().stream().filter(s -> s instanceof Class)
-                .map(s -> (Class)s).toList();
-        Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
-        Class contextClass = modelClasses.get(0);
-
-        // Make sure the class does not contain an attribute named 'active'.
-        Preconditions.checkArgument(
-                contextClass.getOwnedAttributes().stream().noneMatch(a -> a.getName().equals("active")),
-                "Expected no attribute named 'active' to already exist in the single class of the model.");
-
-        // Obtain the activity that the single class within the model should have, as classifier behavior.
-        Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
-
-        // 2. Define locking infrastructure.
-
-        // Create a class for holding lock-related structure and behavior.
-        Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
-
+    public void transform() {
         // Create the signal for acquiring the lock.
         Signal acquireSignal = FileHelper.FACTORY.createSignal();
-        acquireSignal.setName("acquire");
+        acquireSignal.setName("__acquire");
         Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
         acquireParameter.setType(FileHelper.loadPrimitiveType("String"));
         acquireSignal.getOwnedAttributes().add(acquireParameter);
-        lockClass.getNestedClassifiers().add(acquireSignal);
 
         // Create the signal event for the acquire signal to trigger on.
         SignalEvent acquireEvent = FileHelper.FACTORY.createSignalEvent();
         acquireEvent.setSignal(acquireSignal);
         acquireEvent.setVisibility(VisibilityKind.PUBLIC_LITERAL);
-        model.getPackagedElements().add(acquireEvent);
 
         // Create the activity that handles lock acquisition.
         Activity lockHandlerActivity = ActivityHelper.createLockHanderActivity(acquireEvent);
-        lockHandlerActivity.setName("lockhandler");
+        lockHandlerActivity.setName("__lockhandler");
+
+        // Transform the classes and activities within the model.
+        new Transformer(acquireSignal, lockHandlerActivity).doSwitch(model);
+
+        // Create a class for holding lock-related structure and behavior defined earlier.
+        Class lockClass = (Class)model.createPackagedElement("__Lock", UMLPackage.eINSTANCE.getClass_());
+        lockClass.getNestedClassifiers().add(acquireSignal);
         lockClass.getOwnedBehaviors().add(lockHandlerActivity);
 
-        // 3. Transform the single class within the model.
+        // Add the lock acquire event defined earlier to the model.
+        model.getPackagedElements().add(acquireEvent);
+    }
 
-        // Create the static property that indicates the current owner of the lock (if any).
-        Property activeProperty = FileHelper.FACTORY.createProperty();
-        activeProperty.setIsStatic(true);
-        activeProperty.setName("active");
-        activeProperty.setType(FileHelper.loadPrimitiveType("String"));
-        LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
-        activePropertyDefaultValue.setValue("");
-        activeProperty.setDefaultValue(activePropertyDefaultValue);
-        contextClass.getOwnedAttributes().add(activeProperty);
+    class Transformer extends UMLValidatorSwitch {
+        private final Signal acquireSignal;
 
-        // Transform all activity behaviors of the single class within the model.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                transformActivity(activity, acquireSignal);
+        private final Activity lockHandlerActivity;
+
+        private final CifUpdateParser updateParser = new CifUpdateParser();
+
+        private final CifExpressionParser expressionParser = new CifExpressionParser();
+
+        Transformer(Signal acquireSignal, Activity lockHandlerActivity) {
+            this.acquireSignal = acquireSignal;
+            this.lockHandlerActivity = lockHandlerActivity;
+        }
+
+        @Override
+        public Object caseClass(Class classElement) {
+            Object visitedClassElement = super.caseClass(classElement);
+
+            // Create the static property that indicates the current owner of the lock (if any).
+            Property activeProperty = FileHelper.FACTORY.createProperty();
+            activeProperty.setIsStatic(true);
+            activeProperty.setName("__active");
+            activeProperty.setType(FileHelper.loadPrimitiveType("String"));
+            LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
+            activePropertyDefaultValue.setValue("");
+            activeProperty.setDefaultValue(activePropertyDefaultValue);
+            classElement.getOwnedAttributes().add(activeProperty);
+
+            // Obtain the classifier behavior of the class to transform, by adding a call to the lock handler to it.
+            Activity classifierBehavior = (Activity)classElement.getClassifierBehavior();
+
+            // Obtain the single initial node of the classified behavior.
+            InitialNode initialNode = classifierBehavior.getNodes().stream().filter(n -> n instanceof InitialNode)
+                    .map(n -> (InitialNode)n).findAny().get();
+
+            // Create a fork node to start the lock handler in parallel to the rest of the classified behavior.
+            ForkNode forkNode = FileHelper.FACTORY.createForkNode();
+            forkNode.setActivity(classifierBehavior);
+
+            // Relocate all outgoing edges out of the initial node to go out of the fork node instead.
+            for (ActivityEdge edge: new ArrayList<>(initialNode.getOutgoings())) {
+                edge.setSource(forkNode);
             }
+
+            // Add an edge between the initial node and the new fork node.
+            ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
+            initToForkFlow.setActivity(classifierBehavior);
+            initToForkFlow.setSource(initialNode);
+            initToForkFlow.setTarget(forkNode);
+
+            // Define the action that calls the lock handler.
+            CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
+            lockHandlerNode.setActivity(classifierBehavior);
+            lockHandlerNode.setBehavior(lockHandlerActivity);
+
+            // Define the control flow from the new fork node to the node that calls the lock handler.
+            ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
+            forkToLockHandlerFlow.setActivity(classifierBehavior);
+            forkToLockHandlerFlow.setSource(forkNode);
+            forkToLockHandlerFlow.setTarget(lockHandlerNode);
+
+            return visitedClassElement;
         }
 
-        // 4. Transform the classifier behavior (i.e., main activity) of the single class within the model.
-
-        // Obtain the single initial node of the main activity.
-        List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
-                .map(n -> (InitialNode)n).toList();
-        InitialNode initialNode = initialNodes.get(0);
-
-        // Create a fork node to start the lock handler in parallel to the rest of the main activity.
-        ForkNode forkNode = FileHelper.FACTORY.createForkNode();
-        forkNode.setActivity(mainActivity);
-
-        // Relocate all outgoing edges out of the initial node to go out of the fork node instead.
-        for (ActivityEdge edge: new ArrayList<>(initialNode.getOutgoings())) {
-            edge.setSource(forkNode);
+        @Override
+        public Object caseActivity(Activity activity) {
+            UMLActivityUtils.removeIrrelevantInformation(activity);
+            return super.caseActivity(activity);
         }
 
-        // Add an edge between the initial node and the new fork node.
-        ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
-        initToForkFlow.setActivity(mainActivity);
-        initToForkFlow.setSource(initialNode);
-        initToForkFlow.setTarget(forkNode);
+        @Override
+        public Object caseOpaqueAction(OpaqueAction action) {
+            Activity activity = action.getActivity();
 
-        // Define the action that calls the lock handler.
-        CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
-        lockHandlerNode.setActivity(mainActivity);
-        lockHandlerNode.setBehavior(lockHandlerActivity);
+            // Extract the guard of the action, if any, to be encoded later.
+            // If the action has at least one body, then parse the first body, which is assumed to be its guard.
+            List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
+                    .map(b -> translator.translateExpression(b)).toList();
 
-        // Define the control flow from the new fork node to the node that calls the lock handler.
-        ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
-        forkToLockHandlerFlow.setActivity(mainActivity);
-        forkToLockHandlerFlow.setSource(forkNode);
-        forkToLockHandlerFlow.setTarget(lockHandlerNode);
-    }
+            // Extract the effects of the action, if any, to be encoded later.
+            // Parse all bodies except the first one, all of which should be updates.
+            List<String> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
+                    .map(b -> translator.translateUpdate(b)).toList();
 
-    private void transformActivity(Activity activity, Signal acquireSignal) {
-        String activityName = activity.getName();
+            // Define a new activity that encodes the behavior of the action.
+            Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
+            actionActivity.setName(action.getName());
+            activity.getOwnedBehaviors().add(actionActivity);
 
-        Preconditions.checkArgument(model.getPackagedElement(activity.getName()) == null,
-                String.format("Expected the '%s' class to not already exist.", activityName));
+            // Define the call behavior action that replaces the action in the activity.
+            CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
+            replacementActionNode.setActivity(activity);
+            replacementActionNode.setBehavior(actionActivity);
+            replacementActionNode.setName(action.getName());
 
-        UMLActivityUtils.removeIrrelevantInformation(activity);
-
-        // Create a separate class in which all new behaviors for the activity are stored.
-        Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
-
-        // Transform all opaque action nodes of the activity.
-        for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
-            if (node instanceof OpaqueAction opaqueActionNode) {
-                transformOpaqueAction(activityClass, activity, opaqueActionNode, acquireSignal);
+            // Relocate all incoming edges into the action to the replacement action.
+            for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
+                edge.setTarget(replacementActionNode);
             }
-        }
-    }
 
-    private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action,
-            Signal acquireSignal)
-    {
-        // Extract the guard of the action, if any, to be encoded later.
-        // If the action has at least one body, then parse the first body, which is assumed to be its guard.
-        List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
-                .map(b -> translator.translateExpression(b)).toList();
+            // Relocate all outgoing edges out of the action to the replacement action.
+            for (ActivityEdge edge: new ArrayList<>(action.getOutgoings())) {
+                edge.setSource(replacementActionNode);
+            }
 
-        // Extract the effects of the action, if any, to be encoded later.
-        // Parse all bodies except the first one, all of which should be updates.
-        List<String> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
-                .map(b -> translator.translateUpdate(b)).toList();
+            // Remove the old action that is now replaced.
+            action.destroy();
 
-        // Define a new activity that encodes the behavior of the action.
-        Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
-        actionActivity.setName(action.getName());
-        Verify.verify(activityClass.getOwnedBehavior(action.getName()) == null,
-                String.format("Expected the '%s' activity to not already exist.", action.getName()));
-        activityClass.getOwnedBehaviors().add(actionActivity);
-
-        // Define the call behavior action that replaces the action in the activity.
-        CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
-        replacementActionNode.setActivity(activity);
-        replacementActionNode.setBehavior(actionActivity);
-        replacementActionNode.setName(action.getName());
-
-        // Relocate all incoming edges into the action to the replacement action.
-        for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
-            edge.setTarget(replacementActionNode);
+            return doSwitch(replacementActionNode);
         }
 
-        // Relocate all outgoing edges out of the action to the replacement action.
-        for (ActivityEdge edge: new ArrayList<>(action.getOutgoings())) {
-            edge.setSource(replacementActionNode);
+        private AExpression parseExpression(String expression) {
+            return expressionParser.parseString(expression, modelPath);
         }
 
-        // Remove the old action that is now replaced.
-        action.destroy();
-    }
-
-    private AExpression parseExpression(String expression) {
-        return expressionParser.parseString(expression, modelPath);
-    }
-
-    private AUpdate parseUpdate(String update) {
-        return updateParser.parseString(update, modelPath);
+        private AUpdate parseUpdate(String update) {
+            return updateParser.parseString(update, modelPath);
+        }
     }
 }
