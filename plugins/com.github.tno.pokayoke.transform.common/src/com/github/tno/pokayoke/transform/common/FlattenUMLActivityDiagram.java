@@ -92,7 +92,6 @@ public class FlattenUMLActivityDiagram {
                             // of this edge is not a decision node.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
                             newEdge.setActivity(callBehaviorActionToReplace.getActivity());
-
                         }
                     }
 
