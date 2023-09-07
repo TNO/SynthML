@@ -216,7 +216,7 @@ public class UMLTransformer {
     }
 
     /**
-     * Get the nested classes that are not activities of the model.
+     * Get the nested non-activity classes of the model.
      *
      * @param model Model
      * @return List containing the nested classes that are not activities of the provided model.
