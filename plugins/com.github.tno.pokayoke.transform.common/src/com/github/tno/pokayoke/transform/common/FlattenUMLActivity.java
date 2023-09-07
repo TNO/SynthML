@@ -15,7 +15,6 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.PackageableElement;
 
 import com.google.common.base.Verify;
 
@@ -30,44 +29,16 @@ public class FlattenUMLActivity {
         FileHelper.storeModel(model, targetPath);
     }
 
-    /**
-     * Flattens all activities within the given model.
-     *
-     * @param model The non-{@code null} model whose activities to flatten.
-     */
     public static void transformModel(Model model) {
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Activity activity) {
-                transformActivity(activity);
-            } else if (element instanceof Class modelClass) {
-                transformClass(modelClass);
-            } else if (element instanceof Model modelElement) {
-                transformModel(modelElement);
-            }
-        }
-    }
-
-    /**
-     * Flattens all activities within the given class.
-     *
-     * @param modelClass The non-{@code null} class whose activities to flatten.
-     */
-    public static void transformClass(Class modelClass) {
-        for (Behavior behavior: new ArrayList<>(modelClass.getOwnedBehaviors())) {
+        // Extract activities.
+        Class contextClass = (Class)model.getMember("Context");
+        // Transform all activity behaviors of 'contextClass'.
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 flattenActivity(activity, null);
                 UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
-    }
-
-    /**
-     * Recursively flattens the given activity.
-     *
-     * @param activity The non-{@code null} activity to flatten.
-     */
-    public static void transformActivity(Activity activity) {
-        flattenActivity(activity, null);
     }
 
     /**
@@ -77,7 +48,7 @@ public class FlattenUMLActivity {
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
      *     when it is called to flatten the outer most activity.
      */
-    private static void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
+    public static void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
