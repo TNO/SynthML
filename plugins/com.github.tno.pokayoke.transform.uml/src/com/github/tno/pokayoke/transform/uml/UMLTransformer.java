@@ -38,10 +38,7 @@ import com.google.common.base.Preconditions;
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
-    /**
-     * Name for the lock class.
-     *
-     */
+    /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
     private final Model model;
@@ -67,7 +64,7 @@ public class UMLTransformer {
         if (args.length == 2) {
             transformFile(args[0], args[1]);
         } else {
-            System.out.println("Exactly two arguments expected: a source path and a target path.");
+            throw new IOException("Exactly two arguments expected: a source path and a target path.");
         }
     }
 
@@ -148,7 +145,6 @@ public class UMLTransformer {
         // Obtain the single initial node of the main activity.
         final List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
                 .map(n -> (InitialNode)n).toList();
-        // TODO: Why isn't this checking part of step 1?
         Preconditions.checkArgument(initialNodes.size() == 1,
                 "Expected the classified behavior of the class of the model to have exactly one initial node.");
         final InitialNode initialNode = initialNodes.get(0);
@@ -184,7 +180,7 @@ public class UMLTransformer {
      * Get the nested activities of the model.
      *
      * @param model The model.
-
+     *
      * @return The nested activities of the provided model.
      */
     private List<Activity> getNestedActivitiesOf(Model model) {
@@ -220,7 +216,7 @@ public class UMLTransformer {
      *
      * @param model The model.
      * @return The nested non-activity classes of the provided model.
-
+     *
      */
     private List<Class> getNestedNonActivityClassesOf(Model model) {
         List<Class> returnValue = new ArrayList<>();
@@ -292,13 +288,15 @@ public class UMLTransformer {
         try {
             return expressionParser.parseString(expression, modelPath);
         } catch (ParseException pe) {
-            // TODO see https://github.com/TNO/PokaYoke/issues/25
-            System.err.println("Parsing of \"" + expression + "\" failed.");
-            throw pe;
+            throw new RuntimeException("Parsing of \"" + expression + "\" failed.", pe);
         }
     }
 
     private AUpdate parseUpdate(String update) {
-        return updateParser.parseString(update, modelPath);
+        try {
+            return updateParser.parseString(update, modelPath);
+        } catch (ParseException pe) {
+            throw new RuntimeException("Parsing of \"" + update + "\" failed.", pe);
+        }
     }
 }
