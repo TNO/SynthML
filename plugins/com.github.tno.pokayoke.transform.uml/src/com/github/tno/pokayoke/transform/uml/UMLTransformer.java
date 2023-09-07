@@ -202,7 +202,7 @@ public class UMLTransformer {
             }
 
             if (element instanceof Class cls) {
-                // Skip Class generated for lock.
+                // Skip class generated for lock.
                 if (!cls.getName().equals(LOCK_CLASS_NAME)) {
                     for (Behavior behavior: new ArrayList<>(cls.getOwnedBehaviors())) {
                         if (behavior instanceof Activity activity) {
