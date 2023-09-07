@@ -5,6 +5,7 @@
 Before setting up the development environment:
 
 * GitHub should correctly be set up regarding SSH keys (in order to check out the repository using SSH).
+  * Instructions for generating new SSH keys and adding them to your GitHub account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 
 ## Setup
 
