@@ -39,7 +39,7 @@ import com.google.common.base.Preconditions;
  */
 public class UMLTransformer {
     /**
-     * Class name for Lock.
+     * Name for the lock class.
      *
      */
     private static final String LOCK_CLASS_NAME = "Lock";
