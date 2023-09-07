@@ -185,7 +185,7 @@ public class UMLTransformer {
      *
      * @param model The model.
 
-     * @return List containing the nested activities of the provided model.
+     * @return The nested activities of the provided model.
      */
     private List<Activity> getNestedActivitiesOf(Model model) {
         List<Activity> returnValue = new ArrayList<>();
