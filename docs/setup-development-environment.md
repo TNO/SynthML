@@ -35,13 +35,13 @@ Use the following steps to set up an Eclipse development environment for Poka Yo
 2. Run the Eclipse Installer.
 3. Switch to Advanced mode, using the hamburger menu.
    * In case you haven't yet configured SSH keys, consider following the steps described above in the rerequisites, for generating SSH keys within the Eclipse installer.
-5. Select `Eclipse Platform`, `2023-06` and `JRE 17.* - https://download.eclipse.org/justj/jres/17/updates/release/latest`.
-6. Click `Next`.
-7. Use the green plus button to add `file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
+4. Select `Eclipse Platform`, `2023-06` and `JRE 17.* - https://download.eclipse.org/justj/jres/17/updates/release/latest`.
+5. Click `Next`.
+6. Use the green plus button to add `file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
   Choose `Catalog: Eclipse Projects` in the dropdown box.
-8. Select `PokaYoke` and press `Next`.
-9. Enable `Show all variables` and configure `Root install folder`, `Installation folder name`, `GitHub account full name` and `GitHub account email address`.
-10. Click `Next` and then click `Finish`.
-11. When the installer asks trusting licenses and content, accept all licenses and trust all content from all authorities.
+7. Select `PokaYoke` and press `Next`.
+8. Enable `Show all variables` and configure `Root install folder`, `Installation folder name`, `GitHub account full name` and `GitHub account email address`.
+9. Click `Next` and then click `Finish`.
+10. When the installer asks trusting licenses and content, accept all licenses and trust all content from all authorities.
   (Multiple such popups may appear.)
-12. Once the installer is done, and a new development environment is launched, click `Finish` in the installer to close it.
+11. Once the installer is done, and a new development environment is launched, click `Finish` in the installer to close it.
