@@ -189,16 +189,5 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <!-- Use more recent Maven Plugin plugin. Otherwise building Maven plugins fails. -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.8.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 </project>
