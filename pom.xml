@@ -18,8 +18,6 @@
         <maven.compiler.source>${pokayoke.java.version}</maven.compiler.source>
         <maven.compiler.target>${pokayoke.java.version}</maven.compiler.target>
         <maven.compiler.release>${pokayoke.java.version}</maven.compiler.release>
-        <maven.minimal.version>3.9.0</maven.minimal.version>
-        <maven.enforcer.version>3.0.0</maven.enforcer.version>
         <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
