@@ -49,10 +49,10 @@ public class FlattenUMLActivity {
         }
 
         // Check if double underscore is used in the names of any model elements.
-        Preconditions.checkArgument(!FlatteningHelper.isDoubleUnderscoreUsed(model),
+        Preconditions.checkArgument(!NameIDTracingHelper.isDoubleUnderscoreUsed(model),
                 "Expected double underscores to not be used in the names of model elements.");
 
-        // Transform all activity behaviors of 'contextClass'.
+        // Transform all activity behaviors of context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 String activityID = activity.eResource().getURIFragment(activity);
@@ -62,7 +62,7 @@ public class FlattenUMLActivity {
         }
 
         // Make sure that the element names of the model are unique. Duplicated names get a postfix.
-        FlatteningHelper.ensureUniquenessOfNames(model);
+        NameIDTracingHelper.ensureUniquenessOfNames(model);
     }
 
     /**
@@ -87,17 +87,17 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Check if the activity has been visited. If it is not visited, the name and ID of model objects are
-        // added with the absolute name as prefix.
+        // Check if the activity has been visited. If not, the name and ID of model objects are added with the absolute
+        // name and ID as prefix.
         if (!VISITED_ACTIVITIES.contains(childBehavior)) {
             for (ActivityNode node: childBehavior.getNodes()) {
-                FlatteningHelper.setName(node, absoluteName, node.eClass().getName());
-                FlatteningHelper.setTracingComment(node, absoluteID, "Unique-ID:");
+                NameIDTracingHelper.setName(node, absoluteName, node.eClass().getName());
+                NameIDTracingHelper.setTracingComment(node, absoluteID, "Unique-ID:");
             }
 
             for (ActivityEdge edge: childBehavior.getEdges()) {
-                FlatteningHelper.setName(edge, absoluteName, "ActivityEdge");
-                FlatteningHelper.setTracingComment(edge, absoluteID, "Unique-ID:");
+                NameIDTracingHelper.setName(edge, absoluteName, "ActivityEdge");
+                NameIDTracingHelper.setTracingComment(edge, absoluteID, "Unique-ID:");
             }
         }
 
@@ -108,17 +108,17 @@ public class FlattenUMLActivity {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
             // Give the call behavior action a unique name.
-            String callBehaviorActionPrefix = FlatteningHelper.getNameOfObject("CallBehaviorAction");
+            String callBehaviorActionPrefix = NameIDTracingHelper.getNameOfObject("CallBehaviorAction");
 
             // Append the name of the call behavior action to the name of all elements in the activity.
-            FlatteningHelper.appendCallBehaviorActionName(childBehaviorCopy, callBehaviorActionPrefix);
+            NameIDTracingHelper.appendCallBehaviorActionName(childBehaviorCopy, callBehaviorActionPrefix);
 
             // Extract the ID of the call behavior action.
             String callBehaviorActionID = callBehaviorActionToReplace.eResource()
                     .getURIFragment(callBehaviorActionToReplace);
 
             // Append the ID of the call behavior action to the tracing comment of all elements in the activity.
-            FlatteningHelper.appendCallBehaviorActionID(childBehaviorCopy, callBehaviorActionID, "Unique-ID:");
+            NameIDTracingHelper.appendCallBehaviorActionID(childBehaviorCopy, callBehaviorActionID, "Unique-ID:");
 
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
@@ -155,7 +155,7 @@ public class FlattenUMLActivity {
 
                             // Add the ID of the edge in the outer activity (e.g., the incoming edge of the initial
                             // node) to the tracing comment of the newly added edge.
-                            FlatteningHelper.addTracingComment(newEdge,
+                            NameIDTracingHelper.addTracingComment(newEdge,
                                     incomingEdge.eResource().getURIFragment(incomingEdge), "Outer-Edge-Unique-ID:");
 
                             // Add the concatenation of the ID of the edge in the inner activity (e.g., the outgoing
@@ -164,7 +164,7 @@ public class FlattenUMLActivity {
                             String innerEdgeID = callBehaviorActionID + "__"
                                     + childBehavior.eResource().getURIFragment(childBehavior) + "__"
                                     + outgoingEdge.eResource().getURIFragment(outgoingEdge);
-                            FlatteningHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
+                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
                         }
                     }
 
@@ -200,7 +200,7 @@ public class FlattenUMLActivity {
 
                             // Add the ID of the edge in the outer activity (e.g., the outgoing edge of the final
                             // node) to the comment of the newly added edge.
-                            FlatteningHelper.addTracingComment(newEdge,
+                            NameIDTracingHelper.addTracingComment(newEdge,
                                     outgoingEdge.eResource().getURIFragment(outgoingEdge), "Outer-Edge-Unique-ID:");
 
                             // Add the concatenation of the ID of the edge in the inner activity (e.g., the incoming
@@ -209,7 +209,7 @@ public class FlattenUMLActivity {
                             String innerEdgeID = callBehaviorActionID + "__"
                                     + childBehavior.eResource().getURIFragment(childBehavior) + "__"
                                     + incomingEdge.eResource().getURIFragment(incomingEdge);
-                            FlatteningHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
+                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
                         }
                     }
 

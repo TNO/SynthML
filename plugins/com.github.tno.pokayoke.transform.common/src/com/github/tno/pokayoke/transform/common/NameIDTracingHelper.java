@@ -16,14 +16,15 @@ import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 
-public class FlatteningHelper {
+/** Helper class for renaming and tracing model elements in activities. */
+public class NameIDTracingHelper {
     private static final List<String> OBJECT_TYPE = List.of("MergeNode", "ForkNode", "JoinNode", "DecisionNode",
             "CallBehaviorAction", "InitialNode", "FlowFinalNode", "ActivityFinalNode", "OpaqueAction", "ActivityEdge");
 
     private static final Map<String, Integer> OBJECT_COUNT = OBJECT_TYPE.stream()
             .collect(Collectors.toMap(key -> key, key -> 0));
 
-    private FlatteningHelper() {
+    private NameIDTracingHelper() {
     }
 
     /**
@@ -34,17 +35,17 @@ public class FlatteningHelper {
      * @param className The class name of this element.
      */
     public static void setName(NamedElement element, String prefix, String className) {
-        if (!FlatteningHelper.isNamed(element)) {
-            FlatteningHelper.addName(element, className);
+        if (!NameIDTracingHelper.isNamed(element)) {
+            NameIDTracingHelper.addName(element, className);
         }
-        FlatteningHelper.appendPrefix(element, prefix);
+        NameIDTracingHelper.appendPrefixName(element, prefix);
     }
 
     /**
      * Gets a unique name for an object.
      *
      * @param className The class name of the object.
-     * @return A unique name of the object.
+     * @return A unique name for the object.
      */
     public static String getNameOfObject(String className) {
         String name = className + "_" + String.valueOf(OBJECT_COUNT.get(className) + 1);
@@ -62,11 +63,11 @@ public class FlatteningHelper {
      */
     public static void appendCallBehaviorActionName(Activity childBehavior, String name) {
         for (ActivityNode node: childBehavior.getNodes()) {
-            appendPrefix(node, name);
+            appendPrefixName(node, name);
         }
 
         for (ActivityEdge edge: childBehavior.getEdges()) {
-            appendPrefix(edge, name);
+            appendPrefixName(edge, name);
         }
     }
 
@@ -78,11 +79,11 @@ public class FlatteningHelper {
      * @param tracingCommentIdentifier The identifier that distinguishes tracing comments from user comments.
      */
     public static void setTracingComment(NamedElement element, String prefix, String tracingCommentIdentifier) {
-        if (!FlatteningHelper.isTracingCommentExist(element, tracingCommentIdentifier)) {
+        if (!NameIDTracingHelper.isTracingCommentExist(element, tracingCommentIdentifier)) {
             String id = element.eResource().getURIFragment(element);
-            FlatteningHelper.addTracingComment(element, id, tracingCommentIdentifier);
+            NameIDTracingHelper.addTracingComment(element, id, tracingCommentIdentifier);
         }
-        FlatteningHelper.appendPrefixToTracingComment(element, prefix, tracingCommentIdentifier);
+        NameIDTracingHelper.appendPrefixID(element, prefix, tracingCommentIdentifier);
     }
 
     /**
@@ -108,11 +109,11 @@ public class FlatteningHelper {
      */
     public static void appendCallBehaviorActionID(Activity childBehavior, String id, String tracingCommentIdentifier) {
         for (ActivityNode node: childBehavior.getNodes()) {
-            appendPrefixToTracingComment(node, id, tracingCommentIdentifier);
+            appendPrefixID(node, id, tracingCommentIdentifier);
         }
 
         for (ActivityEdge edge: childBehavior.getEdges()) {
-            appendPrefixToTracingComment(edge, id, tracingCommentIdentifier);
+            appendPrefixID(edge, id, tracingCommentIdentifier);
         }
     }
 
@@ -121,10 +122,10 @@ public class FlatteningHelper {
     }
 
     private static void addName(NamedElement element, String className) {
-        element.setName(FlatteningHelper.getNameOfObject(className));
+        element.setName(NameIDTracingHelper.getNameOfObject(className));
     }
 
-    private static void appendPrefix(NamedElement element, String prefix) {
+    private static void appendPrefixName(NamedElement element, String prefix) {
         element.setName(prefix + "__" + element.getName());
     }
 
@@ -133,7 +134,7 @@ public class FlatteningHelper {
                 .size() != 0;
     }
 
-    private static void appendPrefixToTracingComment(NamedElement element, String absoluteID,
+    private static void appendPrefixID(NamedElement element, String absoluteID,
             String tracingCommentIdentifier)
     {
         List<Comment> comments = element.getOwnedComments().stream()
