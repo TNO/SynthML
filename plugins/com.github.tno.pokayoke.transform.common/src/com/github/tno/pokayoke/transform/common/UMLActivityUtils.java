@@ -7,7 +7,7 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 
-/** Utils that process UML activity. */
+/** Utils that process UML activities. */
 public class UMLActivityUtils {
     private UMLActivityUtils() {
     }
@@ -30,7 +30,7 @@ public class UMLActivityUtils {
             if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
                     && literal.isValue())
             {
-                edge.setGuard(null);
+                edge.getGuard();
             }
         }
     }

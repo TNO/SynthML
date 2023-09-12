@@ -24,7 +24,7 @@ import com.google.common.base.Verify;
 public class FlattenUMLActivity {
     private final Model model;
 
-    private static final List<Activity> VISITED_ACTIVITIES = new ArrayList<>();
+    private final List<Activity> VISITED_ACTIVITIES = new ArrayList<>();
 
     public FlattenUMLActivity(Model model) {
         this.model = model;
@@ -40,7 +40,7 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // Clean the relevant info from edges so that double underscore does not exist in the default name of Boolean
+        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
         // literal of guards on edges.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
@@ -48,11 +48,11 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Check if double underscore is used in the names of any model elements.
+        // Check if double underscores are used in the names of any model elements.
         Preconditions.checkArgument(!NameIDTracingHelper.isDoubleUnderscoreUsed(model),
                 "Expected double underscores to not be used in the names of model elements.");
 
-        // Transform all activity behaviors of context class.
+        // Transform all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 String activityID = activity.eResource().getURIFragment(activity);
@@ -61,7 +61,7 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Make sure that the element names of the model are unique. Duplicated names get a postfix.
+        // Make sure that the element names of the model are unique. Duplicate names get a postfix.
         NameIDTracingHelper.ensureUniquenessOfNames(model);
     }
 
@@ -78,6 +78,7 @@ public class FlattenUMLActivity {
     public void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace,
             String absoluteName, String absoluteID)
     {
+        // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
                 Behavior childActivity = actionNode.getBehavior();
