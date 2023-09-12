@@ -14,7 +14,10 @@
     <description>Poka Yoke</description>
 
     <properties>
-        <java.version>17</java.version>
+        <pokayoke.java.version>17</pokayoke.java.version>
+        <maven.compiler.source>${pokayoke.java.version}</maven.compiler.source>
+        <maven.compiler.target>${pokayoke.java.version}</maven.compiler.target>
+        <maven.compiler.release>${pokayoke.java.version}</maven.compiler.release>
         <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
@@ -75,6 +78,14 @@
                 <version>${tycho.version}</version>
             </plugin>
 
+            <!-- Prevent warnings for projects with multiple source directories. -->
+            <!-- See also https://github.com/eclipse-tycho/tycho/discussions/2717. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+
             <!-- Configure packaging of JARs. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -123,6 +134,59 @@
                     <!-- For building and using Maven plugins during the build. -->
                     <pomDependencies>consider</pomDependencies>
                 </configuration>
+            </plugin>
+
+            <!-- Enable source bundles/features. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-source-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                    <missingSourcesAction>FAIL</missingSourcesAction>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>plugin-source</id>
+                        <goals>
+                            <goal>plugin-source</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>feature-source</id>
+                        <goals>
+                            <goal>feature-source</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- The following is needed for generated source features that are part of an update site. -->
+            <!-- Tycho will warn about this if not configured. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <!-- Don't attach (default) metadata before the source-feature execution. -->
+                        <id>default-p2-metadata-default</id>
+                        <configuration>
+                            <attachP2Metadata>false</attachP2Metadata>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Do attach metadata after the source-feature execution. -->
+                        <id>attach-p2-metadata</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
