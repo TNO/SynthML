@@ -74,7 +74,7 @@ public class CifToPythonTranslator {
         } else if (modelTyping.isVariable(name)) {
             return name;
         } else {
-            throw new RuntimeException("Unsupported name expression: " + expr + " " + name);
+            throw new RuntimeException("Unsupported name expression: expr='" + expr + "' name='" + name + "'");
         }
     }
 

@@ -81,10 +81,10 @@ public class UMLTransformer {
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        final List<Class> modelNestedClasses = getNestedNonActivityClassesOf(model);
+        List<Class> modelNestedClasses = getNestedNonActivityClassesOf(model);
         Preconditions.checkArgument(modelNestedClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
-        final Class contextClass = modelNestedClasses.get(0);
+        Class contextClass = modelNestedClasses.get(0);
 
         // Make sure the class does not contain an attribute named 'active'.
         Preconditions.checkArgument(
@@ -96,41 +96,41 @@ public class UMLTransformer {
                 "Expected the single class within the model to have a classifier behavior.");
         Preconditions.checkArgument(contextClass.getClassifierBehavior() instanceof Activity,
                 "Expected the classifier behavior of the single class within the model to be an activity.");
-        final Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
+        Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
 
         // 2. Define locking infrastructure.
 
         // Create a class for holding lock-related structure and behavior.
-        final Class lockClass = (Class)model.createPackagedElement(LOCK_CLASS_NAME, UMLPackage.eINSTANCE.getClass_());
+        Class lockClass = (Class)model.createPackagedElement(LOCK_CLASS_NAME, UMLPackage.eINSTANCE.getClass_());
 
         // Create the signal for acquiring the lock.
-        final Signal acquireSignal = FileHelper.FACTORY.createSignal();
+        Signal acquireSignal = FileHelper.FACTORY.createSignal();
         acquireSignal.setName("acquire");
-        final Property acquireParameter = FileHelper.FACTORY.createProperty();
+        Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
         acquireParameter.setType(FileHelper.loadPrimitiveType("String"));
         acquireSignal.getOwnedAttributes().add(acquireParameter);
         lockClass.getNestedClassifiers().add(acquireSignal);
 
         // Create the signal event for the acquire signal to trigger on.
-        final SignalEvent acquireEvent = FileHelper.FACTORY.createSignalEvent();
+        SignalEvent acquireEvent = FileHelper.FACTORY.createSignalEvent();
         acquireEvent.setSignal(acquireSignal);
         acquireEvent.setVisibility(VisibilityKind.PUBLIC_LITERAL);
         model.getPackagedElements().add(acquireEvent);
 
         // Create the activity that handles lock acquisition.
-        final Activity lockHandlerActivity = ActivityHelper.createLockHanderActivity(acquireEvent);
+        Activity lockHandlerActivity = ActivityHelper.createLockHanderActivity(acquireEvent);
         lockHandlerActivity.setName("lockhandler");
         lockClass.getOwnedBehaviors().add(lockHandlerActivity);
 
         // 3. Transform the single class within the model.
 
         // Create the static property that indicates the current owner of the lock (if any).
-        final Property activeProperty = FileHelper.FACTORY.createProperty();
+        Property activeProperty = FileHelper.FACTORY.createProperty();
         activeProperty.setIsStatic(true);
         activeProperty.setName("active");
         activeProperty.setType(FileHelper.loadPrimitiveType("String"));
-        final LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
+        LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
         activePropertyDefaultValue.setValue("");
         activeProperty.setDefaultValue(activePropertyDefaultValue);
         contextClass.getOwnedAttributes().add(activeProperty);
@@ -143,14 +143,14 @@ public class UMLTransformer {
         // 4. Transform the classifier behavior (i.e., main activity) of the single class within the model.
 
         // Obtain the single initial node of the main activity.
-        final List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
+        List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
                 .map(n -> (InitialNode)n).toList();
         Preconditions.checkArgument(initialNodes.size() == 1,
                 "Expected the classified behavior of the class of the model to have exactly one initial node.");
-        final InitialNode initialNode = initialNodes.get(0);
+        InitialNode initialNode = initialNodes.get(0);
 
         // Create a fork node to start the lock handler in parallel to the rest of the main activity.
-        final ForkNode forkNode = FileHelper.FACTORY.createForkNode();
+        ForkNode forkNode = FileHelper.FACTORY.createForkNode();
         forkNode.setActivity(mainActivity);
 
         // Relocate all outgoing edges out of the initial node to go out of the fork node instead.
@@ -159,18 +159,18 @@ public class UMLTransformer {
         }
 
         // Add an edge between the initial node and the new fork node.
-        final ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
+        ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
         initToForkFlow.setActivity(mainActivity);
         initToForkFlow.setSource(initialNode);
         initToForkFlow.setTarget(forkNode);
 
         // Define the action that calls the lock handler.
-        final CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
+        CallBehaviorAction lockHandlerNode = FileHelper.FACTORY.createCallBehaviorAction();
         lockHandlerNode.setActivity(mainActivity);
         lockHandlerNode.setBehavior(lockHandlerActivity);
 
         // Define the control flow from the new fork node to the node that calls the lock handler.
-        final ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
+        ControlFlow forkToLockHandlerFlow = FileHelper.FACTORY.createControlFlow();
         forkToLockHandlerFlow.setActivity(mainActivity);
         forkToLockHandlerFlow.setSource(forkNode);
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
@@ -200,7 +200,7 @@ public class UMLTransformer {
             if (element instanceof Class cls) {
                 // Skip class generated for lock.
                 if (!cls.getName().equals(LOCK_CLASS_NAME)) {
-                    for (Behavior behavior: new ArrayList<>(cls.getOwnedBehaviors())) {
+                    for (Behavior behavior: cls.getOwnedBehaviors()) {
                         if (behavior instanceof Activity activity) {
                             returnValue.add(activity);
                         }
@@ -232,7 +232,7 @@ public class UMLTransformer {
     }
 
     private void transformActivity(Activity activity, Signal acquireSignal) {
-        final String activityName = activity.getName();
+        String activityName = activity.getName();
 
         Preconditions.checkArgument(model.getPackagedElement(activityName) == null,
                 String.format("Expected the '%s' class to not already exist.", activityName));
@@ -260,7 +260,7 @@ public class UMLTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
-        final String actionName = action.getName();
+        String actionName = action.getName();
         newActivity.setName(actionName);
 
         // Define the call behavior action that replaces the action in the activity.
