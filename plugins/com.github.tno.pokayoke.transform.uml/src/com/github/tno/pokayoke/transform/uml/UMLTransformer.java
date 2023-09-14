@@ -180,7 +180,6 @@ public class UMLTransformer {
      * Get the nested activities of the model.
      *
      * @param model The model.
-     *
      * @return The nested activities of the provided model.
      */
     private List<Activity> getNestedActivitiesOf(Model model) {
