@@ -1,59 +1,192 @@
 
 package com.github.tno.pokayoke.transform.common;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Property;
 
 /** Helper class for renaming and tracing model elements in activities. */
 public class NameIDTracingHelper {
-    private static final List<String> OBJECT_TYPE = List.of("MergeNode", "ForkNode", "JoinNode", "DecisionNode",
-            "CallBehaviorAction", "InitialNode", "FlowFinalNode", "ActivityFinalNode", "OpaqueAction", "ActivityEdge");
-
-    private static final Map<String, Integer> OBJECT_COUNT = OBJECT_TYPE.stream()
-            .collect(Collectors.toMap(key -> key, key -> 0));
-
-    private final String tracingCommentIdentifier;
-
-    public NameIDTracingHelper(String tracingCommentIdentifier) {
-        this.tracingCommentIdentifier = tracingCommentIdentifier;
+    private NameIDTracingHelper() {
     }
 
     /**
-     * Sets the name of a model element with a prefix name.
+     * Gives name to all model elements.
      *
-     * @param element The model element to be updated.
-     * @param prefix The prefix name of the model element.
-     * @param className The class name of this element.
+     * @param model The model.
      */
-    public static void setName(NamedElement element, String prefix, String className) {
-        if (!NameIDTracingHelper.isNamed(element)) {
-            NameIDTracingHelper.addName(element, className);
+    public static void giveNameToModelElements(Model model) {
+        TreeIterator<EObject> iterator = model.eAllContents();
+        while (iterator.hasNext()) {
+            EObject eObject = iterator.next();
+            if (eObject instanceof NamedElement namedElement) {
+                String name = namedElement.getName();
+                if (name == null || name.isEmpty()) {
+                    namedElement.setName(namedElement.eClass().getName());
+                }
+            }
         }
-        NameIDTracingHelper.prependPrefixName(element, prefix);
     }
 
     /**
-     * Gets a unique name for an object.
+     * Ensures unique name for enumerations in a model.
      *
-     * @param className The class name of the object.
-     * @return A unique name for the object.
+     * @param model The model which contains enumerations.
      */
-    public static String getNameOfObject(String className) {
-        String name = className + "_" + String.valueOf(OBJECT_COUNT.get(className) + 1);
-        OBJECT_COUNT.put(className, OBJECT_COUNT.get(className) + 1);
-        return name;
+    public static void ensureUniqueNameForEnumerations(Model model) {
+        // Collect name of enumerations.
+        List<String> names = new ArrayList<>();
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration) {
+                names.add(member.getName());
+            }
+        }
+        // Ensure each enumeration has a unique local name within a set of enumerations.
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration) {
+                ensureUniqueNameForElement(member, names);
+            }
+        }
+    }
+
+    /**
+     * Ensures unique name for properties in a model.
+     *
+     * @param model The model which contains properties.
+     */
+    public static void ensureUniqueNameForProperties(Model model) {
+        // Collect name of properties.
+        List<String> names = new ArrayList<>();
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Property) {
+                names.add(member.getName());
+            }
+        }
+        // Ensure each property has a unique local name within a set of properties.
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Property) {
+                ensureUniqueNameForElement(member, names);
+            }
+        }
+    }
+
+    /**
+     * Ensures unique name for activities in a model.
+     *
+     * @param contextClass The context class where activities are found.
+     */
+    public static void ensureUniqueNameForActivities(Class contextClass) {
+        // Collect name of activities.
+        List<String> names = new ArrayList<>();
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity) {
+                names.add(behavior.getName());
+            }
+        }
+        // Ensure each activity has a unique local name within a set of activities.
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity) {
+                ensureUniqueNameForElement(behavior, names);
+            }
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all nodes and edges in a activity.
+     *
+     * @param activity The activity.
+     */
+    public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
+        // Collect name of nodes.
+        List<String> nodeNames = new ArrayList<>();
+        for (ActivityNode node: activity.getNodes()) {
+            nodeNames.add(node.getName());
+        }
+
+        // Ensure unique name for nodes.
+        for (ActivityNode node: activity.getNodes()) {
+            ensureUniqueNameForElement(node, nodeNames);
+        }
+
+        // Collect name of edges.
+        List<String> edgeNames = new ArrayList<>();
+        for (ActivityEdge edge: activity.getEdges()) {
+            edgeNames.add(edge.getName());
+        }
+
+        // Ensure unique name for edges.
+        for (ActivityEdge edge: activity.getEdges()) {
+            ensureUniqueNameForElement(edge, edgeNames);
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all enumeration literals in an enumeration.
+     *
+     * @param enumeration The enumeration.
+     */
+    public static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
+        // Collect name of enumeration literals.
+        List<String> names = new ArrayList<>();
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            names.add(literal.getName());
+        }
+
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            ensureUniqueNameForElement(literal, names);
+        }
+    }
+
+    /**
+     * Ensures that the name of an element has no duplications in the provided name space.
+     *
+     * @param elemet The element.
+     * @param names The name space.
+     */
+    private static void ensureUniqueNameForElement(NamedElement elemet, List<String> names) {
+        String originalName = elemet.getName();
+        int count = Collections.frequency(names, originalName);
+        // Rename the element if there are duplications.
+        if (count > 1) {
+            String newName = generateUniqueName(originalName, names);
+            names.remove(originalName);
+            names.add(newName);
+            elemet.setName(newName);
+        }
+    }
+
+    /**
+     * Generates a name that has no duplications in the provided name space by modifying the original name.
+     *
+     * @param originalName The original name.
+     * @param names The name space.
+     * @return A unique name.
+     */
+    private static String generateUniqueName(String originalName, List<String> names) {
+        int i = 1;
+        String generatedName = originalName + "_" + String.valueOf(i);
+        while (names.contains(generatedName)) {
+            i++;
+            generatedName = originalName + "_" + String.valueOf(i);
+        }
+
+        return generatedName;
     }
 
     /**
@@ -132,14 +265,6 @@ public class NameIDTracingHelper {
         return element.eResource().getURIFragment(element);
     }
 
-    private static boolean isNamed(NamedElement element) {
-        return element.getName() != null && !element.getName().isEmpty();
-    }
-
-    private static void addName(NamedElement element, String className) {
-        element.setName(NameIDTracingHelper.getNameOfObject(className));
-    }
-
     static void prependPrefixName(NamedElement element, String prefix) {
         element.setName(prefix + "__" + element.getName());
     }
@@ -202,12 +327,5 @@ public class NameIDTracingHelper {
                 }
             }
         }
-    }
-
-    /** Gets Tracing comment identifier.
-     * @return the tracingCommentIdentifier
-     */
-    public String getTracingCommentIdentifier() {
-        return tracingCommentIdentifier;
     }
 }

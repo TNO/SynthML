@@ -30,7 +30,7 @@ public class UMLActivityUtils {
             if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
                     && literal.isValue())
             {
-                edge.getGuard();
+                edge.setGuard(null);
             }
         }
     }

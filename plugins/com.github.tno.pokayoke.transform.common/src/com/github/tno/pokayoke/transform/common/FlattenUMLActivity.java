@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,10 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -55,9 +58,41 @@ public class FlattenUMLActivity {
         Preconditions.checkArgument(!NameIDTracingHelper.isDoubleUnderscoreUsed(model),
                 "Expected double underscores to not be used in the names of model elements.");
 
+        // Step 2: Give each element a name.
+        NameIDTracingHelper.giveNameToModelElements(model);
 
+        // Step 3: Ensure all names are locally unique within their scope.
+        // Ensure if each enumeration has a unique local name within a set of enumerations.
+        NameIDTracingHelper.ensureUniqueNameForEnumerations(model);
 
-        // Transform all activity behaviors of the context class.
+        // Ensure all literals in each enumeration have a unique local name.
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration enumeration) {
+                NameIDTracingHelper.ensureUniqueNameForEnumerationLiterals(enumeration);
+            }
+        }
+
+        // Ensure each property has a unique name within a set of properties.
+        NameIDTracingHelper.ensureUniqueNameForProperties(model);
+
+        // Ensure each activity has unique name within a set of activities.
+        NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
+
+        // Ensure all elements in each activity have a local unique name.
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+            if (behavior instanceof Activity activity) {
+                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
+            }
+        }
+
+//        // Step 4: Give every element an id.
+//        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+//            if (behavior instanceof Activity activity) {
+//                NameIDTracingHelper.giveIDtoModelElements(model);
+//            }
+//        }
+
+        // Step 5: Flatten all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 String activityID = NameIDTracingHelper.getID(activity);
@@ -66,7 +101,7 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Make sure that the element names of the model are unique. Duplicate names get a postfix.
+        // Step 6: Make sure that the element names of the model are unique globally.
         NameIDTracingHelper.ensureUniquenessOfNames(model);
     }
 
@@ -94,32 +129,18 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Check if the activity has been visited. If not, the name and ID of model objects are added with the absolute
-        // name and ID as prefix.
-        if (!visitedActivities.contains(childBehavior)) {
-            for (ActivityNode node: childBehavior.getNodes()) {
-                NameIDTracingHelper.setName(node, absoluteName, node.eClass().getName());
-                NameIDTracingHelper.setTracingComment(node, absoluteID, "Unique-ID:");
-            }
-
-            for (ActivityEdge edge: childBehavior.getEdges()) {
-                NameIDTracingHelper.setName(edge, absoluteName, "ActivityEdge");
-                NameIDTracingHelper.setTracingComment(edge, absoluteID, "Unique-ID:");
-            }
-        }
-
         // Replace the call behavior action with the objects of this activity. repend the name and ID of the call
         // behavior action to the name and tracing comment of objects in this activity, respectively. Connect the
         // objects properly to the outer activity.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
-            // Get a unique name for the call behavior action.
-            String callBehaviorActionPrefix = NameIDTracingHelper.getNameOfObject("CallBehaviorAction");
+//            // Get a unique name for the call behavior action.
+//            String callBehaviorActionPrefix = NameIDTracingHelper.getNameOfObject("CallBehaviorAction");
 
-            // Prepend the name of the call behavior action to the name of all elements in the activity.
-            NameIDTracingHelper.prependCallBehaviorActionNameToNodesAndEdgesInActivity(childBehaviorCopy,
-                    callBehaviorActionPrefix);
+//            // Prepend the name of the call behavior action to the name of all elements in the activity.
+//            NameIDTracingHelper.prependCallBehaviorActionNameToNodesAndEdgesInActivity(childBehaviorCopy,
+//                    callBehaviorActionPrefix);
 
             // Extract the ID of the call behavior action.
             String callBehaviorActionID = NameIDTracingHelper.getID(callBehaviorActionToReplace);
@@ -157,14 +178,14 @@ public class FlattenUMLActivity {
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
                             newEdge.setActivity(callBehaviorActionToReplace.getActivity());
 
-                            // Add name for the newly added edge.
-                            newEdge.setName(callBehaviorActionPrefix + "__" + childBehavior.getName()
-                                    + "__AddedIncomingEdge_" + String.valueOf(i++));
+//                            // Add name for the newly added edge.
+//                            newEdge.setName(callBehaviorActionPrefix + "__" + childBehavior.getName()
+//                                    + "__AddedIncomingEdge_" + String.valueOf(i++));
 
-                            // Add the ID of the edge in the outer activity (e.g., the incoming edge of the initial
-                            // node) to the tracing comment of the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, NameIDTracingHelper.getID(incomingEdge),
-                                    "Outer-Edge-Unique-ID:");
+//                            // Add the ID of the edge in the outer activity (e.g., the incoming edge of the initial
+//                            // node) to the tracing comment of the newly added edge.
+//                            NameIDTracingHelper.addTracingComment(newEdge, NameIDTracingHelper.getID(incomingEdge),
+//                                    "Outer-Edge-Unique-ID:");
 
                             // Add the concatenation of the ID of the edge in the inner activity (e.g., the outgoing
                             // edge of the initial node), the ID of its activity and the ID of the call behavior action
@@ -200,22 +221,22 @@ public class FlattenUMLActivity {
                             // We ignore the guard of the outgoing edge of the behavior action.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
                             newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+//
+//                            // Add name for the newly added edge.
+//                            newEdge.setName(callBehaviorActionPrefix + "__" + childBehavior.getName()
+//                                    + "__AddedOutgoingEdge_" + String.valueOf(i++));
+//
+//                            // Add the ID of the edge in the outer activity (e.g., the outgoing edge of the final
+//                            // node) to the comment of the newly added edge.
+//                            NameIDTracingHelper.addTracingComment(newEdge, NameIDTracingHelper.getID(outgoingEdge),
+//                                    "Outer-Edge-Unique-ID:");
 
-                            // Add name for the newly added edge.
-                            newEdge.setName(callBehaviorActionPrefix + "__" + childBehavior.getName()
-                                    + "__AddedOutgoingEdge_" + String.valueOf(i++));
-
-                            // Add the ID of the edge in the outer activity (e.g., the outgoing edge of the final
-                            // node) to the comment of the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, NameIDTracingHelper.getID(outgoingEdge),
-                                    "Outer-Edge-Unique-ID:");
-
-                            // Add the concatenation of the ID of the edge in the inner activity (e.g., the incoming
-                            // edge of the final node), the ID of its activity and the ID of its call behavior action to
-                            // the comment of the newly added edge.
-                            String innerEdgeID = callBehaviorActionID + "__" + NameIDTracingHelper.getID(childBehavior)
-                                    + "__" + NameIDTracingHelper.getID(incomingEdge);
-                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
+//                            // Add the concatenation of the ID of the edge in the inner activity (e.g., the incoming
+//                            // edge of the final node), the ID of its activity and the ID of its call behavior action to
+//                            // the comment of the newly added edge.
+//                            String innerEdgeID = callBehaviorActionID + "__" + NameIDTracingHelper.getID(childBehavior)
+//                                    + "__" + NameIDTracingHelper.getID(incomingEdge);
+//                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID, "Inner-Edge-Unique-ID:");
                         }
                     }
 
@@ -235,7 +256,5 @@ public class FlattenUMLActivity {
         }
     }
 
-    public static void main(String[] args) {
-        New fl
-    }
+
 }
