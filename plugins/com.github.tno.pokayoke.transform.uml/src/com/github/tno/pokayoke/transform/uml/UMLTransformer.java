@@ -31,6 +31,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
+import com.github.tno.pokayoke.transform.common.UMLValidatorSwitch;
 import com.google.common.base.Preconditions;
 
 /**
@@ -76,6 +77,7 @@ public class UMLTransformer {
 
     public void transformModel() {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
+        new UMLValidatorSwitch().doSwitch(model);
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
@@ -92,10 +94,6 @@ public class UMLTransformer {
                 "Expected no attribute named 'active' to already exist in the single class of the model.");
 
         // Obtain the activity that the single class within the model should have, as classifier behavior.
-        Preconditions.checkNotNull(contextClass.getClassifierBehavior(),
-                "Expected the single class within the model to have a classifier behavior.");
-        Preconditions.checkArgument(contextClass.getClassifierBehavior() instanceof Activity,
-                "Expected the classifier behavior of the single class within the model to be an activity.");
         Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
 
         // 2. Define locking infrastructure.
@@ -145,8 +143,6 @@ public class UMLTransformer {
         // Obtain the single initial node of the main activity.
         List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
                 .map(n -> (InitialNode)n).toList();
-        Preconditions.checkArgument(initialNodes.size() == 1,
-                "Expected the classified behavior of the class of the model to have exactly one initial node.");
         InitialNode initialNode = initialNodes.get(0);
 
         // Create a fork node to start the lock handler in parallel to the rest of the main activity.

@@ -6,8 +6,9 @@
 
     <parent>
         <groupId>com.github.tno.pokayoke</groupId>
-        <artifactId>com.github.tno.pokayoke.releng.root</artifactId>
+        <artifactId>com.github.tno.pokayoke.root</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>com.github.tno.pokayoke.releng.target</artifactId>

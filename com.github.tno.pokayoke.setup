@@ -8,235 +8,243 @@
     xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/pde/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/PDE.ecore http://www.eclipse.org/oomph/setup/projects/1.0 https://raw.githubusercontent.com/eclipse-oomph/oomph/master/setups/models/Projects.ecore"
     name="pokayoke"
     label="PokaYoke">
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="eclipse-checkstyle.version.major"
+      value="8"/>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="eclipse-checkstyle.version.minor"
+      value="41"/>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="eclipse.target.platform"
+      value="None"/>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="com.github.tno.pokayoke.git.clone.url"
+      defaultValue="git@github.com:TNO/PokaYoke.git"
+      label="PokaYoke Git clone URL"/>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="github.user.name"
+      label="GitHub account full name">
+    <annotation
+        source="http://www.eclipse.org/oomph/setup/GlobalVariable"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="github.user.email"
+      label="GitHub account email address">
+    <annotation
+        source="http://www.eclipse.org/oomph/setup/GlobalVariable"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="Global Preferences">
     <setupTask
-        xsi:type="setup:VariableTask"
-        name="eclipse-checkstyle.version.major"
-        value="8" />
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="eclipse-checkstyle.version.minor"
-        value="41" />
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="eclipse.target.platform"
-        value="None" />
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="com.github.tno.pokayoke.git.clone.url"
-        defaultValue="git@github.com:TNO/PokaYoke.git"
-        label="PokaYoke Git clone URL" />
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="github.user.name"
-        label="GitHub account full name">
-        <annotation
-            source="http://www.eclipse.org/oomph/setup/GlobalVariable" />
-    </setupTask>
-    <setupTask
-        xsi:type="setup:VariableTask"
-        name="github.user.email"
-        label="GitHub account email address">
-        <annotation
-            source="http://www.eclipse.org/oomph/setup/GlobalVariable" />
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.jdt.ui">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.javadoc"
+          value="true"/>
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
-        name="Global Preferences">
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.jdt.ui">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.javadoc"
-                value="true" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.m2e.core">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.m2e.core/eclipse.m2.downloadSources"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.m2e.core/eclipse.m2.autoUpdateProjects"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.m2e.core/eclipse.m2.problem.notCoveredMojoExecution"
-                value="ignore" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.oomph.setup.ui">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.oomph.setup.ui/showToolBarContributions"
-                value="true" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.ui">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui/defaultPerspectiveId"
-                value="org.eclipse.jdt.ui.JavaPerspective" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui/SHOW_MEMORY_MONITOR"
-                value="true" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.ui.editors">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/lineNumberRuler"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.color"
-                value="255,196,0" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.highlight"
-                value="false" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.text"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.text.style"
-                value="IBEAM" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/printMargin"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/printMarginColumn"
-                value="120" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/showCarriageReturn"
-                value="false" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/showEnclosedSpaces"
-                value="false" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/showLeadingSpaces"
-                value="false" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/showLineFeed"
-                value="false" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/showWhitespaceCharacters"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/spacesForTabs"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/spellingEnabled"
-                value="true" />
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.editors/tabWidth"
-                value="4" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.ui.ide">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.ui.ide/WORKSPACE_NAME"
-                value="${scope.project.label} development" />
-        </setupTask>
-        <setupTask
-            xsi:type="setup:CompoundTask"
-            name="org.eclipse.wildwebdeveloper.xml">
-            <setupTask
-                xsi:type="setup:PreferenceTask"
-                key="/instance/org.eclipse.wildwebdeveloper.xml/validation.noGrammar"
-                value="ignore" />
-        </setupTask>
+        name="org.eclipse.m2e.core">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.m2e.core/eclipse.m2.downloadSources"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.m2e.core/eclipse.m2.autoUpdateProjects"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.m2e.core/eclipse.m2.problem.notCoveredMojoExecution"
+          value="ignore"/>
     </setupTask>
     <setupTask
-        xsi:type="setup.p2:P2Task">
-        <requirement
-            name="markdown.editor.feature.feature.group" />
-        <requirement
-            name="net.sf.eclipsecs.feature.group" />
-        <requirement
-            name="org.eclipse.sdk.feature.group" />
-        <requirement
-            name="org.eclipse.egit.feature.group" />
-        <requirement
-            name="org.eclipse.m2e.feature.feature.group" />
-        <requirement
-            name="org.eclipse.oomph.setup.sdk.feature.group" />
-        <requirement
-            name="org.eclipse.uml2" />
-        <requirement
-            name="org.eclipse.uml2.uml.resources" />
-        <repository
-            url="https://checkstyle.org/eclipse-cs-update-site/updates/${eclipse-checkstyle.version.major}.x/${eclipse-checkstyle.version.major}.${eclipse-checkstyle.version.minor}.x" />
-        <repository
-            url="https://nodeclipse.github.io/updates/markdown/" />
-        <description>Install the tools needed in the IDE to work with the source
-            code for ${scope.project.label}.</description>
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.oomph.setup.ui">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.oomph.setup.ui/showToolBarContributions"
+          value="true"/>
     </setupTask>
     <setupTask
-        xsi:type="git:GitCloneTask"
-        id="com.github.tno.pokayoke.git.clone"
-        remoteURI="${com.github.tno.pokayoke.git.clone.url}">
-        <configSections
-            name="user">
-            <properties
-                key="name"
-                value="${github.user.name}" />
-            <properties
-                key="email"
-                value="${github.user.email}" />
-        </configSections>
-        <configSections
-            name="core">
-            <properties
-                key="commentChar"
-                value=";" />
-        </configSections>
-        <description>${scope.project.label}</description>
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.ui">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui/defaultPerspectiveId"
+          value="org.eclipse.jdt.ui.JavaPerspective"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui/SHOW_MEMORY_MONITOR"
+          value="true"/>
     </setupTask>
     <setupTask
-        xsi:type="setup:EclipseIniTask"
-        option="-Doomph.redirection.com.github.tno.pokayoke.git"
-        value="=file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup->${com.github.tno.pokayoke.git.clone.location|uri}/com.github.tno.pokayoke.setup"
-        vm="true">
-        <description>Set an Oomph redirection system property to redirect the
-            bootstrap location of this setup to its location in the Git clone.</description>
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.ui.editors">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/lineNumberRuler"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.color"
+          value="255,196,0"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.highlight"
+          value="false"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.text"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/net.sf.eclipsecs.warning.text.style"
+          value="IBEAM"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/printMargin"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/printMarginColumn"
+          value="120"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/showCarriageReturn"
+          value="false"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/showEnclosedSpaces"
+          value="false"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/showLeadingSpaces"
+          value="false"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/showLineFeed"
+          value="false"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/showWhitespaceCharacters"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/spacesForTabs"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/spellingEnabled"
+          value="true"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.editors/tabWidth"
+          value="4"/>
     </setupTask>
     <setupTask
-        xsi:type="projects:ProjectsImportTask">
-        <sourceLocator
-            rootFolder="${com.github.tno.pokayoke.git.clone.location}"
-            locateNestedProjects="true" />
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.ui.ide">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.ui.ide/WORKSPACE_NAME"
+          value="${scope.project.label} development"/>
     </setupTask>
     <setupTask
-        xsi:type="pde:TargetPlatformTask"
-        name="PokaYoke Target Platform" />
-    <stream name="main"
-        label="main" />
-    <logicalProjectContainer
-        xsi:type="setup:Project"
-        href="index:/org.eclipse.setup#//@projectCatalogs[name='com.github']/@projects[name='user.project']" />
-    <description></description>
+        xsi:type="setup:CompoundTask"
+        name="org.eclipse.wildwebdeveloper.xml">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wildwebdeveloper.xml/validation.noGrammar"
+          value="ignore"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wildwebdeveloper.xml/format.maxLineWidth"
+          value="512"/>
+    </setupTask>
+  </setupTask>
+  <setupTask
+      xsi:type="setup.p2:P2Task">
+    <requirement
+        name="markdown.editor.feature.feature.group"/>
+    <requirement
+        name="net.sf.eclipsecs.feature.group"/>
+    <requirement
+        name="org.eclipse.sdk.feature.group"/>
+    <requirement
+        name="org.eclipse.egit.feature.group"/>
+    <requirement
+        name="org.eclipse.m2e.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.oomph.setup.sdk.feature.group"/>
+    <requirement
+        name="org.eclipse.uml2"/>
+    <requirement
+        name="org.eclipse.uml2.uml.resources"/>
+    <repository
+        url="https://checkstyle.org/eclipse-cs-update-site/updates/${eclipse-checkstyle.version.major}.x/${eclipse-checkstyle.version.major}.${eclipse-checkstyle.version.minor}.x"/>
+    <repository
+        url="https://nodeclipse.github.io/updates/markdown/"/>
+    <description>
+      Install the tools needed in the IDE to work with the source
+      code for ${scope.project.label}.
+    </description>
+  </setupTask>
+  <setupTask
+      xsi:type="git:GitCloneTask"
+      id="com.github.tno.pokayoke.git.clone"
+      remoteURI="${com.github.tno.pokayoke.git.clone.url}">
+    <configSections
+        name="user">
+      <properties
+          key="name"
+          value="${github.user.name}"/>
+      <properties
+          key="email"
+          value="${github.user.email}"/>
+    </configSections>
+    <configSections
+        name="core">
+      <properties
+          key="commentChar"
+          value=";"/>
+    </configSections>
+    <description>${scope.project.label}</description>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:EclipseIniTask"
+      option="-Doomph.redirection.com.github.tno.pokayoke.git"
+      value="=file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup->${com.github.tno.pokayoke.git.clone.location|uri}/com.github.tno.pokayoke.setup"
+      vm="true">
+    <description>
+      Set an Oomph redirection system property to redirect the
+      bootstrap location of this setup to its location in the Git clone.
+    </description>
+  </setupTask>
+  <setupTask
+      xsi:type="projects:ProjectsImportTask">
+    <sourceLocator
+        rootFolder="${com.github.tno.pokayoke.git.clone.location}"
+        locateNestedProjects="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="pde:TargetPlatformTask"
+      name="PokaYoke Target Platform"/>
+  <stream name="main"
+      label="main"/>
+  <logicalProjectContainer
+      xsi:type="setup:Project"
+      href="index:/org.eclipse.setup#//@projectCatalogs[name='com.github']/@projects[name='user.project']"/>
+  <description></description>
 </setup:Project>
