@@ -24,7 +24,10 @@ public class NameIDTracingHelper {
     private static final Map<String, Integer> OBJECT_COUNT = OBJECT_TYPE.stream()
             .collect(Collectors.toMap(key -> key, key -> 0));
 
-    private NameIDTracingHelper() {
+    private final String tracingCommentIdentifier;
+
+    public NameIDTracingHelper(String tracingCommentIdentifier) {
+        this.tracingCommentIdentifier = tracingCommentIdentifier;
     }
 
     /**
@@ -38,7 +41,7 @@ public class NameIDTracingHelper {
         if (!NameIDTracingHelper.isNamed(element)) {
             NameIDTracingHelper.addName(element, className);
         }
-        NameIDTracingHelper.appendPrefixName(element, prefix);
+        NameIDTracingHelper.prependPrefixName(element, prefix);
     }
 
     /**
@@ -54,20 +57,20 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Appends the name of the call behavior action to the nodes and edges in the activity called by the call behavior
+     * Prepends the name of the call behavior action to the nodes and edges in the activity called by the call behavior
      * action.
      *
-     * @param childBehavior The activity diagram in which the name of nodes and edges is appended with the name of the
-     *     call behavior action.
+     * @param childBehavior The activity in which the name of nodes and edges is prepended with the name of the call
+     *     behavior action.
      * @param name The name of the call behavior action.
      */
-    public static void appendCallBehaviorActionName(Activity childBehavior, String name) {
+    public static void prependCallBehaviorActionNameToNodesAndEdgesInActivity(Activity childBehavior, String name) {
         for (ActivityNode node: childBehavior.getNodes()) {
-            appendPrefixName(node, name);
+            prependPrefixName(node, name);
         }
 
         for (ActivityEdge edge: childBehavior.getEdges()) {
-            appendPrefixName(edge, name);
+            prependPrefixName(edge, name);
         }
     }
 
@@ -75,15 +78,15 @@ public class NameIDTracingHelper {
      * Sets the tracing comment of a model element with a prefix ID.
      *
      * @param element The element to be updated.
-     * @param prefix The ID to be appended to the comment.
+     * @param prefix The ID to be prepended to the comment.
      * @param tracingCommentIdentifier The identifier that distinguishes tracing comments from user comments.
      */
     public static void setTracingComment(NamedElement element, String prefix, String tracingCommentIdentifier) {
-        if (!NameIDTracingHelper.isTracingCommentExist(element, tracingCommentIdentifier)) {
-            String id = element.eResource().getURIFragment(element);
+        if (!NameIDTracingHelper.hasTracingComment(element, tracingCommentIdentifier)) {
+            String id = getID(element);
             NameIDTracingHelper.addTracingComment(element, id, tracingCommentIdentifier);
         }
-        NameIDTracingHelper.appendPrefixID(element, prefix, tracingCommentIdentifier);
+        NameIDTracingHelper.prependPrefixID(element, prefix, tracingCommentIdentifier);
     }
 
     /**
@@ -100,21 +103,33 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Appends the ID of a call behavior action to the comments of the nodes and edges in the activity called by this
+     * Prepends the ID of a call behavior action to the comments of the nodes and edges in the activity called by this
      * call behavior action.
      *
      * @param childBehavior The activity called by the call behavior action.
      * @param id The ID of the call behavior action.
      * @param tracingCommentIdentifier The identifier that distinguishes tracing comments from user comments.
      */
-    public static void appendCallBehaviorActionID(Activity childBehavior, String id, String tracingCommentIdentifier) {
+    public static void prependCallBehaviorActionIDToNodesAndEdgesInActivity(Activity childBehavior, String id,
+            String tracingCommentIdentifier)
+    {
         for (ActivityNode node: childBehavior.getNodes()) {
-            appendPrefixID(node, id, tracingCommentIdentifier);
+            prependPrefixID(node, id, tracingCommentIdentifier);
         }
 
         for (ActivityEdge edge: childBehavior.getEdges()) {
-            appendPrefixID(edge, id, tracingCommentIdentifier);
+            prependPrefixID(edge, id, tracingCommentIdentifier);
         }
+    }
+
+    /**
+     * Gets the ID of a model element.
+     *
+     * @param element The element.
+     * @return The ID of the element.
+     */
+    public static String getID(NamedElement element) {
+        return element.eResource().getURIFragment(element);
     }
 
     private static boolean isNamed(NamedElement element) {
@@ -125,20 +140,22 @@ public class NameIDTracingHelper {
         element.setName(NameIDTracingHelper.getNameOfObject(className));
     }
 
-    private static void appendPrefixName(NamedElement element, String prefix) {
+    static void prependPrefixName(NamedElement element, String prefix) {
         element.setName(prefix + "__" + element.getName());
     }
 
-    private static boolean isTracingCommentExist(NamedElement element, String tracingCommentIdentifier) {
-        return element.getOwnedComments().stream().filter(c -> c.getBody().contains(tracingCommentIdentifier)).toList()
-                .size() != 0;
+    private static boolean hasTracingComment(NamedElement element, String tracingCommentIdentifier) {
+        return element.getOwnedComments().stream().filter(c -> isTracingComment(c, tracingCommentIdentifier)).findAny()
+                .isPresent();
     }
 
-    private static void appendPrefixID(NamedElement element, String absoluteID,
-            String tracingCommentIdentifier)
-    {
+    private static boolean isTracingComment(Comment comment, String tracingCommentIdentifier) {
+        return comment.getBody().split(":")[0].equals(tracingCommentIdentifier);
+    }
+
+    private static void prependPrefixID(NamedElement element, String absoluteID, String tracingCommentIdentifier) {
         List<Comment> comments = element.getOwnedComments().stream()
-                .filter(c -> c.getBody().contains(tracingCommentIdentifier)).toList();
+                .filter(c -> isTracingComment(c, tracingCommentIdentifier)).toList();
 
         for (Comment comment: comments) {
             // Split the comment body into header and ID chain.
@@ -168,7 +185,7 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Checks if all names are unique in the model and gives a unique name if a duplication is found.
+     * Ensures all named elements in the model have unique names, by renaming elements in case duplicate names are used.
      *
      * @param model The model to check.
      */
@@ -179,9 +196,18 @@ public class NameIDTracingHelper {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
                 if (names.contains(namedElement.getName())) {
-                    names.add(namedElement.getName() + "_1");
+                    String newName = namedElement.getName() + "_1";
+                    namedElement.setName(newName);
+                    names.add(newName);
                 }
             }
         }
+    }
+
+    /** Gets Tracing comment identifier.
+     * @return the tracingCommentIdentifier
+     */
+    public String getTracingCommentIdentifier() {
+        return tracingCommentIdentifier;
     }
 }
