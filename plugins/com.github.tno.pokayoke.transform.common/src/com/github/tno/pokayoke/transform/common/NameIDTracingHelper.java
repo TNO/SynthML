@@ -189,6 +189,16 @@ public class NameIDTracingHelper {
         return generatedName;
     }
 
+    public static void giveIDToModelElements(Model model) {
+        TreeIterator<EObject> iterator = model.eAllContents();
+        while (iterator.hasNext()) {
+            EObject eObject = iterator.next();
+            if (eObject instanceof NamedElement namedElement) {
+                addTracingComment(namedElement, getID(namedElement), "Original-ID-Path:");
+            }
+        }
+    }
+
     /**
      * Prepends the name of the call behavior action to the nodes and edges in the activity called by the call behavior
      * action.

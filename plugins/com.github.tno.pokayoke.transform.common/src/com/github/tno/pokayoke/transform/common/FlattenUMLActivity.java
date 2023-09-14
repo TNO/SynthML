@@ -85,12 +85,8 @@ public class FlattenUMLActivity {
             }
         }
 
-//        // Step 4: Give every element an id.
-//        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-//            if (behavior instanceof Activity activity) {
-//                NameIDTracingHelper.giveIDtoModelElements(model);
-//            }
-//        }
+        // Step 4: Give every element an id.
+        NameIDTracingHelper.giveIDToModelElements(model);
 
         // Step 5: Flatten all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
@@ -255,6 +251,4 @@ public class FlattenUMLActivity {
             callBehaviorActionToReplace.destroy();
         }
     }
-
-
 }
