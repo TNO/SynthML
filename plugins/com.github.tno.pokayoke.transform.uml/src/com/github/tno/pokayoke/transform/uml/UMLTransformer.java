@@ -211,7 +211,6 @@ public class UMLTransformer {
      *
      * @param model The model.
      * @return The nested non-activity classes of the provided model.
-     *
      */
     private List<Class> getNestedNonActivityClassesOf(Model model) {
         List<Class> returnValue = new ArrayList<>();
