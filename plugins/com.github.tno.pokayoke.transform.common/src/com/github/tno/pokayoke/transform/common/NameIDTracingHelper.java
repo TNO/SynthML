@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Enumeration;
@@ -72,22 +73,81 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Ensures unique name for properties in a model.
+     * Ensures that the name of an element has no duplications in the provided name space.
      *
-     * @param model The model which contains properties.
+     * @param element The element.
+     * @param names The name space.
      */
-    public static void ensureUniqueNameForProperties(Model model) {
-        // Collect name of properties.
-        List<String> names = new ArrayList<>();
+    private static void ensureUniqueNameForElement(NamedElement element, List<String> names) {
+        String originalName = element.getName();
+        int count = Collections.frequency(names, originalName);
+
+        // Rename the element if there are duplications.
+        if (count > 1) {
+            String newName = generateUniqueName(originalName, names);
+            names.add(newName);
+            element.setName(newName);
+        }
+    }
+
+    private static String generateUniqueName(String originalName, List<String> names) {
+        int i = 2;
+        String generatedName = originalName + "_" + String.valueOf(i);
+        while (names.contains(generatedName)) {
+            i++;
+            generatedName = originalName + "_" + String.valueOf(i);
+        }
+
+        return generatedName;
+    }
+
+    /**
+     * Ensures locally unique name for enumeration literals in all enumerations.
+     *
+     * @param model The model that contains the enumerations.
+     */
+    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
         for (NamedElement member: model.getMembers()) {
-            if (member instanceof Property) {
-                names.add(member.getName());
+            if (member instanceof Enumeration enumeration) {
+                ensureUniqueNameForEnumerationLiterals(enumeration);
             }
         }
-        // Ensure each property has a unique local name within a set of properties.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Property) {
-                ensureUniqueNameForElement(member, names);
+    }
+
+    /**
+     * Ensures locally unique name for all enumeration literals in an enumeration.
+     *
+     * @param enumeration The enumeration.
+     */
+    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
+        // Collect name of enumeration literals.
+        List<String> names = new ArrayList<>();
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            names.add(literal.getName());
+        }
+
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            ensureUniqueNameForElement(literal, names);
+        }
+    }
+
+    /**
+     * Ensures unique name for properties in a model.
+     *
+     * @param contextClass The class that contains properties.
+     */
+    public static void ensureUniqueNameForProperties(Class contextClass) {
+        // Collect name of properties and their default value.
+        List<String> names = new ArrayList<>();
+        for (NamedElement member: contextClass.getMembers()) {
+            if (member instanceof Property property) {
+                names.add(property.getName());
+            }
+        }
+        // Ensure each property and its default value has a unique local name within a set of properties.
+        for (NamedElement member: contextClass.getMembers()) {
+            if (member instanceof Property property) {
+                ensureUniqueNameForElement(property, names);
             }
         }
     }
@@ -109,6 +169,19 @@ public class NameIDTracingHelper {
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity) {
                 ensureUniqueNameForElement(behavior, names);
+            }
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all elements in each activity.
+     *
+     * @param contextClass The class that contains activities.
+     */
+    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
             }
         }
     }
@@ -143,67 +216,6 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Ensures locally unique name for enumeration literals in all enumerations.
-     *
-     * @param model The model that contains the enumerations.
-     */
-    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration enumeration) {
-                ensureUniqueNameForEnumerationLiterals(enumeration);
-            }
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all enumeration literals in an enumeration.
-     *
-     * @param enumeration The enumeration.
-     */
-    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
-        // Collect name of enumeration literals.
-        List<String> names = new ArrayList<>();
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            names.add(literal.getName());
-        }
-
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            ensureUniqueNameForElement(literal, names);
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all elements in each activity.
-     *
-     * @param contextClass The class that contains activities.
-     */
-    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
-            }
-        }
-    }
-
-    /**
-     * Ensures that the name of an element has no duplications in the provided name space.
-     *
-     * @param elemet The element.
-     * @param names The name space.
-     */
-    private static void ensureUniqueNameForElement(NamedElement elemet, List<String> names) {
-        String originalName = elemet.getName();
-        int count = Collections.frequency(names, originalName);
-
-        // Rename the element if there are duplications.
-        if (count > 1) {
-            String newName = generateUniqueName(originalName, names);
-            names.add(newName);
-            elemet.setName(newName);
-        }
-    }
-
-    /**
      * Adds the ID of model elements to their comments.
      *
      * @param model The model that contains elements.
@@ -219,47 +231,15 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Prepends a prefix to the name of the nodes and edges in the activity called by the call behavior action.
-     *
-     * @param activity The activity in which the name of nodes and edges is prepended.
-     * @param prefix The prefix to prepend.
-     */
-    public static void prependPrefixNameToNodesAndEdges(Activity activity, String prefix) {
-        for (ActivityNode node: activity.getNodes()) {
-            prependPrefixName(node, prefix);
-        }
-
-        for (ActivityEdge edge: activity.getEdges()) {
-            prependPrefixName(edge, prefix);
-        }
-    }
-
-    /**
      * Adds a tracing comment to a model element.
      *
      * @param element The model element.
-     * @param id The ID added as a tracing comment of the model element.
+     * @param id The ID to add as a tracing comment of the model element.
      */
     public static void addTracingComment(NamedElement element, String id) {
         Comment comment = FileHelper.FACTORY.createComment();
         comment.setBody(TRACING_IDENTIFIER + ":" + id);
         element.getOwnedComments().add(comment);
-    }
-
-    /**
-     * Prepends the ID to the comments of the nodes and edges in an activity.
-     *
-     * @param activity The activity that contains nodes and edges.
-     * @param id The ID to prepend.
-     */
-    public static void prependPrefixIDToNodesAndEdgesInActivity(Activity activity, String id) {
-        for (ActivityNode node: activity.getNodes()) {
-            prependPrefixID(node, id);
-        }
-
-        for (ActivityEdge edge: activity.getEdges()) {
-            prependPrefixID(edge, id);
-        }
     }
 
     /**
@@ -270,6 +250,60 @@ public class NameIDTracingHelper {
      */
     public static String getID(NamedElement element) {
         return EcoreUtil.getURI(element).fragment();
+    }
+
+    /**
+     * Prepends a prefix to the name of the nodes and edges in the activity called by the call behavior action.
+     *
+     * @param activity The activity in which the name of nodes and edges is prepended.
+     * @param prefix The prefix to prepend.
+     */
+    public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix) {
+        for (ActivityNode node: activity.getNodes()) {
+            prependPrefixName(node, prefix);
+        }
+
+        for (ActivityEdge edge: activity.getEdges()) {
+            prependPrefixName(edge, prefix);
+        }
+    }
+
+    /**
+     * Prepends prefix name to the name of an element.
+     *
+     * @param element The element.
+     * @param prefix The prefix name to prepend.
+     */
+    public static void prependPrefixName(NamedElement element, String prefix) {
+        element.setName(prefix + "__" + element.getName());
+    }
+
+    /**
+     * Prepends the IDs of the call behavior action and activity to the comments of the nodes and edges in an activity.
+     *
+     * @param activity The activity that contains nodes and edges.
+     * @param action The call behavior action that calls the activity.
+     */
+    public static void prependPrefixIDToNodesAndEdgesInActivity(Activity activity, CallBehaviorAction action) {
+        String id = extractIDFromTracingComment(action) + " " + extractIDFromTracingComment(activity);
+
+        for (ActivityNode node: activity.getNodes()) {
+            prependPrefixID(node, id);
+        }
+
+        for (ActivityEdge edge: activity.getEdges()) {
+            prependPrefixID(edge, id);
+        }
+    }
+
+    private static void prependPrefixID(NamedElement element, String prefixID) {
+        List<Comment> comments = element.getOwnedComments().stream().filter(c -> isTracingComment(c)).toList();
+
+        for (Comment comment: comments) {
+            // Split the comment body into header and ID chain.
+            String[] commentBody = comment.getBody().split(":");
+            comment.setBody(commentBody[0] + ":" + prefixID + " " + commentBody[1]);
+        }
     }
 
     /**
@@ -285,42 +319,11 @@ public class NameIDTracingHelper {
                 tracingComments.add(comment.getBody().split(":")[1]);
             }
         }
-        return tracingComments.get(0);
-    }
-
-    /**
-     * Prepends prefix name to the name of an element.
-     *
-     * @param element The element.
-     * @param prefix The prefix name to prepend.
-     */
-    public static void prependPrefixName(NamedElement element, String prefix) {
-        element.setName(prefix + "__" + element.getName());
-    }
-
-    private static String generateUniqueName(String originalName, List<String> names) {
-        int i = 1;
-        String generatedName = originalName + "_" + String.valueOf(i);
-        while (names.contains(generatedName)) {
-            i++;
-            generatedName = originalName + "_" + String.valueOf(i);
-        }
-
-        return generatedName;
+        return String.join(" ", tracingComments);
     }
 
     private static boolean isTracingComment(Comment comment) {
         return comment.getBody().split(":")[0].equals(TRACING_IDENTIFIER);
-    }
-
-    private static void prependPrefixID(NamedElement element, String absoluteID) {
-        List<Comment> comments = element.getOwnedComments().stream().filter(c -> isTracingComment(c)).toList();
-
-        for (Comment comment: comments) {
-            // Split the comment body into header and ID chain.
-            String[] commentBody = comment.getBody().split(":");
-            comment.setBody(commentBody[0] + ":" + absoluteID + " " + commentBody[1]);
-        }
     }
 
     /**
@@ -355,7 +358,7 @@ public class NameIDTracingHelper {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
                 String name = namedElement.getName();
-                Verify.verify(names.contains(name), String.format("Model name %s is not globally unique.", name));
+                Verify.verify(!names.contains(name), String.format("Model name %s is not globally unique.", name));
                 names.add(name);
             }
         }

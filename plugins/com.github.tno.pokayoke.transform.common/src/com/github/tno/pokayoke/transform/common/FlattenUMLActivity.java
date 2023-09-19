@@ -58,7 +58,7 @@ public class FlattenUMLActivity {
         // Step 3: Ensure that all names are locally unique within their scope.
         NameIDTracingHelper.ensureUniqueNameForEnumerations(model);
         NameIDTracingHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
-        NameIDTracingHelper.ensureUniqueNameForProperties(model);
+        NameIDTracingHelper.ensureUniqueNameForProperties(contextClass);
         NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
         NameIDTracingHelper.ensureUniqueNameForElementsInActivities(contextClass);
 
@@ -72,8 +72,8 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Step 6: Check that the names of the model elements are unique globally.
-        NameIDTracingHelper.checkUniquenessOfNames(model);
+//        // Step 6: Check that the names of the model elements are unique globally.
+//        NameIDTracingHelper.checkUniquenessOfNames(model);
     }
 
     /**
@@ -106,17 +106,12 @@ public class FlattenUMLActivity {
             String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
 
             // Prepend the prefix name to the name of all elements in the activity.
-            NameIDTracingHelper.prependPrefixNameToNodesAndEdges(childBehaviorCopy, prefixName);
+            NameIDTracingHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
 
-            // Extract the ID of the call behavior action and the activity.
-            String actionID = NameIDTracingHelper.extractIDFromTracingComment(callBehaviorActionToReplace);
-            String activityID = NameIDTracingHelper.extractIDFromTracingComment(childBehaviorCopy);
-
-            // Construct the prefix ID.
-            String prefixID = actionID + " " + activityID;
-
-            // Prepend the prefix ID to the tracing comment of all elements in the activity.
-            NameIDTracingHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy, prefixID);
+            // Prepend prefix ID (i.e., the IDs of the activity and the call behavior action) to the tracing comment of
+            // all elements in the activity.
+            NameIDTracingHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy,
+                    callBehaviorActionToReplace);
 
             // Get the activity of the call behavior action.
             Activity parentActivity = callBehaviorActionToReplace.getActivity();
