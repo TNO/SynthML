@@ -13,10 +13,8 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.NamedElement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -58,28 +56,11 @@ public class FlattenUMLActivity {
         NameIDTracingHelper.giveNameToModelElements(model);
 
         // Step 3: Ensure that all names are locally unique within their scope.
-        // Ensure that each enumeration has a unique local name within a set of enumerations.
         NameIDTracingHelper.ensureUniqueNameForEnumerations(model);
-
-        // Ensure that all literals in each enumeration have a unique local name.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration enumeration) {
-                NameIDTracingHelper.ensureUniqueNameForEnumerationLiterals(enumeration);
-            }
-        }
-
-        // Ensure that each property has a unique name within a set of properties.
+        NameIDTracingHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
         NameIDTracingHelper.ensureUniqueNameForProperties(model);
-
-        // Ensure that each activity has a unique name within a set of activities.
         NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
-
-        // Ensure that all elements in each activity have a local unique name.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
-            }
-        }
+        NameIDTracingHelper.ensureUniqueNameForElementsInActivities(contextClass);
 
         // Step 4: Give every element an ID.
         NameIDTracingHelper.addIDTracingCommentToModelElements(model);
@@ -171,17 +152,17 @@ public class FlattenUMLActivity {
                             // Add a name for the newly added edge.
                             newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
 
-                            // Extract the prefix ID of the outerEdge.
-                            String outerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
+                            // Extract the ID of the outer edge.
+                            String outerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
 
-                            // Prepend the prefix ID for the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgePrefixID);
+                            // Add an ID for the newly added edge with the ID of the outer edge.
+                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
 
-                            // Extract the prefix ID of the inner edge.
-                            String innerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
+                            // Extract the ID of the inner edge.
+                            String innerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
 
-                            // Prepend the prefix ID for the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgePrefixID);
+                            // Add an ID for the newly added edge with the ID of the inner edge.
+                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
                         }
                     }
 
@@ -213,17 +194,17 @@ public class FlattenUMLActivity {
                             // Add a name for the newly added edge.
                             newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
 
-                            // Extract the prefix ID of the outer edge.
-                            String outerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
+                            // Extract the ID of the outer edge.
+                            String outerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
 
-                            // Prepend the prefix ID for the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgePrefixID);
+                            // Add an ID for the newly added edge with the ID of the outer edge.
+                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
 
-                            // Extract the prefix ID of the inner edge.
-                            String innerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
+                            // Extract the ID of the inner edge.
+                            String innerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
 
-                            // Prepend the prefix ID for the newly added edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgePrefixID);
+                            // Add an ID for the newly added edge with the ID of the inner edge.
+                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
                         }
                     }
 

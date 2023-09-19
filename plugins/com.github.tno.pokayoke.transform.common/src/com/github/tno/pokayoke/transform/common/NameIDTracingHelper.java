@@ -143,11 +143,24 @@ public class NameIDTracingHelper {
     }
 
     /**
+     * Ensures locally unique name for enumeration literals in all enumerations.
+     *
+     * @param model The model that contains the enumerations.
+     */
+    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration enumeration) {
+                ensureUniqueNameForEnumerationLiterals(enumeration);
+            }
+        }
+    }
+
+    /**
      * Ensures locally unique name for all enumeration literals in an enumeration.
      *
      * @param enumeration The enumeration.
      */
-    public static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
+    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
         // Collect name of enumeration literals.
         List<String> names = new ArrayList<>();
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
@@ -156,6 +169,19 @@ public class NameIDTracingHelper {
 
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             ensureUniqueNameForElement(literal, names);
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all elements in each activity.
+     *
+     * @param contextClass The class that contains activities.
+     */
+    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
+            }
         }
     }
 
