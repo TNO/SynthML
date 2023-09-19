@@ -22,6 +22,8 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
 
+import com.google.common.base.Verify;
+
 /** Helper class for renaming and tracing model elements in activities. */
 public class NameIDTracingHelper {
     private static final String TRACING_IDENTIFIER = "Original-ID-Path";
@@ -30,8 +32,8 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Gives name to all model elements. The name of the class is given to the element as its name if it does not have a
-     * name yet. Otherwise, the original name is kept.
+     * Gives a name to each model element. The name of the class is given to the element as its name if it does not have
+     * a name yet. Otherwise, the original name is kept.
      *
      * @param model The model.
      */
@@ -319,22 +321,17 @@ public class NameIDTracingHelper {
      * Checks the uniqueness of the name of the model elements.
      *
      * @param model The model to check.
-     * @return {@code true} if all the elements have a unique name, otherwise, {@code false}.
      */
-    public static boolean isNameOfModelElementsUnique(Model model) {
+    public static void checkUniquenessOfNames(Model model) {
         Set<String> names = new HashSet<>();
         TreeIterator<EObject> iterator = model.eAllContents();
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
                 String name = namedElement.getName();
-                if (names.contains(name)) {
-                    return false;
-                } else {
-                    names.add(name);
-                }
+                Verify.verify(names.contains(name), String.format("Model name %s is not globally unique.", name));
+                names.add(name);
             }
         }
-        return true;
     }
 }

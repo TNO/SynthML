@@ -21,7 +21,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
-/** Flattens nested UML activity. */
+/** Flattens nested UML activities. */
 public class FlattenUMLActivity {
     private final Model model;
 
@@ -35,15 +35,15 @@ public class FlattenUMLActivity {
         FileHelper.storeModel(model, targetPath);
     }
 
-    private void transformModel() {
+    public void transformModel() {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
         // Step 1: Make sure that no double underscores exist in the names of model elements.
 
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
-        // literal of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
-        // clear meaning and are automatically added by UML designer.
+        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
+        // clear meaning and are automatically added by UML Designer.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
                 UMLActivityUtils.removeIrrelevantInformation(activity);
@@ -75,7 +75,7 @@ public class FlattenUMLActivity {
         NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
 
         // Ensure that all elements in each activity have a local unique name.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
                 NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
             }
@@ -92,7 +92,7 @@ public class FlattenUMLActivity {
         }
 
         // Step 6: Check that the names of the model elements are unique globally.
-        assert NameIDTracingHelper.isNameOfModelElementsUnique(model) : "The name of model elements is not unique.";
+        NameIDTracingHelper.checkUniquenessOfNames(model);
     }
 
     /**
