@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
@@ -22,7 +21,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
-/** Flatten nested UML activity. */
+/** Flattens nested UML activity. */
 public class FlattenUMLActivity {
     private final Model model;
 
@@ -40,11 +39,11 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // Step 1: make sure that no double underscores exist in the names of model elements.
+        // Step 1: Make sure that no double underscores exist in the names of model elements.
 
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
         // literal of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
-        // clear meaning and are automatically added by UML designers.
+        // clear meaning and are automatically added by UML designer.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
                 UMLActivityUtils.removeIrrelevantInformation(activity);
@@ -58,24 +57,24 @@ public class FlattenUMLActivity {
         // Step 2: Give each element a name.
         NameIDTracingHelper.giveNameToModelElements(model);
 
-        // Step 3: Ensure all names are locally unique within their scope.
-        // Ensure if each enumeration has a unique local name within a set of enumerations.
+        // Step 3: Ensure that all names are locally unique within their scope.
+        // Ensure that each enumeration has a unique local name within a set of enumerations.
         NameIDTracingHelper.ensureUniqueNameForEnumerations(model);
 
-        // Ensure all literals in each enumeration have a unique local name.
+        // Ensure that all literals in each enumeration have a unique local name.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration enumeration) {
                 NameIDTracingHelper.ensureUniqueNameForEnumerationLiterals(enumeration);
             }
         }
 
-        // Ensure each property has a unique name within a set of properties.
+        // Ensure that each property has a unique name within a set of properties.
         NameIDTracingHelper.ensureUniqueNameForProperties(model);
 
-        // Ensure each activity has unique name within a set of activities.
+        // Ensure that each activity has a unique name within a set of activities.
         NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
 
-        // Ensure all elements in each activity have a local unique name.
+        // Ensure that all elements in each activity have a local unique name.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
@@ -83,7 +82,7 @@ public class FlattenUMLActivity {
         }
 
         // Step 4: Give every element an ID.
-        NameIDTracingHelper.giveIDToModelElements(model);
+        NameIDTracingHelper.addIDTracingCommentToModelElements(model);
 
         // Step 5: Flatten all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
@@ -92,8 +91,8 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Step 6: Check that the element names of the model are unique globally.
-        assert NameIDTracingHelper.checkUniquenessofNames(model) : "The name of the model element is not unique.";
+        // Step 6: Check that the names of the model elements are unique globally.
+        assert NameIDTracingHelper.isNameOfModelElementsUnique(model) : "The name of model elements is not unique.";
     }
 
     /**
@@ -103,8 +102,6 @@ public class FlattenUMLActivity {
      * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
      *     when it is called to flatten the outer most activity.
-     * @param absoluteName The absolute name of the activity.
-     * @param absoluteID The absolute ID of the activity.
      */
     public void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
@@ -119,8 +116,8 @@ public class FlattenUMLActivity {
         }
 
         // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
-        // behavior action to the name and tracing comment of objects in this activity, respectively. Connect the
-        // objects properly to the outer activity.
+        // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
+        // Connect the objects properly to the outer activity.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
@@ -131,25 +128,28 @@ public class FlattenUMLActivity {
             NameIDTracingHelper.prependPrefixNameToNodesAndEdges(childBehaviorCopy, prefixName);
 
             // Extract the ID of the call behavior action and the activity.
-            String actionTracingComment = NameIDTracingHelper.getIDFromTracingComments(callBehaviorActionToReplace);
-            String activityTracingComment = NameIDTracingHelper.getIDFromTracingComments(childBehaviorCopy);
+            String actionTracingComment = NameIDTracingHelper.extractIDFromTracingComment(callBehaviorActionToReplace);
+            String activityTracingComment = NameIDTracingHelper.extractIDFromTracingComment(childBehaviorCopy);
 
             // Construct the prefix ID.
             String prefixID = actionTracingComment + " " + activityTracingComment;
 
             // Prepend the prefix ID to the tracing comment of all elements in the activity.
-            NameIDTracingHelper.prependPrefixIDToNodesAndEdges(childBehaviorCopy, prefixID);
+            NameIDTracingHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy, prefixID);
+
+            // Get the activity of the call behavior action.
+            Activity parentActivity = callBehaviorActionToReplace.getActivity();
 
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
-                node.setActivity(callBehaviorActionToReplace.getActivity());
+                node.setActivity(parentActivity);
 
                 // Set the activity for all the edges to the activity of the call behavior action to be replaced.
                 for (ActivityEdge edge: node.getOutgoings()) {
-                    edge.setActivity(callBehaviorActionToReplace.getActivity());
+                    edge.setActivity(parentActivity);
                 }
                 for (ActivityEdge edge: node.getIncomings()) {
-                    edge.setActivity(callBehaviorActionToReplace.getActivity());
+                    edge.setActivity(parentActivity);
                 }
 
                 // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
@@ -166,21 +166,21 @@ public class FlattenUMLActivity {
                             // behavior action. We ignore the guard of the outgoing edge of the initial node because
                             // the source of this edge is not a decision node.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
-                            newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+                            newEdge.setActivity(parentActivity);
 
-                            // Add name for the newly added edge.
+                            // Add a name for the newly added edge.
                             newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
 
-                            // Get prefix ID of the outerEdge.
-                            String outerEdgePrefixID = NameIDTracingHelper.getIDFromTracingComments(incomingEdge);
+                            // Extract the prefix ID of the outerEdge.
+                            String outerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
 
-                            // Prepend the ID for the newly added edge.
+                            // Prepend the prefix ID for the newly added edge.
                             NameIDTracingHelper.addTracingComment(newEdge, outerEdgePrefixID);
 
-                            // Get prefix ID of the inner edge.
-                            String innerEdgePrefixID = NameIDTracingHelper.getIDFromTracingComments(outgoingEdge);
+                            // Extract the prefix ID of the inner edge.
+                            String innerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
 
-                            // Prepend the ID for the newly added edge.
+                            // Prepend the prefix ID for the newly added edge.
                             NameIDTracingHelper.addTracingComment(newEdge, innerEdgePrefixID);
                         }
                     }
@@ -199,7 +199,6 @@ public class FlattenUMLActivity {
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
                 // properties, like guards. Name and tracing comment for the new edges are added.
                 if (node instanceof ActivityFinalNode finalNode) {
-                    int i = 1;
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {
                             ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
@@ -209,21 +208,21 @@ public class FlattenUMLActivity {
                             // The guard of the new edge is set to the guard of the incoming edge of the final node.
                             // We ignore the guard of the outgoing edge of the behavior action.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
-                            newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+                            newEdge.setActivity(parentActivity);
 
-                            // Add name for the newly added edge.
+                            // Add a name for the newly added edge.
                             newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
 
-                            // Get prefix ID of the outer edge.
-                            String outerEdgePrefixID = NameIDTracingHelper.getIDFromTracingComments(outgoingEdge);
+                            // Extract the prefix ID of the outer edge.
+                            String outerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
 
-                            // Prepend the ID for the newly added edge.
+                            // Prepend the prefix ID for the newly added edge.
                             NameIDTracingHelper.addTracingComment(newEdge, outerEdgePrefixID);
 
-                            // Get prefix ID of the inner edge.
-                            String innerEdgePrefixID = NameIDTracingHelper.getIDFromTracingComments(incomingEdge);
+                            // Extract the prefix ID of the inner edge.
+                            String innerEdgePrefixID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
 
-                            // Prepend the ID for the newly added edge.
+                            // Prepend the prefix ID for the newly added edge.
                             NameIDTracingHelper.addTracingComment(newEdge, innerEdgePrefixID);
                         }
                     }
