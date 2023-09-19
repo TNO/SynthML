@@ -128,11 +128,11 @@ public class FlattenUMLActivity {
             NameIDTracingHelper.prependPrefixNameToNodesAndEdges(childBehaviorCopy, prefixName);
 
             // Extract the ID of the call behavior action and the activity.
-            String actionTracingComment = NameIDTracingHelper.extractIDFromTracingComment(callBehaviorActionToReplace);
-            String activityTracingComment = NameIDTracingHelper.extractIDFromTracingComment(childBehaviorCopy);
+            String actionID = NameIDTracingHelper.extractIDFromTracingComment(callBehaviorActionToReplace);
+            String activityID = NameIDTracingHelper.extractIDFromTracingComment(childBehaviorCopy);
 
             // Construct the prefix ID.
-            String prefixID = actionTracingComment + " " + activityTracingComment;
+            String prefixID = actionID + " " + activityID;
 
             // Prepend the prefix ID to the tracing comment of all elements in the activity.
             NameIDTracingHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy, prefixID);
