@@ -3,8 +3,10 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.TreeIterator;
@@ -58,10 +60,11 @@ public class NameIDTracingHelper {
      */
     public static void ensureUniqueNameForEnumerations(Model model) {
         // Collect the name of enumerations.
-        List<String> names = new ArrayList<>();
+        Map<String, Integer> names = new HashMap<>();
+
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
-                names.add(member.getName());
+                updateNameMap(member, names);
             }
         }
         // Ensure each enumeration has a locally unique name within a set of enumerations.
@@ -72,28 +75,37 @@ public class NameIDTracingHelper {
         }
     }
 
+    private static void updateNameMap(NamedElement member, Map<String, Integer> names) {
+        String name = member.getName();
+        if (!names.containsKey(name)) {
+            names.put(name, 1);
+        } else {
+            names.put(name, names.get(name) + 1);
+        }
+    }
+
     /**
      * Ensures that the name of an element has no duplications in the provided name space.
      *
      * @param element The element.
      * @param names The name space.
      */
-    private static void ensureUniqueNameForElement(NamedElement element, List<String> names) {
+    private static void ensureUniqueNameForElement(NamedElement element, Map<String, Integer> names) {
         String originalName = element.getName();
-        int count = Collections.frequency(names, originalName);
+        int count = names.get(originalName);
 
         // Rename the element if there are duplications.
         if (count > 1) {
             String newName = generateUniqueName(originalName, names);
-            names.add(newName);
+            names.put(newName, 1);
             element.setName(newName);
         }
     }
 
-    private static String generateUniqueName(String originalName, List<String> names) {
-        int i = 2;
+    private static String generateUniqueName(String originalName, Map<String, Integer> names) {
+        int i = 1;
         String generatedName = originalName + "_" + String.valueOf(i);
-        while (names.contains(generatedName)) {
+        while (names.containsKey(generatedName)) {
             i++;
             generatedName = originalName + "_" + String.valueOf(i);
         }
@@ -121,9 +133,9 @@ public class NameIDTracingHelper {
      */
     private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
         // Collect name of enumeration literals.
-        List<String> names = new ArrayList<>();
+        Map<String, Integer> names = new HashMap<>();
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            names.add(literal.getName());
+            updateNameMap(literal, names);
         }
 
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
@@ -138,10 +150,10 @@ public class NameIDTracingHelper {
      */
     public static void ensureUniqueNameForProperties(Class contextClass) {
         // Collect name of properties and their default value.
-        List<String> names = new ArrayList<>();
+        Map<String, Integer> names = new HashMap<>();
         for (NamedElement member: contextClass.getMembers()) {
             if (member instanceof Property property) {
-                names.add(property.getName());
+                updateNameMap(property, names);
             }
         }
         // Ensure each property and its default value has a unique local name within a set of properties.
@@ -159,10 +171,10 @@ public class NameIDTracingHelper {
      */
     public static void ensureUniqueNameForActivities(Class contextClass) {
         // Collect name of activities.
-        List<String> names = new ArrayList<>();
+        Map<String, Integer> names = new HashMap<>();
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity) {
-                names.add(behavior.getName());
+            if (behavior instanceof Activity activity) {
+                updateNameMap(activity, names);
             }
         }
         // Ensure each activity has a unique local name within a set of activities.
@@ -193,9 +205,9 @@ public class NameIDTracingHelper {
      */
     public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
         // Collect name of nodes.
-        List<String> nodeNames = new ArrayList<>();
+        Map<String, Integer> nodeNames = new HashMap<>();
         for (ActivityNode node: activity.getNodes()) {
-            nodeNames.add(node.getName());
+            updateNameMap(node, nodeNames);
         }
 
         // Ensure unique name for nodes.
@@ -204,9 +216,9 @@ public class NameIDTracingHelper {
         }
 
         // Collect name of edges.
-        List<String> edgeNames = new ArrayList<>();
+        Map<String, Integer> edgeNames = new HashMap<>();
         for (ActivityEdge edge: activity.getEdges()) {
-            edgeNames.add(edge.getName());
+            updateNameMap(edge, edgeNames);
         }
 
         // Ensure unique name for edges.
