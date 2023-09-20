@@ -56,9 +56,8 @@ public class FlattenUMLActivity {
         NameIDTracingHelper.giveNameToModelElements(model);
 
         // Step 3: Ensure that all names are locally unique within their scope.
-        NameIDTracingHelper.ensureUniqueNameForEnumerations(model);
+        NameIDTracingHelper.ensureUniqueNameForEnumerationsAndProperties(model);
         NameIDTracingHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
-        NameIDTracingHelper.ensureUniqueNameForProperties(contextClass);
         NameIDTracingHelper.ensureUniqueNameForActivities(contextClass);
         NameIDTracingHelper.ensureUniqueNameForElementsInActivities(contextClass);
 

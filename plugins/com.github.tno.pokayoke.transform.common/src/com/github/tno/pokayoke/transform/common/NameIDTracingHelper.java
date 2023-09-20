@@ -54,11 +54,11 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Ensures unique name for all enumerations in a model.
+     * Ensures unique name for all enumerations and properties in a model.
      *
-     * @param model The model which contains enumerations.
+     * @param model The model which contains enumerations and properties.
      */
-    public static void ensureUniqueNameForEnumerations(Model model) {
+    public static void ensureUniqueNameForEnumerationsAndProperties(Model model) {
         // Collect the name of enumerations.
         Map<String, Integer> names = new HashMap<>();
 
@@ -67,10 +67,26 @@ public class NameIDTracingHelper {
                 updateNameMap(member, names);
             }
         }
-        // Ensure each enumeration has a locally unique name within a set of enumerations.
+
+        // Collect the name of properties.
+        Class contextClass = (Class)model.getMember("Context");
+        for (NamedElement element: contextClass.getAllAttributes()) {
+            if (element instanceof Property property) {
+                updateNameMap(property, names);
+            }
+        }
+
+        // Ensure each enumeration has a locally unique name within a set of enumerations and properties.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
                 ensureUniqueNameForElement(member, names);
+            }
+        }
+
+        // Ensure each property has a locally unique name within a set of enumerations and properties.
+        for (NamedElement element: contextClass.getAllAttributes()) {
+            if (element instanceof Property property) {
+                ensureUniqueNameForElement(property, names);
             }
         }
     }
@@ -140,27 +156,6 @@ public class NameIDTracingHelper {
 
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             ensureUniqueNameForElement(literal, names);
-        }
-    }
-
-    /**
-     * Ensures unique name for properties in a model.
-     *
-     * @param contextClass The class that contains properties.
-     */
-    public static void ensureUniqueNameForProperties(Class contextClass) {
-        // Collect name of properties and their default value.
-        Map<String, Integer> names = new HashMap<>();
-        for (NamedElement member: contextClass.getMembers()) {
-            if (member instanceof Property property) {
-                updateNameMap(property, names);
-            }
-        }
-        // Ensure each property and its default value has a unique local name within a set of properties.
-        for (NamedElement member: contextClass.getMembers()) {
-            if (member instanceof Property property) {
-                ensureUniqueNameForElement(property, names);
-            }
         }
     }
 
