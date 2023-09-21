@@ -71,6 +71,9 @@ public class FlattenUMLActivity {
             }
         }
 
+        // Step 6: Prepend the name of the outer activity to all model elements.
+        NameIDTracingHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
+
 //        // Step 6: Check that the names of the model elements are unique globally.
 //        NameIDTracingHelper.checkUniquenessOfNames(model);
     }

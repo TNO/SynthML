@@ -333,6 +333,17 @@ public class NameIDTracingHelper {
         return comment.getBody().split(":")[0].equals(TRACING_IDENTIFIER);
     }
 
+    /** Prepend the name of the outer activity to the nodes and edges in activities.
+     * @param contextClass The class that contains activities.
+     */
+    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Class contextClass) {
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+            if (behavior instanceof Activity activity) {
+                prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
+            }
+        }
+    }
+
     /**
      * Checks if a double underscore is used in the name of any model elements.
      *
