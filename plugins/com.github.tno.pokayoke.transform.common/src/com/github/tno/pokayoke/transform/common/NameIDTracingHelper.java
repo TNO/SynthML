@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.common;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +20,8 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.InstanceValue;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
@@ -45,9 +46,12 @@ public class NameIDTracingHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                String name = namedElement.getName();
-                if (name == null || name.isEmpty()) {
-                    namedElement.setName(namedElement.eClass().getName());
+                // LiteralBoolean and InstanceValue are expressions and their instances do not need to be named.
+                if (!(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue)) {
+                    String name = namedElement.getName();
+                    if (name == null || name.isEmpty()) {
+                        namedElement.setName(namedElement.eClass().getName());
+                    }
                 }
             }
         }
@@ -333,7 +337,9 @@ public class NameIDTracingHelper {
         return comment.getBody().split(":")[0].equals(TRACING_IDENTIFIER);
     }
 
-    /** Prepend the name of the outer activity to the nodes and edges in activities.
+    /**
+     * Prepend the name of the outer activity to the nodes and edges in activities.
+     *
      * @param contextClass The class that contains activities.
      */
     public static void prependOuterActivityNameToNodesAndEdgesInActivities(Class contextClass) {
@@ -375,9 +381,12 @@ public class NameIDTracingHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                String name = namedElement.getName();
-                Verify.verify(!names.contains(name), String.format("Model name %s is not globally unique.", name));
-                names.add(name);
+                // LiteralBoolean and InstanceValue instances do not have a name.
+                if (!(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue)) {
+                    String name = namedElement.getName();
+                    Verify.verify(!names.contains(name), String.format("Model name %s is not globally unique.", name));
+                    names.add(name);
+                }
             }
         }
     }
