@@ -293,7 +293,15 @@ public class NameIDTracingHelper {
      * @param action The call behavior action that calls the activity.
      */
     public static void prependPrefixIDToNodesAndEdgesInActivity(Activity activity, CallBehaviorAction action) {
-        String id = extractIDFromTracingComment(action) + " " + extractIDFromTracingComment(activity);
+        List<String> actionIDs = extractIDsFromTracingComment(action);
+        List<String> activityIDs = extractIDsFromTracingComment(activity);
+
+        Verify.verify(actionIDs.size() == 1,
+                String.format("Action %s should have only one tracing comment.", action.getName()));
+        Verify.verify(activityIDs.size() == 1,
+                String.format("Activity %s should have only one tracing comment.", activity.getName()));
+
+        String id = actionIDs.get(0) + " " + activityIDs.get(0);
 
         for (ActivityNode node: activity.getNodes()) {
             prependPrefixID(node, id);
@@ -318,16 +326,16 @@ public class NameIDTracingHelper {
      * Extracts the ID from the tracing comment of the element.
      *
      * @param element The element that contains a tracing comment.
-     * @return The ID in the tracing comment.
+     * @return The IDs in the tracing comments.
      */
-    public static String extractIDFromTracingComment(NamedElement element) {
+    public static List<String> extractIDsFromTracingComment(NamedElement element) {
         List<String> tracingComments = new ArrayList<>();
         for (Comment comment: element.getOwnedComments()) {
             if (isTracingComment(comment)) {
                 tracingComments.add(comment.getBody().split(":")[1]);
             }
         }
-        return String.join(" ", tracingComments);
+        return tracingComments;
     }
 
     private static boolean isTracingComment(Comment comment) {
@@ -381,8 +389,8 @@ public class NameIDTracingHelper {
                 // LiteralBoolean and InstanceValue instances do not have a name.
                 if (!(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue)) {
                     String name = namedElement.getName();
-                    Verify.verify(!names.contains(name), String.format("Model name %s is not globally unique.", name));
-                    names.add(name);
+                    boolean added = names.add(name);
+                    Verify.verify(added, String.format("Model name %s is not globally unique.", name));
                 }
             }
         }

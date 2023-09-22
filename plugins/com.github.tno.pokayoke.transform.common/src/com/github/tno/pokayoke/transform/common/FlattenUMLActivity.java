@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
@@ -148,17 +149,21 @@ public class FlattenUMLActivity {
                             // Add a name for the newly added edge.
                             newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
 
-                            // Extract the ID of the outer edge.
-                            String outerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
+                            // Extract the IDs of the outer edge.
+                            List<String> outerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(incomingEdge);
 
-                            // Add an ID for the newly added edge with the ID of the outer edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                            // Add IDs for the newly added edge with the IDs of the outer edge.
+                            for (String outerEdgeID: outerEdgeIDs) {
+                                NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                            }
 
-                            // Extract the ID of the inner edge.
-                            String innerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
+                            // Extract the IDs of the inner edge.
+                            List<String> innerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(outgoingEdge);
 
-                            // Add an ID for the newly added edge with the ID of the inner edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                            // Add IDs for the newly added edge with the IDs of the inner edge.
+                            for (String innerEdgeID: innerEdgeIDs) {
+                                NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                            }
                         }
                     }
 
@@ -190,17 +195,21 @@ public class FlattenUMLActivity {
                             // Add a name for the newly added edge.
                             newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
 
-                            // Extract the ID of the outer edge.
-                            String outerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(outgoingEdge);
+                            // Extract the IDs of the outer edge.
+                            List<String> outerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(outgoingEdge);
 
-                            // Add an ID for the newly added edge with the ID of the outer edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                            // Add IDs for the newly added edge with the IDs of the outer edge.
+                            for (String outerEdgeID: outerEdgeIDs) {
+                                NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                            }
 
-                            // Extract the ID of the inner edge.
-                            String innerEdgeID = NameIDTracingHelper.extractIDFromTracingComment(incomingEdge);
+                            // Extract the IDs of the inner edge.
+                            List<String> innerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(incomingEdge);
 
-                            // Add an ID for the newly added edge with the ID of the inner edge.
-                            NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                            // Add IDs for the newly added edge with the IDs of the inner edge.
+                            for (String innerEdgeID: innerEdgeIDs) {
+                                NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                            }
                         }
                     }
 
