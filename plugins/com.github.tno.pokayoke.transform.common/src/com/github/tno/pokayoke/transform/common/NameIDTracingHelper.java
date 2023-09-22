@@ -202,25 +202,24 @@ public class NameIDTracingHelper {
      */
     public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
         // Collect name of nodes.
-        Map<String, Integer> nodeNames = new HashMap<>();
+        Map<String, Integer> names = new HashMap<>();
         for (ActivityNode node: activity.getNodes()) {
-            updateNameMap(node, nodeNames);
+            updateNameMap(node, names);
+        }
+
+        // Collect name of edges.
+        for (ActivityEdge edge: activity.getEdges()) {
+            updateNameMap(edge, names);
         }
 
         // Ensure unique name for nodes.
         for (ActivityNode node: activity.getNodes()) {
-            ensureUniqueNameForElement(node, nodeNames);
-        }
-
-        // Collect name of edges.
-        Map<String, Integer> edgeNames = new HashMap<>();
-        for (ActivityEdge edge: activity.getEdges()) {
-            updateNameMap(edge, edgeNames);
+            ensureUniqueNameForElement(node, names);
         }
 
         // Ensure unique name for edges.
         for (ActivityEdge edge: activity.getEdges()) {
-            ensureUniqueNameForElement(edge, edgeNames);
+            ensureUniqueNameForElement(edge, names);
         }
     }
 
