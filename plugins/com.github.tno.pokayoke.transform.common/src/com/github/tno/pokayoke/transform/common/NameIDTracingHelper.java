@@ -36,6 +36,26 @@ public class NameIDTracingHelper {
     }
 
     /**
+     * Checks if a double underscore is used in the name of any model elements.
+     *
+     * @param model The model to check.
+     * @return {@code true} if the model has a model element whose name contains a double underscore, {@code false}
+     *     otherwise.
+     */
+    public static boolean isDoubleUnderscoreUsed(Model model) {
+        TreeIterator<EObject> iterator = model.eAllContents();
+        while (iterator.hasNext()) {
+            EObject eObject = iterator.next();
+            if (eObject instanceof NamedElement namedElement) {
+                if (namedElement.getName() != null && namedElement.getName().contains("__")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gives a name to each model element. The name of the class is given to the element as its name if it does not have
      * a name yet. Otherwise, the original name is kept.
      *
@@ -109,6 +129,82 @@ public class NameIDTracingHelper {
         }
     }
 
+    /**
+     * Ensures locally unique name for enumeration literals in all enumerations.
+     *
+     * @param model The model that contains the enumerations.
+     */
+    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration enumeration) {
+                ensureUniqueNameForEnumerationLiterals(enumeration);
+            }
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all elements in each activity.
+     *
+     * @param contextClass The class that contains activities.
+     */
+    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
+            }
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all enumeration literals in an enumeration.
+     *
+     * @param enumeration The enumeration.
+     */
+    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
+        // Collect name of enumeration literals.
+        Map<String, Integer> names = new HashMap<>();
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            updateNameMap(literal, names);
+        }
+
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            ensureUniqueNameForElement(literal, names);
+        }
+
+        // Prepend the name of enumeration to the name of enumeration literals.
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            prependPrefixName(literal, enumeration.getName());
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all nodes and edges in an activity.
+     *
+     * @param activity The activity.
+     */
+    public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
+        // Collect name of nodes.
+        Map<String, Integer> names = new HashMap<>();
+        for (ActivityNode node: activity.getNodes()) {
+            updateNameMap(node, names);
+        }
+
+        // Collect name of edges.
+        for (ActivityEdge edge: activity.getEdges()) {
+            updateNameMap(edge, names);
+        }
+
+        // Ensure unique name for nodes.
+        for (ActivityNode node: activity.getNodes()) {
+            ensureUniqueNameForElement(node, names);
+        }
+
+        // Ensure unique name for edges.
+        for (ActivityEdge edge: activity.getEdges()) {
+            ensureUniqueNameForElement(edge, names);
+        }
+    }
+
     private static void updateNameMap(NamedElement member, Map<String, Integer> names) {
         String name = member.getName();
         if (!names.containsKey(name)) {
@@ -145,82 +241,6 @@ public class NameIDTracingHelper {
         }
 
         return generatedName;
-    }
-
-    /**
-     * Ensures locally unique name for enumeration literals in all enumerations.
-     *
-     * @param model The model that contains the enumerations.
-     */
-    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration enumeration) {
-                ensureUniqueNameForEnumerationLiterals(enumeration);
-            }
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all enumeration literals in an enumeration.
-     *
-     * @param enumeration The enumeration.
-     */
-    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
-        // Collect name of enumeration literals.
-        Map<String, Integer> names = new HashMap<>();
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            updateNameMap(literal, names);
-        }
-
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            ensureUniqueNameForElement(literal, names);
-        }
-
-        // Prepend the name of enumeration to the name of enumeration literals.
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            prependPrefixName(literal, enumeration.getName());
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all elements in each activity.
-     *
-     * @param contextClass The class that contains activities.
-     */
-    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
-            }
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all nodes and edges in an activity.
-     *
-     * @param activity The activity.
-     */
-    public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
-        // Collect name of nodes.
-        Map<String, Integer> names = new HashMap<>();
-        for (ActivityNode node: activity.getNodes()) {
-            updateNameMap(node, names);
-        }
-
-        // Collect name of edges.
-        for (ActivityEdge edge: activity.getEdges()) {
-            updateNameMap(edge, names);
-        }
-
-        // Ensure unique name for nodes.
-        for (ActivityNode node: activity.getNodes()) {
-            ensureUniqueNameForElement(node, names);
-        }
-
-        // Ensure unique name for edges.
-        for (ActivityEdge edge: activity.getEdges()) {
-            ensureUniqueNameForElement(edge, names);
-        }
     }
 
     /**
@@ -287,6 +307,19 @@ public class NameIDTracingHelper {
     }
 
     /**
+     * Prepend the name of the outer activity to the nodes and edges in activities.
+     *
+     * @param contextClass The class that contains activities.
+     */
+    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Class contextClass) {
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+            if (behavior instanceof Activity activity) {
+                prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
+            }
+        }
+    }
+
+    /**
      * Prepends the IDs of the call behavior action and activity to the comments of the nodes and edges in an activity.
      *
      * @param activity The activity that contains nodes and edges.
@@ -340,39 +373,6 @@ public class NameIDTracingHelper {
 
     private static boolean isTracingComment(Comment comment) {
         return comment.getBody().split(":")[0].equals(TRACING_IDENTIFIER);
-    }
-
-    /**
-     * Prepend the name of the outer activity to the nodes and edges in activities.
-     *
-     * @param contextClass The class that contains activities.
-     */
-    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Class contextClass) {
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
-            }
-        }
-    }
-
-    /**
-     * Checks if a double underscore is used in the name of any model elements.
-     *
-     * @param model The model to check.
-     * @return {@code true} if the model has a model element whose name contains a double underscore, {@code false}
-     *     otherwise.
-     */
-    public static boolean isDoubleUnderscoreUsed(Model model) {
-        TreeIterator<EObject> iterator = model.eAllContents();
-        while (iterator.hasNext()) {
-            EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement namedElement) {
-                if (namedElement.getName() != null && namedElement.getName().contains("__")) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**
