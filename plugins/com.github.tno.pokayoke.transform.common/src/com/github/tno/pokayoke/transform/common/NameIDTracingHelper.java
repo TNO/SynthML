@@ -66,8 +66,7 @@ public class NameIDTracingHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                // LiteralBoolean and InstanceValue are expressions and their instances do not need to be named.
-                if (!(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue)) {
+                if (shouldNamed(namedElement)) {
                     String name = namedElement.getName();
                     if (name == null || name.isEmpty()) {
                         namedElement.setName(namedElement.eClass().getName());
@@ -75,6 +74,16 @@ public class NameIDTracingHelper {
                 }
             }
         }
+    }
+
+    /**
+     * Check if an element is LiteralBoolean or InstanceValue which are expressions and should not be named.
+     *
+     * @param namedElement The element to check.
+     * @return The result of the check.
+     */
+    private static boolean shouldNamed(NamedElement namedElement) {
+        return !(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue);
     }
 
     /**
@@ -387,7 +396,7 @@ public class NameIDTracingHelper {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
                 // LiteralBoolean and InstanceValue instances do not have a name.
-                if (!(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue)) {
+                if (shouldNamed(namedElement)) {
                     String name = namedElement.getName();
                     boolean added = names.add(name);
                     Verify.verify(added, String.format("Model name %s is not globally unique.", name));
