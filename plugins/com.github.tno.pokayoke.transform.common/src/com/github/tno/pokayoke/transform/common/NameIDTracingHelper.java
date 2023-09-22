@@ -62,10 +62,10 @@ public class NameIDTracingHelper {
      *
      * @param model The model which contains enumerations and properties.
      */
-    public static void ensureUniqueNameForEnumerationsAndProperties(Model model) {
-        // Collect the name of enumerations.
+    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Model model) {
         Map<String, Integer> names = new HashMap<>();
 
+        // Collect the name of enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
                 updateNameMap(member, names);
@@ -80,6 +80,13 @@ public class NameIDTracingHelper {
             }
         }
 
+        // Collect name of activities.
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                updateNameMap(activity, names);
+            }
+        }
+
         // Ensure each enumeration has a locally unique name within a set of enumerations and properties.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
@@ -91,6 +98,13 @@ public class NameIDTracingHelper {
         for (NamedElement element: contextClass.getAllAttributes()) {
             if (element instanceof Property property) {
                 ensureUniqueNameForElement(property, names);
+            }
+        }
+
+        // Ensure each activity has a unique local name within a set of activities.
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity) {
+                ensureUniqueNameForElement(behavior, names);
             }
         }
     }
@@ -163,26 +177,6 @@ public class NameIDTracingHelper {
         }
     }
 
-    /**
-     * Ensures unique name for all activities in a class.
-     *
-     * @param contextClass The context class which contains the activities.
-     */
-    public static void ensureUniqueNameForActivities(Class contextClass) {
-        // Collect name of activities.
-        Map<String, Integer> names = new HashMap<>();
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                updateNameMap(activity, names);
-            }
-        }
-        // Ensure each activity has a unique local name within a set of activities.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity) {
-                ensureUniqueNameForElement(behavior, names);
-            }
-        }
-    }
 
     /**
      * Ensures locally unique name for all elements in each activity.
