@@ -175,8 +175,12 @@ public class NameIDTracingHelper {
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             ensureUniqueNameForElement(literal, names);
         }
-    }
 
+        // Prepend the name of enumeration to the name of enumeration literals.
+        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
+            prependPrefixName(literal, enumeration.getName());
+        }
+    }
 
     /**
      * Ensures locally unique name for all elements in each activity.
