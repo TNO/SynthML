@@ -20,11 +20,10 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.InstanceValue;
-import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.google.common.base.Verify;
 
@@ -66,7 +65,7 @@ public class NameIDTracingHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                if (shouldNamed(namedElement)) {
+                if (shouldBeNamed(namedElement)) {
                     String name = namedElement.getName();
                     if (name == null || name.isEmpty()) {
                         namedElement.setName(namedElement.eClass().getName());
@@ -77,13 +76,13 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Check if an element is LiteralBoolean or InstanceValue which are expressions and should not be named.
+     * Check whether an element should be named.
      *
      * @param namedElement The element to check.
-     * @return The result of the check.
+     * @return {@code true} if the element should have a name, {@code false} otherwise.
      */
-    private static boolean shouldNamed(NamedElement namedElement) {
-        return !(namedElement instanceof LiteralBoolean) && !(namedElement instanceof InstanceValue);
+    private static boolean shouldBeNamed(NamedElement namedElement) {
+        return !(namedElement instanceof ValueSpecification);
     }
 
     /**
@@ -94,14 +93,14 @@ public class NameIDTracingHelper {
     public static void ensureUniqueNameForEnumerationsPropertiesActivities(Model model) {
         Map<String, Integer> names = new HashMap<>();
 
-        // Collect the name of enumerations.
+        // Collect names of enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
                 updateNameMap(member, names);
             }
         }
 
-        // Collect the name of properties.
+        // Collect names of properties.
         Class contextClass = (Class)model.getMember("Context");
         for (NamedElement element: contextClass.getAllAttributes()) {
             if (element instanceof Property property) {
@@ -109,7 +108,7 @@ public class NameIDTracingHelper {
             }
         }
 
-        // Collect name of activities.
+        // Collect names of activities.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
                 updateNameMap(activity, names);
@@ -170,7 +169,7 @@ public class NameIDTracingHelper {
      * @param enumeration The enumeration.
      */
     private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
-        // Collect name of enumeration literals.
+        // Collect names of enumeration literals.
         Map<String, Integer> names = new HashMap<>();
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             updateNameMap(literal, names);
@@ -180,7 +179,7 @@ public class NameIDTracingHelper {
             ensureUniqueNameForElement(literal, names);
         }
 
-        // Prepend the name of enumeration to the name of enumeration literals.
+        // Prepend the names of enumeration to the names of enumeration literals.
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             prependPrefixName(literal, enumeration.getName());
         }
@@ -192,23 +191,23 @@ public class NameIDTracingHelper {
      * @param activity The activity.
      */
     public static void ensureUniqueNameForNodesAndEdges(Activity activity) {
-        // Collect name of nodes.
+        // Collect names of nodes.
         Map<String, Integer> names = new HashMap<>();
         for (ActivityNode node: activity.getNodes()) {
             updateNameMap(node, names);
         }
 
-        // Collect name of edges.
+        // Collect names of edges.
         for (ActivityEdge edge: activity.getEdges()) {
             updateNameMap(edge, names);
         }
 
-        // Ensure unique name for nodes.
+        // Ensure unique names for nodes.
         for (ActivityNode node: activity.getNodes()) {
             ensureUniqueNameForElement(node, names);
         }
 
-        // Ensure unique name for edges.
+        // Ensure unique names for edges.
         for (ActivityEdge edge: activity.getEdges()) {
             ensureUniqueNameForElement(edge, names);
         }
@@ -306,7 +305,7 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Prepends prefix name to the name of an element.
+     * Prepends a prefix name to the name of an element.
      *
      * @param element The element.
      * @param prefix The prefix name to prepend.
@@ -365,9 +364,9 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Extracts the ID from the tracing comment of the element.
+     * Extracts the IDs from the tracing comments of the element.
      *
-     * @param element The element that contains a tracing comment.
+     * @param element The element that contains tracing comments.
      * @return The IDs in the tracing comments.
      */
     public static List<String> extractIDsFromTracingComment(NamedElement element) {
@@ -395,8 +394,7 @@ public class NameIDTracingHelper {
         while (iterator.hasNext()) {
             EObject eObject = iterator.next();
             if (eObject instanceof NamedElement namedElement) {
-                // LiteralBoolean and InstanceValue instances do not have a name.
-                if (shouldNamed(namedElement)) {
+                if (shouldBeNamed(namedElement)) {
                     String name = namedElement.getName();
                     boolean added = names.add(name);
                     Verify.verify(added, String.format("Model name %s is not globally unique.", name));
