@@ -86,7 +86,7 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Ensures unique name for all enumerations and properties in a model.
+     * Ensures unique name for all enumerations, properties and activities in a model.
      *
      * @param model The model which contains enumerations and properties.
      */
@@ -115,21 +115,21 @@ public class NameIDTracingHelper {
             }
         }
 
-        // Ensure each enumeration has a locally unique name within a set of enumerations and properties.
+        // Ensure unique names for the enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
                 ensureUniqueNameForElement(member, names);
             }
         }
 
-        // Ensure each property has a locally unique name within a set of enumerations and properties.
+        // Ensure unique names for the properties.
         for (NamedElement element: contextClass.getAllAttributes()) {
             if (element instanceof Property property) {
                 ensureUniqueNameForElement(property, names);
             }
         }
 
-        // Ensure each activity has a unique local name within a set of activities.
+        // Ensure unique names for the activities.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity) {
                 ensureUniqueNameForElement(behavior, names);
