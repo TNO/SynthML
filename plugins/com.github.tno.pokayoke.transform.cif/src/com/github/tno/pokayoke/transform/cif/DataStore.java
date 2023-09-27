@@ -29,7 +29,7 @@ public class DataStore {
     }
 
     protected EnumDecl getEnumeration(EnumLiteral enumLiteral) {
-        return enumerations.get(enumLiteral);
+        return enumLiteralToEnum.get(enumLiteral);
     }
 
     protected void addEnumeration(String name, EnumDecl enumDecl) {
@@ -47,7 +47,7 @@ public class DataStore {
     protected void addEnumerationLiteral(String name, EnumLiteral enumLiteral, EnumDecl enumDecl) {
         enumLiterals.put(name, enumLiteral);
 
-        // Map enum literal to enum. The diagram in specification (https://www.omg.org/spec/UML/2.5.1/PDF page 209)
+        // Map enum literal to enum. The diagram in the specification (https://www.omg.org/spec/UML/2.5.1/PDF page 209)
         // shows that one enum can have 0 or more enum literals and each enum literal is only associated with one enum.
         enumLiteralToEnum.put(enumLiteral, enumDecl);
     }

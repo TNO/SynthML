@@ -43,7 +43,33 @@ public class CifHelper {
     }
 
     /**
-     * Add enumerations and variables of the UML model. Add events for the nodes and variables for the edges.
+     * Validates if the name is CIF valid.
+     *
+     * @param name The name to validate.
+     */
+    public static void validateName(String name) {
+        Verify.verify(CifValidationUtils.isValidIdentifier(name), String.format("%s is not a valid CIF name.", name));
+    }
+
+    /**
+     * Validates if the names of the model are CIF valid.
+     *
+     * @param model The model to validate.
+     */
+    public static void validateNames(Model model) {
+        TreeIterator<EObject> iterator = model.eAllContents();
+        while (iterator.hasNext()) {
+            EObject eObject = iterator.next();
+            if (eObject instanceof NamedElement nameElement) {
+                if (nameElement.getName() != null && !nameElement.getName().equals("")) {
+                    validateName(nameElement.getName());
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds enumerations and variables of the UML model. Adds events for the nodes and variables for the edges.
      *
      * @param model The UML model to transform.
      * @param activity The main activity in the model to transform.
@@ -71,21 +97,24 @@ public class CifHelper {
                 DiscVariable cifBoolVariable = newDiscVariable(property.getName(), null, newBoolType(), null);
 
                 // The default value of attributes and properties can be unspecified:
-                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39).
+                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
+                // exists for this property.
                 if (property.getDefaultValue() != null) {
                     cifBoolVariable.setValue(createBoolValue(property.getDefaultValue().booleanValue()));
                 }
                 aut.getDeclarations().add(cifBoolVariable);
                 dataStore.addVariable(cifBoolVariable.getName(), cifBoolVariable);
             } else if (dataStore.isEnumeration(dataType)) {
-                validateName(property.getName());
                 EnumType enumType = newEnumType(dataStore.getEnumeration(dataType), null);
                 DiscVariable cifEnum = newDiscVariable(property.getName(), null, enumType, null);
 
                 // The default value of attributes and properties can be unspecified:
-                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39).
-                if (property.getDefault() != null) {
-                    cifEnum.setValue(extractEnumLiteral(property, dataStore.getEnumeration(dataType)));
+                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
+                // exists for this property.
+                if (property.getDefaultValue() != null) {
+                    EnumLiteral enumLiteral = dataStore.getEnumerationLiteral(property.getDefaultValue().stringValue());
+                    EnumDecl enumeration = dataStore.getEnumeration(enumLiteral);
+                    cifEnum.setValue(createEnumLiteralValue(enumLiteral, enumeration));
                 }
                 aut.getDeclarations().add(cifEnum);
                 dataStore.addVariable(cifEnum.getName(), cifEnum);
@@ -101,6 +130,13 @@ public class CifHelper {
         return aut;
     }
 
+    /**
+     * Creates edge variables for edges in the activity, and adds them to the automaton and the data store.
+     *
+     * @param activity The activity that contains edges.
+     * @param aut The automaton that contains the created edge variables.
+     * @param dataStore Where edge variables are stored.
+     */
     public static void createEdgeVariables(Activity activity, Automaton aut, DataStore dataStore) {
         for (ActivityEdge edge: activity.getEdges()) {
             // Define a boolean variable and set the initial value to true if its source is an initial node, otherwise,
@@ -119,6 +155,13 @@ public class CifHelper {
         }
     }
 
+    /**
+     * Creates events for nodes in the activity, and adds them to the automaton and the data store.
+     *
+     * @param activity The activity that contains nodes.
+     * @param aut The automaton that contains the created events.
+     * @param dataStore Where events are stored.
+     */
     public static void createEvents(Activity activity, Automaton aut, DataStore dataStore) {
         // Define an event for each node and add them to the map and automaton.
         for (ActivityNode node: activity.getNodes()) {
@@ -129,6 +172,13 @@ public class CifHelper {
         }
     }
 
+    /**
+     * Transforms a UML enumeration into CIF enumeration declaration and adds it to the data store.
+     *
+     * @param enumeration The enumeration to transform.
+     * @param dataStore Where enumeration declarations are stored.
+     * @return A created enumeration declaration.
+     */
     public static EnumDecl transformEnumeration(Enumeration enumeration, DataStore dataStore) {
         EnumDecl cifEnumDecl = newEnumDecl(null, enumeration.getName(), null);
         dataStore.addEnumeration(enumeration.getName(), cifEnumDecl);
@@ -140,6 +190,12 @@ public class CifHelper {
         return cifEnumDecl;
     }
 
+    /**
+     * Creates a CIF boolean value.
+     *
+     * @param boolValue The boolean value.
+     * @return The created CIF boolean value.
+     */
     public static VariableValue createBoolValue(boolean boolValue) {
         BoolExpression boolExpress = newBoolExpression(null, newBoolType(), boolValue);
         VariableValue value = newVariableValue();
@@ -147,29 +203,18 @@ public class CifHelper {
         return value;
     }
 
-    public static VariableValue extractEnumLiteral(Property variable, EnumDecl enumDecl) {
+    /**
+     * Creates a CIF enumeration literal value.
+     *
+     * @param enumLiteral The enumeration literal.
+     * @param enumDecl The corresponding enumeration declaration.
+     * @return The created CIF enumeration literal value.
+     */
+    public static VariableValue createEnumLiteralValue(EnumLiteral enumLiteral, EnumDecl enumDecl) {
         EnumType enumType = newEnumType(enumDecl, null);
-        EnumLiteral enumLiteral = enumDecl.getLiterals().stream()
-                .filter(l -> (l.getName().equals(variable.getDefault()))).findFirst().get();
         EnumLiteralExpression enumExpress = newEnumLiteralExpression(enumLiteral, null, enumType);
         VariableValue value = newVariableValue();
         value.getValues().add(enumExpress);
         return value;
-    }
-
-    public static void validateName(String name) {
-        Verify.verify(CifValidationUtils.isValidIdentifier(name), String.format("%s is not a valid CIF name.", name));
-    }
-
-    public static void validateNames(Model model) {
-        TreeIterator<EObject> iterator = model.eAllContents();
-        while (iterator.hasNext()) {
-            EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement nameElement) {
-                if (nameElement.getName() != null && !nameElement.getName().equals("")) {
-                    validateName(nameElement.getName());
-                }
-            }
-        }
     }
 }
