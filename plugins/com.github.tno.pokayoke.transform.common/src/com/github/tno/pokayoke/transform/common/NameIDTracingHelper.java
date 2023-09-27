@@ -310,7 +310,7 @@ public class NameIDTracingHelper {
      * @param element The element.
      * @param prefix The prefix name to prepend.
      */
-    public static void prependPrefixName(NamedElement element, String prefix) {
+    private static void prependPrefixName(NamedElement element, String prefix) {
         element.setName(prefix + "__" + element.getName());
     }
 
