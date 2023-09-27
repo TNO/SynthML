@@ -28,7 +28,6 @@ public class DataStore {
         return enumerations.get(name);
     }
 
-    @SuppressWarnings("unlikely-arg-type")
     protected EnumDecl getEnumeration(EnumLiteral enumLiteral) {
         return enumerations.get(enumLiteral);
     }

@@ -12,11 +12,6 @@ import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEvent;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newVariableValue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.escet.cif.common.CifValidationUtils;
@@ -160,36 +155,6 @@ public class CifHelper {
         VariableValue value = newVariableValue();
         value.getValues().add(enumExpress);
         return value;
-    }
-
-    public static Map<String, List<ActivityEdge>> extractMapFromCallBehaviorActionToBoundaryEdge(Activity activity) {
-        List<ActivityEdge> boundaryEdges = activity.getEdges().stream()
-                .filter(k -> k.getName().contains("CallBehaviorAction") && k.getName().contains("Added")).toList();
-        Map<String, List<ActivityEdge>> actionToEdges = new HashMap<>();
-        for (ActivityEdge element: boundaryEdges) {
-            String[] chunks = element.getName().split("__");
-            for (String chunk: chunks) {
-                if (chunk.contains("CallBehaviorAction")) {
-                    if (!actionToEdges.containsKey(chunk)) {
-                        actionToEdges.put(chunk, new ArrayList<>());
-                    }
-                    actionToEdges.get(chunk).add(element);
-                }
-            }
-        }
-        return actionToEdges;
-    }
-
-    public static List<ActivityNode> identifyTargetssOfIncomingEdges(List<ActivityEdge> edges) {
-        List<ActivityEdge> incomingEdges = edges.stream().filter(e -> e.getName().contains("Incoming")).toList();
-        List<ActivityNode> targetNodes = incomingEdges.stream().map(edge -> edge.getTarget()).toList();
-        return targetNodes;
-    }
-
-    public static List<ActivityNode> identifySourcesOfOutgoingEdges(List<ActivityEdge> edges) {
-        List<ActivityEdge> outgoingEdges = edges.stream().filter(e -> e.getName().contains("Outgoing")).toList();
-        List<ActivityNode> sourceNodes = outgoingEdges.stream().map(edge -> edge.getSource()).toList();
-        return sourceNodes;
     }
 
     public static void validateName(String name) {
