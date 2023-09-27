@@ -1,28 +1,39 @@
 
 package com.github.tno.pokayoke.transform.cif;
 
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAssignment;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAutomaton;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariable;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEdge;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEdgeEvent;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumDecl;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumLiteral;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumLiteralExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEvent;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEventExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newVariableValue;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifValidationUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
+import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
+import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
+import org.eclipse.escet.cif.metamodel.cif.automata.EdgeEvent;
+import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.declarations.VariableValue;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.uml2.uml.Activity;
@@ -216,5 +227,43 @@ public class CifHelper {
         VariableValue value = newVariableValue();
         value.getValues().add(enumExpress);
         return value;
+    }
+
+    public static void updateOutgoingEdgeVariable(String edgeVariableName, Edge cifEdge, DataStore dataStore) {
+        // Set the outgoing edge variable to true.
+        DiscVariable outgoingEdgedVariable = dataStore.getVariable(edgeVariableName);
+        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(outgoingEdgedVariable, true));
+    }
+
+    public static void setGuardAndUpdateForIncomingEdgeVariable(String edgeVariableName, Edge cifEdge,
+            DataStore dataStore)
+    {
+        // Extract the edge variable for the incoming edge.
+        DiscVariable edgeVariable = dataStore.getVariable(edgeVariableName);
+
+        // Add the guard to the edge.
+        cifEdge.getGuards().add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
+
+        // Set the incoming edge variable to false.
+        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(edgeVariable, false));
+    }
+
+    public static Edge createCifEdgeAndEdgeEvent(Location location, Event nodeEvent) {
+        // Define a CIF edge and add it to the location.
+        Edge cifEdge = newEdge();
+        location.getEdges().add(cifEdge);
+
+        // Define a CIF edge event and add it to the CIF edge.
+        EdgeEvent cifEdgeEvent = newEdgeEvent();
+        cifEdgeEvent.setEvent(newEventExpression(nodeEvent, null, newBoolType()));
+        cifEdge.getEvents().add(cifEdgeEvent);
+
+        return cifEdge;
+    }
+
+    public static Assignment createAssignmentForEdgeVariable(DiscVariable variable, boolean value) {
+        DiscVariableExpression addressableVar = newDiscVariableExpression(null, newBoolType(), variable);
+        Assignment assign = newAssignment(addressableVar, null, newBoolExpression(null, newBoolType(), value));
+        return assign;
     }
 }

@@ -1,13 +1,7 @@
 
 package com.github.tno.pokayoke.transform.cif;
 
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAssignment;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolExpression;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEdge;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEdgeEvent;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEventExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newLocation;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newSpecification;
 
@@ -23,16 +17,12 @@ import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
-import org.eclipse.escet.cif.metamodel.cif.automata.EdgeEvent;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
-import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
-import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -122,16 +112,16 @@ public class UmlActitityToCifTransformer {
                 // Get the node event.
                 Event nodeEvent = dataStore.getEvent(node.getName());
 
-                Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                 // Set guard for the incoming edge variable and update its value to false.
                 ActivityEdge incomingEdge = node.getIncomings().get(0);
-                setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
+                CifHelper.setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
 
                 // Set the outgoing edge variables to true.
                 for (ActivityEdge outgoingEdge: node.getOutgoings()) {
                     // Set the outgoing edge variable to true.
-                    updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
+                    CifHelper.updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge, dataStore);
                 }
             } else if (node instanceof MergeNode) {
                 // Check if the merge node only has one outgoing edge.
@@ -143,14 +133,14 @@ public class UmlActitityToCifTransformer {
 
                 // For each incoming edge, an automaton edge and its info (i.e., guard and update) is transformed.
                 for (ActivityEdge incomingEdge: node.getIncomings()) {
-                    Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                    Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                     // Set guard for the incoming edge variable and update its value to false.
-                    setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
+                    CifHelper.setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
 
                     // Set the outgoing edge variables to true.
                     ActivityEdge outgoingEdge = node.getOutgoings().get(0);
-                    updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
+                    CifHelper.updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge, dataStore);
                 }
             } else if (node instanceof JoinNode) {
                 // Check if the join node only has one outgoing edge.
@@ -160,16 +150,16 @@ public class UmlActitityToCifTransformer {
                 // Get node event.
                 Event nodeEvent = dataStore.getEvent(node.getName());
 
-                Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                 // Set guards for the incoming edge variables and update their value to false.
                 for (ActivityEdge incomingEdge: node.getIncomings()) {
-                    setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
+                    CifHelper.setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
                 }
 
                 // Set the outgoing edge variables to true.
                 ActivityEdge outgoingEdge = node.getOutgoings().get(0);
-                updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
+                CifHelper.updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge, dataStore);
             } else if (node instanceof OpaqueAction action) {
                 // fUML requires that an action with input pins has an offer on at least one of the pins before it
                 // fires: from https://www.omg.org/spec/FUML/1.5/PDF (page 175).
@@ -178,14 +168,15 @@ public class UmlActitityToCifTransformer {
                     Event nodeEvent = dataStore.getEvent(node.getName());
 
                     // Create CIF edge and edge event.
-                    Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                    Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                     // Set guard for the incoming edge variable and update its value to false.
-                    setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
+                    CifHelper.setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
 
                     // Extract the guard of the action from CIF text in the body of the action.
                     // If the action has at least one body, then parse the first body, which is assumed to be its guard.
-                    List<Expression> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
+                    List<Expression> guards = action.getBodies().stream().limit(1)
+                            .map(b -> expressionParser.parseString(b, modelPath))
                             .map(b -> translator.translateExpression(b)).collect(Collectors.toList());
 
                     // Update the guard.
@@ -193,8 +184,9 @@ public class UmlActitityToCifTransformer {
 
                     // Extract the effect of the action from CIF text in the body of the action.
                     // Parse all bodies except the first one, all of which should be updates.
-                    List<Assignment> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
-                            .map(b -> translator.translateUpdate(b)).collect(Collectors.toList());
+                    List<Assignment> effects = action.getBodies().stream().skip(1)
+                            .map(b -> updateParser.parseString(b, modelPath)).map(b -> translator.translateUpdate(b))
+                            .collect(Collectors.toList());
 
                     // Set the value of the variables.
                     cifEdge.getUpdates().addAll(effects);
@@ -203,7 +195,7 @@ public class UmlActitityToCifTransformer {
                     // an action, a thread split and each outgoing thread executes concurrently, i.e., implicit fork:
                     // https://www.omg.org/spec/FUML/1.5/PDF (pages 175 and 225).
                     for (ActivityEdge outgoingEdge: node.getOutgoings()) {
-                        updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
+                        CifHelper.updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge, dataStore);
                     }
                 }
             } else if (node instanceof DecisionNode) {
@@ -214,7 +206,7 @@ public class UmlActitityToCifTransformer {
                 // Get node event.
                 Event nodeEvent = dataStore.getEvent(node.getName());
                 for (ActivityEdge outgoingEdge: node.getOutgoings()) {
-                    Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                    Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                     // Add the edge variable for the incoming edge to the guard.
                     DiscVariable incomingEdgedVariable = dataStore.getVariable(node.getIncomings().get(0).getName());
@@ -223,20 +215,21 @@ public class UmlActitityToCifTransformer {
 
                     // Extract guard from the outgoing edge and add it to the automaton edge.
                     String guard = outgoingEdge.getGuard().getName();
-                    Expression guardExpress = translator.translateExpression(parseExpression(guard));
+                    Expression guardExpress = translator
+                            .translateExpression(expressionParser.parseString(guard, modelPath));
                     cifEdge.getGuards().add(guardExpress);
 
                     // Set the incoming edge variable to false.
-                    cifEdge.getUpdates().add(createAssignmentForEdgeVariable(incomingEdgedVariable, false));
+                    cifEdge.getUpdates().add(CifHelper.createAssignmentForEdgeVariable(incomingEdgedVariable, false));
 
                     // Set the outgoing edge variable to true.
-                    updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge);
+                    CifHelper.updateOutgoingEdgeVariable(outgoingEdge.getName(), cifEdge, dataStore);
                 }
             } else if (node instanceof ActivityFinalNode) {
                 // Get node event.
                 Event nodeEvent = dataStore.getEvent(node.getName());
                 for (ActivityEdge incomingEdge: node.getIncomings()) {
-                    Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                    Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                     // Extract the edge variable for the incoming edge.
                     DiscVariable edgeVariable = dataStore.getVariable(incomingEdge.getName());
@@ -250,65 +243,21 @@ public class UmlActitityToCifTransformer {
                     // (page 430).
                     for (ActivityEdge edge: activity.getEdges()) {
                         // Set the incoming edge variable to false.
-                        cifEdge.getUpdates()
-                                .add(createAssignmentForEdgeVariable(dataStore.getVariable(edge.getName()), false));
+                        cifEdge.getUpdates().add(CifHelper
+                                .createAssignmentForEdgeVariable(dataStore.getVariable(edge.getName()), false));
                     }
                 }
             } else if (node instanceof FlowFinalNode) {
                 // Get node event.
                 Event nodeEvent = dataStore.getEvent(node.getName());
                 for (ActivityEdge incomingEdge: node.getIncomings()) {
-                    Edge cifEdge = createCifEdgeAndEdgeEvent(location, nodeEvent);
+                    Edge cifEdge = CifHelper.createCifEdgeAndEdgeEvent(location, nodeEvent);
 
                     // Set guard for the incoming edge variable and update its value to false. Only the execution of
                     // this control flow is terminated. Other flows in the activity can still continue.
-                    setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge);
+                    CifHelper.setGuardAndUpdateForIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
                 }
             }
         }
-    }
-
-    private void updateOutgoingEdgeVariable(String edgeVariableName, Edge cifEdge) {
-        // Set the outgoing edge variable to true.
-        DiscVariable outgoingEdgedVariable = dataStore.getVariable(edgeVariableName);
-        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(outgoingEdgedVariable, true));
-    }
-
-    private void setGuardAndUpdateForIncomingEdgeVariable(String edgeVariableName, Edge cifEdge) {
-        // Extract the edge variable for the incoming edge.
-        DiscVariable edgeVariable = dataStore.getVariable(edgeVariableName);
-
-        // Add the guard to the edge.
-        cifEdge.getGuards().add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
-
-        // Set the incoming edge variable to false.
-        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(edgeVariable, false));
-    }
-
-    private Edge createCifEdgeAndEdgeEvent(Location location, Event nodeEvent) {
-        // Define a CIF edge and add it to the location.
-        Edge cifEdge = newEdge();
-        location.getEdges().add(cifEdge);
-
-        // Define a CIF edge event and add it to the CIF edge.
-        EdgeEvent cifEdgeEvent = newEdgeEvent();
-        cifEdgeEvent.setEvent(newEventExpression(nodeEvent, null, newBoolType()));
-        cifEdge.getEvents().add(cifEdgeEvent);
-
-        return cifEdge;
-    }
-
-    private Assignment createAssignmentForEdgeVariable(DiscVariable variable, boolean value) {
-        DiscVariableExpression addressableVar = newDiscVariableExpression(null, newBoolType(), variable);
-        Assignment assign = newAssignment(addressableVar, null, newBoolExpression(null, newBoolType(), value));
-        return assign;
-    }
-
-    private AExpression parseExpression(String expression) {
-        return expressionParser.parseString(expression, modelPath);
-    }
-
-    private AUpdate parseUpdate(String update) {
-        return updateParser.parseString(update, modelPath);
     }
 }
