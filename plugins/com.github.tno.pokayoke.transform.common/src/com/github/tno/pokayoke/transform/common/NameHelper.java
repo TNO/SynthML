@@ -175,7 +175,7 @@ public class NameHelper {
     public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
-                NameHelper.ensureUniqueNameForNodesAndEdges(activity);
+                ensureUniqueNameForNodesAndEdges(activity);
             }
         }
     }
