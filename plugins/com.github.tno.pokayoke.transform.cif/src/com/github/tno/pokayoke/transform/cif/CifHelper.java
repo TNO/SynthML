@@ -146,11 +146,13 @@ public class CifHelper {
      *
      * @param enumeration The enumeration to transform.
      * @param dataStore Where enumeration declarations are stored.
-     * @return A created enumeration declaration.
+     * @return The created enumeration declaration.
      */
     public static EnumDecl transformEnumeration(Enumeration enumeration, DataStore dataStore) {
         EnumDecl cifEnumDecl = newEnumDecl(null, enumeration.getName(), null);
         dataStore.addEnumeration(enumeration.getName(), cifEnumDecl);
+
+        // Add enumeration literals to the enumeration declaration and the data store.
         for (EnumerationLiteral umlEnumLiteral: enumeration.getOwnedLiterals()) {
             EnumLiteral cifEnumLiteral = newEnumLiteral(umlEnumLiteral.getName(), null);
             cifEnumDecl.getLiterals().add(cifEnumLiteral);
@@ -196,7 +198,7 @@ public class CifHelper {
      */
     public static void createEdgeVariables(Activity activity, Automaton aut, DataStore dataStore) {
         for (ActivityEdge edge: activity.getEdges()) {
-            // Define a boolean variable and set the initial value to true if its source is an initial node, otherwise,
+            // Define a boolean variable and set its initial value to true if its source is an initial node, otherwise,
             // set the value to false.
             VariableValue value = newVariableValue();
             if (edge.getSource() instanceof InitialNode) {
@@ -206,7 +208,7 @@ public class CifHelper {
             }
             DiscVariable cifBoolVariable = newDiscVariable(edge.getName(), null, newBoolType(), value);
 
-            // Add this variable to the name map and the automaton.
+            // Add this variable to the data store and the automaton.
             dataStore.addVariable(edge.getName(), cifBoolVariable);
             aut.getDeclarations().add(cifBoolVariable);
         }
@@ -220,7 +222,7 @@ public class CifHelper {
      * @param dataStore Where events are stored.
      */
     public static void createEvents(Activity activity, Automaton aut, DataStore dataStore) {
-        // Define an event for each node and add them to the map and automaton.
+        // Define an event for each node and add them to the data store and automaton.
         for (ActivityNode node: activity.getNodes()) {
             Event autEvent = newEvent();
             autEvent.setName(node.getName());
@@ -230,18 +232,18 @@ public class CifHelper {
     }
 
     /**
-     * Creates CIF edge and edge event with an event, and adds the edge to the location.
+     * Creates an edge and an edge event with an event, and adds the edge to the location.
      *
      * @param location The location.
      * @param event The event.
      * @return The created edge.
      */
-    public static Edge createCifEdgeAndEdgeEvent(Location location, Event event) {
-        // Define a CIF edge and add it to the location.
+    public static Edge createEdgeAndEdgeEvent(Location location, Event event) {
+        // Define an automaton edge and add it to the location.
         Edge cifEdge = newEdge();
         location.getEdges().add(cifEdge);
 
-        // Define a CIF edge event and add it to the CIF edge.
+        // Define an automaton edge event and add it to the automaton edge.
         EdgeEvent cifEdgeEvent = newEdgeEvent();
         cifEdgeEvent.setEvent(newEventExpression(event, null, newBoolType()));
         cifEdge.getEvents().add(cifEdgeEvent);
@@ -265,7 +267,7 @@ public class CifHelper {
         // Add the guard to the edge.
         cifEdge.getGuards().add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
 
-        // Set the incoming edge variable to false.
+        // Set the value of the incoming edge variable to false.
         cifEdge.getUpdates().add(createAssignmentForEdgeVariableUpdate(edgeVariable, false));
     }
 
@@ -277,7 +279,7 @@ public class CifHelper {
      * @param dataStore Where edge variables are stored.
      */
     public static void updateOutgoingEdgeVariable(String edgeVariableName, Edge cifEdge, DataStore dataStore) {
-        // Set the outgoing edge variable to true.
+        // Set the value of the outgoing edge variable to true.
         DiscVariable outgoingEdgedVariable = dataStore.getVariable(edgeVariableName);
         cifEdge.getUpdates().add(createAssignmentForEdgeVariableUpdate(outgoingEdgedVariable, true));
     }
@@ -286,7 +288,7 @@ public class CifHelper {
      * Creates an assignment to update edge variable.
      *
      * @param edgeVariable The edge variable.
-     * @param value The value to assign.
+     * @param value The value to be assigned.
      * @return The created assignment.
      */
     public static Assignment createAssignmentForEdgeVariableUpdate(DiscVariable edgeVariable, boolean value) {
