@@ -54,15 +54,6 @@ public class CifHelper {
     }
 
     /**
-     * Validates if the name is CIF valid.
-     *
-     * @param name The name to validate.
-     */
-    public static void validateName(String name) {
-        Verify.verify(CifValidationUtils.isValidIdentifier(name), String.format("%s is not a valid CIF name.", name));
-    }
-
-    /**
      * Validates if the names of the model are CIF valid.
      *
      * @param model The model to validate.
@@ -77,6 +68,15 @@ public class CifHelper {
                 }
             }
         }
+    }
+
+    /**
+     * Validates if the name is CIF valid.
+     *
+     * @param name The name to validate.
+     */
+    public static void validateName(String name) {
+        Verify.verify(CifValidationUtils.isValidIdentifier(name), String.format("%s is not a valid CIF name.", name));
     }
 
     /**
@@ -142,6 +142,52 @@ public class CifHelper {
     }
 
     /**
+     * Transforms a UML enumeration into CIF enumeration declaration and adds it to the data store.
+     *
+     * @param enumeration The enumeration to transform.
+     * @param dataStore Where enumeration declarations are stored.
+     * @return A created enumeration declaration.
+     */
+    public static EnumDecl transformEnumeration(Enumeration enumeration, DataStore dataStore) {
+        EnumDecl cifEnumDecl = newEnumDecl(null, enumeration.getName(), null);
+        dataStore.addEnumeration(enumeration.getName(), cifEnumDecl);
+        for (EnumerationLiteral umlEnumLiteral: enumeration.getOwnedLiterals()) {
+            EnumLiteral cifEnumLiteral = newEnumLiteral(umlEnumLiteral.getName(), null);
+            cifEnumDecl.getLiterals().add(cifEnumLiteral);
+            dataStore.addEnumerationLiteral(umlEnumLiteral.getName(), cifEnumLiteral, cifEnumDecl);
+        }
+        return cifEnumDecl;
+    }
+
+    /**
+     * Creates a CIF boolean value.
+     *
+     * @param boolValue The boolean value.
+     * @return The created CIF boolean value.
+     */
+    private static VariableValue createBoolValue(boolean boolValue) {
+        BoolExpression boolExpress = newBoolExpression(null, newBoolType(), boolValue);
+        VariableValue value = newVariableValue();
+        value.getValues().add(boolExpress);
+        return value;
+    }
+
+    /**
+     * Creates a CIF enumeration literal value.
+     *
+     * @param enumLiteral The enumeration literal.
+     * @param enumDecl The corresponding enumeration declaration.
+     * @return The created CIF enumeration literal value.
+     */
+    private static VariableValue createEnumLiteralValue(EnumLiteral enumLiteral, EnumDecl enumDecl) {
+        EnumType enumType = newEnumType(enumDecl, null);
+        EnumLiteralExpression enumExpress = newEnumLiteralExpression(enumLiteral, null, enumType);
+        VariableValue value = newVariableValue();
+        value.getValues().add(enumExpress);
+        return value;
+    }
+
+    /**
      * Creates edge variables for edges in the activity, and adds them to the automaton and the data store.
      *
      * @param activity The activity that contains edges.
@@ -184,58 +230,33 @@ public class CifHelper {
     }
 
     /**
-     * Transforms a UML enumeration into CIF enumeration declaration and adds it to the data store.
+     * Creates CIF edge and edge event with an event, and adds the edge to the location.
      *
-     * @param enumeration The enumeration to transform.
-     * @param dataStore Where enumeration declarations are stored.
-     * @return A created enumeration declaration.
+     * @param location The location.
+     * @param event The event.
+     * @return The created edge.
      */
-    public static EnumDecl transformEnumeration(Enumeration enumeration, DataStore dataStore) {
-        EnumDecl cifEnumDecl = newEnumDecl(null, enumeration.getName(), null);
-        dataStore.addEnumeration(enumeration.getName(), cifEnumDecl);
-        for (EnumerationLiteral umlEnumLiteral: enumeration.getOwnedLiterals()) {
-            EnumLiteral cifEnumLiteral = newEnumLiteral(umlEnumLiteral.getName(), null);
-            cifEnumDecl.getLiterals().add(cifEnumLiteral);
-            dataStore.addEnumerationLiteral(umlEnumLiteral.getName(), cifEnumLiteral, cifEnumDecl);
-        }
-        return cifEnumDecl;
+    public static Edge createCifEdgeAndEdgeEvent(Location location, Event event) {
+        // Define a CIF edge and add it to the location.
+        Edge cifEdge = newEdge();
+        location.getEdges().add(cifEdge);
+
+        // Define a CIF edge event and add it to the CIF edge.
+        EdgeEvent cifEdgeEvent = newEdgeEvent();
+        cifEdgeEvent.setEvent(newEventExpression(event, null, newBoolType()));
+        cifEdge.getEvents().add(cifEdgeEvent);
+
+        return cifEdge;
     }
 
     /**
-     * Creates a CIF boolean value.
+     * Adds a guard on an edge and updates the value of an incoming edge variable.
      *
-     * @param boolValue The boolean value.
-     * @return The created CIF boolean value.
+     * @param edgeVariableName The name of the edge variable whose value needs to be updated.
+     * @param cifEdge The edge to update.
+     * @param dataStore Where edge variables are stored.
      */
-    public static VariableValue createBoolValue(boolean boolValue) {
-        BoolExpression boolExpress = newBoolExpression(null, newBoolType(), boolValue);
-        VariableValue value = newVariableValue();
-        value.getValues().add(boolExpress);
-        return value;
-    }
-
-    /**
-     * Creates a CIF enumeration literal value.
-     *
-     * @param enumLiteral The enumeration literal.
-     * @param enumDecl The corresponding enumeration declaration.
-     * @return The created CIF enumeration literal value.
-     */
-    public static VariableValue createEnumLiteralValue(EnumLiteral enumLiteral, EnumDecl enumDecl) {
-        EnumType enumType = newEnumType(enumDecl, null);
-        EnumLiteralExpression enumExpress = newEnumLiteralExpression(enumLiteral, null, enumType);
-        VariableValue value = newVariableValue();
-        value.getValues().add(enumExpress);
-        return value;
-    }
-
-    public static void updateOutgoingEdgeVariable(String edgeVariableName, Edge cifEdge, DataStore dataStore) {
-        // Set the outgoing edge variable to true.
-        DiscVariable outgoingEdgedVariable = dataStore.getVariable(edgeVariableName);
-        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(outgoingEdgedVariable, true));
-    }
-
-    public static void setGuardAndUpdateForIncomingEdgeVariable(String edgeVariableName, Edge cifEdge,
+    public static void addGuardAndUpdateIncomingEdgeVariable(String edgeVariableName, Edge cifEdge,
             DataStore dataStore)
     {
         // Extract the edge variable for the incoming edge.
@@ -245,24 +266,31 @@ public class CifHelper {
         cifEdge.getGuards().add(newDiscVariableExpression(null, EcoreUtil.copy(edgeVariable.getType()), edgeVariable));
 
         // Set the incoming edge variable to false.
-        cifEdge.getUpdates().add(createAssignmentForEdgeVariable(edgeVariable, false));
+        cifEdge.getUpdates().add(createAssignmentForEdgeVariableUpdate(edgeVariable, false));
     }
 
-    public static Edge createCifEdgeAndEdgeEvent(Location location, Event nodeEvent) {
-        // Define a CIF edge and add it to the location.
-        Edge cifEdge = newEdge();
-        location.getEdges().add(cifEdge);
-
-        // Define a CIF edge event and add it to the CIF edge.
-        EdgeEvent cifEdgeEvent = newEdgeEvent();
-        cifEdgeEvent.setEvent(newEventExpression(nodeEvent, null, newBoolType()));
-        cifEdge.getEvents().add(cifEdgeEvent);
-
-        return cifEdge;
+    /**
+     * Updates the value of an outgoing edge variable.
+     *
+     * @param edgeVariableName The name of the edge variable whose value needs to be updated.
+     * @param cifEdge The edge to update.
+     * @param dataStore Where edge variables are stored.
+     */
+    public static void updateOutgoingEdgeVariable(String edgeVariableName, Edge cifEdge, DataStore dataStore) {
+        // Set the outgoing edge variable to true.
+        DiscVariable outgoingEdgedVariable = dataStore.getVariable(edgeVariableName);
+        cifEdge.getUpdates().add(createAssignmentForEdgeVariableUpdate(outgoingEdgedVariable, true));
     }
 
-    public static Assignment createAssignmentForEdgeVariable(DiscVariable variable, boolean value) {
-        DiscVariableExpression addressableVar = newDiscVariableExpression(null, newBoolType(), variable);
+    /**
+     * Creates an assignment to update edge variable.
+     *
+     * @param edgeVariable The edge variable.
+     * @param value The value to assign.
+     * @return The created assignment.
+     */
+    public static Assignment createAssignmentForEdgeVariableUpdate(DiscVariable edgeVariable, boolean value) {
+        DiscVariableExpression addressableVar = newDiscVariableExpression(null, newBoolType(), edgeVariable);
         Assignment assign = newAssignment(addressableVar, null, newBoolExpression(null, newBoolType(), value));
         return assign;
     }
