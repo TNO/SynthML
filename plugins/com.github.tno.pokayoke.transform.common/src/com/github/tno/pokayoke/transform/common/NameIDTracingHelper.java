@@ -151,19 +151,6 @@ public class NameIDTracingHelper {
     }
 
     /**
-     * Ensures locally unique name for all elements in each activity.
-     *
-     * @param contextClass The class that contains activities.
-     */
-    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
-            }
-        }
-    }
-
-    /**
      * Ensures locally unique name for all enumeration literals in an enumeration.
      *
      * @param enumeration The enumeration.
@@ -182,6 +169,19 @@ public class NameIDTracingHelper {
         // Prepend the names of enumeration to the names of enumeration literals.
         for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
             prependPrefixName(literal, enumeration.getName());
+        }
+    }
+
+    /**
+     * Ensures locally unique name for all elements in each activity.
+     *
+     * @param contextClass The class that contains activities.
+     */
+    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                NameIDTracingHelper.ensureUniqueNameForNodesAndEdges(activity);
+            }
         }
     }
 
