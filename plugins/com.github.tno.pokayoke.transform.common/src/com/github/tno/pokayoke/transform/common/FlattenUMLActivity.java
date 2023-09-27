@@ -50,19 +50,19 @@ public class FlattenUMLActivity {
         }
 
         // Check that no double underscores exist in the name of any other model elements.
-        Preconditions.checkArgument(!NameIDTracingHelper.isDoubleUnderscoreUsed(model),
+        Preconditions.checkArgument(!NameHelper.isDoubleUnderscoreUsed(model),
                 "Expected double underscores to not be used in the names of model elements.");
 
         // Step 2: Give each element a name.
-        NameIDTracingHelper.giveNameToModelElements(model);
+        NameHelper.giveNameToModelElements(model);
 
         // Step 3: Ensure that all names are locally unique within their scope.
-        NameIDTracingHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
-        NameIDTracingHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
-        NameIDTracingHelper.ensureUniqueNameForElementsInActivities(contextClass);
+        NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
+        NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
+        NameHelper.ensureUniqueNameForElementsInActivities(contextClass);
 
         // Step 4: Give every element an ID.
-        NameIDTracingHelper.addIDTracingCommentToModelElements(model);
+        IDHelper.addIDTracingCommentToModelElements(model);
 
         // Step 5: Flatten all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
@@ -72,10 +72,10 @@ public class FlattenUMLActivity {
         }
 
         // Step 6: Prepend the name of the outer activity to the model elements in activities.
-        NameIDTracingHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
 
         // Step 7: Check that the names of the model elements are unique globally.
-        NameIDTracingHelper.checkUniquenessOfNames(model);
+        NameHelper.checkUniquenessOfNames(model);
     }
 
     /**
@@ -108,11 +108,11 @@ public class FlattenUMLActivity {
             String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
 
             // Prepend the prefix name to the name of all elements in the activity.
-            NameIDTracingHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
+            NameHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
 
             // Prepend prefix ID (i.e., the IDs of the activity and the call behavior action) to the tracing comment of
             // all elements in the activity.
-            NameIDTracingHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy,
+            IDHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy,
                     callBehaviorActionToReplace);
 
             // Get the activity of the call behavior action.
@@ -150,19 +150,19 @@ public class FlattenUMLActivity {
                             newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
 
                             // Extract the IDs of the outer edge.
-                            List<String> outerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(incomingEdge);
+                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
 
                             // Add IDs for the newly added edge with the IDs of the outer edge.
                             for (String outerEdgeID: outerEdgeIDs) {
-                                NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                                IDHelper.addTracingComment(newEdge, outerEdgeID);
                             }
 
                             // Extract the IDs of the inner edge.
-                            List<String> innerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(outgoingEdge);
+                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
 
                             // Add IDs for the newly added edge with the IDs of the inner edge.
                             for (String innerEdgeID: innerEdgeIDs) {
-                                NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                                IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
                         }
                     }
@@ -196,19 +196,19 @@ public class FlattenUMLActivity {
                             newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
 
                             // Extract the IDs of the outer edge.
-                            List<String> outerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(outgoingEdge);
+                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
 
                             // Add IDs for the newly added edge with the IDs of the outer edge.
                             for (String outerEdgeID: outerEdgeIDs) {
-                                NameIDTracingHelper.addTracingComment(newEdge, outerEdgeID);
+                                IDHelper.addTracingComment(newEdge, outerEdgeID);
                             }
 
                             // Extract the IDs of the inner edge.
-                            List<String> innerEdgeIDs = NameIDTracingHelper.extractIDsFromTracingComment(incomingEdge);
+                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
 
                             // Add IDs for the newly added edge with the IDs of the inner edge.
                             for (String innerEdgeID: innerEdgeIDs) {
-                                NameIDTracingHelper.addTracingComment(newEdge, innerEdgeID);
+                                IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
                         }
                     }
