@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.cif;
 
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAssignment;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAutomaton;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariable;
@@ -39,13 +38,11 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.Property;
 
 import com.google.common.base.Verify;
 
@@ -106,7 +103,7 @@ public class CifHelper {
      * @param boolValue The boolean value.
      * @return The created CIF boolean value.
      */
-    private static VariableValue createBoolValue(boolean boolValue) {
+    public static VariableValue createBoolValue(boolean boolValue) {
         BoolExpression boolExpress = newBoolExpression(null, newBoolType(), boolValue);
         VariableValue value = newVariableValue();
         value.getValues().add(boolExpress);
@@ -120,7 +117,7 @@ public class CifHelper {
      * @param enumDecl The corresponding enumeration declaration.
      * @return The created CIF enumeration literal value.
      */
-    private static VariableValue createEnumLiteralValue(EnumLiteral enumLiteral, EnumDecl enumDecl) {
+    public static VariableValue createEnumLiteralValue(EnumLiteral enumLiteral, EnumDecl enumDecl) {
         EnumType enumType = newEnumType(enumDecl, null);
         EnumLiteralExpression enumExpress = newEnumLiteralExpression(enumLiteral, null, enumType);
         VariableValue value = newVariableValue();

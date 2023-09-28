@@ -94,7 +94,7 @@ public class UmlActitityToCifTransformer {
         // Transform the main activity in the contextClass.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity && activity.getName().equals("main")) {
-                Automaton aut = CifHelper.createAutomaton(model, activity, dataStore);
+                Automaton aut = createAutomaton(model, activity, dataStore);
                 CifHelper.validateName(model.getName());
                 aut.setName(model.getName());
                 spec.getComponents().add(aut);
@@ -299,7 +299,7 @@ public class UmlActitityToCifTransformer {
         // Extract and transform enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration umlEnumeration) {
-                EnumDecl cifEnum = transformEnumeration(umlEnumeration, dataStore);
+                EnumDecl cifEnum = CifHelper.transformEnumeration(umlEnumeration, dataStore);
                 aut.getDeclarations().add(cifEnum);
                 dataStore.addEnumeration(umlEnumeration.getName(), cifEnum);
             }
@@ -317,7 +317,7 @@ public class UmlActitityToCifTransformer {
                 // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
                 // exists for this property.
                 if (property.getDefaultValue() != null) {
-                    cifBoolVariable.setValue(createBoolValue(property.getDefaultValue().booleanValue()));
+                    cifBoolVariable.setValue(CifHelper.createBoolValue(property.getDefaultValue().booleanValue()));
                 }
                 aut.getDeclarations().add(cifBoolVariable);
                 dataStore.addVariable(cifBoolVariable.getName(), cifBoolVariable);
@@ -331,7 +331,7 @@ public class UmlActitityToCifTransformer {
                 if (property.getDefaultValue() != null) {
                     EnumLiteral enumLiteral = dataStore.getEnumerationLiteral(property.getDefaultValue().stringValue());
                     EnumDecl enumeration = dataStore.getEnumeration(enumLiteral);
-                    cifEnum.setValue(createEnumLiteralValue(enumLiteral, enumeration));
+                    cifEnum.setValue(CifHelper.createEnumLiteralValue(enumLiteral, enumeration));
                 }
                 aut.getDeclarations().add(cifEnum);
                 dataStore.addVariable(cifEnum.getName(), cifEnum);
@@ -339,10 +339,10 @@ public class UmlActitityToCifTransformer {
         }
 
         // Create an edge variable (boolean) for each edge in the activity.
-        createEdgeVariables(activity, aut, dataStore);
+        CifHelper.createEdgeVariables(activity, aut, dataStore);
 
         // Create an automaton event for each node in the activity.
-        createEvents(activity, aut, dataStore);
+        CifHelper.createEvents(activity, aut, dataStore);
 
         return aut;
     }
