@@ -77,13 +77,17 @@ public class FlattenUMLActivity {
         // Step 6: Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
 
-        // Step 7: Check that the names of the model elements are unique globally.
+        // Step 7: Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final
+        // nodes in the outermost activities.
+        structureInfoHelper.addStructureInfoInActivities(contextClass);
+
+        // Step 8: Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
     }
 
     /**
-     * Recursively transforms the activity, including flattening and renaming as well as adding a chain of IDs to each
-     * object comment for tracing the origin of the element in the original model.
+     * Recursively transforms the activity, including flattening, renaming and adding structure info as well as adding a
+     * chain of IDs to each object comment for tracing the origin of the element in the original model.
      *
      * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
@@ -103,7 +107,7 @@ public class FlattenUMLActivity {
 
         // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
-        // Connect the objects properly to the outer activity.
+        // Connect the objects properly to the outer activity and add structure comments.
         if (callBehaviorActionToReplace != null) {
             // Update the counter for call behavior actions.
             structureInfoHelper.updateCounter();
@@ -187,7 +191,6 @@ public class FlattenUMLActivity {
                 // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
                 // properties, like guards. Name and tracing comment for the new edges are added.
-
                 if (node instanceof ActivityFinalNode finalNode) {
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {

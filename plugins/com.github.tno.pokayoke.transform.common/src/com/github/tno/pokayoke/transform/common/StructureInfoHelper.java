@@ -1,8 +1,14 @@
 
 package com.github.tno.pokayoke.transform.common;
 
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
-import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.InitialNode;
 
 /** Helper for adding structure info. */
 public class StructureInfoHelper {
@@ -17,10 +23,30 @@ public class StructureInfoHelper {
         callBehaviorCounter = callBehaviorCounter + 1;
     }
 
-    public void addStructureInfo(ControlFlow newEdge, String postfix) {
+    public void addStructureInfo(ActivityEdge edge, String postfix) {
         String structureInfo = String.valueOf(callBehaviorCounter) + " " + postfix;
         Comment comment = FileHelper.FACTORY.createComment();
         comment.setBody(STRUCTURE_INFO_IDENTIFIER + ":" + structureInfo);
-        newEdge.getOwnedComments().add(comment);
+        edge.getOwnedComments().add(comment);
+    }
+
+    public void addStructureInfoInActivities(Class contextClass) {
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                updateCounter();
+                for (ActivityNode node: activity.getNodes()) {
+                    if (node instanceof InitialNode initialNode) {
+                        for (ActivityEdge edge: initialNode.getOutgoings()) {
+                            addStructureInfo(edge, "Start");
+                        }
+                    }
+                    if (node instanceof ActivityFinalNode finalNode) {
+                        for (ActivityEdge edge: finalNode.getIncomings()) {
+                            addStructureInfo(edge, "End");
+                        }
+                    }
+                }
+            }
+        }
     }
 }
