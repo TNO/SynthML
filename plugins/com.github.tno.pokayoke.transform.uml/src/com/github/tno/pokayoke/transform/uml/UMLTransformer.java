@@ -17,16 +17,20 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -233,10 +237,14 @@ public class UMLTransformer {
 
         UMLActivityUtils.removeIrrelevantInformation(activity);
 
-        // Transform all opaque action nodes of the activity.
+        // Transform all opaque action nodes and decision nodes of the activity.
         for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
                 transformOpaqueAction(activity, opaqueActionNode, acquireSignal);
+            }
+
+            if (node instanceof DecisionNode decisionNode) {
+                transformDecisionNode(decisionNode);
             }
         }
     }
@@ -292,5 +300,37 @@ public class UMLTransformer {
         } catch (ParseException pe) {
             throw new RuntimeException("Parsing of \"" + update + "\" failed.", pe);
         }
+    }
+
+    private void transformDecisionNode(DecisionNode decisionNode) {
+        for (ActivityEdge edge: decisionNode.getOutgoings()) {
+            ValueSpecification guard = edge.getGuard();
+
+            if (guard != null) {
+                OpaqueExpression translatedGuard = FileHelper.FACTORY.createOpaqueExpression();
+                translatedGuard.getBodies().add(translateValueSpecificationToPython(guard));
+                translatedGuard.getLanguages().add("Python");
+                edge.setGuard(translatedGuard);
+            }
+        }
+    }
+
+    private String translateValueSpecificationToPython(ValueSpecification specification) {
+        if (specification instanceof LiteralBoolean literal) {
+            return translateLiteralBooleanToPython(literal);
+        } else if (specification instanceof OpaqueExpression expr) {
+            return translateOpaqueExpressionToPython(expr);
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + specification);
+        }
+    }
+
+    private String translateLiteralBooleanToPython(LiteralBoolean literal) {
+        return literal.isValue() ? "True" : "False";
+    }
+
+    private String translateOpaqueExpressionToPython(OpaqueExpression expr) {
+        Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected opaque expressions to have one body.");
+        return translator.translateExpression(parseExpression(expr.getBodies().get(0)));
     }
 }
