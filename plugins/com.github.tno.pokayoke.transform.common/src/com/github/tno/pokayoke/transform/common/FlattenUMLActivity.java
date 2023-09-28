@@ -24,8 +24,11 @@ import com.google.common.base.Verify;
 public class FlattenUMLActivity {
     private final Model model;
 
+    private final StructureInfoHelper structureInfoHelper;
+
     public FlattenUMLActivity(Model model) {
         this.model = model;
+        this.structureInfoHelper = new StructureInfoHelper();
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
@@ -102,6 +105,7 @@ public class FlattenUMLActivity {
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
         // Connect the objects properly to the outer activity.
         if (callBehaviorActionToReplace != null) {
+            structureInfoHelper.updateCounter();
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
             // Construct the prefix name.
@@ -164,7 +168,7 @@ public class FlattenUMLActivity {
                             }
 
                             // Add the structure info as a comment to the new edge.
-                            StructureInfoHelper.addStructureInfo(newEdge, )
+                            structureInfoHelper.addStructureInfo(newEdge, "Start");
                         }
                     }
 
@@ -212,6 +216,9 @@ public class FlattenUMLActivity {
                             for (String innerEdgeID: innerEdgeIDs) {
                                 IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
+
+                            // Add the structure info as a comment to the new edge.
+                            structureInfoHelper.addStructureInfo(newEdge, "End");
                         }
                     }
 
