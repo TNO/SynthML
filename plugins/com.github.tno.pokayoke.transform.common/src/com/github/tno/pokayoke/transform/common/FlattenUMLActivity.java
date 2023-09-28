@@ -112,8 +112,7 @@ public class FlattenUMLActivity {
 
             // Prepend prefix ID (i.e., the IDs of the activity and the call behavior action) to the tracing comment of
             // all elements in the activity.
-            IDHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy,
-                    callBehaviorActionToReplace);
+            IDHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy, callBehaviorActionToReplace);
 
             // Get the activity of the call behavior action.
             Activity parentActivity = callBehaviorActionToReplace.getActivity();
@@ -133,6 +132,7 @@ public class FlattenUMLActivity {
                 // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
                 // incoming edge to the call behavior action. The edges are properly connected and given the
                 // appropriate properties, like guards. Name and tracing comment for the new edges are added.
+
                 if (node instanceof InitialNode initialNode) {
                     for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
                         for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
@@ -180,6 +180,7 @@ public class FlattenUMLActivity {
                 // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
                 // properties, like guards. Name and tracing comment for the new edges are added.
+
                 if (node instanceof ActivityFinalNode finalNode) {
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {

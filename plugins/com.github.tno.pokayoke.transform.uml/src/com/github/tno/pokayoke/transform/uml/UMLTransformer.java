@@ -9,6 +9,7 @@ import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.setext.runtime.exceptions.ParseException;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -16,27 +17,35 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
+import com.github.tno.pokayoke.transform.common.UMLValidatorSwitch;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
  * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
+    /** Name for the lock class. */
+    private static final String LOCK_CLASS_NAME = "Lock";
+
     private final Model model;
 
     private final String modelPath;
@@ -56,6 +65,14 @@ public class UMLTransformer {
         this.translator = new CifToPythonTranslator(this.typing);
     }
 
+    public static void main(String[] args) throws IOException {
+        if (args.length == 2) {
+            transformFile(args[0], args[1]);
+        } else {
+            throw new IOException("Exactly two arguments expected: a source path and a target path.");
+        }
+    }
+
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
         new UMLTransformer(model, sourcePath).transformModel();
@@ -64,15 +81,16 @@ public class UMLTransformer {
 
     public void transformModel() {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
+        new UMLValidatorSwitch().doSwitch(model);
 
-        Preconditions.checkArgument(model.getPackagedElement("Lock") == null,
+        Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
 
         // Obtain the single class that should be defined within the model.
-        List<Class> modelClasses = model.getPackagedElements().stream().filter(s -> s instanceof Class)
-                .map(s -> (Class)s).toList();
-        Preconditions.checkArgument(modelClasses.size() == 1, "Expected the model to contain exactly one class.");
-        Class contextClass = modelClasses.get(0);
+        List<Class> modelNestedClasses = getNestedNonActivityClassesOf(model);
+        Preconditions.checkArgument(modelNestedClasses.size() == 1,
+                "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
+        Class contextClass = modelNestedClasses.get(0);
 
         // Make sure the class does not contain an attribute named 'active'.
         Preconditions.checkArgument(
@@ -80,16 +98,12 @@ public class UMLTransformer {
                 "Expected no attribute named 'active' to already exist in the single class of the model.");
 
         // Obtain the activity that the single class within the model should have, as classifier behavior.
-        Preconditions.checkNotNull(contextClass.getClassifierBehavior(),
-                "Expected the single class within the model to have a classifier behavior.");
-        Preconditions.checkArgument(contextClass.getClassifierBehavior() instanceof Activity,
-                "Expected the classifier behavior of the single class within the model to be an activity.");
         Activity mainActivity = (Activity)contextClass.getClassifierBehavior();
 
         // 2. Define locking infrastructure.
 
         // Create a class for holding lock-related structure and behavior.
-        Class lockClass = (Class)model.createPackagedElement("Lock", UMLPackage.eINSTANCE.getClass_());
+        Class lockClass = (Class)model.createPackagedElement(LOCK_CLASS_NAME, UMLPackage.eINSTANCE.getClass_());
 
         // Create the signal for acquiring the lock.
         Signal acquireSignal = FileHelper.FACTORY.createSignal();
@@ -123,11 +137,9 @@ public class UMLTransformer {
         activeProperty.setDefaultValue(activePropertyDefaultValue);
         contextClass.getOwnedAttributes().add(activeProperty);
 
-        // Transform all activity behaviors of the single class within the model.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                transformActivity(activity, acquireSignal);
-            }
+        // Transform all activity behaviors within the model.
+        for (Activity activity: getNestedActivitiesOf(model)) {
+            transformActivity(activity, acquireSignal);
         }
 
         // 4. Transform the classifier behavior (i.e., main activity) of the single class within the model.
@@ -135,11 +147,9 @@ public class UMLTransformer {
         // Obtain the single initial node of the main activity.
         List<InitialNode> initialNodes = mainActivity.getNodes().stream().filter(n -> n instanceof InitialNode)
                 .map(n -> (InitialNode)n).toList();
-        Preconditions.checkArgument(initialNodes.size() == 1,
-                "Expected the classified behavior of the class of the model to have exactly one initial node.");
         InitialNode initialNode = initialNodes.get(0);
 
-        // Create a fork node to start the lock handler in parallel to the rest of the main activity diagram.
+        // Create a fork node to start the lock handler in parallel to the rest of the main activity.
         ForkNode forkNode = FileHelper.FACTORY.createForkNode();
         forkNode.setActivity(mainActivity);
 
@@ -166,28 +176,80 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
     }
 
+    /**
+     * Get the nested activities of the model.
+     *
+     * @param model The model.
+     * @return The nested activities of the provided model.
+     */
+    private List<Activity> getNestedActivitiesOf(Model model) {
+        List<Activity> returnValue = new ArrayList<>();
+        for (PackageableElement element: model.getPackagedElements()) {
+            // Since an element can have multiple types, we don't use else if.
+
+            if (element instanceof Model modelElement) {
+                List<Activity> childActivities = getNestedActivitiesOf(modelElement);
+                returnValue.addAll(childActivities);
+            }
+
+            if (element instanceof Activity activityElement) {
+                returnValue.add(activityElement);
+            }
+
+            if (element instanceof Class cls) {
+                // Skip class generated for lock.
+                if (!cls.getName().equals(LOCK_CLASS_NAME)) {
+                    for (Behavior behavior: cls.getOwnedBehaviors()) {
+                        if (behavior instanceof Activity activity) {
+                            returnValue.add(activity);
+                        }
+                    }
+                }
+            }
+        }
+        return returnValue;
+    }
+
+    /**
+     * Get the nested non-activity classes of the model.
+     *
+     * @param model The model.
+     * @return The nested non-activity classes of the provided model.
+     */
+    private List<Class> getNestedNonActivityClassesOf(Model model) {
+        List<Class> returnValue = new ArrayList<>();
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Model modelElement) {
+                final List<Class> modelElementClasses = getNestedNonActivityClassesOf(modelElement);
+                returnValue.addAll(modelElementClasses);
+            } else if (element instanceof Class classElement && !(element instanceof Activity)) {
+                returnValue.add(classElement);
+            }
+        }
+        return returnValue;
+    }
+
     private void transformActivity(Activity activity, Signal acquireSignal) {
         String activityName = activity.getName();
 
-        Preconditions.checkArgument(model.getPackagedElement(activity.getName()) == null,
+        Preconditions.checkArgument(model.getPackagedElement(activityName) == null,
                 String.format("Expected the '%s' class to not already exist.", activityName));
 
         UMLActivityUtils.removeIrrelevantInformation(activity);
 
-        // Create a separate class in which all new behaviors for the activity are stored.
-        Class activityClass = (Class)model.createPackagedElement(activityName, UMLPackage.eINSTANCE.getClass_());
-
-        // Transform all opaque action nodes of the activity.
+        // Transform all opaque action nodes and decision nodes of the activity.
         for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
-                transformOpaqueAction(activityClass, activity, opaqueActionNode, acquireSignal);
+                transformOpaqueAction(activity, opaqueActionNode, acquireSignal);
+            }
+
+            if (node instanceof DecisionNode decisionNode) {
+                transformDecisionNode(decisionNode);
             }
         }
     }
 
-    private void transformOpaqueAction(Class activityClass, Activity activity, OpaqueAction action,
-            Signal acquireSignal)
-    {
+    private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
@@ -199,17 +261,15 @@ public class UMLTransformer {
                 .map(b -> translator.translateUpdate(b)).toList();
 
         // Define a new activity that encodes the behavior of the action.
-        Activity actionActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
-        actionActivity.setName(action.getName());
-        Verify.verify(activityClass.getOwnedBehavior(action.getName()) == null,
-                String.format("Expected the '%s' activity to not already exist.", action.getName()));
-        activityClass.getOwnedBehaviors().add(actionActivity);
+        Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal);
+        String actionName = action.getName();
+        newActivity.setName(actionName);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
         replacementActionNode.setActivity(activity);
-        replacementActionNode.setBehavior(actionActivity);
-        replacementActionNode.setName(action.getName());
+        replacementActionNode.setBehavior(newActivity);
+        replacementActionNode.setName(actionName);
 
         // Relocate all incoming edges into the action to the replacement action.
         for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
@@ -223,13 +283,54 @@ public class UMLTransformer {
 
         // Remove the old action that is now replaced.
         action.destroy();
+        activity.getOwnedBehaviors().add(newActivity);
     }
 
     private AExpression parseExpression(String expression) {
-        return expressionParser.parseString(expression, modelPath);
+        try {
+            return expressionParser.parseString(expression, modelPath);
+        } catch (ParseException pe) {
+            throw new RuntimeException("Parsing of \"" + expression + "\" failed.", pe);
+        }
     }
 
     private AUpdate parseUpdate(String update) {
-        return updateParser.parseString(update, modelPath);
+        try {
+            return updateParser.parseString(update, modelPath);
+        } catch (ParseException pe) {
+            throw new RuntimeException("Parsing of \"" + update + "\" failed.", pe);
+        }
+    }
+
+    private void transformDecisionNode(DecisionNode decisionNode) {
+        for (ActivityEdge edge: decisionNode.getOutgoings()) {
+            ValueSpecification guard = edge.getGuard();
+
+            if (guard != null) {
+                OpaqueExpression translatedGuard = FileHelper.FACTORY.createOpaqueExpression();
+                translatedGuard.getBodies().add(translateValueSpecificationToPython(guard));
+                translatedGuard.getLanguages().add("Python");
+                edge.setGuard(translatedGuard);
+            }
+        }
+    }
+
+    private String translateValueSpecificationToPython(ValueSpecification specification) {
+        if (specification instanceof LiteralBoolean literal) {
+            return translateLiteralBooleanToPython(literal);
+        } else if (specification instanceof OpaqueExpression expr) {
+            return translateOpaqueExpressionToPython(expr);
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + specification);
+        }
+    }
+
+    private String translateLiteralBooleanToPython(LiteralBoolean literal) {
+        return literal.isValue() ? "True" : "False";
+    }
+
+    private String translateOpaqueExpressionToPython(OpaqueExpression expr) {
+        Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected opaque expressions to have one body.");
+        return translator.translateExpression(parseExpression(expr.getBodies().get(0)));
     }
 }
