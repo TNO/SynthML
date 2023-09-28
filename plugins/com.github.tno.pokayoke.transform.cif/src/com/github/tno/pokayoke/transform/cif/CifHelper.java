@@ -54,9 +54,9 @@ public class CifHelper {
     }
 
     /**
-     * Validates if the names of the model are CIF valid.
+     * Validates that the names of elements in the UML model are valid CIF identifiers.
      *
-     * @param model The model to validate.
+     * @param model The UML model to validate.
      */
     public static void validateNames(Model model) {
         TreeIterator<EObject> iterator = model.eAllContents();
@@ -71,16 +71,18 @@ public class CifHelper {
     }
 
     /**
-     * Validates if the name is CIF valid.
+     * Validates that the name of a UML element is a valid CIF identifier.
      *
-     * @param name The name to validate.
+     * @param identifier The name of a UML element to validate.
      */
-    public static void validateName(String name) {
-        Verify.verify(CifValidationUtils.isValidIdentifier(name), String.format("%s is not a valid CIF name.", name));
+    public static void validateName(String identifier) {
+        Verify.verify(CifValidationUtils.isValidIdentifier(identifier),
+                String.format("%s is not a valid CIF name.", identifier));
     }
 
     /**
-     * Adds enumerations and variables of the UML model. Adds events for the nodes and variables for the edges.
+     * Creates a new CIF automaton for a UML model. Adds enumerations and variables of the UML model to the CIF
+     * automaton. Also adds CIF events for the UML nodes, and CIF variables for the UML edges.
      *
      * @param model The UML model to transform.
      * @param activity The main activity in the model to transform.

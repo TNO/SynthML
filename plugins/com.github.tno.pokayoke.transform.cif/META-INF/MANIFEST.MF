@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.github.tno.pokayoke.transform.cif
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
  org.eclipse.uml2.uml.resources;bundle-version="5.5.0",
- org.eclipse.escet.cif.parser;bundle-version="0.0.0",
+ org.eclipse.escet.cif.parser;bundle-version="1.0.0",
  org.eclipse.escet.setext.runtime;bundle-version="0.10.0",
  org.eclipse.escet.cif.metamodel;bundle-version="0.10.0",
  org.eclipse.escet.cif.metamodel.java;bundle-version="0.10.0",

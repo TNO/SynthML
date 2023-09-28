@@ -9,7 +9,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
-/** Store data (e.g., variables and events) defined in the CIF automaton model. */
+/** Stores data (e.g., variables and events) defined in the CIF model. */
 public class DataStore {
     private final Map<String, EnumLiteral> enumLiterals = new LinkedHashMap<>();
 
