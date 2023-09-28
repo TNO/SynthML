@@ -1,7 +1,11 @@
 
 package com.github.tno.pokayoke.transform.cif;
 
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newAutomaton;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariable;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
+import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newLocation;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newSpecification;
 
@@ -18,8 +22,11 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
+import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
+import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
 import org.eclipse.escet.common.app.framework.AppEnv;
@@ -30,12 +37,15 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.FlowFinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
@@ -114,7 +124,8 @@ public class UmlActitityToCifTransformer {
                 // Create an automaton edge and its edge event.
                 Edge cifEdge = CifHelper.createEdgeAndEdgeEvent(location, nodeEvent);
 
-                // Add a guard to the automaton edge with the incoming edge variable and update the value of the edge variable to
+                // Add a guard to the automaton edge with the incoming edge variable and update the value of the edge
+                // variable to
                 // false.
                 ActivityEdge incomingEdge = node.getIncomings().get(0);
                 CifHelper.addGuardAndUpdateIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
@@ -136,7 +147,8 @@ public class UmlActitityToCifTransformer {
                     // Create an automaton edge and its edge event.
                     Edge cifEdge = CifHelper.createEdgeAndEdgeEvent(location, nodeEvent);
 
-                    // Add a guard to the automaton edge with the incoming edge variable and update the value of the variable to
+                    // Add a guard to the automaton edge with the incoming edge variable and update the value of the
+                    // variable to
                     // false.
                     CifHelper.addGuardAndUpdateIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
 
@@ -174,7 +186,8 @@ public class UmlActitityToCifTransformer {
                     // Create an automaton edge and its edge event.
                     Edge cifEdge = CifHelper.createEdgeAndEdgeEvent(location, nodeEvent);
 
-                    // Add a guard to the automaton edge with the incoming edge variable and update the value of the edge variable
+                    // Add a guard to the automaton edge with the incoming edge variable and update the value of the
+                    // edge variable
                     // to false.
                     CifHelper.addGuardAndUpdateIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
 
@@ -262,11 +275,75 @@ public class UmlActitityToCifTransformer {
                     // Create an automaton edge and its edge event.
                     Edge cifEdge = CifHelper.createEdgeAndEdgeEvent(location, nodeEvent);
 
-                    // Add a guard to the automaton edge with the incoming edge variable and update its value to false. Only
+                    // Add a guard to the automaton edge with the incoming edge variable and update its value to false.
+                    // Only
                     // the execution of this control flow is terminated. Other flows in the activity can still continue.
                     CifHelper.addGuardAndUpdateIncomingEdgeVariable(incomingEdge.getName(), cifEdge, dataStore);
                 }
             }
         }
+    }
+
+    /**
+     * Creates a new CIF automaton for a UML model. Adds enumerations and variables of the UML model to the CIF
+     * automaton. Also adds CIF events for the UML nodes, and CIF variables for the UML edges.
+     *
+     * @param model The UML model to transform.
+     * @param activity The main activity in the model to transform.
+     * @param dataStore Storage for keeping track of the elements of the CIF model.
+     * @return The new CIF automaton.
+     */
+    public static Automaton createAutomaton(Model model, Activity activity, DataStore dataStore) {
+        Automaton aut = newAutomaton();
+
+        // Extract and transform enumerations.
+        for (NamedElement member: model.getMembers()) {
+            if (member instanceof Enumeration umlEnumeration) {
+                EnumDecl cifEnum = transformEnumeration(umlEnumeration, dataStore);
+                aut.getDeclarations().add(cifEnum);
+                dataStore.addEnumeration(umlEnumeration.getName(), cifEnum);
+            }
+        }
+
+        // Extract and transform properties (data variables).
+        Class contextClass = (Class)model.getMember("Context");
+        for (Property property: contextClass.getAllAttributes()) {
+            String dataType = property.getType().getName();
+
+            if (dataType.equals("Boolean")) {
+                DiscVariable cifBoolVariable = newDiscVariable(property.getName(), null, newBoolType(), null);
+
+                // The default value of attributes and properties can be unspecified:
+                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
+                // exists for this property.
+                if (property.getDefaultValue() != null) {
+                    cifBoolVariable.setValue(createBoolValue(property.getDefaultValue().booleanValue()));
+                }
+                aut.getDeclarations().add(cifBoolVariable);
+                dataStore.addVariable(cifBoolVariable.getName(), cifBoolVariable);
+            } else if (dataStore.isEnumeration(dataType)) {
+                EnumType enumType = newEnumType(dataStore.getEnumeration(dataType), null);
+                DiscVariable cifEnum = newDiscVariable(property.getName(), null, enumType, null);
+
+                // The default value of attributes and properties can be unspecified:
+                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
+                // exists for this property.
+                if (property.getDefaultValue() != null) {
+                    EnumLiteral enumLiteral = dataStore.getEnumerationLiteral(property.getDefaultValue().stringValue());
+                    EnumDecl enumeration = dataStore.getEnumeration(enumLiteral);
+                    cifEnum.setValue(createEnumLiteralValue(enumLiteral, enumeration));
+                }
+                aut.getDeclarations().add(cifEnum);
+                dataStore.addVariable(cifEnum.getName(), cifEnum);
+            }
+        }
+
+        // Create an edge variable (boolean) for each edge in the activity.
+        createEdgeVariables(activity, aut, dataStore);
+
+        // Create an automaton event for each node in the activity.
+        createEvents(activity, aut, dataStore);
+
+        return aut;
     }
 }

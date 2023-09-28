@@ -81,69 +81,6 @@ public class CifHelper {
     }
 
     /**
-     * Creates a new CIF automaton for a UML model. Adds enumerations and variables of the UML model to the CIF
-     * automaton. Also adds CIF events for the UML nodes, and CIF variables for the UML edges.
-     *
-     * @param model The UML model to transform.
-     * @param activity The main activity in the model to transform.
-     * @param dataStore Storage for keeping track of the elements of the CIF model.
-     * @return The new CIF automaton.
-     */
-    public static Automaton createAutomaton(Model model, Activity activity, DataStore dataStore) {
-        Automaton aut = newAutomaton();
-
-        // Extract and transform enumerations.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration umlEnumeration) {
-                EnumDecl cifEnum = transformEnumeration(umlEnumeration, dataStore);
-                aut.getDeclarations().add(cifEnum);
-                dataStore.addEnumeration(umlEnumeration.getName(), cifEnum);
-            }
-        }
-
-        // Extract and transform properties (data variables).
-        Class contextClass = (Class)model.getMember("Context");
-        for (Property property: contextClass.getAllAttributes()) {
-            String dataType = property.getType().getName();
-
-            if (dataType.equals("Boolean")) {
-                DiscVariable cifBoolVariable = newDiscVariable(property.getName(), null, newBoolType(), null);
-
-                // The default value of attributes and properties can be unspecified:
-                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
-                // exists for this property.
-                if (property.getDefaultValue() != null) {
-                    cifBoolVariable.setValue(createBoolValue(property.getDefaultValue().booleanValue()));
-                }
-                aut.getDeclarations().add(cifBoolVariable);
-                dataStore.addVariable(cifBoolVariable.getName(), cifBoolVariable);
-            } else if (dataStore.isEnumeration(dataType)) {
-                EnumType enumType = newEnumType(dataStore.getEnumeration(dataType), null);
-                DiscVariable cifEnum = newDiscVariable(property.getName(), null, enumType, null);
-
-                // The default value of attributes and properties can be unspecified:
-                // https://www.omg.org/spec/FUML/1.5/PDF (page 32 and 39). A CIF value is created if a default value
-                // exists for this property.
-                if (property.getDefaultValue() != null) {
-                    EnumLiteral enumLiteral = dataStore.getEnumerationLiteral(property.getDefaultValue().stringValue());
-                    EnumDecl enumeration = dataStore.getEnumeration(enumLiteral);
-                    cifEnum.setValue(createEnumLiteralValue(enumLiteral, enumeration));
-                }
-                aut.getDeclarations().add(cifEnum);
-                dataStore.addVariable(cifEnum.getName(), cifEnum);
-            }
-        }
-
-        // Create an edge variable (boolean) for each edge in the activity.
-        createEdgeVariables(activity, aut, dataStore);
-
-        // Create an automaton event for each node in the activity.
-        createEvents(activity, aut, dataStore);
-
-        return aut;
-    }
-
-    /**
      * Transforms a UML enumeration into CIF enumeration declaration and adds it to the data store.
      *
      * @param enumeration The enumeration to transform.
