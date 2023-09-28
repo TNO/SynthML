@@ -105,7 +105,9 @@ public class FlattenUMLActivity {
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
         // Connect the objects properly to the outer activity.
         if (callBehaviorActionToReplace != null) {
+            // Update the counter for call behavior actions.
             structureInfoHelper.updateCounter();
+
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
             // Construct the prefix name.
