@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
@@ -16,79 +17,153 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
-/** Flatten nested UML activities. */
+/** Flattens nested UML activities. */
 public class FlattenUMLActivity {
-    private FlattenUMLActivity() {
+    private final Model model;
+
+    public FlattenUMLActivity(Model model) {
+        this.model = model;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        transformModel(model);
+        new FlattenUMLActivity(model).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public static void transformModel(Model model) {
-        // Extract activities.
+    public void transformModel() {
+        // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
-        // Transform all activity behaviors of 'contextClass'.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+
+        // Step 1: Make sure that no double underscores exist in the names of model elements.
+
+        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
+        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
+        // clear meaning and are automatically added by UML Designer.
+        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
-                flattenActivity(activity, null);
                 UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
+
+        // Check that no double underscores exist in the name of any other model elements.
+        Preconditions.checkArgument(!NameHelper.isDoubleUnderscoreUsed(model),
+                "Expected double underscores to not be used in the names of model elements.");
+
+        // Step 2: Give each element a name.
+        NameHelper.giveNameToModelElements(model);
+
+        // Step 3: Ensure that all names are locally unique within their scope.
+        NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
+        NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
+        NameHelper.ensureUniqueNameForElementsInActivities(contextClass);
+
+        // Step 4: Give every element an ID.
+        IDHelper.addIDTracingCommentToModelElements(model);
+
+        // Step 5: Flatten all activity behaviors of the context class.
+        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+            if (behavior instanceof Activity activity) {
+                transformActivity(activity, null);
+            }
+        }
+
+        // Step 6: Prepend the name of the outer activity to the model elements in activities.
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
+
+        // Step 7: Check that the names of the model elements are unique globally.
+        NameHelper.checkUniquenessOfNames(model);
     }
 
     /**
-     * Recursively flatten the given activity.
+     * Recursively transforms the activity, including flattening and renaming as well as adding a chain of IDs to each
+     * object comment for tracing the origin of the element in the original model.
      *
      * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
      *     when it is called to flatten the outer most activity.
      */
-    public static void flattenActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
+    private void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior actionBehavior = actionNode.getBehavior();
-                Verify.verify(actionBehavior != null, String
+                Behavior childActivity = actionNode.getBehavior();
+                Verify.verifyNotNull(childActivity, String
                         .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-                flattenActivity((Activity)actionBehavior, actionNode);
+
+                transformActivity((Activity)childActivity, actionNode);
             }
         }
 
-        // Replace the call behavior action with the content of this activity, and connect it with proper edges.
+        // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
+        // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
+        // Connect the objects properly to the outer activity.
         if (callBehaviorActionToReplace != null) {
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
+            // Construct the prefix name.
+            String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
+
+            // Prepend the prefix name to the name of all elements in the activity.
+            NameHelper.prependPrefixNameToNodesAndEdgesInActivity(childBehaviorCopy, prefixName);
+
+            // Prepend prefix ID (i.e., the IDs of the activity and the call behavior action) to the tracing comment of
+            // all elements in the activity.
+            IDHelper.prependPrefixIDToNodesAndEdgesInActivity(childBehaviorCopy, callBehaviorActionToReplace);
+
+            // Get the activity of the call behavior action.
+            Activity parentActivity = callBehaviorActionToReplace.getActivity();
+
             for (ActivityNode node: new ArrayList<>(childBehaviorCopy.getNodes())) {
                 // Set the activity for the node.
-                node.setActivity(callBehaviorActionToReplace.getActivity());
+                node.setActivity(parentActivity);
 
                 // Set the activity for all the edges to the activity of the call behavior action to be replaced.
                 for (ActivityEdge edge: node.getOutgoings()) {
-                    edge.setActivity(callBehaviorActionToReplace.getActivity());
+                    edge.setActivity(parentActivity);
                 }
                 for (ActivityEdge edge: node.getIncomings()) {
-                    edge.setActivity(callBehaviorActionToReplace.getActivity());
+                    edge.setActivity(parentActivity);
                 }
 
-                // Create a new edge for every pair of an outgoing edge from the activity's initial node and an incoming
-                // edge to the call behavior action. The edges are properly connected and given the appropriate
-                // properties, like guards.
+                // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
+                // incoming edge to the call behavior action. The edges are properly connected and given the
+                // appropriate properties, like guards. Name and tracing comment for the new edges are added.
+
                 if (node instanceof InitialNode initialNode) {
                     for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
                         for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
                             ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
-                            // The guard of the new edge is set to the guard of the incoming edge of the call behavior
-                            // action. We ignore the guard of the outgoing edge of the initial node because the source
-                            // of this edge is not a decision node.
+
+                            // The guard of the new edge is set to the guard of the incoming edge of the call
+                            // behavior action. We ignore the guard of the outgoing edge of the initial node because
+                            // the source of this edge is not a decision node.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
-                            newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+                            newEdge.setActivity(parentActivity);
+
+                            // Add a name for the newly added edge.
+                            newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
+
+                            // Extract the IDs of the outer edge.
+                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
+
+                            // Add IDs for the newly added edge with the IDs of the outer edge.
+                            for (String outerEdgeID: outerEdgeIDs) {
+                                IDHelper.addTracingComment(newEdge, outerEdgeID);
+                            }
+
+                            // Extract the IDs of the inner edge.
+                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
+
+                            // Add IDs for the newly added edge with the IDs of the inner edge.
+                            for (String innerEdgeID: innerEdgeIDs) {
+                                IDHelper.addTracingComment(newEdge, innerEdgeID);
+                            }
                         }
                     }
 
@@ -104,17 +179,38 @@ public class FlattenUMLActivity {
 
                 // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
-                // properties, like guards.
+                // properties, like guards. Name and tracing comment for the new edges are added.
+
                 if (node instanceof ActivityFinalNode finalNode) {
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {
                             ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
-                            // The guard of the new edge is set to the guard of the incoming edge of the final node. We
-                            // ignore the guard of the outgoing edge of the behavior action.
+
+                            // The guard of the new edge is set to the guard of the incoming edge of the final node.
+                            // We ignore the guard of the outgoing edge of the behavior action.
                             newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
-                            newEdge.setActivity(callBehaviorActionToReplace.getActivity());
+                            newEdge.setActivity(parentActivity);
+
+                            // Add a name for the newly added edge.
+                            newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
+
+                            // Extract the IDs of the outer edge.
+                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
+
+                            // Add IDs for the newly added edge with the IDs of the outer edge.
+                            for (String outerEdgeID: outerEdgeIDs) {
+                                IDHelper.addTracingComment(newEdge, outerEdgeID);
+                            }
+
+                            // Extract the IDs of the inner edge.
+                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
+
+                            // Add IDs for the newly added edge with the IDs of the inner edge.
+                            for (String innerEdgeID: innerEdgeIDs) {
+                                IDHelper.addTracingComment(newEdge, innerEdgeID);
+                            }
                         }
                     }
 
