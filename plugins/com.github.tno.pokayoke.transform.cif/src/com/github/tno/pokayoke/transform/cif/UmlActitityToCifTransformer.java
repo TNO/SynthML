@@ -84,7 +84,7 @@ public class UmlActitityToCifTransformer {
         // Transform the main activity in the contextClass.
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity && activity.getName().equals("main")) {
-                Automaton aut = CifHelper.initializeAutomaton(model, activity, dataStore);
+                Automaton aut = CifHelper.createAutomaton(model, activity, dataStore);
                 CifHelper.validateName(model.getName());
                 aut.setName(model.getName());
                 spec.getComponents().add(aut);

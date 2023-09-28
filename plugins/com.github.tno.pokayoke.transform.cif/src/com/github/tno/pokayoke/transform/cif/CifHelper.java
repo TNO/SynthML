@@ -86,13 +86,13 @@ public class CifHelper {
      *
      * @param model The UML model to transform.
      * @param activity The main activity in the model to transform.
-     * @param dataStore Where variables and events are stored.
-     * @return Initialized automaton.
+     * @param dataStore Storage for keeping track of the elements of the CIF model.
+     * @return The new CIF automaton.
      */
-    public static Automaton initializeAutomaton(Model model, Activity activity, DataStore dataStore) {
+    public static Automaton createAutomaton(Model model, Activity activity, DataStore dataStore) {
         Automaton aut = newAutomaton();
 
-        // Extract and transform enumeration.
+        // Extract and transform enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration umlEnumeration) {
                 EnumDecl cifEnum = transformEnumeration(umlEnumeration, dataStore);
