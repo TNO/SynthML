@@ -128,11 +128,9 @@ public class FlattenUMLActivity {
                 for (ActivityEdge edge: node.getIncomings()) {
                     edge.setActivity(parentActivity);
                 }
-
                 // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
                 // incoming edge to the call behavior action. The edges are properly connected and given the
                 // appropriate properties, like guards. Name and tracing comment for the new edges are added.
-
                 if (node instanceof InitialNode initialNode) {
                     for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
                         for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
@@ -164,6 +162,9 @@ public class FlattenUMLActivity {
                             for (String innerEdgeID: innerEdgeIDs) {
                                 IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
+
+                            // Add the structure info as a comment to the new edge.
+                            StructureInfoHelper.addStructureInfo(newEdge, )
                         }
                     }
 
