@@ -64,13 +64,6 @@ public class CifToCifTranslator {
         };
     }
 
-    private UnaryOperator translateUnaryOperator(String operator) {
-        return switch (operator) {
-            case "not" -> UnaryOperator.INVERSE;
-            default -> throw new RuntimeException("Unsupported operator: " + operator);
-        };
-    }
-
     private BoolExpression translateBoolExpression(ABoolExpression expr) {
         return expr.value ? newBoolExpression(null, newBoolType(), true)
                 : newBoolExpression(null, newBoolType(), false);
@@ -96,6 +89,13 @@ public class CifToCifTranslator {
     private Expression translateUnaryExpression(AUnaryExpression expr) {
         return newUnaryExpression(translateExpression(expr.child), translateUnaryOperator(expr.operator), null,
                 newBoolType());
+    }
+
+    private UnaryOperator translateUnaryOperator(String operator) {
+        return switch (operator) {
+            case "not" -> UnaryOperator.INVERSE;
+            default -> throw new RuntimeException("Unsupported operator: " + operator);
+        };
     }
 
     public Assignment translateUpdate(AUpdate update) {
