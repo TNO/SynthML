@@ -14,17 +14,17 @@ import org.eclipse.uml2.uml.InitialNode;
 public class StructureInfoHelper {
     private static final String STRUCTURE_INFO_IDENTIFIER = "Original-Structure";
 
-    private int callBehaviorCounter = 0;
+    private int counter = 0;
 
     public StructureInfoHelper() {
     }
 
-    public void updateCounter() {
-        callBehaviorCounter = callBehaviorCounter + 1;
+    public void incrementCounter() {
+        counter = counter + 1;
     }
 
     public void addStructureInfo(ActivityEdge edge, String postfix) {
-        String structureInfo = String.valueOf(callBehaviorCounter) + " " + postfix;
+        String structureInfo = String.valueOf(counter) + " " + postfix;
         Comment comment = FileHelper.FACTORY.createComment();
         comment.setBody(STRUCTURE_INFO_IDENTIFIER + ":" + structureInfo);
         edge.getOwnedComments().add(comment);
@@ -33,7 +33,7 @@ public class StructureInfoHelper {
     public void addStructureInfoInActivities(Class contextClass) {
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
-                updateCounter();
+                incrementCounter();
                 for (ActivityNode node: activity.getNodes()) {
                     if (node instanceof InitialNode initialNode) {
                         for (ActivityEdge edge: initialNode.getOutgoings()) {

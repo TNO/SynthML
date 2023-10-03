@@ -109,8 +109,8 @@ public class FlattenUMLActivity {
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
         // Connect the objects properly to the outer activity and add structure info comments.
         if (callBehaviorActionToReplace != null) {
-            // Update the counter for structure info comments, for call behavior actions.
-            structureInfoHelper.updateCounter();
+            // Increment the counter for structure info comments, for call behavior actions.
+            structureInfoHelper.incrementCounter();
 
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
