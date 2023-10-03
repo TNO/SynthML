@@ -16,9 +16,6 @@ public class StructureInfoHelper {
 
     private int counter = 0;
 
-    public StructureInfoHelper() {
-    }
-
     public void incrementCounter() {
         counter = counter + 1;
     }
