@@ -174,7 +174,7 @@ public class FlattenUMLActivity {
                             }
 
                             // Add the structure info as a comment to the new edge.
-                            structureInfoHelper.addStructureInfo(newEdge, "Start");
+                            structureInfoHelper.addStructureStartInfo(newEdge);
                         }
                     }
 
@@ -223,7 +223,7 @@ public class FlattenUMLActivity {
                             }
 
                             // Add the structure info as a comment to the new edge.
-                            structureInfoHelper.addStructureInfo(newEdge, "End");
+                            structureInfoHelper.addStructureEndInfo(newEdge);
                         }
                     }
 

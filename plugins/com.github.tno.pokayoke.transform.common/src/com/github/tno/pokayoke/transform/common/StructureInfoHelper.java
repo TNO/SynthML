@@ -20,7 +20,15 @@ public class StructureInfoHelper {
         counter = counter + 1;
     }
 
-    public void addStructureInfo(ActivityEdge edge, String postfix) {
+    public void addStructureStartInfo(ActivityEdge edge) {
+        addStructureInfo(edge, "Start");
+    }
+
+    public void addStructureEndInfo(ActivityEdge edge) {
+        addStructureInfo(edge, "End");
+    }
+
+    private void addStructureInfo(ActivityEdge edge, String postfix) {
         String structureInfo = String.valueOf(counter) + " " + postfix;
         Comment comment = FileHelper.FACTORY.createComment();
         comment.setBody(STRUCTURE_INFO_IDENTIFIER + ":" + structureInfo);
