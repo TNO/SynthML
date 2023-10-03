@@ -16,25 +16,6 @@ public class StructureInfoHelper {
 
     private int counter = 0;
 
-    public void incrementCounter() {
-        counter = counter + 1;
-    }
-
-    public void addStructureStartInfo(ActivityEdge edge) {
-        addStructureInfo(edge, "Start");
-    }
-
-    public void addStructureEndInfo(ActivityEdge edge) {
-        addStructureInfo(edge, "End");
-    }
-
-    private void addStructureInfo(ActivityEdge edge, String postfix) {
-        String structureInfo = String.valueOf(counter) + " " + postfix;
-        Comment comment = FileHelper.FACTORY.createComment();
-        comment.setBody(STRUCTURE_INFO_IDENTIFIER + ":" + structureInfo);
-        edge.getOwnedComments().add(comment);
-    }
-
     public void addStructureInfoInActivities(Class contextClass) {
         for (Behavior behavior: contextClass.getOwnedBehaviors()) {
             if (behavior instanceof Activity activity) {
@@ -53,5 +34,24 @@ public class StructureInfoHelper {
                 }
             }
         }
+    }
+
+    public void incrementCounter() {
+        counter = counter + 1;
+    }
+
+    public void addStructureStartInfo(ActivityEdge edge) {
+        addStructureInfo(edge, "Start");
+    }
+
+    public void addStructureEndInfo(ActivityEdge edge) {
+        addStructureInfo(edge, "End");
+    }
+
+    private void addStructureInfo(ActivityEdge edge, String postfix) {
+        String structureInfo = String.valueOf(counter) + " " + postfix;
+        Comment comment = FileHelper.FACTORY.createComment();
+        comment.setBody(STRUCTURE_INFO_IDENTIFIER + ":" + structureInfo);
+        edge.getOwnedComments().add(comment);
     }
 }
