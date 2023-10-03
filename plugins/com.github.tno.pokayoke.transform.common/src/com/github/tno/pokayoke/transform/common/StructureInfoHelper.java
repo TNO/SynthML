@@ -10,7 +10,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.InitialNode;
 
-/** Helper for adding structure info. */
+/** Helper for adding structure information to edges. */
 public class StructureInfoHelper {
     private static final String STRUCTURE_INFO_IDENTIFIER = "Original-Structure";
 
