@@ -38,7 +38,8 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // 1. Check whether the model has the expected structure.
+        // Step 1: Check whether the model has the expected structure, particularly that no double underscores exist in
+        // the names of relevant model elements.
         new UMLValidatorSwitch().doSwitch(model);
 
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
