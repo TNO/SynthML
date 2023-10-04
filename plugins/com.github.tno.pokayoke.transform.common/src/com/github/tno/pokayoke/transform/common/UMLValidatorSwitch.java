@@ -43,7 +43,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseModel(Model model) {
-        checkValidityOf(model.getName());
+        String modelName = model.getName();
+
+        Preconditions.checkNotNull(modelName, "Expected a non-null model name.");
+        checkAbsenceOfDoubleUnderscore(modelName);
 
         // Visit all packaged elements and check (local) uniqueness of their names.
         Set<String> names = new LinkedHashSet<>();
@@ -61,8 +64,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseClass(Class classElement) {
-        checkValidityOf(classElement.getName());
+        String className = classElement.getName();
 
+        Preconditions.checkNotNull(className, "Expected a non-null class name.");
+        checkAbsenceOfDoubleUnderscore(className);
         Preconditions.checkArgument(classElement.getNestedClassifiers().isEmpty(),
                 "Expected classes to not contain any nested classifiers.");
         Preconditions.checkNotNull(classElement.getClassifierBehavior(),
@@ -95,7 +100,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseProperty(Property property) {
-        checkValidityOf(property.getName());
+        String propertyName = property.getName();
+
+        Preconditions.checkNotNull(propertyName, "Expected a non-null property name.");
+        checkAbsenceOfDoubleUnderscore(propertyName);
 
         // Visit the property type.
         Type propertyType = property.getType();
@@ -122,8 +130,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseEnumeration(Enumeration enumeration) {
-        checkValidityOf(enumeration.getName());
+        String enumerationName = enumeration.getName();
 
+        Preconditions.checkNotNull(enumerationName, "Expected a non-null enumeration name.");
+        checkAbsenceOfDoubleUnderscore(enumerationName);
         Preconditions.checkArgument(enumeration.eContainer() instanceof Model,
                 "Expected enumerations to be declared in models.");
         Preconditions.checkArgument(enumeration.eContainer().eContainer() == null,
@@ -144,7 +154,8 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseEnumerationLiteral(EnumerationLiteral literal) {
         String literalName = literal.getName();
 
-        checkValidityOf(literalName);
+        Preconditions.checkNotNull(literalName, "Expected a non-null literal name.");
+        checkAbsenceOfDoubleUnderscore(literalName);
 
         // Ensure that the literal uses a unique name.
         EnumerationLiteral existingLiteral = enumLiterals.put(literalName, literal);
@@ -173,6 +184,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseOpaqueExpression(OpaqueExpression expression) {
+        checkAbsenceOfDoubleUnderscore(expression.getName());
         Preconditions.checkArgument(expression.getBodies().size() == 1,
                 "Expected opaque expressions to have exactly one expression body.");
         return expression;
@@ -180,8 +192,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseActivity(Activity activity) {
-        checkValidityOf(activity.getName());
+        String activityName = activity.getName();
 
+        Preconditions.checkNotNull(activityName, "Expected a non-null activity name.");
+        checkAbsenceOfDoubleUnderscore(activityName);
         Preconditions.checkArgument(activity.getMembers().isEmpty(), "Expected activities to not have any members.");
         Preconditions.checkArgument(activity.getClassifierBehavior() == null,
                 "Expected activities to not have a classifier behavior.");
@@ -206,65 +220,48 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     @Override
     public Object caseInitialNode(InitialNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseFinalNode(FinalNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseForkNode(ForkNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseJoinNode(JoinNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseDecisionNode(DecisionNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseMergeNode(MergeNode node) {
         String nodeName = node.getName();
-        if (nodeName != null) {
-            checkValidityOf(nodeName);
-        }
-
+        checkAbsenceOfDoubleUnderscore(nodeName);
         return node;
     }
 
     @Override
     public Object caseCallBehaviorAction(CallBehaviorAction action) {
+        checkAbsenceOfDoubleUnderscore(action.getName());
         Preconditions.checkNotNull(action.getBehavior(),
                 "Expected the called behavior of call behavior actions to be non-null.");
         return action;
@@ -272,25 +269,28 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseOpaqueAction(OpaqueAction action) {
-        checkValidityOf(action.getName());
+        checkAbsenceOfDoubleUnderscore(action.getName());
         return action;
     }
 
     @Override
     public Object caseControlFlow(ControlFlow edge) {
+        checkAbsenceOfDoubleUnderscore(edge.getName());
+
         Preconditions.checkNotNull(edge.getSource(), "Expected a non-null source node.");
         Preconditions.checkNotNull(edge.getTarget(), "Expected a non-null target node.");
 
         String edgeName = edge.getName();
         if (edgeName != null) {
-            checkValidityOf(edgeName);
+            checkAbsenceOfDoubleUnderscore(edgeName);
         }
 
         return edge;
     }
 
-    protected void checkValidityOf(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null name.");
-        Preconditions.checkArgument(!name.contains("__"), "Expected names to not contain '__'.");
+    protected void checkAbsenceOfDoubleUnderscore(String name) {
+        if (name != null) {
+            Preconditions.checkArgument(!name.contains("__"), "Expected names to not contain '__'.");
+        }
     }
 }
