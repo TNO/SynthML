@@ -17,8 +17,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
-import com.google.common.base.Verify;
-
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
     private final Model model;
@@ -93,11 +91,7 @@ public class FlattenUMLActivity {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior childActivity = actionNode.getBehavior();
-                Verify.verifyNotNull(childActivity, String
-                        .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-
-                transformActivity((Activity)childActivity, actionNode);
+                transformActivity((Activity)actionNode.getBehavior(), actionNode);
             }
         }
 

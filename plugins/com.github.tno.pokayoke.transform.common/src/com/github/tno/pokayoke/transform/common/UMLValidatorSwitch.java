@@ -264,6 +264,8 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscore(action.getName());
         Preconditions.checkNotNull(action.getBehavior(),
                 "Expected the called behavior of call behavior actions to be non-null.");
+        Preconditions.checkArgument(action.getBehavior() instanceof Activity,
+                "Expected the behavior of any call behavior action to be an activity.");
         return action;
     }
 
