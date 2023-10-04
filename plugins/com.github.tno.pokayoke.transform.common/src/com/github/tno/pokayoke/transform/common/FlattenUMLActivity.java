@@ -17,7 +17,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /** Flattens nested UML activities. */
@@ -41,7 +40,8 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // Step 1: Make sure that no double underscores exist in the names of model elements.
+        // 1. Check whether the model has the expected structure.
+        new UMLValidatorSwitch().doSwitch(model);
 
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
         // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
@@ -51,10 +51,6 @@ public class FlattenUMLActivity {
                 UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
-
-        // Check that no double underscores exist in the name of any other model elements.
-        Preconditions.checkArgument(!NameHelper.isDoubleUnderscoreUsed(model),
-                "Expected double underscores to not be used in the names of model elements.");
 
         // Step 2: Give each element a name.
         NameHelper.giveNameToModelElements(model);
