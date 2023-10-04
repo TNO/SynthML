@@ -278,15 +278,8 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     @Override
     public Object caseControlFlow(ControlFlow edge) {
         checkAbsenceOfDoubleUnderscore(edge.getName());
-
         Preconditions.checkNotNull(edge.getSource(), "Expected a non-null source node.");
         Preconditions.checkNotNull(edge.getTarget(), "Expected a non-null target node.");
-
-        String edgeName = edge.getName();
-        if (edgeName != null) {
-            checkAbsenceOfDoubleUnderscore(edgeName);
-        }
-
         return edge;
     }
 
