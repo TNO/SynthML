@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PackageableElement;
@@ -45,7 +46,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseModel(Model model) {
         String modelName = model.getName();
 
-        Preconditions.checkNotNull(modelName, "Expected a non-null model name.");
+        checkNonNullNameOf(model);
         checkAbsenceOfDoubleUnderscore(modelName);
 
         // Visit all packaged elements and check (local) uniqueness of their names.
@@ -66,7 +67,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseClass(Class classElement) {
         String className = classElement.getName();
 
-        Preconditions.checkNotNull(className, "Expected a non-null class name.");
+        checkNonNullNameOf(classElement);
         checkAbsenceOfDoubleUnderscore(className);
         Preconditions.checkArgument(classElement.getNestedClassifiers().isEmpty(),
                 "Expected classes to not contain any nested classifiers.");
@@ -102,7 +103,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseProperty(Property property) {
         String propertyName = property.getName();
 
-        Preconditions.checkNotNull(propertyName, "Expected a non-null property name.");
+        checkNonNullNameOf(property);
         checkAbsenceOfDoubleUnderscore(propertyName);
 
         // Visit the property type.
@@ -132,7 +133,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseEnumeration(Enumeration enumeration) {
         String enumerationName = enumeration.getName();
 
-        Preconditions.checkNotNull(enumerationName, "Expected a non-null enumeration name.");
+        checkNonNullNameOf(enumeration);
         checkAbsenceOfDoubleUnderscore(enumerationName);
         Preconditions.checkArgument(enumeration.eContainer() instanceof Model,
                 "Expected enumerations to be declared in models.");
@@ -154,7 +155,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseEnumerationLiteral(EnumerationLiteral literal) {
         String literalName = literal.getName();
 
-        Preconditions.checkNotNull(literalName, "Expected a non-null literal name.");
+        checkNonNullNameOf(literal);
         checkAbsenceOfDoubleUnderscore(literalName);
 
         // Ensure that the literal uses a unique name.
@@ -195,7 +196,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseActivity(Activity activity) {
         String activityName = activity.getName();
 
-        Preconditions.checkNotNull(activityName, "Expected a non-null activity name.");
+        checkNonNullNameOf(activity);
         checkAbsenceOfDoubleUnderscore(activityName);
         Preconditions.checkArgument(activity.getMembers().isEmpty(), "Expected activities to not have any members.");
         Preconditions.checkArgument(activity.getClassifierBehavior() == null,
@@ -290,9 +291,15 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         return edge;
     }
 
+    protected void checkNonNullNameOf(NamedElement element) {
+        Preconditions.checkNotNull(element.getName(),
+                String.format("Expected the given %s to have a non-null name.", element.eClass().getName()));
+    }
+
     protected void checkAbsenceOfDoubleUnderscore(String name) {
         if (name != null) {
-            Preconditions.checkArgument(!name.contains("__"), "Expected names to not contain '__'.");
+            Preconditions.checkArgument(!name.contains("__"),
+                    String.format("Expected names to not contain a '__', but got '%s'.", name));
         }
     }
 }
