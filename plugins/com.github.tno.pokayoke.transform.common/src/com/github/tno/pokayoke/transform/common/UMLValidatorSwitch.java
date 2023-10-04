@@ -44,8 +44,6 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseModel(Model model) {
-        String modelName = model.getName();
-
         checkNonNullNameOf(model);
         checkAbsenceOfDoubleUnderscoresInNameOf(model);
 
@@ -65,10 +63,9 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseClass(Class classElement) {
-        String className = classElement.getName();
-
         checkNonNullNameOf(classElement);
         checkAbsenceOfDoubleUnderscoresInNameOf(classElement);
+
         Preconditions.checkArgument(classElement.getNestedClassifiers().isEmpty(),
                 "Expected classes to not contain any nested classifiers.");
         Preconditions.checkNotNull(classElement.getClassifierBehavior(),
@@ -101,8 +98,6 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseProperty(Property property) {
-        String propertyName = property.getName();
-
         checkNonNullNameOf(property);
         checkAbsenceOfDoubleUnderscoresInNameOf(property);
 
@@ -131,10 +126,9 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseEnumeration(Enumeration enumeration) {
-        String enumerationName = enumeration.getName();
-
         checkNonNullNameOf(enumeration);
         checkAbsenceOfDoubleUnderscoresInNameOf(enumeration);
+
         Preconditions.checkArgument(enumeration.eContainer() instanceof Model,
                 "Expected enumerations to be declared in models.");
         Preconditions.checkArgument(enumeration.eContainer().eContainer() == null,
@@ -153,10 +147,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseEnumerationLiteral(EnumerationLiteral literal) {
-        String literalName = literal.getName();
-
         checkNonNullNameOf(literal);
         checkAbsenceOfDoubleUnderscoresInNameOf(literal);
+
+        String literalName = literal.getName();
 
         // Ensure that the literal uses a unique name.
         EnumerationLiteral existingLiteral = enumLiterals.put(literalName, literal);
@@ -194,10 +188,9 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseActivity(Activity activity) {
-        String activityName = activity.getName();
-
         checkNonNullNameOf(activity);
         checkAbsenceOfDoubleUnderscoresInNameOf(activity);
+
         Preconditions.checkArgument(activity.getMembers().isEmpty(), "Expected activities to not have any members.");
         Preconditions.checkArgument(activity.getClassifierBehavior() == null,
                 "Expected activities to not have a classifier behavior.");
@@ -221,42 +214,36 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseInitialNode(InitialNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
 
     @Override
     public Object caseFinalNode(FinalNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
 
     @Override
     public Object caseForkNode(ForkNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
 
     @Override
     public Object caseJoinNode(JoinNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
 
     @Override
     public Object caseDecisionNode(DecisionNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
 
     @Override
     public Object caseMergeNode(MergeNode node) {
-        String nodeName = node.getName();
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
         return node;
     }
