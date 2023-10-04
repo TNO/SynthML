@@ -17,9 +17,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
     private final Model model;
@@ -41,8 +38,6 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // Step 1: Make sure that no double underscores exist in the names of model elements.
-
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
         // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
         // clear meaning and are automatically added by UML Designer.
@@ -52,9 +47,9 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Check that no double underscores exist in the name of any other model elements.
-        Preconditions.checkArgument(!NameHelper.isDoubleUnderscoreUsed(model),
-                "Expected double underscores to not be used in the names of model elements.");
+        // Step 1: Check whether the model has the expected structure, particularly that no double underscores exist in
+        // the names of relevant model elements.
+        new UMLValidatorSwitch().doSwitch(model);
 
         // Step 2: Give each element a name.
         NameHelper.giveNameToModelElements(model);
@@ -97,11 +92,7 @@ public class FlattenUMLActivity {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior childActivity = actionNode.getBehavior();
-                Verify.verifyNotNull(childActivity, String
-                        .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-
-                transformActivity((Activity)childActivity, actionNode);
+                transformActivity((Activity)actionNode.getBehavior(), actionNode);
             }
         }
 
