@@ -179,6 +179,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseLiteralBoolean(LiteralBoolean literal) {
+        checkAbsenceOfDoubleUnderscore(literal.getName());
         return literal;
     }
 
@@ -280,6 +281,12 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscore(edge.getName());
         Preconditions.checkNotNull(edge.getSource(), "Expected a non-null source node.");
         Preconditions.checkNotNull(edge.getTarget(), "Expected a non-null target node.");
+
+        ValueSpecification guard = edge.getGuard();
+        if (guard != null) {
+            doSwitch(guard);
+        }
+
         return edge;
     }
 
