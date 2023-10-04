@@ -23,12 +23,12 @@ public class StructureInfoHelper {
                 for (ActivityNode node: activity.getNodes()) {
                     if (node instanceof InitialNode initialNode) {
                         for (ActivityEdge edge: initialNode.getOutgoings()) {
-                            addStructureInfo(edge, "Start");
+                            addStructureStartInfo(edge);
                         }
                     }
                     if (node instanceof ActivityFinalNode finalNode) {
                         for (ActivityEdge edge: finalNode.getIncomings()) {
-                            addStructureInfo(edge, "End");
+                            addStructureEndInfo(edge);
                         }
                     }
                 }
