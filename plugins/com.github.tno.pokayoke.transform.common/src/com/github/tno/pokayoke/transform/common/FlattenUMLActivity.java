@@ -17,15 +17,15 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
     private final Model model;
 
+    private final StructureInfoHelper structureInfoHelper;
+
     public FlattenUMLActivity(Model model) {
         this.model = model;
+        this.structureInfoHelper = new StructureInfoHelper();
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
@@ -38,8 +38,6 @@ public class FlattenUMLActivity {
         // Extract context class.
         Class contextClass = (Class)model.getMember("Context");
 
-        // Step 1: Make sure that no double underscores exist in the names of model elements.
-
         // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
         // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
         // clear meaning and are automatically added by UML Designer.
@@ -49,9 +47,9 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Check that no double underscores exist in the name of any other model elements.
-        Preconditions.checkArgument(!NameHelper.isDoubleUnderscoreUsed(model),
-                "Expected double underscores to not be used in the names of model elements.");
+        // Step 1: Check whether the model has the expected structure, particularly that no double underscores exist in
+        // the names of relevant model elements.
+        new UMLValidatorSwitch().doSwitch(model);
 
         // Step 2: Give each element a name.
         NameHelper.giveNameToModelElements(model);
@@ -74,13 +72,17 @@ public class FlattenUMLActivity {
         // Step 6: Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
 
-        // Step 7: Check that the names of the model elements are unique globally.
+        // Step 7: Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final
+        // nodes in the outermost activities.
+        structureInfoHelper.addStructureInfoInActivities(contextClass);
+
+        // Step 8: Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
     }
 
     /**
-     * Recursively transforms the activity, including flattening and renaming as well as adding a chain of IDs to each
-     * object comment for tracing the origin of the element in the original model.
+     * Recursively transforms the activity, including flattening, renaming and adding structure info as well as adding a
+     * chain of IDs to each object comment for tracing the origin of the element in the original model.
      *
      * @param childBehavior The non-{@code null} activity to be flattened.
      * @param callBehaviorActionToReplace The call behavior action that calls the activity. It can be {@code null} only
@@ -90,18 +92,17 @@ public class FlattenUMLActivity {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
             if (node instanceof CallBehaviorAction actionNode) {
-                Behavior childActivity = actionNode.getBehavior();
-                Verify.verifyNotNull(childActivity, String
-                        .format("The behavior of the call behavior action %s is unspecified.", actionNode.getName()));
-
-                transformActivity((Activity)childActivity, actionNode);
+                transformActivity((Activity)actionNode.getBehavior(), actionNode);
             }
         }
 
         // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
-        // Connect the objects properly to the outer activity.
+        // Connect the objects properly to the outer activity and add structure info comments.
         if (callBehaviorActionToReplace != null) {
+            // Increment the counter for structure info comments, for call behavior actions.
+            structureInfoHelper.incrementCounter();
+
             Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
 
             // Construct the prefix name.
@@ -128,11 +129,9 @@ public class FlattenUMLActivity {
                 for (ActivityEdge edge: node.getIncomings()) {
                     edge.setActivity(parentActivity);
                 }
-
                 // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
                 // incoming edge to the call behavior action. The edges are properly connected and given the
                 // appropriate properties, like guards. Name and tracing comment for the new edges are added.
-
                 if (node instanceof InitialNode initialNode) {
                     for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
                         for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
@@ -164,6 +163,9 @@ public class FlattenUMLActivity {
                             for (String innerEdgeID: innerEdgeIDs) {
                                 IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
+
+                            // Add the structure info as a comment to the new edge.
+                            structureInfoHelper.addStructureStartInfo(newEdge);
                         }
                     }
 
@@ -180,7 +182,6 @@ public class FlattenUMLActivity {
                 // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
                 // edge of the call behavior action. The edges are properly connected and given the appropriate
                 // properties, like guards. Name and tracing comment for the new edges are added.
-
                 if (node instanceof ActivityFinalNode finalNode) {
                     for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
                         for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {
@@ -211,6 +212,9 @@ public class FlattenUMLActivity {
                             for (String innerEdgeID: innerEdgeIDs) {
                                 IDHelper.addTracingComment(newEdge, innerEdgeID);
                             }
+
+                            // Add the structure info as a comment to the new edge.
+                            structureInfoHelper.addStructureEndInfo(newEdge);
                         }
                     }
 
