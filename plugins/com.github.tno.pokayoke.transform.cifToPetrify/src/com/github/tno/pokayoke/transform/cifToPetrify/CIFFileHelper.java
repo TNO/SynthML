@@ -5,7 +5,6 @@ import java.nio.file.Path;
 
 import org.eclipse.escet.cif.io.CifReader;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
-import org.eclipse.uml2.uml.Model;
 
 public class CIFFileHelper {
     /**
