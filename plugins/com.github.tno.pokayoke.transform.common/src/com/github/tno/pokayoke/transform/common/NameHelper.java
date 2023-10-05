@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
@@ -95,18 +96,22 @@ public class NameHelper {
             }
         }
 
-        // Collect names of properties.
-        Class contextClass = (Class)model.getMember("Context");
-        for (NamedElement element: contextClass.getAllAttributes()) {
-            if (element instanceof Property property) {
-                updateNameMap(property, names);
-            }
-        }
+        // Iterate over all classes and collect the names of all properties and activities.
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Class classElement) {
+                // Collect names of class properties.
+                for (NamedElement attribute: classElement.getAllAttributes()) {
+                    if (attribute instanceof Property property) {
+                        updateNameMap(property, names);
+                    }
+                }
 
-        // Collect names of activities.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                updateNameMap(activity, names);
+                // Collect names of class activities.
+                for (Behavior behavior: classElement.getOwnedBehaviors()) {
+                    if (behavior instanceof Activity activity) {
+                        updateNameMap(activity, names);
+                    }
+                }
             }
         }
 
@@ -117,17 +122,22 @@ public class NameHelper {
             }
         }
 
-        // Ensure unique names for the properties.
-        for (NamedElement element: contextClass.getAllAttributes()) {
-            if (element instanceof Property property) {
-                ensureUniqueNameForElement(property, names);
-            }
-        }
+        // Iterate over all classes and ensure the names of all their properties and activities are unique.
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Class classElement) {
+                // Ensure unique names for the class properties.
+                for (NamedElement attribute: classElement.getAllAttributes()) {
+                    if (attribute instanceof Property property) {
+                        ensureUniqueNameForElement(property, names);
+                    }
+                }
 
-        // Ensure unique names for the activities.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity) {
-                ensureUniqueNameForElement(behavior, names);
+                // Ensure unique names for the class activities.
+                for (Behavior behavior: classElement.getOwnedBehaviors()) {
+                    if (behavior instanceof Activity) {
+                        ensureUniqueNameForElement(behavior, names);
+                    }
+                }
             }
         }
     }
