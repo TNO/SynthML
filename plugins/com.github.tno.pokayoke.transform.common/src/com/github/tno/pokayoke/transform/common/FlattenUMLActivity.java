@@ -74,7 +74,7 @@ public class FlattenUMLActivity {
         // Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForElementsInActivities(classElement);
 
-        // Flatten all activity behaviors of the context class.
+        // Flatten all activity behaviors of the class.
         for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 transformActivity(activity, null);
