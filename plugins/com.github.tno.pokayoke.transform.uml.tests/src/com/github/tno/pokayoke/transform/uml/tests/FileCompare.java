@@ -26,7 +26,7 @@ public class FileCompare {
      */
     public static void assertContentsMatch(Path expectedFile, Path actualFile, String message) throws IOException {
         assertFalse(Files.isDirectory(expectedFile),
-                message + ": expectedFile " + expectedFile.toString() + " is not a file but a directory");
+                message + ": expectedFile " + expectedFile.toString() + " is not a file but a directory.");
         assertFalse(Files.isDirectory(actualFile),
                 message + ": actualFile " + actualFile.toString() + " is not a file but a directory");
 

@@ -39,7 +39,7 @@ class Regression {
     private static Stream<Arguments> provideArgumentsForRegressionTests() {
         final String testdataName = "testdata";
         final Path testdataPath = Path.of(testdataName);
-        assertTrue(Files.isDirectory(testdataPath), "testdata directory doesn't exist");
+        assertTrue(Files.isDirectory(testdataPath), "The 'testdata' directory doesn't exist.");
 
         final String regressiontestsName = "regressiontests";
         final Path regressiontestsPath = testdataPath.resolve(regressiontestsName);
@@ -85,7 +85,7 @@ class Regression {
         // Verify
         FileCompare.assertContentsMatch(expectedPath, outputPath, dirLongName);
 
-        // Tear down
+        // Tear down.
         Files.delete(outputPath);
     }
 }
