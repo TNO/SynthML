@@ -100,12 +100,12 @@ class Regression {
 
         final Path inputPath = dirPath.resolve(INPUT_FILENAME);
         assertTrue(Files.exists(inputPath),
-                "Input file '" + INPUT_FILENAME + "' unexpectedly absent in " + dirLongName);
+                "Input file '" + INPUT_FILENAME + "' unexpectedly absent in " + dirLongName + ".");
         final String inputLongName = inputPath.toString();
 
         final Path expectedPath = dirPath.resolve(EXPECTED_FILENAME);
         assertTrue(Files.exists(expectedPath),
-                "Expected file '" + EXPECTED_FILENAME + "' unexpectedly absent in " + dirLongName);
+                "Expected file '" + EXPECTED_FILENAME + "' unexpectedly absent in " + dirLongName + ".");
 
         final Path outputPath = dirPath.resolve(OUTPUT_FILENAME);
         final String outputLongName = outputPath.toString();
