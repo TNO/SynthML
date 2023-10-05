@@ -28,7 +28,7 @@ public class FileCompare {
         assertFalse(Files.isDirectory(expectedFile),
                 message + ": expectedFile " + expectedFile.toString() + " is not a file but a directory.");
         assertFalse(Files.isDirectory(actualFile),
-                message + ": actualFile " + actualFile.toString() + " is not a file but a directory");
+                message + ": actualFile " + actualFile.toString() + " is not a file but a directory.");
 
         final List<String> expectedContents = Files.readAllLines(expectedFile);
         final List<String> actualContents = Files.readAllLines(actualFile);
