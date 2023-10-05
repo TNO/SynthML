@@ -85,7 +85,7 @@ class Regression {
         // Verify
         FileCompare.assertContentsMatch(expectedPath, outputPath, dirLongName);
 
-        // Tear down
+        // Tear down.
         Files.delete(outputPath);
     }
 }
