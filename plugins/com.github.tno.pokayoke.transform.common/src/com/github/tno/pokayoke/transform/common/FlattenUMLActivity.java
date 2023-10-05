@@ -35,18 +35,6 @@ public class FlattenUMLActivity {
     }
 
     public void transformModel() {
-        // Extract context class.
-        Class contextClass = (Class)model.getMember("Context");
-
-        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
-        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
-        // clear meaning and are automatically added by UML Designer.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                UMLActivityUtils.removeIrrelevantInformation(activity);
-            }
-        }
-
         // Step 1: Check whether the model has the expected structure, particularly that no double underscores exist in
         // the names of relevant model elements.
         new UMLValidatorSwitch().doSwitch(model);
@@ -57,27 +45,41 @@ public class FlattenUMLActivity {
         // Step 3: Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
         NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
-        NameHelper.ensureUniqueNameForElementsInActivities(contextClass);
 
         // Step 4: Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
+
+        // Step 8: Check that the names of the model elements are unique globally.
+        NameHelper.checkUniquenessOfNames(model);
+    }
+
+    private void transformClass(Class classElement) {
+        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
+        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
+        // clear meaning and are automatically added by UML Designer.
+        for (Behavior behavior: classElement.getOwnedBehaviors()) {
+            if (behavior instanceof Activity activity) {
+                UMLActivityUtils.removeIrrelevantInformation(activity);
+            }
+        }
+
+        // Step 3: Ensure that all names are locally unique within their scope.
+        NameHelper.ensureUniqueNameForElementsInActivities(classElement);
+
         // Step 5: Flatten all activity behaviors of the context class.
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
+        for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 transformActivity(activity, null);
             }
         }
 
         // Step 6: Prepend the name of the outer activity to the model elements in activities.
-        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(contextClass);
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(classElement);
 
         // Step 7: Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final
         // nodes in the outermost activities.
-        structureInfoHelper.addStructureInfoInActivities(contextClass);
-
-        // Step 8: Check that the names of the model elements are unique globally.
-        NameHelper.checkUniquenessOfNames(model);
+        structureInfoHelper.addStructureInfoInActivities(classElement);
     }
 
     /**
