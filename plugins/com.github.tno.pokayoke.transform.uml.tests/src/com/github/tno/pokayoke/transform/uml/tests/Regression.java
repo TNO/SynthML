@@ -78,7 +78,7 @@ class Regression {
         final String outputLongName = outputPath.toString();
 
         // Act
-        Model model = FileHelper.loadModel(inputLongName);
+        final Model model = FileHelper.loadModel(inputLongName);
         new UMLTransformer(model, inputLongName).transformModel();
         FileHelper.storeModel(model, outputLongName);
 
