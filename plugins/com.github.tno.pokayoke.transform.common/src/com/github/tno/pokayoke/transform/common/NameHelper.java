@@ -91,8 +91,8 @@ public class NameHelper {
 
         // Collect names of enumerations.
         for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration) {
-                updateNameMap(member, namesWithinModelScope);
+            if (member instanceof Enumeration enumeration) {
+                updateNameMap(enumeration, namesWithinModelScope);
             }
         }
 
@@ -117,8 +117,8 @@ public class NameHelper {
 
                 // Ensure unique names for the enumerations.
                 for (NamedElement member: model.getMembers()) {
-                    if (member instanceof Enumeration) {
-                        ensureUniqueNameForElement(member, namesWithinClassScope);
+                    if (member instanceof Enumeration enumeration) {
+                        ensureUniqueNameForElement(enumeration, namesWithinClassScope);
                     }
                 }
 
@@ -131,8 +131,8 @@ public class NameHelper {
 
                 // Ensure unique names for the class activities.
                 for (Behavior behavior: classElement.getOwnedBehaviors()) {
-                    if (behavior instanceof Activity) {
-                        ensureUniqueNameForElement(behavior, namesWithinClassScope);
+                    if (behavior instanceof Activity activity) {
+                        ensureUniqueNameForElement(activity, namesWithinClassScope);
                     }
                 }
             }
