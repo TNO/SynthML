@@ -87,7 +87,7 @@ class Regression {
                 returnValue.add(Arguments.of(subDirectory));
             }
         } catch (IOException e) {
-            fail("IOException while adding subdirectories of the regressiontests directory" + e.toString());
+            fail("IOException while adding subdirectories of the 'regressiontests' directory" + e.toString());
         }
         return returnValue.stream();
     }
