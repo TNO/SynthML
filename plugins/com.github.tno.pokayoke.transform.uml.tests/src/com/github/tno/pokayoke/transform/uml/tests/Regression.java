@@ -27,8 +27,21 @@ import com.github.tno.pokayoke.transform.uml.UMLTransformer;
  */
 class Regression {
     /**
-     * The regression tests consists out of a discovery functionality and a general test case. Furthermore, a test
+     * The regression tests consists out of test discovery functionality and a general test case. Furthermore, a test
      * extension is used to enable the comparison of the UML files/resources.
+     *
+     * <p>
+     * When verification within a test case fails, that test will stop and, by design, tear down will NOT be executed.
+     * Since tear down is not executed, the actual output file will remain available in the corresponding sub-directory
+     * on disk. This is beneficial since
+     * <ul>
+     * <li>The actual output file is useful for diagnosis, such as examining the difference with the expected output
+     * file.</li>
+     * <li>The actual output file is useful for (automatically) changing the expected output file in case of intended
+     * changes.</li>
+     * <li>The next test run is not affected since it will just overwrite the actual output file.</li>
+     * </ul>
+     * </p>
      */
 
     /**
@@ -82,11 +95,12 @@ class Regression {
     @ParameterizedTest
     @MethodSource("provideArgumentsForRegressionTests")
     void regressionTests(Path dirPath) throws IOException {
-        // Set up - includes checking of preconditions
+        // Set up - includes checking of preconditions.
         final String dirLongName = dirPath.toString();
 
         final Path inputPath = dirPath.resolve(INPUT_FILENAME);
-        assertTrue(Files.exists(inputPath), "Input file '" + INPUT_FILENAME + "' unexpectedly absent in " + dirLongName);
+        assertTrue(Files.exists(inputPath),
+                "Input file '" + INPUT_FILENAME + "' unexpectedly absent in " + dirLongName);
         final String inputLongName = inputPath.toString();
 
         final Path expectedPath = dirPath.resolve(EXPECTED_FILENAME);
@@ -96,15 +110,15 @@ class Regression {
         final Path outputPath = dirPath.resolve(OUTPUT_FILENAME);
         final String outputLongName = outputPath.toString();
 
-        // Act
+        // Act.
         final Model model = FileHelper.loadModel(inputLongName);
         new UMLTransformer(model, inputLongName).transformModel();
         FileHelper.storeModel(model, outputLongName);
 
-        // Verify
+        // Verify.
         FileCompare.assertContentsMatch(expectedPath, outputPath, dirLongName);
 
-        // Tear down.
+        // Tear down - only executed when the test is successful.
         Files.delete(outputPath);
     }
 }
