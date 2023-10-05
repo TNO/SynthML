@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.internal.resource.UMLResourceImpl;
  * Test Resource.
  *
  * <p>
- * In tests, UML resources should be reproducible. Hence, not depend on random generated identifiers (UUIDs) but on
+ * In tests, UML resources should be reproducible. Hence, they should not depend on random generated identifiers (UUIDs) but on
  * relative paths.
  * </p>
  */
