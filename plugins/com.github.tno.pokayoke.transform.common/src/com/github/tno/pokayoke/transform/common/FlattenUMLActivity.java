@@ -36,18 +36,18 @@ public class FlattenUMLActivity {
     }
 
     public void transformModel() {
-        // Step 1: Check whether the model has the expected structure, particularly that no double underscores exist in
-        // the names of relevant model elements.
+        // Check whether the model has the expected structure, particularly that no double underscores exist in the
+        // names of relevant model elements.
         new UMLValidatorSwitch().doSwitch(model);
 
-        // Step 2: Give each element a name.
+        // Give each element a name.
         NameHelper.giveNameToModelElements(model);
 
-        // Step 3: Ensure that all names are locally unique within their scope.
+        // Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
         NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
 
-        // Step 4: Give every element an ID.
+        // Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
         // Transform all classes in the model.
@@ -57,7 +57,7 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Step 8: Check that the names of the model elements are unique globally.
+        // Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
     }
 
@@ -71,21 +71,21 @@ public class FlattenUMLActivity {
             }
         }
 
-        // Step 3: Ensure that all names are locally unique within their scope.
+        // Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForElementsInActivities(classElement);
 
-        // Step 5: Flatten all activity behaviors of the context class.
+        // Flatten all activity behaviors of the context class.
         for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
                 transformActivity(activity, null);
             }
         }
 
-        // Step 6: Prepend the name of the outer activity to the model elements in activities.
+        // Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(classElement);
 
-        // Step 7: Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final
-        // nodes in the outermost activities.
+        // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
+        // in the outermost activities.
         structureInfoHelper.addStructureInfoInActivities(classElement);
     }
 
