@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.PackageableElement;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -49,6 +50,12 @@ public class FlattenUMLActivity {
         // Step 4: Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
+        // Transform all classes in the model.
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Class classElement) {
+                transformClass(classElement);
+            }
+        }
 
         // Step 8: Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
