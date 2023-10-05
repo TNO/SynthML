@@ -95,7 +95,7 @@ class Regression {
     @ParameterizedTest
     @MethodSource("provideArgumentsForRegressionTests")
     void regressionTests(Path dirPath) throws IOException {
-        // Set up - includes checking of preconditions.
+        // Set up, which includes checking of preconditions.
         final String dirLongName = dirPath.toString();
 
         final Path inputPath = dirPath.resolve(INPUT_FILENAME);
@@ -118,7 +118,7 @@ class Regression {
         // Verify.
         FileCompare.assertContentsMatch(expectedPath, outputPath, dirLongName);
 
-        // Tear down - only executed when the test is successful.
+        // Tear down, which will only be executed when the test is successful.
         Files.delete(outputPath);
     }
 }
