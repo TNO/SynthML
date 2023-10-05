@@ -23,13 +23,33 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
 /**
- * Regression tests. Separate into the test case and the discovery functionality
+ * Regression tests.
  */
 class Regression {
+    /**
+     * The regression tests consists out of a discovery functionality and a general test case. Furthermore, a test
+     * extension is used to enable the comparison of the UML files/resources.
+     */
+
+    /**
+     * The test extension of the UML files/resources on disk.
+     */
     private static final String TESTEXTENSION = "umltst";
-    private static final String INPUT_NAME = "input.uml";
-    private static final String EXPECTED_NAME = "expected." + TESTEXTENSION;
-    private static final String OUTPUT_NAME = "output." + TESTEXTENSION;
+
+    /**
+     * The filename of the input of the regression test.
+     */
+    private static final String INPUT_FILENAME = "input.uml";
+
+    /**
+     * The filename of the expected output of the regression test.
+     */
+    private static final String EXPECTED_FILENAME = "expected." + TESTEXTENSION;
+
+    /**
+     * The filename of the actual output of the regression test.
+     */
+    private static final String OUTPUT_FILENAME = "output." + TESTEXTENSION;
 
     @BeforeAll
     public static void setup() {
@@ -65,16 +85,15 @@ class Regression {
         // Set up - includes checking of preconditions
         final String dirLongName = dirPath.toString();
 
-        final Path inputPath = dirPath.resolve(INPUT_NAME);
-        assertTrue(Files.exists(inputPath),
-                "Input file '" + INPUT_NAME + "' unexpectedly absent in " + dirLongName);
+        final Path inputPath = dirPath.resolve(INPUT_FILENAME);
+        assertTrue(Files.exists(inputPath), "Input file '" + INPUT_FILENAME + "' unexpectedly absent in " + dirLongName);
         final String inputLongName = inputPath.toString();
 
-        final Path expectedPath = dirPath.resolve(EXPECTED_NAME);
+        final Path expectedPath = dirPath.resolve(EXPECTED_FILENAME);
         assertTrue(Files.exists(expectedPath),
-                "Expected file '" + EXPECTED_NAME + "' unexpectedly absent in " + dirLongName);
+                "Expected file '" + EXPECTED_FILENAME + "' unexpectedly absent in " + dirLongName);
 
-        final Path outputPath = dirPath.resolve(OUTPUT_NAME);
+        final Path outputPath = dirPath.resolve(OUTPUT_FILENAME);
         final String outputLongName = outputPath.toString();
 
         // Act
