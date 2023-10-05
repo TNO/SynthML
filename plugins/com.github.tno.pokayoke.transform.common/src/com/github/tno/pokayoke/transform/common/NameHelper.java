@@ -82,60 +82,57 @@ public class NameHelper {
     }
 
     /**
-     * Ensures globally unique name for all enumerations, properties and activities in a model.
+     * Ensures locally unique names for enumerations, properties and activities in a model, within their scope.
      *
-     * @param model The model which contains enumerations and properties.
+     * @param model The model to check.
      */
     public static void ensureUniqueNameForEnumerationsPropertiesActivities(Model model) {
-        Map<String, Integer> names = new HashMap<>();
+        Map<String, Integer> namesWithinModelScope = new HashMap<>();
 
         // Collect names of enumerations.
         for (NamedElement member: model.getMembers()) {
             if (member instanceof Enumeration) {
-                updateNameMap(member, names);
+                updateNameMap(member, namesWithinModelScope);
             }
         }
 
-        // Iterate over all classes and collect the names of all properties and activities.
+        // Iterate over all classes, collect all class-local names, and check their uniqueness.
         for (PackageableElement element: model.getPackagedElements()) {
+            Map<String, Integer> namesWithinClassScope = new HashMap<>(namesWithinModelScope);
+
             if (element instanceof Class classElement) {
                 // Collect names of class properties.
                 for (NamedElement attribute: classElement.getAllAttributes()) {
                     if (attribute instanceof Property property) {
-                        updateNameMap(property, names);
+                        updateNameMap(property, namesWithinClassScope);
                     }
                 }
 
                 // Collect names of class activities.
                 for (Behavior behavior: classElement.getOwnedBehaviors()) {
                     if (behavior instanceof Activity activity) {
-                        updateNameMap(activity, names);
+                        updateNameMap(activity, namesWithinClassScope);
                     }
                 }
-            }
-        }
 
-        // Ensure unique names for the enumerations.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration) {
-                ensureUniqueNameForElement(member, names);
-            }
-        }
+                // Ensure unique names for the enumerations.
+                for (NamedElement member: model.getMembers()) {
+                    if (member instanceof Enumeration) {
+                        ensureUniqueNameForElement(member, namesWithinClassScope);
+                    }
+                }
 
-        // Iterate over all classes and ensure the names of all their properties and activities are unique.
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class classElement) {
                 // Ensure unique names for the class properties.
                 for (NamedElement attribute: classElement.getAllAttributes()) {
                     if (attribute instanceof Property property) {
-                        ensureUniqueNameForElement(property, names);
+                        ensureUniqueNameForElement(property, namesWithinClassScope);
                     }
                 }
 
                 // Ensure unique names for the class activities.
                 for (Behavior behavior: classElement.getOwnedBehaviors()) {
                     if (behavior instanceof Activity) {
-                        ensureUniqueNameForElement(behavior, names);
+                        ensureUniqueNameForElement(behavior, namesWithinClassScope);
                     }
                 }
             }
