@@ -79,7 +79,7 @@ class Regression {
         assertTrue(Files.isDirectory(regressiontestsPath),
                 "regressiontests directory doesn't exist within testdata directory");
 
-        List<Arguments> returnValue = new ArrayList<>();
+        final List<Arguments> returnValue = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(regressiontestsPath,
                 Files::isDirectory))
         {
