@@ -82,7 +82,7 @@ public class NameHelper {
     }
 
     /**
-     * Ensures unique name for all enumerations, properties and activities in a model.
+     * Ensures globally unique name for all enumerations, properties and activities in a model.
      *
      * @param model The model which contains enumerations and properties.
      */
