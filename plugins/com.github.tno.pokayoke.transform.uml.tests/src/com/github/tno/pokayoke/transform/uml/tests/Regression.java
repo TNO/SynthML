@@ -77,7 +77,7 @@ class Regression {
         final String regressiontestsName = "regressiontests";
         final Path regressiontestsPath = testdataPath.resolve(regressiontestsName);
         assertTrue(Files.isDirectory(regressiontestsPath),
-                "regressiontests directory doesn't exist within testdata directory");
+                "The 'regressiontests' directory doesn't exist within the 'testdata' directory.");
 
         final List<Arguments> returnValue = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(regressiontestsPath,
@@ -87,7 +87,7 @@ class Regression {
                 returnValue.add(Arguments.of(subDirectory));
             }
         } catch (IOException e) {
-            fail("IOException while adding subdirectories of the regressiontests directory" + e.toString());
+            fail("IOException while adding subdirectories of the 'regressiontests' directory" + e.toString());
         }
         return returnValue.stream();
     }
