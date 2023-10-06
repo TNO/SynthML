@@ -54,6 +54,10 @@ public class FlattenUMLActivity {
         // Transform the elements within the model.
         transformModel(model);
 
+        // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
+        // in the outermost activities.
+        structureInfoHelper.addStructureInfoInActivities(model);
+
         // Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
 
@@ -80,11 +84,6 @@ public class FlattenUMLActivity {
                 transformActivity(activity, null);
             }
         }
-
-        // TODO relocate
-        // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
-        // in the outermost activities.
-        structureInfoHelper.addStructureInfoInActivities(classElement);
     }
 
     /**
