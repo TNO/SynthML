@@ -3,10 +3,10 @@ package com.github.tno.pokayoke.transform.common;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
-import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
@@ -37,7 +37,7 @@ public class StructureInfoHelper {
             if (node instanceof InitialNode initialNode) {
                 initialNode.getOutgoings().forEach(this::addStructureStartInfo);
             }
-            if (node instanceof ActivityFinalNode finalNode) {
+            if (node instanceof FinalNode finalNode) {
                 finalNode.getIncomings().forEach(this::addStructureEndInfo);
             }
         }
