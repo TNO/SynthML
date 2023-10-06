@@ -5,10 +5,12 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Namespace;
 
 /** Helper for adding structure information to edges. */
 public class StructureInfoHelper {
@@ -16,11 +18,11 @@ public class StructureInfoHelper {
 
     private int counter = 0;
 
-    public void addStructureInfoInActivities(Class contextClass) {
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
+    public void addStructureInfoInActivities(Namespace namespace) {
+        for (NamedElement member: namespace.getOwnedMembers()) {
+            if (member instanceof Activity activityMember) {
                 incrementCounter();
-                for (ActivityNode node: activity.getNodes()) {
+                for (ActivityNode node: activityMember.getNodes()) {
                     if (node instanceof InitialNode initialNode) {
                         for (ActivityEdge edge: initialNode.getOutgoings()) {
                             addStructureStartInfo(edge);
@@ -32,6 +34,10 @@ public class StructureInfoHelper {
                         }
                     }
                 }
+            } else if (member instanceof Class classMember) {
+                addStructureInfoInActivities(classMember);
+            } else if (member instanceof Model modelMember) {
+                addStructureInfoInActivities(modelMember);
             }
         }
     }
