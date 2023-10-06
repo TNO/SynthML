@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.common;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -187,11 +186,7 @@ public class NameHelper {
         } else if (element instanceof Activity activityElement) {
             ensureUniqueNameForNodesAndEdges(activityElement);
         } else if (element instanceof Class classElement) {
-            for (Behavior behavior: classElement.getOwnedBehaviors()) {
-                if (behavior instanceof Activity activity) {
-                    ensureUniqueNameForNodesAndEdges(activity);
-                }
-            }
+            classElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
         }
     }
 
@@ -298,11 +293,7 @@ public class NameHelper {
         } else if (element instanceof Activity activityElement) {
             prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
         } else if (element instanceof Class classElement) {
-            for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
-                if (behavior instanceof Activity activity) {
-                    prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
-                }
-            }
+            classElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         }
     }
 
