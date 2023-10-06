@@ -65,10 +65,10 @@ public class FlattenUMLActivity {
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Model nestedModel) {
                 transformModel(nestedModel);
-            } else if (element instanceof Class classElement) {
-                transformClass(classElement);
             } else if (element instanceof Activity activityElement) {
                 transformActivity(activityElement, null);
+            } else if (element instanceof Class classElement) {
+                transformClass(classElement);
             }
         }
     }
