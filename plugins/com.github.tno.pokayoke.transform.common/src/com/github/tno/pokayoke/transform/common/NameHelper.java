@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
@@ -81,6 +82,7 @@ public class NameHelper {
         return !(namedElement instanceof ValueSpecification);
     }
 
+    // TODO update
     /**
      * Ensures locally unique names for enumerations, properties and activities in a model, within their scope.
      *
@@ -175,15 +177,21 @@ public class NameHelper {
     }
 
     /**
-     * Ensures locally unique name for all elements in each activity.
+     * Ensures locally unique names for all elements in each activity in the given UML element.
      *
-     * @param contextClass The class that contains activities.
+     * @param element The UML element that contains activities, either directly or nested in models or classes.
      */
-    public static void ensureUniqueNameForElementsInActivities(Class contextClass) {
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                ensureUniqueNameForNodesAndEdges(activity);
+    public static void ensureUniqueNameForElementsInActivities(Element element) {
+        if (element instanceof Model modelElement) {
+            modelElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
+        } else if (element instanceof Class classElement) {
+            for (Behavior behavior: classElement.getOwnedBehaviors()) {
+                if (behavior instanceof Activity activity) {
+                    ensureUniqueNameForNodesAndEdges(activity);
+                }
             }
+        } else if (element instanceof Activity activityElement) {
+            ensureUniqueNameForNodesAndEdges(activityElement);
         }
     }
 

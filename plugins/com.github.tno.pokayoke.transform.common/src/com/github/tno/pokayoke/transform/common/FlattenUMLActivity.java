@@ -46,6 +46,7 @@ public class FlattenUMLActivity {
         // Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
         NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
+        NameHelper.ensureUniqueNameForElementsInActivities(model);
 
         // Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
@@ -78,9 +79,6 @@ public class FlattenUMLActivity {
                 UMLActivityUtils.removeIrrelevantInformation(activity);
             }
         }
-
-        // Ensure that all names are locally unique within their scope.
-        NameHelper.ensureUniqueNameForElementsInActivities(classElement);
 
         // Flatten all activity behaviors of the class.
         for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
