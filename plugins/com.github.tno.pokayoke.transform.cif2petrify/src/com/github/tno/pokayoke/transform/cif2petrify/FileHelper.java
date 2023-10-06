@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import org.eclipse.escet.cif.io.CifReader;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 
-public class CIFFileHelper {
+public class FileHelper {
     /**
      * Read CIF {@link Specification} from given {@link Path}.
      *
