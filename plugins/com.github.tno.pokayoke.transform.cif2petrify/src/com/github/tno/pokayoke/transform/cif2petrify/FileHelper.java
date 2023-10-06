@@ -14,7 +14,7 @@ public class FileHelper {
     private FileHelper() {
     }
 
-    public static Specification loadCIFSpec(String sourcePath) {
+    public static Specification loadCifSpec(String sourcePath) {
         Path path = Paths.get(sourcePath);
         CifReader reader = new CifReader();
         reader.suppressWarnings = true;
@@ -22,10 +22,10 @@ public class FileHelper {
         return reader.read();
     }
 
-    public static void storePetrifySpec(String output, String targetPath) throws IOException {
+    public static void writeToFile(String body, String targetPath) throws IOException {
         FileWriter file = new FileWriter(targetPath);
         BufferedWriter buffer = new BufferedWriter(file);
-        buffer.write(output);
+        buffer.write(body);
         buffer.flush();
         buffer.close();
     }
