@@ -181,12 +181,12 @@ public class NameHelper {
      * @param element The UML element that contains activities, either directly or nested in models or classes.
      */
     public static void ensureUniqueNameForElementsInActivities(Element element) {
-        if (element instanceof Model modelElement) {
-            modelElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
-        } else if (element instanceof Activity activityElement) {
+        if (element instanceof Activity activityElement) {
             ensureUniqueNameForNodesAndEdges(activityElement);
         } else if (element instanceof Class classElement) {
             classElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
         }
     }
 
@@ -288,12 +288,12 @@ public class NameHelper {
      * @param element The UML element that contains activities, either directly or nested in models or classes.
      */
     public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element) {
-        if (element instanceof Model modelElement) {
-            modelElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
-        } else if (element instanceof Activity activityElement) {
+        if (element instanceof Activity activityElement) {
             prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
         } else if (element instanceof Class classElement) {
             classElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         }
     }
 
