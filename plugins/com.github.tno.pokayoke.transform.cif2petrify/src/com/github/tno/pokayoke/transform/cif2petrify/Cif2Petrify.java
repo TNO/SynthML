@@ -23,10 +23,10 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 
 /** Transform CIF state space to Petrify input. */
-public class CIFToPetrify {
+public class Cif2Petrify {
     private final Specification spec;
 
-    public CIFToPetrify(Specification spec) {
+    public Cif2Petrify(Specification spec) {
         this.spec = spec;
     }
 
