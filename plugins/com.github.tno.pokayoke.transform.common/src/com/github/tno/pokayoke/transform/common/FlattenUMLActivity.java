@@ -74,15 +74,6 @@ public class FlattenUMLActivity {
     }
 
     private void transformClass(Class classElement) {
-        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
-        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
-        // clear meaning and are automatically added by UML Designer.
-        for (Behavior behavior: classElement.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                UMLActivityUtils.removeIrrelevantInformation(activity);
-            }
-        }
-
         // Flatten all activity behaviors of the class.
         for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
             if (behavior instanceof Activity activity) {
@@ -90,6 +81,7 @@ public class FlattenUMLActivity {
             }
         }
 
+        // TODO relocate
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
         // in the outermost activities.
         structureInfoHelper.addStructureInfoInActivities(classElement);
@@ -110,6 +102,11 @@ public class FlattenUMLActivity {
                 transformActivity((Activity)actionNode.getBehavior(), actionNode);
             }
         }
+
+        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
+        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
+        // clear meaning and are automatically added by UML Designer.
+        UMLActivityUtils.removeIrrelevantInformation(childBehavior);
 
         // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
