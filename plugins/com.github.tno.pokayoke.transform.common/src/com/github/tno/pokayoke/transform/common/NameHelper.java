@@ -3,22 +3,23 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.PackageableElement;
+import org.eclipse.uml2.uml.Namespace;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
@@ -81,61 +82,47 @@ public class NameHelper {
         return !(namedElement instanceof ValueSpecification);
     }
 
-    // TODO update
     /**
-     * Ensures locally unique names for enumerations, properties and activities in a model, within their scope.
+     * Ensures unique names for enumerations, properties and activities in a namespace, within their scope.
      *
-     * @param model The model to check.
+     * @param namespace The namespace to check.
      */
-    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Model model) {
-        Map<String, Integer> namesWithinModelScope = new HashMap<>();
+    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Namespace namespace) {
+        ensureUniqueNameForEnumerationsPropertiesActivities(namespace, new LinkedHashMap<>());
+    }
 
-        // Collect names of enumerations.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration enumeration) {
-                updateNameMap(enumeration, namesWithinModelScope);
+    /**
+     * Ensures unique names for enumerations, properties and activities in a namespace, within their scope.
+     *
+     * @param namespace The namespace to check.
+     * @param names The names of enumerations, properties and activities in the context of the namespace.
+     */
+    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Namespace namespace,
+            Map<String, Integer> names)
+    {
+        Map<String, Integer> localNames = new LinkedHashMap<>(names);
+
+        // Helper for iterating over all enumeration, property and activity members directly within the namespace.
+        Consumer<Consumer<NamedElement>> memberIterator = elementConsumer -> {
+            for (NamedElement member: namespace.getOwnedMembers()) {
+                if (member instanceof Enumeration || member instanceof Property || member instanceof Activity) {
+                    elementConsumer.accept(member);
+                }
             }
-        }
+        };
 
-        // Iterate over all classes, collect all class-local names, and check their uniqueness.
-        for (PackageableElement element: model.getPackagedElements()) {
-            Map<String, Integer> namesWithinClassScope = new HashMap<>(namesWithinModelScope);
+        // Collect the names of all enumeration, property and activity members.
+        memberIterator.accept(element -> updateNameMap(element, localNames));
 
-            if (element instanceof Class classElement) {
-                // Collect names of class properties.
-                for (NamedElement attribute: classElement.getAllAttributes()) {
-                    if (attribute instanceof Property property) {
-                        updateNameMap(property, namesWithinClassScope);
-                    }
-                }
+        // Ensure unique names for all enumeration, property and activity members.
+        memberIterator.accept(element -> ensureUniqueNameForElement(element, localNames));
 
-                // Collect names of class activities.
-                for (Behavior behavior: classElement.getOwnedBehaviors()) {
-                    if (behavior instanceof Activity activity) {
-                        updateNameMap(activity, namesWithinClassScope);
-                    }
-                }
-
-                // Ensure unique names for the enumerations.
-                for (NamedElement member: model.getMembers()) {
-                    if (member instanceof Enumeration enumeration) {
-                        ensureUniqueNameForElement(enumeration, namesWithinClassScope);
-                    }
-                }
-
-                // Ensure unique names for the class properties.
-                for (NamedElement attribute: classElement.getAllAttributes()) {
-                    if (attribute instanceof Property property) {
-                        ensureUniqueNameForElement(property, namesWithinClassScope);
-                    }
-                }
-
-                // Ensure unique names for the class activities.
-                for (Behavior behavior: classElement.getOwnedBehaviors()) {
-                    if (behavior instanceof Activity activity) {
-                        ensureUniqueNameForElement(activity, namesWithinClassScope);
-                    }
-                }
+        // Recursively consider all nested classes and models.
+        for (Element member: namespace.getOwnedMembers()) {
+            if (member instanceof Class classMember) {
+                ensureUniqueNameForEnumerationsPropertiesActivities(classMember, localNames);
+            } else if (member instanceof Model modelMember) {
+                ensureUniqueNameForEnumerationsPropertiesActivities(modelMember, localNames);
             }
         }
     }
