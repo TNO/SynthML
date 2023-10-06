@@ -31,11 +31,11 @@ public class FlattenUMLActivity {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model).transformModel();
+        new FlattenUMLActivity(model).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transformModel() {
+    public void transform() {
         // Check whether the model has the expected structure, particularly that no double underscores exist in the
         // names of relevant model elements.
         new UMLValidatorSwitch().doSwitch(model);
