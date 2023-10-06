@@ -288,15 +288,21 @@ public class NameHelper {
     }
 
     /**
-     * Prepend the name of the outer activity to the nodes and edges in activities.
+     * Prepend the name of the outer activity to the nodes and edges in activities within the given UML element.
      *
-     * @param contextClass The class that contains activities.
+     * @param element The UML element that contains activities, either directly or nested in models or classes.
      */
-    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Class contextClass) {
-        for (Behavior behavior: new ArrayList<>(contextClass.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
+    public static void prependOuterActivityNameToNodesAndEdgesInActivities(Element element) {
+        if (element instanceof Model modelElement) {
+            modelElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+        } else if (element instanceof Class classElement) {
+            for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
+                if (behavior instanceof Activity activity) {
+                    prependPrefixNameToNodesAndEdgesInActivity(activity, activity.getName());
+                }
             }
+        } else if (element instanceof Activity activityElement) {
+            prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
         }
     }
 

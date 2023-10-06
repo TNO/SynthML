@@ -54,6 +54,9 @@ public class FlattenUMLActivity {
         // Transform the elements within the model.
         transformModel(model);
 
+        // Prepend the name of the outer activity to the model elements in activities.
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
+
         // Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
     }
@@ -86,9 +89,6 @@ public class FlattenUMLActivity {
                 transformActivity(activity, null);
             }
         }
-
-        // Prepend the name of the outer activity to the model elements in activities.
-        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(classElement);
 
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
         // in the outermost activities.
