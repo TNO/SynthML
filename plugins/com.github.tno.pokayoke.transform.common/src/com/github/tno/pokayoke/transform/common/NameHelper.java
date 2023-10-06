@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
@@ -81,53 +82,59 @@ public class NameHelper {
     }
 
     /**
-     * Ensures unique name for all enumerations, properties and activities in a model.
+     * Ensures locally unique names for enumerations, properties and activities in a model, within their scope.
      *
-     * @param model The model which contains enumerations and properties.
+     * @param model The model to check.
      */
     public static void ensureUniqueNameForEnumerationsPropertiesActivities(Model model) {
-        Map<String, Integer> names = new HashMap<>();
+        Map<String, Integer> namesWithinModelScope = new HashMap<>();
 
         // Collect names of enumerations.
         for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration) {
-                updateNameMap(member, names);
+            if (member instanceof Enumeration enumeration) {
+                updateNameMap(enumeration, namesWithinModelScope);
             }
         }
 
-        // Collect names of properties.
-        Class contextClass = (Class)model.getMember("Context");
-        for (NamedElement element: contextClass.getAllAttributes()) {
-            if (element instanceof Property property) {
-                updateNameMap(property, names);
-            }
-        }
+        // Iterate over all classes, collect all class-local names, and check their uniqueness.
+        for (PackageableElement element: model.getPackagedElements()) {
+            Map<String, Integer> namesWithinClassScope = new HashMap<>(namesWithinModelScope);
 
-        // Collect names of activities.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                updateNameMap(activity, names);
-            }
-        }
+            if (element instanceof Class classElement) {
+                // Collect names of class properties.
+                for (NamedElement attribute: classElement.getAllAttributes()) {
+                    if (attribute instanceof Property property) {
+                        updateNameMap(property, namesWithinClassScope);
+                    }
+                }
 
-        // Ensure unique names for the enumerations.
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration) {
-                ensureUniqueNameForElement(member, names);
-            }
-        }
+                // Collect names of class activities.
+                for (Behavior behavior: classElement.getOwnedBehaviors()) {
+                    if (behavior instanceof Activity activity) {
+                        updateNameMap(activity, namesWithinClassScope);
+                    }
+                }
 
-        // Ensure unique names for the properties.
-        for (NamedElement element: contextClass.getAllAttributes()) {
-            if (element instanceof Property property) {
-                ensureUniqueNameForElement(property, names);
-            }
-        }
+                // Ensure unique names for the enumerations.
+                for (NamedElement member: model.getMembers()) {
+                    if (member instanceof Enumeration enumeration) {
+                        ensureUniqueNameForElement(enumeration, namesWithinClassScope);
+                    }
+                }
 
-        // Ensure unique names for the activities.
-        for (Behavior behavior: contextClass.getOwnedBehaviors()) {
-            if (behavior instanceof Activity) {
-                ensureUniqueNameForElement(behavior, names);
+                // Ensure unique names for the class properties.
+                for (NamedElement attribute: classElement.getAllAttributes()) {
+                    if (attribute instanceof Property property) {
+                        ensureUniqueNameForElement(property, namesWithinClassScope);
+                    }
+                }
+
+                // Ensure unique names for the class activities.
+                for (Behavior behavior: classElement.getOwnedBehaviors()) {
+                    if (behavior instanceof Activity activity) {
+                        ensureUniqueNameForElement(activity, namesWithinClassScope);
+                    }
+                }
             }
         }
     }

@@ -174,7 +174,6 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
 
     @Override
     public Object caseLiteralBoolean(LiteralBoolean literal) {
-        checkAbsenceOfDoubleUnderscoresInNameOf(literal);
         return literal;
     }
 
