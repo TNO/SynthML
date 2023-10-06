@@ -171,9 +171,9 @@ public class NameHelper {
         if (element instanceof Activity activityElement) {
             ensureUniqueNameForNodesAndEdges(activityElement);
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
+            classElement.getOwnedMembers().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedElements().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
+            modelElement.getOwnedMembers().forEach(NameHelper::ensureUniqueNameForElementsInActivities);
         }
     }
 
@@ -278,9 +278,9 @@ public class NameHelper {
         if (element instanceof Activity activityElement) {
             prependPrefixNameToNodesAndEdgesInActivity(activityElement, activityElement.getName());
         } else if (element instanceof Class classElement) {
-            classElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            classElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         } else if (element instanceof Model modelElement) {
-            modelElement.getOwnedElements().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
+            modelElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         }
     }
 
