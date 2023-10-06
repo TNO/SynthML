@@ -2,7 +2,7 @@
  *
  */
 
-package com.github.tno.pokayoke.transform.cifToPetrify;
+package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
