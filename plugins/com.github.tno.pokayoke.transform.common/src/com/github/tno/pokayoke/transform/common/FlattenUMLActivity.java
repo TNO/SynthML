@@ -50,15 +50,23 @@ public class FlattenUMLActivity {
         // Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
-        // Transform all classes in the model.
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class classElement) {
-                transformClass(classElement);
-            }
-        }
+        // Transform the elements within the model.
+        transformModel(model);
 
         // Check that the names of the model elements are unique globally.
         NameHelper.checkUniquenessOfNames(model);
+    }
+
+    private void transformModel(Model model) {
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Model nestedModel) {
+                transformModel(nestedModel);
+            } else if (element instanceof Class classElement) {
+                transformClass(classElement);
+            } else if (element instanceof Activity activityElement) {
+                transformActivity(activityElement, null);
+            }
+        }
     }
 
     private void transformClass(Class classElement) {
