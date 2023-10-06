@@ -17,14 +17,9 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 
-/** Transform CIF state space to Petrify input. */
+/** Transforms CIF state spaces to Petrify input. */
 public class Cif2Petrify {
-    private final Specification spec;
-
-    private final StringBuilder stringBuilder = new StringBuilder();
-
-    public Cif2Petrify(Specification spec) {
-        this.spec = spec;
+    private Cif2Petrify() {
     }
 
     public static void main(String[] args) throws IOException {
@@ -36,26 +31,27 @@ public class Cif2Petrify {
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Specification spec = FileHelper.loadCIFSpec(sourcePath);
-        Cif2Petrify transformer = new Cif2Petrify(spec);
-        String output = transformer.transformModel();
-        FileHelper.storePetrifySpec(output, targetPath);
+        Specification specification = FileHelper.loadCifSpec(sourcePath);
+        String body = Cif2Petrify.transformModel(specification);
+        FileHelper.writeToFile(body, targetPath);
     }
 
-    private String transformModel() {
+    private static String transformModel(Specification specification) {
+        StringBuilder stringBuilder = new StringBuilder();
+
         // Append heading string.
-        stringBuilder.append(".model example");
+        stringBuilder.append(".model safestatespace");
         stringBuilder.append("\n");
         stringBuilder.append(".dummy start end ");
 
-        EList<Component> comps = spec.getComponents();
+        EList<Component> components = specification.getComponents();
         List<String> postConditionEvents = new ArrayList<>();
 
         // Iterate over components to extract information from components for event declaration (in 'Spec'), post
         // condition event declaration (in 'Post') and the state space (in 'statespace').
-        for (Component comp: comps) {
-            if (comp.getName().equals("Spec")) {
-                Group compWithEvents = (Group)comp;
+        for (Component component: components) {
+            if (component.getName().equals("Spec")) {
+                Group compWithEvents = (Group)component;
                 EList<Declaration> events = compWithEvents.getDeclarations();
 
                 List<String> eventName = new ArrayList<>();
@@ -73,8 +69,8 @@ public class Cif2Petrify {
 
                 stringBuilder.append(".state graph");
                 stringBuilder.append("\n");
-            } else if (comp.getName().equals("Post")) {
-                Group compWithPostConditionEvents = (Group)comp;
+            } else if (component.getName().equals("Post")) {
+                Group compWithPostConditionEvents = (Group)component;
                 EList<Declaration> events = compWithPostConditionEvents.getDeclarations();
 
                 // Collect post condition events.
@@ -83,22 +79,22 @@ public class Cif2Petrify {
                     Declaration event = eventIterator.next();
                     postConditionEvents.add(event.getName());
                 }
-            } else if (comp.getName().equals("statespace")) {
-                Automaton aut = (Automaton)comp;
+            } else if (component.getName().equals("statespace")) {
+                Automaton automaton = (Automaton)component;
 
                 stringBuilder.append("loc0 start loc1");
                 stringBuilder.append("\n");
 
                 // Iterate over locations to extract edge info.
-                for (Location loc: aut.getLocations()) {
+                for (Location location: automaton.getLocations()) {
                     // Iterate over edges to extract edge events and append them to the string.
-                    for (Edge edge: loc.getEdges()) {
+                    for (Edge edge: location.getEdges()) {
                         List<String> edgeEvents = new ArrayList<>();
 
                         // Collect the name of edge events.
                         for (EdgeEvent edgeEvent: edge.getEvents()) {
-                            EventExpression express = (EventExpression)edgeEvent.getEvent();
-                            String eventName = express.getEvent().getName();
+                            EventExpression expression = (EventExpression)edgeEvent.getEvent();
+                            String eventName = expression.getEvent().getName();
 
                             // Add the name of event that is not a post-condition event to the list.
                             if (!postConditionEvents.contains(eventName)) {
@@ -108,17 +104,17 @@ public class Cif2Petrify {
 
                         // Append the edge.
                         if (edgeEvents.size() > 0) {
-                            String str = String.format("%s %s %s", loc.getName(), String.join(",", edgeEvents),
-                                    edge.getTarget().getName());
-                            stringBuilder.append(str);
+                            String edgeString = String.format("%s %s %s", location.getName(),
+                                    String.join(",", edgeEvents), edge.getTarget().getName());
+                            stringBuilder.append(edgeString);
                             stringBuilder.append("\n");
                         }
                     }
                 }
 
                 // Get the last location in which the edge event is not a post condition event.
-                String lastLocation = aut.getLocations().get(aut.getLocations().size() - postConditionEvents.size() - 1)
-                        .getName();
+                String lastLocation = automaton.getLocations()
+                        .get(automaton.getLocations().size() - postConditionEvents.size() - 1).getName();
 
                 // Append the looping edge.
                 String str = String.format("%s end loc0", lastLocation);
