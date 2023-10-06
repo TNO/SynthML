@@ -21,23 +21,28 @@ public class StructureInfoHelper {
     public void addStructureInfoInActivities(Namespace namespace) {
         for (NamedElement member: namespace.getOwnedMembers()) {
             if (member instanceof Activity activityMember) {
-                incrementCounter();
-                for (ActivityNode node: activityMember.getNodes()) {
-                    if (node instanceof InitialNode initialNode) {
-                        for (ActivityEdge edge: initialNode.getOutgoings()) {
-                            addStructureStartInfo(edge);
-                        }
-                    }
-                    if (node instanceof ActivityFinalNode finalNode) {
-                        for (ActivityEdge edge: finalNode.getIncomings()) {
-                            addStructureEndInfo(edge);
-                        }
-                    }
-                }
+                addStructureInfoInActivity(activityMember);
             } else if (member instanceof Class classMember) {
                 addStructureInfoInActivities(classMember);
             } else if (member instanceof Model modelMember) {
                 addStructureInfoInActivities(modelMember);
+            }
+        }
+    }
+
+    public void addStructureInfoInActivity(Activity activity) {
+        incrementCounter();
+
+        for (ActivityNode node: activity.getNodes()) {
+            if (node instanceof InitialNode initialNode) {
+                for (ActivityEdge edge: initialNode.getOutgoings()) {
+                    addStructureStartInfo(edge);
+                }
+            }
+            if (node instanceof ActivityFinalNode finalNode) {
+                for (ActivityEdge edge: finalNode.getIncomings()) {
+                    addStructureEndInfo(edge);
+                }
             }
         }
     }
