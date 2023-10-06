@@ -26,7 +26,6 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.google.common.base.Verify;
 
 /** Helper class for renaming model elements. */
-
 public class NameHelper {
     private NameHelper() {
     }
