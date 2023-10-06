@@ -32,11 +32,11 @@ public class Cif2Petrify {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Specification specification = FileHelper.loadCifSpec(sourcePath);
-        String body = Cif2Petrify.transformModel(specification);
+        String body = Cif2Petrify.transform(specification);
         FileHelper.writeToFile(body, targetPath);
     }
 
-    private static String transformModel(Specification specification) {
+    private static String transform(Specification specification) {
         StringBuilder stringBuilder = new StringBuilder();
 
         // Append heading string.
