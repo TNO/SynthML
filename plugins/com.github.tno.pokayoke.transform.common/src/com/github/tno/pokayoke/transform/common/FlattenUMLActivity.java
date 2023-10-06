@@ -10,13 +10,12 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.PackageableElement;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -51,8 +50,8 @@ public class FlattenUMLActivity {
         // Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
-        // Transform the elements within the model.
-        transformModel(model);
+        // Transform all elements within the model.
+        transform(model);
 
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
         // in all outermost activities.
@@ -65,24 +64,13 @@ public class FlattenUMLActivity {
         NameHelper.checkUniquenessOfNames(model);
     }
 
-    private void transformModel(Model model) {
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Activity activityElement) {
-                transformActivity(activityElement, null);
-            } else if (element instanceof Class classElement) {
-                transformClass(classElement);
-            } else if (element instanceof Model nestedModel) {
-                transformModel(nestedModel);
-            }
-        }
-    }
-
-    private void transformClass(Class classElement) {
-        // Flatten all activity behaviors of the class.
-        for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                transformActivity(activity, null);
-            }
+    private void transform(Element element) {
+        if (element instanceof Activity activityElement) {
+            transformActivity(activityElement, null);
+        } else if (element instanceof Class classElement) {
+            classElement.getOwnedMembers().forEach(this::transform);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedMembers().forEach(this::transform);
         }
     }
 
