@@ -55,7 +55,7 @@ public class FlattenUMLActivity {
         transformModel(model);
 
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
-        // in the outermost activities.
+        // in all outermost activities.
         structureInfoHelper.addStructureInfoInActivities(model);
 
         // Prepend the name of the outer activity to the model elements in activities.
