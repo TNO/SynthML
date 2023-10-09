@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -42,21 +43,26 @@ import com.google.common.base.Verify;
 public class UMLValidatorSwitch extends UMLSwitch<Object> {
     private final Map<String, EnumerationLiteral> enumLiterals = new LinkedHashMap<>();
 
+    private final Stack<Set<String>> elementNames = new Stack<>();
+
     @Override
     public Object caseModel(Model model) {
         checkNonNullNameOf(model);
         checkAbsenceOfDoubleUnderscoresInNameOf(model);
 
         // Visit all packaged elements and check (local) uniqueness of their names.
-        Set<String> names = new LinkedHashSet<>();
+        elementNames.push(new LinkedHashSet<>());
+
+        for (PackageableElement element: model.getPackagedElements()) {
+            registerUniqueElementName(element.getName());
+        }
 
         for (PackageableElement element: model.getPackagedElements()) {
             Object visistedElement = doSwitch(element);
             Verify.verifyNotNull(visistedElement, "Unsupported packageable element: " + element);
-            String elementName = element.getName();
-            Verify.verify(!names.contains(elementName), "Duplicate name: " + elementName);
-            names.add(elementName);
         }
+
+        elementNames.pop();
 
         return model;
     }
@@ -74,24 +80,22 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                 "Expected classes to own their classifier behavior.");
 
         // Visit all class properties and check (local) uniqueness of their names.
-        Set<String> names = new LinkedHashSet<>();
+        elementNames.push(new LinkedHashSet<>());
 
         for (Property property: classElement.getOwnedAttributes()) {
             Object visitedProperty = doSwitch(property);
             Verify.verifyNotNull(visitedProperty, "Unsupported class property: " + property);
-            String propertyName = property.getName();
-            Verify.verify(!names.contains(propertyName), "Duplicate name: " + propertyName);
-            names.add(propertyName);
+            registerUniqueElementName(property.getName());
         }
 
         // Visit all class behaviors and check (local) uniqueness of their names.
         for (Behavior behavior: classElement.getOwnedBehaviors()) {
             Object visitedBehavior = doSwitch(behavior);
             Verify.verifyNotNull(visitedBehavior, "Unsupported class behavior: " + behavior);
-            String behaviorName = behavior.getName();
-            Verify.verify(!names.contains(behaviorName), "Duplicate name: " + behaviorName);
-            names.add(behaviorName);
+            registerUniqueElementName(behavior.getName());
         }
+
+        elementNames.pop();
 
         return classElement;
     }
@@ -290,5 +294,10 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                     String.format("Expected the name of the given %s to not contain '__', but got '%s'.",
                             element.eClass().getName(), name));
         }
+    }
+
+    private void registerUniqueElementName(String name) {
+        Verify.verify(elementNames.stream().noneMatch(names -> names.contains(name)), "Duplicate name: " + name);
+        elementNames.peek().add(name);
     }
 }
