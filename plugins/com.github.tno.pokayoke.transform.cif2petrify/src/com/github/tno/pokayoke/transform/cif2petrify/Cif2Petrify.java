@@ -3,19 +3,18 @@ package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.escet.cif.metamodel.cif.Component;
-import org.eclipse.escet.cif.metamodel.cif.Group;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.automata.Alphabet;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.EdgeEvent;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
-import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 
 /** Transforms CIF state spaces to Petrify input. */
 public class Cif2Petrify {
@@ -39,54 +38,48 @@ public class Cif2Petrify {
     private static String transform(Specification specification) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        // Append heading string.
+        // Append the heading string.
         stringBuilder.append(".model safestatespace");
         stringBuilder.append("\n");
         stringBuilder.append(".dummy start end ");
 
         EList<Component> components = specification.getComponents();
-        List<String> postConditionEvents = new ArrayList<>();
 
-        // Iterate over components to extract information from components for event declaration (in 'Spec'), post
-        // condition event declaration (in 'Post') and the state space (in 'statespace').
+        // Iterate over components to extract information from the component named 'statespace'.
         for (Component component: components) {
-            if (component.getName().equals("Spec")) {
-                Group compWithEvents = (Group)component;
-                EList<Declaration> events = compWithEvents.getDeclarations();
+            if (component.getName().equals("statespace")) {
+                Automaton automaton = (Automaton)component;
 
-                List<String> eventName = new ArrayList<>();
-                Iterator<Declaration> eventIterator = events.iterator();
-
-                // Iterate over the event list to extract the name of events.
-                while (eventIterator.hasNext()) {
-                    Declaration event = eventIterator.next();
-                    eventName.add(event.getName());
+                Alphabet alphabet = automaton.getAlphabet();
+                List<String> eventNames = new ArrayList<>();
+                for (Expression expression: alphabet.getEvents()) {
+                    EventExpression eventExpression = (EventExpression)expression;
+                    eventNames.add(eventExpression.getEvent().getName());
                 }
 
                 // Append the declaration of events.
-                stringBuilder.append(String.join(" ", eventName));
+                stringBuilder.append(String.join(" ", eventNames));
                 stringBuilder.append("\n");
 
                 stringBuilder.append(".state graph");
                 stringBuilder.append("\n");
-            } else if (component.getName().equals("Post")) {
-                Group compWithPostConditionEvents = (Group)component;
-                EList<Declaration> events = compWithPostConditionEvents.getDeclarations();
 
-                // Collect post condition events.
-                Iterator<Declaration> eventIterator = events.iterator();
-                while (eventIterator.hasNext()) {
-                    Declaration event = eventIterator.next();
-                    postConditionEvents.add(event.getName());
-                }
-            } else if (component.getName().equals("statespace")) {
-                Automaton automaton = (Automaton)component;
-
-                stringBuilder.append("loc0 start loc1");
-                stringBuilder.append("\n");
+                List<Location> markedLocactions = new ArrayList<>();
 
                 // Iterate over locations to extract edge info.
                 for (Location location: automaton.getLocations()) {
+                    // Identify the initial location and append the first edge.
+                    List<Expression> initialExpressions = location.getInitials();
+                    if (initialExpressions.size() > 0) {
+                        stringBuilder.append(String.format("loc0 start %s", location.getName()));
+                        stringBuilder.append("\n");
+                    }
+
+                    // Identify the marked locations.
+                    if (location.getMarkeds().size() > 0 & location.getEdges().size() == 0) {
+                        markedLocactions.add(location);
+                    }
+
                     // Iterate over edges to extract edge events and append them to the string.
                     for (Edge edge: location.getEdges()) {
                         List<String> edgeEvents = new ArrayList<>();
@@ -95,11 +88,7 @@ public class Cif2Petrify {
                         for (EdgeEvent edgeEvent: edge.getEvents()) {
                             EventExpression expression = (EventExpression)edgeEvent.getEvent();
                             String eventName = expression.getEvent().getName();
-
-                            // Add the name of event that is not a post-condition event to the list.
-                            if (!postConditionEvents.contains(eventName)) {
-                                edgeEvents.add(eventName);
-                            }
+                            edgeEvents.add(eventName);
                         }
 
                         // Append the edge.
@@ -111,22 +100,19 @@ public class Cif2Petrify {
                         }
                     }
                 }
-
-                // Get the last location in which the edge event is not a post condition event.
-                String lastLocation = automaton.getLocations()
-                        .get(automaton.getLocations().size() - postConditionEvents.size() - 1).getName();
-
                 // Append the looping edge.
-                String str = String.format("%s end loc0", lastLocation);
-                stringBuilder.append(str);
-                stringBuilder.append("\n");
+                for (Location markedLocation: markedLocactions) {
+                    stringBuilder.append(String.format("%s end loc0", markedLocation.getName()));
+                    stringBuilder.append("\n");
+                }
 
-                // Append the marking location.
+                // Append the marking string.
                 stringBuilder.append(".marking {loc0}");
                 stringBuilder.append("\n");
             }
         }
-        // Append ending string.
+
+        // Append the ending string.
         stringBuilder.append(".end");
 
         return stringBuilder.toString();
