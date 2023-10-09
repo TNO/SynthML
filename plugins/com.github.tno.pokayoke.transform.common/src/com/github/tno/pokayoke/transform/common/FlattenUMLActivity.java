@@ -59,9 +59,6 @@ public class FlattenUMLActivity {
 
         // Prepend the name of the outer activity to the model elements in activities.
         NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
-
-        // Check that the names of the model elements are unique globally.
-        NameHelper.checkUniquenessOfNames(model);
     }
 
     private void transform(Element element) {
