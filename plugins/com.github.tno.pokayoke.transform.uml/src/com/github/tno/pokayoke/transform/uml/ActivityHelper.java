@@ -40,7 +40,8 @@ public class ActivityHelper {
      * @param guards A list of single-line Python boolean expressions.
      * @param effects A list of single-line Python programs.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The identifier of the caller.
+     * @param callerId The unique identifier of the caller.
+
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire, String callerId) {
