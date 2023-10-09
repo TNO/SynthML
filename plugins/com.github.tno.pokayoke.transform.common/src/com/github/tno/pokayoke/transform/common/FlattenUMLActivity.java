@@ -10,13 +10,12 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.PackageableElement;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -31,11 +30,11 @@ public class FlattenUMLActivity {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model).transformModel();
+        new FlattenUMLActivity(model).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transformModel() {
+    public void transform() {
         // Check whether the model has the expected structure, particularly that no double underscores exist in the
         // names of relevant model elements.
         new UMLValidatorSwitch().doSwitch(model);
@@ -46,47 +45,30 @@ public class FlattenUMLActivity {
         // Ensure that all names are locally unique within their scope.
         NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
         NameHelper.ensureUniqueNameForEnumerationLiteralsInEnumerations(model);
+        NameHelper.ensureUniqueNameForElementsInActivities(model);
 
         // Give every element an ID.
         IDHelper.addIDTracingCommentToModelElements(model);
 
-        // Transform all classes in the model.
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class classElement) {
-                transformClass(classElement);
-            }
-        }
-
-        // Check that the names of the model elements are unique globally.
-        NameHelper.checkUniquenessOfNames(model);
-    }
-
-    private void transformClass(Class classElement) {
-        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
-        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
-        // clear meaning and are automatically added by UML Designer.
-        for (Behavior behavior: classElement.getOwnedBehaviors()) {
-            if (behavior instanceof Activity activity) {
-                UMLActivityUtils.removeIrrelevantInformation(activity);
-            }
-        }
-
-        // Ensure that all names are locally unique within their scope.
-        NameHelper.ensureUniqueNameForElementsInActivities(classElement);
-
-        // Flatten all activity behaviors of the class.
-        for (Behavior behavior: new ArrayList<>(classElement.getOwnedBehaviors())) {
-            if (behavior instanceof Activity activity) {
-                transformActivity(activity, null);
-            }
-        }
-
-        // Prepend the name of the outer activity to the model elements in activities.
-        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(classElement);
+        // Transform all elements within the model.
+        transform(model);
 
         // Add structure comments to the outgoing edges of the initial nodes and the incoming edges of the final nodes
-        // in the outermost activities.
-        structureInfoHelper.addStructureInfoInActivities(classElement);
+        // in all outermost activities.
+        structureInfoHelper.addStructureInfoInActivities(model);
+
+        // Prepend the name of the outer activity to the model elements in activities.
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
+    }
+
+    private void transform(Element element) {
+        if (element instanceof Activity activityElement) {
+            transformActivity(activityElement, null);
+        } else if (element instanceof Class classElement) {
+            classElement.getOwnedMembers().forEach(this::transform);
+        } else if (element instanceof Model modelElement) {
+            modelElement.getOwnedMembers().forEach(this::transform);
+        }
     }
 
     /**
@@ -104,6 +86,11 @@ public class FlattenUMLActivity {
                 transformActivity((Activity)actionNode.getBehavior(), actionNode);
             }
         }
+
+        // Clean the irrelevant info from edges so that double underscores do not exist in the default name of Boolean
+        // literals of guards on edges that are not the outgoing edges of decision nodes. These guards do not have a
+        // clear meaning and are automatically added by UML Designer.
+        UMLActivityUtils.removeIrrelevantInformation(childBehavior);
 
         // Replace the call behavior action with the objects of this activity. Prepend the name and ID of the call
         // behavior action and the activity to the name and tracing comment of objects in this activity, respectively.
