@@ -41,9 +41,9 @@ import com.google.common.base.Verify;
 
 /** Visits UML elements and checks whether their structure is as expected. */
 public class UMLValidatorSwitch extends UMLSwitch<Object> {
-    private final Map<String, EnumerationLiteral> enumLiterals = new LinkedHashMap<>();
-
     private final Stack<Set<String>> elementNames = new Stack<>();
+
+    private final Map<String, EnumerationLiteral> enumLiterals = new LinkedHashMap<>();
 
     @Override
     public Object caseModel(Model model) {
