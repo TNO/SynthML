@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.google.common.base.Preconditions;
 
 /** Helper class for creating various kinds of activities. */
 
@@ -47,7 +48,8 @@ public class ActivityHelper {
     public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire,
             String callerId)
     {
-        assert !callerId.contains("'") : "Precondition violated: callerId contains quote character ('): " + callerId;
+        Preconditions.checkArgument(!callerId.contains("'"),
+                "Argument callerId contains quote character ('): " + callerId);
 
         // Combine all given guards into a single Python expression.
         String guard = "True";

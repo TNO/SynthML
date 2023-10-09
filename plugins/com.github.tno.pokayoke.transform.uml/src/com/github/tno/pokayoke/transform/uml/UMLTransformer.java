@@ -261,7 +261,8 @@ public class UMLTransformer {
                 .map(b -> translator.translateUpdate(b)).toList();
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal, action.getQualifiedName());
+        Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal,
+                action.getQualifiedName());
         String actionName = action.getName();
         newActivity.setName(actionName);
 
