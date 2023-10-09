@@ -43,7 +43,6 @@ public class FlattenUMLActivity {
         NameHelper.giveNameToModelElements(model);
 
         // Ensure that all names are locally unique within their scope.
-        NameHelper.ensureUniqueNameForEnumerationsPropertiesActivities(model);
         NameHelper.ensureUniqueNameForElementsInActivities(model);
 
         // Give every element an ID.
