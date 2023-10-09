@@ -40,11 +40,15 @@ public class ActivityHelper {
      * @param guards A list of single-line Python boolean expressions.
      * @param effects A list of single-line Python programs.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller.
-
+     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
+     *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire, String callerId) {
+    public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire,
+            String callerId)
+    {
+        assert !callerId.contains("'") : "Precondition violated: callerId contains quote character ('): " + callerId;
+
         // Combine all given guards into a single Python expression.
         String guard = "True";
         if (!guards.isEmpty()) {
