@@ -50,6 +50,7 @@ public class Cif2Petrify {
             if (component.getName().equals("statespace")) {
                 Automaton automaton = (Automaton)component;
 
+                // Extract the name of events.
                 Alphabet alphabet = automaton.getAlphabet();
                 List<String> eventNames = new ArrayList<>();
                 for (Expression expression: alphabet.getEvents()) {
