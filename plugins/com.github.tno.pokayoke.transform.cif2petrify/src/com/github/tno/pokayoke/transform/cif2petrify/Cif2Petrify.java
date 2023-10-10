@@ -54,6 +54,9 @@ public class Cif2Petrify {
         // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
 
+        Preconditions.checkArgument(eventNames.stream().distinct().count() == eventNames.size(),
+                "Expected all event names in the state space alphabet to be uniquely named.");
+
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
         stringBuilder.append(String.join(" ", eventNames));
         stringBuilder.append("\n");
@@ -63,9 +66,14 @@ public class Cif2Petrify {
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
+            String locationName = location.getName();
+
+            Preconditions.checkArgument(!locationName.equals("loc0"),
+                        "Expected no locations in the state space automaton to be named 'loc0'.");
+
             // Translate initial locations.
             if (!location.getInitials().isEmpty()) {
-                stringBuilder.append(String.format("loc0 start %s", location.getName()));
+                stringBuilder.append(String.format("loc0 start %s", locationName));
                 stringBuilder.append("\n");
             }
 
@@ -74,14 +82,14 @@ public class Cif2Petrify {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
                         "Expected marked locations to not have outgoing edges.");
 
-                stringBuilder.append(String.format("%s end loc0", location.getName()));
+                stringBuilder.append(String.format("%s end loc0", locationName));
                 stringBuilder.append("\n");
             }
 
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String edgeString = String.format("%s %s %s", location.getName(), edgeEvent.getName(),
+                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
                             edge.getTarget().getName());
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
