@@ -36,12 +36,12 @@ public class Cif2Petrify {
     private static String transform(Specification specification) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        // Append the heading string.
+        // Declare the header of the Petrify model.
         stringBuilder.append(".model safestatespace");
         stringBuilder.append("\n");
         stringBuilder.append(".dummy start end ");
 
-        // Get the state space.
+        // Obtain the state space automaton in the CIF specification.
         Optional<Automaton> possibleStatespace = specification.getComponents().stream()
                 .filter(c -> c instanceof Automaton a && a.getName().equals("statespace")).map(c -> (Automaton)c)
                 .findFirst();
@@ -51,7 +51,7 @@ public class Cif2Petrify {
 
         Automaton automaton = possibleStatespace.get();
 
-        // Extract the name of events.
+        // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
