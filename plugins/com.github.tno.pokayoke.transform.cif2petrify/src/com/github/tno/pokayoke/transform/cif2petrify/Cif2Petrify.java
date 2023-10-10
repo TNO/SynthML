@@ -54,7 +54,7 @@ public class Cif2Petrify {
         // Extract the name of events.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
 
-        // Append the declaration of events.
+        // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
         stringBuilder.append(String.join(" ", eventNames));
         stringBuilder.append("\n");
 
@@ -73,7 +73,7 @@ public class Cif2Petrify {
             // Translate marked locations.
             if (!location.getMarkeds().isEmpty()) {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
-                        "Expected a marked location does not have outgoing edges");
+                        "Expected marked locations to not have outgoing edges.");
 
                 // Append the ending edge.
                 stringBuilder.append(String.format("%s end loc0", location.getName()));
@@ -92,11 +92,11 @@ public class Cif2Petrify {
             }
         }
 
-        // Append the marking string.
+        // Indicate that the first location has a token initially.
         stringBuilder.append(".marking {loc0}");
         stringBuilder.append("\n");
 
-        // Append the ending string.
+        // Indicate the end of the Petrify input graph.
         stringBuilder.append(".end");
         stringBuilder.append("\n");
 
