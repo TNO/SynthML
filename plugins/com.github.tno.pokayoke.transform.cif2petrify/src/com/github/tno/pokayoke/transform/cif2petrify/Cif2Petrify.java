@@ -81,6 +81,9 @@ public class Cif2Petrify {
 
             // Translate marked locations.
             if (!location.getMarkeds().isEmpty()) {
+                Preconditions.checkArgument(location.getEdges().isEmpty(),
+                        "Expected marked locations to not have outgoing edges.");
+
                 stringBuilder.append(String.format("%s end loc0", locationName));
                 stringBuilder.append("\n");
             }
