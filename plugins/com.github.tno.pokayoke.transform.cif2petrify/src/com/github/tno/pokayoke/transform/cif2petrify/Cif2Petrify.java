@@ -65,7 +65,6 @@ public class Cif2Petrify {
         for (Location location: automaton.getLocations()) {
             // Translate initial locations.
             if (!location.getInitials().isEmpty()) {
-                // Append the starting edge.
                 stringBuilder.append(String.format("loc0 start %s", location.getName()));
                 stringBuilder.append("\n");
             }
@@ -75,7 +74,6 @@ public class Cif2Petrify {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
                         "Expected marked locations to not have outgoing edges.");
 
-                // Append the ending edge.
                 stringBuilder.append(String.format("%s end loc0", location.getName()));
                 stringBuilder.append("\n");
             }
@@ -83,7 +81,6 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    // Append the edge.
                     String edgeString = String.format("%s %s %s", location.getName(), edgeEvent.getName(),
                             edge.getTarget().getName());
                     stringBuilder.append(edgeString);
