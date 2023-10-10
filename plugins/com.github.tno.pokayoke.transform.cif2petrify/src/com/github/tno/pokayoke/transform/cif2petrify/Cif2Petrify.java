@@ -69,7 +69,9 @@ public class Cif2Petrify {
             String locationName = location.getName();
 
             Preconditions.checkArgument(!locationName.equals("loc0"),
-                        "Expected no locations in the state space automaton to be named 'loc0'.");
+                    "Expected no locations in the state space automaton to be named 'loc0'.");
+            Preconditions.checkArgument(!location.getEdges().isEmpty() || !location.getMarkeds().isEmpty(),
+                    "Expected non-marked locations to have outgoing edges.");
 
             // Translate initial locations.
             if (!location.getInitials().isEmpty()) {
@@ -79,9 +81,6 @@ public class Cif2Petrify {
 
             // Translate marked locations.
             if (!location.getMarkeds().isEmpty()) {
-                Preconditions.checkArgument(location.getEdges().isEmpty(),
-                        "Expected marked locations to not have outgoing edges.");
-
                 stringBuilder.append(String.format("%s end loc0", locationName));
                 stringBuilder.append("\n");
             }
