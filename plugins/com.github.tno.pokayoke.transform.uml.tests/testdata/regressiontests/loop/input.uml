@@ -21,12 +21,12 @@
         <guard xmi:type="uml:LiteralBoolean" xmi:id="_ZU1NQWaREe6brK4DOE-dfg" name="Merge_To_Decision_guard" value="true"/>
         <weight xmi:type="uml:LiteralInteger" xmi:id="_ZU1NQmaREe6brK4DOE-dfg" name="Merge_To_Decision_weight"/>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_Z5eLYGaREe6brK4DOE-dfg" target="_B3xPoGRREe6PU57shoVyvw" source="_Ok8jIGaREe6brK4DOE-dfg">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_Z5eLYGaREe6brK4DOE-dfg" name="Above" target="_B3xPoGRREe6PU57shoVyvw" source="_Ok8jIGaREe6brK4DOE-dfg">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="_jisIYGaREe6brK4DOE-dfg" name="AboveThreshold">
           <body>Value</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_aj8EsGaREe6brK4DOE-dfg" target="_ROQuwGaREe6brK4DOE-dfg" source="_Ok8jIGaREe6brK4DOE-dfg">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_aj8EsGaREe6brK4DOE-dfg" name="Below" target="_ROQuwGaREe6brK4DOE-dfg" source="_Ok8jIGaREe6brK4DOE-dfg">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="_6iIfoGaREe6brK4DOE-dfg" name="BelowThreshold">
           <body>not Value</body>
         </guard>
