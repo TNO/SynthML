@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commanilities of Tests for Transformers
+Bundle-SymbolicName: com.github.tno.pokayoke.transform.tests.common
+Bundle-Version: 0.0.1.qualifier
+Export-Package: com.github.tno.pokayoke.transform.tests.common
+Require-Bundle: com.github.tno.pokayoke.transform.common;bundle-version="0.0.0",
+ junit-jupiter-api;bundle-version="5.9.3",
+ junit-jupiter-params;bundle-version="5.9.3"
+Bundle-Vendor: TNO
+Automatic-Module-Name: com.github.tno.pokayoke.transform.tests.common
+Bundle-RequiredExecutionEnvironment: JavaSE-17

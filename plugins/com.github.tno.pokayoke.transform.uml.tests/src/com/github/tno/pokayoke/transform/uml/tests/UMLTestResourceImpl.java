@@ -13,8 +13,8 @@ import org.eclipse.uml2.uml.internal.resource.UMLResourceImpl;
  * </p>
  */
 @SuppressWarnings("restriction")
-public class TestResource extends UMLResourceImpl {
-    public TestResource(URI uri) {
+public class UMLTestResourceImpl extends UMLResourceImpl {
+    public UMLTestResourceImpl(URI uri) {
         super(uri);
     }
 

@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.uml.tests;
+package com.github.tno.pokayoke.transform.tests.common;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
