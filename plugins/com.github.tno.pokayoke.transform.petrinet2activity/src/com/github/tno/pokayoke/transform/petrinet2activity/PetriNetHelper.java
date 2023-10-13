@@ -1,10 +1,7 @@
 
 package com.github.tno.pokayoke.transform.petrinet2activity;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,12 +92,12 @@ public class PetriNetHelper {
 
         Preconditions.checkArgument(matcher.find(), "Expected the Petri Net input to contain the marking place.");
 
-        String initialPlaceName = matcher.group(1).trim();
+        String markingPlaceName = matcher.group(1).trim();
         PTMarking initialMarking = pnFactory.createPTMarking();
         initialMarking.setText((long)1);
-        Place initNodePlace = (Place)nameObjectMapping.get(initialPlaceName);
-        initialMarking.setContainerPlace(initNodePlace);
-        initNodePlace.setInitialMarking(initialMarking);
+        Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
+        initialMarking.setContainerPlace(markingPlace);
+        markingPlace.setInitialMarking(initialMarking);
 
         // Iterate over specification line to create arcs.
         for (String line: specificationLines) {
@@ -163,6 +160,4 @@ public class PetriNetHelper {
         source.getOutArcs().add(arc);
         return arc;
     }
-
-
 }
