@@ -30,7 +30,7 @@ public class PetriNetHelper {
     private PetriNetHelper() {
     }
 
-    private static PtnetFactory pnFactory = PtnetFactory.eINSTANCE;
+    private static PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
 
     public static Page parsePetriNet(String sourcePath) throws IOException {
         List<String> inputPetriNet = FileHelper.readFile(sourcePath);
@@ -94,7 +94,7 @@ public class PetriNetHelper {
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
         // Create marking for the marking place.
-        PTMarking initialMarking = pnFactory.createPTMarking();
+        PTMarking initialMarking = petriNetFactory.createPTMarking();
         initialMarking.setText((long)1);
         initialMarking.setContainerPlace(markingPlace);
         markingPlace.setInitialMarking(initialMarking);
@@ -111,26 +111,26 @@ public class PetriNetHelper {
     }
 
     private static Page initializePetriNetPage(String petriNetId) {
-        PtnetFactory pnFactory = PtnetFactory.eINSTANCE;
+        PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
 
         // Create Petri Net doc.
-        PetriNetDoc pnd = pnFactory.createPetriNetDoc();
+        PetriNetDoc petriNetDoc = petriNetFactory.createPetriNetDoc();
 
         // Create Petri Net.
-        PetriNet pn = pnFactory.createPetriNet();
-        pn.setId(petriNetId);
-        pn.setContainerPetriNetDoc(pnd);
+        PetriNet petriNet = petriNetFactory.createPetriNet();
+        petriNet.setId(petriNetId);
+        petriNet.setContainerPetriNetDoc(petriNetDoc);
 
         // Create page in Petri Net.
-        Page page = pnFactory.createPage();
-        page.setContainerPetriNet(pn);
+        Page page = petriNetFactory.createPage();
+        page.setContainerPetriNet(petriNet);
         page.setId(petriNetId);
 
         return page;
     }
 
     private static Transition createTransition(String nameString, Page page) {
-        Transition transition = pnFactory.createTransition();
+        Transition transition = petriNetFactory.createTransition();
         transition.setId(nameString);
         transition.setName(createName(nameString));
         transition.setContainerPage(page);
@@ -138,7 +138,7 @@ public class PetriNetHelper {
     }
 
     private static Place createPlace(String nameString, Page page) {
-        Place place = pnFactory.createPlace();
+        Place place = petriNetFactory.createPlace();
         place.setId(nameString);
         place.setName(createName(nameString));
         place.setContainerPage(page);
@@ -146,13 +146,13 @@ public class PetriNetHelper {
     }
 
     private static Name createName(String nameString) {
-        Name name = pnFactory.createName();
+        Name name = petriNetFactory.createName();
         name.setText(nameString);
         return name;
     }
 
     private static Arc createArc(Node source, Node target, Page page) {
-        Arc arc = pnFactory.createArc();
+        Arc arc = petriNetFactory.createArc();
         arc.setContainerPage(page);
         arc.setId(source.getId() + "_to_" + target.getId());
         arc.setSource(source);
