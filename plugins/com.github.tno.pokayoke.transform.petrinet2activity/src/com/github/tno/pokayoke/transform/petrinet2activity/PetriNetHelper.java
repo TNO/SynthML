@@ -110,7 +110,7 @@ public class PetriNetHelper {
         return petrinetPage;
     }
 
-    public static Page initializePetriNetPage(String petriNetId) {
+    private static Page initializePetriNetPage(String petriNetId) {
         PtnetFactory pnFactory = PtnetFactory.eINSTANCE;
 
         // Create Petri Net doc.
