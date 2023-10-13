@@ -9,7 +9,8 @@ Require-Bundle: com.github.tno.pokayoke.transform.common;bundle-version="0.0.0",
  org.eclipse.uml2.uml;bundle-version="5.5.0",
  org.eclipse.uml2.uml.resources;bundle-version="5.5.0",
  junit-jupiter-api;bundle-version="5.9.3",
- junit-jupiter-params;bundle-version="5.9.3"
+ junit-jupiter-params;bundle-version="5.9.3",
+ com.github.tno.pokayoke.transform.tests.common;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml.tests
 Bundle-RequiredExecutionEnvironment: JavaSE-17
