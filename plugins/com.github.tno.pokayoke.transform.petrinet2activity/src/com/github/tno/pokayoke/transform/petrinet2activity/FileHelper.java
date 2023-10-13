@@ -16,7 +16,6 @@ public class FileHelper {
     }
 
     public static List<String> readFile(String sourcePath) throws IOException {
-        Files.readAllLines(Paths.get(sourcePath));
         return Files.readAllLines(Paths.get(sourcePath));
     }
 
