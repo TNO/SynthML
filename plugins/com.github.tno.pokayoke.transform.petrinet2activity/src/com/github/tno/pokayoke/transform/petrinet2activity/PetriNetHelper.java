@@ -52,7 +52,7 @@ public class PetriNetHelper {
         Optional<String> transitionDeclaration = petrinetBody.stream().filter(line -> line.startsWith(dummyString))
                 .map(line -> line.replaceAll(dummyString, "").trim()).findFirst();
         Preconditions.checkArgument(transitionDeclaration.isPresent(),
-                "Expected the Petri Net input to contain transition decalrations.");
+                "Expected the Petri Net input to contain transition declarations.");
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.get().split(" ")));
 
         // Obtain the specification lines.
@@ -62,9 +62,12 @@ public class PetriNetHelper {
         List<String> transitionPlaceNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" ")))
                 .distinct().toList();
 
-        // Obtain the name of the duplicate transitions.
-        List<String> withoutTransitionDuplicates = new ArrayList<>(transitionNames);
-        for (String transitionName: withoutTransitionDuplicates) {
+        // In case a transition appears multiple times in a Petri Net. Petrify distinguishes each duplication by adding
+        // a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and these
+        // duplications are not specified in the transition declarations, but only appear in the specification.
+        // Obtain the name of these duplications.
+        List<String> declaredTransitionNames = new ArrayList<>(transitionNames);
+        for (String transitionName: declaredTransitionNames) {
             List<String> duplicates = transitionPlaceNames.stream()
                     .filter(e -> !e.equals(transitionName) && e.startsWith(transitionName)).toList();
             transitionNames.addAll(duplicates);
@@ -89,7 +92,7 @@ public class PetriNetHelper {
         // Parse the marking place in curly brackets.
         Pattern pattern = Pattern.compile("\\{\\s*([^}]+)\\s*\\}");
         Matcher matcher = pattern.matcher(markingLine);
-        Preconditions.checkArgument(matcher.find(), "Expected the Petri Net input to contain the marking place.");
+        Preconditions.checkArgument(matcher.find(), "Expected the Petri Net input to contain a marking place.");
         String markingPlaceName = matcher.group(1).trim();
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
