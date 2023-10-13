@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_VfeX0EZ9Ee6sBZ7qA2kCLg" name="MyModel">
+  <packagedElement xmi:type="uml:Class" xmi:id="_UU4OsGRSEe6PU57shoVyvw" name="MyClass" classifierBehavior="_zxqCwFGHEe6vfoQ8SCm9OQ">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_zxqCwFGHEe6vfoQ8SCm9OQ" name="ClaimFlag" node="_5qLVUFGHEe6vfoQ8SCm9OQ _78O3gFGHEe6vfoQ8SCm9OQ _95zXcFGHEe6vfoQ8SCm9OQ _A4vNwFGIEe6vfoQ8SCm9OQ _C4s6YFGIEe6vfoQ8SCm9OQ _KpbrwFGIEe6vfoQ8SCm9OQ _MaVosFGIEe6vfoQ8SCm9OQ _O76NkFGIEe6vfoQ8SCm9OQ _YdG3AFGIEe6vfoQ8SCm9OQ _bNHggFGIEe6vfoQ8SCm9OQ _dz0dAFGIEe6vfoQ8SCm9OQ _l2kOsGRQEe6PU57shoVyvw _nhHE8GRQEe6PU57shoVyvw _p2b9kGRQEe6PU57shoVyvw _uhae8GRQEe6PU57shoVyvw _2TvLwGRQEe6PU57shoVyvw _9jmEsGRQEe6PU57shoVyvw _B3xPoGRREe6PU57shoVyvw _JmDJ8GRREe6PU57shoVyvw">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_RumXoFGIEe6vfoQ8SCm9OQ" target="_95zXcFGHEe6vfoQ8SCm9OQ" source="_5qLVUFGHEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_Rum-sFGIEe6vfoQ8SCm9OQ" name="Initial_To_ClaimFlag_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_RuoM0FGIEe6vfoQ8SCm9OQ" name="Initial_To_ClaimFlag_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_SU14QFGIEe6vfoQ8SCm9OQ" target="_78O3gFGHEe6vfoQ8SCm9OQ" source="_95zXcFGHEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_SU14QVGIEe6vfoQ8SCm9OQ" name="ClaimFlag_To_ForkFlag_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_SU14QlGIEe6vfoQ8SCm9OQ" name="ClaimFlag_To_ForkFlag_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_SyuuIFGIEe6vfoQ8SCm9OQ" target="_KpbrwFGIEe6vfoQ8SCm9OQ" source="_A4vNwFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_SyuuIVGIEe6vfoQ8SCm9OQ" name="ClaimResource1_To_ForkResource1_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_SyuuIlGIEe6vfoQ8SCm9OQ" name="ClaimResource1_To_ForkResource1_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_TXBG8FGIEe6vfoQ8SCm9OQ" target="_MaVosFGIEe6vfoQ8SCm9OQ" source="_C4s6YFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_TXBuAFGIEe6vfoQ8SCm9OQ" name="ClaimResource2_To_ForkResource2_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_TXBuAVGIEe6vfoQ8SCm9OQ" name="ClaimResource2_To_ForkResource2_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_UkoJkFGIEe6vfoQ8SCm9OQ" target="_A4vNwFGIEe6vfoQ8SCm9OQ" source="_78O3gFGHEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_UkowoFGIEe6vfoQ8SCm9OQ" name="ForkFlag_To_ClaimResource1_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_UkowoVGIEe6vfoQ8SCm9OQ" name="ForkFlag_To_ClaimResource1_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_VUpRQFGIEe6vfoQ8SCm9OQ" target="_C4s6YFGIEe6vfoQ8SCm9OQ" source="_78O3gFGHEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_VUp4UFGIEe6vfoQ8SCm9OQ" name="ForkFlag_To_ClaimResource2_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_VUp4UVGIEe6vfoQ8SCm9OQ" name="ForkFlag_To_ClaimResource2_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_WL_wAFGIEe6vfoQ8SCm9OQ" target="_O76NkFGIEe6vfoQ8SCm9OQ" source="_MaVosFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_WMAXEFGIEe6vfoQ8SCm9OQ" name="ForkResource2_To_JoinFlag_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_WMAXEVGIEe6vfoQ8SCm9OQ" name="ForkResource2_To_JoinFlag_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_W5yqIFGIEe6vfoQ8SCm9OQ" target="_O76NkFGIEe6vfoQ8SCm9OQ" source="_KpbrwFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_W5z4QFGIEe6vfoQ8SCm9OQ" name="ForkResource1_To_JoinFlag_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_W5z4QVGIEe6vfoQ8SCm9OQ" name="ForkResource1_To_JoinFlag_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_aZUsEFGIEe6vfoQ8SCm9OQ" target="_YdG3AFGIEe6vfoQ8SCm9OQ" source="_O76NkFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_aZVTIFGIEe6vfoQ8SCm9OQ" name="JoinFlag_To_ReleaseFlag_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_aZV6MFGIEe6vfoQ8SCm9OQ" name="JoinFlag_To_ReleaseFlag_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_fUmTQFGIEe6vfoQ8SCm9OQ" target="_bNHggFGIEe6vfoQ8SCm9OQ" source="_MaVosFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_fUm6UFGIEe6vfoQ8SCm9OQ" name="ForkResource2_To_Rest2_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_fUm6UVGIEe6vfoQ8SCm9OQ" name="ForkResource2_To_Rest2_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_gFGjIFGIEe6vfoQ8SCm9OQ" target="_dz0dAFGIEe6vfoQ8SCm9OQ" source="_KpbrwFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_gFHKMFGIEe6vfoQ8SCm9OQ" name="ForkResource1_To_Rest1_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_gFHKMVGIEe6vfoQ8SCm9OQ" name="ForkResource1_To_Rest1_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_wTNzwGRQEe6PU57shoVyvw" target="_uhae8GRQEe6PU57shoVyvw" source="_dz0dAFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_wTPB4GRQEe6PU57shoVyvw" name="Setup1_To_JoinTogether_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_wTQQAGRQEe6PU57shoVyvw" name="Setup1_To_JoinTogether_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_xA5ZIGRQEe6PU57shoVyvw" target="_uhae8GRQEe6PU57shoVyvw" source="_bNHggFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_xA6AMGRQEe6PU57shoVyvw" name="Setup2_To_JoinTogether_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_xA6AMWRQEe6PU57shoVyvw" name="Setup2_To_JoinTogether_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_zq3sEGRQEe6PU57shoVyvw" target="_l2kOsGRQEe6PU57shoVyvw" source="_uhae8GRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_zq46MGRQEe6PU57shoVyvw" name="JoinTogether_To_Together_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_zq46MWRQEe6PU57shoVyvw" name="JoinTogether_To_Together_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_6HFhkGRQEe6PU57shoVyvw" target="_2TvLwGRQEe6PU57shoVyvw" source="_l2kOsGRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_6HFhkWRQEe6PU57shoVyvw" name="Together_To_ForkTogether_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_6HGIoGRQEe6PU57shoVyvw" name="Together_To_ForkTogether_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_61gGwGRQEe6PU57shoVyvw" target="_p2b9kGRQEe6PU57shoVyvw" source="_2TvLwGRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_61gt0GRQEe6PU57shoVyvw" name="ForkTogether_To_Teardown2_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_61gt0WRQEe6PU57shoVyvw" name="ForkTogether_To_Teardown2_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_7f5HkGRQEe6PU57shoVyvw" target="_nhHE8GRQEe6PU57shoVyvw" source="_2TvLwGRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_7f5uoGRQEe6PU57shoVyvw" name="ForkTogether_To_Teardown1_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_7f5uoWRQEe6PU57shoVyvw" name="ForkTogether_To_Teardown1_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="__HgHcGRQEe6PU57shoVyvw" target="_9jmEsGRQEe6PU57shoVyvw" source="_p2b9kGRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="__HgHcWRQEe6PU57shoVyvw" name="Teardown2_To_JoinDone_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="__HgHcmRQEe6PU57shoVyvw" name="Teardown2_To_JoinDone_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="__qnbkGRQEe6PU57shoVyvw" target="_9jmEsGRQEe6PU57shoVyvw" source="_nhHE8GRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="__qnbkWRQEe6PU57shoVyvw" name="Teardown1_To_JoinDone_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="__qnbkmRQEe6PU57shoVyvw" name="Teardown1_To_JoinDone_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_DCt_0GRREe6PU57shoVyvw" target="_B3xPoGRREe6PU57shoVyvw" source="_9jmEsGRQEe6PU57shoVyvw">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_DCt_0WRREe6PU57shoVyvw" name="JoinDone_To_ActivityFinal_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_DCum4GRREe6PU57shoVyvw" name="JoinDone_To_ActivityFinal_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_KvbM0GRREe6PU57shoVyvw" target="_JmDJ8GRREe6PU57shoVyvw" source="_YdG3AFGIEe6vfoQ8SCm9OQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_KvbM0WRREe6PU57shoVyvw" name="ReleaseFlag_To_FlowFinal_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_Kvbz4GRREe6PU57shoVyvw" name="ReleaseFlag_To_FlowFinal_weight"/>
+      </edge>
+      <node xmi:type="uml:InitialNode" xmi:id="_5qLVUFGHEe6vfoQ8SCm9OQ" name="Initial" outgoing="_RumXoFGIEe6vfoQ8SCm9OQ"/>
+      <node xmi:type="uml:ForkNode" xmi:id="_78O3gFGHEe6vfoQ8SCm9OQ" name="ForkFlag" incoming="_SU14QFGIEe6vfoQ8SCm9OQ" outgoing="_UkoJkFGIEe6vfoQ8SCm9OQ _VUpRQFGIEe6vfoQ8SCm9OQ"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_95zXcFGHEe6vfoQ8SCm9OQ" name="ClaimFlag" incoming="_RumXoFGIEe6vfoQ8SCm9OQ" outgoing="_SU14QFGIEe6vfoQ8SCm9OQ" body=""/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_A4vNwFGIEe6vfoQ8SCm9OQ" name="ClaimResource1" incoming="_UkoJkFGIEe6vfoQ8SCm9OQ" outgoing="_SyuuIFGIEe6vfoQ8SCm9OQ" body=""/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_C4s6YFGIEe6vfoQ8SCm9OQ" name="ClaimResource2" incoming="_VUpRQFGIEe6vfoQ8SCm9OQ" outgoing="_TXBG8FGIEe6vfoQ8SCm9OQ" body=""/>
+      <node xmi:type="uml:ForkNode" xmi:id="_KpbrwFGIEe6vfoQ8SCm9OQ" name="ForkResource1" incoming="_SyuuIFGIEe6vfoQ8SCm9OQ" outgoing="_W5yqIFGIEe6vfoQ8SCm9OQ _gFGjIFGIEe6vfoQ8SCm9OQ"/>
+      <node xmi:type="uml:ForkNode" xmi:id="_MaVosFGIEe6vfoQ8SCm9OQ" name="ForkResource2" incoming="_TXBG8FGIEe6vfoQ8SCm9OQ" outgoing="_WL_wAFGIEe6vfoQ8SCm9OQ _fUmTQFGIEe6vfoQ8SCm9OQ"/>
+      <node xmi:type="uml:JoinNode" xmi:id="_O76NkFGIEe6vfoQ8SCm9OQ" name="JoinFlag" incoming="_WL_wAFGIEe6vfoQ8SCm9OQ _W5yqIFGIEe6vfoQ8SCm9OQ" outgoing="_aZUsEFGIEe6vfoQ8SCm9OQ">
+        <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_O77bsFGIEe6vfoQ8SCm9OQ" name="Join1" value="true"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_YdG3AFGIEe6vfoQ8SCm9OQ" name="ReleaseFlag" incoming="_aZUsEFGIEe6vfoQ8SCm9OQ" outgoing="_KvbM0GRREe6PU57shoVyvw" body=""/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_bNHggFGIEe6vfoQ8SCm9OQ" name="Setup2" incoming="_fUmTQFGIEe6vfoQ8SCm9OQ" outgoing="_xA5ZIGRQEe6PU57shoVyvw" body=""/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_dz0dAFGIEe6vfoQ8SCm9OQ" name="Setup1" incoming="_gFGjIFGIEe6vfoQ8SCm9OQ" outgoing="_wTNzwGRQEe6PU57shoVyvw" body=""/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_l2kOsGRQEe6PU57shoVyvw" name="Together" incoming="_zq3sEGRQEe6PU57shoVyvw" outgoing="_6HFhkGRQEe6PU57shoVyvw"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_nhHE8GRQEe6PU57shoVyvw" name="Teardown1" incoming="_7f5HkGRQEe6PU57shoVyvw" outgoing="__qnbkGRQEe6PU57shoVyvw"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_p2b9kGRQEe6PU57shoVyvw" name="Teardown2" incoming="_61gGwGRQEe6PU57shoVyvw" outgoing="__HgHcGRQEe6PU57shoVyvw"/>
+      <node xmi:type="uml:JoinNode" xmi:id="_uhae8GRQEe6PU57shoVyvw" name="JoinTogether" incoming="_wTNzwGRQEe6PU57shoVyvw _xA5ZIGRQEe6PU57shoVyvw" outgoing="_zq3sEGRQEe6PU57shoVyvw">
+        <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_uhbGAGRQEe6PU57shoVyvw" name="Join2" value="true"/>
+      </node>
+      <node xmi:type="uml:ForkNode" xmi:id="_2TvLwGRQEe6PU57shoVyvw" name="ForkTogether" incoming="_6HFhkGRQEe6PU57shoVyvw" outgoing="_61gGwGRQEe6PU57shoVyvw _7f5HkGRQEe6PU57shoVyvw"/>
+      <node xmi:type="uml:JoinNode" xmi:id="_9jmEsGRQEe6PU57shoVyvw" name="JoinDone" incoming="__HgHcGRQEe6PU57shoVyvw __qnbkGRQEe6PU57shoVyvw" outgoing="_DCt_0GRREe6PU57shoVyvw">
+        <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_9jmrwGRQEe6PU57shoVyvw" name="Join3" value="true"/>
+      </node>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="_B3xPoGRREe6PU57shoVyvw" name="ActivityFinal" incoming="_DCt_0GRREe6PU57shoVyvw"/>
+      <node xmi:type="uml:FlowFinalNode" xmi:id="_JmDJ8GRREe6PU57shoVyvw" name="FlowFinal" incoming="_KvbM0GRREe6PU57shoVyvw"/>
+    </ownedBehavior>
+  </packagedElement>
+</uml:Model>
