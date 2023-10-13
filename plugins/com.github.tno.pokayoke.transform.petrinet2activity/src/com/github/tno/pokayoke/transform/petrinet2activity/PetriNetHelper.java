@@ -164,7 +164,7 @@ public class PetriNetHelper {
         return arc;
     }
 
-    public static void exportToFile(Page page, String outputPath) throws IOException {
+    public static void exportToPNMLFile(Page page, String outputPath) throws IOException {
         File file = new File(outputPath);
         try (FileOutputStream output = new FileOutputStream(file)) {
             FileChannel channel = output.getChannel();
