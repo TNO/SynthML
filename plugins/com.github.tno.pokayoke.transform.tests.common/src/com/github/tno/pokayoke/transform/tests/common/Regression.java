@@ -138,7 +138,7 @@ public abstract class Regression {
      *
      * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.
-     * @param expectedFile Name of expected output file
+     * @param expectedFile Name of expected output file.
      * @param actualFile Name of actual output file.
      * @return Stream of arguments for regression tests.
      */
