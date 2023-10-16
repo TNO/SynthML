@@ -15,9 +15,9 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.google.guava;bundle-version="0.0.0",
  fr.lip6.pnml.framework.utils;bundle-version="2.2.12",
  fr.lip6.pnml.framework.ptnet;bundle-version="2.2.12",
- org.eclipse.uml2.uml,
- org.eclipse.emf.ecore,
- com.github.tno.pokayoke.transform.common
+ org.eclipse.uml2.uml;bundle-version="5.5.0",
+ org.eclipse.emf.ecore;bundle-version="2.34.0",
+ com.github.tno.pokayoke.transform.common;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.petrify2uml
 Bundle-RequiredExecutionEnvironment: JavaSE-17
