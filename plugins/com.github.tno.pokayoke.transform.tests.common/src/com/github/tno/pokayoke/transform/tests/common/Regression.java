@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.tests.common;
 
+import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -16,27 +17,33 @@ import org.junit.jupiter.params.provider.Arguments;
 
 /**
  * Regression tests.
+ *
+ * <p>
+ * Regression tests are discovered as sub-directories of a particular directory. A test will also fail whenever a
+ * sub-directory of that particular directory does not contain a valid regression test.
+ * </p>
+ *
+ * <p>
+ * When verification within this test fails, this test will stop and, by design, tear down will NOT be executed. Since
+ * tear down is not executed, the actual output file will remain available on disk. This is beneficial since
+ * <ul>
+ * <li>The actual output file is useful for diagnosis, such as examining the difference with the expected output
+ * file.</li>
+ * <li>The actual output file is useful for (automatically) changing the expected output file in case of intended
+ * changes.</li>
+ * <li>The next test run is not affected since it will just overwrite the actual output file.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Verification whether the expected output file exists is performed after the actual output file is created. This
+ * simplifies the creation of regression tests.
+ * </p>
+ *
  */
 public abstract class Regression {
     /**
-     * The regression test.
-     *
-     * <p>
-     * When verification within this test fails, this test will stop and, by design, tear down will NOT be executed.
-     * Since tear down is not executed, the actual output file will remain available on disk. This is beneficial since
-     * <ul>
-     * <li>The actual output file is useful for diagnosis, such as examining the difference with the expected output
-     * file.</li>
-     * <li>The actual output file is useful for (automatically) changing the expected output file in case of intended
-     * changes.</li>
-     * <li>The next test run is not affected since it will just overwrite the actual output file.</li>
-     * </ul>
-     * </p>
-     *
-     * <p>
-     * Verification whether the expected output file exists is performed after the actual output file is created. This
-     * simplifies the creation of regression tests.
-     * </p>
+     * Constructor.
      *
      * @param inputPath Path to the input file.
      * @param expectedPath Path to the expected output file.
@@ -89,39 +96,64 @@ public abstract class Regression {
         Files.delete(outputPath);
     }
 
-    private static boolean isRegressionTestDirectory(Path path, String inputFile) {
-        if (!Files.isDirectory(path)) {
-            return false;
-        }
-
-        final Path inputPath = path.resolve(inputFile);
-        return Files.exists(inputPath);
+    /**
+     * Provide arguments for regression tests based on input and output extension.
+     *
+     * @param inputExtension Extension of the input file.
+     * @param outputExtension Extension of the actual and expected output file.
+     * @return Stream of arguments for regression tests.
+     */
+    public static Stream<? extends Arguments> provideArguments(String inputExtension, String outputExtension) {
+        return provideArguments("input." + inputExtension, "expected." + outputExtension, "actual." + outputExtension);
     }
 
-    public static Stream<? extends Arguments> provideArguments(String inputExtension, String outputExtension)
-            throws Exception
+    /**
+     * Provide arguments for regression tests with the given input file name and the expected and actual output file
+     * names.
+     *
+     * @param inputFile Name of input file.
+     * @param expectedFile Name of expected output file
+     * @param actualFile Name of actual output file.
+     * @return Stream of arguments for regression tests.
+     */
+    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFile,
+            final String actualFile)
     {
-        final String inputFile = "input." + inputExtension;
-        final String expectedFile = "expected." + outputExtension;
-        final String outputFile = "output." + outputExtension;
-
         final String testResourcesName = "resources-test";
         final Path testResourcesPath = Path.of(testResourcesName);
-        assertTrue(Files.isDirectory(testResourcesPath), "The '" + testResourcesName + "' directory doesn't exist.");
+        assertDirectoryExists(testResourcesPath, "The '" + testResourcesName + "' directory doesn't exist.");
 
         final String regressiontestsName = "regressiontests";
         final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
-        assertTrue(Files.isDirectory(regressiontestsPath), "The '" + regressiontestsName
+        assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
                 + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
+
+        return provideArguments(regressiontestsPath, inputFile, expectedFile, actualFile);
+    }
+
+    /**
+     * Provide arguments for regression tests in the directory regressiontestsPath with the given input file name and
+     * the expected and actual output file names.
+     *
+     *
+     * @param regressiontestsPath Directory containing the regression tests.
+     * @param inputFile Name of input file.
+     * @param expectedFile Name of expected output file
+     * @param actualFile Name of actual output file.
+     * @return Stream of arguments for regression tests.
+     */
+    private static Stream<? extends Arguments> provideArguments(final Path regressiontestsPath, final String inputFile,
+            final String expectedFile, final String actualFile)
+    {
         final String regressiontestsPathString = regressiontestsPath.toString();
 
         final List<Arguments> returnValue = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(regressiontestsPath,
-                p -> isRegressionTestDirectory(p, inputFile)))
+                Files::isDirectory))
         {
             for (Path subDirectory: directoryStream) {
                 returnValue.add(Arguments.of(subDirectory.resolve(inputFile), subDirectory.resolve(expectedFile),
-                        subDirectory.resolve(outputFile), subDirectory.toString()));
+                        subDirectory.resolve(actualFile), subDirectory.toString()));
             }
         } catch (IOException e) {
             fail("IOException while adding subdirectories of the regressiontests directory '"

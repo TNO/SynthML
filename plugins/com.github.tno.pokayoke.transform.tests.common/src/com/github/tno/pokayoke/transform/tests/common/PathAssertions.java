@@ -18,16 +18,27 @@ public class PathAssertions {
     }
 
     /**
+     * Assert that the path refers to an existing directory.
+     *
+     * @param file The path of the file.
+     * @param message The message to be used when the assertion fails.
+     */
+    public static void assertDirectoryExists(Path file, String message) {
+        assertTrue(Files.exists(file), message + ": file '" + file.toString() + "' does not exist.");
+        assertTrue(Files.isDirectory(file),
+                message + ": path '" + file.toString() + "' does not refer to a directory.");
+    }
+
+    /**
      * Assert that the path refers to an existing file.
      *
      * @param file The path of the file.
      * @param message The message to be used when the assertion fails.
-     * @throws IOException Thrown when one of the files can't be read.
      */
-    public static void assertFileExists(Path file, String message) throws IOException {
+    public static void assertFileExists(Path file, String message) {
         assertTrue(Files.exists(file), message + ": file '" + file.toString() + "' does not exist.");
         assertFalse(Files.isDirectory(file),
-                message + ": path '" + file.toString() + "' does not refer to a file but a directory.");
+                message + ": path '" + file.toString() + "' does not refer to a file.");
     }
 
     /**
