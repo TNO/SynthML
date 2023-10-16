@@ -44,7 +44,7 @@ public class PetriNetHelper {
         Page petrinetPage = PetriNetHelper.initializePetriNetPage(modelName.toString());
 
         // Remove the header lines.
-        List<String> petrinetBody = FileHelper.readFile(sourcePath).stream().filter(line -> !line.startsWith("#"))
+        List<String> petrinetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#"))
                 .toList();
 
         // Obtain the name of the declared transitions.
