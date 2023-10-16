@@ -36,9 +36,9 @@ public class PetriNetHelper {
         List<String> inputPetriNet = FileHelper.readFile(sourcePath);
 
         // Obtain model name.
-        String nameHeader = ".model ";
+        String nameHeader = ".model";
         String modelName = inputPetriNet.stream().filter(line -> line.startsWith(nameHeader))
-                .map(line -> line.replace(nameHeader, "")).findFirst().get();
+                .map(line -> line.replace(nameHeader, "").trim()).findFirst().get();
 
         // Create a Petri Net page.
         Page petrinetPage = PetriNetHelper.initializePetriNetPage(modelName.toString());
@@ -48,7 +48,7 @@ public class PetriNetHelper {
                 .toList();
 
         // Obtain the name of the declared transitions.
-        String dummyString = ".dummy  ";
+        String dummyString = ".dummy";
         Optional<String> transitionDeclaration = petrinetBody.stream().filter(line -> line.startsWith(dummyString))
                 .map(line -> line.replaceAll(dummyString, "").trim()).findFirst();
         Preconditions.checkArgument(transitionDeclaration.isPresent(),
