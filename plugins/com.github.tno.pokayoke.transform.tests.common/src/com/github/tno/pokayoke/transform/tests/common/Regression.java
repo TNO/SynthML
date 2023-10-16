@@ -76,8 +76,6 @@ public abstract class Regression {
      * @throws IOException Thrown when one of the files can't be read.
      */
     private void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
-        assertTrue(Files.exists(expectedPath),
-                message + ": Expected output file '" + expectedPath.toString() + "' doesn't exist.");
         PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
     }
 
