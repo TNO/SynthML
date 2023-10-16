@@ -68,20 +68,19 @@ public abstract class RegressionArgumentsProvider implements ArgumentsProvider {
         }
 
         final Path inputPath = path.resolve(getInputFileName());
-        final Path expectedPath = path.resolve(getExpectedOutputFileName());
-        return Files.exists(inputPath) && Files.exists(expectedPath);
+        return Files.exists(inputPath);
     }
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-        final String testdataName = "testdata";
-        final Path testdataPath = Path.of(testdataName);
-        assertTrue(Files.isDirectory(testdataPath), "The 'testdata' directory doesn't exist.");
+        final String testResourcesName = "resources-test";
+        final Path testResourcesPath = Path.of(testResourcesName);
+        assertTrue(Files.isDirectory(testResourcesPath), "The '" + testResourcesName + "' directory doesn't exist.");
 
         final String regressiontestsName = "regressiontests";
-        final Path regressiontestsPath = testdataPath.resolve(regressiontestsName);
-        assertTrue(Files.isDirectory(regressiontestsPath),
-                "The 'regressiontests' directory doesn't exist within the 'testdata' directory.");
+        final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
+        assertTrue(Files.isDirectory(regressiontestsPath), "The '" + regressiontestsName
+                + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
         final String regressiontestsPathString = regressiontestsPath.toString();
 
         final List<Arguments> returnValue = new ArrayList<>();
