@@ -26,8 +26,8 @@ import fr.lip6.move.pnml.ptnet.PtnetFactory;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper for parsing Petrify output. */
-public class PetriNetHelper {
-    private PetriNetHelper() {
+public class Petrify2PNMLTranslator {
+    private Petrify2PNMLTranslator() {
     }
 
     private static PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
@@ -43,7 +43,7 @@ public class PetriNetHelper {
         Preconditions.checkArgument(modelName.isPresent(), "Expected the Petri Net output to have a model name.");
 
         // Create a Petri Net page.
-        Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.get().toString());
+        Page petriNetPage = initializePetriNetPage(modelName.get().toString());
 
         // Remove the header lines.
         List<String> petriNetBody = petrifyOutput.stream().filter(line -> !line.startsWith("#")).toList();
