@@ -40,8 +40,7 @@ public class PetriNetHelper {
         Optional<String> modelName = petrifyOutput.stream().filter(line -> line.startsWith(nameHeader))
                 .map(line -> line.replace(nameHeader, "").trim()).findFirst();
 
-        Preconditions.checkArgument(modelName.isPresent(),
-                "Expected the Petri Net output to have a model name.");
+        Preconditions.checkArgument(modelName.isPresent(), "Expected the Petri Net output to have a model name.");
 
         // Create a Petri Net page.
         Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.get().toString());

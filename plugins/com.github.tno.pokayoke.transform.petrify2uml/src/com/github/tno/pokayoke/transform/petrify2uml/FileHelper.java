@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import fr.lip6.move.pnml.ptnet.Page;
+import fr.lip6.move.pnml.ptnet.PetriNet;
 
 public class FileHelper {
     private FileHelper() {
@@ -19,11 +19,11 @@ public class FileHelper {
         return Files.readAllLines(Paths.get(sourcePath));
     }
 
-    public static void writePetriNet(Page page, String outputPath) throws IOException {
+    public static void writePetriNet(PetriNet petriNet, String outputPath) throws IOException {
         File file = new File(outputPath);
         try (FileOutputStream output = new FileOutputStream(file)) {
             FileChannel channel = output.getChannel();
-            page.getContainerPetriNet().getContainerPetriNetDoc().toPNML(channel);
+            petriNet.toPNML(channel);
             channel.close();
         }
     }
