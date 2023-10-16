@@ -132,7 +132,7 @@ public abstract class Regression {
     }
 
     /**
-     * Provide arguments for regression tests in the directory regressiontestsPath with the given input file name and
+     * Provide arguments for regression tests in the indicated regression test directory with the given input file name and
      * the expected and actual output file names.
      *
      *
