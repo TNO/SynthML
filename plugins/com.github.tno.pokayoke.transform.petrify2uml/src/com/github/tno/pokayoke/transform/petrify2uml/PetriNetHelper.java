@@ -25,7 +25,7 @@ import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.PtnetFactory;
 import fr.lip6.move.pnml.ptnet.Transition;
 
-/** Helper for parsing Petrify input. */
+/** Helper for parsing Petrify output. */
 public class PetriNetHelper {
     private PetriNetHelper() {
     }
@@ -132,26 +132,26 @@ public class PetriNetHelper {
         return page;
     }
 
-    private static Transition createTransition(String nameString, Page page) {
+    private static Transition createTransition(String name, Page page) {
         Transition transition = petriNetFactory.createTransition();
-        transition.setId(nameString);
-        transition.setName(createName(nameString));
+        transition.setId(name);
+        transition.setName(createName(name));
         transition.setContainerPage(page);
         return transition;
     }
 
-    private static Place createPlace(String nameString, Page page) {
+    private static Place createPlace(String name, Page page) {
         Place place = petriNetFactory.createPlace();
-        place.setId(nameString);
-        place.setName(createName(nameString));
+        place.setId(name);
+        place.setName(createName(name));
         place.setContainerPage(page);
         return place;
     }
 
-    private static Name createName(String nameString) {
-        Name name = petriNetFactory.createName();
-        name.setText(nameString);
-        return name;
+    private static Name createName(String name) {
+        Name nameObject = petriNetFactory.createName();
+        nameObject.setText(name);
+        return nameObject;
     }
 
     private static Arc createArc(Node source, Node target, Page page) {
