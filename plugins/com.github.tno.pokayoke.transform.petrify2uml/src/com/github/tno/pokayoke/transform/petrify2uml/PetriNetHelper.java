@@ -41,22 +41,22 @@ public class PetriNetHelper {
                 .map(line -> line.replace(nameHeader, "").trim()).findFirst().get();
 
         // Create a Petri Net page.
-        Page petrinetPage = PetriNetHelper.initializePetriNetPage(modelName.toString());
+        Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.toString());
 
         // Remove the header lines.
-        List<String> petrinetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#"))
+        List<String> petriNetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#"))
                 .toList();
 
         // Obtain the name of the declared transitions.
         String dummyString = ".dummy";
-        Optional<String> transitionDeclaration = petrinetBody.stream().filter(line -> line.startsWith(dummyString))
+        Optional<String> transitionDeclaration = petriNetBody.stream().filter(line -> line.startsWith(dummyString))
                 .map(line -> line.replaceAll(dummyString, "").trim()).findFirst();
         Preconditions.checkArgument(transitionDeclaration.isPresent(),
                 "Expected the Petri Net input to contain transition declarations.");
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.get().split(" ")));
 
         // Obtain the specification lines.
-        List<String> specificationLines = petrinetBody.stream().filter(line -> !line.startsWith(".")).toList();
+        List<String> specificationLines = petriNetBody.stream().filter(line -> !line.startsWith(".")).toList();
 
         // Obtain the name of all the elements in the specification.
         List<String> transitionPlaceNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" ")))
@@ -76,18 +76,18 @@ public class PetriNetHelper {
         Map<String, Node> nameObjectMapping = new HashMap<>();
 
         // Create transitions and add them to the name map.
-        transitionNames.stream().forEach(t -> nameObjectMapping.put(t, createTransition(t, petrinetPage)));
+        transitionNames.stream().forEach(t -> nameObjectMapping.put(t, createTransition(t, petriNetPage)));
 
         // Obtain the name of places.
         List<String> placeNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" "))).distinct()
                 .filter(e -> !nameObjectMapping.containsKey(e)).toList();
 
         // Create places and add them to the name map.
-        placeNames.stream().forEach(p -> nameObjectMapping.put(p, createPlace(p, petrinetPage)));
+        placeNames.stream().forEach(p -> nameObjectMapping.put(p, createPlace(p, petriNetPage)));
 
         // Obtain the marking line.
         String markingIdentifier = ".marking";
-        String markingLine = petrinetBody.stream().filter(line -> line.contains(markingIdentifier)).findFirst().get();
+        String markingLine = petriNetBody.stream().filter(line -> line.contains(markingIdentifier)).findFirst().get();
 
         // Parse the marking place in curly brackets.
         Pattern pattern = Pattern.compile("\\{\\s*([^}]+)\\s*\\}");
@@ -107,10 +107,10 @@ public class PetriNetHelper {
             List<String> elements = Arrays.asList(line.split(" "));
             String source = elements.get(0);
             elements.stream().skip(1).forEach(
-                    (target) -> createArc(nameObjectMapping.get(source), nameObjectMapping.get(target), petrinetPage));
+                    (target) -> createArc(nameObjectMapping.get(source), nameObjectMapping.get(target), petriNetPage));
         }
 
-        return petrinetPage;
+        return petriNetPage;
     }
 
     private static Page initializePetriNetPage(String petriNetId) {
