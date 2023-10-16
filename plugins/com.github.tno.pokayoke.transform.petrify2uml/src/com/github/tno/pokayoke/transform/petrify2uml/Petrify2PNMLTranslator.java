@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
@@ -90,11 +88,10 @@ public class Petrify2PNMLTranslator {
         String markingIdentifier = ".marking";
         String markingLine = petriNetBody.stream().filter(line -> line.contains(markingIdentifier)).findFirst().get();
 
-        // Parse the marking place in curly brackets.
-        Pattern pattern = Pattern.compile("\\{\\s*([^}]+)\\s*\\}");
-        Matcher matcher = pattern.matcher(markingLine);
-        Preconditions.checkArgument(matcher.find(), "Expected the Petri Net output to contain a marking place.");
-        String markingPlaceName = matcher.group(1).trim();
+        // Obtain the marking place in curly brackets.
+        String markingPlaceName = markingLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
+        Preconditions.checkArgument(!markingPlaceName.isEmpty(),
+                "Expected the Petri Net output to contain a marking place.");
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
         // Create marking for the marking place.
