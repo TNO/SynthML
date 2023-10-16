@@ -43,7 +43,7 @@ import org.junit.jupiter.params.provider.Arguments;
  */
 public abstract class Regression {
     /**
-     * Constructor.
+     * Executes the different steps in the regression test.
      *
      * @param inputPath Path to the input file.
      * @param expectedPath Path to the expected output file.
@@ -52,7 +52,7 @@ public abstract class Regression {
      * @throws IOException Thrown when one of operations on the files fails.
      */
     public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
-        setUpTest();
+        setUpTest(inputPath);
         actTest(inputPath, outputPath);
         verifyTest(expectedPath, outputPath, message);
         tearDownTest(outputPath);
@@ -60,9 +60,11 @@ public abstract class Regression {
 
     /**
      * Set up test.
+     *
+     * @param inputPath Path to the input file.
      */
-    private void setUpTest() {
-        // nothing to do
+    private void setUpTest(Path inputPath) {
+        PathAssertions.assertFileExists(inputPath, "Input for regression test must exist.");
     }
 
     /**
@@ -134,7 +136,6 @@ public abstract class Regression {
     /**
      * Provide arguments for regression tests in the directory regressiontestsPath with the given input file name and
      * the expected and actual output file names.
-     *
      *
      * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.

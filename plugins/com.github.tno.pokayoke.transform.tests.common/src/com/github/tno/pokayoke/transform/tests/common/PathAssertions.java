@@ -11,22 +11,33 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Utility functions for file comparison.
+ * Common assertions for path variables. Includes checking the existence of files and directories, and comparing their
+ * contents.
  */
 public class PathAssertions {
     private PathAssertions() {
     }
 
     /**
-     * Assert that the path refers to an existing directory.
+     * Assert that the path exists.
      *
-     * @param file The path of the file.
+     * @param path The path.
      * @param message The message to be used when the assertion fails.
      */
-    public static void assertDirectoryExists(Path file, String message) {
-        assertTrue(Files.exists(file), message + ": file '" + file.toString() + "' does not exist.");
-        assertTrue(Files.isDirectory(file),
-                message + ": path '" + file.toString() + "' does not refer to a directory.");
+    public static void assertPathExists(Path path, String message) {
+        assertTrue(Files.exists(path), message + ": path '" + path.toString() + "' does not exist.");
+    }
+
+    /**
+     * Assert that the path refers to an existing directory.
+     *
+     * @param directory The path of the directory.
+     * @param message The message to be used when the assertion fails.
+     */
+    public static void assertDirectoryExists(Path directory, String message) {
+        assertPathExists(directory, message);
+        assertTrue(Files.isDirectory(directory),
+                message + ": path '" + directory.toString() + "' does not refer to a directory.");
     }
 
     /**
@@ -36,9 +47,8 @@ public class PathAssertions {
      * @param message The message to be used when the assertion fails.
      */
     public static void assertFileExists(Path file, String message) {
-        assertTrue(Files.exists(file), message + ": file '" + file.toString() + "' does not exist.");
-        assertFalse(Files.isDirectory(file),
-                message + ": path '" + file.toString() + "' does not refer to a file.");
+        assertPathExists(file, message);
+        assertFalse(Files.isDirectory(file), message + ": path '" + file.toString() + "' does not refer to a file.");
     }
 
     /**

@@ -21,12 +21,12 @@ import com.github.tno.pokayoke.transform.uml.UMLTransformer;
  */
 class UMLRegression extends Regression {
     public static final String INPUTFILEEXTENSION = "uml";
+
     public static final String OUTPUTFILEEXTENSION = "umltst";
 
     @BeforeAll
     public static void setup() {
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap()
-                .put(OUTPUTFILEEXTENSION, new UMLTestFactory());
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUTFILEEXTENSION, new UMLTestFactory());
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
