@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.petrinet2activity;
+package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.File;
 import java.io.FileOutputStream;
