@@ -52,7 +52,7 @@ public class PetriNetHelper {
         // Obtain the name of the declared transitions.
         String dummyString = ".dummy";
         Optional<String> transitionDeclaration = petriNetBody.stream().filter(line -> line.startsWith(dummyString))
-                .map(line -> line.replaceAll(dummyString, "").trim()).findFirst();
+                .map(line -> line.replace(dummyString, "").trim()).findFirst();
         Preconditions.checkArgument(transitionDeclaration.isPresent(),
                 "Expected the Petri Net input to contain transition declarations.");
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.get().split(" ")));
