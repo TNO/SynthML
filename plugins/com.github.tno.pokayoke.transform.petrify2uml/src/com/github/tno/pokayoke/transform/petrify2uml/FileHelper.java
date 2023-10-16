@@ -19,7 +19,7 @@ public class FileHelper {
         return Files.readAllLines(Paths.get(sourcePath));
     }
 
-    public static void exportToPNMLFile(Page page, String outputPath) throws IOException {
+    public static void writePNMLFile(Page page, String outputPath) throws IOException {
         File file = new File(outputPath);
         try (FileOutputStream output = new FileOutputStream(file)) {
             FileChannel channel = output.getChannel();
