@@ -33,28 +33,28 @@ public class PetriNetHelper {
     private static PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
 
     public static Page parsePetriNet(String sourcePath) throws IOException {
-        List<String> inputPetriNet = FileHelper.readFile(sourcePath);
+        List<String> petrifyOutput = FileHelper.readFile(sourcePath);
 
         // Obtain model name.
         String nameHeader = ".model";
-        Optional<String> modelName = inputPetriNet.stream().filter(line -> line.startsWith(nameHeader))
+        Optional<String> modelName = petrifyOutput.stream().filter(line -> line.startsWith(nameHeader))
                 .map(line -> line.replace(nameHeader, "").trim()).findFirst();
 
         Preconditions.checkArgument(modelName.isPresent(),
-                "Expected the Petri Net input to have a model name. ");
+                "Expected the Petri Net output to have a model name.");
 
         // Create a Petri Net page.
         Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.get().toString());
 
         // Remove the header lines.
-        List<String> petriNetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#")).toList();
+        List<String> petriNetBody = petrifyOutput.stream().filter(line -> !line.startsWith("#")).toList();
 
         // Obtain the name of the declared transitions.
-        String dummyString = ".dummy";
-        Optional<String> transitionDeclaration = petriNetBody.stream().filter(line -> line.startsWith(dummyString))
-                .map(line -> line.replace(dummyString, "").trim()).findFirst();
+        String dummyIdentifier = ".dummy";
+        Optional<String> transitionDeclaration = petriNetBody.stream().filter(line -> line.startsWith(dummyIdentifier))
+                .map(line -> line.replace(dummyIdentifier, "").trim()).findFirst();
         Preconditions.checkArgument(transitionDeclaration.isPresent(),
-                "Expected the Petri Net input to contain transition declarations.");
+                "Expected the Petri Net output to contain transition declarations.");
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.get().split(" ")));
 
         // Obtain the specification lines.
@@ -64,10 +64,10 @@ public class PetriNetHelper {
         List<String> transitionPlaceNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" ")))
                 .distinct().toList();
 
-        // In case a transition appears multiple times in a Petri Net. Petrify distinguishes each duplication by adding
+        // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplication by adding
         // a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and these
-        // duplications are not specified in the transition declarations, but only appear in the specification.
-        // Obtain the name of these duplications.
+        // duplications are not specified in the transition declarations, but only appear later in the specification.
+        // Obtain the name of these duplications from the specification.
         List<String> declaredTransitionNames = new ArrayList<>(transitionNames);
         for (String transitionName: declaredTransitionNames) {
             List<String> duplicates = transitionPlaceNames.stream()
@@ -94,7 +94,7 @@ public class PetriNetHelper {
         // Parse the marking place in curly brackets.
         Pattern pattern = Pattern.compile("\\{\\s*([^}]+)\\s*\\}");
         Matcher matcher = pattern.matcher(markingLine);
-        Preconditions.checkArgument(matcher.find(), "Expected the Petri Net input to contain a marking place.");
+        Preconditions.checkArgument(matcher.find(), "Expected the Petri Net output to contain a marking place.");
         String markingPlaceName = matcher.group(1).trim();
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
