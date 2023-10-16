@@ -37,15 +37,17 @@ public class PetriNetHelper {
 
         // Obtain model name.
         String nameHeader = ".model";
-        String modelName = inputPetriNet.stream().filter(line -> line.startsWith(nameHeader))
-                .map(line -> line.replace(nameHeader, "").trim()).findFirst().get();
+        Optional<String> modelName = inputPetriNet.stream().filter(line -> line.startsWith(nameHeader))
+                .map(line -> line.replace(nameHeader, "").trim()).findFirst();
+
+        Preconditions.checkArgument(modelName.isPresent(),
+                "Expected the Petri Net input to have a model name. ");
 
         // Create a Petri Net page.
-        Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.toString());
+        Page petriNetPage = PetriNetHelper.initializePetriNetPage(modelName.get().toString());
 
         // Remove the header lines.
-        List<String> petriNetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#"))
-                .toList();
+        List<String> petriNetBody = inputPetriNet.stream().filter(line -> !line.startsWith("#")).toList();
 
         // Obtain the name of the declared transitions.
         String dummyString = ".dummy";
