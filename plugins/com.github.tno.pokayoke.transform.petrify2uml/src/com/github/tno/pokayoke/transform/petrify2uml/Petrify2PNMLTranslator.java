@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 
@@ -31,67 +30,75 @@ public class Petrify2PNMLTranslator {
     private static PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
 
     public static Page parsePetriNet(String sourcePath) throws IOException {
-        List<String> petrifyOutput = FileHelper.readFile(sourcePath);
+        LinkedList<String> petrifyOutput = new LinkedList<>(FileHelper.readFile(sourcePath));
+
+        // Skip all comments.
+        while (petrifyOutput.element().startsWith("#")) {
+            petrifyOutput.remove();
+        }
 
         // Obtain model name.
-        String nameHeader = ".model";
-        Optional<String> modelName = petrifyOutput.stream().filter(line -> line.startsWith(nameHeader))
-                .map(line -> line.replace(nameHeader, "").trim()).findFirst();
-
-        Preconditions.checkArgument(modelName.isPresent(), "Expected the Petri Net output to have a model name.");
+        String modelMameHeader = ".model";
+        Preconditions.checkArgument(petrifyOutput.element().startsWith(modelMameHeader),
+                "Expected the Petri Net output to have a model name.");
+        String modelName = petrifyOutput.element().replace(modelMameHeader, "").trim();
+        petrifyOutput.remove();
 
         // Create a Petri Net page.
-        Page petriNetPage = initializePetriNetPage(modelName.get().toString());
+        Page petriNetPage = initializePetriNetPage(modelName);
 
-        // Remove the header lines.
-        List<String> petriNetBody = petrifyOutput.stream().filter(line -> !line.startsWith("#")).toList();
-
-        // Obtain the name of the declared transitions.
+        // Obtain list of transitions.
         String dummyIdentifier = ".dummy";
-        Optional<String> transitionDeclaration = petriNetBody.stream().filter(line -> line.startsWith(dummyIdentifier))
-                .map(line -> line.replace(dummyIdentifier, "").trim()).findFirst();
-        Preconditions.checkArgument(transitionDeclaration.isPresent(),
+        Preconditions.checkArgument(petrifyOutput.element().startsWith(dummyIdentifier),
                 "Expected the Petri Net output to contain transition declarations.");
-        List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.get().split(" ")));
-
-        // Obtain the specification lines.
-        List<String> specificationLines = petriNetBody.stream().filter(line -> !line.startsWith(".")).toList();
-
-        // Obtain the name of all the elements in the specification.
-        List<String> transitionPlaceNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" ")))
-                .distinct().toList();
-
-        // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplication by adding
-        // a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and these
-        // duplications are not specified in the transition declarations, but only appear later in the specification.
-        // Obtain the name of these duplications from the specification.
-        List<String> declaredTransitionNames = new ArrayList<>(transitionNames);
-        for (String transitionName: declaredTransitionNames) {
-            List<String> duplicates = transitionPlaceNames.stream()
-                    .filter(e -> !e.equals(transitionName) && e.startsWith(transitionName)).toList();
-            transitionNames.addAll(duplicates);
-        }
+        String transitionDeclaration = petrifyOutput.element().replace(dummyIdentifier, "").trim();
+        petrifyOutput.remove();
+        List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.split(" ")));
 
         Map<String, Node> nameObjectMapping = new HashMap<>();
 
-        // Create transitions and add them to the name map.
-        transitionNames.stream().forEach(t -> nameObjectMapping.put(t, createTransition(t, petriNetPage)));
-
-        // Obtain the name of places.
-        List<String> placeNames = specificationLines.stream().flatMap(line -> Stream.of(line.split(" "))).distinct()
-                .filter(e -> !nameObjectMapping.containsKey(e)).toList();
-
         // Create places and add them to the name map.
-        placeNames.stream().forEach(p -> nameObjectMapping.put(p, createPlace(p, petriNetPage)));
+        transitionNames.forEach(t -> nameObjectMapping.put(t, createTransition(t, petriNetPage)));
 
-        // Obtain the marking line.
-        String markingIdentifier = ".marking";
-        String markingLine = petriNetBody.stream().filter(line -> line.contains(markingIdentifier)).findFirst().get();
+        // Iterate over each specification line to create places, duplicate transitions and arcs.
+        String specificationIdentifier = ".graph";
+        Preconditions.checkArgument(petrifyOutput.element().startsWith(specificationIdentifier),
+                "Expected the Petri Net output to contain specification. ");
+        petrifyOutput.remove();
+        while (!petrifyOutput.element().startsWith(".marking")) {
+            List<String> elements = Arrays.asList(petrifyOutput.element().split(" "));
+
+            // Create new places and duplicate transitions if they have not been created.
+            for (String element: elements) {
+                if (!nameObjectMapping.containsKey(element)) {
+                    if (isDuplicateTransition(element, nameObjectMapping)) {
+                        nameObjectMapping.put(element, createDuplicateTransition(element, petriNetPage));
+                    } else {
+                        nameObjectMapping.put(element, createPlace(element, petriNetPage));
+                    }
+                }
+            }
+
+            String source = elements.get(0);
+
+            // Create arcs from the source to its targets. In case the source is the 'end' transition, a final place is
+            // created and connected to the 'end' transition.
+            if (source.equals("end")) {
+                String targetPlace = "FinalPlace";
+                createArc(nameObjectMapping.get(source), createPlace(targetPlace, petriNetPage), petriNetPage);
+            } else {
+                elements.stream().skip(1).forEach((target) -> createArc(nameObjectMapping.get(source),
+                        nameObjectMapping.get(target), petriNetPage));
+            }
+            petrifyOutput.remove();
+        }
 
         // Obtain the marking place in curly brackets.
-        String markingPlaceName = markingLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
-        Preconditions.checkArgument(!markingPlaceName.isEmpty(),
+        String markingIdentifier = ".marking";
+        Preconditions.checkArgument(petrifyOutput.element().startsWith(markingIdentifier),
                 "Expected the Petri Net output to contain a marking place.");
+        String markingPlaceName = petrifyOutput.element().replace(markingIdentifier, "").replace("{", "")
+                .replace("}", "").trim();
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
         // Create marking for the marking place.
@@ -99,14 +106,6 @@ public class Petrify2PNMLTranslator {
         initialMarking.setText((long)1);
         initialMarking.setContainerPlace(markingPlace);
         markingPlace.setInitialMarking(initialMarking);
-
-        // Iterate over specification lines to create arcs.
-        for (String line: specificationLines) {
-            List<String> elements = Arrays.asList(line.split(" "));
-            String source = elements.get(0);
-            elements.stream().skip(1).forEach(
-                    (target) -> createArc(nameObjectMapping.get(source), nameObjectMapping.get(target), petriNetPage));
-        }
 
         return petriNetPage;
     }
@@ -138,6 +137,14 @@ public class Petrify2PNMLTranslator {
         return transition;
     }
 
+    private static Transition createDuplicateTransition(String name, Page page) {
+        Transition transition = petriNetFactory.createTransition();
+        transition.setId(name);
+        transition.setName(createName(name.split("/")[0]));
+        transition.setContainerPage(page);
+        return transition;
+    }
+
     private static Place createPlace(String name, Page page) {
         Place place = petriNetFactory.createPlace();
         place.setId(name);
@@ -155,10 +162,19 @@ public class Petrify2PNMLTranslator {
     private static Arc createArc(Node source, Node target, Page page) {
         Arc arc = petriNetFactory.createArc();
         arc.setContainerPage(page);
-        arc.setId(source.getId() + "_to_" + target.getId());
+        arc.setId(source.getId() + "__to__" + target.getId());
         arc.setSource(source);
         arc.setTarget(target);
         source.getOutArcs().add(arc);
         return arc;
+    }
+
+    private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
+        for (String declaredName: nameObjectMapping.keySet()) {
+            if (elementName.startsWith(declaredName) && elementName.contains("/")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
