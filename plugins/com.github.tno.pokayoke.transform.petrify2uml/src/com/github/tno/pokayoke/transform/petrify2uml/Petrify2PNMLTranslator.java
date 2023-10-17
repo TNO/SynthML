@@ -54,6 +54,8 @@ public class Petrify2PNMLTranslator {
         String transitionDeclaration = petrifyOutput.element().replace(dummyIdentifier, "").trim();
         petrifyOutput.remove();
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.split(" ")));
+        Preconditions.checkArgument(transitionNames.size() == transitionNames.stream().distinct().count(),
+                "Expected the transition name to be unique.");
 
         Map<String, Node> nameObjectMapping = new HashMap<>();
 
@@ -63,7 +65,7 @@ public class Petrify2PNMLTranslator {
         // Iterate over each specification line to create places, duplicate transitions and arcs.
         String specificationIdentifier = ".graph";
         Preconditions.checkArgument(petrifyOutput.element().startsWith(specificationIdentifier),
-                "Expected the Petri Net output to contain specification. ");
+                "Expected the Petri Net output to contain specification.");
         petrifyOutput.remove();
         while (!petrifyOutput.element().startsWith(".marking")) {
             List<String> elements = Arrays.asList(petrifyOutput.element().split(" "));
