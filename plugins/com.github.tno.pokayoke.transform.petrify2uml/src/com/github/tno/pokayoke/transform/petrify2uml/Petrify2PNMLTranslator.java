@@ -22,7 +22,7 @@ import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.PtnetFactory;
 import fr.lip6.move.pnml.ptnet.Transition;
 
-/** Helper for parsing Petrify output. */
+/** Translates Petrify output to PNML. */
 public class Petrify2PNMLTranslator {
     private Petrify2PNMLTranslator() {
     }
