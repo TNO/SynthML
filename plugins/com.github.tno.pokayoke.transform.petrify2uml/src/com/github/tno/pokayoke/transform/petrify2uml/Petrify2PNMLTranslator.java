@@ -112,7 +112,7 @@ public class Petrify2PNMLTranslator {
 
         // Create marking for the marking place.
         PTMarking initialMarking = PETRINETFACTORY.createPTMarking();
-        initialMarking.setText((long)1);
+        initialMarking.setText(1L);
         initialMarking.setContainerPlace(markingPlace);
         markingPlace.setInitialMarking(initialMarking);
 
