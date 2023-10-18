@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,44 +27,44 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRINETFACTORY = PtnetFactory.eINSTANCE;
 
-    public static Page transformPetriNetOutput(LinkedList<String> petrifyOutput) {
+    public static Page transformPetriNetOutput(List<String> petrifyOutput) {
         // Skip all comments.
-        while (petrifyOutput.element().startsWith("#")) {
-            petrifyOutput.remove();
+        while (petrifyOutput.get(0).startsWith("#")) {
+            petrifyOutput.remove(0);
         }
 
         // Obtain model name.
-        String modelMameHeader = ".model";
-        Preconditions.checkArgument(petrifyOutput.element().startsWith(modelMameHeader),
+        String modelNameHeader = ".model";
+        Preconditions.checkArgument(petrifyOutput.get(0).startsWith(modelNameHeader),
                 "Expected the Petri Net output to have a model name.");
-        String modelName = petrifyOutput.element().replace(modelMameHeader, "").trim();
-        petrifyOutput.remove();
+        String modelName = petrifyOutput.get(0).replace(modelNameHeader, "").trim();
+        petrifyOutput.remove(0);
 
         // Create a Petri Net page.
         Page petriNetPage = initializePetriNetPage(modelName);
 
         // Obtain list of transitions.
         String dummyIdentifier = ".dummy";
-        Preconditions.checkArgument(petrifyOutput.element().startsWith(dummyIdentifier),
+        Preconditions.checkArgument(petrifyOutput.get(0).startsWith(dummyIdentifier),
                 "Expected the Petri Net output to contain transition declarations.");
-        String transitionDeclaration = petrifyOutput.element().replace(dummyIdentifier, "").trim();
-        petrifyOutput.remove();
+        String transitionDeclaration = petrifyOutput.get(0).replace(dummyIdentifier, "").trim();
+        petrifyOutput.remove(0);
+
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.split(" ")));
         Preconditions.checkArgument(transitionNames.size() == transitionNames.stream().distinct().count(),
                 "Expected the transition name to be unique.");
 
-        Map<String, Node> nameObjectMapping = new HashMap<>();
-
         // Create places and add them to the name map.
+        Map<String, Node> nameObjectMapping = new HashMap<>();
         transitionNames.forEach(t -> nameObjectMapping.put(t, createTransition(t, petriNetPage)));
 
         // Iterate over each specification line to create places, duplicate transitions and arcs.
         String specificationIdentifier = ".graph";
-        Preconditions.checkArgument(petrifyOutput.element().startsWith(specificationIdentifier),
+        Preconditions.checkArgument(petrifyOutput.get(0).startsWith(specificationIdentifier),
                 "Expected the Petri Net output to contain specification.");
-        petrifyOutput.remove();
-        while (!petrifyOutput.element().startsWith(".marking")) {
-            List<String> elements = Arrays.asList(petrifyOutput.element().split(" "));
+        petrifyOutput.remove(0);
+        while (!petrifyOutput.get(0).startsWith(".marking")) {
+            List<String> elements = Arrays.asList(petrifyOutput.get(0).split(" "));
 
             // Create new places and duplicate transitions if they have not been created.
             for (String element: elements) {
@@ -89,15 +88,15 @@ public class Petrify2PNMLTranslator {
                 elements.stream().skip(1).forEach((target) -> createArc(nameObjectMapping.get(source),
                         nameObjectMapping.get(target), petriNetPage));
             }
-            petrifyOutput.remove();
+            petrifyOutput.remove(0);
         }
 
         // Obtain the marking place in curly brackets.
         String markingIdentifier = ".marking";
-        Preconditions.checkArgument(petrifyOutput.element().startsWith(markingIdentifier),
+        Preconditions.checkArgument(petrifyOutput.get(0).startsWith(markingIdentifier),
                 "Expected the Petri Net output to contain a marking place.");
-        String markingPlaceName = petrifyOutput.element().replace(markingIdentifier, "").replace("{", "")
-                .replace("}", "").trim();
+        String markingPlaceName = petrifyOutput.get(0).replace(markingIdentifier, "").replace("{", "").replace("}", "")
+                .trim();
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
         // Create marking for the marking place.
