@@ -28,6 +28,12 @@ public class Petrify2PNMLTranslator {
     private static final PtnetFactory PETRINETFACTORY = PtnetFactory.eINSTANCE;
 
     public static Page transformPetriNetOutput(List<String> petrifyOutput) {
+        Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
+                "Expected that the Petri Net output does not contain string 'FinalPlace' as this string is used as the identifier of the final place.");
+
+        Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__")),
+                "Expected that the Petri Net output does not contain double underscores as they are used in the name of arcs.");
+
         // Skip all comments.
         while (petrifyOutput.get(0).startsWith("#")) {
             petrifyOutput.remove(0);
@@ -172,6 +178,8 @@ public class Petrify2PNMLTranslator {
     }
 
     private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
+        // Since CIF does not accept '/', the generated state space cannot contain '/'. It is safe to use '/' to
+        // identify duplicate transitions.
         for (String declaredName: nameObjectMapping.keySet()) {
             if (elementName.startsWith(declaredName) && elementName.contains("/")) {
                 return true;
