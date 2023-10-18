@@ -89,10 +89,9 @@ public class Petrify2PNMLTranslator {
                 }
             }
 
-            String source = elements.get(0);
-
             // Create arcs from the source to its targets. In case the source is the 'end' transition, a final place is
             // created and connected to the 'end' transition.
+            String source = elements.get(0);
             if (source.equals("end")) {
                 String finalPlace = "FinalPlace";
                 createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
@@ -145,6 +144,23 @@ public class Petrify2PNMLTranslator {
         return transition;
     }
 
+    private static Name createName(String name) {
+        Name nameObject = PETRINETFACTORY.createName();
+        nameObject.setText(name);
+        return nameObject;
+    }
+
+    private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
+        // Since CIF does not accept '/', the generated state space cannot contain '/'. It is safe to use '/' to
+        // identify duplicate transitions.
+        for (String declaredName: nameObjectMapping.keySet()) {
+            if (elementName.startsWith(declaredName) && elementName.contains("/")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static Transition createDuplicateTransition(String name, Page page) {
         Transition transition = PETRINETFACTORY.createTransition();
         transition.setId(name);
@@ -161,12 +177,6 @@ public class Petrify2PNMLTranslator {
         return place;
     }
 
-    private static Name createName(String name) {
-        Name nameObject = PETRINETFACTORY.createName();
-        nameObject.setText(name);
-        return nameObject;
-    }
-
     private static Arc createArc(Node source, Node target, Page page) {
         Arc arc = PETRINETFACTORY.createArc();
         arc.setContainerPage(page);
@@ -175,16 +185,5 @@ public class Petrify2PNMLTranslator {
         arc.setTarget(target);
         source.getOutArcs().add(arc);
         return arc;
-    }
-
-    private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
-        // Since CIF does not accept '/', the generated state space cannot contain '/'. It is safe to use '/' to
-        // identify duplicate transitions.
-        for (String declaredName: nameObjectMapping.keySet()) {
-            if (elementName.startsWith(declaredName) && elementName.contains("/")) {
-                return true;
-            }
-        }
-        return false;
     }
 }
