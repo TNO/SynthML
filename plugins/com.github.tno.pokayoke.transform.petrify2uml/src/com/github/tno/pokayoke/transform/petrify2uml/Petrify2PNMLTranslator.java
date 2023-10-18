@@ -29,10 +29,10 @@ public class Petrify2PNMLTranslator {
 
     public static Page transformPetriNetOutput(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
-                "Expected that the Petri Net output does not contain string 'FinalPlace' as this string is used as the identifier of the final place.");
+                "Expected that the Petri Net output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__")),
-                "Expected that the Petri Net output does not contain double underscores as they are used in the name of arcs.");
+                "Expected that the Petri Net output does not contain double underscores as they are going to be used in the name of arcs.");
 
         // Skip all comments.
         while (petrifyOutput.get(0).startsWith("#")) {
