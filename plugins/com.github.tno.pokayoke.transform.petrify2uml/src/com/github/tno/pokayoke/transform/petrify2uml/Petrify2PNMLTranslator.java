@@ -28,7 +28,7 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRINETFACTORY = PtnetFactory.eINSTANCE;
 
-    public static Page parsePetriNet(LinkedList<String> petrifyOutput) {
+    public static Page transformPetriNetOutput(LinkedList<String> petrifyOutput) {
         // Skip all comments.
         while (petrifyOutput.element().startsWith("#")) {
             petrifyOutput.remove();
