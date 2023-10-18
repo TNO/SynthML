@@ -37,7 +37,7 @@ public class Petrify2PNMLTranslator {
         String modelNameHeader = ".model";
         Preconditions.checkArgument(petrifyOutput.get(0).startsWith(modelNameHeader),
                 "Expected the Petri Net output to have a model name.");
-        String modelName = petrifyOutput.get(0).replace(modelNameHeader, "").trim();
+        String modelName = petrifyOutput.get(0).substring(modelNameHeader.length()).trim();
         petrifyOutput.remove(0);
 
         // Create a Petri Net page.
@@ -47,16 +47,21 @@ public class Petrify2PNMLTranslator {
         String dummyIdentifier = ".dummy";
         Preconditions.checkArgument(petrifyOutput.get(0).startsWith(dummyIdentifier),
                 "Expected the Petri Net output to contain transition declarations.");
-        String transitionDeclaration = petrifyOutput.get(0).replace(dummyIdentifier, "").trim();
+        String transitionDeclaration = petrifyOutput.get(0).substring(dummyIdentifier.length()).trim();
         petrifyOutput.remove(0);
 
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.split(" ")));
         Preconditions.checkArgument(transitionNames.size() == transitionNames.stream().distinct().count(),
                 "Expected the transition name to be unique.");
 
-        // Create places and add them to the name map.
-        Map<String, Node> nameObjectMapping = new HashMap<>();
-        transitionNames.forEach(t -> nameObjectMapping.put(t, createTransition(t, petriNetPage)));
+        // Create transitions and add them to the map that stores name of places and places.
+        Map<String, Node> transitionsPlacesMap = new HashMap<>();
+        transitionNames.forEach(t -> transitionsPlacesMap.put(t, createTransition(t, petriNetPage)));
+
+        // In case a transition appears multiple times in a Petri Net. Petrify distinguishes each duplication by
+        // adding a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and
+        // these duplications are not specified in the transition declarations, but only appear in the specification.
+        // Therefore, transition duplications in the specification should be collected.
 
         // Iterate over each specification line to create places, duplicate transitions and arcs.
         String specificationIdentifier = ".graph";
@@ -66,13 +71,14 @@ public class Petrify2PNMLTranslator {
         while (!petrifyOutput.get(0).startsWith(".marking")) {
             List<String> elements = Arrays.asList(petrifyOutput.get(0).split(" "));
 
-            // Create new places and duplicate transitions if they have not been created.
+            // Create new places and duplicate transitions if they have not been created. Store the names and objects in
+            // map.
             for (String element: elements) {
-                if (!nameObjectMapping.containsKey(element)) {
-                    if (isDuplicateTransition(element, nameObjectMapping)) {
-                        nameObjectMapping.put(element, createDuplicateTransition(element, petriNetPage));
+                if (!transitionsPlacesMap.containsKey(element)) {
+                    if (isDuplicateTransition(element, transitionsPlacesMap)) {
+                        transitionsPlacesMap.put(element, createDuplicateTransition(element, petriNetPage));
                     } else {
-                        nameObjectMapping.put(element, createPlace(element, petriNetPage));
+                        transitionsPlacesMap.put(element, createPlace(element, petriNetPage));
                     }
                 }
             }
@@ -82,11 +88,11 @@ public class Petrify2PNMLTranslator {
             // Create arcs from the source to its targets. In case the source is the 'end' transition, a final place is
             // created and connected to the 'end' transition.
             if (source.equals("end")) {
-                String targetPlace = "FinalPlace";
-                createArc(nameObjectMapping.get(source), createPlace(targetPlace, petriNetPage), petriNetPage);
+                String finalPlace = "FinalPlace";
+                createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
             } else {
-                elements.stream().skip(1).forEach((target) -> createArc(nameObjectMapping.get(source),
-                        nameObjectMapping.get(target), petriNetPage));
+                elements.stream().skip(1).forEach((target) -> createArc(transitionsPlacesMap.get(source),
+                        transitionsPlacesMap.get(target), petriNetPage));
             }
             petrifyOutput.remove(0);
         }
@@ -97,7 +103,7 @@ public class Petrify2PNMLTranslator {
                 "Expected the Petri Net output to contain a marking place.");
         String markingPlaceName = petrifyOutput.get(0).replace(markingIdentifier, "").replace("{", "").replace("}", "")
                 .trim();
-        Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
+        Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
         // Create marking for the marking place.
         PTMarking initialMarking = PETRINETFACTORY.createPTMarking();
