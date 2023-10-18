@@ -27,7 +27,7 @@ public class Petrify2PNMLTranslator {
     private Petrify2PNMLTranslator() {
     }
 
-    private static PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
+    private static final PtnetFactory PETRINETFACTORY = PtnetFactory.eINSTANCE;
 
     public static Page parsePetriNet(String sourcePath) throws IOException {
         LinkedList<String> petrifyOutput = new LinkedList<>(FileHelper.readFile(sourcePath));
@@ -104,7 +104,7 @@ public class Petrify2PNMLTranslator {
         Place markingPlace = (Place)nameObjectMapping.get(markingPlaceName);
 
         // Create marking for the marking place.
-        PTMarking initialMarking = petriNetFactory.createPTMarking();
+        PTMarking initialMarking = PETRINETFACTORY.createPTMarking();
         initialMarking.setText((long)1);
         initialMarking.setContainerPlace(markingPlace);
         markingPlace.setInitialMarking(initialMarking);
@@ -113,18 +113,16 @@ public class Petrify2PNMLTranslator {
     }
 
     private static Page initializePetriNetPage(String petriNetId) {
-        PtnetFactory petriNetFactory = PtnetFactory.eINSTANCE;
-
         // Create Petri Net doc.
-        PetriNetDoc petriNetDoc = petriNetFactory.createPetriNetDoc();
+        PetriNetDoc petriNetDoc = PETRINETFACTORY.createPetriNetDoc();
 
         // Create Petri Net.
-        PetriNet petriNet = petriNetFactory.createPetriNet();
+        PetriNet petriNet = PETRINETFACTORY.createPetriNet();
         petriNet.setId(petriNetId);
         petriNet.setContainerPetriNetDoc(petriNetDoc);
 
         // Create page in Petri Net.
-        Page page = petriNetFactory.createPage();
+        Page page = PETRINETFACTORY.createPage();
         page.setContainerPetriNet(petriNet);
         page.setId(petriNetId);
 
@@ -132,7 +130,7 @@ public class Petrify2PNMLTranslator {
     }
 
     private static Transition createTransition(String name, Page page) {
-        Transition transition = petriNetFactory.createTransition();
+        Transition transition = PETRINETFACTORY.createTransition();
         transition.setId(name);
         transition.setName(createName(name));
         transition.setContainerPage(page);
@@ -140,7 +138,7 @@ public class Petrify2PNMLTranslator {
     }
 
     private static Transition createDuplicateTransition(String name, Page page) {
-        Transition transition = petriNetFactory.createTransition();
+        Transition transition = PETRINETFACTORY.createTransition();
         transition.setId(name);
         transition.setName(createName(name.split("/")[0]));
         transition.setContainerPage(page);
@@ -148,7 +146,7 @@ public class Petrify2PNMLTranslator {
     }
 
     private static Place createPlace(String name, Page page) {
-        Place place = petriNetFactory.createPlace();
+        Place place = PETRINETFACTORY.createPlace();
         place.setId(name);
         place.setName(createName(name));
         place.setContainerPage(page);
@@ -156,13 +154,13 @@ public class Petrify2PNMLTranslator {
     }
 
     private static Name createName(String name) {
-        Name nameObject = petriNetFactory.createName();
+        Name nameObject = PETRINETFACTORY.createName();
         nameObject.setText(name);
         return nameObject;
     }
 
     private static Arc createArc(Node source, Node target, Page page) {
-        Arc arc = petriNetFactory.createArc();
+        Arc arc = PETRINETFACTORY.createArc();
         arc.setContainerPage(page);
         arc.setId(source.getId() + "__to__" + target.getId());
         arc.setSource(source);
