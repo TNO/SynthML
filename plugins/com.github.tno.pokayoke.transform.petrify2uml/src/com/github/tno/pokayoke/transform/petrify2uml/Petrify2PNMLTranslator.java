@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,9 +28,7 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRINETFACTORY = PtnetFactory.eINSTANCE;
 
-    public static Page parsePetriNet(String sourcePath) throws IOException {
-        LinkedList<String> petrifyOutput = new LinkedList<>(FileHelper.readFile(sourcePath));
-
+    public static Page parsePetriNet(LinkedList<String> petrifyOutput) {
         // Skip all comments.
         while (petrifyOutput.element().startsWith("#")) {
             petrifyOutput.remove();
