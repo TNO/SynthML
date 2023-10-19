@@ -2,9 +2,10 @@
 package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -36,20 +37,16 @@ public class Cif2Petrify {
     private static String transform(Specification specification) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        // Obtain the automaton in the CIF specification.
+        List<Automaton> automata = new ArrayList<>();
+        automata = CifCollectUtils.collectAutomata(specification, automata);
+        Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
+        Automaton automaton = automata.get(0);
+
         // Declare the header of the Petrify model.
-        stringBuilder.append(".model safestatespace");
+        stringBuilder.append(".model " + automaton.getName());
         stringBuilder.append("\n");
         stringBuilder.append(".dummy start end ");
-
-        // Obtain the state space automaton in the CIF specification.
-        Optional<Automaton> possibleStatespace = specification.getComponents().stream()
-                .filter(c -> c instanceof Automaton a && a.getName().equals("statespace")).map(c -> (Automaton)c)
-                .findFirst();
-
-        Preconditions.checkArgument(possibleStatespace.isPresent(),
-                "Expected the CIF specification to include a state space automaton.");
-
-        Automaton automaton = possibleStatespace.get();
 
         // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
@@ -91,8 +88,10 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String targetLocationName = edge.getTarget() == null ? location.getName() : edge.getTarget().getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(), targetLocationName);
+                    String targetLocationName = edge.getTarget() == null ? location.getName()
+                            : edge.getTarget().getName();
+                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
+                            targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
