@@ -38,8 +38,8 @@ public class Petrify2PNMLTranslator {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
-        Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__")),
-                "Expected that the Petrify output does not contain double underscores as they are going to be used in the name of arcs.");
+        Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__to__")),
+                "Expected that the Petrify output does not contain '__to__' as they are going to be used in the name of arcs.");
 
         // Skip all comments.
         String currentLine = petrifyOutput.get(0);
