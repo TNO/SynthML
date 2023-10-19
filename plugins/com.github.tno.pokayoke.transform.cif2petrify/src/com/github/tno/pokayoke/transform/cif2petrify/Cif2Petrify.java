@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -91,8 +92,10 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String targetLocationName = edge.getTarget() == null ? location.getName() : edge.getTarget().getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(), targetLocationName);
+                    String targetLocationName = CifEdgeUtils.getTarget(edge) == null ? location.getName()
+                            : CifEdgeUtils.getTarget(edge).getName();
+                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
+                            targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
