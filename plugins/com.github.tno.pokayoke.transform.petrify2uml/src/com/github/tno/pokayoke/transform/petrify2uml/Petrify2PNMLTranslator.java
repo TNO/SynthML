@@ -27,7 +27,7 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
-    public static Page transformPetriNetOutput(List<String> petrifyOutput) {
+    public static Page transformPetrifyOutput(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petri Net output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
