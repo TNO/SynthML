@@ -1,9 +1,8 @@
 
 package com.github.tno.pokayoke.transform.cif2petrify;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -14,19 +13,18 @@ public class FileHelper {
     private FileHelper() {
     }
 
-    public static Specification loadCifSpec(String sourcePath) {
-        Path path = Paths.get(sourcePath);
+    public static Specification loadCifSpec(Path sourcePath) {
         CifReader reader = new CifReader();
         reader.suppressWarnings = true;
-        reader.init(path.toString(), path.toAbsolutePath().toString(), false);
+        reader.init(sourcePath.toString(), sourcePath.toAbsolutePath().toString(), false);
         return reader.read();
     }
 
-    public static void writeToFile(String body, String targetPath) throws IOException {
-        FileWriter file = new FileWriter(targetPath);
-        BufferedWriter buffer = new BufferedWriter(file);
-        buffer.write(body);
-        buffer.flush();
-        buffer.close();
+    public static void writeToFile(String body, Path targetPath) {
+        try {
+            Files.writeString(targetPath, body);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
