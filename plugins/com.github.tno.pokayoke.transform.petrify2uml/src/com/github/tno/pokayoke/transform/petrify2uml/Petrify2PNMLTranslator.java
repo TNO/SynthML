@@ -27,12 +27,19 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
+    /**
+     * Transforms Petrify output to PNML.
+     *
+     * @param petrifyOutput Petrify output in a list of strings. A LinkedList should be provided, as otherwise removing
+     *     elements from the head of the list is too expensive.
+     * @return Translated Petri Net page
+     */
     public static Page transformPetrifyOutput(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
-                "Expected that the Petri Net output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
+                "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__")),
-                "Expected that the Petri Net output does not contain double underscores as they are going to be used in the name of arcs.");
+                "Expected that the Petrify output does not contain double underscores as they are going to be used in the name of arcs.");
 
         // Skip all comments.
         String cuurentLine = petrifyOutput.get(0);
@@ -44,7 +51,7 @@ public class Petrify2PNMLTranslator {
         String modelNameHeader = ".model";
         cuurentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(cuurentLine.startsWith(modelNameHeader),
-                "Expected the Petri Net output to have a model name.");
+                "Expected the Petrify output to have a model name.");
         String modelName = cuurentLine.substring(modelNameHeader.length()).trim();
         petrifyOutput.remove(0);
 
@@ -55,7 +62,7 @@ public class Petrify2PNMLTranslator {
         String dummyIdentifier = ".dummy";
         cuurentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(cuurentLine.startsWith(dummyIdentifier),
-                "Expected the Petri Net output to contain transition declarations.");
+                "Expected the Petrify output to contain transition declarations.");
         String transitionDeclaration = cuurentLine.substring(dummyIdentifier.length()).trim();
         petrifyOutput.remove(0);
 
@@ -63,11 +70,11 @@ public class Petrify2PNMLTranslator {
         Preconditions.checkArgument(transitionNames.size() == transitionNames.stream().distinct().count(),
                 "Expected the transition name to be unique.");
 
-        // Create transitions and add them to the map that stores name of places and places.
+        // Create transitions and add them to the map that stores objects and their names.
         Map<String, Node> transitionsPlacesMap = new HashMap<>();
         transitionNames.forEach(t -> transitionsPlacesMap.put(t, createTransition(t, petriNetPage)));
 
-        // In case a transition appears multiple times in a Petri Net. Petrify distinguishes each duplication by
+        // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplication by
         // adding a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and
         // these duplications are not specified in the transition declarations, but only appear in the specification.
         // Therefore, transition duplications in the specification should be collected.
@@ -76,7 +83,7 @@ public class Petrify2PNMLTranslator {
         String specificationIdentifier = ".graph";
         cuurentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(cuurentLine.startsWith(specificationIdentifier),
-                "Expected the Petri Net output to contain specification.");
+                "Expected the Petrify output to contain specification.");
         petrifyOutput.remove(0);
 
         cuurentLine = petrifyOutput.get(0);
@@ -112,7 +119,7 @@ public class Petrify2PNMLTranslator {
         String markingIdentifier = ".marking";
         cuurentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(cuurentLine.startsWith(markingIdentifier),
-                "Expected the Petri Net output to contain a marking place.");
+                "Expected the Petrify output to contain a marking place.");
         String markingPlaceName = cuurentLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
         Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
@@ -157,8 +164,8 @@ public class Petrify2PNMLTranslator {
     }
 
     private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
-        // Since CIF does not accept '/', the generated state space cannot contain '/'. It is safe to use '/' to
-        // identify duplicate transitions.
+        // Since CIF does not accept '/' in identifiers, the generated state space cannot contain '/'. It is safe to use
+        // '/' to identify duplicate transitions.
         for (String declaredName: nameObjectMapping.keySet()) {
             if (elementName.startsWith(declaredName) && elementName.contains("/")) {
                 return true;
