@@ -40,7 +40,7 @@ public class Petrify2PNMLTranslator {
      *
      * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
      *     removing elements from the head of the list is too expensive.
-     * @return Translated Petri Net page.
+     * @return The Petri Net.
      */
     public static PetriNet transform(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
@@ -128,7 +128,8 @@ public class Petrify2PNMLTranslator {
         String markingIdentifier = ".marking";
         Preconditions.checkArgument(currentLine.startsWith(markingIdentifier),
                 "Expected the Petrify output to contain a marking place.");
-        String markingPlaceName = currentLine.substring(markingIdentifier.length()).replace("{", "").replace("}", "").trim();
+        String markingPlaceName = currentLine.substring(markingIdentifier.length()).replace("{", "").replace("}", "")
+                .trim();
 
         Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
