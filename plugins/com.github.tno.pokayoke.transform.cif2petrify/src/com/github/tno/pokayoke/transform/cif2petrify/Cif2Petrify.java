@@ -77,7 +77,7 @@ public class Cif2Petrify {
             boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
                     : CifValueUtils.isTriviallyFalse(location.getMarkeds(), false, true);
             Preconditions.checkArgument(isTriviallyMarked || isTriviallyNotMarked,
-                    "Expected that locations are either trivially marked or not trivially marked.");
+                    "Expected that locations are either trivially marked or trivially not marked.");
             Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
                     "Expected non-marked locations to have outgoing edges.");
 
@@ -86,7 +86,7 @@ public class Cif2Petrify {
             boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
                     : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
             Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
-                    "Expected locations are either trivially initial states or not trivially initial states");
+                    "Expected that locations are either trivially initial or trivially not initial.");
 
             // Translate initial locations.
             if (isTriviallyInitial) {
