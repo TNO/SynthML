@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.escet.cif.common.CifEventUtils;
+import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
@@ -70,17 +71,31 @@ public class Cif2Petrify {
 
             Preconditions.checkArgument(!locationName.equals("loc0"),
                     "Expected no locations in the state space automaton to be named 'loc0'.");
-            Preconditions.checkArgument(!location.getEdges().isEmpty() || !location.getMarkeds().isEmpty(),
+
+            boolean isTriviallyMarked = location.getMarkeds().isEmpty() ? false
+                    : CifValueUtils.isTriviallyTrue(location.getMarkeds(), false, true);
+            boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
+                    : CifValueUtils.isTriviallyFalse(location.getMarkeds(), false, true);
+            Preconditions.checkArgument(isTriviallyMarked || isTriviallyNotMarked,
+                    "Expected that locations are either trivially marked or not trivially marked.");
+            Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
                     "Expected non-marked locations to have outgoing edges.");
 
+            boolean isInitialStateTrivially = location.getInitials().isEmpty() ? false
+                    : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
+            boolean isNotInitialStateTrivially = location.getInitials().isEmpty() ? true
+                    : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
+            Preconditions.checkArgument(isInitialStateTrivially || isNotInitialStateTrivially,
+                    "Expected locations are either trivially initial state or not trivially initial state");
+
             // Translate initial locations.
-            if (!location.getInitials().isEmpty()) {
+            if (isInitialStateTrivially) {
                 stringBuilder.append(String.format("loc0 start %s", locationName));
                 stringBuilder.append("\n");
             }
 
             // Translate marked locations.
-            if (!location.getMarkeds().isEmpty()) {
+            if (isTriviallyMarked) {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
                         "Expected marked locations to not have outgoing edges.");
 
@@ -91,8 +106,10 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String targetLocationName = edge.getTarget() == null ? location.getName() : edge.getTarget().getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(), targetLocationName);
+                    String targetLocationName = edge.getTarget() == null ? location.getName()
+                            : edge.getTarget().getName();
+                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
+                            targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
