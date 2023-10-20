@@ -58,7 +58,6 @@ public class Petrify2PNMLTranslator {
 
         // Obtain model name.
         String modelNameHeader = ".model";
-        currentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(currentLine.startsWith(modelNameHeader),
                 "Expected the Petrify output to have a model name.");
         String modelName = currentLine.substring(modelNameHeader.length()).trim();
@@ -122,11 +121,11 @@ public class Petrify2PNMLTranslator {
                         transitionsPlacesMap.get(target), petriNetPage));
             }
             petrifyOutput.remove(0);
+            currentLine = petrifyOutput.get(0);
         }
 
         // Obtain the marking place in curly brackets.
         String markingIdentifier = ".marking";
-        currentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(currentLine.startsWith(markingIdentifier),
                 "Expected the Petrify output to contain a marking place.");
         String markingPlaceName = currentLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
