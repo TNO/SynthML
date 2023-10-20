@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
+import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
@@ -53,6 +54,9 @@ public class Cif2Petrify {
 
         Preconditions.checkArgument(eventNames.stream().distinct().count() == eventNames.size(),
                 "Expected all event names in the state space alphabet to be uniquely named.");
+        Preconditions.checkArgument(
+                eventNames.stream().filter(e -> e.equals("start") || e.equals("end")).findAny().isEmpty(),
+                "Expected that 'start' and 'end' are not used as event names.");
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
         stringBuilder.append(String.join(" ", eventNames));
