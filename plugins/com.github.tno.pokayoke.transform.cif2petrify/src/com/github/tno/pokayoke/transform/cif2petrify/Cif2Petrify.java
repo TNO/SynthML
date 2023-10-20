@@ -81,15 +81,15 @@ public class Cif2Petrify {
             Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
                     "Expected non-marked locations to have outgoing edges.");
 
-            boolean isInitialStateTrivially = location.getInitials().isEmpty() ? false
+            boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
                     : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
-            boolean isNotInitialStateTrivially = location.getInitials().isEmpty() ? true
+            boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
                     : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
-            Preconditions.checkArgument(isInitialStateTrivially || isNotInitialStateTrivially,
-                    "Expected locations are either trivially initial state or not trivially initial state");
+            Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
+                    "Expected locations are either trivially initial states or not trivially initial states");
 
             // Translate initial locations.
-            if (isInitialStateTrivially) {
+            if (isTriviallyInitial) {
                 stringBuilder.append(String.format("loc0 start %s", locationName));
                 stringBuilder.append("\n");
             }
