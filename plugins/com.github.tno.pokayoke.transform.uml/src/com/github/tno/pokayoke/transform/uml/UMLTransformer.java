@@ -23,8 +23,10 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
@@ -304,15 +306,53 @@ public class UMLTransformer {
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {
-        for (ActivityEdge edge: decisionNode.getOutgoings()) {
-            ValueSpecification guard = edge.getGuard();
+        // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
+        // whose guard holds.
+        OpaqueAction decisionEvaluationNode = FileHelper.FACTORY.createOpaqueAction();
+        decisionEvaluationNode.setActivity(decisionNode.getActivity());
+        decisionEvaluationNode.getLanguages().add("Python");
 
-            if (guard != null) {
-                OpaqueExpression translatedGuard = FileHelper.FACTORY.createOpaqueExpression();
-                translatedGuard.getBodies().add(translateValueSpecificationToPython(guard));
-                translatedGuard.getLanguages().add("Python");
-                edge.setGuard(translatedGuard);
-            }
+        // Define the Python body program of the decision evaluation node.
+        StringBuilder decisionEvaluationProgram = new StringBuilder();
+        decisionEvaluationProgram.append("import random\n");
+        decisionEvaluationProgram.append("branches = []\n");
+
+        for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
+            ActivityEdge edge = decisionNode.getOutgoings().get(i);
+            ValueSpecification edgeGuard = edge.getGuard();
+            String translatedGuard = edgeGuard != null ? translateValueSpecificationToPython(edgeGuard) : "True";
+            decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
+        }
+
+        decisionEvaluationProgram.append("branch = random.choice(branches)\n");
+        decisionEvaluationNode.getBodies().add(decisionEvaluationProgram.toString());
+
+        // Redirect the incoming edges into the decision node to go into the new evaluation node instead.
+        for (ActivityEdge incomingEdge: new ArrayList<>(decisionNode.getIncomings())) {
+            incomingEdge.setTarget(decisionEvaluationNode);
+        }
+
+        // Define the control flow from the new evaluator node to the decision node.
+        ControlFlow evaluationToDecisionFlow = FileHelper.FACTORY.createControlFlow();
+        evaluationToDecisionFlow.setActivity(decisionNode.getActivity());
+        evaluationToDecisionFlow.setSource(decisionEvaluationNode);
+        evaluationToDecisionFlow.setTarget(decisionNode);
+
+        // Define the object flow from the new evaluator node to the decision node.
+        OutputPin evaluationOutput = decisionEvaluationNode.createOutputValue("branch",
+                FileHelper.loadPrimitiveType("Integer"));
+        ObjectFlow evaluationToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
+        evaluationToDecisionObjFlow.setActivity(decisionNode.getActivity());
+        evaluationToDecisionObjFlow.setSource(evaluationOutput);
+        evaluationToDecisionObjFlow.setTarget(decisionNode);
+
+        // Update the guards of all outgoing edges accordingly to the outcome of the decision evaluation node.
+        for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
+            ActivityEdge edge = decisionNode.getOutgoings().get(i);
+            OpaqueExpression newGuard = FileHelper.FACTORY.createOpaqueExpression();
+            newGuard.getLanguages().add("Python");
+            newGuard.getBodies().add("branch == " + i);
+            edge.setGuard(newGuard);
         }
     }
 
