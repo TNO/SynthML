@@ -31,8 +31,8 @@ public class Petrify2PNMLTranslator {
 
     public static void transformFile(String inutPath, String outputPath) throws IOException {
         List<String> input = FileHelper.readFile(inutPath);
-        Page petrinetPage = transform(input);
-        FileHelper.writePetriNet(petrinetPage.getContainerPetriNet(), outputPath);
+        PetriNet petriNet = transform(input);
+        FileHelper.writePetriNet(petriNet, outputPath);
     }
 
     /**
@@ -42,7 +42,7 @@ public class Petrify2PNMLTranslator {
      *     removing elements from the head of the list is too expensive.
      * @return Translated Petri Net page.
      */
-    private static Page transform(List<String> petrifyOutput) {
+    public static PetriNet transform(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
@@ -138,7 +138,7 @@ public class Petrify2PNMLTranslator {
         initialMarking.setContainerPlace(markingPlace);
         markingPlace.setInitialMarking(initialMarking);
 
-        return petriNetPage;
+        return petriNetPage.getContainerPetriNet();
     }
 
     private static Page initializePetriNetPage(String petriNetId) {
