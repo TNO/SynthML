@@ -76,27 +76,29 @@ public class Petrify2PNMLTranslator {
 
         List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclaration.split(" ")));
         Preconditions.checkArgument(transitionNames.size() == transitionNames.stream().distinct().count(),
-                "Expected the transition name to be unique.");
+                "Expected transition names to be unique.");
 
         // Create transitions and add them to the map that stores objects and their names.
         Map<String, Node> transitionsPlacesMap = new HashMap<>();
         transitionNames.forEach(t -> transitionsPlacesMap.put(t, createTransition(t, petriNetPage)));
 
-        // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplication by
-        // adding a postfix to the name of the transition (e.g., Transition_A/1 is a duplication of Transition_A), and
-        // these duplications are not specified in the transition declarations, but only appear in the specification.
-        // Therefore, transition duplications in the specification should be collected.
+        // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplicate by
+        // adding a postfix to the name of the transition (e.g., 'Transition_A/1' is a duplicate of 'Transition_A'),
+        // and these duplicates are not specified in the transition declarations, but only appear in the
+        // specification. Therefore, transition duplicates in the specification are collected and separate transition
+        // objects are created with same name but different IDs. For example, duplicate 'Transition_A/1' is named
+        // as 'Transition_A' but with 'Transition_A/1' as its ID.
 
         // Iterate over each specification line to create places, duplicate transitions and arcs.
         String specificationIdentifier = ".graph";
         currentLine = petrifyOutput.get(0);
         Preconditions.checkArgument(currentLine.startsWith(specificationIdentifier),
-                "Expected the Petrify output to contain specification.");
+                "Expected the Petrify output to contain a specification.");
         petrifyOutput.remove(0);
 
         currentLine = petrifyOutput.get(0);
         while (!currentLine.startsWith(".marking")) {
-            List<String> elements = Arrays.asList(petrifyOutput.get(0).split(" "));
+            List<String> elements = Arrays.asList(currentLine.split(" "));
 
             // Create new places and duplicate transitions if they have not been created. Store the names and the
             // corresponding objects in the map.
@@ -117,7 +119,7 @@ public class Petrify2PNMLTranslator {
                 String finalPlace = "FinalPlace";
                 createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
             } else {
-                elements.stream().skip(1).forEach((target) -> createArc(transitionsPlacesMap.get(source),
+                elements.stream().skip(1).forEach(target -> createArc(transitionsPlacesMap.get(source),
                         transitionsPlacesMap.get(target), petriNetPage));
             }
             petrifyOutput.remove(0);
@@ -133,7 +135,7 @@ public class Petrify2PNMLTranslator {
 
         Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
-        // Create marking for the marking place.
+        // Create a marking for the marking place.
         PTMarking initialMarking = PETRI_NET_FACTORY.createPTMarking();
         initialMarking.setText(1L);
         initialMarking.setContainerPlace(markingPlace);
