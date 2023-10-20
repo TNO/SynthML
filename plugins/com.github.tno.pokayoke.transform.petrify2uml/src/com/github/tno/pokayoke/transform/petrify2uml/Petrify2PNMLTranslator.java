@@ -128,7 +128,7 @@ public class Petrify2PNMLTranslator {
         String markingIdentifier = ".marking";
         Preconditions.checkArgument(currentLine.startsWith(markingIdentifier),
                 "Expected the Petrify output to contain a marking place.");
-        String markingPlaceName = currentLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
+        String markingPlaceName = currentLine.substring(markingIdentifier.length()).replace("{", "").replace("}", "").trim();
 
         Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
