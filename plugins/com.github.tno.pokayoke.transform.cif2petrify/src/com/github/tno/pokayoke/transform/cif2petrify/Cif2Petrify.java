@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +28,10 @@ public class Cif2Petrify {
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Specification specification = FileHelper.loadCifSpec(sourcePath);
+    public static void transformFile(String sourcePath, String targetPath) {
+        Specification specification = FileHelper.loadCifSpec(Paths.get(sourcePath));
         String body = Cif2Petrify.transform(specification);
-        FileHelper.writeToFile(body, targetPath);
+        FileHelper.writeToFile(body, Paths.get(targetPath));
     }
 
     private static String transform(Specification specification) {
@@ -91,8 +92,10 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String targetLocationName = edge.getTarget() == null ? location.getName() : edge.getTarget().getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(), targetLocationName);
+                    String targetLocationName = edge.getTarget() == null ? location.getName()
+                            : edge.getTarget().getName();
+                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
+                            targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
