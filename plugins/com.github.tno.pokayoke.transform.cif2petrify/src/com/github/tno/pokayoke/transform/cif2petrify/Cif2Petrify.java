@@ -92,8 +92,8 @@ public class Cif2Petrify {
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    String targetLocationName = CifEdgeUtils.getTarget(edge) == null ? location.getName()
-                            : CifEdgeUtils.getTarget(edge).getName();
+                    Location targetLocation = CifEdgeUtils.getTarget(edge);
+                    String targetLocationName = targetLocation.getName();
                     String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
                             targetLocationName);
                     stringBuilder.append(edgeString);
