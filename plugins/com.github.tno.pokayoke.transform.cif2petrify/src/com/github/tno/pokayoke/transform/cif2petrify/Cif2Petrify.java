@@ -38,8 +38,7 @@ public class Cif2Petrify {
         StringBuilder stringBuilder = new StringBuilder();
 
         // Obtain the automaton in the CIF specification.
-        List<Automaton> automata = new ArrayList<>();
-        automata = CifCollectUtils.collectAutomata(specification, automata);
+        List<Automaton> automata = CifCollectUtils.collectAutomata(specification, new ArrayList<>());
         Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
         Automaton automaton = automata.get(0);
 
