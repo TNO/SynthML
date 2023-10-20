@@ -1,9 +1,11 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,14 +29,20 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
+    public static void transformFile(String inutPath, String outputPath) throws IOException {
+        List<String> input = FileHelper.readFile(inutPath);
+        Page petrinetPage = transform(input);
+        FileHelper.writePetriNet(petrinetPage.getContainerPetriNet(), outputPath);
+    }
+
     /**
      * Transforms Petrify output to PNML.
      *
-     * @param petrifyOutput Petrify output in a list of strings. A LinkedList should be provided, as otherwise removing
-     *     elements from the head of the list is too expensive.
-     * @return Translated Petri Net page
+     * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
+     *     removing elements from the head of the list is too expensive.
+     * @return Translated Petri Net page.
      */
-    public static Page transformPetrifyOutput(List<String> petrifyOutput) {
+    private static Page transform(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
@@ -122,6 +130,7 @@ public class Petrify2PNMLTranslator {
         Preconditions.checkArgument(currentLine.startsWith(markingIdentifier),
                 "Expected the Petrify output to contain a marking place.");
         String markingPlaceName = currentLine.replace(markingIdentifier, "").replace("{", "").replace("}", "").trim();
+
         Place markingPlace = (Place)transitionsPlacesMap.get(markingPlaceName);
 
         // Create marking for the marking place.
