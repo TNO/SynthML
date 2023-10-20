@@ -72,6 +72,13 @@ public class Cif2Petrify {
             Preconditions.checkArgument(!locationName.equals("loc0"),
                     "Expected no locations in the state space automaton to be named 'loc0'.");
 
+            boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
+                    : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
+            boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
+                    : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
+            Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
+                    "Expected that locations are either trivially initial or trivially not initial.");
+
             boolean isTriviallyMarked = location.getMarkeds().isEmpty() ? false
                     : CifValueUtils.isTriviallyTrue(location.getMarkeds(), false, true);
             boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
@@ -80,13 +87,6 @@ public class Cif2Petrify {
                     "Expected that locations are either trivially marked or trivially not marked.");
             Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
                     "Expected non-marked locations to have outgoing edges.");
-
-            boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
-                    : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
-            boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
-                    : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
-            Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
-                    "Expected that locations are either trivially initial or trivially not initial.");
 
             // Translate initial locations.
             if (isTriviallyInitial) {
