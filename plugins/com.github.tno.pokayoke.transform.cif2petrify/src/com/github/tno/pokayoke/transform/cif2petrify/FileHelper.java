@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.cif2petrify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.eclipse.escet.cif.io.CifReader;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
@@ -20,11 +19,7 @@ public class FileHelper {
         return reader.read();
     }
 
-    public static void writeToFile(String body, Path targetPath) {
-        try {
-            Files.writeString(targetPath, body);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void writeToFile(String body, Path targetPath) throws IOException {
+        Files.writeString(targetPath, body);
     }
 }
