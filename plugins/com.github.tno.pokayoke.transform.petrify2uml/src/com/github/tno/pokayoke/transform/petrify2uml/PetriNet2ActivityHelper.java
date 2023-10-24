@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
@@ -31,7 +31,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
 public class PetriNet2ActivityHelper {
-    private static HashMap<String, OpaqueAction> nameActionMapping = new HashMap<>();
+    private static HashMap<String, OpaqueAction> nameActionMap = new HashMap<>();
 
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
@@ -39,28 +39,28 @@ public class PetriNet2ActivityHelper {
     }
 
     public static Activity initializeUMLActivity(Page page) {
-        // Create a UML model and initialize it
-
+        // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
         model.setName(page.getId());
 
-        // Create a UML class and add it to the model
+        // Create a UML class and add it to the model.
         Class contextClass = model.createOwnedClass("Class", false);
 
-        // Create an activity for the class
+        // Create an activity for the class.
         Activity activity = UML_FACTORY.createActivity();
         activity.setName(page.getId());
 
-        // Add activity as the owned member of the class.
+        // Add the activity as the owned member of the class.
         contextClass.getOwnedBehaviors().add(activity);
+
         return activity;
     }
 
-    public static OpaqueAction createOpacheAction(String name, Activity activity) {
+    public static OpaqueAction transformTransition(String name, Activity activity) {
         OpaqueAction action = UML_FACTORY.createOpaqueAction();
         action.setName(name);
         action.setActivity(activity);
-        nameActionMapping.put(name, action);
+        nameActionMap.put(name, action);
         return action;
     }
 
@@ -75,7 +75,7 @@ public class PetriNet2ActivityHelper {
                 "Expected the initial place to have exactly one outgoing arc.");
         Arc arc = place.getOutArcs().get(0);
         String targetName = arc.getTarget().getId();
-        OpaqueAction targetAction = nameActionMapping.get(targetName);
+        OpaqueAction targetAction = nameActionMap.get(targetName);
 
         createControlFlow(place.getId(), activity, initialNode, targetAction);
     }
@@ -101,22 +101,22 @@ public class PetriNet2ActivityHelper {
         finalNode.setActivity(activity);
         Preconditions.checkArgument(place.getInArcs().size() == 1,
                 "Expected the final place to have exactly one incoming arc.");
-        Arc arc = place.getInArcs().get(0);
-        String sourceName = arc.getSource().getId();
-        OpaqueAction sourceAction = nameActionMapping.get(sourceName);
+        Arc inArc = place.getInArcs().get(0);
+        String sourceName = inArc.getSource().getId();
+        OpaqueAction sourceAction = nameActionMap.get(sourceName);
 
         createControlFlow(place.getId(), activity, sourceAction, finalNode);
     }
 
-    public static boolean isOneToOnePlace(Place place) {
+    public static boolean isOneToOnePattern(Place place) {
         return place.getInArcs().size() == 1 && place.getOutArcs().size() == 1;
     }
 
-    public static void transformOneToOnePlace(Place place, Activity activity) {
+    public static void transformOneToOnePattern(Place place, Activity activity) {
         Node sourceNode = place.getInArcs().get(0).getSource();
-        OpaqueAction sourceAction = nameActionMapping.get(sourceNode.getId());
+        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
         Node targetNode = place.getOutArcs().get(0).getTarget();
-        OpaqueAction targetAction = nameActionMapping.get(targetNode.getId());
+        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
 
         createControlFlow(place.getId(), activity, sourceAction, targetAction);
     }
@@ -127,11 +127,11 @@ public class PetriNet2ActivityHelper {
 
     public static void transformMergePattern(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
-        List<OpaqueAction> sourceActions = place.getInArcs().stream()
-                .map(o -> nameActionMapping.get(o.getSource().getId())).toList();
+        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
+                .toList();
 
         // Obtain the action translated from the target of the outgoing arc.
-        NamedElement targetAction = place.getOutArcs().stream().map(o -> nameActionMapping.get(o.getTarget().getId()))
+        OpaqueAction targetAction = place.getOutArcs().stream().map(o -> nameActionMap.get(o.getTarget().getId()))
                 .findFirst().get();
 
         // Create a merge node.
@@ -140,12 +140,12 @@ public class PetriNet2ActivityHelper {
         merge.setActivity(activity);
 
         // Connect the merge node to the actions translated from the sources of the incoming arcs.
-        sourceActions.stream().forEach(
-                action -> createControlFlow(action.getName() + "__to__" + merge.getName(), activity, action, merge));
+        sourceActions.stream()
+                .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
+                        activity, sourceAction, merge));
 
         // Connect the merge node to the action translated from the target of the outgoing arc.
-        createControlFlow(merge.getName() + "__to__" + targetAction.getName(), activity, merge,
-                (ActivityNode)targetAction);
+        createControlFlow(merge.getName() + "__to__" + targetAction.getName(), activity, merge, targetAction);
     }
 
     public static boolean isDecisionPattern(Place place) {
@@ -154,12 +154,12 @@ public class PetriNet2ActivityHelper {
 
     public static void transformDecisionPattern(Place place, Activity activity) {
         // Obtain the action translated from the source of the incoming arc.
-        NamedElement sourceAction = place.getInArcs().stream().map(o -> nameActionMapping.get(o.getSource().getId()))
+        OpaqueAction sourceAction = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
                 .findFirst().get();
 
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMapping.get(o.getTarget().getId())).toList();
+                .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
 
         // Create a decision node.
         DecisionNode decision = UML_FACTORY.createDecisionNode();
@@ -167,14 +167,13 @@ public class PetriNet2ActivityHelper {
         decision.setActivity(activity);
 
         // Connect decision node and the source action.
-        createControlFlow(sourceAction.getName() + "__to__" + decision.getName(), activity, (ActivityNode)sourceAction,
-                decision);
+        createControlFlow(sourceAction.getName() + "__to__" + decision.getName(), activity, sourceAction, decision);
 
-        // Connect the decision node to the action translated from the targets of the outgoing arcs and set the guard of
-        // the edges to true.
-        for (NamedElement action: targetActions) {
+        // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the guard
+        // of the edges to true.
+        for (OpaqueAction action: targetActions) {
             ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
-                    decision, (ActivityNode)action);
+                    decision, action);
             LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
             guard.setValue(true);
             controlFlow.setGuard(guard);
@@ -187,21 +186,22 @@ public class PetriNet2ActivityHelper {
 
     public static void transformMergeDecisionPattern(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
-        List<OpaqueAction> sourceActions = place.getInArcs().stream()
-                .map(o -> nameActionMapping.get(o.getSource().getId())).toList();
+        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
+                .toList();
 
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMapping.get(o.getTarget().getId())).toList();
+                .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
 
-        // create a merge node.
+        // Create a merge node.
         MergeNode merge = UML_FACTORY.createMergeNode();
         merge.setName(place.getId());
         merge.setActivity(activity);
 
         // Connect the merge node to the actions translated from the sources of the incoming arcs.
-        sourceActions.stream().forEach(
-                action -> createControlFlow(action.getName() + "__to__" + merge.getName(), activity, action, merge));
+        sourceActions.stream()
+                .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
+                        activity, sourceAction, merge));
 
         // Create a decision node.
         DecisionNode decision = UML_FACTORY.createDecisionNode();
@@ -211,11 +211,11 @@ public class PetriNet2ActivityHelper {
         // Connect merge and decision nodes.
         createControlFlow(merge.getName() + "__to__" + decision.getName(), activity, merge, decision);
 
-        // Connect the decision node to the action translated from the targets of the outgoing arcs and set the guard of
-        // the edges to true.
-        for (NamedElement action: targetActions) {
+        // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the guard
+        // of the edges to true.
+        for (OpaqueAction action: targetActions) {
             ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
-                    decision, (ActivityNode)action);
+                    decision, action);
             LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
             guard.setValue(true);
             controlFlow.setGuard(guard);
@@ -227,21 +227,25 @@ public class PetriNet2ActivityHelper {
     }
 
     public static void transformForkPattern(Transition transition, Activity activity) {
+        // Create a fork node.
+        ForkNode fork = UML_FACTORY.createForkNode();
+        fork.setActivity(activity);
+        fork.setName("Fork");
+
         // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMapping.get(transition.getId());
+        OpaqueAction action = nameActionMap.get(transition.getId());
 
         // Obtain the outgoing edges.
         List<ActivityEdge> outgoingEdges = action.getOutgoings();
 
-        // create a fork node.
-        ForkNode fork = UML_FACTORY.createForkNode();
-        fork.setActivity(activity);
+        // Reset the source of the outgoing edges to the fork node.
+        for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
+            outgoingEdge.setSource(fork);
+            outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
+        }
 
         // Connect the action to the fork node.
-        createControlFlow(action.getName() + "__to__" + "fork", activity, action, fork);
-
-        // Reset the source of the outgoing edges to the fork node.
-        outgoingEdges.stream().forEach(outgoingEdge -> outgoingEdge.setSource(fork));
+        createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
     }
 
     public static boolean isJoinPattern(Transition transition) {
@@ -249,26 +253,38 @@ public class PetriNet2ActivityHelper {
     }
 
     public static void transformJoinPattern(Transition transition, Activity activity) {
-        // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMapping.get(transition.getId());
-
-        // Obtain the incoming edges of the action.
-        List<ActivityEdge> incomingEdges = action.getIncomings();
-
         // Create a join node.
         JoinNode join = UML_FACTORY.createJoinNode();
         join.setActivity(activity);
         join.setName("Join");
 
-        // Connect the join node and the action.
-        createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
+        // Obtain the action translated from the transition.
+        OpaqueAction action = nameActionMap.get(transition.getId());
+
+        // Obtain the incoming edges of the action.
+        List<ActivityEdge> incomingEdges = action.getIncomings();
 
         // Reset the target of the incoming edges to the join node.
-        incomingEdges.stream().forEach(incomingEdge -> incomingEdge.setTarget(join));
+        for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
+            incomingEdge.setTarget(join);
+            incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
+        }
+
+        // Connect the join node and the action.
+        createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
+    }
+
+    public static boolean isForkJoinPattern(Transition transition) {
+        return transition.getInArcs().size() > 1 && transition.getOutArcs().size() > 1;
+    }
+
+    public static void transformForkJoinPattern(Transition transition, Activity activity) {
+        transformForkPattern(transition, activity);
+        transformJoinPattern(transition, activity);
     }
 
     public static void renameDuplicateActions() {
-        nameActionMapping.values().stream().filter(action -> action.getName().contains("/"))
+        nameActionMap.values().stream().filter(action -> action.getName().contains("/"))
                 .forEach(action -> action.setName(action.getName().split("/")[0]));
     }
 }

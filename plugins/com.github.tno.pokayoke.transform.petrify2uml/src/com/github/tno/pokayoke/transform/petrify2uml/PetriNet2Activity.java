@@ -35,8 +35,7 @@ public class PetriNet2Activity {
         // Translate all transitions into actions.
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Transition transition) {
-                String name = transition.getId();
-                PetriNet2ActivityHelper.createOpacheAction(name, activity);
+                PetriNet2ActivityHelper.transformTransition(transition.getId(), activity);
             }
         }
 
@@ -51,12 +50,12 @@ public class PetriNet2Activity {
             }
         }
 
-        // Translate the places which have exactly one incoming arc and one outgoing arc into one edge that connects two
+        // Translate the places which have exactly one incoming arc and one outgoing arc to one edge that connects two
         // actions.
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.isOneToOnePlace(place)) {
-                    PetriNet2ActivityHelper.transformOneToOnePlace(place, activity);
+                if (PetriNet2ActivityHelper.isOneToOnePattern(place)) {
+                    PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
                 }
             }
         }
@@ -77,13 +76,15 @@ public class PetriNet2Activity {
         }
 
         // Translate the patterns for fork and join nodes. These nodes are created and properly
-        // connected to the translated activity nodes.
+        // connected to other activity nodes.
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Transition transition) {
                 if (PetriNet2ActivityHelper.isForkPattern(transition)) {
                     PetriNet2ActivityHelper.transformForkPattern(transition, activity);
                 } else if (PetriNet2ActivityHelper.isJoinPattern(transition)) {
                     PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
+                } else if (PetriNet2ActivityHelper.isForkJoinPattern(transition)) {
+                    PetriNet2ActivityHelper.transformForkJoinPattern(transition, activity);
                 }
             }
         }
