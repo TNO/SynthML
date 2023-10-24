@@ -89,7 +89,7 @@ public class PetriNet2Activity {
         }
 
         // Rename the actions translated from duplicate transitions to have the same name (i.e., remove the postfix).
-        PetriNet2ActivityHelper.renameDuplicateActions(activity);
+        PetriNet2ActivityHelper.renameDuplicateActions();
 
         return activity;
     }
