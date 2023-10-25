@@ -80,7 +80,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(place.getId(), activity, initialNode, targetAction);
     }
 
-    public static ControlFlow createControlFlow(String edgeName, Activity activity, ActivityNode source,
+    private static ControlFlow createControlFlow(String edgeName, Activity activity, ActivityNode source,
             ActivityNode target)
     {
         ControlFlow edge = UML_FACTORY.createControlFlow();
