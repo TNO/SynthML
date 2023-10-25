@@ -33,11 +33,8 @@ public class PetriNet2Activity {
         Activity activity = PetriNet2ActivityHelper.initializeUMLActivity(page);
 
         // Translate all transitions into actions.
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Transition transition) {
-                PetriNet2ActivityHelper.transformTransition(transition.getId(), activity);
-            }
-        }
+        page.getObjects().stream().filter(pnObj -> pnObj instanceof Transition).forEach(
+                transition -> PetriNet2ActivityHelper.transformTransition(((Transition)transition).getId(), activity));
 
         // Translate the marked place and final place into initial and final nodes respectively.
         for (PnObject pnObj: page.getObjects()) {
