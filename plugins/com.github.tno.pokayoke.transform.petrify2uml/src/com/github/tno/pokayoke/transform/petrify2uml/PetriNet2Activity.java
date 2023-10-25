@@ -26,7 +26,7 @@ public class PetriNet2Activity {
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
 
-    private static Activity transform(PetriNet petriNet) {
+    public static Activity transform(PetriNet petriNet) {
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
