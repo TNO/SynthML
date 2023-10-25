@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.List;
@@ -21,26 +22,31 @@ import org.eclipse.escet.common.app.framework.options.Options;
 import org.eclipse.escet.common.app.framework.output.OutputMode;
 import org.eclipse.escet.common.app.framework.output.OutputModeOption;
 
+import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
 import com.google.common.base.Preconditions;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
-    public void performFullSynthesis(String inputPath, String outputdir) {
+    public void performFullSynthesis(String inputPath, String outputdir) throws IOException {
         // Load CIF specification.
         Specification cifSpec = FileHelper.loadCifSpec(Paths.get(inputPath));
 
         // Generate CIF state space.
         Specification cifStateSpace = convertToStateSpace(cifSpec);
 
+
         // Translate CIF state space to Petrify input
-        cifStateSpace
+        String body = Cif2Petrify.transform(cifStateSpace);
+        FileHelper.writeToFile(body, Paths.get(outputdir+"/"+cifSpec.getName()+".g"));
 
-        // Petrify the state space
 
-        // Translate Petrify output to PNML
+        // Petrify the state space.
 
-        // Translate Petri Net to UML Activity
+
+        // Translate Petrify output to PNML.
+
+        // Translate Petri Net to UML Activity.
     }
 
     /**

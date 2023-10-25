@@ -37,7 +37,7 @@ public class Cif2Petrify {
         FileHelper.writeToFile(body, Paths.get(targetPath));
     }
 
-    private static String transform(Specification specification) {
+    public static String transform(Specification specification) {
         StringBuilder stringBuilder = new StringBuilder();
 
         // Obtain the automaton in the CIF specification.
