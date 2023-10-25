@@ -70,6 +70,7 @@ public class Cif2Petrify {
         for (Location location: automaton.getLocations()) {
             String locationName = location.getName();
 
+            Preconditions.checkNotNull(locationName, "Expected locations to have a name.");
             Preconditions.checkArgument(!locationName.equals("loc0"),
                     "Expected no locations in the state space automaton to be named 'loc0'.");
 
