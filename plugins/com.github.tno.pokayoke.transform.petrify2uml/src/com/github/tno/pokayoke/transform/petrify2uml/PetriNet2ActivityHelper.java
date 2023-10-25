@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -31,7 +32,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
 public class PetriNet2ActivityHelper {
-    private static HashMap<String, OpaqueAction> nameActionMap = new HashMap<>();
+    private static Map<String, OpaqueAction> nameActionMap = new HashMap<>();
 
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
