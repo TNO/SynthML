@@ -1,0 +1,45 @@
+# It is a Free-Choice Petri net
+.model statespace
+.dummy  start end c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied
+.graph
+start p2 p11
+c_act1 p1
+c_act8 p14
+c_act6 p8
+c_act14 p13
+c_act11 p4
+c_act2 p10
+c_act7 p3
+u_act10 p17
+c_act3 p3
+c_act5 p19
+c_act9 p9
+c_act4 p6
+c_act12 p15
+c_act13 p18
+c_satisfied p5
+end p12
+u_act10/1 p7
+c_act6/1 p0 p16
+p0 c_act5
+p1 c_act6
+p2 c_act8
+p3 u_act10 u_act10/1
+p4 c_act2
+p5 end
+p6 c_satisfied
+p7 c_act6/1
+p8 c_act2
+p9 c_act12
+p10 c_act7
+p11 c_act1
+p12 start
+p13 c_act11
+p14 c_act14
+p15 c_act13
+p16 c_act9
+p17 c_act3
+p18 c_satisfied
+p19 c_act4
+.marking { p12 }
+.end
