@@ -72,8 +72,16 @@ public class PetriNet2ActivityHelper {
     public static void transformMarkedPlace(Activity activity, Place place) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
-        Preconditions.checkArgument(place.getOutArcs().size() == 1,
-                "Expected the initial place to have exactly one outgoing arc.");
+
+        int numInArcs = place.getInArcs().size();
+        int numOutArcs = place.getOutArcs().size();
+        Preconditions.checkArgument(numInArcs == 0,
+                "The marked place has %s imcoming arcs. It is expected the marked place to have no incoming arc.",
+                numInArcs);
+        Preconditions.checkArgument(numOutArcs == 1,
+                "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
+                numOutArcs);
+
         Arc arc = place.getOutArcs().get(0);
         String targetName = arc.getTarget().getId();
         OpaqueAction targetAction = nameActionMap.get(targetName);
@@ -100,8 +108,16 @@ public class PetriNet2ActivityHelper {
     public static void transformFinalPlace(Activity activity, Place place) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
-        Preconditions.checkArgument(place.getInArcs().size() == 1,
-                "Expected the final place to have exactly one incoming arc.");
+
+        int numInArcs = place.getInArcs().size();
+        int numOutArcs = place.getOutArcs().size();
+        Preconditions.checkArgument(numInArcs == 1,
+                "The final place has %s imcoming arcs. It is expected the final place to have exactly one incoming arc.",
+                numInArcs);
+        Preconditions.checkArgument(numOutArcs == 0,
+                "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
+                numOutArcs);
+
         Arc inArc = place.getInArcs().get(0);
         String sourceName = inArc.getSource().getId();
         OpaqueAction sourceAction = nameActionMap.get(sourceName);
