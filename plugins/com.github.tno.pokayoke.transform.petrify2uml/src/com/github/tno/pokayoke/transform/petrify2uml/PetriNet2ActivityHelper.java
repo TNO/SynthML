@@ -82,9 +82,8 @@ public class PetriNet2ActivityHelper {
                 "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
                 numOutArcs);
 
-        Arc arc = place.getOutArcs().get(0);
-        String targetName = arc.getTarget().getId();
-        OpaqueAction targetAction = nameActionMap.get(targetName);
+        Node targetNode = place.getOutArcs().get(0).getTarget();
+        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
 
         createControlFlow(place.getId(), activity, initialNode, targetAction);
     }
@@ -118,9 +117,8 @@ public class PetriNet2ActivityHelper {
                 "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
                 numOutArcs);
 
-        Arc inArc = place.getInArcs().get(0);
-        String sourceName = inArc.getSource().getId();
-        OpaqueAction sourceAction = nameActionMap.get(sourceName);
+        Node sourceNode = place.getInArcs().get(0).getSource();
+        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
 
         createControlFlow(place.getId(), activity, sourceAction, finalNode);
     }
@@ -148,8 +146,8 @@ public class PetriNet2ActivityHelper {
                 .toList();
 
         // Obtain the action translated from the target of the outgoing arc.
-        OpaqueAction targetAction = place.getOutArcs().stream().map(o -> nameActionMap.get(o.getTarget().getId()))
-                .findFirst().get();
+        Node targetNode = place.getOutArcs().get(0).getTarget();
+        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
 
         // Create a merge node.
         MergeNode merge = UML_FACTORY.createMergeNode();
@@ -171,8 +169,8 @@ public class PetriNet2ActivityHelper {
 
     public static void transformDecisionPattern(Place place, Activity activity) {
         // Obtain the action translated from the source of the incoming arc.
-        OpaqueAction sourceAction = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
-                .findFirst().get();
+        Node sourceNode = place.getInArcs().get(0).getSource();
+        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
 
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
