@@ -32,11 +32,13 @@ import org.eclipse.escet.common.app.framework.output.OutputModeOption;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
-
+    private FullSynthesisApp() {
+    }
 
     public static void performFullSynthesis(String inputPath, String outputdir) throws IOException {
         // Load CIF specification.
@@ -67,8 +69,11 @@ public class FullSynthesisApp {
         executePetrify(petrifyInputPath, petrifyOutputPath, warinings, 20);
 
         // Translate Petrify output to PNML.
+        Path pnmlOutputPath = Paths.get(outputdir, fileName + ".pnml");
+        Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
 
         // Translate Petri Net to UML Activity.
+        // TBD when the code is merged into the main branch.
     }
 
     public static boolean executePetrify(Path petrifyInputPath, Path petrifyOutputPath, List<String> warnings,
@@ -76,7 +81,7 @@ public class FullSynthesisApp {
     {
         File stdOutFile = new File(petrifyOutputPath.toString());
         ArrayList<String> command = new ArrayList<>();
-        String[] petrifyOptions = {"-opt", "-p", "-er", "-efc", "-ip"};
+        String[] petrifyOptions = {"-opt", "-p", "-er", "-fc", "-ip"};
         command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
         command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toAbsolutePath().toString()));
         command.add("-o");

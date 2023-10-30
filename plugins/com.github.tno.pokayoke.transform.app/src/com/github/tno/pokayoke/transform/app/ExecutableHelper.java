@@ -8,20 +8,20 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.eclipse.core.runtime.Path;
-
 
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import com.google.common.base.Preconditions;
 
-/**
- *
- */
+/** Helper methods for executables. */
 public class ExecutableHelper {
+    private ExecutableHelper() {
+    }
+
     /**
      * Get absolute path to executable, to be found in a certain plugin, in a certain folder.
      *
@@ -38,7 +38,7 @@ public class ExecutableHelper {
             Path bundledCifPath = new Path(folderName + "/" + executableName + ".exe");
 
             try {
-                URL fileURL= FileLocator.find(bundle, bundledCifPath);
+                URL fileURL = FileLocator.find(bundle, bundledCifPath);
                 URL executableURL = FileLocator.resolve(fileURL);
                 if (executableURL != null) {
                     File executable = new File(executableURL.toURI());
