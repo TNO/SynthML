@@ -15,13 +15,13 @@ import com.github.tno.pokayoke.transform.tests.common.Regression;
 /**
  * Regression tests.
  */
-class Petrify2UMLRegression extends Regression {
-    public static final String INPUTFILEEXTENSION = "out";
+class Petrify2PNMLRegression extends Regression {
+    public static final String INPUT_FILE_EXTENSION = "out";
 
-    public static final String OUTPUTFILEEXTENSION = "uml";
+    public static final String OUTPUT_FILE_EXTENSION = "pnml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUTFILEEXTENSION, OUTPUTFILEEXTENSION);
+        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
