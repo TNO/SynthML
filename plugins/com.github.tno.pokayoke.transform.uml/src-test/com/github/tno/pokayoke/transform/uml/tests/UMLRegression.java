@@ -20,17 +20,17 @@ import com.github.tno.pokayoke.transform.uml.UMLTransformer;
  * Regression tests.
  */
 class UMLRegression extends Regression {
-    public static final String INPUTFILEEXTENSION = "uml";
+    public static final String INPUT_FILE_EXTENSION = "uml";
 
-    public static final String OUTPUTFILEEXTENSION = "umltst";
+    public static final String OUTPUT_FILE_EXTENSION = "umltst";
 
     @BeforeAll
     public static void setup() {
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUTFILEEXTENSION, new UMLTestFactory());
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUT_FILE_EXTENSION, new UMLTestFactory());
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUTFILEEXTENSION, OUTPUTFILEEXTENSION);
+        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
