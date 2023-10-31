@@ -16,12 +16,12 @@ import com.github.tno.pokayoke.transform.tests.common.Regression;
  * Regression tests.
  */
 class CIF2PetrifyRegression extends Regression {
-    public static final String INPUTFILEEXTENSION = "cif";
+    public static final String INPUT_FILE_EXTENSION = "cif";
 
-    public static final String OUTPUTFILEEXTENSION = "g";
+    public static final String OUTPUT_FILE_EXTENSION = "g";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUTFILEEXTENSION, OUTPUTFILEEXTENSION);
+        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
