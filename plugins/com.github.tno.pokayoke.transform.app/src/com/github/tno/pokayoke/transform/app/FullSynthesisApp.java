@@ -112,7 +112,7 @@ public class FullSynthesisApp {
     }
 
     /**
-     * Convert to Petri Net.
+     * Convert CIF state space to Petri Net using Petrify.
      *
      * @param petrifyInputPath The path of the petrify input file.
      * @param petrifyOutputPath The path of the petrify output file.
