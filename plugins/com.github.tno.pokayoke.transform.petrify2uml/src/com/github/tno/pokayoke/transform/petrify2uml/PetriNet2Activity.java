@@ -27,6 +27,9 @@ public class PetriNet2Activity {
     }
 
     public static Activity transform(PetriNet petriNet) {
+        // According to PNML documents, each Petri Net needs to contain at least one page. Users can add multiple pages
+        // to structure their Petri Net in various ways.In our transformation, we add only one page that is mandatory.
+        // See more info in : https://dev.lip6.fr/trac/research/ISOIEC15909/wiki/English/User/Structure.
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
