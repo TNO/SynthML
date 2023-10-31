@@ -27,6 +27,7 @@ import com.google.common.base.Preconditions;
 import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.Place;
+import fr.lip6.move.pnml.ptnet.PnObject;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
@@ -56,12 +57,29 @@ public class PetriNet2ActivityHelper {
         return activity;
     }
 
-    public static OpaqueAction transformTransition(String name, Activity activity) {
+    public static void transformTransitions(Page page, Activity activity) {
+        page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast)
+                .forEach(transition -> transformTransition(transition.getId(), activity));
+    }
+
+    private static OpaqueAction transformTransition(String name, Activity activity) {
         OpaqueAction action = UML_FACTORY.createOpaqueAction();
         action.setName(name);
         action.setActivity(activity);
         nameActionMap.put(name, action);
         return action;
+    }
+
+    public static void transformMarkedAndFinalPlaces(Page page, Activity activity) {
+        for (PnObject pnObj: page.getObjects()) {
+            if (pnObj instanceof Place place) {
+                if (PetriNet2ActivityHelper.isMarkedPlace(place)) {
+                    PetriNet2ActivityHelper.transformMarkedPlace(activity, place);
+                } else if (PetriNet2ActivityHelper.isFinalPlace(place)) {
+                    PetriNet2ActivityHelper.transformFinalPlace(activity, place);
+                }
+            }
+        }
     }
 
     /**
@@ -70,7 +88,7 @@ public class PetriNet2ActivityHelper {
      * @param place The place to check.
      * @return {@code true} if the place is marked, otherwise {@code false}.
      */
-    public static boolean isMarkedPlace(Place place) {
+    private static boolean isMarkedPlace(Place place) {
         if (place.getInitialMarking() != null) {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
@@ -93,7 +111,7 @@ public class PetriNet2ActivityHelper {
      * @param activity The activity that the initial node belongs to.
      * @param place The marked place.
      */
-    public static void transformMarkedPlace(Activity activity, Place place) {
+    private static void transformMarkedPlace(Activity activity, Place place) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
 
@@ -121,7 +139,7 @@ public class PetriNet2ActivityHelper {
      * @param place The place to check.
      * @return {@code true} if the place is marked, otherwise {@code false}.
      */
-    public static boolean isFinalPlace(Place place) {
+    private static boolean isFinalPlace(Place place) {
         if (place.getId().equals("FinalPlace")) {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
@@ -144,7 +162,7 @@ public class PetriNet2ActivityHelper {
      * @param activity The activity that the final node belongs to.
      * @param place The final place.
      */
-    public static void transformFinalPlace(Activity activity, Place place) {
+    private static void transformFinalPlace(Activity activity, Place place) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
@@ -154,23 +172,43 @@ public class PetriNet2ActivityHelper {
         createControlFlow(place.getId(), activity, sourceAction, finalNode);
     }
 
-    public static boolean hasSingleInArc(Place place) {
+    public static void transformPlaceBasedPatterns(Page page, Activity activity) {
+        for (PnObject pnObj: page.getObjects()) {
+            if (pnObj instanceof Place place) {
+                if (PetriNet2ActivityHelper.hasSingleInArc(place)) {
+                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
+                        PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
+                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
+                        PetriNet2ActivityHelper.transformDecisionPattern(place, activity);
+                    }
+                } else if (PetriNet2ActivityHelper.hasMultiInArcs(place)) {
+                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
+                        PetriNet2ActivityHelper.transformMergePattern(place, activity);
+                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
+                        PetriNet2ActivityHelper.transformMergeDecisionPattern(place, activity);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean hasSingleInArc(Place place) {
         return place.getInArcs().size() == 1;
     }
 
-    public static boolean hasSingleOutArc(Place place) {
+    private static boolean hasSingleOutArc(Place place) {
         return place.getOutArcs().size() == 1;
     }
 
-    public static boolean hasMultiInArcs(Place place) {
+    private static boolean hasMultiInArcs(Place place) {
         return place.getInArcs().size() > 1;
     }
 
-    public static boolean hasMultiOutArcs(Place place) {
+    private static boolean hasMultiOutArcs(Place place) {
         return place.getOutArcs().size() > 1;
     }
 
-    public static void transformOneToOnePattern(Place place, Activity activity) {
+    private static void transformOneToOnePattern(Place place, Activity activity) {
         Node sourceNode = place.getInArcs().get(0).getSource();
         OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
         Node targetNode = place.getOutArcs().get(0).getTarget();
@@ -179,7 +217,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(place.getId(), activity, sourceAction, targetAction);
     }
 
-    public static void transformMergePattern(Place place, Activity activity) {
+    private static void transformMergePattern(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
         List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
                 .toList();
@@ -202,7 +240,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(merge.getName() + "__to__" + targetAction.getName(), activity, merge, targetAction);
     }
 
-    public static void transformDecisionPattern(Place place, Activity activity) {
+    private static void transformDecisionPattern(Place place, Activity activity) {
         // Obtain the action translated from the source of the incoming arc.
         Node sourceNode = place.getInArcs().get(0).getSource();
         OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
@@ -230,7 +268,7 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    public static void transformMergeDecisionPattern(Place place, Activity activity) {
+    private static void transformMergeDecisionPattern(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
         List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
                 .toList();
@@ -268,15 +306,28 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    public static boolean hasMultiInArcs(Transition transition) {
+    public static void transformTransitionBasedPatterns(Page page, Activity activity) {
+        for (PnObject pnObj: page.getObjects()) {
+            if (pnObj instanceof Transition transition) {
+                if (PetriNet2ActivityHelper.hasMultiOutArcs(transition)) {
+                    PetriNet2ActivityHelper.transformForkPattern(transition, activity);
+                }
+                if (PetriNet2ActivityHelper.hasMultiInArcs(transition)) {
+                    PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
+                }
+            }
+        }
+    }
+
+    private static boolean hasMultiInArcs(Transition transition) {
         return transition.getInArcs().size() > 1;
     }
 
-    public static boolean hasMultiOutArcs(Transition transition) {
+    private static boolean hasMultiOutArcs(Transition transition) {
         return transition.getOutArcs().size() > 1;
     }
 
-    public static void transformForkPattern(Transition transition, Activity activity) {
+    private static void transformForkPattern(Transition transition, Activity activity) {
         // Create a fork node.
         ForkNode fork = UML_FACTORY.createForkNode();
         fork.setActivity(activity);
@@ -298,7 +349,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
     }
 
-    public static void transformJoinPattern(Transition transition, Activity activity) {
+    private static void transformJoinPattern(Transition transition, Activity activity) {
         // Create a join node.
         JoinNode join = UML_FACTORY.createJoinNode();
         join.setActivity(activity);

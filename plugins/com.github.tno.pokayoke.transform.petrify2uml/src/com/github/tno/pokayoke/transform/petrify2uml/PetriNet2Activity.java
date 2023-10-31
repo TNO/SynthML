@@ -10,9 +10,6 @@ import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
-import fr.lip6.move.pnml.ptnet.Place;
-import fr.lip6.move.pnml.ptnet.PnObject;
-import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Transforms Petri Net to Activity. */
 public class PetriNet2Activity {
@@ -33,53 +30,21 @@ public class PetriNet2Activity {
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
+
+        // Initialize an UML activity.
         Activity activity = PetriNet2ActivityHelper.initializeUMLActivity(page);
 
         // Translate all transitions into actions.
-        page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast)
-                .forEach(transition -> PetriNet2ActivityHelper.transformTransition(transition.getId(), activity));
+        PetriNet2ActivityHelper.transformTransitions(page, activity);
 
         // Translate the marked place and final place into initial and final nodes respectively.
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.isMarkedPlace(place)) {
-                    PetriNet2ActivityHelper.transformMarkedPlace(activity, place);
-                } else if (PetriNet2ActivityHelper.isFinalPlace(place)) {
-                    PetriNet2ActivityHelper.transformFinalPlace(activity, place);
-                }
-            }
-        }
+        PetriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
 
         // Translate the place-based patterns based on the number of incoming and outgoing arcs of the place.
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.hasSingleInArc(place)) {
-                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
-                        PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
-                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
-                        PetriNet2ActivityHelper.transformDecisionPattern(place, activity);
-                    }
-                } else if (PetriNet2ActivityHelper.hasMultiInArcs(place)) {
-                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
-                        PetriNet2ActivityHelper.transformMergePattern(place, activity);
-                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
-                        PetriNet2ActivityHelper.transformMergeDecisionPattern(place, activity);
-                    }
-                }
-            }
-        }
+        PetriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
 
         // Translate the transition-based patterns based on the number of incoming and outgoing arcs of the transition.
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Transition transition) {
-                if (PetriNet2ActivityHelper.hasMultiInArcs(transition)) {
-                    PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
-                }
-                if (PetriNet2ActivityHelper.hasMultiOutArcs(transition)) {
-                    PetriNet2ActivityHelper.transformForkPattern(transition, activity);
-                }
-            }
-        }
+        PetriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
 
         // Rename the actions translated from duplicate transitions to have the same name (i.e., remove the postfix).
         PetriNet2ActivityHelper.renameDuplicateActions();
