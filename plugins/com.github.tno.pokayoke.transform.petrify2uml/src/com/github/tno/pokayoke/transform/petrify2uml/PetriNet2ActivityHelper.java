@@ -57,6 +57,12 @@ public class PetriNet2ActivityHelper {
         return activity;
     }
 
+    /**
+     * Transforms all transitions into actions.
+     *
+     * @param page The Petri Net page that contains the transitions.
+     * @param activity The activity that contains the transformed actions.
+     */
     public static void transformTransitions(Page page, Activity activity) {
         page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast)
                 .forEach(transition -> transformTransition(transition.getId(), activity));
@@ -70,20 +76,26 @@ public class PetriNet2ActivityHelper {
         return action;
     }
 
+    /**
+     * Transforms marked and final places into initial and final nodes.
+     *
+     * @param page The Petri Net page that contains the marked and final.
+     * @param activity The activity that contains the transformed nodes.
+     */
     public static void transformMarkedAndFinalPlaces(Page page, Activity activity) {
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Place place) {
                 if (PetriNet2ActivityHelper.isMarkedPlace(place)) {
-                    PetriNet2ActivityHelper.transformMarkedPlace(activity, place);
+                    PetriNet2ActivityHelper.transformMarkedPlace(place, activity);
                 } else if (PetriNet2ActivityHelper.isFinalPlace(place)) {
-                    PetriNet2ActivityHelper.transformFinalPlace(activity, place);
+                    PetriNet2ActivityHelper.transformFinalPlace(place, activity);
                 }
             }
         }
     }
 
     /**
-     * Checks if the place is marked as the initial. The mark was added when transforming petrify output to PNML.
+     * Checks if the place is marked as the initial. The mark was added when transforming Petrify output to PNML.
      *
      * @param place The place to check.
      * @return {@code true} if the place is marked, otherwise {@code false}.
@@ -105,13 +117,13 @@ public class PetriNet2ActivityHelper {
     }
 
     /**
-     * Transforms a marked place to an initial node. This method should only be called after
-     * {@link #isMarkedPlace(Place)} is called and returns true.
+     * Transforms a marked place to an initial node. This method should only be called if {@link #isMarkedPlace(Place)}
+     * returns true.
      *
-     * @param activity The activity that the initial node belongs to.
      * @param place The marked place.
+     * @param activity The activity that contains the transformed initial node.
      */
-    private static void transformMarkedPlace(Activity activity, Place place) {
+    private static void transformMarkedPlace(Place place, Activity activity) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
 
@@ -134,7 +146,7 @@ public class PetriNet2ActivityHelper {
     }
 
     /**
-     * Checks if the place is a final place. The final place was defined when transforming petrify output to PNML.
+     * Checks if the place is a final place. The final place was defined when transforming Petrify output to PNML.
      *
      * @param place The place to check.
      * @return {@code true} if the place is marked, otherwise {@code false}.
@@ -156,13 +168,13 @@ public class PetriNet2ActivityHelper {
     }
 
     /**
-     * Transforms a final place to a final node. This method should only be called after {@link #isFinalPlace(Place)} is
-     * called and returns true.
+     * Transforms a final place to a final node. This method should only be called if {@link #isFinalPlace(Place)}
+     * returns true.
      *
-     * @param activity The activity that the final node belongs to.
      * @param place The final place.
+     * @param activity The activity that contains the transformed final node.
      */
-    private static void transformFinalPlace(Activity activity, Place place) {
+    private static void transformFinalPlace(Place place, Activity activity) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
@@ -172,6 +184,13 @@ public class PetriNet2ActivityHelper {
         createControlFlow(place.getId(), activity, sourceAction, finalNode);
     }
 
+    /**
+     * Transforms the place-based patterns that are detected based on the number of incoming and outgoing arcs of
+     * places.
+     *
+     * @param page The Petri Net page that contains places.
+     * @param activity The activity that contains the transformed activity objects.
+     */
     public static void transformPlaceBasedPatterns(Page page, Activity activity) {
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Place place) {
@@ -306,6 +325,13 @@ public class PetriNet2ActivityHelper {
         }
     }
 
+    /**
+     * Transforms the transition-based patterns that are detected based on the number of incoming and outgoing arcs of
+     * transitions.
+     *
+     * @param page The Petri Net page that contains the transitions.
+     * @param activity The activity that contains the transformed activity objects.
+     */
     public static void transformTransitionBasedPatterns(Page page, Activity activity) {
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Transition transition) {
