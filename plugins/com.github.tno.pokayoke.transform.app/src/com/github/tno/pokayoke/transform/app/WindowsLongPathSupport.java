@@ -7,9 +7,9 @@ import org.apache.commons.lang3.SystemUtils;
  * Provide support to enable long paths on Windows.
  */
 public class WindowsLongPathSupport {
-    /**
-     * Prefix enabling long paths on Windows.
-     */
+    private WindowsLongPathSupport() {
+    }
+
     public static final String LONG_PATH_PREFIX = "\\\\?\\";
 
     public static boolean hasLongPathPrefix(String path) {

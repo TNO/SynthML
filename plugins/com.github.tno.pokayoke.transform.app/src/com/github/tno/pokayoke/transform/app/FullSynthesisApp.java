@@ -42,15 +42,15 @@ public class FullSynthesisApp {
 
     public static void performFullSynthesis(String inputPath, String outputdir) throws IOException {
         // Load CIF specification.
-        Path inputFilePath = Paths.get(inputPath);
-        String fileName = FilenameUtils.removeExtension(inputFilePath.getFileName().toString());
-        Specification cifSpec = FileHelper.loadCifSpec(inputFilePath);
+        Path cifSpecInputPath = Paths.get(inputPath);
+        String filePrefix = FilenameUtils.removeExtension(cifSpecInputPath.getFileName().toString());
+        Specification cifSpec = FileHelper.loadCifSpec(cifSpecInputPath);
 
         // Generate CIF state space.
         Specification cifStateSpace = convertToStateSpace(cifSpec);
 
         // Output the generated CIF state space.
-        Path cifStateSpacePath = Paths.get(outputdir, fileName + ".statespace.cif");
+        Path cifStateSpacePath = Paths.get(outputdir, filePrefix + ".statespace.cif");
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(cifStateSpace, cifStateSpacePath.toString(), outputdir);
@@ -58,85 +58,28 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // Translate CIF state space to Petrify input.
-        String body = Cif2Petrify.transform(cifStateSpace);
-        Path petrifyInputPath = Paths.get(outputdir, fileName + ".g");
-        FileHelper.writeToFile(body, petrifyInputPath);
+        // Translate the CIF state space to Petrify input and output the Petrify input.
+        Path petrifyInputPath = Paths.get(outputdir, filePrefix + ".g");
+        Cif2Petrify.transformFile(cifStateSpacePath.toString(), petrifyInputPath.toString());
 
-        // Petrify the state space.
-        Path petrifyOutputPath = Paths.get(outputdir, fileName + ".out");
+        // Petrify the state space and output the generated Petri Net.
+        Path petrifyOutputPath = Paths.get(outputdir, filePrefix + ".out");
         List<String> warinings = new ArrayList<>();
-        executePetrify(petrifyInputPath, petrifyOutputPath, warinings, 20);
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, warinings, 20);
 
-        // Translate Petrify output to PNML.
-        Path pnmlOutputPath = Paths.get(outputdir, fileName + ".pnml");
+        // Translate the Petrify output to PNML and output the PNML.
+        Path pnmlOutputPath = Paths.get(outputdir, filePrefix + ".pnml");
         Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
 
-        // Translate Petri Net to UML Activity.
-        // TBD when the code is merged into the main branch.
-    }
-
-    public static boolean executePetrify(Path petrifyInputPath, Path petrifyOutputPath, List<String> warnings,
-            int timeoutInSeconds)
-    {
-        File stdOutFile = new File(petrifyOutputPath.toString());
-        ArrayList<String> command = new ArrayList<>();
-        String[] petrifyOptions = {"-opt", "-p", "-er", "-fc", "-ip"};
-        command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toAbsolutePath().toString()));
-        command.add("-o");
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(stdOutFile.getAbsolutePath().toString()));
-        command.addAll(Arrays.asList(petrifyOptions));
-        ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
-        petrifyProcessBuilder.redirectErrorStream(true);
-        petrifyProcessBuilder.redirectOutput(stdOutFile);
-
-        // Start the process for rendering the SVG.
-        Process petrifyProcess;
-        try {
-            petrifyProcess = petrifyProcessBuilder.start();
-        } catch (IOException e) {
-            warnings.add("I/O error during execution of petrify process: " + e.getMessage());
-            return false;
-        }
-
-        // Wait for the process to finish within the given timeout period.
-        boolean petrifyProcessCompleted;
-        try {
-            petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            petrifyProcess.destroyForcibly();
-
-            try {
-                Files.delete(stdOutFile.toPath());
-            } catch (IOException ex) {
-                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
-            }
-
-            return false;
-        }
-
-        // Check whether the process timed out.
-        if (!petrifyProcessCompleted) {
-            petrifyProcess.destroyForcibly();
-
-            try {
-                Files.delete(stdOutFile.toPath());
-            } catch (IOException e) {
-                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
-            }
-
-            return false;
-        }
-
-        return true;
+        // Translate Petri Net to UML Activity and output the activity.
+        // TBD when the code for this functionality is merged into the main branch.
     }
 
     /**
-     * Compute the statespace of the automata in a specification.
+     * Compute the state space of the automata in a specification.
      *
      * @param cif {@link Specification} containing automata to convert.
-     * @return {@link Specification} containing statespace automaton.
+     * @return {@link Specification} containing state space automaton.
      */
 
     public static Specification convertToStateSpace(Specification cif) {
@@ -166,5 +109,70 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
         return statespace;
+    }
+
+    /**
+     * Convert to Petri Net.
+     *
+     * @param petrifyInputPath The path of the petrify input file.
+     * @param petrifyOutputPath The path of the petrify output file.
+     * @param warnings The warning messages.
+     * @param timeoutInSeconds The timeout for the conversion process.
+     * @return {@code true} if the process is successfully executed, otherwise {@code false}.
+     */
+    public static boolean convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, List<String> warnings,
+            int timeoutInSeconds)
+    {
+        File stdOutFile = new File(petrifyOutputPath.toString());
+
+        // Construct the command for Petrify.
+        ArrayList<String> command = new ArrayList<>();
+        String[] petrifyOptions = {"-opt", "-p", "-er", "-fc", "-ip"};
+        command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
+        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toString()));
+        command.add("-o");
+        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyOutputPath.toString()));
+        command.addAll(Arrays.asList(petrifyOptions));
+        ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
+        petrifyProcessBuilder.redirectErrorStream(true);
+        petrifyProcessBuilder.redirectOutput(stdOutFile);
+
+        // Start the process for Petrify.
+        Process petrifyProcess;
+        try {
+            petrifyProcess = petrifyProcessBuilder.start();
+        } catch (IOException e) {
+            warnings.add("I/O error during execution of petrify process: " + e.getMessage());
+            return false;
+        }
+
+        // Wait for the process to finish within the given timeout period.
+        boolean petrifyProcessCompleted;
+        try {
+            petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            petrifyProcess.destroyForcibly();
+            try {
+                Files.delete(stdOutFile.toPath());
+            } catch (IOException ex) {
+                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
+            }
+
+            return false;
+        }
+
+        // Check whether the process timed out.
+        if (!petrifyProcessCompleted) {
+            petrifyProcess.destroyForcibly();
+            try {
+                Files.delete(stdOutFile.toPath());
+            } catch (IOException e) {
+                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }
