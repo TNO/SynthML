@@ -68,7 +68,7 @@ public class PetriNet2ActivityHelper {
      * Checks if the place is marked as the initial. The mark was added when transforming petrify output to PNML.
      *
      * @param place The place to check.
-     * @return true if the place is marked, otherwise false
+     * @return {@code true} if the place is marked, otherwise {@code false}.
      */
     public static boolean isMarkedPlace(Place place) {
         if (place.getInitialMarking() != null) {
@@ -119,7 +119,7 @@ public class PetriNet2ActivityHelper {
      * Checks if the place is a final place. The final place was defined when transforming petrify output to PNML.
      *
      * @param place The place to check.
-     * @return true if the place is a final place, otherwise false.
+     * @return {@code true} if the place is marked, otherwise {@code false}.
      */
     public static boolean isFinalPlace(Place place) {
         if (place.getId().equals("FinalPlace")) {
@@ -154,8 +154,20 @@ public class PetriNet2ActivityHelper {
         createControlFlow(place.getId(), activity, sourceAction, finalNode);
     }
 
-    public static boolean isOneToOnePattern(Place place) {
-        return place.getInArcs().size() == 1 && place.getOutArcs().size() == 1;
+    public static boolean hasSingleInArc(Place place) {
+        return place.getInArcs().size() == 1;
+    }
+
+    public static boolean hasSingleOutArc(Place place) {
+        return place.getOutArcs().size() == 1;
+    }
+
+    public static boolean hasMultiInArcs(Place place) {
+        return place.getInArcs().size() > 1;
+    }
+
+    public static boolean hasMultiOutArcs(Place place) {
+        return place.getOutArcs().size() > 1;
     }
 
     public static void transformOneToOnePattern(Place place, Activity activity) {
@@ -165,10 +177,6 @@ public class PetriNet2ActivityHelper {
         OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
 
         createControlFlow(place.getId(), activity, sourceAction, targetAction);
-    }
-
-    public static boolean isMergePattern(Place place) {
-        return place.getInArcs().size() > 1 && place.getOutArcs().size() == 1;
     }
 
     public static void transformMergePattern(Place place, Activity activity) {
@@ -192,10 +200,6 @@ public class PetriNet2ActivityHelper {
 
         // Connect the merge node to the action translated from the target of the outgoing arc.
         createControlFlow(merge.getName() + "__to__" + targetAction.getName(), activity, merge, targetAction);
-    }
-
-    public static boolean isDecisionPattern(Place place) {
-        return place.getInArcs().size() == 1 && place.getOutArcs().size() > 1;
     }
 
     public static void transformDecisionPattern(Place place, Activity activity) {
@@ -224,10 +228,6 @@ public class PetriNet2ActivityHelper {
             guard.setValue(true);
             controlFlow.setGuard(guard);
         }
-    }
-
-    public static boolean isMergeDecisionPattern(Place place) {
-        return place.getInArcs().size() > 1 && place.getOutArcs().size() > 1;
     }
 
     public static void transformMergeDecisionPattern(Place place, Activity activity) {
@@ -268,8 +268,12 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    public static boolean isForkPattern(Transition transition) {
-        return transition.getInArcs().size() == 1 && transition.getOutArcs().size() > 1;
+    public static boolean hasMultiInArcs(Transition transition) {
+        return transition.getInArcs().size() > 1;
+    }
+
+    public static boolean hasMultiOutArcs(Transition transition) {
+        return transition.getOutArcs().size() > 1;
     }
 
     public static void transformForkPattern(Transition transition, Activity activity) {
@@ -294,10 +298,6 @@ public class PetriNet2ActivityHelper {
         createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
     }
 
-    public static boolean isJoinPattern(Transition transition) {
-        return transition.getInArcs().size() > 1 && transition.getOutArcs().size() == 1;
-    }
-
     public static void transformJoinPattern(Transition transition, Activity activity) {
         // Create a join node.
         JoinNode join = UML_FACTORY.createJoinNode();
@@ -318,15 +318,6 @@ public class PetriNet2ActivityHelper {
 
         // Connect the join node and the action.
         createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
-    }
-
-    public static boolean isForkJoinPattern(Transition transition) {
-        return transition.getInArcs().size() > 1 && transition.getOutArcs().size() > 1;
-    }
-
-    public static void transformForkJoinPattern(Transition transition, Activity activity) {
-        transformForkPattern(transition, activity);
-        transformJoinPattern(transition, activity);
     }
 
     public static void renameDuplicateActions() {

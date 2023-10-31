@@ -50,41 +50,33 @@ public class PetriNet2Activity {
             }
         }
 
-        // Translate the places which have exactly one incoming arc and one outgoing arc to one edge that connects two
-        // actions.
+        // Translate the place-based patterns based on the number of incoming and outgoing arcs of the place.
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.isOneToOnePattern(place)) {
-                    PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
+                if (PetriNet2ActivityHelper.hasSingleInArc(place)) {
+                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
+                        PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
+                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
+                        PetriNet2ActivityHelper.transformDecisionPattern(place, activity);
+                    }
+                } else if (PetriNet2ActivityHelper.hasMultiInArcs(place)) {
+                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
+                        PetriNet2ActivityHelper.transformMergePattern(place, activity);
+                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
+                        PetriNet2ActivityHelper.transformMergeDecisionPattern(place, activity);
+                    }
                 }
             }
         }
 
-        // Translate the patterns for merge and decision merge nodes. These nodes are created and properly
-        // connected to the translated actions. After this step, all places are translated and all the activity nodes
-        // are connected.
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.isMergePattern(place)) {
-                    PetriNet2ActivityHelper.transformMergePattern(place, activity);
-                } else if (PetriNet2ActivityHelper.isDecisionPattern(place)) {
-                    PetriNet2ActivityHelper.transformDecisionPattern(place, activity);
-                } else if (PetriNet2ActivityHelper.isMergeDecisionPattern(place)) {
-                    PetriNet2ActivityHelper.transformMergeDecisionPattern(place, activity);
-                }
-            }
-        }
-
-        // Translate the patterns for fork and join nodes. These nodes are created and properly
-        // connected to other activity nodes.
+        // Translate the transition-based patterns based on the number of incoming and outgoing arcs of the transition.
         for (PnObject pnObj: page.getObjects()) {
             if (pnObj instanceof Transition transition) {
-                if (PetriNet2ActivityHelper.isForkPattern(transition)) {
-                    PetriNet2ActivityHelper.transformForkPattern(transition, activity);
-                } else if (PetriNet2ActivityHelper.isJoinPattern(transition)) {
+                if (PetriNet2ActivityHelper.hasMultiInArcs(transition)) {
                     PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
-                } else if (PetriNet2ActivityHelper.isForkJoinPattern(transition)) {
-                    PetriNet2ActivityHelper.transformForkJoinPattern(transition, activity);
+                }
+                if (PetriNet2ActivityHelper.hasMultiOutArcs(transition)) {
+                    PetriNet2ActivityHelper.transformForkPattern(transition, activity);
                 }
             }
         }
