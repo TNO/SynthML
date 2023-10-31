@@ -64,6 +64,12 @@ public class PetriNet2ActivityHelper {
         return action;
     }
 
+    /**
+     * Checks if the place is marked as the initial. The mark was added when transforming petrify output to PNML.
+     *
+     * @param place The place to check.
+     * @return true if the place is marked, otherwise false
+     */
     public static boolean isMarkedPlace(Place place) {
         if (place.getInitialMarking() != null) {
             int numInArcs = place.getInArcs().size();
@@ -80,6 +86,13 @@ public class PetriNet2ActivityHelper {
         }
     }
 
+    /**
+     * Transforms a marked place to an initial node. This method should only be called after
+     * {@link #isMarkedPlace(Place)} is called and returns true.
+     *
+     * @param activity The activity that the initial node belongs to.
+     * @param place The marked place.
+     */
     public static void transformMarkedPlace(Activity activity, Place place) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
@@ -102,6 +115,12 @@ public class PetriNet2ActivityHelper {
         return edge;
     }
 
+    /**
+     * Checks if the place is a final place. The final place was defined when transforming petrify output to PNML.
+     *
+     * @param place The place to check.
+     * @return true if the place is a final place, otherwise false.
+     */
     public static boolean isFinalPlace(Place place) {
         if (place.getId().equals("FinalPlace")) {
             int numInArcs = place.getInArcs().size();
@@ -118,6 +137,13 @@ public class PetriNet2ActivityHelper {
         }
     }
 
+    /**
+     * Transforms a final place to a final node. This method should only be called after {@link #isFinalPlace(Place)} is
+     * called and returns true.
+     *
+     * @param activity The activity that the final node belongs to.
+     * @param place The final place.
+     */
     public static void transformFinalPlace(Activity activity, Place place) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
