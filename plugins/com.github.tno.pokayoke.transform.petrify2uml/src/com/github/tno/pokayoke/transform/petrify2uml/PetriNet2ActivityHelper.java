@@ -24,7 +24,6 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.google.common.base.Preconditions;
 
-import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.Place;
