@@ -65,21 +65,24 @@ public class PetriNet2ActivityHelper {
     }
 
     public static boolean isMarkedPlace(Place place) {
-        return place.getInitialMarking() != null;
+        if (place.getInitialMarking() != null) {
+            int numInArcs = place.getInArcs().size();
+            int numOutArcs = place.getOutArcs().size();
+            Preconditions.checkArgument(numInArcs == 0,
+                    "The marked place has %s imcoming arcs. It is expected the marked place to have no incoming arc.",
+                    numInArcs);
+            Preconditions.checkArgument(numOutArcs == 1,
+                    "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
+                    numOutArcs);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void transformMarkedPlace(Activity activity, Place place) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
-
-        int numInArcs = place.getInArcs().size();
-        int numOutArcs = place.getOutArcs().size();
-        Preconditions.checkArgument(numInArcs == 0,
-                "The marked place has %s imcoming arcs. It is expected the marked place to have no incoming arc.",
-                numInArcs);
-        Preconditions.checkArgument(numOutArcs == 1,
-                "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
-                numOutArcs);
 
         Node targetNode = place.getOutArcs().get(0).getTarget();
         OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
@@ -100,21 +103,24 @@ public class PetriNet2ActivityHelper {
     }
 
     public static boolean isFinalPlace(Place place) {
-        return place.getId().equals("FinalPlace");
+        if (place.getId().equals("FinalPlace")) {
+            int numInArcs = place.getInArcs().size();
+            int numOutArcs = place.getOutArcs().size();
+            Preconditions.checkArgument(numInArcs == 1,
+                    "The final place has %s imcoming arcs. It is expected the final place to have exactly one incoming arc.",
+                    numInArcs);
+            Preconditions.checkArgument(numOutArcs == 0,
+                    "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
+                    numOutArcs);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void transformFinalPlace(Activity activity, Place place) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
-
-        int numInArcs = place.getInArcs().size();
-        int numOutArcs = place.getOutArcs().size();
-        Preconditions.checkArgument(numInArcs == 1,
-                "The final place has %s imcoming arcs. It is expected the final place to have exactly one incoming arc.",
-                numInArcs);
-        Preconditions.checkArgument(numOutArcs == 0,
-                "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
-                numOutArcs);
 
         Node sourceNode = place.getInArcs().get(0).getSource();
         OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
