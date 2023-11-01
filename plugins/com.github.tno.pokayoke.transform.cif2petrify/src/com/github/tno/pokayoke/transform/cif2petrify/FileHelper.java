@@ -1,8 +1,6 @@
 
 package com.github.tno.pokayoke.transform.cif2petrify;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.eclipse.escet.cif.io.CifReader;
@@ -17,9 +15,5 @@ public class FileHelper {
         reader.suppressWarnings = true;
         reader.init(sourcePath.toString(), sourcePath.toAbsolutePath().toString(), false);
         return reader.read();
-    }
-
-    public static void writeToFile(String body, Path targetPath) throws IOException {
-        Files.writeString(targetPath, body);
     }
 }

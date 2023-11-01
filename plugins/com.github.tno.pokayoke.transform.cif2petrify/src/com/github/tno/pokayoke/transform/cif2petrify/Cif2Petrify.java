@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Cif2Petrify {
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
         Specification specification = FileHelper.loadCifSpec(Paths.get(sourcePath));
         String body = Cif2Petrify.transform(specification);
-        FileHelper.writeToFile(body, Paths.get(targetPath));
+        Files.writeString(Paths.get(targetPath), body);
     }
 
     public static String transform(Specification specification) {
