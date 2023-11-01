@@ -25,7 +25,7 @@ public class FullSynthesisHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) IStructuredSelection selection) {
         IResource inputResource = (IResource)selection.getFirstElement();
         Path inputPath = Paths.get(inputResource.getLocationURI());
-        Path outputPath = inputPath.resolveSibling("Output");
+        Path outputPath = inputPath.resolveSibling("output");
         Job job = Job.create("Performing full synthesis", monitor -> {
             try {
                 Files.createDirectories(outputPath);
