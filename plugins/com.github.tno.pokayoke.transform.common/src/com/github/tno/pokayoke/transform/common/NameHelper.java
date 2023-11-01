@@ -177,7 +177,7 @@ public class NameHelper {
      * Prepends a prefix to the name of the nodes and edges in the activity called by the call behavior action.
      *
      * @param activity The activity in which the name of nodes and edges is prepended.
-     * @param prefix The prefix to prepend.f
+     * @param prefix The prefix to prepend.
      */
     public static void prependPrefixNameToNodesAndEdgesInActivity(Activity activity, String prefix) {
         for (ActivityNode node: activity.getNodes()) {
