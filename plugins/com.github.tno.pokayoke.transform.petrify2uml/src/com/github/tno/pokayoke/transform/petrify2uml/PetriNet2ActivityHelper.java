@@ -192,136 +192,62 @@ public class PetriNet2ActivityHelper {
      * @param activity The activity that contains the transformed activity objects.
      */
     public static void transformPlaceBasedPatterns(Page page, Activity activity) {
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.hasSingleInArc(place)) {
-                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
-                        PetriNet2ActivityHelper.transformOneToOnePattern(place, activity);
-                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
-                        PetriNet2ActivityHelper.transformDecisionPattern(place, activity);
-                    }
-                } else if (PetriNet2ActivityHelper.hasMultiInArcs(place)) {
-                    if (PetriNet2ActivityHelper.hasSingleOutArc(place)) {
-                        PetriNet2ActivityHelper.transformMergePattern(place, activity);
-                    } else if (PetriNet2ActivityHelper.hasMultiOutArcs(place)) {
-                        PetriNet2ActivityHelper.transformMergeDecisionPattern(place, activity);
-                    }
-                }
+        // Obtain the places that have at least one incoming and outgoing arcs (i.e., excluding the places for initial
+        // and final nodes).
+        List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
+                .filter(place -> place.getInArcs().size() > 0 && place.getOutArcs().size() > 0).toList();
+
+        for (Place place: places) {
+            ActivityNode source = transformMerge(place, activity);
+            ActivityNode target = transformDecision(place, activity);
+            createControlFlow(source.getName() + "__to__" + target.getName(), activity, source, target);
+        }
+    }
+
+    private static ActivityNode transformMerge(Place place, Activity activity) {
+        // Obtain the actions translated from the sources of the incoming arcs.
+        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
+                .toList();
+
+        if (sourceActions.size() == 1) {
+            return sourceActions.get(0);
+        } else {
+            // Create a merge node.
+            MergeNode merge = UML_FACTORY.createMergeNode();
+            merge.setName("Merge__" + place.getId());
+            merge.setActivity(activity);
+
+            // Connect the merge node to the actions translated from the sources of the incoming arcs.
+            sourceActions.stream()
+                    .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
+                            activity, sourceAction, merge));
+            return merge;
+        }
+    }
+
+    private static ActivityNode transformDecision(Place place, Activity activity) {
+        // Obtain the actions translated from the target of the outgoing arcs.
+        List<OpaqueAction> targetActions = place.getOutArcs().stream()
+                .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
+
+        if (targetActions.size() == 1) {
+            return targetActions.get(0);
+        } else {
+            // Create a decision node.
+            DecisionNode decision = UML_FACTORY.createDecisionNode();
+            decision.setName("Decision__" + place.getId());
+            decision.setActivity(activity);
+
+            // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the
+            // guard of the edges to true.
+            for (OpaqueAction action: targetActions) {
+                ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
+                        decision, action);
+                LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
+                guard.setValue(true);
+                controlFlow.setGuard(guard);
             }
-        }
-    }
-
-    private static boolean hasSingleInArc(Place place) {
-        return place.getInArcs().size() == 1;
-    }
-
-    private static boolean hasSingleOutArc(Place place) {
-        return place.getOutArcs().size() == 1;
-    }
-
-    private static boolean hasMultiInArcs(Place place) {
-        return place.getInArcs().size() > 1;
-    }
-
-    private static boolean hasMultiOutArcs(Place place) {
-        return place.getOutArcs().size() > 1;
-    }
-
-    private static void transformOneToOnePattern(Place place, Activity activity) {
-        Node sourceNode = place.getInArcs().get(0).getSource();
-        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
-        Node targetNode = place.getOutArcs().get(0).getTarget();
-        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
-
-        createControlFlow(place.getId(), activity, sourceAction, targetAction);
-    }
-
-    private static void transformMergePattern(Place place, Activity activity) {
-        // Obtain the actions translated from the sources of the incoming arcs.
-        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
-                .toList();
-
-        // Obtain the action translated from the target of the outgoing arc.
-        Node targetNode = place.getOutArcs().get(0).getTarget();
-        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
-
-        // Create a merge node.
-        MergeNode merge = UML_FACTORY.createMergeNode();
-        merge.setName(place.getId());
-        merge.setActivity(activity);
-
-        // Connect the merge node to the actions translated from the sources of the incoming arcs.
-        sourceActions.stream()
-                .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
-                        activity, sourceAction, merge));
-
-        // Connect the merge node to the action translated from the target of the outgoing arc.
-        createControlFlow(merge.getName() + "__to__" + targetAction.getName(), activity, merge, targetAction);
-    }
-
-    private static void transformDecisionPattern(Place place, Activity activity) {
-        // Obtain the action translated from the source of the incoming arc.
-        Node sourceNode = place.getInArcs().get(0).getSource();
-        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
-
-        // Obtain the actions translated from the target of the outgoing arcs.
-        List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
-
-        // Create a decision node.
-        DecisionNode decision = UML_FACTORY.createDecisionNode();
-        decision.setName(place.getId());
-        decision.setActivity(activity);
-
-        // Connect decision node and the source action.
-        createControlFlow(sourceAction.getName() + "__to__" + decision.getName(), activity, sourceAction, decision);
-
-        // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the guard
-        // of the edges to true.
-        for (OpaqueAction action: targetActions) {
-            ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
-                    decision, action);
-            LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
-            guard.setValue(true);
-            controlFlow.setGuard(guard);
-        }
-    }
-
-    private static void transformMergeDecisionPattern(Place place, Activity activity) {
-        // Obtain the actions translated from the sources of the incoming arcs.
-        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
-                .toList();
-
-        // Obtain the actions translated from the target of the outgoing arcs.
-        List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
-
-        // Create a merge node.
-        MergeNode merge = UML_FACTORY.createMergeNode();
-        merge.setName(place.getId());
-        merge.setActivity(activity);
-
-        // Connect the merge node to the actions translated from the sources of the incoming arcs.
-        sourceActions.stream()
-                .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
-                        activity, sourceAction, merge));
-
-        // Create a decision node.
-        DecisionNode decision = UML_FACTORY.createDecisionNode();
-        decision.setName(place.getId());
-        decision.setActivity(activity);
-
-        // Connect merge and decision nodes.
-        createControlFlow(merge.getName() + "__to__" + decision.getName(), activity, merge, decision);
-
-        // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the guard
-        // of the edges to true.
-        for (OpaqueAction action: targetActions) {
-            ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
-                    decision, action);
-            LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
-            guard.setValue(true);
-            controlFlow.setGuard(guard);
+            return decision;
         }
     }
 
