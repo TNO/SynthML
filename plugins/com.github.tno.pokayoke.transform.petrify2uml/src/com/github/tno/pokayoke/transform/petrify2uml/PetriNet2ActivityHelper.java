@@ -27,7 +27,6 @@ import com.google.common.base.Preconditions;
 import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.Place;
-import fr.lip6.move.pnml.ptnet.PnObject;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
@@ -196,7 +195,7 @@ public class PetriNet2ActivityHelper {
         for (Place place: places) {
             ActivityNode source = transformMerge(place, activity);
             ActivityNode target = transformDecision(place, activity);
-            createControlFlow(source.getName() + "__to__" + target.getName(), activity, source, target);
+            createControlFlow(concatenateNamesOfNodes(source, target), activity, source, target);
         }
     }
 
@@ -215,10 +214,14 @@ public class PetriNet2ActivityHelper {
 
             // Connect the merge node to the actions translated from the sources of the incoming arcs.
             sourceActions.stream()
-                    .forEach(sourceAction -> createControlFlow(sourceAction.getName() + "__to__" + merge.getName(),
-                            activity, sourceAction, merge));
+                    .forEach(sourceAction -> createControlFlow(concatenateNamesOfNodes(sourceAction, merge), activity,
+                            sourceAction, merge));
             return merge;
         }
+    }
+
+    private static String concatenateNamesOfNodes(ActivityNode left, ActivityNode right) {
+        return left.getName() + "__to__" + right.getName();
     }
 
     private static ActivityNode transformDecision(Place place, Activity activity) {
@@ -251,8 +254,8 @@ public class PetriNet2ActivityHelper {
     private static void connectDecisionNode2TargetAction(DecisionNode decision, Activity activity,
             OpaqueAction targetAction)
     {
-        ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + targetAction.getName(), activity,
-                decision, targetAction);
+        ControlFlow controlFlow = createControlFlow(concatenateNamesOfNodes(decision, targetAction), activity, decision,
+                targetAction);
         LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
         guard.setValue(true);
         controlFlow.setGuard(guard);
@@ -271,12 +274,20 @@ public class PetriNet2ActivityHelper {
                 .map(Transition.class::cast).toList();
 
         transitions.stream().filter(transition -> hasMultiOutArcs(transition))
-                .forEach(transition -> transformForkPattern(transition, activity));
+                .forEach(transition -> transformFork(transition, activity));
         transitions.stream().filter(transition -> hasMultiInArcs(transition))
-                .forEach(transition -> transformJoinPattern(transition, activity));
+                .forEach(transition -> transformJoin(transition, activity));
     }
 
-    private static void transformForkPattern(Transition transition, Activity activity) {
+    private static boolean hasMultiInArcs(Transition transition) {
+        return transition.getInArcs().size() > 1;
+    }
+
+    private static boolean hasMultiOutArcs(Transition transition) {
+        return transition.getOutArcs().size() > 1;
+    }
+
+    private static void transformFork(Transition transition, Activity activity) {
         // Create a fork node.
         ForkNode fork = UML_FACTORY.createForkNode();
         fork.setActivity(activity);
@@ -291,14 +302,14 @@ public class PetriNet2ActivityHelper {
         // Reset the source of the outgoing edges to the fork node.
         for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
             outgoingEdge.setSource(fork);
-            outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
+            outgoingEdge.setName(concatenateNamesOfNodes(fork, outgoingEdge.getTarget()));
         }
 
         // Connect the action to the fork node.
-        createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
+        createControlFlow(concatenateNamesOfNodes(action, fork), activity, action, fork);
     }
 
-    private static void transformJoinPattern(Transition transition, Activity activity) {
+    private static void transformJoin(Transition transition, Activity activity) {
         // Create a join node.
         JoinNode join = UML_FACTORY.createJoinNode();
         join.setActivity(activity);
@@ -313,19 +324,11 @@ public class PetriNet2ActivityHelper {
         // Reset the target of the incoming edges to the join node.
         for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
             incomingEdge.setTarget(join);
-            incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
+            incomingEdge.setName(concatenateNamesOfNodes(incomingEdge.getSource(), join));
         }
 
         // Connect the join node and the action.
-        createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
-    }
-
-    private static boolean hasMultiInArcs(Transition transition) {
-        return transition.getInArcs().size() > 1;
-    }
-
-    private static boolean hasMultiOutArcs(Transition transition) {
-        return transition.getOutArcs().size() > 1;
+        createControlFlow(concatenateNamesOfNodes(join, action), activity, join, action);
     }
 
     public static void renameDuplicateActions() {
