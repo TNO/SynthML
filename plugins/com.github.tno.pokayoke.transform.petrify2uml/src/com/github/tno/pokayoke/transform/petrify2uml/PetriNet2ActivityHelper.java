@@ -220,10 +220,6 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    private static String concatenateNamesOfNodes(ActivityNode left, ActivityNode right) {
-        return left.getName() + "__to__" + right.getName();
-    }
-
     private static ActivityNode transformDecision(Place place, Activity activity) {
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
@@ -259,6 +255,10 @@ public class PetriNet2ActivityHelper {
         LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
         guard.setValue(true);
         controlFlow.setGuard(guard);
+    }
+
+    private static String concatenateNamesOfNodes(ActivityNode left, ActivityNode right) {
+        return left.getName() + "__to__" + right.getName();
     }
 
     /**
