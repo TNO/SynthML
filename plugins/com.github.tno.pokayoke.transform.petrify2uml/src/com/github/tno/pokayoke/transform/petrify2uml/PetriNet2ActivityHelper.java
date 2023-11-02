@@ -100,7 +100,7 @@ public class PetriNet2ActivityHelper {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
             Preconditions.checkArgument(numInArcs == 0,
-                    "The marked place has %s imcoming arcs. It is expected the marked place to have no incoming arc.",
+                    "The marked place has %s incoming arcs. It is expected the marked place to have no incoming arc.",
                     numInArcs);
             Preconditions.checkArgument(numOutArcs == 1,
                     "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
@@ -140,6 +140,10 @@ public class PetriNet2ActivityHelper {
         return edge;
     }
 
+    private static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
+        return createControlFlow(concatenateNamesOfNodes(source, target), activity, source, target);
+    }
+
     /**
      * Checks if the place is a final place. The final place was defined when transforming Petrify output to PNML.
      *
@@ -151,7 +155,7 @@ public class PetriNet2ActivityHelper {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
             Preconditions.checkArgument(numInArcs == 1,
-                    "The final place has %s imcoming arcs. It is expected the final place to have exactly one incoming arc.",
+                    "The final place has %s incoming arcs. It is expected the final place to have exactly one incoming arc.",
                     numInArcs);
             Preconditions.checkArgument(numOutArcs == 0,
                     "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
@@ -190,12 +194,12 @@ public class PetriNet2ActivityHelper {
         // Obtain the places that have at least one incoming and outgoing arcs (i.e., excluding the places for initial
         // and final nodes).
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
-                .filter(place -> place.getInArcs().size() > 0 && place.getOutArcs().size() > 0).toList();
+                .filter(place -> place.getInArcs().isEmpty() && place.getOutArcs().isEmpty()).toList();
 
         for (Place place: places) {
             ActivityNode source = transformMerge(place, activity);
             ActivityNode target = transformDecision(place, activity);
-            createControlFlow(concatenateNamesOfNodes(source, target), activity, source, target);
+            createControlFlow(activity, source, target);
         }
     }
 
@@ -213,9 +217,7 @@ public class PetriNet2ActivityHelper {
             merge.setActivity(activity);
 
             // Connect the merge node to the actions translated from the sources of the incoming arcs.
-            sourceActions.stream()
-                    .forEach(sourceAction -> createControlFlow(concatenateNamesOfNodes(sourceAction, merge), activity,
-                            sourceAction, merge));
+            sourceActions.stream().forEach(sourceAction -> createControlFlow(activity, sourceAction, merge));
             return merge;
         }
     }
@@ -250,8 +252,7 @@ public class PetriNet2ActivityHelper {
     private static void connectDecisionNode2TargetAction(DecisionNode decision, Activity activity,
             OpaqueAction targetAction)
     {
-        ControlFlow controlFlow = createControlFlow(concatenateNamesOfNodes(decision, targetAction), activity, decision,
-                targetAction);
+        ControlFlow controlFlow = createControlFlow(activity, decision, targetAction);
         LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
         guard.setValue(true);
         controlFlow.setGuard(guard);
@@ -306,7 +307,7 @@ public class PetriNet2ActivityHelper {
         }
 
         // Connect the action to the fork node.
-        createControlFlow(concatenateNamesOfNodes(action, fork), activity, action, fork);
+        createControlFlow(activity, action, fork);
     }
 
     private static void transformJoin(Transition transition, Activity activity) {
@@ -328,7 +329,7 @@ public class PetriNet2ActivityHelper {
         }
 
         // Connect the join node and the action.
-        createControlFlow(concatenateNamesOfNodes(join, action), activity, join, action);
+        createControlFlow(activity, join, action);
     }
 
     public static void renameDuplicateActions() {
