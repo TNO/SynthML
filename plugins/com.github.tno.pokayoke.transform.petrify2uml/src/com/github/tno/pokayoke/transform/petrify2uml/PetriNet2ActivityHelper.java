@@ -259,15 +259,61 @@ public class PetriNet2ActivityHelper {
      * @param activity The activity that contains the transformed activity objects.
      */
     public static void transformTransitionBasedPatterns(Page page, Activity activity) {
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Transition transition) {
-                if (PetriNet2ActivityHelper.hasMultiOutArcs(transition)) {
-                    PetriNet2ActivityHelper.transformForkPattern(transition, activity);
-                }
-                if (PetriNet2ActivityHelper.hasMultiInArcs(transition)) {
-                    PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
-                }
+        // Obtain the transitions.
+        List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
+                .map(Transition.class::cast).toList();
+
+        for (Transition transition: transitions) {
+            PetriNet2ActivityHelper.transformForkPattern(transition, activity);
+            PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
+        }
+    }
+
+    private static void transformForkPattern(Transition transition, Activity activity) {
+        if (hasMultiOutArcs(transition)) {
+            // Create a fork node.
+            ForkNode fork = UML_FACTORY.createForkNode();
+            fork.setActivity(activity);
+            fork.setName("Fork");
+
+            // Obtain the action translated from the transition.
+            OpaqueAction action = nameActionMap.get(transition.getId());
+
+            // Obtain the outgoing edges.
+            List<ActivityEdge> outgoingEdges = action.getOutgoings();
+
+            // Reset the source of the outgoing edges to the fork node.
+            for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
+                outgoingEdge.setSource(fork);
+                outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
             }
+
+            // Connect the action to the fork node.
+            createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
+        }
+    }
+
+    private static void transformJoinPattern(Transition transition, Activity activity) {
+        if (hasMultiInArcs(transition)) {
+            // Create a join node.
+            JoinNode join = UML_FACTORY.createJoinNode();
+            join.setActivity(activity);
+            join.setName("Join");
+
+            // Obtain the action translated from the transition.
+            OpaqueAction action = nameActionMap.get(transition.getId());
+
+            // Obtain the incoming edges of the action.
+            List<ActivityEdge> incomingEdges = action.getIncomings();
+
+            // Reset the target of the incoming edges to the join node.
+            for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
+                incomingEdge.setTarget(join);
+                incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
+            }
+
+            // Connect the join node and the action.
+            createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
         }
     }
 
@@ -277,50 +323,6 @@ public class PetriNet2ActivityHelper {
 
     private static boolean hasMultiOutArcs(Transition transition) {
         return transition.getOutArcs().size() > 1;
-    }
-
-    private static void transformForkPattern(Transition transition, Activity activity) {
-        // Create a fork node.
-        ForkNode fork = UML_FACTORY.createForkNode();
-        fork.setActivity(activity);
-        fork.setName("Fork");
-
-        // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMap.get(transition.getId());
-
-        // Obtain the outgoing edges.
-        List<ActivityEdge> outgoingEdges = action.getOutgoings();
-
-        // Reset the source of the outgoing edges to the fork node.
-        for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
-            outgoingEdge.setSource(fork);
-            outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
-        }
-
-        // Connect the action to the fork node.
-        createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
-    }
-
-    private static void transformJoinPattern(Transition transition, Activity activity) {
-        // Create a join node.
-        JoinNode join = UML_FACTORY.createJoinNode();
-        join.setActivity(activity);
-        join.setName("Join");
-
-        // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMap.get(transition.getId());
-
-        // Obtain the incoming edges of the action.
-        List<ActivityEdge> incomingEdges = action.getIncomings();
-
-        // Reset the target of the incoming edges to the join node.
-        for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
-            incomingEdge.setTarget(join);
-            incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
-        }
-
-        // Connect the join node and the action.
-        createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
     }
 
     public static void renameDuplicateActions() {
