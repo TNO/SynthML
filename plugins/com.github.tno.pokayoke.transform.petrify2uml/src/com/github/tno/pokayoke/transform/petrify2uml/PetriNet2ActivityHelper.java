@@ -240,13 +240,13 @@ public class PetriNet2ActivityHelper {
 
             // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the
             // guard of the edges to true.
-            for (OpaqueAction action: targetActions) {
-                ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + action.getName(), activity,
-                        decision, action);
+            targetActions.stream().forEach(targetAction -> {
+                ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + targetAction.getName(),
+                        activity, decision, targetAction);
                 LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
                 guard.setValue(true);
                 controlFlow.setGuard(guard);
-            }
+            });
             return decision;
         }
     }
