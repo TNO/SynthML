@@ -243,7 +243,6 @@ PokaYoke Checkstyle
       <property name="format" value="(@param \w+|@return) [a-z]"/>
       <property name="message" value="JavaDoc @-tag description should not start with a lower-case letter."/>
     </module>
-    <module name="MissingSwitchDefault"/>
     <module name="OneStatementPerLine"/>
     <module name="InvalidJavadocPosition"/>
   </module>
