@@ -83,15 +83,11 @@ public class PetriNet2ActivityHelper {
      * @param activity The activity that contains the transformed nodes.
      */
     public static void transformMarkedAndFinalPlaces(Page page, Activity activity) {
-        for (PnObject pnObj: page.getObjects()) {
-            if (pnObj instanceof Place place) {
-                if (PetriNet2ActivityHelper.isMarkedPlace(place)) {
-                    PetriNet2ActivityHelper.transformMarkedPlace(place, activity);
-                } else if (PetriNet2ActivityHelper.isFinalPlace(place)) {
-                    PetriNet2ActivityHelper.transformFinalPlace(place, activity);
-                }
-            }
-        }
+        // Obtain the places.
+        List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast).toList();
+
+        places.stream().filter(place -> isMarkedPlace(place)).forEach(place -> transformMarkedPlace(place, activity));
+        places.stream().filter(place -> isFinalPlace(place)).forEach(place -> transformFinalPlace(place, activity));
     }
 
     /**
@@ -238,17 +234,28 @@ public class PetriNet2ActivityHelper {
             decision.setName("Decision__" + place.getId());
             decision.setActivity(activity);
 
-            // Connect the decision node to the actions translated from the targets of the outgoing arcs and set the
-            // guard of the edges to true.
-            targetActions.stream().forEach(targetAction -> {
-                ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + targetAction.getName(),
-                        activity, decision, targetAction);
-                LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
-                guard.setValue(true);
-                controlFlow.setGuard(guard);
-            });
+            targetActions.stream()
+                    .forEach(targetAction -> connectDecisionNode2TargetAction(decision, activity, targetAction));
             return decision;
         }
+    }
+
+    /**
+     * Connect the decision node to the action translated from the target of the outgoing arcs and set the guard of the
+     * edges to true.
+     *
+     * @param decision The decision node.
+     * @param activity The activity that contains the decision node.
+     * @param targetAction The target action to connect.
+     */
+    private static void connectDecisionNode2TargetAction(DecisionNode decision, Activity activity,
+            OpaqueAction targetAction)
+    {
+        ControlFlow controlFlow = createControlFlow(decision.getName() + "__to__" + targetAction.getName(), activity,
+                decision, targetAction);
+        LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
+        guard.setValue(true);
+        controlFlow.setGuard(guard);
     }
 
     /**
@@ -263,58 +270,54 @@ public class PetriNet2ActivityHelper {
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).toList();
 
-        for (Transition transition: transitions) {
-            PetriNet2ActivityHelper.transformForkPattern(transition, activity);
-            PetriNet2ActivityHelper.transformJoinPattern(transition, activity);
-        }
+        transitions.stream().filter(transition -> hasMultiOutArcs(transition))
+                .forEach(transition -> transformForkPattern(transition, activity));
+        transitions.stream().filter(transition -> hasMultiInArcs(transition))
+                .forEach(transition -> transformJoinPattern(transition, activity));
     }
 
     private static void transformForkPattern(Transition transition, Activity activity) {
-        if (hasMultiOutArcs(transition)) {
-            // Create a fork node.
-            ForkNode fork = UML_FACTORY.createForkNode();
-            fork.setActivity(activity);
-            fork.setName("Fork");
+        // Create a fork node.
+        ForkNode fork = UML_FACTORY.createForkNode();
+        fork.setActivity(activity);
+        fork.setName("Fork");
 
-            // Obtain the action translated from the transition.
-            OpaqueAction action = nameActionMap.get(transition.getId());
+        // Obtain the action translated from the transition.
+        OpaqueAction action = nameActionMap.get(transition.getId());
 
-            // Obtain the outgoing edges.
-            List<ActivityEdge> outgoingEdges = action.getOutgoings();
+        // Obtain the outgoing edges.
+        List<ActivityEdge> outgoingEdges = action.getOutgoings();
 
-            // Reset the source of the outgoing edges to the fork node.
-            for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
-                outgoingEdge.setSource(fork);
-                outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
-            }
-
-            // Connect the action to the fork node.
-            createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
+        // Reset the source of the outgoing edges to the fork node.
+        for (ActivityEdge outgoingEdge: new ArrayList<>(outgoingEdges)) {
+            outgoingEdge.setSource(fork);
+            outgoingEdge.setName(fork.getName() + "__to__" + outgoingEdge.getTarget().getName());
         }
+
+        // Connect the action to the fork node.
+        createControlFlow(action.getName() + "__to__" + fork.getName(), activity, action, fork);
     }
 
     private static void transformJoinPattern(Transition transition, Activity activity) {
-        if (hasMultiInArcs(transition)) {
-            // Create a join node.
-            JoinNode join = UML_FACTORY.createJoinNode();
-            join.setActivity(activity);
-            join.setName("Join");
+        // Create a join node.
+        JoinNode join = UML_FACTORY.createJoinNode();
+        join.setActivity(activity);
+        join.setName("Join");
 
-            // Obtain the action translated from the transition.
-            OpaqueAction action = nameActionMap.get(transition.getId());
+        // Obtain the action translated from the transition.
+        OpaqueAction action = nameActionMap.get(transition.getId());
 
-            // Obtain the incoming edges of the action.
-            List<ActivityEdge> incomingEdges = action.getIncomings();
+        // Obtain the incoming edges of the action.
+        List<ActivityEdge> incomingEdges = action.getIncomings();
 
-            // Reset the target of the incoming edges to the join node.
-            for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
-                incomingEdge.setTarget(join);
-                incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
-            }
-
-            // Connect the join node and the action.
-            createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
+        // Reset the target of the incoming edges to the join node.
+        for (ActivityEdge incomingEdge: new ArrayList<>(incomingEdges)) {
+            incomingEdge.setTarget(join);
+            incomingEdge.setName(incomingEdge.getSource().getName() + "__to__" + join.getName());
         }
+
+        // Connect the join node and the action.
+        createControlFlow(join.getName() + "__to__" + action.getName(), activity, join, action);
     }
 
     private static boolean hasMultiInArcs(Transition transition) {
