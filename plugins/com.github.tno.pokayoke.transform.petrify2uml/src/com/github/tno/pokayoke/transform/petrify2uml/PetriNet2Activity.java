@@ -31,22 +31,13 @@ public class PetriNet2Activity {
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
 
-        // Initialize an UML activity.
         Activity activity = PetriNet2ActivityHelper.initializeUMLActivity(page);
 
-        // Translate all transitions into actions.
         PetriNet2ActivityHelper.transformTransitions(page, activity);
-
-        // Translate the marked place and final place into initial and final nodes respectively.
         PetriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
-
-        // Translate the place-based patterns based on the number of incoming and outgoing arcs of the place.
         PetriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
-
-        // Translate the transition-based patterns based on the number of incoming and outgoing arcs of the transition.
         PetriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
 
-        // Rename the actions translated from duplicate transitions to have the same name (i.e., remove the postfix).
         PetriNet2ActivityHelper.renameDuplicateActions();
 
         return activity;
