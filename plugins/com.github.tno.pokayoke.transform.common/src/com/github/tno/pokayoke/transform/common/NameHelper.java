@@ -2,10 +2,8 @@
 package com.github.tno.pokayoke.transform.common;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.TreeIterator;
@@ -16,38 +14,15 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
-import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Namespace;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.google.common.base.Verify;
-
 /** Helper class for renaming model elements. */
 public class NameHelper {
     private NameHelper() {
-    }
-
-    /**
-     * Checks if a double underscore is used in the name of any model elements.
-     *
-     * @param model The model to check.
-     * @return {@code true} if the model has a model element whose name contains a double underscore, {@code false}
-     *     otherwise.
-     */
-    public static boolean isDoubleUnderscoreUsed(Model model) {
-        TreeIterator<EObject> iterator = model.eAllContents();
-        while (iterator.hasNext()) {
-            EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement namedElement) {
-                if (namedElement.getName() != null && namedElement.getName().contains("__")) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -85,15 +60,6 @@ public class NameHelper {
      * Ensures unique names for enumerations, properties and activities in a namespace, within their scope.
      *
      * @param namespace The namespace to check.
-     */
-    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Namespace namespace) {
-        ensureUniqueNameForEnumerationsPropertiesActivities(namespace, new LinkedHashMap<>());
-    }
-
-    /**
-     * Ensures unique names for enumerations, properties and activities in a namespace, within their scope.
-     *
-     * @param namespace The namespace to check.
      * @param names The names of enumerations, properties and activities in the context of the namespace.
      */
     public static void ensureUniqueNameForEnumerationsPropertiesActivities(Namespace namespace,
@@ -123,41 +89,6 @@ public class NameHelper {
             } else if (member instanceof Model modelMember) {
                 ensureUniqueNameForEnumerationsPropertiesActivities(modelMember, localNames);
             }
-        }
-    }
-
-    /**
-     * Ensures locally unique name for enumeration literals in all enumerations.
-     *
-     * @param model The model that contains the enumerations.
-     */
-    public static void ensureUniqueNameForEnumerationLiteralsInEnumerations(Model model) {
-        for (NamedElement member: model.getMembers()) {
-            if (member instanceof Enumeration enumeration) {
-                ensureUniqueNameForEnumerationLiterals(enumeration);
-            }
-        }
-    }
-
-    /**
-     * Ensures locally unique name for all enumeration literals in an enumeration.
-     *
-     * @param enumeration The enumeration.
-     */
-    private static void ensureUniqueNameForEnumerationLiterals(Enumeration enumeration) {
-        // Collect names of enumeration literals.
-        Map<String, Integer> names = new HashMap<>();
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            updateNameMap(literal, names);
-        }
-
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            ensureUniqueNameForElement(literal, names);
-        }
-
-        // Prepend the names of enumeration to the names of enumeration literals.
-        for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
-            prependPrefixName(literal, enumeration.getName());
         }
     }
 
@@ -280,26 +211,6 @@ public class NameHelper {
             classElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         } else if (element instanceof Model modelElement) {
             modelElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
-        }
-    }
-
-    /**
-     * Checks the uniqueness of the name of the model elements.
-     *
-     * @param model The model to check.
-     */
-    public static void checkUniquenessOfNames(Model model) {
-        Set<String> names = new HashSet<>();
-        TreeIterator<EObject> iterator = model.eAllContents();
-        while (iterator.hasNext()) {
-            EObject eObject = iterator.next();
-            if (eObject instanceof NamedElement namedElement) {
-                if (shouldBeNamed(namedElement)) {
-                    String name = namedElement.getName();
-                    boolean added = names.add(name);
-                    Verify.verify(added, String.format("Model name %s is not globally unique.", name));
-                }
-            }
         }
     }
 }
