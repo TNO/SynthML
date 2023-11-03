@@ -40,6 +40,9 @@ public class FullSynthesisApp {
     }
 
     public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
+        // Perform Synthesis.
+        // TODO when the synthesis specification is formalized.
+
         // Load CIF specification.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Specification cifSpec = FileHelper.loadCifSpec(inputPath);
@@ -70,7 +73,7 @@ public class FullSynthesisApp {
         Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
 
         // Translate Petri Net to UML Activity and output the activity.
-        // TBD when the code for this functionality is merged into the main branch.
+        // TODO when the code for this functionality is merged into the main branch.
     }
 
     /**
@@ -140,7 +143,8 @@ public class FullSynthesisApp {
         // Duplicate transitions for a better structured Petri Net.
         command.add("-er");
 
-        // Produce a Free-Choice Petri net.
+        // Produce a Free-Choice Petri net. If this option is not used, places with multiple incoming and outgoing
+        // edges are produced.
         command.add("-fc");
 
         // Produce Petri Net with places. If this option is not used, implied places are described as
