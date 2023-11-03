@@ -29,7 +29,7 @@ public class FullSynthesisHandler {
         Job job = Job.create("Performing full synthesis", monitor -> {
             try {
                 Files.createDirectories(outputPath);
-                FullSynthesisApp.performFullSynthesis(inputPath.toString(), outputPath.toString());
+                FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
 
                 inputResource.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 

@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -40,35 +39,34 @@ public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(String inputPath, String outputdir) throws IOException {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
         // Load CIF specification.
-        Path cifSpecInputPath = Paths.get(inputPath);
-        String filePrefix = FilenameUtils.removeExtension(cifSpecInputPath.getFileName().toString());
-        Specification cifSpec = FileHelper.loadCifSpec(cifSpecInputPath);
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Specification cifSpec = FileHelper.loadCifSpec(inputPath);
 
         // Generate CIF state space.
         Specification cifStateSpace = convertToStateSpace(cifSpec);
 
         // Output the generated CIF state space.
-        Path cifStateSpacePath = Paths.get(outputdir, filePrefix + ".statespace.cif");
+        Path cifStateSpacePath = Paths.get(outputFolderPath.toString(), filePrefix + ".statespace.cif");
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifStateSpace, cifStateSpacePath.toString(), outputdir);
+            CifWriter.writeCifSpec(cifStateSpace, cifStateSpacePath.toString(), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
 
         // Translate the CIF state space to Petrify input and output the Petrify input.
-        Path petrifyInputPath = Paths.get(outputdir, filePrefix + ".g");
+        Path petrifyInputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".g");
         Cif2Petrify.transformFile(cifStateSpacePath.toString(), petrifyInputPath.toString());
 
         // Petrify the state space and output the generated Petri Net.
-        Path petrifyOutputPath = Paths.get(outputdir, filePrefix + ".out");
-        List<String> warinings = new ArrayList<>();
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, warinings, 20);
+        Path petrifyOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".out");
+        List<String> warnings = new ArrayList<>();
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, warnings, 20);
 
         // Translate the Petrify output to PNML and output the PNML.
-        Path pnmlOutputPath = Paths.get(outputdir, filePrefix + ".pnml");
+        Path pnmlOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".pnml");
         Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
 
         // Translate Petri Net to UML Activity and output the activity.
@@ -126,13 +124,29 @@ public class FullSynthesisApp {
         File stdOutFile = new File(petrifyOutputPath.toString());
 
         // Construct the command for Petrify.
-        ArrayList<String> command = new ArrayList<>();
-        String[] petrifyOptions = {"-opt", "-p", "-er", "-fc", "-ip"};
+        List<String> command = new ArrayList<>();
+
         command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
         command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toString()));
         command.add("-o");
         command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyOutputPath.toString()));
-        command.addAll(Arrays.asList(petrifyOptions));
+
+        // Add Petrify options.
+        command.add("-opt");
+
+        // Produce a pure Petri net (no self-loop places).
+        command.add("-p");
+
+        // Duplicate transitions for a better structured Petri Net.
+        command.add("-er");
+
+        // Produce a Free-Choice Petri net.
+        command.add("-fc");
+
+        // Produce Petri Net with places. If this option is not used, implied places are described as
+        // transition-transition arcs.
+        command.add("-ip");
+
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
         petrifyProcessBuilder.redirectErrorStream(true);
         petrifyProcessBuilder.redirectOutput(stdOutFile);
