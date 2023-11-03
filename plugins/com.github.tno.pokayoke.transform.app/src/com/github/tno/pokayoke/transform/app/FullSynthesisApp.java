@@ -67,8 +67,8 @@ public class FullSynthesisApp {
 
         // Petrify the state space and output the generated Petri Net.
         Path petrifyOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".out");
-        Path pertrifyLogPath = Paths.get(outputFolderPath.toString(), "petrify.log");
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, pertrifyLogPath, 20);
+        Path petrifyLogPath = Paths.get(outputFolderPath.toString(), "petrify.log");
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
         // Translate the Petrify output to PNML and output the PNML.
         Path pnmlOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".pnml");
@@ -118,10 +118,10 @@ public class FullSynthesisApp {
      *
      * @param petrifyInputPath The path of the Petrify input file.
      * @param petrifyOutputPath The path of the Petrify output file.
-     * @param pertrifyLogPath The path of the etrify log file.
+     * @param petrifyLogPath The path of the etrify log file.
      * @param timeoutInSeconds The timeout for the conversion process.
      */
-    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, Path pertrifyLogPath,
+    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, Path petrifyLogPath,
             int timeoutInSeconds)
     {
         File stdOutputFile = new File(petrifyOutputPath.toString());
@@ -153,7 +153,7 @@ public class FullSynthesisApp {
 
         // Generate a log file.
         command.add("-log");
-        command.add(pertrifyLogPath.toString());
+        command.add(petrifyLogPath.toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
         petrifyProcessBuilder.redirectOutput(stdOutputFile);
