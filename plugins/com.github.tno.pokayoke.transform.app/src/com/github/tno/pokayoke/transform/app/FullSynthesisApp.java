@@ -79,18 +79,17 @@ public class FullSynthesisApp {
     /**
      * Compute the state space of the automata in a specification.
      *
-     * @param cif {@link Specification} containing automata to convert.
+     * @param spec {@link Specification} containing automata to convert.
      * @return {@link Specification} containing state space automaton.
      */
-
-    public static Specification convertToStateSpace(Specification cif) {
+    public static Specification convertToStateSpace(Specification spec) {
         Application<?> app = new DummyApplication(new AppStreams());
         Options.set(OutputModeOption.class, OutputMode.ERROR);
         Options.set(AutomatonNameOption.class, null);
 
         Specification statespace;
         try {
-            ExplorerBuilder builder = new ExplorerBuilder(cif);
+            ExplorerBuilder builder = new ExplorerBuilder(spec);
             builder.collectData();
             ExplorerStateFactory stateFactory = new ExplorerStateFactory();
             Explorer explorer = builder.buildExplorer(stateFactory);
@@ -105,7 +104,7 @@ public class FullSynthesisApp {
             explorer.renumberStates();
             explorer.minimizeEdges();
             CifAutomatonBuilder statespaceBuilder = new CifAutomatonBuilder();
-            statespace = statespaceBuilder.createAutomaton(explorer, cif);
+            statespace = statespaceBuilder.createAutomaton(explorer, spec);
         } finally {
             AppEnv.unregisterApplication();
         }
