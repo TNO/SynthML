@@ -194,7 +194,7 @@ public class PetriNet2ActivityHelper {
         // Obtain the places that have at least one incoming and outgoing arcs (i.e., excluding the places for initial
         // and final nodes).
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
-                .filter(place -> place.getInArcs().isEmpty() && place.getOutArcs().isEmpty()).toList();
+                .filter(place -> !place.getInArcs().isEmpty() && !place.getOutArcs().isEmpty()).toList();
 
         for (Place place: places) {
             ActivityNode source = transformMerge(place, activity);
