@@ -163,6 +163,22 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- Enable Tycho surefire test. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-surefire-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <id>surefire-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- The following is needed for generated source features that are part of an update site. -->
             <!-- Tycho will warn about this if not configured. -->
