@@ -41,6 +41,7 @@ public class FullSynthesisApp {
 
     public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
         Files.createDirectories(outputFolderPath);
+
         // Perform Synthesis.
         // TODO when the synthesis specification is formalized.
 
@@ -66,7 +67,8 @@ public class FullSynthesisApp {
 
         // Petrify the state space and output the generated Petri Net.
         Path petrifyOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".out");
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, 20);
+        Path pertrifyLogPath = Paths.get(outputFolderPath.toString(), "petrify.log");
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, pertrifyLogPath, 20);
 
         // Translate the Petrify output to PNML and output the PNML.
         Path pnmlOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".pnml");
@@ -114,12 +116,15 @@ public class FullSynthesisApp {
     /**
      * Convert CIF state space to Petri Net using Petrify.
      *
-     * @param petrifyInputPath The path of the petrify input file.
-     * @param petrifyOutputPath The path of the petrify output file.
+     * @param petrifyInputPath The path of the Petrify input file.
+     * @param petrifyOutputPath The path of the Petrify output file.
+     * @param pertrifyLogPath The path of the etrify log file.
      * @param timeoutInSeconds The timeout for the conversion process.
      */
-    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, int timeoutInSeconds) {
-        File stdOutFile = new File(petrifyOutputPath.toString());
+    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, Path pertrifyLogPath,
+            int timeoutInSeconds)
+    {
+        File stdOutputFile = new File(petrifyOutputPath.toString());
 
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
@@ -146,9 +151,12 @@ public class FullSynthesisApp {
         // transition-transition arcs.
         command.add("-ip");
 
+        // Generate a log file.
+        command.add("-log");
+        command.add(pertrifyLogPath.toString());
+
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
-        petrifyProcessBuilder.redirectErrorStream(true);
-        petrifyProcessBuilder.redirectOutput(stdOutFile);
+        petrifyProcessBuilder.redirectOutput(stdOutputFile);
 
         // Start the process for Petrify.
         Process petrifyProcess;
@@ -167,7 +175,7 @@ public class FullSynthesisApp {
         } catch (InterruptedException e) {
             try {
                 petrifyProcess.destroyForcibly();
-                Files.delete(stdOutFile.toPath());
+                Files.delete(stdOutputFile.toPath());
             } catch (IOException e1) {
                 throw new RuntimeException("Failed to kill the Petrify process.", e);
             }
@@ -177,9 +185,9 @@ public class FullSynthesisApp {
         if (!petrifyProcessCompleted) {
             petrifyProcess.destroyForcibly();
             try {
-                Files.delete(stdOutFile.toPath());
+                Files.delete(stdOutputFile.toPath());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to delete: " + stdOutFile.toString(), e);
+                throw new RuntimeException("Failed to delete: " + stdOutputFile.toString(), e);
             }
         }
     }
