@@ -50,7 +50,6 @@ public class ExecutableHelper {
                         e);
             }
         }
-
-        return null;
+        throw new RuntimeException("Failed to get " + executableName + " path from " + pluginName + " plugin.");
     }
 }
