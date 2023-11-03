@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: TNO Poka Yoke Application UI
+Bundle-Name: TNO Poka Yoke Applications UI
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.app.ui;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Export-Package: com.github.tno.pokayoke.transform.app.ui
