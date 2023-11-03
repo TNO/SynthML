@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.app.ui;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -28,7 +27,6 @@ public class FullSynthesisHandler {
         Path outputPath = inputPath.resolveSibling("output");
         Job job = Job.create("Performing full synthesis", monitor -> {
             try {
-                Files.createDirectories(outputPath);
                 FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
 
                 inputResource.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);

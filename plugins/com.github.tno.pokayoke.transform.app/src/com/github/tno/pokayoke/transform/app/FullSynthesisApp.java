@@ -40,6 +40,7 @@ public class FullSynthesisApp {
     }
 
     public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
+        Files.createDirectories(outputFolderPath);
         // Perform Synthesis.
         // TODO when the synthesis specification is formalized.
 
@@ -65,8 +66,7 @@ public class FullSynthesisApp {
 
         // Petrify the state space and output the generated Petri Net.
         Path petrifyOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".out");
-        List<String> warnings = new ArrayList<>();
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, warnings, 20);
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, 20);
 
         // Translate the Petrify output to PNML and output the PNML.
         Path pnmlOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".pnml");
@@ -117,13 +117,9 @@ public class FullSynthesisApp {
      *
      * @param petrifyInputPath The path of the petrify input file.
      * @param petrifyOutputPath The path of the petrify output file.
-     * @param warnings The warning messages.
      * @param timeoutInSeconds The timeout for the conversion process.
-     * @return {@code true} if the process is successfully executed, otherwise {@code false}.
      */
-    public static boolean convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, List<String> warnings,
-            int timeoutInSeconds)
-    {
+    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, int timeoutInSeconds) {
         File stdOutFile = new File(petrifyOutputPath.toString());
 
         // Construct the command for Petrify.
@@ -157,26 +153,25 @@ public class FullSynthesisApp {
 
         // Start the process for Petrify.
         Process petrifyProcess;
+
         try {
             petrifyProcess = petrifyProcessBuilder.start();
         } catch (IOException e) {
-            warnings.add("I/O error during execution of petrify process: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Failed to start the Petrify process.", e);
         }
 
         // Wait for the process to finish within the given timeout period.
-        boolean petrifyProcessCompleted;
+        boolean petrifyProcessCompleted = false;
+
         try {
             petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            petrifyProcess.destroyForcibly();
             try {
+                petrifyProcess.destroyForcibly();
                 Files.delete(stdOutFile.toPath());
-            } catch (IOException ex) {
-                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
+            } catch (IOException e1) {
+                throw new RuntimeException("Failed to kill the Petrify process.", e);
             }
-
-            return false;
         }
 
         // Check whether the process timed out.
@@ -185,12 +180,8 @@ public class FullSynthesisApp {
             try {
                 Files.delete(stdOutFile.toPath());
             } catch (IOException e) {
-                warnings.add("I/O error while deleting temporary file from " + stdOutFile + ": " + e.getMessage());
+                throw new RuntimeException("Failed to delete: " + stdOutFile.toString(), e);
             }
-
-            return false;
         }
-
-        return true;
     }
 }
