@@ -100,10 +100,10 @@ public class PetriNet2ActivityHelper {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
             Preconditions.checkArgument(numInArcs == 0,
-                    "The marked place has %s incoming arcs. It is expected the marked place to have no incoming arc.",
+                    "The place with initial marking has %s incoming arcs. It is expected this place to have no incoming arc.",
                     numInArcs);
             Preconditions.checkArgument(numOutArcs == 1,
-                    "The marked place has %s outgoing arcs. It is expected the marked place to have exactly one outgoing arc.",
+                    "The place with initial marking has %s outgoing arcs. It is expected this place to have exactly one outgoing arc.",
                     numOutArcs);
             return true;
         } else {
@@ -155,10 +155,10 @@ public class PetriNet2ActivityHelper {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
             Preconditions.checkArgument(numInArcs == 1,
-                    "The final place has %s incoming arcs. It is expected the final place to have exactly one incoming arc.",
+                    "The place with 'FinalPlace' as ID has %s incoming arcs. It is expected this place to have exactly one incoming arc.",
                     numInArcs);
             Preconditions.checkArgument(numOutArcs == 0,
-                    "The final place has %s outgoing arcs. It is expected the final place to have no outgoing arc.",
+                    "The place with 'FinalPlace' as ID has %s outgoing arcs. It is expected this place to have no outgoing arc.",
                     numOutArcs);
             return true;
         } else {
@@ -273,10 +273,9 @@ public class PetriNet2ActivityHelper {
         // Obtain the transitions.
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).toList();
-
-        transitions.stream().filter(transition -> hasMultiOutArcs(transition))
+        transitions.stream().filter(PetriNet2ActivityHelper::hasMultiOutArcs)
                 .forEach(transition -> transformFork(transition, activity));
-        transitions.stream().filter(transition -> hasMultiInArcs(transition))
+        transitions.stream().filter(PetriNet2ActivityHelper::hasMultiInArcs)
                 .forEach(transition -> transformJoin(transition, activity));
     }
 
