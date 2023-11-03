@@ -30,6 +30,3 @@ Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.app
-Import-Package: org.eclipse.escet.cif.parser;version="0.0.0",
- org.eclipse.escet.common.app.framework;version="0.0.0"
- 
