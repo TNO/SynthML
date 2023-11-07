@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class FullSynthesisApp {
         Specification cifStateSpace = convertToStateSpace(cifSpec);
 
         // Output the generated CIF state space.
-        Path cifStateSpacePath = Paths.get(outputFolderPath.toString(), filePrefix + ".statespace.cif");
+        Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.cif");
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(cifStateSpace, cifStateSpacePath.toString(), outputFolderPath.toString());
@@ -62,16 +61,16 @@ public class FullSynthesisApp {
         }
 
         // Translate the CIF state space to Petrify input and output the Petrify input.
-        Path petrifyInputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".g");
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
         Cif2Petrify.transformFile(cifStateSpacePath.toString(), petrifyInputPath.toString());
 
         // Petrify the state space and output the generated Petri Net.
-        Path petrifyOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".out");
-        Path petrifyLogPath = Paths.get(outputFolderPath.toString(), "petrify.log");
+        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
+        Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
         // Translate the Petrify output to PNML and output the PNML.
-        Path pnmlOutputPath = Paths.get(outputFolderPath.toString(), filePrefix + ".pnml");
+        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
         Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
 
         // Translate Petri Net to UML Activity and output the activity.
