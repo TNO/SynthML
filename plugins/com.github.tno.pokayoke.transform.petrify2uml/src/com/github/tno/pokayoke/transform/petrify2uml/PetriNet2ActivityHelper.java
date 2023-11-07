@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +34,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PetriNet2ActivityHelper {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
-    private final Map<String, OpaqueAction> nameActionMap;
-
-    public PetriNet2ActivityHelper(Map<String, OpaqueAction> nameActionMap) {
-        this.nameActionMap = nameActionMap;
-    }
+    private final Map<String, OpaqueAction> nameActionMap = new HashMap<>();
 
     public Activity initializeUMLActivity(Page page) {
         // Create a UML model and initialize it.
