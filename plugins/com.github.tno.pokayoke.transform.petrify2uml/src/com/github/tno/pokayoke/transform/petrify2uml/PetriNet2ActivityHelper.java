@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +30,15 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
 public class PetriNet2ActivityHelper {
-    private static Map<String, OpaqueAction> nameActionMap = new HashMap<>();
-
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
-    private PetriNet2ActivityHelper() {
+    private final Map<String, OpaqueAction> nameActionMap;
+
+    public PetriNet2ActivityHelper(Map<String, OpaqueAction> nameActionMap) {
+        this.nameActionMap = nameActionMap;
     }
 
-    public static Activity initializeUMLActivity(Page page) {
+    public Activity initializeUMLActivity(Page page) {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
         model.setName(page.getId());
@@ -62,12 +62,12 @@ public class PetriNet2ActivityHelper {
      * @param page The Petri Net page that contains the transitions.
      * @param activity The activity that contains the transformed actions.
      */
-    public static void transformTransitions(Page page, Activity activity) {
+    public void transformTransitions(Page page, Activity activity) {
         page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast)
                 .forEach(transition -> transformTransition(transition.getId(), activity));
     }
 
-    private static OpaqueAction transformTransition(String name, Activity activity) {
+    private OpaqueAction transformTransition(String name, Activity activity) {
         OpaqueAction action = UML_FACTORY.createOpaqueAction();
         action.setName(name);
         action.setActivity(activity);
@@ -81,7 +81,7 @@ public class PetriNet2ActivityHelper {
      * @param page The Petri Net page that contains the marked and final.
      * @param activity The activity that contains the transformed nodes.
      */
-    public static void transformMarkedAndFinalPlaces(Page page, Activity activity) {
+    public void transformMarkedAndFinalPlaces(Page page, Activity activity) {
         // Obtain the places.
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast).toList();
 
@@ -118,7 +118,7 @@ public class PetriNet2ActivityHelper {
      * @param place The marked place.
      * @param activity The activity that contains the transformed initial node.
      */
-    private static void transformMarkedPlace(Place place, Activity activity) {
+    private void transformMarkedPlace(Place place, Activity activity) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
 
@@ -173,7 +173,7 @@ public class PetriNet2ActivityHelper {
      * @param place The final place.
      * @param activity The activity that contains the transformed final node.
      */
-    private static void transformFinalPlace(Place place, Activity activity) {
+    private void transformFinalPlace(Place place, Activity activity) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
@@ -190,7 +190,7 @@ public class PetriNet2ActivityHelper {
      * @param page The Petri Net page that contains places.
      * @param activity The activity that contains the transformed activity objects.
      */
-    public static void transformPlaceBasedPatterns(Page page, Activity activity) {
+    public void transformPlaceBasedPatterns(Page page, Activity activity) {
         // Obtain the places that have at least one incoming and outgoing arcs (i.e., excluding the places for initial
         // and final nodes).
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
@@ -203,7 +203,7 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    private static ActivityNode transformMerge(Place place, Activity activity) {
+    private ActivityNode transformMerge(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
         List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
                 .toList();
@@ -222,7 +222,7 @@ public class PetriNet2ActivityHelper {
         }
     }
 
-    private static ActivityNode transformDecision(Place place, Activity activity) {
+    private ActivityNode transformDecision(Place place, Activity activity) {
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
                 .map(o -> nameActionMap.get(o.getTarget().getId())).toList();
@@ -269,7 +269,7 @@ public class PetriNet2ActivityHelper {
      * @param page The Petri Net page that contains the transitions.
      * @param activity The activity that contains the transformed activity objects.
      */
-    public static void transformTransitionBasedPatterns(Page page, Activity activity) {
+    public void transformTransitionBasedPatterns(Page page, Activity activity) {
         // Obtain the transitions.
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).toList();
@@ -287,7 +287,7 @@ public class PetriNet2ActivityHelper {
         return transition.getOutArcs().size() > 1;
     }
 
-    private static void transformFork(Transition transition, Activity activity) {
+    private void transformFork(Transition transition, Activity activity) {
         // Create a fork node.
         ForkNode fork = UML_FACTORY.createForkNode();
         fork.setActivity(activity);
@@ -309,7 +309,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(activity, action, fork);
     }
 
-    private static void transformJoin(Transition transition, Activity activity) {
+    private void transformJoin(Transition transition, Activity activity) {
         // Create a join node.
         JoinNode join = UML_FACTORY.createJoinNode();
         join.setActivity(activity);
@@ -331,7 +331,7 @@ public class PetriNet2ActivityHelper {
         createControlFlow(activity, join, action);
     }
 
-    public static void renameDuplicateActions() {
+    public void renameDuplicateActions() {
         nameActionMap.values().stream().filter(action -> action.getName().contains("/"))
                 .forEach(action -> action.setName(action.getName().split("/")[0]));
     }

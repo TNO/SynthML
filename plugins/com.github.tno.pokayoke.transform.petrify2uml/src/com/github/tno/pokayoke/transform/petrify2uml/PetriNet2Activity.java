@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.uml2.uml.Activity;
@@ -31,14 +32,15 @@ public class PetriNet2Activity {
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
 
-        Activity activity = PetriNet2ActivityHelper.initializeUMLActivity(page);
+        PetriNet2ActivityHelper petriNet2ActivityHelper = new PetriNet2ActivityHelper(new HashMap<>());
+        Activity activity = petriNet2ActivityHelper.initializeUMLActivity(page);
 
-        PetriNet2ActivityHelper.transformTransitions(page, activity);
-        PetriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
-        PetriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
-        PetriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
+        petriNet2ActivityHelper.transformTransitions(page, activity);
+        petriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
+        petriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
+        petriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
 
-        PetriNet2ActivityHelper.renameDuplicateActions();
+        petriNet2ActivityHelper.renameDuplicateActions();
 
         return activity;
     }
