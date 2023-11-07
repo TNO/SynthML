@@ -117,14 +117,12 @@ public class FullSynthesisApp {
      *
      * @param petrifyInputPath The path of the Petrify input file.
      * @param petrifyOutputPath The path of the Petrify output file.
-     * @param petrifyLogPath The path of the etrify log file.
+     * @param petrifyLogPath The path of the Petrify log file.
      * @param timeoutInSeconds The timeout for the conversion process.
      */
     public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, Path petrifyLogPath,
             int timeoutInSeconds)
     {
-        File stdOutputFile = new File(petrifyOutputPath.toString());
-
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
 
@@ -149,7 +147,6 @@ public class FullSynthesisApp {
         command.add(petrifyLogPath.toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
-        petrifyProcessBuilder.redirectOutput(stdOutputFile);
 
         // Start the process for Petrify.
         Process petrifyProcess;
@@ -168,9 +165,9 @@ public class FullSynthesisApp {
         } catch (InterruptedException e) {
             petrifyProcess.destroyForcibly();
             try {
-                Files.delete(stdOutputFile.toPath());
+                Files.delete(petrifyOutputPath);
             } catch (IOException e1) {
-                throw new RuntimeException("Failed to kill the Petrify process.", e);
+                throw new RuntimeException("Failed to kill the Petrify process.", e1);
             }
         }
 
@@ -178,9 +175,9 @@ public class FullSynthesisApp {
         if (!petrifyProcessCompleted) {
             petrifyProcess.destroyForcibly();
             try {
-                Files.delete(stdOutputFile.toPath());
+                Files.delete(petrifyOutputPath);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to delete: " + stdOutputFile.toString(), e);
+                throw new RuntimeException("Failed to delete: " + petrifyOutputPath.toString(), e);
             }
         }
     }
