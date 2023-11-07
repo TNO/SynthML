@@ -166,8 +166,8 @@ public class FullSynthesisApp {
         try {
             petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            petrifyProcess.destroyForcibly();
             try {
-                petrifyProcess.destroyForcibly();
                 Files.delete(stdOutputFile.toPath());
             } catch (IOException e1) {
                 throw new RuntimeException("Failed to kill the Petrify process.", e);
