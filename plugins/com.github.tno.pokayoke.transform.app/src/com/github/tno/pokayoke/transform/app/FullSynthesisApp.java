@@ -164,21 +164,11 @@ public class FullSynthesisApp {
             petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             petrifyProcess.destroyForcibly();
-            try {
-                Files.delete(petrifyOutputPath);
-            } catch (IOException e1) {
-                throw new RuntimeException("Failed to kill the Petrify process.", e1);
-            }
         }
 
         // Check whether the process timed out.
         if (!petrifyProcessCompleted) {
             petrifyProcess.destroyForcibly();
-            try {
-                Files.delete(petrifyOutputPath);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to delete: " + petrifyOutputPath.toString(), e);
-            }
         }
     }
 }
