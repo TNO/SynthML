@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -71,7 +72,9 @@ public class PetriNet2ActivityHelper {
         OpaqueAction action = UML_FACTORY.createOpaqueAction();
         action.setName(name);
         action.setActivity(activity);
-        nameActionMap.put(name, action);
+        Verify.verify(nameActionMap.put(name, action) == null,
+                "An existing action with the same name %s has already been added to the map.", name);
+
         return action;
     }
 
