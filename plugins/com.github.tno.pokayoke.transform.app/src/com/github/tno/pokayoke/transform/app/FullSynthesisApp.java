@@ -133,20 +133,14 @@ public class FullSynthesisApp {
         command.add("-o");
         command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyOutputPath.toString()));
 
-        // Add Petrify options.
+        // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
 
-        // Produce a pure Petri net (no self-loop places).
-        command.add("-p");
-
-        // Duplicate transitions for a better structured Petri Net.
-        command.add("-er");
-
-        // Produce a Free-Choice Petri net. If this option is not used, places with multiple incoming and outgoing
-        // edges are produced.
+        // Produce a choice free Petri net. By being choice free, the Petri Net becomes easier to translate to an
+        // activity.
         command.add("-fc");
 
-        // Produce Petri Net with places. If this option is not used, implied places are described as
+        // Produce Petri Net with intermediate places. If this option is not used, implied places are described as
         // transition-transition arcs.
         command.add("-ip");
 
