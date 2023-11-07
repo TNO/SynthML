@@ -28,7 +28,7 @@ public class ExecutableHelper {
      * @param executableName The executable name.
      * @param pluginName The plugin name.
      * @param folderName The folder name.
-     * @return The absolute path, or {@code null} if not available.
+     * @return The absolute path.
      */
     public static String getExecutable(String executableName, String pluginName, String folderName) {
         if (Platform.isRunning() && SystemUtils.IS_OS_WINDOWS) {
