@@ -170,6 +170,7 @@ public class FullSynthesisApp {
         // Check whether the process timed out.
         if (!petrifyProcessCompleted) {
             petrifyProcess.destroyForcibly();
+            throw new RuntimeException("Petrify process timed out.");
         }
     }
 }
