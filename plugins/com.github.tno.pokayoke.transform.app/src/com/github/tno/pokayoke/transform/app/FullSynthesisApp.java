@@ -164,6 +164,7 @@ public class FullSynthesisApp {
             petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             petrifyProcess.destroyForcibly();
+            throw new RuntimeException("Interrupted while waiting for Petrify process to finish.", e);
         }
 
         // Check whether the process timed out.
