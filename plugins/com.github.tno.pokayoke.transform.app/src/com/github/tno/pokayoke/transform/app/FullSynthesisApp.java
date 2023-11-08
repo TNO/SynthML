@@ -32,6 +32,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -172,5 +173,7 @@ public class FullSynthesisApp {
             petrifyProcess.destroyForcibly();
             throw new RuntimeException("Petrify process timed out.");
         }
+
+        Verify.verify(petrifyProcess.exitValue() == 0, "Petrify process is not successfully executed.");
     }
 }
