@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.app;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
