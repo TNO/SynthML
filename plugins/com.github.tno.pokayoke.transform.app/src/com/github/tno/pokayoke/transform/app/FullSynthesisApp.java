@@ -158,7 +158,7 @@ public class FullSynthesisApp {
         }
 
         // Wait for the process to finish within the given timeout period.
-        boolean petrifyProcessCompleted = false;
+        boolean petrifyProcessCompleted;
 
         try {
             petrifyProcessCompleted = petrifyProcess.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
