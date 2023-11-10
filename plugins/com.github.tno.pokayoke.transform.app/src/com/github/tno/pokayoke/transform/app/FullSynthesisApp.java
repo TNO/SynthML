@@ -173,6 +173,6 @@ public class FullSynthesisApp {
             throw new RuntimeException("Petrify process timed out.");
         }
 
-        Verify.verify(petrifyProcess.exitValue() == 0, "Petrify process is not successfully executed.");
+        Verify.verify(petrifyProcess.exitValue() == 0, "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
     }
 }
