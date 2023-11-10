@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_NAOEsN4FEeqZ0qkYlTZN4w">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Pm2IsN4FEeqZ0qkYlTZN4w" featurename="menuContributions" parentElementId="org.eclipse.e4.legacy.ide.application">
+    <elements xsi:type="menu:MenuContribution" xmi:id="_XRNMUN4FEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisMenuContribution" positionInParent="before=additions" parentId="popup">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_b6g5wN4FEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisHandledMenuItem" label="Perform full synthesis" tooltip="Perform full synthesis" command="_v1beIN4HEeqZ0qkYlTZN4w">
+        <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_KUdLgOO3EeqRGIZRdH8HYA" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneCifFile"/>
+      </children>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_tOzaIN4HEeqZ0qkYlTZN4w" featurename="commands" parentElementId="org.eclipse.e4.legacy.ide.application">
+    <elements xsi:type="commands:Command" xmi:id="_v1beIN4HEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisCommand" commandName="Perform full synthesis"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5Y8mUN4IEeqZ0qkYlTZN4w" featurename="handlers" parentElementId="org.eclipse.e4.legacy.ide.application">
+    <elements xsi:type="commands:Handler" xmi:id="_84tRwN4IEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisHandler" contributionURI="bundleclass://com.github.tno.pokayoke.transform.app.ui/com.github.tno.pokayoke.transform.app.ui.FullSynthesisHandler" command="_v1beIN4HEeqZ0qkYlTZN4w"/>
+  </fragments>
+</fragment:ModelFragments>
