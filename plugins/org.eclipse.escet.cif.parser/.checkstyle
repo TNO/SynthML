@@ -5,7 +5,7 @@
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
   <fileset name="PokaYoke" enabled="true" check-config-name="PokaYoke" local="true">
-    <file-match-pattern match-pattern="^src/" include-pattern="true"/>
+    <file-match-pattern match-pattern="^src(-test)?/" include-pattern="true"/>
   </fileset>
   <filter name="NonSrcDirs" enabled="false"/>
 </fileset-config>
