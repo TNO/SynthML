@@ -53,6 +53,8 @@
                             <consoleOutput>false</consoleOutput>
                             <failOnViolation>true</failOnViolation>
                             <violationSeverity>info</violationSeverity>
+                            <sourceDirectories>src/</sourceDirectories>
+                            <testSourceDirectories>src-test/</testSourceDirectories>
                         </configuration>
                         <goals>
                             <goal>check</goal>
