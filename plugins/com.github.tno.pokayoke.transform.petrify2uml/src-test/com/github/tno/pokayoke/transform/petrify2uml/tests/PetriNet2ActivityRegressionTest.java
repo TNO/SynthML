@@ -15,7 +15,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 /** Regression test for the translation from Petrify output to Activity. */
-class PetriNet2ActivityRegression extends RegressionTest {
+class PetriNet2ActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
     public static final String OUTPUT_FILE_EXTENSION = "umltst";
