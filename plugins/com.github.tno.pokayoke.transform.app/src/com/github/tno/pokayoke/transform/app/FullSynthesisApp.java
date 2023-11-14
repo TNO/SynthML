@@ -29,6 +29,7 @@ import org.eclipse.escet.common.app.framework.output.OutputModeOption;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -69,12 +70,9 @@ public class FullSynthesisApp {
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
-        // Translate the Petrify output to PNML and output the PNML.
-        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        Petrify2PNMLTranslator.transformFile(petrifyOutputPath.toString(), pnmlOutputPath.toString());
-
         // Translate Petri Net to UML Activity and output the activity.
-        // TODO when the code for this functionality is merged into the main branch.
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
+        PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
     /**
@@ -173,6 +171,7 @@ public class FullSynthesisApp {
             throw new RuntimeException("Petrify process timed out.");
         }
 
-        Verify.verify(petrifyProcess.exitValue() == 0, "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+        Verify.verify(petrifyProcess.exitValue() == 0,
+                "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
     }
 }
