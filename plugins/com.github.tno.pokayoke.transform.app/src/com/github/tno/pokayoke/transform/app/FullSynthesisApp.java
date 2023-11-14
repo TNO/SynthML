@@ -30,7 +30,6 @@ import org.eclipse.escet.common.app.framework.output.OutputModeOption;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
-import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
