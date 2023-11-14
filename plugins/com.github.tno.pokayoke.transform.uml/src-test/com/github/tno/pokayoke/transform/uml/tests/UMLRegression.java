@@ -41,7 +41,7 @@ class UMLRegression extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void testAct(Path inputPath, Path outputPath) throws IOException {
         final String inputPathString = inputPath.toString();
         final Model model = FileHelper.loadModel(inputPathString);
         new UMLTransformer(model, inputPathString).transformModel();

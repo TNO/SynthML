@@ -32,7 +32,7 @@ class CIF2PetrifyRegression extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void testAct(Path inputPath, Path outputPath) throws IOException {
         Cif2Petrify.transformFile(inputPath.toString(), outputPath.toString());
     }
 }

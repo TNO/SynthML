@@ -32,7 +32,7 @@ class Petrify2PNMLRegression extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void testAct(Path inputPath, Path outputPath) throws IOException {
         Petrify2PNMLTranslator.transformFile(inputPath.toString(), outputPath.toString());
     }
 }
