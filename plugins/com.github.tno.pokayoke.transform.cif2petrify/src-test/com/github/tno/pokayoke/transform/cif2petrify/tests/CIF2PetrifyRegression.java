@@ -10,18 +10,18 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
-import com.github.tno.pokayoke.transform.tests.common.Regression;
+import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 /**
  * Regression tests.
  */
-class CIF2PetrifyRegression extends Regression {
+class CIF2PetrifyRegression extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "cif";
 
     public static final String OUTPUT_FILE_EXTENSION = "g";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override

@@ -12,10 +12,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
-import com.github.tno.pokayoke.transform.tests.common.Regression;
+import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 /** Regression test for the translation from Petrify output to Activity. */
-class PetriNet2ActivityRegression extends Regression {
+class PetriNet2ActivityRegression extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
     public static final String OUTPUT_FILE_EXTENSION = "umltst";
@@ -26,7 +26,7 @@ class PetriNet2ActivityRegression extends Regression {
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
