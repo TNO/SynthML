@@ -8,7 +8,7 @@
       <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       <defaultValue xsi:type="uml:LiteralString" value=""/>
     </ownedAttribute>
-    <ownedBehavior xsi:type="uml:Activity" name="Loop" node="//MyClass/Loop/Initial //MyClass/Loop/ActivityFinal //MyClass/Loop/Merge //MyClass/Loop/Decision //MyClass/Loop/Initialize.1 //MyClass/Loop/Increment.1 //MyClass/Loop/@ownedNode.6 //MyClass/Loop/@ownedNode.7">
+    <ownedBehavior xsi:type="uml:Activity" name="Loop" node="//MyClass/Loop/Initial //MyClass/Loop/ActivityFinal //MyClass/Loop/Merge //MyClass/Loop/Decision //MyClass/Loop/Initialize.1 //MyClass/Loop/@ownedNode.5 //MyClass/Loop/Increment.1 //MyClass/Loop/@ownedNode.7 //MyClass/Loop/@ownedNode.8">
       <ownedBehavior xsi:type="uml:Activity" name="Initialize" node="//MyClass/Loop/Initialize/@ownedNode.0 //MyClass/Loop/Initialize/@ownedNode.1 //MyClass/Loop/Initialize/@ownedNode.2 //MyClass/Loop/Initialize/@ownedNode.3 //MyClass/Loop/Initialize/@ownedNode.4 //MyClass/Loop/Initialize/@ownedNode.5 //MyClass/Loop/Initialize/@ownedNode.6 //MyClass/Loop/Initialize/@ownedNode.7 //MyClass/Loop/Initialize/@ownedNode.8 //MyClass/Loop/Initialize/@ownedNode.9 //MyClass/Loop/Initialize/@ownedNode.10 //MyClass/Loop/Initialize/@ownedNode.11">
         <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Initialize/@ownedNode.1" source="//MyClass/Loop/Initialize/@ownedNode.0"/>
         <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Initialize/@ownedNode.2" source="//MyClass/Loop/Initialize/@ownedNode.1"/>
@@ -193,32 +193,46 @@ isSuccessful = guard</body>
         <ownedNode xsi:type="uml:DecisionNode" incoming="//MyClass/Loop/Increment/@edge.13 //MyClass/Loop/Increment/@edge.14" outgoing="//MyClass/Loop/Increment/@edge.15 //MyClass/Loop/Increment/@edge.16"/>
         <ownedNode xsi:type="uml:ActivityFinalNode" incoming="//MyClass/Loop/Increment/@edge.15"/>
       </ownedBehavior>
-      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Initialize.1" source="//MyClass/Loop/@ownedNode.6"/>
+      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Initialize.1" source="//MyClass/Loop/@ownedNode.7"/>
       <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Merge" source="//MyClass/Loop/Initialize.1"/>
       <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Merge" source="//MyClass/Loop/Increment.1"/>
-      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Decision" source="//MyClass/Loop/Merge"/>
+      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/@ownedNode.5" source="//MyClass/Loop/Merge"/>
       <edge xsi:type="uml:ControlFlow" name="Above" target="//MyClass/Loop/ActivityFinal" source="//MyClass/Loop/Decision">
         <guard xsi:type="uml:OpaqueExpression">
-          <body>Value</body>
+          <body>branch == 0</body>
           <language>Python</language>
         </guard>
       </edge>
       <edge xsi:type="uml:ControlFlow" name="Below" target="//MyClass/Loop/Increment.1" source="//MyClass/Loop/Decision">
         <guard xsi:type="uml:OpaqueExpression">
-          <body>not (Value)</body>
+          <body>branch == 1</body>
           <language>Python</language>
         </guard>
       </edge>
-      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/@ownedNode.6" source="//MyClass/Loop/Initial"/>
-      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/@ownedNode.7" source="//MyClass/Loop/@ownedNode.6"/>
-      <ownedNode xsi:type="uml:InitialNode" name="Initial" outgoing="//MyClass/Loop/@edge.6"/>
+      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/Decision" source="//MyClass/Loop/@ownedNode.5"/>
+      <edge xsi:type="uml:ObjectFlow" target="//MyClass/Loop/Decision" source="//MyClass/Loop/@ownedNode.5/branch"/>
+      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/@ownedNode.7" source="//MyClass/Loop/Initial"/>
+      <edge xsi:type="uml:ControlFlow" target="//MyClass/Loop/@ownedNode.8" source="//MyClass/Loop/@ownedNode.7"/>
+      <ownedNode xsi:type="uml:InitialNode" name="Initial" outgoing="//MyClass/Loop/@edge.8"/>
       <ownedNode xsi:type="uml:ActivityFinalNode" name="ActivityFinal" incoming="//MyClass/Loop/Above"/>
       <ownedNode xsi:type="uml:MergeNode" name="Merge" incoming="//MyClass/Loop/@edge.1 //MyClass/Loop/@edge.2" outgoing="//MyClass/Loop/@edge.3"/>
-      <ownedNode xsi:type="uml:DecisionNode" name="Decision" incoming="//MyClass/Loop/@edge.3" outgoing="//MyClass/Loop/Above //MyClass/Loop/Below"/>
+      <ownedNode xsi:type="uml:DecisionNode" name="Decision" incoming="//MyClass/Loop/@edge.6 //MyClass/Loop/@edge.7" outgoing="//MyClass/Loop/Above //MyClass/Loop/Below"/>
       <ownedNode xsi:type="uml:CallBehaviorAction" name="Initialize" incoming="//MyClass/Loop/@edge.0" outgoing="//MyClass/Loop/@edge.1" behavior="//MyClass/Loop/Initialize"/>
+      <ownedNode xsi:type="uml:OpaqueAction" incoming="//MyClass/Loop/@edge.3" outgoing="//MyClass/Loop/@edge.6">
+        <body>import random
+branches = []
+if Value: branches.append(0)
+if not (Value): branches.append(1)
+branch = random.choice(branches)
+</body>
+        <language>Python</language>
+        <outputValue name="branch" outgoing="//MyClass/Loop/@edge.7">
+          <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+        </outputValue>
+      </ownedNode>
       <ownedNode xsi:type="uml:CallBehaviorAction" name="Increment" incoming="//MyClass/Loop/Below" outgoing="//MyClass/Loop/@edge.2" behavior="//MyClass/Loop/Increment"/>
-      <ownedNode xsi:type="uml:ForkNode" incoming="//MyClass/Loop/@edge.6" outgoing="//MyClass/Loop/@edge.0 //MyClass/Loop/@edge.7"/>
-      <ownedNode xsi:type="uml:CallBehaviorAction" incoming="//MyClass/Loop/@edge.7" behavior="//Lock/lockhandler"/>
+      <ownedNode xsi:type="uml:ForkNode" incoming="//MyClass/Loop/@edge.8" outgoing="//MyClass/Loop/@edge.0 //MyClass/Loop/@edge.9"/>
+      <ownedNode xsi:type="uml:CallBehaviorAction" incoming="//MyClass/Loop/@edge.9" behavior="//Lock/lockhandler"/>
     </ownedBehavior>
   </packagedElement>
   <packagedElement xsi:type="uml:Class" name="Lock">
