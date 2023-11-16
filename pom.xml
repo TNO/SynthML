@@ -166,7 +166,7 @@
                 </executions>
             </plugin>
             
-            <!-- Configure shared unit/integration testing configuration, used by profiles below. -->
+            <!-- Configure shared unit/integration testing configuration. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-surefire-plugin</artifactId>
