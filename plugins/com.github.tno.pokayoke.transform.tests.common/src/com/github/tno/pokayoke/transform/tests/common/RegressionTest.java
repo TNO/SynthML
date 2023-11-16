@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  *
  */
-public abstract class Regression {
+public abstract class RegressionTest {
     /**
      * Executes the different steps in the regression test.
      *

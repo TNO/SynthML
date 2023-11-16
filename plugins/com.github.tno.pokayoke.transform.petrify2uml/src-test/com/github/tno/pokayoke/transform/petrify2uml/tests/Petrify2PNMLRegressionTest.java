@@ -5,28 +5,23 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
-import com.github.tno.pokayoke.transform.tests.common.Regression;
+import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/** Regression test for the translation from Petrify output to Activity. */
-class PetriNet2ActivityRegression extends Regression {
+/**
+ * Regression tests.
+ */
+class Petrify2PNMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
-    public static final String OUTPUT_FILE_EXTENSION = "umltst";
-
-    @BeforeAll
-    public static void setup() {
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUT_FILE_EXTENSION, new UMLTestFactory());
-    }
+    public static final String OUTPUT_FILE_EXTENSION = "pnml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -38,6 +33,6 @@ class PetriNet2ActivityRegression extends Regression {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        PetriNet2Activity.transformFile(inputPath.toString(), outputPath.toString());
+        Petrify2PNMLTranslator.transformFile(inputPath.toString(), outputPath.toString());
     }
 }

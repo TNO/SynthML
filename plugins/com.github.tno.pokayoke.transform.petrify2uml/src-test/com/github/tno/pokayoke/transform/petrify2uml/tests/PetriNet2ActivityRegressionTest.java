@@ -1,26 +1,22 @@
 
-package com.github.tno.pokayoke.transform.uml.tests;
+package com.github.tno.pokayoke.transform.petrify2uml.tests;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.uml2.uml.Model;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.transform.tests.common.Regression;
-import com.github.tno.pokayoke.transform.uml.UMLTransformer;
+import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/**
- * Regression tests.
- */
-class UMLRegression extends Regression {
-    public static final String INPUT_FILE_EXTENSION = "uml";
+/** Regression test for the translation from Petrify output to Activity. */
+class PetriNet2ActivityRegressionTest extends RegressionTest {
+    public static final String INPUT_FILE_EXTENSION = "out";
 
     public static final String OUTPUT_FILE_EXTENSION = "umltst";
 
@@ -30,7 +26,7 @@ class UMLRegression extends Regression {
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return Regression.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -42,9 +38,6 @@ class UMLRegression extends Regression {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        final String inputPathString = inputPath.toString();
-        final Model model = FileHelper.loadModel(inputPathString);
-        new UMLTransformer(model, inputPathString).transformModel();
-        FileHelper.storeModel(model, outputPath.toString());
+        PetriNet2Activity.transformFile(inputPath.toString(), outputPath.toString());
     }
 }

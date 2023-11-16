@@ -165,21 +165,25 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Enable Tycho surefire test. -->
+            
+            <!-- Configure shared unit/integration testing configuration. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-surefire-plugin</artifactId>
                 <version>${tycho.version}</version>
-                  <configuration>
-                      <!-- Execute tests in alphabetical order, to more easily compare different build logs. -->
-                      <runOrder>alphabetical</runOrder>
-                  </configuration>
+                <configuration>
+                    <!-- Execute tests in alphabetical order, to more easily compare different build logs. -->
+                    <runOrder>alphabetical</runOrder>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>surefire-test</id>
-                        <phase>test</phase>
+                        <id>execute-tests</id>
+                        <configuration>
+                            <failIfNoTests>false</failIfNoTests>
+                        </configuration>
                         <goals>
-                            <goal>test</goal>
+                            <goal>plugin-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
