@@ -52,10 +52,10 @@ public abstract class RegressionTest {
      * @throws IOException Thrown when one of operations on the files fails.
      */
     public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
-        testSetUp(inputPath);
-        testAct(inputPath, outputPath);
-        testVerify(expectedPath, outputPath, message);
-        testTearDown(outputPath);
+        setUpTest(inputPath);
+        actTest(inputPath, outputPath);
+        verifyTest(expectedPath, outputPath, message);
+        tearDownTest(outputPath);
     }
 
     /**
@@ -63,7 +63,7 @@ public abstract class RegressionTest {
      *
      * @param inputPath Path to the input file.
      */
-    private void testSetUp(Path inputPath) {
+    private void setUpTest(Path inputPath) {
         PathAssertions.assertFileExists(inputPath, "Input for regression test must exist.");
     }
 
@@ -74,7 +74,7 @@ public abstract class RegressionTest {
      * @param outputPath Path for the actual output file.
      * @throws IOException Thrown when one of operations on the files fails.
      */
-    protected abstract void testAct(Path inputPath, Path outputPath) throws IOException;
+    protected abstract void actTest(Path inputPath, Path outputPath) throws IOException;
 
     /**
      * Verify test.
@@ -84,7 +84,7 @@ public abstract class RegressionTest {
      * @param message Message in case of a failing assertion.
      * @throws IOException Thrown when one of the files can't be read.
      */
-    private void testVerify(Path expectedPath, Path outputPath, String message) throws IOException {
+    private void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
         PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
     }
 
@@ -94,7 +94,7 @@ public abstract class RegressionTest {
      * @param outputPath Path to the actual output file.
      * @throws IOException Thrown when actual output file can't be deleted.
      */
-    private void testTearDown(Path outputPath) throws IOException {
+    private void tearDownTest(Path outputPath) throws IOException {
         Files.delete(outputPath);
     }
 
