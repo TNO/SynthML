@@ -73,12 +73,12 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscoresInNameOf(classElement);
 
         Preconditions.checkArgument(classElement.getNestedClassifiers().isEmpty(),
-                String.format("Expected classes to not contain any nested classifiers. Violated by class %s.",
+                String.format("Expected classes to not contain any nested classifiers. Violated by class '%s'.",
                         classElement.getName()));
         Preconditions.checkNotNull(classElement.getClassifierBehavior(), String.format(
-                "Expected classes to have a classifier behavior. Violated by class %s.", classElement.getName()));
+                "Expected classes to have a classifier behavior. Violated by class '%s'.", classElement.getName()));
         Preconditions.checkArgument(classElement.getOwnedBehaviors().contains(classElement.getClassifierBehavior()),
-                String.format("Expected classes to own their classifier behavior. Violated by class %s.",
+                String.format("Expected classes to own their classifier behavior. Violated by class '%s'.",
                         classElement.getName()));
 
         // Visit all class properties and check (local) uniqueness of their names.
@@ -136,13 +136,13 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscoresInNameOf(enumeration);
 
         Preconditions.checkArgument(enumeration.eContainer() instanceof Model, String.format(
-                "Expected enumerations to be declared in models. Violated by enumeration %s.", enumeration.getName()));
+                "Expected enumerations to be declared in models. Violated by enumeration '%s'.", enumeration.getName()));
         Preconditions.checkArgument(enumeration.eContainer().eContainer() == null,
                 String.format(
-                        "Expected enumerations to be declared on the outer-most level. Violated by enumeration %s.",
+                        "Expected enumerations to be declared on the outer-most level. Violated by enumeration '%s'.",
                         enumeration.getName()));
         Preconditions.checkArgument(!enumeration.getOwnedLiterals().isEmpty(),
-                String.format("Expected enumerations to have at least one literal. Violated by enumeration %s.",
+                String.format("Expected enumerations to have at least one literal. Violated by enumeration '%s'.",
                         enumeration.getName()));
 
         // Visit all enumeration literals.
@@ -200,11 +200,11 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscoresInNameOf(activity);
 
         Preconditions.checkArgument(activity.getMembers().isEmpty(),
-                String.format("Expected activities to not have any members. Violated by activity %s.", activity.getName()));
+                String.format("Expected activities to not have any members. Violated by activity '%s'.", activity.getName()));
         Preconditions.checkArgument(activity.getClassifierBehavior() == null, String.format(
-                "Expected activities to not have a classifier behavior. Violated by activity %s.", activity.getName()));
+                "Expected activities to not have a classifier behavior. Violated by activity '%s'.", activity.getName()));
         Preconditions.checkArgument(activity.getNodes().stream().filter(n -> n instanceof InitialNode).count() == 1,
-                String.format("Expected activities to have exactly one initial node. Violated by activity %s.",
+                String.format("Expected activities to have exactly one initial node. Violated by activity '%s'.",
                         activity.getName()));
 
         // Visit all activity nodes.
@@ -263,11 +263,11 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
         checkAbsenceOfDoubleUnderscoresInNameOf(action);
         Preconditions.checkNotNull(action.getBehavior(),
                 String.format(
-                        "Expected the called behavior of call behavior actions to be non-null. Violated by action %s.",
+                        "Expected the called behavior of call behavior actions to be non-null. Violated by action '%s'.",
                         action.getName()));
         Preconditions.checkArgument(action.getBehavior() instanceof Activity,
                 String.format(
-                        "Expected the behavior of any call behavior action to be an activity. Violated by action %s.",
+                        "Expected the behavior of any call behavior action to be an activity. Violated by action '%s'.",
                         action.getName()));
         return action;
     }
@@ -282,9 +282,9 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseControlFlow(ControlFlow edge) {
         checkAbsenceOfDoubleUnderscoresInNameOf(edge);
         Preconditions.checkNotNull(edge.getSource(),
-                String.format("Expected a non-null source node. Violated by edge %s.", edge.getName()));
+                String.format("Expected a non-null source node. Violated by edge '%s'.", edge.getName()));
         Preconditions.checkNotNull(edge.getTarget(),
-                String.format("Expected a non-null target node. Violated by edge %s.", edge.getName()));
+                String.format("Expected a non-null target node. Violated by edge '%s'.", edge.getName()));
 
         ValueSpecification guard = edge.getGuard();
         if (guard != null) {
