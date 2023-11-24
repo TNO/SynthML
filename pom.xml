@@ -21,6 +21,12 @@
         <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
+        <!-- Maven Formatter version. -->
+        <!-- To ensure consistent formatting, select plugin version that matches
+        the Eclipse version that we use, -->
+        <!-- see
+        https://code.revelc.net/formatter-maven-plugin/eclipse-versions.html -->
+        <maven.formatter.version>2.20.0</maven.formatter.version>
     </properties>
 
     <organization>
@@ -63,6 +69,30 @@
                 </executions>
             </plugin>
 
+            <!-- Enable Maven formatter plugin, to validate that all code is
+            properly formatted. -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${maven.formatter.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configFile>
+                        ${session.executionRootDirectory}/eclipse-pokayoke-formatter-profile.xml
+                    </configFile>
+                    <directories>
+                        <directory>src</directory>
+                        <directory>src-test</directory>
+                    </directories>
+                </configuration>
+            </plugin>
+
             <!-- Enable Tycho. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -81,7 +111,8 @@
             </plugin>
 
             <!-- Prevent warnings for projects with multiple source directories. -->
-            <!-- See also https://github.com/eclipse-tycho/tycho/discussions/2717. -->
+            <!-- See also
+            https://github.com/eclipse-tycho/tycho/discussions/2717. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -95,7 +126,8 @@
                 <version>${tycho.version}</version>
 
                 <configuration>
-                    <!-- Use property-based fixed qualifier for all plugins/features/etc. -->
+                    <!-- Use property-based fixed qualifier for all
+                    plugins/features/etc. -->
                     <forceContextQualifier>${pokayoke.version.qualifier}</forceContextQualifier>
 
                     <!-- Disable Maven descriptors in JAR bundles. -->
@@ -113,13 +145,15 @@
                 <configuration>
                     <!-- Configure target platform file. -->
                     <target>
-                        <file>${maven.multiModuleProjectDirectory}/releng/com.github.tno.pokayoke.releng.target/com.github.tno.pokayoke.releng.target.target</file>
+                        <file>
+                            ${maven.multiModuleProjectDirectory}/releng/com.github.tno.pokayoke.releng.target/com.github.tno.pokayoke.releng.target.target</file>
                     </target>
 
                     <!-- Let JustJ handle the execution environment. -->
                     <!-- See https://www.eclipse.org/justj/?page=documentation
                     for more information. -->
-                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+                    <executionEnvironment>
+                        org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
                     <!-- Configure environments. -->
                     <!-- Determines which environment specific bundles will be
@@ -165,14 +199,15 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- Configure shared unit/integration testing configuration. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-surefire-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                    <!-- Execute tests in alphabetical order, to more easily compare different build logs. -->
+                    <!-- Execute tests in alphabetical order, to more easily
+                    compare different build logs. -->
                     <runOrder>alphabetical</runOrder>
                 </configuration>
                 <executions>
@@ -189,7 +224,8 @@
                 </executions>
             </plugin>
 
-            <!-- The following is needed for generated source features that are part of an update site. -->
+            <!-- The following is needed for generated source features that are
+            part of an update site. -->
             <!-- Tycho will warn about this if not configured. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -197,14 +233,16 @@
                 <version>${tycho.version}</version>
                 <executions>
                     <execution>
-                        <!-- Don't attach (default) metadata before the source-feature execution. -->
+                        <!-- Don't attach (default) metadata before the
+                        source-feature execution. -->
                         <id>default-p2-metadata-default</id>
                         <configuration>
                             <attachP2Metadata>false</attachP2Metadata>
                         </configuration>
                     </execution>
                     <execution>
-                        <!-- Do attach metadata after the source-feature execution. -->
+                        <!-- Do attach metadata after the source-feature
+                        execution. -->
                         <id>attach-p2-metadata</id>
                         <phase>package</phase>
                         <goals>
