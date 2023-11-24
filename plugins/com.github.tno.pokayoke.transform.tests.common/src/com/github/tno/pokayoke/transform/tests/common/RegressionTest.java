@@ -134,8 +134,8 @@ public abstract class RegressionTest {
     }
 
     /**
-     * Provide arguments for regression tests in the indicated regression test directory with the given input file name and
-     * the expected and actual output file names.
+     * Provide arguments for regression tests in the indicated regression test directory with the given input file name
+     * and the expected and actual output file names.
      *
      * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.
