@@ -157,7 +157,7 @@ public abstract class RegressionTest {
                         subDirectory.resolve(actualFile), subDirectory.toString()));
             }
         } catch (IOException e) {
-            throw new RuntimeException("IOException while adding subdirectories of the regressiontests directory '"
+            throw new RuntimeException("I/O error while adding subdirectories of the regressiontests directory '"
                     + regressiontestsPathString + "'", e);
         }
 
