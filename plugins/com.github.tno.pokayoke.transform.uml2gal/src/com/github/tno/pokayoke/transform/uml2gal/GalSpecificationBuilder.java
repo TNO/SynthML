@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.gal;
+package com.github.tno.pokayoke.transform.uml2gal;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
