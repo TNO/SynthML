@@ -19,16 +19,16 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="_lA9rII3LEe6_8e6M7syDNw" target="_UUZAII3LEe6_8e6M7syDNw" source="_Rj_8II3LEe6_8e6M7syDNw"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="_lW6tAI3LEe6_8e6M7syDNw" target="_UUZAII3LEe6_8e6M7syDNw" source="_SkzR0I3LEe6_8e6M7syDNw"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="_lz4V0I3LEe6_8e6M7syDNw" target="_WKMrMI3LEe6_8e6M7syDNw" source="_UUZAII3LEe6_8e6M7syDNw"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_mNjaEI3LEe6_8e6M7syDNw" name="inputLocation = Carrier" target="_XTDwsI3LEe6_8e6M7syDNw" source="_WKMrMI3LEe6_8e6M7syDNw">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_mNjaEI3LEe6_8e6M7syDNw" name="inputLocation = A" target="_XTDwsI3LEe6_8e6M7syDNw" source="_WKMrMI3LEe6_8e6M7syDNw">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="_BW5l8I3MEe6_8e6M7syDNw" name="">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-          <body>inputLocation = Carrier</body>
+          <body>inputLocation = A</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_mlCtAI3LEe6_8e6M7syDNw" name="inputLocation = Track" target="_aS-ecI3LEe6_8e6M7syDNw" source="_WKMrMI3LEe6_8e6M7syDNw">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_mlCtAI3LEe6_8e6M7syDNw" name="inputLocation = B" target="_aS-ecI3LEe6_8e6M7syDNw" source="_WKMrMI3LEe6_8e6M7syDNw">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="_J7YvgI3MEe6_8e6M7syDNw" name="">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-          <body>inputLocation = Track</body>
+          <body>inputLocation = B</body>
         </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="_m9-xcI3LEe6_8e6M7syDNw" target="_cRCtoI3LEe6_8e6M7syDNw" source="_aS-ecI3LEe6_8e6M7syDNw"/>
@@ -48,12 +48,12 @@
         <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_UUZAIY3LEe6_8e6M7syDNw" name="Join1" value="true"/>
       </node>
       <node xmi:type="uml:DecisionNode" xmi:id="_WKMrMI3LEe6_8e6M7syDNw" name="" incoming="_lz4V0I3LEe6_8e6M7syDNw" outgoing="_mNjaEI3LEe6_8e6M7syDNw _mlCtAI3LEe6_8e6M7syDNw"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_XTDwsI3LEe6_8e6M7syDNw" name="process_carrier" incoming="_mNjaEI3LEe6_8e6M7syDNw" outgoing="_nbt2UI3LEe6_8e6M7syDNw">
+      <node xmi:type="uml:OpaqueAction" xmi:id="_XTDwsI3LEe6_8e6M7syDNw" name="process_A" incoming="_mNjaEI3LEe6_8e6M7syDNw" outgoing="_nbt2UI3LEe6_8e6M7syDNw">
         <body>true</body>
         <body>robot1_claimed := false</body>
         <body>robot2_claimed := false</body>
       </node>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_aS-ecI3LEe6_8e6M7syDNw" name="process_track" incoming="_mlCtAI3LEe6_8e6M7syDNw" outgoing="_m9-xcI3LEe6_8e6M7syDNw">
+      <node xmi:type="uml:OpaqueAction" xmi:id="_aS-ecI3LEe6_8e6M7syDNw" name="process_B" incoming="_mlCtAI3LEe6_8e6M7syDNw" outgoing="_m9-xcI3LEe6_8e6M7syDNw">
         <body>true</body>
         <body>robot1_claimed := false</body>
         <body>robot2_claimed := false</body>
@@ -63,7 +63,7 @@
     </ownedBehavior>
   </packagedElement>
   <packagedElement xmi:type="uml:Enumeration" xmi:id="_iJrxcI3KEe6_8e6M7syDNw" name="InputLocation">
-    <ownedLiteral xmi:id="_jw4_0I3KEe6_8e6M7syDNw" name="Carrier"/>
-    <ownedLiteral xmi:id="_mXZIAI3KEe6_8e6M7syDNw" name="Track"/>
+    <ownedLiteral xmi:id="_jw4_0I3KEe6_8e6M7syDNw" name="A"/>
+    <ownedLiteral xmi:id="_mXZIAI3KEe6_8e6M7syDNw" name="B"/>
   </packagedElement>
 </uml:Model>
