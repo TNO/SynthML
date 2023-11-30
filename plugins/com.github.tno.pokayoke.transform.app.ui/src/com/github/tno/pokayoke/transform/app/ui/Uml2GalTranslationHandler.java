@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.github.tno.pokayoke.transform.app.Uml2GalTranslationApp;
 
-/** Menu action handler to transform UML models to GAL specifications. */
+/** Menu action handler for transforming UML models to GAL specifications. */
 public class Uml2GalTranslationHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) IStructuredSelection selection) {
