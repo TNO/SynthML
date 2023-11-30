@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Functionality for Transforming Poka Yoke Activities to GAL
+Bundle-SymbolicName: com.github.tno.pokayoke.transform.gal
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: TNO
+Automatic-Module-Name: com.github.tno.pokayoke.transform.gal
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: com.github.tno.pokayoke.transform.gal
+Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
+ org.junit.jupiter.api;version="5.9.3",
+ org.junit.jupiter.params;version="5.9.3",
+ org.junit.jupiter.params.provider;version="5.9.3"
