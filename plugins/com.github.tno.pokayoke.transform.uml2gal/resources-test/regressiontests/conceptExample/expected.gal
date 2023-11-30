@@ -1,0 +1,78 @@
+
+$Carrier=0 ;
+$Track=1 ;
+typedef Boolean= 0..1 ;
+typedef InputLocation= 0..1 ;
+gal ExampleModel__ExampleClass{
+  int inputLocation = 0;
+  int robot1_claimed = 0;
+  int robot2_claimed = 0;
+  int __init = 0;
+  int __edge__0 = 1;
+  int __edge__1 = 0;
+  int __edge__2 = 0;
+  int __edge__3 = 0;
+  int __edge__4 = 0;
+  int __edge__5 = 0;
+  int __edge__6 = 0;
+  int __edge__7 = 0;
+  int __edge__8 = 0;
+  int __edge__9 = 0;
+  int __edge__10 = 0;
+  transition __initialize(InputLocation $inputLocation) [ __init == 0 ] {
+    __init = 1    ;
+    inputLocation = $inputLocation    ;
+  }
+  transition __ForkNode_ExampleActivity__ForkNode__1 [ __init == 1 && __edge__0 == 1 && __edge__1 == 0 && __edge__2 == 0 ] {
+    __edge__0 = 0    ;
+    __edge__1 = 1    ;
+    __edge__2 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__claim_robot1__2 [ __init == 1 && !robot1_claimed == 1 && __edge__1 == 1 && __edge__3 == 0 ] {
+    robot1_claimed = 1    ;
+    __edge__1 = 0    ;
+    __edge__3 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__claim_robot2__3 [ __init == 1 && !robot2_claimed == 1 && __edge__2 == 1 && __edge__4 == 0 ] {
+    robot2_claimed = 1    ;
+    __edge__2 = 0    ;
+    __edge__4 = 1    ;
+  }
+  transition __JoinNode_ExampleActivity__JoinNode__4 [ __init == 1 && __edge__3 == 1 && __edge__4 == 1 && __edge__5 == 0 ] {
+    __edge__3 = 0    ;
+    __edge__4 = 0    ;
+    __edge__5 = 1    ;
+  }
+  transition __DecisionNode_ExampleActivity__DecisionNode__5 [ __init == 1 && inputLocation == $Carrier && __edge__5 == 1 && __edge__6 == 0 ] {
+    __edge__5 = 0    ;
+    __edge__6 = 1    ;
+  }
+  transition __DecisionNode_ExampleActivity__DecisionNode__6 [ __init == 1 && inputLocation == $Track && __edge__5 == 1 && __edge__7 == 0 ] {
+    __edge__5 = 0    ;
+    __edge__7 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__process_carrier__7 [ __init == 1 && true && __edge__6 == 1 && __edge__9 == 0 ] {
+    robot1_claimed = 0    ;
+    robot2_claimed = 0    ;
+    __edge__6 = 0    ;
+    __edge__9 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__process_track__8 [ __init == 1 && true && __edge__7 == 1 && __edge__8 == 0 ] {
+    robot1_claimed = 0    ;
+    robot2_claimed = 0    ;
+    __edge__7 = 0    ;
+    __edge__8 = 1    ;
+  }
+  transition __MergeNode_ExampleActivity__MergeNode__9 [ __init == 1 && __edge__8 == 1 && __edge__10 == 0 ] {
+    __edge__8 = 0    ;
+    __edge__10 = 1    ;
+  }
+  transition __MergeNode_ExampleActivity__MergeNode__10 [ __init == 1 && __edge__9 == 1 && __edge__10 == 0 ] {
+    __edge__9 = 0    ;
+    __edge__10 = 1    ;
+  }
+  transition __ActivityFinalNode_ExampleActivity__ActivityFinalNode__11 [ __init == 1 && __edge__10 == 1 ] {
+    __edge__10 = 0    ;
+  }
+}
+main ExampleModel__ExampleClass ;
