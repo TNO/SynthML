@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.uml2gal.Uml2GalTranslationHelper;
 
@@ -14,14 +15,16 @@ public class Uml2GalTranslationApp {
     private Uml2GalTranslationApp() {
     }
 
-    public static void translateUml2Gal(Path inputPath, Path outputFolderPath) throws IOException {
+    public static void translateUml2Gal(Path inputPath, Path outputFolderPath) throws IOException, JSONException {
         Files.createDirectories(outputFolderPath);
 
-        // Determine the name of the output GAL file.
+        // Determine the paths of the output GAL and JSON files.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
-        Path outputFilePath = outputFolderPath.resolve(filePrefix + ".gal");
+        Path outputGalFilePath = outputFolderPath.resolve(filePrefix + ".gal");
+        Path outputJsonFilePath = outputFolderPath.resolve(filePrefix + ".json");
 
         // Translate the UML model at the input path, and write the resulting GAL specification to the output path.
-        Uml2GalTranslationHelper.translateCifAnnotatedModel(inputPath.toString(), outputFilePath.toString());
+        Uml2GalTranslationHelper.translateCifAnnotatedModel(inputPath.toString(), outputGalFilePath.toString(),
+                outputJsonFilePath.toString());
     }
 }

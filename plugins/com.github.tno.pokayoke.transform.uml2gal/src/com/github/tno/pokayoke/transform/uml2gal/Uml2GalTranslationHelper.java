@@ -1,10 +1,12 @@
 
 package com.github.tno.pokayoke.transform.uml2gal;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 
 import org.eclipse.uml2.uml.Model;
+import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
@@ -55,6 +57,31 @@ public class Uml2GalTranslationHelper {
         Model model = FileHelper.loadModel(sourcePath);
         Specification specification = new CifAnnotatedUml2GalTranslator(sourcePath).translate(model);
         store(specification, targetPath);
+    }
+
+    /**
+     * Translates a CIF-annotated UML model to a GAL specification.
+     *
+     * @param sourcePath The path to load the UML model.
+     * @param targetPath The path to store the translated GAL specification.
+     * @param tracingPath The path to store the JSON tracing information.
+     * @throws IOException Thrown in case the model could not be loaded or the specification be stored.
+     * @throws JSONException In case generating the tracing JSON failed.
+     */
+    public static void translateCifAnnotatedModel(String sourcePath, String targetPath, String tracingPath)
+            throws IOException, JSONException
+    {
+        // Translate the UML model and store the result.
+        Model model = FileHelper.loadModel(sourcePath);
+        Uml2GalTranslator translator = new CifAnnotatedUml2GalTranslator(sourcePath);
+        Specification specification = translator.translate(model);
+        store(specification, targetPath);
+
+        // Store the tracing information as JSON.
+        FileWriter tracingFileWriter = new FileWriter(tracingPath);
+        tracingFileWriter.write(translator.getTracingAsJson().toString());
+        tracingFileWriter.flush();
+        tracingFileWriter.close();
     }
 
     static And combineAsAnd(BooleanExpression left, BooleanExpression right) {

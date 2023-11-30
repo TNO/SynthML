@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.app.Uml2GalTranslationApp;
 
@@ -32,7 +33,7 @@ public class Uml2GalTranslationHandler {
                 inputResource.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 
                 return Status.OK_STATUS;
-            } catch (IOException | CoreException e) {
+            } catch (IOException | JSONException | CoreException e) {
                 return new Status(IStatus.ERROR, getClass().getPackageName(),
                         "Failed to transform to GAL: " + inputPath, e);
             }

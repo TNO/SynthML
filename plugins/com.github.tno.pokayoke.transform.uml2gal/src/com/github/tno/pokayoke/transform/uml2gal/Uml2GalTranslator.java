@@ -5,13 +5,16 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Comment;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FinalNode;
@@ -29,6 +32,9 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
@@ -61,9 +67,9 @@ public abstract class Uml2GalTranslator {
 
     private final Map<ActivityEdge, Variable> edgeMapping = new LinkedHashMap<>();
 
-    private final Map<Variable, String> variableTracing = new LinkedHashMap<>();
+    private final Map<Variable, Element> variableTracing = new LinkedHashMap<>();
 
-    private final Map<Transition, String> transitionTracing = new LinkedHashMap<>();
+    private final Map<Transition, Element> transitionTracing = new LinkedHashMap<>();
 
     /**
      * Translates the given expression to a GAL Boolean expression.
@@ -116,6 +122,31 @@ public abstract class Uml2GalTranslator {
 
         // Return the translated GAL specification;
         return specificationBuilder.build();
+    }
+
+    /**
+     * Gives tracing information of how the translated GAL specification relates to the input UML model.
+     *
+     * @return Tracing infromation, as JSON.
+     * @throws JSONException In case generating the tracing JSON failed.
+     */
+    public JSONObject getTracingAsJson() throws JSONException {
+        // Helper function to convert UML comments to JSON arrays.
+        Function<Element, JSONArray> convertComments = element -> new JSONArray(
+                element.getOwnedComments().stream().map(Comment::getBody).toList());
+
+        // Convert the tracing mappings to JSON objects.
+        JSONObject variableTracingJson = new JSONObject(variableTracing.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey().getName(), e -> convertComments.apply(e.getValue()))));
+        JSONObject transitionTracingJson = new JSONObject(transitionTracing.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey().getName(), e -> convertComments.apply(e.getValue()))));
+
+        // Construct and return the root JSON object.
+        JSONObject root = new JSONObject();
+        root.put("variables", variableTracingJson);
+        root.put("transitions", transitionTracingJson);
+
+        return root;
     }
 
     private void translateModel(Model model) {
@@ -221,8 +252,8 @@ public abstract class Uml2GalTranslator {
             variable = typeBuilder.addVariable(name, 0);
         }
 
-        // TODO make sure tracing is correct
-        variableTracing.put(variable, getIdentifierOf(property));
+        // Make sure the created variable can be tracked back to the property.
+        variableTracing.put(variable, property);
     }
 
     private void translateActivity(Activity activity) {
@@ -236,8 +267,8 @@ public abstract class Uml2GalTranslator {
                     edge.getSource() instanceof InitialNode ? 1 : 0);
             edgeMapping.put(edge, variable);
 
-            // TODO double check whether this still works correctly.
-            variableTracing.put(variable, getIdentifierOf(edge));
+            // Make sure the created variable can be tracked back to the edge.
+            variableTracing.put(variable, edge);
         }
 
         // Visit and translate all activity nodes, according to their type (initial nodes are already accounted for).
@@ -318,7 +349,7 @@ public abstract class Uml2GalTranslator {
         Verify.verifyNotNull(nodeName, "Expected the type of the given node to have a name.");
 
         if (!Strings.isNullOrEmpty(node.getName())) {
-            nodeName += "_" + node.getName();
+            nodeName += "_" + node.getName().replace(" ", "_");
         }
 
         transitionBuilder.setName(String.format("__%s__%s", nodeName, typeBuilder.getTransitionCount()));
@@ -348,7 +379,7 @@ public abstract class Uml2GalTranslator {
 
         // Build and return the transition.
         Transition transition = transitionBuilder.build();
-        transitionTracing.put(transition, getIdentifierOf(node));
+        transitionTracing.put(transition, node);
         return transition;
     }
 
@@ -420,10 +451,5 @@ public abstract class Uml2GalTranslator {
         ParamRef paramRef = Uml2GalTranslationHelper.FACTORY.createParamRef();
         paramRef.setRefParam(param);
         return paramRef;
-    }
-
-    // TODO double check whether this is still needed.
-    private String getIdentifierOf(EObject object) {
-        return object.eResource().getURIFragment(object);
     }
 }
