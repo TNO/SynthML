@@ -10,6 +10,7 @@ import fr.lip6.move.gal.ConstParameter;
 import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.GALTypeDeclaration;
 import fr.lip6.move.gal.Specification;
+import fr.lip6.move.gal.TypeDeclaration;
 import fr.lip6.move.gal.TypedefDeclaration;
 
 /** Builder to conveniently construct {@link Specification GAL specifications}. */
@@ -23,7 +24,6 @@ public class GalSpecificationBuilder {
     private final Map<String, TypedefDeclaration> typedefMapping = new LinkedHashMap<>();
 
     public ConstParameter addParam(String name, int defaultValue) {
-        Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         ConstParameter param = Uml2GalTranslationHelper.FACTORY.createConstParameter();
         param.setName("$" + name);
@@ -32,7 +32,6 @@ public class GalSpecificationBuilder {
     }
 
     public ConstParameter addParam(ConstParameter param) {
-        Preconditions.checkNotNull(param, "Expected a non-null parameter.");
         Preconditions.checkArgument(!specification.getParams().contains(param), "Parameter already declared: " + param);
         String name = param.getName();
         Preconditions.checkArgument(!paramMapping.containsKey(name), "Duplicate parameter name: " + name);
@@ -42,7 +41,6 @@ public class GalSpecificationBuilder {
     }
 
     public GALTypeDeclaration addType(GALTypeDeclaration typeDecl) {
-        Preconditions.checkNotNull(typeDecl, "Expected a non-null type.");
         Preconditions.checkArgument(!specification.getTypes().contains(typeDecl), "Type already declared: " + typeDecl);
         String name = typeDecl.getName();
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
@@ -53,7 +51,6 @@ public class GalSpecificationBuilder {
     }
 
     public TypedefDeclaration addTypedef(String name, int minValue, int maxValue) {
-        Preconditions.checkNotNull(name, "Expected a non-null typedef name.");
         Preconditions.checkArgument(minValue <= maxValue, "Expected the given min value to not exceed the max value.");
         TypedefDeclaration typedef = Uml2GalTranslationHelper.FACTORY.createTypedefDeclaration();
         typedef.setName(name);
@@ -67,7 +64,6 @@ public class GalSpecificationBuilder {
     }
 
     public TypedefDeclaration addTypedef(TypedefDeclaration typedef) {
-        Preconditions.checkNotNull(typedef, "Expected a non-null typedef.");
         Preconditions.checkArgument(!specification.getTypedefs().contains(typedef),
                 "Typedef already declared: " + typedef);
         String name = typedef.getName();
@@ -78,24 +74,24 @@ public class GalSpecificationBuilder {
         return typedef;
     }
 
+    public TypeDeclaration getMain() {
+        return specification.getMain();
+    }
+
     public ConstParameter getParam(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         return paramMapping.get("$" + name);
     }
 
     public GALTypeDeclaration getType(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null type name.");
         return typeMapping.get(name);
     }
 
     public TypedefDeclaration getTypedef(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null typedef name.");
         return typedefMapping.get(name);
     }
 
     public void setMain(GALTypeDeclaration typeDecl) {
-        Preconditions.checkNotNull(typeDecl, "Expected a non-null type.");
         specification.setMain(typeDecl);
     }
 

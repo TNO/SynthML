@@ -19,7 +19,6 @@ public class GalTypeDeclarationBuilder {
     private final Map<String, Variable> variableMapping = new LinkedHashMap<>();
 
     public Transition addTransition(Transition transition) {
-        Preconditions.checkNotNull(transition, "Expected a non-null transition.");
         Preconditions.checkArgument(!typeDecl.getTransitions().contains(transition),
                 "Transition already declared: " + transition);
         typeDecl.getTransitions().add(transition);
@@ -33,8 +32,6 @@ public class GalTypeDeclarationBuilder {
     }
 
     public Variable addVariable(String name, IntExpression defaultValue) {
-        Preconditions.checkNotNull(name, "Expected a non-null variable name.");
-        Preconditions.checkNotNull(defaultValue, "Expected a non-null default value.");
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         Preconditions.checkArgument(!variableMapping.containsKey(name), "Duplicate variable name: " + name);
         Variable variable = Uml2GalTranslationHelper.FACTORY.createVariable();
@@ -50,12 +47,10 @@ public class GalTypeDeclarationBuilder {
     }
 
     public Variable getVariable(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null variable name.");
         return variableMapping.get(name);
     }
 
     public void setName(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null type name.");
         typeDecl.setName(name);
     }
 

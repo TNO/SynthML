@@ -32,11 +32,15 @@ public class GalTransitionBuilder {
 
     private final Map<String, Parameter> paramMapping = new LinkedHashMap<>();
 
-    public Statement addAssignment(Variable variable, Parameter value) {
-        Preconditions.checkNotNull(value, "Expected a non-null parameter.");
-        ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();
-        reference.setRefParam(value);
-        return addAssignment(variable, reference);
+    public Statement addAction(Statement statement) {
+        Preconditions.checkArgument(!transition.getActions().contains(statement),
+                "Action already declared: " + statement);
+        transition.getActions().add(statement);
+        return statement;
+    }
+
+    public void addActions(Collection<? extends Statement> statements) {
+        statements.forEach(this::addAction);
     }
 
     public Statement addAssignment(Variable variable, int value) {
@@ -45,29 +49,20 @@ public class GalTransitionBuilder {
         return addAssignment(variable, constant);
     }
 
+    public Statement addAssignment(Variable variable, Parameter value) {
+        ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();
+        reference.setRefParam(value);
+        return addAssignment(variable, reference);
+    }
+
     public Statement addAssignment(Variable variable, IntExpression value) {
-        Preconditions.checkNotNull(variable, "Expected a non-null variable.");
         VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(variable);
-        Preconditions.checkNotNull(value, "Expected a non-null expression.");
         Assignment assignment = Uml2GalTranslationHelper.FACTORY.createAssignment();
         assignment.setLeft(reference);
         assignment.setRight(value);
         assignment.setType(AssignType.ASSIGN);
         return addAction(assignment);
-    }
-
-    public Statement addAction(Statement statement) {
-        Preconditions.checkNotNull(statement, "Expected a non-null statement.");
-        Preconditions.checkArgument(!transition.getActions().contains(statement),
-                "Action already declared: " + statement);
-        transition.getActions().add(statement);
-        return statement;
-    }
-
-    public void addActions(Collection<? extends Statement> statements) {
-        Preconditions.checkNotNull(statements, "Expected a non-null collection of statements.");
-        statements.forEach(this::addAction);
     }
 
     public BooleanExpression addEqualityGuard(Variable left, int right) {
@@ -77,15 +72,12 @@ public class GalTransitionBuilder {
     }
 
     public BooleanExpression addEqualityGuard(Variable left, IntExpression right) {
-        Preconditions.checkNotNull(left, "Expected a non-null variable.");
         VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(left);
         return addEqualityGuard(reference, right);
     }
 
     public BooleanExpression addEqualityGuard(IntExpression left, IntExpression right) {
-        Preconditions.checkNotNull(left, "Expected a non-null left expression.");
-        Preconditions.checkNotNull(right, "Expected a non-null right expression.");
         Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
         comparison.setOperator(ComparisonOperators.EQ);
         comparison.setLeft(left);
@@ -94,19 +86,15 @@ public class GalTransitionBuilder {
     }
 
     public BooleanExpression addGuard(BooleanExpression guard) {
-        Preconditions.checkNotNull(guard, "Expected a non-null guard.");
         guards.add(guard);
         return guard;
     }
 
     public void addGuards(Collection<? extends BooleanExpression> guards) {
-        Preconditions.checkNotNull(guards, "Expected a non-null collection of guards.");
         guards.forEach(this::addGuard);
     }
 
     public Parameter addParam(String name, TypedefDeclaration paramType) {
-        Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
-        Preconditions.checkNotNull(paramType, "Expected a non-null parameter type.");
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         Parameter param = Uml2GalTranslationHelper.FACTORY.createParameter();
         param.setName("$" + name);
@@ -115,7 +103,6 @@ public class GalTransitionBuilder {
     }
 
     public Parameter addParam(Parameter param) {
-        Preconditions.checkNotNull(param, "Expected a non-null parameter.");
         Preconditions.checkArgument(!transition.getParams().contains(param), "Parameter already declared: " + param);
         String name = param.getName();
         Preconditions.checkArgument(!paramMapping.containsKey(name), "Duplicate parameter name: " + name);
@@ -125,13 +112,11 @@ public class GalTransitionBuilder {
     }
 
     public Parameter getParam(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         return paramMapping.get("$" + name);
     }
 
     public void setName(String name) {
-        Preconditions.checkNotNull(name, "Expected a non-null transition name.");
         transition.setName(name);
     }
 
