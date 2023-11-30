@@ -9,8 +9,8 @@ import fr.lip6.move.gal.And;
 import fr.lip6.move.gal.BooleanExpression;
 import fr.lip6.move.gal.GalFactory;
 
-public class GalTranslationHelper {
-    private GalTranslationHelper() {
+public class Uml2GalTranslationHelper {
+    private Uml2GalTranslationHelper() {
     }
 
     static final GalFactory FACTORY = GalFactory.eINSTANCE;
@@ -18,7 +18,7 @@ public class GalTranslationHelper {
     static And combineAsAnd(BooleanExpression left, BooleanExpression right) {
         Preconditions.checkNotNull(left, "Expected a non-null left expression.");
         Preconditions.checkNotNull(right, "Expected a non-null right expression.");
-        And conjunction = GalTranslationHelper.FACTORY.createAnd();
+        And conjunction = Uml2GalTranslationHelper.FACTORY.createAnd();
         conjunction.setLeft(left);
         conjunction.setRight(right);
         return conjunction;
@@ -26,8 +26,8 @@ public class GalTranslationHelper {
 
     static BooleanExpression combineAsAnd(Collection<BooleanExpression> exprs) {
         Preconditions.checkNotNull(exprs, "Expected a non-null collection of expressions.");
-        return exprs.stream().reduce(GalTranslationHelper::combineAsAnd)
-                .orElse(GalTranslationHelper.FACTORY.createTrue());
+        return exprs.stream().reduce(Uml2GalTranslationHelper::combineAsAnd)
+                .orElse(Uml2GalTranslationHelper.FACTORY.createTrue());
     }
 
     static void ensureNameDoesNotContainDollarSign(String name) {

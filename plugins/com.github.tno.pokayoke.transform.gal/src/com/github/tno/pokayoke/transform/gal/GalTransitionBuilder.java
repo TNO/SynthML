@@ -26,7 +26,7 @@ import fr.lip6.move.gal.VariableReference;
 
 /** Builder to conveniently construct {@link Transition GAL transitions}. */
 public class GalTransitionBuilder {
-    private final Transition transition = GalTranslationHelper.FACTORY.createTransition();
+    private final Transition transition = Uml2GalTranslationHelper.FACTORY.createTransition();
 
     private final List<BooleanExpression> guards = new ArrayList<>();
 
@@ -34,23 +34,23 @@ public class GalTransitionBuilder {
 
     public Statement addAssignment(Variable variable, Parameter value) {
         Preconditions.checkNotNull(value, "Expected a non-null parameter.");
-        ParamRef reference = GalTranslationHelper.FACTORY.createParamRef();
+        ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();
         reference.setRefParam(value);
         return addAssignment(variable, reference);
     }
 
     public Statement addAssignment(Variable variable, int value) {
-        Constant constant = GalTranslationHelper.FACTORY.createConstant();
+        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
         constant.setValue(value);
         return addAssignment(variable, constant);
     }
 
     public Statement addAssignment(Variable variable, IntExpression value) {
         Preconditions.checkNotNull(variable, "Expected a non-null variable.");
-        VariableReference reference = GalTranslationHelper.FACTORY.createVariableReference();
+        VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(variable);
         Preconditions.checkNotNull(value, "Expected a non-null expression.");
-        Assignment assignment = GalTranslationHelper.FACTORY.createAssignment();
+        Assignment assignment = Uml2GalTranslationHelper.FACTORY.createAssignment();
         assignment.setLeft(reference);
         assignment.setRight(value);
         assignment.setType(AssignType.ASSIGN);
@@ -71,14 +71,14 @@ public class GalTransitionBuilder {
     }
 
     public BooleanExpression addEqualityGuard(Variable left, int right) {
-        Constant constant = GalTranslationHelper.FACTORY.createConstant();
+        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
         constant.setValue(right);
         return addEqualityGuard(left, constant);
     }
 
     public BooleanExpression addEqualityGuard(Variable left, IntExpression right) {
         Preconditions.checkNotNull(left, "Expected a non-null variable.");
-        VariableReference reference = GalTranslationHelper.FACTORY.createVariableReference();
+        VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(left);
         return addEqualityGuard(reference, right);
     }
@@ -86,7 +86,7 @@ public class GalTransitionBuilder {
     public BooleanExpression addEqualityGuard(IntExpression left, IntExpression right) {
         Preconditions.checkNotNull(left, "Expected a non-null left expression.");
         Preconditions.checkNotNull(right, "Expected a non-null right expression.");
-        Comparison comparison = GalTranslationHelper.FACTORY.createComparison();
+        Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
         comparison.setOperator(ComparisonOperators.EQ);
         comparison.setLeft(left);
         comparison.setRight(right);
@@ -107,8 +107,8 @@ public class GalTransitionBuilder {
     public Parameter addParam(String name, TypedefDeclaration paramType) {
         Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
         Preconditions.checkNotNull(paramType, "Expected a non-null parameter type.");
-        GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
-        Parameter param = GalTranslationHelper.FACTORY.createParameter();
+        Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
+        Parameter param = Uml2GalTranslationHelper.FACTORY.createParameter();
         param.setName("$" + name);
         param.setType(paramType);
         return addParam(param);
@@ -126,7 +126,7 @@ public class GalTransitionBuilder {
 
     public Parameter getParam(String name) {
         Preconditions.checkNotNull(name, "Expected a non-null parameter name.");
-        GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
+        Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         return paramMapping.get("$" + name);
     }
 
@@ -136,7 +136,7 @@ public class GalTransitionBuilder {
     }
 
     public Transition build() {
-        transition.setGuard(GalTranslationHelper.combineAsAnd(guards));
+        transition.setGuard(Uml2GalTranslationHelper.combineAsAnd(guards));
         return transition;
     }
 }

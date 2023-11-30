@@ -14,7 +14,7 @@ import fr.lip6.move.gal.Variable;
 
 /** Builder to conveniently construct {@link GALTypeDeclaration GAL type declarations}. */
 public class GalTypeDeclarationBuilder {
-    private final GALTypeDeclaration typeDecl = GalTranslationHelper.FACTORY.createGALTypeDeclaration();
+    private final GALTypeDeclaration typeDecl = Uml2GalTranslationHelper.FACTORY.createGALTypeDeclaration();
 
     private final Map<String, Variable> variableMapping = new LinkedHashMap<>();
 
@@ -27,7 +27,7 @@ public class GalTypeDeclarationBuilder {
     }
 
     public Variable addVariable(String name, int defaultValue) {
-        Constant constValue = GalTranslationHelper.FACTORY.createConstant();
+        Constant constValue = Uml2GalTranslationHelper.FACTORY.createConstant();
         constValue.setValue(defaultValue);
         return addVariable(name, constValue);
     }
@@ -35,9 +35,9 @@ public class GalTypeDeclarationBuilder {
     public Variable addVariable(String name, IntExpression defaultValue) {
         Preconditions.checkNotNull(name, "Expected a non-null variable name.");
         Preconditions.checkNotNull(defaultValue, "Expected a non-null default value.");
-        GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
+        Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         Preconditions.checkArgument(!variableMapping.containsKey(name), "Duplicate variable name: " + name);
-        Variable variable = GalTranslationHelper.FACTORY.createVariable();
+        Variable variable = Uml2GalTranslationHelper.FACTORY.createVariable();
         variable.setName(name);
         variable.setValue(defaultValue);
         typeDecl.getVariables().add(variable);
