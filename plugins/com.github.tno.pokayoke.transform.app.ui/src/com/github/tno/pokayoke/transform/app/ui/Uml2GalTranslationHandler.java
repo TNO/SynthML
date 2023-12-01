@@ -19,14 +19,14 @@ import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.app.Uml2GalTranslationApp;
 
-/** Menu action handler for transforming UML models to GAL specifications. */
+/** Menu action handler for translating UML models to GAL specifications. */
 public class Uml2GalTranslationHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) IStructuredSelection selection) {
         IResource inputResource = (IResource)selection.getFirstElement();
         Path inputPath = Paths.get(inputResource.getLocationURI());
         Path outputPath = inputPath.resolveSibling("output");
-        Job job = Job.create("Transforming UML to GAL", monitor -> {
+        Job job = Job.create("Translating UML to GAL", monitor -> {
             try {
                 Uml2GalTranslationApp.translateUml2Gal(inputPath, outputPath);
 
@@ -35,7 +35,7 @@ public class Uml2GalTranslationHandler {
                 return Status.OK_STATUS;
             } catch (IOException | JSONException | CoreException e) {
                 return new Status(IStatus.ERROR, getClass().getPackageName(),
-                        "Failed to transform to GAL: " + inputPath, e);
+                        "Failed to translate to GAL: " + inputPath, e);
             }
         });
         job.setUser(true);

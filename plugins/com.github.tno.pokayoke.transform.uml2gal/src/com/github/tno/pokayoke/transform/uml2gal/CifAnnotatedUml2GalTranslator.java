@@ -189,8 +189,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
             return reference;
         }
 
-        // Try translating the expression as an enumeration literal, which got translated to specification
-        // parameters.
+        // Try translating the expression as an enumeration literal, which got translated to specification parameters.
         ConstParameter param = specificationBuilder.getParam(name);
         if (param != null) {
             ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();

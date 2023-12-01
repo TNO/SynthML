@@ -96,35 +96,6 @@ public abstract class Uml2GalTranslator {
     protected abstract Assignment translateAssignment(String update);
 
     /**
-     * Translates the given UML model to a GAL specification.
-     *
-     * @param model The model to translate.
-     * @return The translated specification.
-     */
-    public Specification translate(Model model) {
-        // Validate and flatten the model.
-        new UMLValidatorSwitch().doSwitch(model);
-        new FlattenUMLActivity(model).transform();
-
-        // Create GAL specification builders for translating the UML model, and reset from any previous translations.
-        specificationBuilder = new GalSpecificationBuilder();
-        typeBuilder = new GalTypeDeclarationBuilder();
-        initVariable = null;
-        edgeMapping.clear();
-        variableTracing.clear();
-        transitionTracing.clear();
-
-        // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(FileHelper.loadPrimitiveType("Boolean").getName(), 0, 1);
-
-        // Translate the given model by visiting and translating all its elements.
-        translateModel(model);
-
-        // Return the translated GAL specification;
-        return specificationBuilder.build();
-    }
-
-    /**
      * Gives tracing information of how the translated GAL specification relates to the input UML model.
      *
      * @return Tracing infromation, as JSON.
@@ -147,6 +118,35 @@ public abstract class Uml2GalTranslator {
         root.put("transitions", transitionTracingJson);
 
         return root;
+    }
+
+    /**
+     * Translates the given UML model to a GAL specification.
+     *
+     * @param model The model to translate.
+     * @return The translated specification.
+     */
+    public Specification translate(Model model) {
+        // Validate and flatten the model.
+        new UMLValidatorSwitch().doSwitch(model);
+        new FlattenUMLActivity(model).transform();
+
+        // Create GAL specification builders for translating the UML model, and reset from any previous translation.
+        specificationBuilder = new GalSpecificationBuilder();
+        typeBuilder = new GalTypeDeclarationBuilder();
+        initVariable = null;
+        edgeMapping.clear();
+        variableTracing.clear();
+        transitionTracing.clear();
+
+        // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
+        specificationBuilder.addTypedef(FileHelper.loadPrimitiveType("Boolean").getName(), 0, 1);
+
+        // Translate the given model by visiting and translating all its elements.
+        translateModel(model);
+
+        // Return the translated GAL specification.
+        return specificationBuilder.build();
     }
 
     private void translateModel(Model model) {
@@ -242,7 +242,7 @@ public abstract class Uml2GalTranslator {
         // In GAL all variable declarations need to have a default value. If the current property has a default value
         // defined, we translate it as part of the variable declaration. Otherwise, we give the variable a (temporary)
         // default value of '0'. The initialization transition will then fix the latter case, by allowing any variable
-        // that shouldn't have a default value to have an arbitrary value instead of '0'.
+        // that should not have a default value to have an arbitrary value instead of '0'.
         ValueSpecification defaultValue = property.getDefaultValue();
 
         Variable variable;
@@ -252,7 +252,7 @@ public abstract class Uml2GalTranslator {
             variable = typeBuilder.addVariable(name, 0);
         }
 
-        // Make sure the created variable can be tracked back to the property.
+        // Make sure the created variable can be traced back to the property.
         variableTracing.put(variable, property);
     }
 
@@ -267,7 +267,7 @@ public abstract class Uml2GalTranslator {
                     edge.getSource() instanceof InitialNode ? 1 : 0);
             edgeMapping.put(edge, variable);
 
-            // Make sure the created variable can be tracked back to the edge.
+            // Make sure the created variable can be traced back to the edge.
             variableTracing.put(variable, edge);
         }
 
@@ -315,7 +315,7 @@ public abstract class Uml2GalTranslator {
     }
 
     private void translateMergeNode(MergeNode node) {
-        // Define a GAL transition for every incoming edge, since only one of these edges needs to be active.
+        // Define a GAL transition for every incoming edge, since only one of these edges needs to be enabled.
         for (ActivityEdge incomingEdge: node.getIncomings()) {
             typeBuilder.addTransition(translateActivityNode(node, ImmutableList.of(incomingEdge), node.getOutgoings(),
                     ImmutableList.of(), ImmutableList.of()));
@@ -326,8 +326,8 @@ public abstract class Uml2GalTranslator {
      * Translates the given UML activity node to a GAL transition.
      *
      * @param node The node to translate.
-     * @param incomingEdgesToConsider The incoming edges of the node to consider.
-     * @param outgoingEdgesToConsider The outgoing edges of the node to consider.
+     * @param incomingEdgesToConsider The subset of incoming edges of the node to consider.
+     * @param outgoingEdgesToConsider The subset of outgoing edges of the node to consider.
      * @param guards The guards to add to the translated transition.
      * @param effects The effects to add to the translated transition.
      * @return The translated transition.
@@ -361,16 +361,16 @@ public abstract class Uml2GalTranslator {
         transitionBuilder.addGuards(guards);
         transitionBuilder.addActions(effects);
 
-        // Define a guard for every incoming edge to consider, to check if it is active, as well as an assignment to
-        // make it inactive after having taken the transition.
+        // Define a guard for every incoming edge to consider, to check if it is enabled, as well as an assignment to
+        // make it disabled after having taken the transition.
         for (ActivityEdge incomingEdge: incomingEdgesToConsider) {
             Variable variable = edgeMapping.get(incomingEdge);
             transitionBuilder.addEqualityGuard(variable, 1);
             transitionBuilder.addAssignment(variable, 0);
         }
 
-        // Define a guard for every outgoing edge to consider, to check if it is inactive, as well as an assignment to
-        // make it active after having taken the transition.
+        // Define a guard for every outgoing edge to consider, to check if it is disabled, as well as an assignment to
+        // make it enabled after having taken the transition.
         for (ActivityEdge outgoingEdge: outgoingEdgesToConsider) {
             Variable variable = edgeMapping.get(outgoingEdge);
             transitionBuilder.addEqualityGuard(variable, 0);
