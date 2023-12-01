@@ -51,19 +51,6 @@ public class Uml2GalTranslationHelper {
      *
      * @param sourcePath The path to load the UML model.
      * @param targetPath The path to store the translated GAL specification.
-     * @throws IOException Thrown in case the model could not be loaded or the specification be stored.
-     */
-    public static void translateCifAnnotatedModel(String sourcePath, String targetPath) throws IOException {
-        Model model = FileHelper.loadModel(sourcePath);
-        Specification specification = new CifAnnotatedUml2GalTranslator(sourcePath).translate(model);
-        store(specification, targetPath);
-    }
-
-    /**
-     * Translates a CIF-annotated UML model to a GAL specification.
-     *
-     * @param sourcePath The path to load the UML model.
-     * @param targetPath The path to store the translated GAL specification.
      * @param tracingPath The path to store the JSON tracing information.
      * @throws IOException Thrown in case the model could not be loaded or the specification be stored.
      * @throws JSONException In case generating the tracing JSON failed.
