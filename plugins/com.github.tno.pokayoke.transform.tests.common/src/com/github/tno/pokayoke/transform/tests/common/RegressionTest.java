@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.tests.common;
 
 import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
