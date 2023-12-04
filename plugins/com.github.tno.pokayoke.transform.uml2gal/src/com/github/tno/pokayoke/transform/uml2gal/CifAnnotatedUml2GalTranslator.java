@@ -89,17 +89,11 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
         }
 
         // Try translating the expression as a comparison of integers, e.g., less than or equal to.
-        ComparisonOperators comparisonOperator = translateComparisonOperator(expr.operator);
-
-        if (comparisonOperator != null) {
-            Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
-            comparison.setLeft(translateExpressionToInt(expr.left));
-            comparison.setRight(translateExpressionToInt(expr.right));
-            comparison.setOperator(comparisonOperator);
-            return comparison;
-        } else {
-            throw new RuntimeException("Unsupported binary expression: " + expr);
-        }
+        Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
+        comparison.setLeft(translateExpressionToInt(expr.left));
+        comparison.setRight(translateExpressionToInt(expr.right));
+        comparison.setOperator(translateComparisonOperator(expr.operator));
+        return comparison;
     }
 
     private ComparisonOperators translateComparisonOperator(String operator) {
@@ -110,7 +104,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
             case ">" -> ComparisonOperators.GT;
             case "<=" -> ComparisonOperators.LE;
             case "<" -> ComparisonOperators.LT;
-            default -> null;
+            default -> throw new RuntimeException("Unsupported operator: " + operator);
         };
     }
 
