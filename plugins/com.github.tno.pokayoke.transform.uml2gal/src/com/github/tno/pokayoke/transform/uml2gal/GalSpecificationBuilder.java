@@ -52,13 +52,13 @@ public class GalSpecificationBuilder {
 
     public TypedefDeclaration addTypedef(String name, int minValue, int maxValue) {
         Preconditions.checkArgument(minValue <= maxValue, "Expected the given min value to not exceed the max value.");
-        TypedefDeclaration typedef = Uml2GalTranslationHelper.FACTORY.createTypedefDeclaration();
-        typedef.setName(name);
         Constant typedefMinValue = Uml2GalTranslationHelper.FACTORY.createConstant();
         typedefMinValue.setValue(minValue);
-        typedef.setMin(typedefMinValue);
         Constant typedefMaxValue = Uml2GalTranslationHelper.FACTORY.createConstant();
         typedefMaxValue.setValue(maxValue);
+        TypedefDeclaration typedef = Uml2GalTranslationHelper.FACTORY.createTypedefDeclaration();
+        typedef.setName(name);
+        typedef.setMin(typedefMinValue);
         typedef.setMax(typedefMaxValue);
         return addTypedef(typedef);
     }
