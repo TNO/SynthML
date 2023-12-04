@@ -153,7 +153,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
         IntExpression right = translateExpressionToInt(expr.right);
 
         switch (expr.operator) {
-            case "+", "-", "%", "/", "*" -> {
+            case "+", "-" -> {
                 BinaryIntExpression binExpr = Uml2GalTranslationHelper.FACTORY.createBinaryIntExpression();
                 binExpr.setLeft(left);
                 binExpr.setOp(expr.operator);
