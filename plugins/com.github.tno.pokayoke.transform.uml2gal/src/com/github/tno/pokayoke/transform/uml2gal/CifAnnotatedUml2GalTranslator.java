@@ -130,7 +130,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
                 not.setValue(translateExpressionToBoolean(expr.child));
                 return not;
             }
-            default -> throw new RuntimeException("Unsupported unary expression: " + expr);
+            default -> throw new RuntimeException("Unsupported unary expression: " + expr.operator);
         }
     }
 
@@ -160,7 +160,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
                 binExpr.setRight(right);
                 return binExpr;
             }
-            default -> throw new RuntimeException("Unsupported binary expression: " + expr);
+            default -> throw new RuntimeException("Unsupported binary expression: " + expr.operator);
         }
     }
 
@@ -190,7 +190,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
             reference.setRefParam(param);
             return reference;
         } else {
-            throw new RuntimeException("Unsupported name expression: " + expr);
+            throw new RuntimeException("Unsupported name expression: " + name);
         }
     }
 
@@ -201,7 +201,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
                 minus.setValue(translateExpressionToInt(expr.child));
                 return minus;
             }
-            default -> throw new RuntimeException("Unsupported unary expression: " + expr);
+            default -> throw new RuntimeException("Unsupported unary expression: " + expr.operator);
         }
     }
 
