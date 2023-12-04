@@ -165,16 +165,11 @@ public abstract class Uml2GalTranslator {
             }
         }
 
-        // Visit nested models.
+        // Visit nested models and non-activity classes directly within the model.
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Model nestedModel) {
                 translateModel(nestedModel);
-            }
-        }
-
-        // Visit non-activity classes directly within the model.
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Class classElement && !(element instanceof Activity)) {
+            } else if (element instanceof Class classElement && !(element instanceof Activity)) {
                 translateClass(classElement);
             }
         }
