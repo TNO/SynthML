@@ -25,18 +25,18 @@ public class GalTypeDeclarationBuilder {
         return transition;
     }
 
-    public Variable addVariable(String name, int defaultValue) {
+    public Variable addVariable(String name, int initialValue) {
         Constant constValue = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constValue.setValue(defaultValue);
+        constValue.setValue(initialValue);
         return addVariable(name, constValue);
     }
 
-    public Variable addVariable(String name, IntExpression defaultValue) {
+    public Variable addVariable(String name, IntExpression initialValue) {
         Uml2GalTranslationHelper.ensureNameDoesNotContainDollarSign(name);
         Preconditions.checkArgument(!variableMapping.containsKey(name), "Duplicate variable name: " + name);
         Variable variable = Uml2GalTranslationHelper.FACTORY.createVariable();
         variable.setName(name);
-        variable.setValue(defaultValue);
+        variable.setValue(initialValue);
         typeDecl.getVariables().add(variable);
         variableMapping.put(name, variable);
         return variable;
