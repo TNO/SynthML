@@ -21,7 +21,7 @@
         <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
-        <!-- Maven Formatter version. -->
+        <!-- Maven formatter version. -->
         <!-- To ensure consistent formatting, select plugin version that matches the Eclipse version that we use, -->
         <!-- see https://code.revelc.net/formatter-maven-plugin/eclipse-versions.html -->
         <maven.formatter.version>2.23.0</maven.formatter.version>
