@@ -2592,7 +2592,7 @@ public class CifToSynthesisConverter {
      * @return The synthesis predicate.
      * @throws UnsupportedPredicateException If the predicate is not supported.
      */
-    private static BDD convertPred(Expression pred, boolean initial, SynthesisAutomaton synthAut)
+    public static BDD convertPred(Expression pred, boolean initial, SynthesisAutomaton synthAut)
             throws UnsupportedPredicateException
     {
         if (pred instanceof BoolExpression) {
@@ -2929,7 +2929,7 @@ public class CifToSynthesisConverter {
      * @throws UnsupportedPredicateException If the predicate is not supported.
      * @throws InvalidInputException If a static part of the given expression can't be evaluated.
      */
-    private static CifBddBitVectorAndCarry convertExpr(Expression expr, boolean initial, SynthesisAutomaton synthAut,
+    public static CifBddBitVectorAndCarry convertExpr(Expression expr, boolean initial, SynthesisAutomaton synthAut,
             boolean allowSubtract, Supplier<String> partMsg) throws UnsupportedPredicateException
     {
         // Variable references.
@@ -3377,7 +3377,7 @@ public class CifToSynthesisConverter {
     }
 
     /** Exception to indicate an unsupported predicate. */
-    private static class UnsupportedPredicateException extends Exception {
+    public static class UnsupportedPredicateException extends Exception {
         /**
          * The (part of the) predicate that is not supported. May be {@code null} to indicate that the predicate is not
          * supported due to earlier precondition violations.

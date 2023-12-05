@@ -27,6 +27,7 @@ import org.eclipse.escet.cif.cif2cif.ElimComponentDefInst;
 import org.eclipse.escet.cif.cif2cif.RemoveIoDecls;
 import org.eclipse.escet.cif.datasynth.bdd.BddUtils;
 import org.eclipse.escet.cif.datasynth.conversion.CifToSynthesisConverter;
+import org.eclipse.escet.cif.datasynth.conversion.CifToSynthesisConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.datasynth.conversion.SynthesisToCifConverter;
 import org.eclipse.escet.cif.datasynth.options.BddAdvancedVariableOrderOption;
 import org.eclipse.escet.cif.datasynth.options.BddDcshVarOrderOption;
@@ -135,6 +136,9 @@ public class CifDataSynthesisApp extends Application<IOutputComponent> {
         }
         try {
             doSynthesis(doTiming, timing);
+        } catch (UnsupportedPredicateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally {
             // Print timing statistics.
             if (doTiming) {
@@ -152,8 +156,9 @@ public class CifDataSynthesisApp extends Application<IOutputComponent> {
      *
      * @param doTiming Whether to collect timing statistics.
      * @param timing The timing statistics data. Is modified in-place.
+     * @throws UnsupportedPredicateException Throw unsupported predicate exception.
      */
-    private void doSynthesis(boolean doTiming, CifDataSynthesisTiming timing) {
+    private void doSynthesis(boolean doTiming, CifDataSynthesisTiming timing) throws UnsupportedPredicateException {
         // Read option value, to validate it early.
         String supName = SupervisorNameOption.getSupervisorName("sup");
         String supNamespace = SupervisorNamespaceOption.getNamespace();

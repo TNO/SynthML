@@ -75,6 +75,7 @@ import org.eclipse.escet.cif.common.CifTypeUtils;
 import org.eclipse.escet.cif.common.CifValidationUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.datasynth.bdd.BddToCif;
+import org.eclipse.escet.cif.datasynth.conversion.CifToSynthesisConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.datasynth.options.BddOutputNamePrefixOption;
 import org.eclipse.escet.cif.datasynth.options.BddOutputOption;
 import org.eclipse.escet.cif.datasynth.options.BddOutputOption.BddOutputMode;
@@ -122,6 +123,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.Field;
 import org.eclipse.escet.cif.metamodel.cif.types.ListType;
 import org.eclipse.escet.cif.metamodel.cif.types.TupleType;
 import org.eclipse.escet.common.app.framework.exceptions.InvalidOptionException;
+import org.eclipse.escet.common.app.framework.output.OutputProvider;
 import org.eclipse.escet.common.emf.EMFHelper;
 import org.eclipse.escet.common.java.Assert;
 import org.eclipse.escet.common.java.Sets;
@@ -180,8 +182,11 @@ public class SynthesisToCifConverter {
      * @param supName The name of the supervisor automaton.
      * @param supNamespace The namespace of the supervisor, or {@code null} for the empty namespace.
      * @return The output CIF specification, i.e. the modified input CIF specification.
+     * @throws UnsupportedPredicateException Throw unsupported predicate exception.
      */
-    public Specification convert(SynthesisAutomaton synthAut, Specification spec, String supName, String supNamespace) {
+    public Specification convert(SynthesisAutomaton synthAut, Specification spec, String supName, String supNamespace)
+            throws UnsupportedPredicateException
+    {
         // Initialization.
         this.synthAut = synthAut;
         this.spec = spec;
@@ -263,6 +268,91 @@ public class SynthesisToCifConverter {
         // re-allocation, breaking BDD equality/hashing and thus our internal
         // node mapping.
         prepareBddToCif();
+
+        // --------------------------------Hacking code-------------------------------------------
+
+        String recenterAction = "c_ALR_recenter_wafer";
+        String rotateAction = "c_ALR_rotate_towards_LL1T";
+
+        // Step 1: get synthesized conditions in BDD.
+        Event recenter = controllables.stream().filter(e -> e.getName().equals(recenterAction)).toList().get(0);
+        Event rotate = controllables.stream().filter(e -> e.getName().equals(rotateAction)).toList().get(0);
+
+        BDD recenterSynthesizedCondition = synthAut.outputGuards.get(recenter);
+        BDD rotateSynthesizedCondition = synthAut.outputGuards.get(rotate);
+        Expression recenterSynthesizedConditionExpr = convertPred(recenterSynthesizedCondition);
+        Expression rotateSynthesizedConditionExpr = convertPred(rotateSynthesizedCondition);
+
+        OutputProvider.out("Synthesized condition expression for Recenter Wafer:");
+        OutputProvider.out(CifTextUtils.exprToStr(recenterSynthesizedConditionExpr));
+        OutputProvider.out("Synthesized condition expression for Rotate Towards LL1T:");
+        OutputProvider.out(CifTextUtils.exprToStr(rotateSynthesizedConditionExpr));
+
+        // Step 2: get state annotation in BDD.
+        // Copy the annotation from the generated state space. Double quotations have been replaced with single
+        // quotations.
+        String loc16 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.is_measured = false, Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'True', sup = '*')";
+        String loc17 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.is_measured = false, Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'False', sup = '*')";
+
+        loc16 = loc16.replace("@state(", "").replace(")", "");
+        loc17 = loc17.replace("@state(", "").replace(")", "");
+
+        // Parse the state info and create binary expression for each location.
+        BinaryExpression expression4Location16 = CIFExpressionHelper.getBinaryExpression4Location(synthAut, loc16);
+        BinaryExpression expression4Location17 = CIFExpressionHelper.getBinaryExpression4Location(synthAut, loc17);
+
+        OutputProvider.out("State expression for location 16: ");
+        OutputProvider.out(CifTextUtils.exprToStr(expression4Location16));
+        OutputProvider.out("State expression for location 17: ");
+        OutputProvider.out(CifTextUtils.exprToStr(expression4Location17));
+
+        // Convert CIF expressions to BDDs.
+        BDD bdd4Loc16 = CifToSynthesisConverter.convertPred(expression4Location16, false, synthAut);
+        BDD bdd4Loc17 = CifToSynthesisConverter.convertPred(expression4Location17, false, synthAut);
+
+        // Get disjunction BDD of these two CIF expressions.
+        BDD disjunction = bdd4Loc16.or(bdd4Loc17);
+
+        // Print the corresponding expression.
+        Expression disjunctionExpression = convertPred(disjunction);
+        OutputProvider.out("Expression for disjunction of expressions for Loc 16 and 17: ");
+        OutputProvider.out(CifTextUtils.exprToStr(disjunctionExpression));
+
+        // Step 3: get action guards in BDDs.
+        Automaton specComp = (Automaton)spec.getComponents().stream()
+                .filter(component -> component.getName().equals("Spec")).toList().get(0);
+        Location location = specComp.getLocations().stream().filter(loc -> loc.getName().equals("Home")).toList()
+                .get(0);
+
+        Expression recenterActionGuardExpr = CifValueUtils
+                .createConjunction(CIFExpressionHelper.getActionGuard(recenterAction, location.getEdges()));
+        Expression rotateActionGuardExpr = CifValueUtils
+                .createConjunction(CIFExpressionHelper.getActionGuard(rotateAction, location.getEdges()));
+
+        OutputProvider.out("Action guards for Recenter Wafer: ");
+        OutputProvider.out(CifTextUtils.exprToStr(recenterActionGuardExpr));
+        OutputProvider.out("Action guards for Rotate Towards LL1T:");
+        OutputProvider.out(CifTextUtils.exprToStr(rotateActionGuardExpr));
+
+        BDD recenterActionGuardBDD = CifToSynthesisConverter.convertPred(recenterActionGuardExpr, false, synthAut);
+        BDD rotationActionGuardBDD = CifToSynthesisConverter.convertPred(rotateActionGuardExpr, false, synthAut);
+
+        // Step 4: Simplify BDDs.
+        BDD simplifiedRecenterGuardBDD = recenterSynthesizedCondition.simplify(recenterActionGuardBDD)
+                .simplify(disjunction);
+        BDD simplifiedRotateGuardBDD = rotateSynthesizedCondition.simplify(rotationActionGuardBDD)
+                .simplify(disjunction);
+
+        // Step 5: Convert BDDs into expressions.
+        Expression recenterWaferGuardExpr = convertPred(simplifiedRecenterGuardBDD);
+        Expression rotateTowardsLL1TGuardExpr = convertPred(simplifiedRotateGuardBDD);
+
+        // Print the simplified expressions.
+        OutputProvider.out("Print the simplified expressions: ");
+        OutputProvider.out(CifTextUtils.exprToStr(recenterWaferGuardExpr));
+        OutputProvider.out(CifTextUtils.exprToStr(rotateTowardsLL1TGuardExpr));
+
+        // --------------------------------Hacking code-------------------------------------------
 
         // Add edges for controllable events.
         List<Edge> edges = listc(controllables.size());

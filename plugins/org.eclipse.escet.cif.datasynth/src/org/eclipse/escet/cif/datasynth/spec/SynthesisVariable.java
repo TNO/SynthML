@@ -46,6 +46,10 @@ public abstract class SynthesisVariable {
     /** The upper bound (maximum value) of the variable. */
     public final int upper;
 
+    // Hacking code ---------------------------------
+    public final PositionObject cifObject;
+    // Hacking code ---------------------------------
+
     /**
      * The BDD domain of the variable. For updates, this represents the pre/old domain. Is {@code null} until actual
      * domain is set.
@@ -77,6 +81,10 @@ public abstract class SynthesisVariable {
         this.count = count;
         this.lower = lower;
         this.upper = upper;
+
+        // Hacking code ---------------------------------
+        this.cifObject = obj;
+        // Hacking code ---------------------------------
     }
 
     /**
