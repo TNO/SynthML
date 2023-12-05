@@ -1,0 +1,115 @@
+//////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available
+// under the terms of the MIT License which is available at
+// https://opensource.org/licenses/MIT
+//
+// SPDX-License-Identifier: MIT
+//////////////////////////////////////////////////////////////////////////////
+
+package org.eclipse.escet.cif.datasynth.varorder.parser;
+
+import java.util.List;
+
+import org.eclipse.escet.cif.datasynth.varorder.parser.ast.VarOrdererArg;
+import org.eclipse.escet.cif.datasynth.varorder.parser.ast.VarOrdererInstance;
+import org.eclipse.escet.setext.runtime.Parser;
+import org.eclipse.escet.setext.runtime.Token;
+
+/**
+ * Call back hook methods for:
+ * <ul>
+ *  <li>{@link VarOrdererParser}</li>
+ * </ul>
+ */
+public final class VarOrdererParserHooks
+implements VarOrdererParser.Hooks
+{
+    @Override
+    public void setParser(Parser<?> parser) {
+    }
+
+    @Override // VarOrdererSeq : VarOrderer;
+    public List<VarOrdererInstance> parseVarOrdererSeq1(VarOrdererInstance v1) {
+        // return null;
+    }
+
+    @Override // VarOrdererSeq : VarOrdererSeq ARROWTK VarOrderer;
+    public List<VarOrdererInstance> parseVarOrdererSeq2(List<VarOrdererInstance> l1, VarOrdererInstance v3) {
+        // return null;
+    }
+
+    @Override // VarOrdererList : VarOrderer;
+    public List<VarOrdererInstance> parseVarOrdererList1(VarOrdererInstance v1) {
+        // return null;
+    }
+
+    @Override // VarOrdererList : VarOrdererList COMMATK VarOrderer;
+    public List<VarOrdererInstance> parseVarOrdererList2(List<VarOrdererInstance> l1, VarOrdererInstance v3) {
+        // return null;
+    }
+
+    @Override // VarOrderer : @IDENTIFIERTK;
+    public VarOrdererInstance parseVarOrderer1(Token t1) {
+        // return null;
+    }
+
+    @Override // VarOrderer : @IDENTIFIERTK PAROPENTK PARCLOSETK;
+    public VarOrdererInstance parseVarOrderer2(Token t1) {
+        // return null;
+    }
+
+    @Override // VarOrderer : @IDENTIFIERTK PAROPENTK VarOrdererArgs OptComma PARCLOSETK;
+    public VarOrdererInstance parseVarOrderer3(Token t1, List<VarOrdererArg> l3, Token t4) {
+        // return null;
+    }
+
+    @Override // VarOrderer : @PAROPENTK VarOrdererSeq PARCLOSETK;
+    public VarOrdererInstance parseVarOrderer4(Token t1, List<VarOrdererInstance> l2) {
+        // return null;
+    }
+
+    @Override // VarOrdererArgs : VarOrdererArg;
+    public List<VarOrdererArg> parseVarOrdererArgs1(VarOrdererArg v1) {
+        // return null;
+    }
+
+    @Override // VarOrdererArgs : VarOrdererArgs COMMATK VarOrdererArg;
+    public List<VarOrdererArg> parseVarOrdererArgs2(List<VarOrdererArg> l1, VarOrdererArg v3) {
+        // return null;
+    }
+
+    @Override // VarOrdererArg : @IDENTIFIERTK EQUALTK @NUMBERTK;
+    public VarOrdererArg parseVarOrdererArg1(Token t1, Token t3) {
+        // return null;
+    }
+
+    @Override // VarOrdererArg : @IDENTIFIERTK EQUALTK @STRINGTK;
+    public VarOrdererArg parseVarOrdererArg2(Token t1, Token t3) {
+        // return null;
+    }
+
+    @Override // VarOrdererArg : @IDENTIFIERTK EQUALTK VarOrderer;
+    public VarOrdererArg parseVarOrdererArg3(Token t1, VarOrdererInstance v3) {
+        // return null;
+    }
+
+    @Override // VarOrdererArg : @IDENTIFIERTK EQUALTK SQOPENTK VarOrdererList SQCLOSETK;
+    public VarOrdererArg parseVarOrdererArg4(Token t1, List<VarOrdererInstance> l4) {
+        // return null;
+    }
+
+    @Override // OptComma : ;
+    public Token parseOptComma1() {
+        // return null;
+    }
+
+    @Override // OptComma : @COMMATK;
+    public Token parseOptComma2(Token t1) {
+        // return null;
+    }
+}

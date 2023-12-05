@@ -1,0 +1,80 @@
+//////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2022, 2023 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available
+// under the terms of the MIT License which is available at
+// https://opensource.org/licenses/MIT
+//
+// SPDX-License-Identifier: MIT
+//////////////////////////////////////////////////////////////////////////////
+
+@scanner org.eclipse.escet.cif.datasynth.varorder.parser.VarOrdererScanner;
+
+@terminals:
+  // Symbols.
+  ARROWTK    = "\->";
+  COMMATK    = ",";
+  EQUALTK    = "=";
+  PARCLOSETK = "\)";
+  PAROPENTK  = "\(";
+  SQOPENTK   = "\[";
+  SQCLOSETK  = "\]";
+
+  // Literals.
+  IDENTIFIERTK     = "[a-zA-Z]([a-zA-Z\-]*[a-zA-Z])?"
+                     [an identifier];
+  NUMBERTK         = "\-?(0|[1-9][0-9]*)"
+                     [an integer literal];
+  STRINGTK         = "\"([^\\\"\n]|\\[nt\\\"])*\""
+                     [a string literal];
+
+  // Whitespace and EOF.
+  "[ \t\r\n]+";
+  @eof;
+end
+
+@import java.util.List;
+@import org.eclipse.escet.cif.datasynth.varorder.parser;
+@import org.eclipse.escet.cif.datasynth.varorder.parser.ast;
+@import org.eclipse.escet.setext.runtime.Token;
+
+@main VarOrdererSeq: parser.VarOrdererParser;
+
+@hooks parser.VarOrdererParserHooks;
+
+{List<ast.VarOrdererInstance>}
+VarOrdererSeq : VarOrderer
+              | VarOrdererSeq ARROWTK VarOrderer
+              ;
+
+{List<ast.VarOrdererInstance>}
+VarOrdererList : VarOrderer
+               | VarOrdererList COMMATK VarOrderer
+               ;
+
+{ast.VarOrdererInstance}
+VarOrderer : @IDENTIFIERTK
+           | @IDENTIFIERTK PAROPENTK                         PARCLOSETK
+           | @IDENTIFIERTK PAROPENTK VarOrdererArgs OptComma PARCLOSETK
+           | @PAROPENTK VarOrdererSeq PARCLOSETK
+           ;
+
+{List<ast.VarOrdererArg>}
+VarOrdererArgs : VarOrdererArg
+               | VarOrdererArgs COMMATK VarOrdererArg
+               ;
+
+{ast.VarOrdererArg}
+VarOrdererArg : @IDENTIFIERTK EQUALTK @NUMBERTK
+              | @IDENTIFIERTK EQUALTK @STRINGTK
+              | @IDENTIFIERTK EQUALTK VarOrderer // If no arguments, includes a single identifier.
+              | @IDENTIFIERTK EQUALTK SQOPENTK VarOrdererList SQCLOSETK
+              ;
+
+{Token}
+OptComma : /* empty */
+         | @COMMATK
+         ;

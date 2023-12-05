@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
+  <local-check-config name="Eclipse ESCET Checkstyle" location="/org.eclipse.escet.releng.configuration/checkstyle.xml" type="project" description="Eclipse ESCET Checkstyle.
+
+Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+
+See the NOTICE file(s) distributed with this work for additional
+information regarding copyright ownership.
+
+This program and the accompanying materials are made available under the terms
+of the MIT License which is available at https://opensource.org/licenses/MIT
+
+SPDX-License-Identifier: MIT">
+    <additional-data name="protect-config-file" value="false"/>
+  </local-check-config>
+  <fileset name="all" enabled="true" check-config-name="Eclipse ESCET Checkstyle" local="true">
+    <file-match-pattern match-pattern="^(src.*|asciidoc)/" include-pattern="true"/>
+  </fileset>
+  <filter name="NonSrcDirs" enabled="false"/>
+</fileset-config>
