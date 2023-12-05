@@ -59,6 +59,10 @@ import fr.lip6.move.gal.Variable;
 
 /** Translates annotated UML models to GAL specifications. */
 public abstract class Uml2GalTranslator {
+    protected static final int BOOL_FALSE = 0;
+
+    protected static final int BOOL_TRUE = 1;
+
     protected GalSpecificationBuilder specificationBuilder;
 
     protected GalTypeDeclarationBuilder typeBuilder;
@@ -140,7 +144,7 @@ public abstract class Uml2GalTranslator {
         transitionTracing.clear();
 
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(FileHelper.loadPrimitiveType("Boolean").getName(), 0, 1);
+        specificationBuilder.addTypedef(FileHelper.loadPrimitiveType("Boolean").getName(), BOOL_FALSE, BOOL_TRUE);
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);
@@ -196,13 +200,13 @@ public abstract class Uml2GalTranslator {
         // Declare the variable that indicates whether the initialization transition for the given class has been taken.
         // The initialization transition itself is constructed later below, and will initialize all variables that do
         // not have a fixed default value, by assigning an arbitrary value to them from the domain indicated by the
-        // variable type. Any other transitions can only be taken when the initialization variable is set to '1'.
-        initVariable = typeBuilder.addVariable("__init", 0);
+        // variable type. Any other transitions can only be taken when the init variable is set to 'BOOL_TRUE'.
+        initVariable = typeBuilder.addVariable("__init", BOOL_FALSE);
 
         // The initialization transition can only be taken when initialization has not already happened, and updates the
         // initialization variable to indicate to all transitions that initialization has happened.
-        initTransitionBuilder.addEqualityGuard(initVariable, 0);
-        initTransitionBuilder.addAssignment(initVariable, 1);
+        initTransitionBuilder.addEqualityGuard(initVariable, BOOL_FALSE);
+        initTransitionBuilder.addAssignment(initVariable, BOOL_TRUE);
 
         // For every class property without default value, define a parameter that ranges over the type domain, as well
         // as an assignment to assign this parameter to the corresponding variable, making its value arbitrary.
@@ -236,15 +240,15 @@ public abstract class Uml2GalTranslator {
 
         // In GAL all variable declarations need to have a default value. If the current property has a default value
         // defined, we translate it as part of the variable declaration. Otherwise, we give the variable a (temporary)
-        // default value of '0'. The initialization transition will then fix the latter case, by allowing any variable
-        // that should not have a default value to have an arbitrary value instead of '0'.
+        // default value of 'BOOL_FALSE'. The initialization transition will then fix the latter case, by allowing any
+        // variable that should not have a default value to have an arbitrary value instead of 'BOOL_FALSE'.
         ValueSpecification defaultValue = property.getDefaultValue();
 
         Variable variable;
         if (defaultValue != null) {
             variable = typeBuilder.addVariable(name, translateValueSpecificationToInt(defaultValue));
         } else {
-            variable = typeBuilder.addVariable(name, 0);
+            variable = typeBuilder.addVariable(name, BOOL_FALSE);
         }
 
         // Make sure the created variable can be traced back to the property.
@@ -259,7 +263,7 @@ public abstract class Uml2GalTranslator {
 
             // Translate the edge as a GAL variable.
             Variable variable = typeBuilder.addVariable(String.format("__edge__%s", edgeMapping.size()),
-                    edge.getSource() instanceof InitialNode ? 1 : 0);
+                    edge.getSource() instanceof InitialNode ? BOOL_TRUE : BOOL_FALSE);
             edgeMapping.put(edge, variable);
 
             // Make sure the created variable can be traced back to the edge.
@@ -350,7 +354,7 @@ public abstract class Uml2GalTranslator {
         transitionBuilder.setName(String.format("__%s__%s", nodeName, typeBuilder.getTransitionCount()));
 
         // Define a guard that ensures that the initialization transition has already been taken.
-        transitionBuilder.addEqualityGuard(initVariable, 1);
+        transitionBuilder.addEqualityGuard(initVariable, BOOL_TRUE);
 
         // Add the specified guards and effects to the transition.
         transitionBuilder.addGuards(guards);
@@ -360,16 +364,16 @@ public abstract class Uml2GalTranslator {
         // make it disabled after having taken the transition.
         for (ActivityEdge incomingEdge: incomingEdgesToConsider) {
             Variable variable = edgeMapping.get(incomingEdge);
-            transitionBuilder.addEqualityGuard(variable, 1);
-            transitionBuilder.addAssignment(variable, 0);
+            transitionBuilder.addEqualityGuard(variable, BOOL_TRUE);
+            transitionBuilder.addAssignment(variable, BOOL_FALSE);
         }
 
         // Define a guard for every outgoing edge to consider, to check if it is disabled, as well as an assignment to
         // make it enabled after having taken the transition.
         for (ActivityEdge outgoingEdge: outgoingEdgesToConsider) {
             Variable variable = edgeMapping.get(outgoingEdge);
-            transitionBuilder.addEqualityGuard(variable, 0);
-            transitionBuilder.addAssignment(variable, 1);
+            transitionBuilder.addEqualityGuard(variable, BOOL_FALSE);
+            transitionBuilder.addAssignment(variable, BOOL_TRUE);
         }
 
         // Build and return the transition.
@@ -413,7 +417,7 @@ public abstract class Uml2GalTranslator {
 
     private Constant translateLiteralBooleanToInt(LiteralBoolean literal) {
         Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(literal.isValue() ? 1 : 0);
+        constant.setValue(literal.isValue() ? BOOL_TRUE : BOOL_FALSE);
         return constant;
     }
 

@@ -166,7 +166,7 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
 
     private IntExpression translateBoolExpressionToInt(ABoolExpression expr) {
         Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(expr.value ? 1 : 0);
+        constant.setValue(expr.value ? BOOL_TRUE : BOOL_FALSE);
         return constant;
     }
 
