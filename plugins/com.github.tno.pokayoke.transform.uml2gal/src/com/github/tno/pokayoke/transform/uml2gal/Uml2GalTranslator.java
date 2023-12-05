@@ -284,6 +284,8 @@ public abstract class Uml2GalTranslator {
                 translateDecisionNode(decisionNode);
             } else if (node instanceof MergeNode mergeNode) {
                 translateMergeNode(mergeNode);
+            } else if (!(node instanceof InitialNode)) {
+                throw new RuntimeException("Unsupported activity node: " + node);
             }
         }
     }
