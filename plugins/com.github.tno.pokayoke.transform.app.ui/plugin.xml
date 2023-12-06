@@ -39,6 +39,26 @@ SPDX-License-Identifier: MIT
             </iterate>
          </with>
       </definition>
+      <definition
+            id="com.github.tno.pokayoke.transform.app.ui.oneUmlFile">
+         <with
+               variable="selection">
+            <count
+                  value="1">
+            </count>
+            <iterate
+                  ifEmpty="false"
+                  operator="and">
+               <adapt
+                     type="org.eclipse.core.resources.IFile">
+               </adapt>
+               <test
+                     property="org.eclipse.core.resources.name"
+                     value="*.uml">
+               </test>
+            </iterate>
+         </with>
+      </definition>
    </extension>
 
 </plugin>

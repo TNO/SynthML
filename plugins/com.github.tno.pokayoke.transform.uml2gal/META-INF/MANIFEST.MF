@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Functionality for Transforming Poka Yoke Activities to GAL
+Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml2gal
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: TNO
+Automatic-Module-Name: com.github.tno.pokayoke.transform.uml2gal
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: com.github.tno.pokayoke.transform.uml2gal
+Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
+ org.junit.jupiter.api;version="5.9.3",
+ org.junit.jupiter.params;version="5.9.3",
+ org.junit.jupiter.params.provider;version="5.9.3"
+Require-Bundle: fr.lip6.move.gal;bundle-version="0.0.0",
+ com.google.guava;bundle-version="0.0.0",
+ org.eclipse.uml2.uml;bundle-version="5.5.0",
+ com.github.tno.pokayoke.transform.common;bundle-version="0.0.1",
+ org.eclipse.escet.cif.parser;bundle-version="1.0.0",
+ org.eclipse.escet.setext.runtime;bundle-version="0.10.0",
+ org.apache.commons.lang3;bundle-version="3.12.0",
+ org.json;bundle-version="0.0.0",
+ org.apache.commons.io;bundle-version="0.0.0"

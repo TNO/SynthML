@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.tests.common;
 
 import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -84,7 +83,7 @@ public abstract class RegressionTest {
      * @param message Message in case of a failing assertion.
      * @throws IOException Thrown when one of the files can't be read.
      */
-    private void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
+    protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
         PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
     }
 
@@ -94,7 +93,7 @@ public abstract class RegressionTest {
      * @param outputPath Path to the actual output file.
      * @throws IOException Thrown when actual output file can't be deleted.
      */
-    private void tearDownTest(Path outputPath) throws IOException {
+    protected void tearDownTest(Path outputPath) throws IOException {
         Files.delete(outputPath);
     }
 
