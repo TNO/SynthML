@@ -8,6 +8,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
@@ -139,6 +140,8 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
             return translateBinaryExpressionToInt(binExpr);
         } else if (expr instanceof ABoolExpression boolExpr) {
             return translateBoolExpressionToInt(boolExpr);
+        } else if (expr instanceof AIntExpression intExpr) {
+            return translateIntExpressionToInt(intExpr);
         } else if (expr instanceof ANameExpression nameExpr) {
             return translateNameExpressionToInt(nameExpr);
         } else if (expr instanceof AUnaryExpression unaryExpr) {
@@ -167,6 +170,12 @@ public class CifAnnotatedUml2GalTranslator extends Uml2GalTranslator {
     private IntExpression translateBoolExpressionToInt(ABoolExpression expr) {
         Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
         constant.setValue(expr.value ? BOOL_TRUE : BOOL_FALSE);
+        return constant;
+    }
+
+    private IntExpression translateIntExpressionToInt(AIntExpression expr) {
+        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
+        constant.setValue(Integer.parseInt(expr.value));
         return constant;
     }
 
