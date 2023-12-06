@@ -65,10 +65,9 @@ public class Uml2GalTranslationHelper {
         store(specification, targetPath);
 
         // Store the tracing information as JSON.
-        FileWriter tracingFileWriter = new FileWriter(tracingPath);
-        tracingFileWriter.write(translator.getTracingAsJson().toString());
-        tracingFileWriter.flush();
-        tracingFileWriter.close();
+        try (FileWriter tracingFileWriter = new FileWriter(tracingPath)) {
+            tracingFileWriter.write(translator.getTracingAsJson().toString());
+        }
     }
 
     static And combineAsAnd(BooleanExpression left, BooleanExpression right) {
