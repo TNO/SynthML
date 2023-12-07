@@ -182,7 +182,7 @@ public class SynthesisToCifConverter {
      * @param supName The name of the supervisor automaton.
      * @param supNamespace The namespace of the supervisor, or {@code null} for the empty namespace.
      * @return The output CIF specification, i.e. the modified input CIF specification.
-     * @throws UnsupportedPredicateException Throw unsupported predicate exception.
+     * @throws UnsupportedPredicateException
      */
     public Specification convert(SynthesisAutomaton synthAut, Specification spec, String supName, String supNamespace)
             throws UnsupportedPredicateException
@@ -268,54 +268,56 @@ public class SynthesisToCifConverter {
         // re-allocation, breaking BDD equality/hashing and thus our internal
         // node mapping.
         prepareBddToCif();
-
+//
         // --------------------------------Hacking code-------------------------------------------
 
-        String recenterAction = "c_ALR_recenter_wafer";
-        String rotateAction = "c_ALR_rotate_towards_LL1T";
+        // Below are the names of two choice actions from choice-in-parallel example.
+        String action1Name = "c_Drink_Coffee";
+        String action2Name = "c_Drink_Tea";
+
+        // Below are the names of two choice actions from feasibility study example.
+//        String action1Name = "c_ALR_recenter_wafer";
+//        String action2Name = "c_ALR_rotate_towards_LL1T";
 
         // Step 1: get synthesized conditions in BDD.
-        Event recenter = controllables.stream().filter(e -> e.getName().equals(recenterAction)).toList().get(0);
-        Event rotate = controllables.stream().filter(e -> e.getName().equals(rotateAction)).toList().get(0);
+        Event action1 = controllables.stream().filter(e -> e.getName().equals(action1Name)).toList().get(0);
+        Event action2 = controllables.stream().filter(e -> e.getName().equals(action2Name)).toList().get(0);
 
-        BDD recenterSynthesizedCondition = synthAut.outputGuards.get(recenter);
-        BDD rotateSynthesizedCondition = synthAut.outputGuards.get(rotate);
-        Expression recenterSynthesizedConditionExpr = convertPred(recenterSynthesizedCondition);
-        Expression rotateSynthesizedConditionExpr = convertPred(rotateSynthesizedCondition);
+        BDD action1SynthesizedCondition = synthAut.outputGuards.get(action1);
+        BDD action2SynthesizedCondition = synthAut.outputGuards.get(action2);
+        Expression action1SynthesizedConditionExpr = convertPred(action1SynthesizedCondition);
+        Expression action2SynthesizedConditionExpr = convertPred(action2SynthesizedCondition);
 
-        OutputProvider.out("Synthesized condition expression for Recenter Wafer:");
-        OutputProvider.out(CifTextUtils.exprToStr(recenterSynthesizedConditionExpr));
-        OutputProvider.out("Synthesized condition expression for Rotate Towards LL1T:");
-        OutputProvider.out(CifTextUtils.exprToStr(rotateSynthesizedConditionExpr));
+        // Print the synthesized conditions expressions.
+        OutputProvider.out("Synthesized condition expression for " + action1Name);
+        OutputProvider.out(CifTextUtils.exprToStr(action1SynthesizedConditionExpr));
+        OutputProvider.out("Synthesized condition expression for " + action2Name);
+        OutputProvider.out(CifTextUtils.exprToStr(action2SynthesizedConditionExpr));
 
         // Step 2: get state annotation in BDD.
         // Copy the annotation from the generated state space. Double quotations have been replaced with single
         // quotations.
-        String loc16 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.is_measured = false, Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'True', sup = '*')";
-        String loc17 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.is_measured = false, Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'False', sup = '*')";
 
-        loc16 = loc16.replace("@state(", "").replace(")", "");
-        loc17 = loc17.replace("@state(", "").replace(")", "");
+        // Below are the annotations for choice-in-parallel example.
+        String loc4 = "@state(constraint = 'busy', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Unknown', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'NotYetOccurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String loc5 = "@state(constraint = 'busy', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Unknown', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'Occurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String loc6 = "@state(constraint = 'idle', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Coffee', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'NotYetOccurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String loc7 = "@state(constraint = 'idle', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Tea', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'NotYetOccurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String loc8 = "@state(constraint = 'idle', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Coffee', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'Occurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String loc9 = "@state(constraint = 'idle', Drink_Coffee_happens_once = 'NotYetOccurred', Drink_Tea_happens_once = 'NotYetOccurred', Post = 'NotSatisfied', Spec = 'Home', Spec.Coffee_or_Tea = 'Tea', Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = 'NotYetOccurred', Starting_Computer_happens_once = 'Occurred', sup = '*', Turn_Computer_On_happens_once = 'Occurred')";
+        String[] inputStates = new String[] {loc4, loc5, loc6, loc7, loc8, loc9};
 
-        // Parse the state info and create binary expression for each location.
-        BinaryExpression expression4Location16 = CIFExpressionHelper.getBinaryExpression4Location(synthAut, loc16);
-        BinaryExpression expression4Location17 = CIFExpressionHelper.getBinaryExpression4Location(synthAut, loc17);
+        // Below are the annotations for feasibility study example.
+//        String loc16 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'True', sup = '*')";
+//        String loc17 = "@state(ALR_claim_happens_once = 'Occurred', ALR_move_to_LL1T_happens_once = 'Occurred', ALR_release_happens_once = 'NotYetOccurred', ALR_rotate_towards_APA_happens_once = 'NotYetOccurred', ALR_rotate_towards_LL1T_happens_twice = 'OccurredOnce', ALR_unclamp_wafer_happens_once = 'Occurred', constraint = 'idle', LL1_claim_happens_once = 'Occurred', LL1_close_atmospheric_gate_happens_once = 'NotYetOccurred', LL1_open_atmospheric_gate_happens_once = 'Occurred', LL1_pumpdown_happens_once = 'NotYetOccurred', LL1_release_happens_once = 'NotYetOccurred', LL1_vent_happens_once = 'Occurred', Post = 'NotSatisfied', Spec = 'Home', Spec.ALR_claimed = true, Spec.ALR_has_wafer = false, Spec.ALR_position = 'AtLL1T', Spec.LL1_claimed = true, Spec.LL1_is_atmospheric = true, Spec.LL1_is_atmospheric_gate_open = true, Spec.LL1T_has_wafer = true, Spec.LL1T_is_wafer_centered = 'False', sup = '*')";
+//        String[] inputStates = new String[] {loc16, loc17};
 
-        OutputProvider.out("State expression for location 16: ");
-        OutputProvider.out(CifTextUtils.exprToStr(expression4Location16));
-        OutputProvider.out("State expression for location 17: ");
-        OutputProvider.out(CifTextUtils.exprToStr(expression4Location17));
-
-        // Convert CIF expressions to BDDs.
-        BDD bdd4Loc16 = CifToSynthesisConverter.convertPred(expression4Location16, false, synthAut);
-        BDD bdd4Loc17 = CifToSynthesisConverter.convertPred(expression4Location17, false, synthAut);
-
-        // Get disjunction BDD of these two CIF expressions.
-        BDD disjunction = bdd4Loc16.or(bdd4Loc17);
+        // Get the disjunction of BDDs generated from each input state;
+        BDD disjunction = CIFExpressionHelper.getDisjunctionBDDOfStates(inputStates, synthAut);
 
         // Print the corresponding expression.
         Expression disjunctionExpression = convertPred(disjunction);
-        OutputProvider.out("Expression for disjunction of expressions for Loc 16 and 17: ");
+        OutputProvider.out("Expression for disjunction of expressions:");
         OutputProvider.out(CifTextUtils.exprToStr(disjunctionExpression));
 
         // Step 3: get action guards in BDDs.
@@ -324,33 +326,39 @@ public class SynthesisToCifConverter {
         Location location = specComp.getLocations().stream().filter(loc -> loc.getName().equals("Home")).toList()
                 .get(0);
 
-        Expression recenterActionGuardExpr = CifValueUtils
-                .createConjunction(CIFExpressionHelper.getActionGuard(recenterAction, location.getEdges()));
-        Expression rotateActionGuardExpr = CifValueUtils
-                .createConjunction(CIFExpressionHelper.getActionGuard(rotateAction, location.getEdges()));
+        Expression action1ActionGuardExpr = CifValueUtils
+                .createConjunction(CIFExpressionHelper.getActionGuard(action1Name, location.getEdges()));
+        Expression action2ActionGuardExpr = CifValueUtils
+                .createConjunction(CIFExpressionHelper.getActionGuard(action2Name, location.getEdges()));
 
-        OutputProvider.out("Action guards for Recenter Wafer: ");
-        OutputProvider.out(CifTextUtils.exprToStr(recenterActionGuardExpr));
-        OutputProvider.out("Action guards for Rotate Towards LL1T:");
-        OutputProvider.out(CifTextUtils.exprToStr(rotateActionGuardExpr));
+        OutputProvider.out("Action guards for " + action1Name);
+        OutputProvider.out(CifTextUtils.exprToStr(action1ActionGuardExpr));
+        OutputProvider.out("Action guards for " + action2Name);
+        OutputProvider.out(CifTextUtils.exprToStr(action2ActionGuardExpr));
 
-        BDD recenterActionGuardBDD = CifToSynthesisConverter.convertPred(recenterActionGuardExpr, false, synthAut);
-        BDD rotationActionGuardBDD = CifToSynthesisConverter.convertPred(rotateActionGuardExpr, false, synthAut);
+        BDD action1ActionGuardBDD = CifToSynthesisConverter.convertPred(action1ActionGuardExpr, false, synthAut);
+        BDD action2ActionGuardBDD = CifToSynthesisConverter.convertPred(action2ActionGuardExpr, false, synthAut);
 
-        // Step 4: Simplify BDDs.
-        BDD simplifiedRecenterGuardBDD = recenterSynthesizedCondition.simplify(recenterActionGuardBDD)
+        // Step 4: Simplify BDDs and concert BDDs into expression.
+        BDD action1SimplifiedStateOnly = action1SynthesizedCondition.simplify(disjunction);
+        BDD action2SimplifiedStateOnly = action2SynthesizedCondition.simplify(disjunction);
+        Expression action1EdgeGuardExpr = convertPred(action1SimplifiedStateOnly);
+        Expression action2EdgeGuardExpr = convertPred(action2SimplifiedStateOnly);
+
+        OutputProvider.out("Print the result of the simplication against only the state info: ");
+        OutputProvider.out(CifTextUtils.exprToStr(action1EdgeGuardExpr));
+        OutputProvider.out(CifTextUtils.exprToStr(action2EdgeGuardExpr));
+
+        BDD action1SimplifiedStateGuard = action1SynthesizedCondition.simplify(action1ActionGuardBDD)
                 .simplify(disjunction);
-        BDD simplifiedRotateGuardBDD = rotateSynthesizedCondition.simplify(rotationActionGuardBDD)
+        BDD action2SimplifiedStateGuard = action2SynthesizedCondition.simplify(action2ActionGuardBDD)
                 .simplify(disjunction);
+        action1EdgeGuardExpr = convertPred(action1SimplifiedStateGuard);
+        action2EdgeGuardExpr = convertPred(action2SimplifiedStateGuard);
 
-        // Step 5: Convert BDDs into expressions.
-        Expression recenterWaferGuardExpr = convertPred(simplifiedRecenterGuardBDD);
-        Expression rotateTowardsLL1TGuardExpr = convertPred(simplifiedRotateGuardBDD);
-
-        // Print the simplified expressions.
-        OutputProvider.out("Print the simplified expressions: ");
-        OutputProvider.out(CifTextUtils.exprToStr(recenterWaferGuardExpr));
-        OutputProvider.out(CifTextUtils.exprToStr(rotateTowardsLL1TGuardExpr));
+        OutputProvider.out("Print the result of the simplication against both the guard and the state info: ");
+        OutputProvider.out(CifTextUtils.exprToStr(action1EdgeGuardExpr));
+        OutputProvider.out(CifTextUtils.exprToStr(action2EdgeGuardExpr));
 
         // --------------------------------Hacking code-------------------------------------------
 

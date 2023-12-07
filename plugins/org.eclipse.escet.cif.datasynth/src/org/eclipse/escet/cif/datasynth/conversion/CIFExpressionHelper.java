@@ -29,6 +29,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
+import org.eclipse.escet.cif.datasynth.conversion.CifToSynthesisConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.datasynth.spec.SynthesisAutomaton;
 import org.eclipse.escet.cif.datasynth.spec.SynthesisDiscVariable;
 import org.eclipse.escet.cif.datasynth.spec.SynthesisLocPtrVariable;
@@ -50,8 +51,32 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.common.position.metamodel.position.PositionObject;
 
+import com.github.javabdd.BDD;
+
+/** Helper class for creating CIF expressions. */
 public class CIFExpressionHelper {
     private CIFExpressionHelper() {
+    }
+
+    public static BDD getDisjunctionBDDOfStates(String[] inputStates, SynthesisAutomaton synthesisAutomaton)
+            throws UnsupportedPredicateException
+    {
+        List<BDD> bddLsit = new ArrayList<>();
+
+        for (String inputState: inputStates) {
+            String loc = inputState.replace("@state(", "").replace(")", "");
+            BinaryExpression expression4Location = CIFExpressionHelper.getBinaryExpression4Location(synthesisAutomaton,
+                    loc);
+            BDD bdd4Loc = CifToSynthesisConverter.convertPred(expression4Location, false, synthesisAutomaton);
+            bddLsit.add(bdd4Loc);
+        }
+
+        BDD disjunction = bddLsit.get(0);
+        for (int i = 1; i < bddLsit.size(); i++) {
+            disjunction = disjunction.or(bddLsit.get(i));
+        }
+
+        return disjunction;
     }
 
     public static BinaryExpression getBinaryExpression4Location(SynthesisAutomaton synthesisAutomaton,
@@ -62,8 +87,8 @@ public class CIFExpressionHelper {
 
         Map<String, Expression> variables2Expressions = CIFExpressionHelper
                 .getVariable2ExpressionMap(synthesisAutomaton, variables2Values);
-        BinaryExpression expression = (BinaryExpression)CifValueUtils
-                .createConjunction(getStateExpressions(variables2Expressions, variables2Values), true);
+        BinaryExpression expression = (BinaryExpression)CifValueUtils.createConjunction(
+                getStateExpressions(variables2Expressions, variables2Values), true);
 
         return expression;
     }
@@ -111,9 +136,9 @@ public class CIFExpressionHelper {
     }
 
     public static List<Expression> getStateExpressions(Map<String, Expression> variables2Expressions,
-            Map<String, String> variables2Values)
+           Map<String, String> variables2Values)
     {
-        List<Expression> expressions = new ArrayList<>();
+        List<Expression> expressions = new ArrayList<Expression>();
         for (Map.Entry<String, String> variable: variables2Values.entrySet()) {
             String variableName = variable.getKey();
             String variableValue = variable.getValue();
