@@ -21,6 +21,10 @@
         <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.1</tycho.version>
+        <!-- Maven formatter version. -->
+        <!-- To ensure consistent formatting, select plugin version that matches the Eclipse version that we use, -->
+        <!-- see https://code.revelc.net/formatter-maven-plugin/eclipse-versions.html -->
+        <maven.formatter.version>2.23.0</maven.formatter.version>
     </properties>
 
     <organization>
@@ -61,6 +65,29 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Enable Maven formatter plugin, to validate that all code is properly formatted. -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${maven.formatter.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configFile>
+                        ${session.executionRootDirectory}/pokayoke-formatter-profile.xml
+                    </configFile>
+                    <directories>
+                        <directory>src</directory>
+                        <directory>src-test</directory>
+                    </directories>
+                </configuration>
             </plugin>
 
             <!-- Enable Tycho. -->
@@ -165,7 +192,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- Configure shared unit/integration testing configuration. -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
