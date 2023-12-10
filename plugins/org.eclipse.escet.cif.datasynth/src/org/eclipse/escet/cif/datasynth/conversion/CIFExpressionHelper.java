@@ -51,6 +51,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.common.position.metamodel.position.PositionObject;
 
 import com.github.javabdd.BDD;
+import com.google.common.base.Verify;
 
 /** Helper class for creating CIF expressions. */
 public class CIFExpressionHelper {
@@ -178,16 +179,17 @@ public class CIFExpressionHelper {
     }
 
     public static List<Expression> getActionGuard(String action, List<Edge> edges) {
+        List<Edge> edgeList = new ArrayList<>();
         for (Edge edge: edges) {
             for (EdgeEvent event: edge.getEvents()) {
                 EventExpression e = (EventExpression)event.getEvent();
                 String name = e.getEvent().getName();
-                if (name.equals(action)) {
-                    return deepclone(edge.getGuards());
+                if (name.equals(action) && !edgeList.contains(edge)) {
+                    edgeList.add(edge);
                 }
             }
         }
-
-        return null;
+        Verify.verify(edgeList.size() == 1, String.format("Expected exactly one guard for action %s", action));
+        return deepclone(edgeList.get(0).getGuards());
     }
 }
