@@ -17,7 +17,6 @@ import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBinaryExpr
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newBoolType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newDiscVariableExpression;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumLiteralExpression;
-import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newEnumType;
 import static org.eclipse.escet.cif.metamodel.java.CifConstructors.newLocationExpression;
 import static org.eclipse.escet.common.emf.EMFHelper.deepclone;
 
@@ -87,8 +86,8 @@ public class CIFExpressionHelper {
 
         Map<String, Expression> variables2Expressions = CIFExpressionHelper
                 .getVariable2ExpressionMap(synthesisAutomaton, variables2Values);
-        BinaryExpression expression = (BinaryExpression)CifValueUtils.createConjunction(
-                getStateExpressions(variables2Expressions, variables2Values), true);
+        BinaryExpression expression = (BinaryExpression)CifValueUtils
+                .createConjunction(getStateExpressions(variables2Expressions, variables2Values), true);
 
         return expression;
     }
@@ -114,7 +113,7 @@ public class CIFExpressionHelper {
             PositionObject obj = variable.cifObject;
             String variableName = CifTextUtils.getAbsName(obj);
 
-            if (obj instanceof Automaton && !variableName.equals("constraint")) {
+            if (obj instanceof Automaton) {
                 SynthesisLocPtrVariable locationVariable = (SynthesisLocPtrVariable)variable;
                 LocationExpression locationExpression = newLocationExpression();
                 locationExpression.setType(newBoolType());
@@ -136,7 +135,7 @@ public class CIFExpressionHelper {
     }
 
     public static List<Expression> getStateExpressions(Map<String, Expression> variables2Expressions,
-           Map<String, String> variables2Values)
+            Map<String, String> variables2Values)
     {
         List<Expression> expressions = new ArrayList<Expression>();
         for (Map.Entry<String, String> variable: variables2Values.entrySet()) {
@@ -162,7 +161,7 @@ public class CIFExpressionHelper {
                         EnumLiteral enumliteral = enumLiterals.stream()
                                 .filter(literal -> literal.getName().equals(variableValue)).toList().get(0);
 
-                        binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, newEnumType()));
+                        binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
                         if (variableValue.equals("true")) {
                             binaryExpression.setRight(CifValueUtils.makeTrue());
@@ -188,6 +187,7 @@ public class CIFExpressionHelper {
                 }
             }
         }
+
         return null;
     }
 }
