@@ -65,8 +65,7 @@ public class CIFExpressionHelper {
 
         for (String inputState: inputStates) {
             String loc = inputState.replace("@state(", "").replace(")", "");
-            BinaryExpression expression4Location = getBinaryExpression4Location(synthesisAutomaton,
-                    loc);
+            BinaryExpression expression4Location = getBinaryExpression4Location(synthesisAutomaton, loc);
             BDD bdd4Loc = CifToSynthesisConverter.convertPred(expression4Location, false, synthesisAutomaton);
             bddLsit.add(bdd4Loc);
         }
@@ -85,8 +84,7 @@ public class CIFExpressionHelper {
         String[] stateAnnotations = stateAnnotation.split(",");
         Map<String, String> variables2Values = getVariable2ValueMap(stateAnnotations);
 
-        Map<String, Expression> variables2Expressions =
-                getVariable2ExpressionMap(synthesisAutomaton, variables2Values);
+        Map<String, Expression> variables2Expressions = getVariable2ExpressionMap(synthesisAutomaton, variables2Values);
         BinaryExpression expression = (BinaryExpression)CifValueUtils
                 .createConjunction(getStateExpressions(variables2Expressions, variables2Values), true);
 
@@ -101,6 +99,7 @@ public class CIFExpressionHelper {
             String variableValue = stateAnnotation.split("=")[1].trim();
             variables2Values.put(variableName, variableValue.replace("'", ""));
         }
+
         return variables2Values;
     }
 
@@ -189,7 +188,8 @@ public class CIFExpressionHelper {
                 }
             }
         }
-        Verify.verify(edgeList.size() == 1, String.format("Expected exactly one guard for action %s", action));
+        Verify.verify(edgeList.size() == 1, String.format("Expected exactly one edge for action %s", action));
+
         return deepclone(edgeList.get(0).getGuards());
     }
 }
