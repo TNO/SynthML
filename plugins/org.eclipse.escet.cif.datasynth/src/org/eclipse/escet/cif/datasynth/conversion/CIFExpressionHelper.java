@@ -183,7 +183,7 @@ public class CIFExpressionHelper {
             for (EdgeEvent event: edge.getEvents()) {
                 EventExpression e = (EventExpression)event.getEvent();
                 String name = e.getEvent().getName();
-                if (name.equals(action) && !edgeList.contains(edge)) {
+                if (name.equals(action)) {
                     edgeList.add(edge);
                 }
             }
