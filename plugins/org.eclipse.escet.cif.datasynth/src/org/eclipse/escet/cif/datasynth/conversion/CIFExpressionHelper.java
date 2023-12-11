@@ -123,10 +123,10 @@ public class CIFExpressionHelper {
                 locationExpression.setLocation(loc);
                 expressionMap.put(variableName, locationExpression);
             } else if (obj instanceof DiscVariable) {
-                SynthesisDiscVariable locationVaraible = (SynthesisDiscVariable)variable;
+                SynthesisDiscVariable locationVariable = (SynthesisDiscVariable)variable;
                 DiscVariableExpression variableExpression = newDiscVariableExpression();
-                variableExpression.setType(deepclone(locationVaraible.var.getType()));
-                variableExpression.setVariable(locationVaraible.var);
+                variableExpression.setType(deepclone(locationVariable.var.getType()));
+                variableExpression.setVariable(locationVariable.var);
                 expressionMap.put(variableName, variableExpression);
             }
         }
