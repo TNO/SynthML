@@ -303,7 +303,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     }
 
     protected void checkNamingConventions(NamedElement element, Boolean checkDoubleUnderscore,
-            Boolean checkOtherRules)
+            Boolean checkProperIdentifierName)
     {
         String name = element.getName();
 
@@ -313,13 +313,13 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                         String.format("Expected the name of the given %s to not contain '__', but got '%s'.",
                                 element.eClass().getName(), name));
             }
-            if (checkOtherRules) {
+            if (checkProperIdentifierName) {
                 String pattern = "^[a-zA-Z_][0-9a-zA-Z_]*$";
                 Pattern regex = Pattern.compile(pattern);
                 Matcher matcher = regex.matcher(name);
 
                 Preconditions.checkArgument(matcher.matches(), String.format(
-                        "Expected the name of the given %s to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*, but got '%s'",
+                        "Expected the name of the given %s to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*, but got '%s'.",
                         element.eClass().getName(), name));
             }
         }
