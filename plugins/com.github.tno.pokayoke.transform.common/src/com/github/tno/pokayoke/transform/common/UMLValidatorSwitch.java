@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -49,6 +51,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseModel(Model model) {
         checkNonNullNameOf(model);
         checkAbsenceOfDoubleUnderscoresInNameOf(model);
+        checkNamingConventions(model);
 
         // Visit all packaged elements and check (local) uniqueness of their names.
         elementNames.push(new LinkedHashSet<>());
@@ -71,6 +74,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseClass(Class classElement) {
         checkNonNullNameOf(classElement);
         checkAbsenceOfDoubleUnderscoresInNameOf(classElement);
+        checkNamingConventions(classElement);
 
         Preconditions.checkArgument(classElement.getNestedClassifiers().isEmpty(),
                 String.format("Expected classes to not contain any nested classifiers. Violated by class '%s'.",
@@ -106,6 +110,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseProperty(Property property) {
         checkNonNullNameOf(property);
         checkAbsenceOfDoubleUnderscoresInNameOf(property);
+        checkNamingConventions(property);
 
         // Visit the property type.
         Type propertyType = property.getType();
@@ -134,6 +139,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseEnumeration(Enumeration enumeration) {
         checkNonNullNameOf(enumeration);
         checkAbsenceOfDoubleUnderscoresInNameOf(enumeration);
+        checkNamingConventions(enumeration);
 
         Preconditions.checkArgument(enumeration.eContainer() instanceof Model,
                 String.format("Expected enumerations to be declared in models. Violated by enumeration '%s'.",
@@ -159,6 +165,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseEnumerationLiteral(EnumerationLiteral literal) {
         checkNonNullNameOf(literal);
         checkAbsenceOfDoubleUnderscoresInNameOf(literal);
+        checkNamingConventions(literal);
 
         String literalName = literal.getName();
 
@@ -199,6 +206,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     public Object caseActivity(Activity activity) {
         checkNonNullNameOf(activity);
         checkAbsenceOfDoubleUnderscoresInNameOf(activity);
+        checkNamingConventions(activity);
 
         Preconditions.checkArgument(activity.getMembers().isEmpty(), String
                 .format("Expected activities to not have any members. Violated by activity '%s'.", activity.getName()));
@@ -227,42 +235,49 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     @Override
     public Object caseInitialNode(InitialNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseFinalNode(FinalNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseForkNode(ForkNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseJoinNode(JoinNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseDecisionNode(DecisionNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseMergeNode(MergeNode node) {
         checkAbsenceOfDoubleUnderscoresInNameOf(node);
+        checkNamingConventions(node);
         return node;
     }
 
     @Override
     public Object caseCallBehaviorAction(CallBehaviorAction action) {
         checkAbsenceOfDoubleUnderscoresInNameOf(action);
+        checkNamingConventions(action);
         Preconditions.checkNotNull(action.getBehavior(), String.format(
                 "Expected the called behavior of call behavior actions to be non-null. Violated by action '%s'.",
                 action.getName()));
@@ -276,6 +291,7 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
     @Override
     public Object caseOpaqueAction(OpaqueAction action) {
         checkAbsenceOfDoubleUnderscoresInNameOf(action);
+        checkNamingConventions(action);
         return action;
     }
 
@@ -307,6 +323,20 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
             Preconditions.checkArgument(!name.contains("__"),
                     String.format("Expected the name of the given %s to not contain '__', but got '%s'.",
                             element.eClass().getName(), name));
+        }
+    }
+
+    protected void checkNamingConventions(NamedElement element) {
+        String name = element.getName();
+
+        if (name != null && !name.isEmpty()) {
+            String pattern = "^[a-zA-Z_][0-9a-zA-Z_]*$";
+            Pattern regex = Pattern.compile(pattern);
+            Matcher matcher = regex.matcher(name);
+
+            Preconditions.checkArgument(matcher.matches(), String.format(
+                    "Expected the name of the given %s to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*, but got '%s'",
+                    element.eClass().getName(), name));
         }
     }
 
