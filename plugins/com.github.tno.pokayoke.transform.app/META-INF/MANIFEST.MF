@@ -27,7 +27,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.apache.commons.lang3;bundle-version="3.12.0",
  com.github.tno.pokayoke.transform.petrify2uml;bundle-version="0.0.1",
  com.github.tno.pokayoke.transform.uml2gal;bundle-version="0.0.1",
- org.json;bundle-version="0.0.0"
+ org.json;bundle-version="0.0.0",
+ com.github.tno.pokayoke.transform.uml;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-17
