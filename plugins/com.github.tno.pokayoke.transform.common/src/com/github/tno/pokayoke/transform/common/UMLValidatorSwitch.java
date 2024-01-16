@@ -302,8 +302,8 @@ public class UMLValidatorSwitch extends UMLSwitch<Object> {
                 String.format("Expected the given %s to have a non-null name.", element.eClass().getName()));
     }
 
-    protected void checkNamingConventions(NamedElement element, Boolean checkDoubleUnderscore,
-            Boolean checkProperIdentifierName)
+    protected void checkNamingConventions(NamedElement element, boolean checkDoubleUnderscore,
+            boolean checkProperIdentifierName)
     {
         String name = element.getName();
 
