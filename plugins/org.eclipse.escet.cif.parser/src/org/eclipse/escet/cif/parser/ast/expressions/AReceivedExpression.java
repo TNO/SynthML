@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -18,7 +18,7 @@ import org.eclipse.escet.common.java.TextPosition;
 /** Received value reference expression. */
 public class AReceivedExpression extends AExpression {
     /**
-     * Constructor for the {@Link AReceivedExpression} class.
+     * Constructor for the {@link AReceivedExpression} class.
      *
      * @param position Position information.
      */

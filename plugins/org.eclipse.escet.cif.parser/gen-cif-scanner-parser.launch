@@ -9,7 +9,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.escet.setext.generator.SeTextGeneratorApp"/>
 <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.eclipse.escet.setext.generator"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="../../../../../../src/org/eclipse/escet/cif/parser/cif.setext --java-header-file=../../../../../../../../misc/license-header/license-header.java.txt"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="../../../../../../src/org/eclipse/escet/cif/parser/cif.setext --output-bnf=on --java-header-file=../../../../../../../../misc/license-header/license-header.java.txt"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.escet.setext.generator"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:org.eclipse.escet.cif.parser/src-gen/org/eclipse/escet/cif/parser}"/>
 </launchConfiguration>

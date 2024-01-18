@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -191,7 +191,8 @@ end
   SQCLOSETK        = "\]";
 end
 
-@shortcut identifier = "$?[a-zA-Z_][a-zA-Z0-9_]*";
+@shortcut uidentifier = "[a-zA-Z_][a-zA-Z0-9_]*";
+@shortcut identifier  = "$?{uidentifier}";
 
 @terminals:
   // Literals.
@@ -209,6 +210,8 @@ end
                      [a real literal];
   STRINGTK         = "\"([^\\\"\n]|\\[nt\\\"])*\""
                      [a string literal];
+  ANNOTATIONNAMETK = "@{uidentifier}(:{uidentifier})*"
+                     [an annotation name];
 
   // Comments.
   "//.*";
@@ -228,13 +231,11 @@ end
 
 @main Specification: org.eclipse.escet.cif.parser.CifParser;
 
-@start Expression: org.eclipse.escet.cif.parser.CifExpressionParser;
-@start Update: org.eclipse.escet.cif.parser.CifUpdateParser;
-
 @hooks org.eclipse.escet.cif.parser.CifParserHooks;
 
 @import org.eclipse.escet.common.java as common_java;
 @import org.eclipse.escet.cif.parser.ast as cif;
+@import org.eclipse.escet.cif.parser.ast.annotations as annos;
 @import org.eclipse.escet.cif.parser.ast.automata;
 @import org.eclipse.escet.cif.parser.ast.declarations as decls;
 @import org.eclipse.escet.cif.parser.ast.expressions as exprs;
@@ -270,13 +271,13 @@ GroupDecl : Decl
           | @NAMESPACEKW @IDENTIFIERTK SEMICOLTK
           | @NAMESPACEKW @RELATIVENAMETK SEMICOLTK
           | @FUNCKW Types Identifier FuncParams COLONTK FuncBody
-          | Identifier COLONTK Name ActualParms @SEMICOLTK
-          | @GROUPKW                 DEFKW Identifier FormalParms COLONTK GroupBody     @ENDKW
-          | OptSupKind @AUTOMATONKW  DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW
-          |    SupKind               DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW
-          | @GROUPKW                       Identifier             COLONTK GroupBody     @ENDKW
-          | OptSupKind @AUTOMATONKW        Identifier             COLONTK AutomatonBody @ENDKW
-          |    SupKind                     Identifier             COLONTK AutomatonBody @ENDKW
+          | Identifier COLONTK Name CompInstArgs @SEMICOLTK
+          | @GROUPKW                 DEFKW Identifier CompDefParms COLONTK GroupBody     @ENDKW
+          | OptSupKind @AUTOMATONKW  DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW
+          |    SupKind               DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW
+          | @GROUPKW                       Identifier              COLONTK GroupBody     @ENDKW
+          | OptSupKind @AUTOMATONKW        Identifier              COLONTK AutomatonBody @ENDKW
+          |    SupKind                     Identifier              COLONTK AutomatonBody @ENDKW
           ;
 
 {List<cif.ADecl>}
@@ -290,7 +291,7 @@ AutDecl : Decl
         | @ALPHABETKW SEMICOLTK
         | @MONITORKW Events SEMICOLTK
         | @MONITORKW SEMICOLTK
-        | @DISCKW Type DiscDecls SEMICOLTK
+        | OptAnnos @DISCKW Type DiscDecls SEMICOLTK
         ;
 
 {cif.ADecl}
@@ -302,7 +303,7 @@ Decl : @TYPEKW TypeDefs SEMICOLTK
      |    Controllability          EventType Identifiers SEMICOLTK
      | @CONSTKW Type ConstantDefs SEMICOLTK
      | @ALGKW Type AlgVarsDefs SEMICOLTK
-     | @INPUTKW Type Identifiers SEMICOLTK
+     | OptAnnos @INPUTKW Type Identifiers SEMICOLTK
      | @CONTKW ContDecls SEMICOLTK
      | @EQUATIONKW Equations SEMICOLTK
      | @INITIALKW Expressions SEMICOLTK
@@ -439,10 +440,10 @@ Locations : Location
           ;
 
 {automata.ALocation}
-Location : @LOCATIONKW SEMICOLTK
-         | @LOCATIONKW Identifier SEMICOLTK
-         | @LOCATIONKW COLONTK LocationElements
-         | @LOCATIONKW Identifier COLONTK LocationElements
+Location : OptAnnos @LOCATIONKW SEMICOLTK
+         | OptAnnos @LOCATIONKW Identifier SEMICOLTK
+         | OptAnnos @LOCATIONKW COLONTK LocationElements
+         | OptAnnos @LOCATIONKW Identifier COLONTK LocationElements
          ;
 
 {List<automata.ALocationElement>}
@@ -463,36 +464,36 @@ LocationElement : @INITIALKW SEMICOLTK
                 ;
 
 {List<exprs.AExpression>}
-ActualParms : PAROPENTK PARCLOSETK
-            | PAROPENTK Expressions PARCLOSETK
-            ;
+CompInstArgs : PAROPENTK PARCLOSETK
+             | PAROPENTK Expressions PARCLOSETK
+             ;
 
-{List<cif.AFormalParameter>}
-FormalParms : PAROPENTK PARCLOSETK
-            | PAROPENTK FormalDecls PARCLOSETK
-            ;
+{List<cif.AParameter>}
+CompDefParms : PAROPENTK PARCLOSETK
+             | PAROPENTK CompDefDecls PARCLOSETK
+             ;
 
-{List<cif.AFormalParameter>}
-FormalDecls : FormalDeclaration
-            | FormalDecls SEMICOLTK FormalDeclaration
-            ;
+{List<cif.AParameter>}
+CompDefDecls : CompDefDeclaration
+             | CompDefDecls SEMICOLTK CompDefDeclaration
+             ;
 
-{cif.AFormalParameter}
-FormalDeclaration : OptControllability @EVENTKW           EventParamIds
-                  | OptControllability @EVENTKW EventType EventParamIds
-                  |    Controllability                    EventParamIds
-                  |    Controllability          EventType EventParamIds
-                  | Name Identifiers
-                  | @LOCATIONKW Identifiers
-                  | @ALGKW Type Identifiers
-                  ;
+{cif.AParameter}
+CompDefDeclaration : OptControllability @EVENTKW           EventParamIds
+                   | OptControllability @EVENTKW EventType EventParamIds
+                   |    Controllability                    EventParamIds
+                   |    Controllability          EventType EventParamIds
+                   | Name Identifiers
+                   | @LOCATIONKW Identifiers
+                   | @ALGKW Type Identifiers
+                   ;
 
-{List<cif.AFormalEventParameterPart>}
+{List<cif.AEventParameterPart>}
 EventParamIds : EventParamId
               | EventParamIds COMMATK EventParamId
               ;
 
-{cif.AFormalEventParameterPart}
+{cif.AEventParameterPart}
 EventParamId : Identifier OptEventParamFlags
              ;
 
@@ -592,8 +593,8 @@ Addressables : Addressable
              ;
 
 {exprs.AExpression}
-Addressable : Identifier
-            | Identifier Projections
+Addressable : Name
+            | Name Projections
             | @PAROPENTK Addressable COMMATK Addressables PARCLOSETK
             ;
 
@@ -694,6 +695,7 @@ SvgAttr : ATTRKW StringToken
 
 {svg.ASvgIn}
 SvgIn : @SVGINKW IDKW Expression EVENTKW SvgInEvent OptSvgFile @SEMICOLTK
+      | @SVGINKW IDKW Expression DOKW Updates OptSvgFile @SEMICOLTK
       ;
 
 {svg.ASvgInEvent}
@@ -925,3 +927,31 @@ Name : Identifier
      | @ABSOLUTENAMETK
      | @ROOTNAMETK
      ;
+
+///////////////////////////////////////////////////////////////////////////////
+
+{List<annos.AAnnotation>}
+OptAnnos : /* empty */
+         | OptAnnos Annotation
+         ;
+
+{annos.AAnnotation}
+Annotation : @ANNOTATIONNAMETK
+           | @ANNOTATIONNAMETK PAROPENTK PARCLOSETK
+           | @ANNOTATIONNAMETK PAROPENTK AnnotationArgs OptComma PARCLOSETK
+           ;
+
+{List<annos.AAnnotationArgument>}
+AnnotationArgs : AnnotationArg
+               | AnnotationArgs COMMATK AnnotationArg
+               ;
+
+{annos.AAnnotationArgument}
+AnnotationArg : @IDENTIFIERTK   EQTK Expression
+              | @RELATIVENAMETK EQTK Expression
+              ;
+
+{setext.runtime.Token}
+OptComma : /* empty */
+         | @COMMATK
+         ;

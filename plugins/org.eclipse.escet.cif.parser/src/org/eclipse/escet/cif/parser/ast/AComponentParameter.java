@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -16,25 +16,25 @@ package org.eclipse.escet.cif.parser.ast;
 import java.util.List;
 
 import org.eclipse.escet.cif.parser.ast.tokens.AIdentifier;
-import org.eclipse.escet.cif.parser.ast.types.ACifType;
+import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.common.java.TextPosition;
 
-/** Formal algebraic parameter. */
-public class AFormalAlgParameter extends AFormalParameter {
-    /** The type of the parameter. */
-    public final ACifType type;
+/** Component parameter. */
+public class AComponentParameter extends AParameter {
+    /** The component definition type of the parameter. */
+    public final AName type;
 
     /** The names of the parameters. */
     public final List<AIdentifier> names;
 
     /**
-     * Constructor for the {@link AFormalAlgParameter} class.
+     * Constructor for the {@link AComponentParameter} class.
      *
-     * @param type The type of the parameter.
+     * @param type The component definition type of the parameter.
      * @param names The names of the parameters.
      * @param position Position information.
      */
-    public AFormalAlgParameter(ACifType type, List<AIdentifier> names, TextPosition position) {
+    public AComponentParameter(AName type, List<AIdentifier> names, TextPosition position) {
         super(position);
         this.type = type;
         this.names = names;

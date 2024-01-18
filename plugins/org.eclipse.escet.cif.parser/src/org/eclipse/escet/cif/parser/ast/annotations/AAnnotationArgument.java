@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
+// Copyright (c) 2023, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -11,30 +11,28 @@
 // SPDX-License-Identifier: MIT
 //////////////////////////////////////////////////////////////////////////////
 
-package org.eclipse.escet.cif.parser.ast.declarations;
+package org.eclipse.escet.cif.parser.ast.annotations;
 
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
-import org.eclipse.escet.cif.parser.ast.tokens.AIdentifier;
-import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.Token;
 
-/** Constant. */
-public class AConstant extends ACifObject {
-    /** The name of the constant. */
-    public final AIdentifier name;
+/** Annotation argument. */
+public class AAnnotationArgument extends ACifObject {
+    /** The name of the annotation argument. */
+    public final Token name;
 
-    /** The value of the constant. */
+    /** The value of the annotation argument. */
     public final AExpression value;
 
     /**
-     * Constructor for the {@link AConstant} class.
+     * Constructor for the {@link AAnnotationArgument} class.
      *
-     * @param name The name of the constant.
-     * @param value The value of the constant.
-     * @param position Position information.
+     * @param name The name of the annotation argument.
+     * @param value The value of the annotation argument.
      */
-    public AConstant(AIdentifier name, AExpression value, TextPosition position) {
-        super(position);
+    public AAnnotationArgument(Token name, AExpression value) {
+        super(name.position);
         this.name = name;
         this.value = value;
     }

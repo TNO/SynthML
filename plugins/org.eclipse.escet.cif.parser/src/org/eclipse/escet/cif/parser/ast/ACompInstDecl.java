@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -28,21 +28,21 @@ public class ACompInstDecl extends ADecl {
     /** The name of the component definition to instantiate. */
     public final AName defName;
 
-    /** The parameters of the component instantiation. */
-    public final List<AExpression> parameters;
+    /** The arguments of the component instantiation. */
+    public final List<AExpression> arguments;
 
     /**
      * Constructor for the {@link ACompInstDecl} class.
      *
      * @param instName The name of the component instantiation.
      * @param defName The name of the component definition to instantiate.
-     * @param parameters The parameters of the component instantiation.
+     * @param arguments The arguments of the component instantiation.
      * @param position Position information.
      */
-    public ACompInstDecl(AIdentifier instName, AName defName, List<AExpression> parameters, TextPosition position) {
+    public ACompInstDecl(AIdentifier instName, AName defName, List<AExpression> arguments, TextPosition position) {
         super(position);
         this.instName = instName;
         this.defName = defName;
-        this.parameters = parameters;
+        this.arguments = arguments;
     }
 }

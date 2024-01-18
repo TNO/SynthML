@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -27,8 +27,8 @@ public class ACompDefDecl extends ADecl {
     /** The name of the component definition. */
     public final AIdentifier name;
 
-    /** The formal parameters of the component definition. */
-    public final List<AFormalParameter> parameters;
+    /** The parameters of the component definition. */
+    public final List<AParameter> parameters;
 
     /** The body of the component definition. */
     public final AComponentBody body;
@@ -38,11 +38,11 @@ public class ACompDefDecl extends ADecl {
      *
      * @param kind Automaton supervisory kind, or {@code null} for group definitions or if not specified.
      * @param name The name of the component definition.
-     * @param parameters The formal parameters of the component definition.
+     * @param parameters The parameters of the component definition.
      * @param body The body of the component definition.
      * @param position Position information.
      */
-    public ACompDefDecl(Token kind, AIdentifier name, List<AFormalParameter> parameters, AComponentBody body,
+    public ACompDefDecl(Token kind, AIdentifier name, List<AParameter> parameters, AComponentBody body,
             TextPosition position)
     {
         super(position);

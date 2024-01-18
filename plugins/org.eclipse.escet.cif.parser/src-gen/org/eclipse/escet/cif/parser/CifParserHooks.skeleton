@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -17,13 +17,15 @@ import java.util.List;
 
 import org.eclipse.escet.cif.parser.ast.ADecl;
 import org.eclipse.escet.cif.parser.ast.AEquation;
-import org.eclipse.escet.cif.parser.ast.AFormalEventParameterPart;
-import org.eclipse.escet.cif.parser.ast.AFormalParameter;
+import org.eclipse.escet.cif.parser.ast.AEventParameterPart;
 import org.eclipse.escet.cif.parser.ast.AGroupBody;
 import org.eclipse.escet.cif.parser.ast.AImport;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.AInvariantDecl;
+import org.eclipse.escet.cif.parser.ast.AParameter;
 import org.eclipse.escet.cif.parser.ast.ASpecification;
+import org.eclipse.escet.cif.parser.ast.annotations.AAnnotation;
+import org.eclipse.escet.cif.parser.ast.annotations.AAnnotationArgument;
 import org.eclipse.escet.cif.parser.ast.automata.AAutomatonBody;
 import org.eclipse.escet.cif.parser.ast.automata.ACoreEdge;
 import org.eclipse.escet.cif.parser.ast.automata.AEdgeEvent;
@@ -75,14 +77,10 @@ import org.eclipse.escet.setext.runtime.Token;
  * Call back hook methods for:
  * <ul>
  *  <li>{@link CifParser}</li>
- *  <li>{@link CifExpressionParser}</li>
- *  <li>{@link CifUpdateParser}</li>
  * </ul>
  */
 public final class CifParserHooks
-implements CifParser.Hooks,
-           CifExpressionParser.Hooks,
-           CifUpdateParser.Hooks
+implements CifParser.Hooks
 {
     @Override
     public void setParser(Parser<?> parser) {
@@ -383,23 +381,23 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // GroupDecl : Identifier COLONTK Name ActualParms @SEMICOLTK;
+    @Override // GroupDecl : Identifier COLONTK Name CompInstArgs @SEMICOLTK;
     public ADecl parseGroupDecl06(AIdentifier a1, AName a3, List<AExpression> l4, Token t5) {
         // return null;
     }
 
-    @Override // GroupDecl : @GROUPKW DEFKW Identifier FormalParms COLONTK GroupBody @ENDKW;
-    public ADecl parseGroupDecl07(Token t1, AIdentifier a3, List<AFormalParameter> l4, AGroupBody a6, Token t7) {
+    @Override // GroupDecl : @GROUPKW DEFKW Identifier CompDefParms COLONTK GroupBody @ENDKW;
+    public ADecl parseGroupDecl07(Token t1, AIdentifier a3, List<AParameter> l4, AGroupBody a6, Token t7) {
         // return null;
     }
 
-    @Override // GroupDecl : OptSupKind @AUTOMATONKW DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW;
-    public ADecl parseGroupDecl08(Token t1, Token t2, AIdentifier a4, List<AFormalParameter> l5, AAutomatonBody a7, Token t8) {
+    @Override // GroupDecl : OptSupKind @AUTOMATONKW DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW;
+    public ADecl parseGroupDecl08(Token t1, Token t2, AIdentifier a4, List<AParameter> l5, AAutomatonBody a7, Token t8) {
         // return null;
     }
 
-    @Override // GroupDecl : SupKind DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW;
-    public ADecl parseGroupDecl09(Token t1, AIdentifier a3, List<AFormalParameter> l4, AAutomatonBody a6, Token t7) {
+    @Override // GroupDecl : SupKind DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW;
+    public ADecl parseGroupDecl09(Token t1, AIdentifier a3, List<AParameter> l4, AAutomatonBody a6, Token t7) {
         // return null;
     }
 
@@ -453,8 +451,8 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // AutDecl : @DISCKW Type DiscDecls SEMICOLTK;
-    public ADecl parseAutDecl6(Token t1, ACifType a2, List<ADiscVariable> l3) {
+    @Override // AutDecl : OptAnnos @DISCKW Type DiscDecls SEMICOLTK;
+    public ADecl parseAutDecl6(List<AAnnotation> l1, Token t2, ACifType a3, List<ADiscVariable> l4) {
         // return null;
     }
 
@@ -498,8 +496,8 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // Decl : @INPUTKW Type Identifiers SEMICOLTK;
-    public ADecl parseDecl09(Token t1, ACifType a2, List<AIdentifier> l3) {
+    @Override // Decl : OptAnnos @INPUTKW Type Identifiers SEMICOLTK;
+    public ADecl parseDecl09(List<AAnnotation> l1, Token t2, ACifType a3, List<AIdentifier> l4) {
         // return null;
     }
 
@@ -818,23 +816,23 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // Location : @LOCATIONKW SEMICOLTK;
-    public ALocation parseLocation1(Token t1) {
+    @Override // Location : OptAnnos @LOCATIONKW SEMICOLTK;
+    public ALocation parseLocation1(List<AAnnotation> l1, Token t2) {
         // return null;
     }
 
-    @Override // Location : @LOCATIONKW Identifier SEMICOLTK;
-    public ALocation parseLocation2(Token t1, AIdentifier a2) {
+    @Override // Location : OptAnnos @LOCATIONKW Identifier SEMICOLTK;
+    public ALocation parseLocation2(List<AAnnotation> l1, Token t2, AIdentifier a3) {
         // return null;
     }
 
-    @Override // Location : @LOCATIONKW COLONTK LocationElements;
-    public ALocation parseLocation3(Token t1, List<ALocationElement> l3) {
+    @Override // Location : OptAnnos @LOCATIONKW COLONTK LocationElements;
+    public ALocation parseLocation3(List<AAnnotation> l1, Token t2, List<ALocationElement> l4) {
         // return null;
     }
 
-    @Override // Location : @LOCATIONKW Identifier COLONTK LocationElements;
-    public ALocation parseLocation4(Token t1, AIdentifier a2, List<ALocationElement> l4) {
+    @Override // Location : OptAnnos @LOCATIONKW Identifier COLONTK LocationElements;
+    public ALocation parseLocation4(List<AAnnotation> l1, Token t2, AIdentifier a3, List<ALocationElement> l5) {
         // return null;
     }
 
@@ -893,83 +891,83 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // ActualParms : PAROPENTK PARCLOSETK;
-    public List<AExpression> parseActualParms1() {
+    @Override // CompInstArgs : PAROPENTK PARCLOSETK;
+    public List<AExpression> parseCompInstArgs1() {
         // return null;
     }
 
-    @Override // ActualParms : PAROPENTK Expressions PARCLOSETK;
-    public List<AExpression> parseActualParms2(List<AExpression> l2) {
+    @Override // CompInstArgs : PAROPENTK Expressions PARCLOSETK;
+    public List<AExpression> parseCompInstArgs2(List<AExpression> l2) {
         // return null;
     }
 
-    @Override // FormalParms : PAROPENTK PARCLOSETK;
-    public List<AFormalParameter> parseFormalParms1() {
+    @Override // CompDefParms : PAROPENTK PARCLOSETK;
+    public List<AParameter> parseCompDefParms1() {
         // return null;
     }
 
-    @Override // FormalParms : PAROPENTK FormalDecls PARCLOSETK;
-    public List<AFormalParameter> parseFormalParms2(List<AFormalParameter> l2) {
+    @Override // CompDefParms : PAROPENTK CompDefDecls PARCLOSETK;
+    public List<AParameter> parseCompDefParms2(List<AParameter> l2) {
         // return null;
     }
 
-    @Override // FormalDecls : FormalDeclaration;
-    public List<AFormalParameter> parseFormalDecls1(AFormalParameter a1) {
+    @Override // CompDefDecls : CompDefDeclaration;
+    public List<AParameter> parseCompDefDecls1(AParameter a1) {
         // return null;
     }
 
-    @Override // FormalDecls : FormalDecls SEMICOLTK FormalDeclaration;
-    public List<AFormalParameter> parseFormalDecls2(List<AFormalParameter> l1, AFormalParameter a3) {
+    @Override // CompDefDecls : CompDefDecls SEMICOLTK CompDefDeclaration;
+    public List<AParameter> parseCompDefDecls2(List<AParameter> l1, AParameter a3) {
         // return null;
     }
 
-    @Override // FormalDeclaration : OptControllability @EVENTKW EventParamIds;
-    public AFormalParameter parseFormalDeclaration1(Token t1, Token t2, List<AFormalEventParameterPart> l3) {
+    @Override // CompDefDeclaration : OptControllability @EVENTKW EventParamIds;
+    public AParameter parseCompDefDeclaration1(Token t1, Token t2, List<AEventParameterPart> l3) {
         // return null;
     }
 
-    @Override // FormalDeclaration : OptControllability @EVENTKW EventType EventParamIds;
-    public AFormalParameter parseFormalDeclaration2(Token t1, Token t2, ACifType a3, List<AFormalEventParameterPart> l4) {
+    @Override // CompDefDeclaration : OptControllability @EVENTKW EventType EventParamIds;
+    public AParameter parseCompDefDeclaration2(Token t1, Token t2, ACifType a3, List<AEventParameterPart> l4) {
         // return null;
     }
 
-    @Override // FormalDeclaration : Controllability EventParamIds;
-    public AFormalParameter parseFormalDeclaration3(Token t1, List<AFormalEventParameterPart> l2) {
+    @Override // CompDefDeclaration : Controllability EventParamIds;
+    public AParameter parseCompDefDeclaration3(Token t1, List<AEventParameterPart> l2) {
         // return null;
     }
 
-    @Override // FormalDeclaration : Controllability EventType EventParamIds;
-    public AFormalParameter parseFormalDeclaration4(Token t1, ACifType a2, List<AFormalEventParameterPart> l3) {
+    @Override // CompDefDeclaration : Controllability EventType EventParamIds;
+    public AParameter parseCompDefDeclaration4(Token t1, ACifType a2, List<AEventParameterPart> l3) {
         // return null;
     }
 
-    @Override // FormalDeclaration : Name Identifiers;
-    public AFormalParameter parseFormalDeclaration5(AName a1, List<AIdentifier> l2) {
+    @Override // CompDefDeclaration : Name Identifiers;
+    public AParameter parseCompDefDeclaration5(AName a1, List<AIdentifier> l2) {
         // return null;
     }
 
-    @Override // FormalDeclaration : @LOCATIONKW Identifiers;
-    public AFormalParameter parseFormalDeclaration6(Token t1, List<AIdentifier> l2) {
+    @Override // CompDefDeclaration : @LOCATIONKW Identifiers;
+    public AParameter parseCompDefDeclaration6(Token t1, List<AIdentifier> l2) {
         // return null;
     }
 
-    @Override // FormalDeclaration : @ALGKW Type Identifiers;
-    public AFormalParameter parseFormalDeclaration7(Token t1, ACifType a2, List<AIdentifier> l3) {
+    @Override // CompDefDeclaration : @ALGKW Type Identifiers;
+    public AParameter parseCompDefDeclaration7(Token t1, ACifType a2, List<AIdentifier> l3) {
         // return null;
     }
 
     @Override // EventParamIds : EventParamId;
-    public List<AFormalEventParameterPart> parseEventParamIds1(AFormalEventParameterPart a1) {
+    public List<AEventParameterPart> parseEventParamIds1(AEventParameterPart a1) {
         // return null;
     }
 
     @Override // EventParamIds : EventParamIds COMMATK EventParamId;
-    public List<AFormalEventParameterPart> parseEventParamIds2(List<AFormalEventParameterPart> l1, AFormalEventParameterPart a3) {
+    public List<AEventParameterPart> parseEventParamIds2(List<AEventParameterPart> l1, AEventParameterPart a3) {
         // return null;
     }
 
     @Override // EventParamId : Identifier OptEventParamFlags;
-    public AFormalEventParameterPart parseEventParamId1(AIdentifier a1, List<AEventParamFlag> l2) {
+    public AEventParameterPart parseEventParamId1(AIdentifier a1, List<AEventParamFlag> l2) {
         // return null;
     }
 
@@ -1183,13 +1181,13 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // Addressable : Identifier;
-    public AExpression parseAddressable1(AIdentifier a1) {
+    @Override // Addressable : Name;
+    public AExpression parseAddressable1(AName a1) {
         // return null;
     }
 
-    @Override // Addressable : Identifier Projections;
-    public AExpression parseAddressable2(AIdentifier a1, List<AProjectionExpression> l2) {
+    @Override // Addressable : Name Projections;
+    public AExpression parseAddressable2(AName a1, List<AProjectionExpression> l2) {
         // return null;
     }
 
@@ -1380,6 +1378,11 @@ implements CifParser.Hooks,
 
     @Override // SvgIn : @SVGINKW IDKW Expression EVENTKW SvgInEvent OptSvgFile @SEMICOLTK;
     public ASvgIn parseSvgIn1(Token t1, AExpression a3, ASvgInEvent a5, ASvgFile a6, Token t7) {
+        // return null;
+    }
+
+    @Override // SvgIn : @SVGINKW IDKW Expression DOKW Updates OptSvgFile @SEMICOLTK;
+    public ASvgIn parseSvgIn2(Token t1, AExpression a3, List<AUpdate> l5, ASvgFile a6, Token t7) {
         // return null;
     }
 
@@ -2005,6 +2008,61 @@ implements CifParser.Hooks,
 
     @Override // Name : @ROOTNAMETK;
     public AName parseName4(Token t1) {
+        // return null;
+    }
+
+    @Override // OptAnnos : ;
+    public List<AAnnotation> parseOptAnnos1() {
+        // return null;
+    }
+
+    @Override // OptAnnos : OptAnnos Annotation;
+    public List<AAnnotation> parseOptAnnos2(List<AAnnotation> l1, AAnnotation a2) {
+        // return null;
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK;
+    public AAnnotation parseAnnotation1(Token t1) {
+        // return null;
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK PAROPENTK PARCLOSETK;
+    public AAnnotation parseAnnotation2(Token t1) {
+        // return null;
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK PAROPENTK AnnotationArgs OptComma PARCLOSETK;
+    public AAnnotation parseAnnotation3(Token t1, List<AAnnotationArgument> l3, Token t4) {
+        // return null;
+    }
+
+    @Override // AnnotationArgs : AnnotationArg;
+    public List<AAnnotationArgument> parseAnnotationArgs1(AAnnotationArgument a1) {
+        // return null;
+    }
+
+    @Override // AnnotationArgs : AnnotationArgs COMMATK AnnotationArg;
+    public List<AAnnotationArgument> parseAnnotationArgs2(List<AAnnotationArgument> l1, AAnnotationArgument a3) {
+        // return null;
+    }
+
+    @Override // AnnotationArg : @IDENTIFIERTK EQTK Expression;
+    public AAnnotationArgument parseAnnotationArg1(Token t1, AExpression a3) {
+        // return null;
+    }
+
+    @Override // AnnotationArg : @RELATIVENAMETK EQTK Expression;
+    public AAnnotationArgument parseAnnotationArg2(Token t1, AExpression a3) {
+        // return null;
+    }
+
+    @Override // OptComma : ;
+    public Token parseOptComma1() {
+        // return null;
+    }
+
+    @Override // OptComma : @COMMATK;
+    public Token parseOptComma2(Token t1) {
         // return null;
     }
 }
