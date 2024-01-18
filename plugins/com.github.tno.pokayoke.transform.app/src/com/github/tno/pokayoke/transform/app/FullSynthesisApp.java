@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.explorer.CifAutomatonBuilder;
 import org.eclipse.escet.cif.explorer.ExplorerStateFactory;
-import org.eclipse.escet.cif.explorer.app.AutomatonNameOption;
+import org.eclipse.escet.cif.explorer.options.AutomatonNameOption;
 import org.eclipse.escet.cif.explorer.runtime.BaseState;
 import org.eclipse.escet.cif.explorer.runtime.Explorer;
 import org.eclipse.escet.cif.explorer.runtime.ExplorerBuilder;
