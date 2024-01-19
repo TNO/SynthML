@@ -1,20 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ESCET CIF Parser (Incubation)
+Bundle-Name: ESCET CIF Parser
 Bundle-SymbolicName: org.eclipse.escet.cif.parser;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Bundle-Vendor: Eclipse ESCET
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.escet.common.position.metamodel;bundle-version="0.0.0",
- org.eclipse.escet.common.java;bundle-version="0.0.0",
- org.eclipse.escet.common.emf;bundle-version="0.0.0",
- org.eclipse.escet.setext.runtime;bundle-version="0.0.0",
- org.eclipse.escet.common.position.common;bundle-version="0.0.0",
+Require-Bundle: org.eclipse.escet.common.position.metamodel;bundle-version="3.0.0",
+ org.eclipse.escet.common.java;bundle-version="3.0.0",
+ org.eclipse.escet.common.emf;bundle-version="3.0.0",
+ org.eclipse.escet.setext.runtime;bundle-version="3.0.0",
+ org.eclipse.escet.common.position.common;bundle-version="3.0.0",
  org.eclipse.jface.text;bundle-version="3.16.100",
- org.eclipse.escet.common.app.framework;bundle-version="0.0.0"
+ org.eclipse.escet.common.app.framework;bundle-version="3.0.0"
 Export-Package: org.eclipse.escet.cif.parser,
  org.eclipse.escet.cif.parser.ast,
+ org.eclipse.escet.cif.parser.ast.annotations,
  org.eclipse.escet.cif.parser.ast.automata,
  org.eclipse.escet.cif.parser.ast.declarations,
  org.eclipse.escet.cif.parser.ast.expressions,

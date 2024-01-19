@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -19,26 +19,26 @@ import org.eclipse.escet.cif.parser.ast.types.ACifType;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.Token;
 
-/** Formal event parameter. */
-public class AFormalEventParameter extends AFormalParameter {
+/** Event parameter. */
+public class AEventParameter extends AParameter {
     /** The controllability of the parameters, or {@code null} if not specified. */
     public final Token controllability;
 
     /** The parts of the parameters. */
-    public final List<AFormalEventParameterPart> parts;
+    public final List<AEventParameterPart> parts;
 
     /** The type of the event, or {@code null} if not applicable. */
     public final ACifType type;
 
     /**
-     * Constructor for the {@link AFormalEventParameter} class.
+     * Constructor for the {@link AEventParameter} class.
      *
      * @param controllability The controllability of the parameters, or {@code null} if not specified.
      * @param parts The parts of the parameters.
      * @param type The type of the event, or {@code null} if not applicable.
      * @param position Position information.
      */
-    public AFormalEventParameter(Token controllability, List<AFormalEventParameterPart> parts, ACifType type,
+    public AEventParameter(Token controllability, List<AEventParameterPart> parts, ACifType type,
             TextPosition position)
     {
         super(position);

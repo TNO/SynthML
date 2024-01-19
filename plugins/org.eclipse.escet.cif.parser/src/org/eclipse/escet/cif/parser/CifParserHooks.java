@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -18,18 +18,16 @@ import static org.eclipse.escet.common.java.Lists.listc;
 
 import java.util.List;
 
+import org.eclipse.escet.cif.parser.ast.AAlgParameter;
 import org.eclipse.escet.cif.parser.ast.ACompDecl;
 import org.eclipse.escet.cif.parser.ast.ACompDefDecl;
 import org.eclipse.escet.cif.parser.ast.ACompInstDecl;
+import org.eclipse.escet.cif.parser.ast.AComponentParameter;
 import org.eclipse.escet.cif.parser.ast.ADecl;
 import org.eclipse.escet.cif.parser.ast.AEquation;
 import org.eclipse.escet.cif.parser.ast.AEquationDecl;
-import org.eclipse.escet.cif.parser.ast.AFormalAlgParameter;
-import org.eclipse.escet.cif.parser.ast.AFormalComponentParameter;
-import org.eclipse.escet.cif.parser.ast.AFormalEventParameter;
-import org.eclipse.escet.cif.parser.ast.AFormalEventParameterPart;
-import org.eclipse.escet.cif.parser.ast.AFormalLocationParameter;
-import org.eclipse.escet.cif.parser.ast.AFormalParameter;
+import org.eclipse.escet.cif.parser.ast.AEventParameter;
+import org.eclipse.escet.cif.parser.ast.AEventParameterPart;
 import org.eclipse.escet.cif.parser.ast.AFuncDecl;
 import org.eclipse.escet.cif.parser.ast.AGroupBody;
 import org.eclipse.escet.cif.parser.ast.AImport;
@@ -37,9 +35,13 @@ import org.eclipse.escet.cif.parser.ast.AImportDecl;
 import org.eclipse.escet.cif.parser.ast.AInitialDecl;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.AInvariantDecl;
+import org.eclipse.escet.cif.parser.ast.ALocationParameter;
 import org.eclipse.escet.cif.parser.ast.AMarkedDecl;
 import org.eclipse.escet.cif.parser.ast.ANamespaceDecl;
+import org.eclipse.escet.cif.parser.ast.AParameter;
 import org.eclipse.escet.cif.parser.ast.ASpecification;
+import org.eclipse.escet.cif.parser.ast.annotations.AAnnotation;
+import org.eclipse.escet.cif.parser.ast.annotations.AAnnotationArgument;
 import org.eclipse.escet.cif.parser.ast.automata.AAlphabetDecl;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AAutomatonBody;
@@ -470,20 +472,20 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new AFuncDecl(a3, l2, l4, a6, a3.position);
     }
 
-    @Override // GroupDecl : Identifier COLONTK Name ActualParms @SEMICOLTK;
+    @Override // GroupDecl : Identifier COLONTK Name CompInstArgs @SEMICOLTK;
     public ADecl parseGroupDecl06(AIdentifier a1, AName a3, List<AExpression> l4, Token t5) {
         parser.addFoldRange(a1.position, t5.position);
         return new ACompInstDecl(a1, a3, l4, a1.position);
     }
 
-    @Override // GroupDecl : @GROUPKW DEFKW Identifier FormalParms COLONTK GroupBody @ENDKW;
-    public ADecl parseGroupDecl07(Token t1, AIdentifier a3, List<AFormalParameter> l4, AGroupBody a6, Token t7) {
+    @Override // GroupDecl : @GROUPKW DEFKW Identifier CompDefParms COLONTK GroupBody @ENDKW;
+    public ADecl parseGroupDecl07(Token t1, AIdentifier a3, List<AParameter> l4, AGroupBody a6, Token t7) {
         parser.addFoldRange(t1, t7);
         return new ACompDefDecl(null, a3, l4, a6, a3.position);
     }
 
-    @Override // GroupDecl : OptSupKind @AUTOMATONKW DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW;
-    public ADecl parseGroupDecl08(Token t1, Token t2, AIdentifier a4, List<AFormalParameter> l5, AAutomatonBody a7,
+    @Override // GroupDecl : OptSupKind @AUTOMATONKW DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW;
+    public ADecl parseGroupDecl08(Token t1, Token t2, AIdentifier a4, List<AParameter> l5, AAutomatonBody a7,
             Token t8)
     {
         Token firstToken = (t1 != null) ? t1 : t2;
@@ -491,8 +493,8 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new ACompDefDecl(t1, a4, l5, a7, a4.position);
     }
 
-    @Override // GroupDecl : SupKind DEFKW Identifier FormalParms COLONTK AutomatonBody @ENDKW;
-    public ADecl parseGroupDecl09(Token t1, AIdentifier a3, List<AFormalParameter> l4, AAutomatonBody a6, Token t7) {
+    @Override // GroupDecl : SupKind DEFKW Identifier CompDefParms COLONTK AutomatonBody @ENDKW;
+    public ADecl parseGroupDecl09(Token t1, AIdentifier a3, List<AParameter> l4, AAutomatonBody a6, Token t7) {
         parser.addFoldRange(t1, t7);
         return new ACompDefDecl(t1, a3, l4, a6, a3.position);
     }
@@ -549,13 +551,12 @@ public final class CifParserHooks implements CifParser.Hooks {
 
     @Override // AutDecl : @MONITORKW SEMICOLTK;
     public ADecl parseAutDecl5(Token t1) {
-        List<AName> events = list();
-        return new AMonitorDecl(events, t1.position);
+        return new AMonitorDecl(list(), t1.position);
     }
 
-    @Override // AutDecl : @DISCKW Type DiscDecls SEMICOLTK;
-    public ADecl parseAutDecl6(Token t1, ACifType a2, List<ADiscVariable> l3) {
-        return new ADiscVariableDecl(a2, l3, t1.position);
+    @Override // AutDecl : OptAnnos @DISCKW Type DiscDecls SEMICOLTK;
+    public ADecl parseAutDecl6(List<AAnnotation> l1, Token t2, ACifType a3, List<ADiscVariable> l4) {
+        return new ADiscVariableDecl(l1, a3, l4, t2.position);
     }
 
     @Override // Decl : @TYPEKW TypeDefs SEMICOLTK;
@@ -598,9 +599,9 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new AAlgVariableDecl(a2, l3, t1.position);
     }
 
-    @Override // Decl : @INPUTKW Type Identifiers SEMICOLTK;
-    public ADecl parseDecl09(Token t1, ACifType a2, List<AIdentifier> l3) {
-        return new AInputVariableDecl(a2, l3, t1.position);
+    @Override // Decl : OptAnnos @INPUTKW Type Identifiers SEMICOLTK;
+    public ADecl parseDecl09(List<AAnnotation> l1, Token t2, ACifType a3, List<AIdentifier> l4) {
+        return new AInputVariableDecl(l1, a3, l4, t2.position);
     }
 
     @Override // Decl : @CONTKW ContDecls SEMICOLTK;
@@ -741,7 +742,7 @@ public final class CifParserHooks implements CifParser.Hooks {
 
     @Override // FuncVarDecls : FuncVarDecls Type FuncVarDecl SEMICOLTK;
     public List<ADiscVariableDecl> parseFuncVarDecls2(List<ADiscVariableDecl> l1, ACifType a2, List<ADiscVariable> l3) {
-        l1.add(new ADiscVariableDecl(a2, l3, null));
+        l1.add(new ADiscVariableDecl(listc(0), a2, l3, null));
         return l1;
     }
 
@@ -853,22 +854,17 @@ public final class CifParserHooks implements CifParser.Hooks {
 
     @Override // CoreEdge : WHENKW Expressions OptEdgeUrgent OptEdgeUpdate;
     public ACoreEdge parseCoreEdge2(List<AExpression> l2, TextPosition t3, List<AUpdate> l4) {
-        List<AEdgeEvent> events = list();
-        return new ACoreEdge(events, l2, t3, l4);
+        return new ACoreEdge(list(), l2, t3, l4);
     }
 
     @Override // CoreEdge : @NOWKW OptEdgeUpdate;
     public ACoreEdge parseCoreEdge3(Token t1, List<AUpdate> l2) {
-        List<AEdgeEvent> events = list();
-        List<AExpression> guards = list();
-        return new ACoreEdge(events, guards, t1.position, l2);
+        return new ACoreEdge(list(), list(), t1.position, l2);
     }
 
     @Override // CoreEdge : DOKW Updates;
     public ACoreEdge parseCoreEdge4(List<AUpdate> l2) {
-        List<AEdgeEvent> events = list();
-        List<AExpression> guards = list();
-        return new ACoreEdge(events, guards, null, l2);
+        return new ACoreEdge(list(), list(), null, l2);
     }
 
     @Override // OptEdgeGuard : ;
@@ -953,21 +949,21 @@ public final class CifParserHooks implements CifParser.Hooks {
         return l1;
     }
 
-    @Override // Location : @LOCATIONKW SEMICOLTK;
-    public ALocation parseLocation1(Token t1) {
-        return new ALocation(null, null, t1.position);
+    @Override // Location : OptAnnos @LOCATIONKW SEMICOLTK;
+    public ALocation parseLocation1(List<AAnnotation> l1, Token t2) {
+        return new ALocation(l1, null, null, t2.position);
     }
 
-    @Override // Location : @LOCATIONKW Identifier SEMICOLTK;
-    public ALocation parseLocation2(Token t1, AIdentifier a2) {
-        return new ALocation(a2, null, t1.position);
+    @Override // Location : OptAnnos @LOCATIONKW Identifier SEMICOLTK;
+    public ALocation parseLocation2(List<AAnnotation> l1, Token t2, AIdentifier a3) {
+        return new ALocation(l1, a3, null, t2.position);
     }
 
-    @Override // Location : @LOCATIONKW COLONTK LocationElements;
-    public ALocation parseLocation3(Token t1, List<ALocationElement> l3) {
-        ALocation loc = new ALocation(null, l3, t1.position);
+    @Override // Location : OptAnnos @LOCATIONKW COLONTK LocationElements;
+    public ALocation parseLocation3(List<AAnnotation> l1, Token t2, List<ALocationElement> l4) {
+        ALocation loc = new ALocation(l1, null, l4, t2.position);
 
-        for (ALocationElement lelem: l3) {
+        for (ALocationElement lelem: l4) {
             if (!(lelem instanceof AEquationLocationElement)) {
                 continue;
             }
@@ -980,11 +976,11 @@ public final class CifParserHooks implements CifParser.Hooks {
         return loc;
     }
 
-    @Override // Location : @LOCATIONKW Identifier COLONTK LocationElements;
-    public ALocation parseLocation4(Token t1, AIdentifier a2, List<ALocationElement> l4) {
-        ALocation loc = new ALocation(a2, l4, t1.position);
+    @Override // Location : OptAnnos @LOCATIONKW Identifier COLONTK LocationElements;
+    public ALocation parseLocation4(List<AAnnotation> l1, Token t2, AIdentifier a3, List<ALocationElement> l5) {
+        ALocation loc = new ALocation(l1, a3, l5, t2.position);
 
-        for (ALocationElement lelem: l4) {
+        for (ALocationElement lelem: l5) {
             if (!(lelem instanceof AEquationLocationElement)) {
                 continue;
             }
@@ -1054,90 +1050,86 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new AEdgeLocationElement(a2, a4, t1.position);
     }
 
-    @Override // ActualParms : PAROPENTK PARCLOSETK;
-    public List<AExpression> parseActualParms1() {
+    @Override // CompInstArgs : PAROPENTK PARCLOSETK;
+    public List<AExpression> parseCompInstArgs1() {
         return list();
     }
 
-    @Override // ActualParms : PAROPENTK Expressions PARCLOSETK;
-    public List<AExpression> parseActualParms2(List<AExpression> l2) {
+    @Override // CompInstArgs : PAROPENTK Expressions PARCLOSETK;
+    public List<AExpression> parseCompInstArgs2(List<AExpression> l2) {
         return l2;
     }
 
-    @Override // FormalParms : PAROPENTK PARCLOSETK;
-    public List<AFormalParameter> parseFormalParms1() {
+    @Override // CompDefParms : PAROPENTK PARCLOSETK;
+    public List<AParameter> parseCompDefParms1() {
         return list();
     }
 
-    @Override // FormalParms : PAROPENTK FormalDecls PARCLOSETK;
-    public List<AFormalParameter> parseFormalParms2(List<AFormalParameter> l2) {
+    @Override // CompDefParms : PAROPENTK CompDefDecls PARCLOSETK;
+    public List<AParameter> parseCompDefParms2(List<AParameter> l2) {
         return l2;
     }
 
-    @Override // FormalDecls : FormalDeclaration;
-    public List<AFormalParameter> parseFormalDecls1(AFormalParameter a1) {
+    @Override // CompDefDecls : CompDefDeclaration;
+    public List<AParameter> parseCompDefDecls1(AParameter a1) {
         return list(a1);
     }
 
-    @Override // FormalDecls : FormalDecls SEMICOLTK FormalDeclaration;
-    public List<AFormalParameter> parseFormalDecls2(List<AFormalParameter> l1, AFormalParameter a3) {
+    @Override // CompDefDecls : CompDefDecls SEMICOLTK CompDefDeclaration;
+    public List<AParameter> parseCompDefDecls2(List<AParameter> l1, AParameter a3) {
         l1.add(a3);
         return l1;
     }
 
-    @Override // FormalDeclaration : OptControllability @EVENTKW EventParamIds;
-    public AFormalParameter parseFormalDeclaration1(Token t1, Token t2, List<AFormalEventParameterPart> l3) {
-        return new AFormalEventParameter(t1, l3, null, t2.position);
+    @Override // CompDefDeclaration : OptControllability @EVENTKW EventParamIds;
+    public AParameter parseCompDefDeclaration1(Token t1, Token t2, List<AEventParameterPart> l3) {
+        return new AEventParameter(t1, l3, null, t2.position);
     }
 
-    @Override // FormalDeclaration : OptControllability @EVENTKW EventType EventParamIds;
-    public AFormalParameter parseFormalDeclaration2(Token t1, Token t2, ACifType a3,
-            List<AFormalEventParameterPart> l4)
-    {
-        return new AFormalEventParameter(t1, l4, a3, t2.position);
+    @Override // CompDefDeclaration : OptControllability @EVENTKW EventType EventParamIds;
+    public AParameter parseCompDefDeclaration2(Token t1, Token t2, ACifType a3, List<AEventParameterPart> l4) {
+        return new AEventParameter(t1, l4, a3, t2.position);
     }
 
-    @Override // FormalDeclaration : Controllability EventParamIds;
-    public AFormalParameter parseFormalDeclaration3(Token t1, List<AFormalEventParameterPart> l2) {
-        return new AFormalEventParameter(t1, l2, null, t1.position);
+    @Override // CompDefDeclaration : Controllability EventParamIds;
+    public AParameter parseCompDefDeclaration3(Token t1, List<AEventParameterPart> l2) {
+        return new AEventParameter(t1, l2, null, t1.position);
     }
 
-    @Override // FormalDeclaration : Controllability EventType EventParamIds;
-    public AFormalParameter parseFormalDeclaration4(Token t1, ACifType a2, List<AFormalEventParameterPart> l3) {
-        return new AFormalEventParameter(t1, l3, a2, t1.position);
+    @Override // CompDefDeclaration : Controllability EventType EventParamIds;
+    public AParameter parseCompDefDeclaration4(Token t1, ACifType a2, List<AEventParameterPart> l3) {
+        return new AEventParameter(t1, l3, a2, t1.position);
     }
 
-    @Override // FormalDeclaration : Name Identifiers;
-    public AFormalParameter parseFormalDeclaration5(AName a1, List<AIdentifier> l2) {
-        return new AFormalComponentParameter(a1, l2, a1.position);
+    @Override // CompDefDeclaration : Name Identifiers;
+    public AParameter parseCompDefDeclaration5(AName a1, List<AIdentifier> l2) {
+        return new AComponentParameter(a1, l2, a1.position);
     }
 
-    @Override // FormalDeclaration : @LOCATIONKW Identifiers;
-    public AFormalParameter parseFormalDeclaration6(Token t1, List<AIdentifier> l2) {
-        return new AFormalLocationParameter(l2, t1.position);
+    @Override // CompDefDeclaration : @LOCATIONKW Identifiers;
+    public AParameter parseCompDefDeclaration6(Token t1, List<AIdentifier> l2) {
+        return new ALocationParameter(l2, t1.position);
     }
 
-    @Override // FormalDeclaration : @ALGKW Type Identifiers;
-    public AFormalParameter parseFormalDeclaration7(Token t1, ACifType a2, List<AIdentifier> l3) {
-        return new AFormalAlgParameter(a2, l3, t1.position);
+    @Override // CompDefDeclaration : @ALGKW Type Identifiers;
+    public AParameter parseCompDefDeclaration7(Token t1, ACifType a2, List<AIdentifier> l3) {
+        return new AAlgParameter(a2, l3, t1.position);
     }
 
     @Override // EventParamIds : EventParamId;
-    public List<AFormalEventParameterPart> parseEventParamIds1(AFormalEventParameterPart a1) {
+    public List<AEventParameterPart> parseEventParamIds1(AEventParameterPart a1) {
         return list(a1);
     }
 
     @Override // EventParamIds : EventParamIds COMMATK EventParamId;
-    public List<AFormalEventParameterPart> parseEventParamIds2(List<AFormalEventParameterPart> l1,
-            AFormalEventParameterPart a3)
-    {
+    public List<AEventParameterPart> parseEventParamIds2(List<AEventParameterPart> l1, AEventParameterPart a3) {
         l1.add(a3);
         return l1;
     }
 
     @Override // EventParamId : Identifier OptEventParamFlags;
-    public AFormalEventParameterPart parseEventParamId1(AIdentifier a1, List<AEventParamFlag> l2) {
-        return new AFormalEventParameterPart(a1, l2);
+    public AEventParameterPart parseEventParamId1(AIdentifier a1, List<AEventParamFlag> l2) {
+        return new AEventParameterPart(a1, l2);
     }
 
     @Override // OptEventParamFlags : ;
@@ -1370,14 +1362,14 @@ public final class CifParserHooks implements CifParser.Hooks {
         return l1;
     }
 
-    @Override // Addressable : Identifier;
-    public AExpression parseAddressable1(AIdentifier a1) {
-        return new ANameExpression(new AName(a1.id, a1.position), false, a1.position);
+    @Override // Addressable : Name;
+    public AExpression parseAddressable1(AName a1) {
+        return new ANameExpression(new AName(a1.name, a1.position), false, a1.position);
     }
 
-    @Override // Addressable : Identifier Projections;
-    public AExpression parseAddressable2(AIdentifier a1, List<AProjectionExpression> l2) {
-        AExpression refExpr = new ANameExpression(new AName(a1.id, a1.position), false, a1.position);
+    @Override // Addressable : Name Projections;
+    public AExpression parseAddressable2(AName a1, List<AProjectionExpression> l2) {
+        AExpression refExpr = new ANameExpression(new AName(a1.name, a1.position), false, a1.position);
         AProjectionExpression rslt = null;
         for (AProjectionExpression proj: l2) {
             if (rslt == null) {
@@ -1590,7 +1582,13 @@ public final class CifParserHooks implements CifParser.Hooks {
     @Override // SvgIn : @SVGINKW IDKW Expression EVENTKW SvgInEvent OptSvgFile @SEMICOLTK;
     public ASvgIn parseSvgIn1(Token t1, AExpression a3, ASvgInEvent a5, ASvgFile a6, Token t7) {
         parser.addFoldRange(t1.position, t7.position);
-        return new ASvgIn(a3, a5, a6, t1.position);
+        return new ASvgIn(a3, a5, list(), a6, t1.position);
+    }
+
+    @Override // SvgIn : @SVGINKW IDKW Expression DOKW Updates OptSvgFile @SEMICOLTK;
+    public ASvgIn parseSvgIn2(Token t1, AExpression a3, List<AUpdate> l5, ASvgFile a6, Token t7) {
+        parser.addFoldRange(t1.position, t7.position);
+        return new ASvgIn(a3, null, l5, a6, t1.position);
     }
 
     @Override // SvgInEvent : Name;
@@ -1826,8 +1824,7 @@ public final class CifParserHooks implements CifParser.Hooks {
 
     @Override // Type : @FUNCKW Type PAROPENTK PARCLOSETK;
     public ACifType parseType12(Token t1, ACifType a2) {
-        List<ACifType> paramTypes = list();
-        return new AFuncType(a2, paramTypes, t1.position);
+        return new AFuncType(a2, list(), t1.position);
     }
 
     @Override // Type : @FUNCKW Type PAROPENTK Types PARCLOSETK;
@@ -2094,8 +2091,7 @@ public final class CifParserHooks implements CifParser.Hooks {
 
     @Override // ExpressionFactor : @SQOPENTK SQCLOSETK;
     public AExpression parseExpressionFactor07(Token t1) {
-        List<AExpression> elements = list();
-        return new AListExpression(elements, t1.position);
+        return new AListExpression(list(), t1.position);
     }
 
     @Override // ExpressionFactor : @SQOPENTK Expressions SQCLOSETK;
@@ -2240,5 +2236,62 @@ public final class CifParserHooks implements CifParser.Hooks {
     @Override // Name : @ROOTNAMETK;
     public AName parseName4(Token t1) {
         return new AName(t1.text, t1.position);
+    }
+
+    @Override // OptAnnos : ;
+    public List<AAnnotation> parseOptAnnos1() {
+        return list();
+    }
+
+    @Override // OptAnnos : OptAnnos Annotation;
+    public List<AAnnotation> parseOptAnnos2(List<AAnnotation> l1, AAnnotation a2) {
+        l1.add(a2);
+        return l1;
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK;
+    public AAnnotation parseAnnotation1(Token t1) {
+        return new AAnnotation(t1, list());
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK PAROPENTK PARCLOSETK;
+    public AAnnotation parseAnnotation2(Token t1) {
+        return new AAnnotation(t1, list());
+    }
+
+    @Override // Annotation : @ANNOTATIONNAMETK PAROPENTK AnnotationArgs OptComma PARCLOSETK;
+    public AAnnotation parseAnnotation3(Token t1, List<AAnnotationArgument> l3, Token t4) {
+        return new AAnnotation(t1, l3);
+    }
+
+    @Override // AnnotationArgs : AnnotationArg;
+    public List<AAnnotationArgument> parseAnnotationArgs1(AAnnotationArgument a1) {
+        return list(a1);
+    }
+
+    @Override // AnnotationArgs : AnnotationArgs COMMATK AnnotationArg;
+    public List<AAnnotationArgument> parseAnnotationArgs2(List<AAnnotationArgument> l1, AAnnotationArgument a3) {
+        l1.add(a3);
+        return l1;
+    }
+
+    @Override // AnnotationArg : @IDENTIFIERTK EQTK Expression;
+    public AAnnotationArgument parseAnnotationArg1(Token t1, AExpression a3) {
+        return new AAnnotationArgument(t1, a3);
+    }
+
+    @Override // AnnotationArg : @RELATIVENAMETK EQTK Expression;
+    public AAnnotationArgument parseAnnotationArg2(Token t1, AExpression a3) {
+        return new AAnnotationArgument(t1, a3);
+    }
+
+    @Override // OptComma : ;
+    public Token parseOptComma1() {
+        return null;
+    }
+
+    @Override // OptComma : @COMMATK;
+    public Token parseOptComma2(Token t1) {
+        return t1;
     }
 }

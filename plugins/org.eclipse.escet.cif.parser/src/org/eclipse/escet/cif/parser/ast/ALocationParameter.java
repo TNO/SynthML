@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -16,27 +16,21 @@ package org.eclipse.escet.cif.parser.ast;
 import java.util.List;
 
 import org.eclipse.escet.cif.parser.ast.tokens.AIdentifier;
-import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.common.java.TextPosition;
 
-/** Formal component parameter. */
-public class AFormalComponentParameter extends AFormalParameter {
-    /** The component definition type of the parameter. */
-    public final AName type;
-
+/** Location parameter. */
+public class ALocationParameter extends AParameter {
     /** The names of the parameters. */
     public final List<AIdentifier> names;
 
     /**
-     * Constructor for the {@link AFormalComponentParameter} class.
+     * Constructor for the {@link ALocationParameter} class.
      *
-     * @param type The component definition type of the parameter.
      * @param names The names of the parameters.
      * @param position Position information.
      */
-    public AFormalComponentParameter(AName type, List<AIdentifier> names, TextPosition position) {
+    public ALocationParameter(List<AIdentifier> names, TextPosition position) {
         super(position);
-        this.type = type;
         this.names = names;
     }
 }

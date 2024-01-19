@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2010, 2023 Contributors to the Eclipse Foundation
+// Copyright (c) 2010, 2024 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -2325,7 +2325,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : FALSEKW;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -2800,7 +2800,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : SELFKW;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -3275,7 +3275,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : TIMEKW;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -3330,7 +3330,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : TRUEKW;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -5351,7 +5351,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : QUESTIONTK;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -7616,7 +7616,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 157:
             case 158:
             case 162:
-            case 169: {
+            case 170: {
                 // Reduce Name : RELATIVENAMETK;
                 doReduce1(token, 24);
                 Object o1 = doReduce2();
@@ -7673,7 +7673,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 157:
             case 158:
             case 162:
-            case 169: {
+            case 170: {
                 // Reduce Name : ABSOLUTENAMETK;
                 doReduce1(token, 24);
                 Object o1 = doReduce2();
@@ -7730,7 +7730,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 157:
             case 158:
             case 162:
-            case 169: {
+            case 170: {
                 // Reduce Name : ROOTNAMETK;
                 doReduce1(token, 24);
                 Object o1 = doReduce2();
@@ -7788,7 +7788,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 157:
             case 158:
             case 162:
-            case 169: {
+            case 170: {
                 // Reduce Identifier : IDENTIFIERTK;
                 doReduce1(token, 1);
                 Object o1 = doReduce2();
@@ -7843,7 +7843,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : NUMBERTK;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -7898,7 +7898,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : REALTK;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -7953,7 +7953,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce StringToken : STRINGTK;
                 doReduce1(token, 2);
                 Object o1 = doReduce2();
@@ -8012,7 +8012,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : AddExpression;
                 doReduce1(token, 13);
                 Object o1 = doReduce2();
@@ -8056,7 +8056,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce OrExpression : AndExpression;
                 doReduce1(token, 11);
                 Object o1 = doReduce2();
@@ -8143,7 +8143,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce AndExpression : CompareExpression;
                 doReduce1(token, 12);
                 Object o1 = doReduce2();
@@ -8168,7 +8168,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
      */
     private final void action72() throws IOException {
         switch (token.id) {
-            case 169: {
+            case 170: {
                 // Accept.
                 Object rslt = doAccept(token);
                 accept = true;
@@ -8218,7 +8218,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : ExpressionFactor;
                 doReduce1(token, 17);
                 Object o1 = doReduce2();
@@ -8283,7 +8283,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce UnaryExpression : FuncExpression;
                 doReduce1(token, 16);
                 Object o1 = doReduce2();
@@ -8340,7 +8340,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 157:
             case 158:
             case 162:
-            case 169: {
+            case 170: {
                 // Reduce Name : Identifier;
                 doReduce1(token, 24);
                 Object o1 = doReduce2();
@@ -8413,7 +8413,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce AddExpression : MulExpression;
                 doReduce1(token, 14);
                 Object o1 = doReduce2();
@@ -8474,7 +8474,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : Name;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -8529,7 +8529,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : NonEmptySetExpression;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -8582,7 +8582,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce Expression : OrExpression;
                 doReduce1(token, 10);
                 Object o1 = doReduce2();
@@ -8655,7 +8655,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : StringToken;
                 doReduce1(token, 18);
                 Object o1 = doReduce2();
@@ -8708,7 +8708,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce MulExpression : UnaryExpression;
                 doReduce1(token, 15);
                 Object o1 = doReduce2();
@@ -9189,7 +9189,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : StdLibFunction PAROPENTK PARCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -9718,7 +9718,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : StdLibFunction PAROPENTK Expressions PARCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -11053,7 +11053,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce Expression : OrExpression EQUIVALENCETK OrExpression;
                 doReduce1(token, 10);
                 Object o3 = doReduce2();
@@ -11096,7 +11096,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce Expression : OrExpression IMPLIESTK OrExpression;
                 doReduce1(token, 10);
                 Object o3 = doReduce2();
@@ -11142,7 +11142,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce OrExpression : OrExpression ORKW AndExpression;
                 doReduce1(token, 11);
                 Object o3 = doReduce2();
@@ -11651,7 +11651,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce AndExpression : AndExpression ANDKW CompareExpression;
                 doReduce1(token, 12);
                 Object o3 = doReduce2();
@@ -15072,7 +15072,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression GTTK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -15987,7 +15987,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce AddExpression : AddExpression MINUSTK MulExpression;
                 doReduce1(token, 14);
                 Object o3 = doReduce2();
@@ -17722,7 +17722,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce MulExpression : MulExpression SLASHTK UnaryExpression;
                 doReduce1(token, 15);
                 Object o3 = doReduce2();
@@ -17777,7 +17777,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce MulExpression : MulExpression ASTERISKTK UnaryExpression;
                 doReduce1(token, 15);
                 Object o3 = doReduce2();
@@ -17832,7 +17832,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce MulExpression : MulExpression MODKW UnaryExpression;
                 doReduce1(token, 15);
                 Object o3 = doReduce2();
@@ -17887,7 +17887,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce MulExpression : MulExpression DIVKW UnaryExpression;
                 doReduce1(token, 15);
                 Object o3 = doReduce2();
@@ -17962,7 +17962,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce AddExpression : AddExpression PLUSTK MulExpression;
                 doReduce1(token, 14);
                 Object o3 = doReduce2();
@@ -18023,7 +18023,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression GETK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18084,7 +18084,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression NETK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18145,7 +18145,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression EQTK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18206,7 +18206,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression LETK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18267,7 +18267,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression LTTK AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18328,7 +18328,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression SUBKW AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18389,7 +18389,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce CompareExpression : CompareExpression INKW AddExpression;
                 doReduce1(token, 13);
                 Object o3 = doReduce2();
@@ -18446,7 +18446,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : Name APOSTROPHETK;
                 doReduce1(token, 18);
                 Object o2 = doReduce2();
@@ -19882,7 +19882,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : FuncExpression SQOPENTK OptExpression COLONTK OptExpression SQCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -19942,7 +19942,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : FuncExpression SQOPENTK Expression SQCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -20000,7 +20000,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : FuncExpression PAROPENTK PARCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -20081,7 +20081,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce FuncExpression : FuncExpression PAROPENTK Expressions PARCLOSETK;
                 doReduce1(token, 17);
                 doReduce2();
@@ -20139,7 +20139,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : SQOPENTK SQCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -20219,7 +20219,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : SQOPENTK Expressions SQCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -20720,7 +20720,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : PAROPENTK Expression PARCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -20801,7 +20801,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : PAROPENTK Expression COMMATK Expressions PARCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -20860,7 +20860,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : CUROPENTK CURCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -20996,7 +20996,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce NonEmptySetExpression : CUROPENTK Expressions CURCLOSETK;
                 doReduce1(token, 19);
                 doReduce2();
@@ -21921,7 +21921,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : CUROPENTK DictPairs CURCLOSETK;
                 doReduce1(token, 18);
                 doReduce2();
@@ -22444,7 +22444,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce UnaryExpression : MINUSTK UnaryExpression;
                 doReduce1(token, 16);
                 Object o2 = doReduce2();
@@ -22498,7 +22498,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce UnaryExpression : PLUSTK UnaryExpression;
                 doReduce1(token, 16);
                 Object o2 = doReduce2();
@@ -23274,7 +23274,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : LTTK Type GTTK ExpressionFactor;
                 doReduce1(token, 18);
                 Object o4 = doReduce2();
@@ -26542,7 +26542,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce UnaryExpression : SAMPLEKW FuncExpression;
                 doReduce1(token, 16);
                 Object o2 = doReduce2();
@@ -26596,7 +26596,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 154:
             case 156:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce UnaryExpression : NOTKW UnaryExpression;
                 doReduce1(token, 16);
                 Object o2 = doReduce2();
@@ -28925,7 +28925,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : SWITCHKW Expression COLONTK SwitchBody ENDKW;
                 doReduce1(token, 18);
                 doReduce2();
@@ -30828,7 +30828,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             case 156:
             case 157:
             case 158:
-            case 169: {
+            case 170: {
                 // Reduce ExpressionFactor : IFKW Expressions COLONTK Expression OptElifExprs ELSEKW Expression ENDKW;
                 doReduce1(token, 18);
                 doReduce2();
@@ -37748,7 +37748,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
             {148, 149}, // state 69
             {124}, // state 70
             {126, 131, 142, 143, 144, 145, 146, 147}, // state 71
-            {169}, // state 72
+            {170}, // state 72
             {}, // state 73
             {155, 157}, // state 74
             {}, // state 75
@@ -37935,7 +37935,7 @@ public final class CifExpressionParser extends Parser<AExpression> {
                 {102, 125, 127, 140, 141},
                 {104, 155, 157},
                 {111, 136},
-                {97, 169},
+                {97, 170},
                 {98, 129, 150, 151},
                 {99, 124},
             },
