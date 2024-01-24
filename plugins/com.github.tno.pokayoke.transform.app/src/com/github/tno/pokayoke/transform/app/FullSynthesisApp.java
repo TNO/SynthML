@@ -6,19 +6,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
+import org.eclipse.escet.cif.eventbased.apps.DfaMinimizationApplication;
+import org.eclipse.escet.cif.eventbased.apps.ProjectionApplication;
 import org.eclipse.escet.cif.explorer.CifAutomatonBuilder;
 import org.eclipse.escet.cif.explorer.ExplorerStateFactory;
+import org.eclipse.escet.cif.explorer.options.AddStateAnnosOption;
 import org.eclipse.escet.cif.explorer.options.AutomatonNameOption;
 import org.eclipse.escet.cif.explorer.runtime.BaseState;
 import org.eclipse.escet.cif.explorer.runtime.Explorer;
 import org.eclipse.escet.cif.explorer.runtime.ExplorerBuilder;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.Application;
 import org.eclipse.escet.common.app.framework.DummyApplication;
@@ -60,9 +68,24 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Perform event-based automaton projection.
+        String preservedEvents = getPreservedEvents(cifStateSpace);
+        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.cif");
+        String[] projectionArgs = new String[] {cifStateSpacePath.toString(), "--preserve=" + preservedEvents,
+                "--output=" + cifProjectedStateSpacePath.toString()};
+        ProjectionApplication projectionApp = new ProjectionApplication();
+        projectionApp.run(projectionArgs, false);
+
+        // Perform DFA minimization.
+        Path cifMinimizedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.minimized.cif");
+        String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
+                "--output=" + cifMinimizedStateSpacePath.toString()};
+        DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
+        dfaMinimizationApp.run(dfaMinimizationArgs, false);
+
         // Translate the CIF state space to Petrify input and output the Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifStateSpacePath.toString(), petrifyInputPath.toString());
+        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
 
         // Petrify the state space and output the generated Petri Net.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
@@ -74,6 +97,15 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
+    private static String getPreservedEvents(Specification spec) {
+        Set<Event> events = new HashSet<>();
+        CifCollectUtils.collectEvents(spec, events);
+        List<String> eventNames = new ArrayList<>(events).stream().filter(event -> event.getControllable())
+                .map(event -> CifTextUtils.getAbsName(event, false)).toList();
+
+        return String.join(",", eventNames);
+    }
+
     /**
      * Compute the state space of the automata in a specification.
      *
@@ -83,6 +115,7 @@ public class FullSynthesisApp {
     public static Specification convertToStateSpace(Specification spec) {
         Application<?> app = new DummyApplication(new AppStreams());
         Options.set(OutputModeOption.class, OutputMode.ERROR);
+        Options.set(AddStateAnnosOption.class, true);
         Options.set(AutomatonNameOption.class, null);
 
         Specification statespace;
