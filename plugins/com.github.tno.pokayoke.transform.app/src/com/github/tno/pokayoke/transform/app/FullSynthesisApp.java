@@ -4,33 +4,22 @@ package com.github.tno.pokayoke.transform.app;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.escet.cif.explorer.CifAutomatonBuilder;
-import org.eclipse.escet.cif.explorer.ExplorerStateFactory;
-import org.eclipse.escet.cif.explorer.options.AutomatonNameOption;
-import org.eclipse.escet.cif.explorer.runtime.BaseState;
-import org.eclipse.escet.cif.explorer.runtime.Explorer;
-import org.eclipse.escet.cif.explorer.runtime.ExplorerBuilder;
-import org.eclipse.escet.cif.io.CifWriter;
+import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
+import org.eclipse.escet.cif.eventbased.apps.DfaMinimizationApplication;
+import org.eclipse.escet.cif.eventbased.apps.ProjectionApplication;
+import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
-import org.eclipse.escet.common.app.framework.AppEnv;
-import org.eclipse.escet.common.app.framework.Application;
-import org.eclipse.escet.common.app.framework.DummyApplication;
-import org.eclipse.escet.common.app.framework.io.AppStreams;
-import org.eclipse.escet.common.app.framework.options.Options;
-import org.eclipse.escet.common.app.framework.output.OutputMode;
-import org.eclipse.escet.common.app.framework.output.OutputModeOption;
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /** Application that performs full synthesis. */
@@ -40,29 +29,37 @@ public class FullSynthesisApp {
 
     public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
         Files.createDirectories(outputFolderPath);
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
         // Perform Synthesis.
         // TODO when the synthesis specification is formalized.
 
-        // Load CIF specification.
-        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
-        Specification cifSpec = FileHelper.loadCifSpec(inputPath);
-
-        // Generate CIF state space.
-        Specification cifStateSpace = convertToStateSpace(cifSpec);
-
-        // Output the generated CIF state space.
+        // Perform state space generation.
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifStateSpace, cifStateSpacePath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
+        String[] stateSpaceGenerationArgs = new String[] {inputPath.toString(),
+                "--output=" + cifStateSpacePath.toString()};
+        ExplorerApplication explorerApp = new ExplorerApplication();
+        explorerApp.run(stateSpaceGenerationArgs, false);
+
+        // Perform event-based automaton projection.
+        Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
+        String preservedEvents = getPreservedEvents(cifStateSpace);
+        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.cif");
+        String[] projectionArgs = new String[] {cifStateSpacePath.toString(), "--preserve=" + preservedEvents,
+                "--output=" + cifProjectedStateSpacePath.toString()};
+        ProjectionApplication projectionApp = new ProjectionApplication();
+        projectionApp.run(projectionArgs, false);
+
+        // Perform DFA minimization.
+        Path cifMinimizedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.minimized.cif");
+        String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
+                "--output=" + cifMinimizedStateSpacePath.toString()};
+        DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
+        dfaMinimizationApp.run(dfaMinimizationArgs, false);
 
         // Translate the CIF state space to Petrify input and output the Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifStateSpacePath.toString(), petrifyInputPath.toString());
+        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
 
         // Petrify the state space and output the generated Petri Net.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
@@ -74,39 +71,13 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    /**
-     * Compute the state space of the automata in a specification.
-     *
-     * @param spec {@link Specification} containing automata to convert.
-     * @return {@link Specification} containing state space automaton.
-     */
-    public static Specification convertToStateSpace(Specification spec) {
-        Application<?> app = new DummyApplication(new AppStreams());
-        Options.set(OutputModeOption.class, OutputMode.ERROR);
-        Options.set(AutomatonNameOption.class, null);
+    private static String getPreservedEvents(Specification spec) {
+        List<Event> events = new ArrayList<>();
+        CifCollectUtils.collectEvents(spec, events);
+        List<String> eventNames = events.stream().filter(event -> event.getControllable())
+                .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        Specification statespace;
-        try {
-            ExplorerBuilder builder = new ExplorerBuilder(spec);
-            builder.collectData();
-            ExplorerStateFactory stateFactory = new ExplorerStateFactory();
-            Explorer explorer = builder.buildExplorer(stateFactory);
-            List<BaseState> initials = explorer.getInitialStates(app);
-            Preconditions.checkArgument(initials != null && !initials.isEmpty());
-            Queue<BaseState> queue = new ArrayDeque<>();
-            queue.addAll(initials);
-            while (!queue.isEmpty()) {
-                BaseState state = queue.poll();
-                queue.addAll(state.getNewSuccessorStates());
-            }
-            explorer.renumberStates();
-            explorer.minimizeEdges();
-            CifAutomatonBuilder statespaceBuilder = new CifAutomatonBuilder();
-            statespace = statespaceBuilder.createAutomaton(explorer, spec);
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-        return statespace;
+        return String.join(",", eventNames);
     }
 
     /**
