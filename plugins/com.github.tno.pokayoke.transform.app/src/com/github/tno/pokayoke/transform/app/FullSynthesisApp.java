@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
@@ -74,9 +72,9 @@ public class FullSynthesisApp {
     }
 
     private static String getPreservedEvents(Specification spec) {
-        Set<Event> events = new HashSet<>();
+        List<Event> events = new ArrayList<>();
         CifCollectUtils.collectEvents(spec, events);
-        List<String> eventNames = new ArrayList<>(events).stream().filter(event -> event.getControllable())
+        List<String> eventNames = events.stream().filter(event -> event.getControllable())
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
