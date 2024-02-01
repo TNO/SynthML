@@ -2,8 +2,9 @@
 package com.github.tno.pokayoke.transform.region2statemapping;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +25,19 @@ public class ExtractRegionStateMapping {
     private ExtractRegionStateMapping() {
     }
 
-    public static Map<String, Set<String>> extract(PetriNet petriNet, List<String> petrifyOutput) {
+    /**
+     * Extracts a region-state map from the given Petri net and state machine.
+     *
+     * @param petriNet The Petri Net.
+     * @param petrifyInput The Petrify input that contains a state machine.
+     * @return A map from state in the state machine to region (i.e., a set of places) in the Petri net.
+     */
+    public static Map<String, Set<String>> extract(PetriNet petriNet, List<String> petrifyInput) {
         // Initialize an empty map from place to states.
         List<Place> places = petriNet.getPages().get(0).getObjects().stream().filter(Place.class::isInstance)
                 .map(Place.class::cast).toList();
-        Map<String, Set<String>> regionStateMap = new HashMap<>();
-        places.stream().forEach(place -> regionStateMap.put(place.getName().getText(), new HashSet<>()));
+        Map<String, Set<String>> regionStateMap = new LinkedHashMap<>();
+        places.stream().forEach(place -> regionStateMap.put(place.getName().getText(), new LinkedHashSet<>()));
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
         // initial state (i.e., loc0 as added in the CIF2Petrify step) and the initial marked place.
@@ -37,15 +45,15 @@ public class ExtractRegionStateMapping {
                 .toList();
         String initialState = "loc0";
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
-        queue.add(Pair.of(initialState, new HashSet<>(markedPlace)));
+        queue.add(Pair.of(initialState, new LinkedHashSet<>(markedPlace)));
 
         // Initialize a list for the visited pairs of state and places.
-        List<Pair<String, Set<Place>>> visited = new ArrayList<>();
+        Set<Pair<String, Set<Place>>> visited = new LinkedHashSet<>();
 
         // Get transitions of the state machine.
-        List<Triple<String, String, String>> transitions = getTransitions(petrifyOutput);
+        List<Triple<String, String, String>> transitions = getTransitions(petrifyInput);
 
-        // Co-simulate the State Machine and Petri Net while the queue is not empty.
+        // Co-simulate the state machine and Petri net while the queue is not empty.
         while (!queue.isEmpty()) {
             Pair<String, Set<Place>> statePlacesPair = queue.poll();
 
@@ -76,12 +84,12 @@ public class ExtractRegionStateMapping {
         return regionStateMap;
     }
 
-    private static List<Triple<String, String, String>> getTransitions(List<String> petrifyOutput) {
+    private static List<Triple<String, String, String>> getTransitions(List<String> petrifyInput) {
         List<Triple<String, String, String>> transitions = new ArrayList<>();
 
         // Get transition lines from the Petrify output. All the lines that do not start with '.' are the transition
         // lines.
-        List<String> transitionLines = petrifyOutput.stream().filter(line -> !line.startsWith(".")).toList();
+        List<String> transitionLines = petrifyInput.stream().filter(line -> !line.startsWith(".")).toList();
         for (String transition: transitionLines) {
             String[] components = transition.split(" ");
             String sourceState = components[0];
@@ -94,13 +102,13 @@ public class ExtractRegionStateMapping {
 
     private static Set<Place> fire(String transitionLabel, Set<Place> currentPlaces) {
         // Initialize the next places with a copy of the current places.
-        Set<Place> nextPlaces = currentPlaces.stream().collect(Collectors.toSet());
+        Set<Place> nextPlaces = currentPlaces.stream().collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // For each current place, the connected transitions are collected, and fired if allowed.
         for (Place currentPlace: currentPlaces) {
             Set<Transition> transitions = currentPlace.getOutArcs().stream().map(arc -> arc.getTarget())
                     .map(Transition.class::cast).filter(t -> t.getName().getText().equals(transitionLabel))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
             for (Transition transition: transitions) {
                 List<Place> sourcePlacesofTransition = transition.getInArcs().stream().map(arc -> arc.getSource())
