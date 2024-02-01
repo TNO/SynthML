@@ -52,12 +52,11 @@ public class FullSynthesisApp {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
         settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
-        CifDataSynthesisTiming timing = new CifDataSynthesisTiming();
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
-        CifDataSynthesisResult cifSynthesisResult = synthesis(cifSpec, settings, false, timing);
+        CifDataSynthesisResult cifSynthesisResult = synthesize(cifSpec, settings);
 
         // Convert synthesis result back to CIF.
-        convertSynthesisResultToCif(cifSpec, cifSynthesisResult, false, timing, cifSynthesisPath.toString(),
+        convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
 
         // TODO Extract action guards from specification and synthesized guards from the synthesis result.
@@ -79,7 +78,8 @@ public class FullSynthesisApp {
         projectionApp.run(projectionArgs, false);
 
         // Perform DFA minimization.
-        Path cifMinimizedStateSpacePath = outputFolderPath.resolve(filePrefix + ".ctrlsys.statespace.projected.minimized.cif");
+        Path cifMinimizedStateSpacePath = outputFolderPath
+                .resolve(filePrefix + ".ctrlsys.statespace.projected.minimized.cif");
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
@@ -99,20 +99,9 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    private static CifDataSynthesisResult synthesis(Specification spec, CifDataSynthesisSettings settings,
-            boolean doTiming, CifDataSynthesisTiming timing)
-    {
+    private static CifDataSynthesisResult synthesize(Specification spec, CifDataSynthesisSettings settings) {
         // Perform preprocessing.
-        if (doTiming) {
-            timing.inputPreProcess.start();
-        }
-        try {
-            CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
-        } finally {
-            if (doTiming) {
-                timing.inputPreProcess.stop();
-            }
-        }
+        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
 
         // Create BDD factory.
         List<Long> continuousOpMisses = list();
@@ -125,53 +114,29 @@ public class FullSynthesisApp {
         CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
 
         CifBddSpec cifBddSpec;
-        if (doTiming) {
-            timing.inputConvert.start();
-        }
-        try {
-            cifBddSpec = converter.convert(spec, settings, factory);
-        } finally {
-            if (doTiming) {
-                timing.inputConvert.stop();
-            }
-        }
+        cifBddSpec = converter.convert(spec, settings, factory);
 
         // Perform synthesis.
-        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings, timing);
+        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
+                new CifDataSynthesisTiming());
 
         return synthResult;
     }
 
     private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
-            boolean doTiming, CifDataSynthesisTiming timing, String outPutFilePath, String outFolderPath)
+            String outPutFilePath, String outFolderPath)
     {
         Specification rslt;
 
         // Construct output CIF specification.
         SynthesisToCifConverter converter = new SynthesisToCifConverter();
-
-        if (doTiming) {
-            timing.outputConvert.start();
-        }
-        try {
-            rslt = converter.convert(synthResult, spec);
-        } finally {
-            if (doTiming) {
-                timing.outputConvert.stop();
-            }
-        }
+        rslt = converter.convert(synthResult, spec);
 
         // Write output CIF specification.
-        if (doTiming) {
-            timing.outputWrite.start();
-        }
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(rslt, outPutFilePath, outFolderPath);
         } finally {
-            if (doTiming) {
-                timing.outputWrite.stop();
-            }
             AppEnv.unregisterApplication();
         }
         return rslt;
