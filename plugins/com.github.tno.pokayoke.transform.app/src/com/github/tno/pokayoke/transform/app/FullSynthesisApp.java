@@ -5,21 +5,29 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.eventbased.apps.DfaMinimizationApplication;
 import org.eclipse.escet.cif.eventbased.apps.ProjectionApplication;
 import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
+import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
+import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
+import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.common.app.framework.AppEnv;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 /** Application that performs full synthesis. */
@@ -41,12 +49,16 @@ public class FullSynthesisApp {
         ExplorerApplication explorerApp = new ExplorerApplication();
         explorerApp.run(stateSpaceGenerationArgs, false);
 
-        // Perform event-based automaton projection.
+        // Remove state annotation for states that have uncontrollable events on its outgoing edges.
         Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
+        Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
+        removeStateAnnotation(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
+
+        // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.cif");
-        String[] projectionArgs = new String[] {cifStateSpacePath.toString(), "--preserve=" + preservedEvents,
-                "--output=" + cifProjectedStateSpacePath.toString()};
+        String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
+                "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         ProjectionApplication projectionApp = new ProjectionApplication();
         projectionApp.run(projectionArgs, false);
 
@@ -69,6 +81,36 @@ public class FullSynthesisApp {
         // Translate Petri Net to UML Activity and output the activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
+    }
+
+    private static void removeStateAnnotation(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
+        List<Event> events = new ArrayList<>();
+        CifCollectUtils.collectEvents(spec, events);
+        List<String> uncontrollableEventNames = events.stream().filter(event -> !event.getControllable())
+                .map(event -> event.getName()).toList();
+
+        // Obtain the automaton in the CIF specification.
+        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
+        Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
+        Automaton automaton = automata.get(0);
+
+        for (Location loc: automaton.getLocations()) {
+            List<String> edgeEventNames = loc.getEdges().stream().map(edge -> CifEventUtils.getEvents(edge))
+                    .flatMap(set -> set.stream()).map(event -> event.getName()).toList();
+
+            if (new HashSet<>(edgeEventNames).equals(new HashSet<>(uncontrollableEventNames))) {
+                List<Annotation> annotationToRemove = loc.getAnnotations().stream()
+                        .filter(annotation -> annotation.getName().equals("state")).toList();
+                loc.getAnnotations().removeAll(annotationToRemove);
+            }
+        }
+
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(spec, cifStateSpacePath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
     }
 
     private static String getPreservedEvents(Specification spec) {
