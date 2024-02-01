@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.region2statemapping;
 
 import java.util.ArrayList;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -13,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.escet.common.java.Assert;
 import org.eclipse.escet.common.java.Triple;
 
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2ActivityHelper;
@@ -63,10 +63,11 @@ public class ExtractRegionStateMapping {
 
                 // Get the current state and places (with tokens).
                 String currentState = statePlacesPair.getLeft();
-                Set<Place> currentPlace = statePlacesPair.getRight();
+                Set<Place> currentPlaces = statePlacesPair.getRight();
 
                 // Update the region-state map with current state for each current place.
-                currentPlace.stream().forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
+                currentPlaces.stream()
+                        .forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
 
                 // Get the transitions to be fired.
                 List<Triple<String, String, String>> transitionsToFire = transitions.stream()
@@ -76,7 +77,7 @@ public class ExtractRegionStateMapping {
                 for (Triple<String, String, String> transition: transitionsToFire) {
                     String transitionLabel = transition.second;
                     String nextState = transition.third;
-                    Set<Place> nextPlaces = fire(transitionLabel, currentPlace);
+                    Set<Place> nextPlaces = fire(transitionLabel, currentPlaces);
                     queue.add(Pair.of(nextState, nextPlaces));
                 }
             }
@@ -87,14 +88,15 @@ public class ExtractRegionStateMapping {
     private static List<Triple<String, String, String>> getTransitions(List<String> petrifyInput) {
         List<Triple<String, String, String>> transitions = new ArrayList<>();
 
-        // Get transition lines from the Petrify output. All the lines that do not start with '.' are the transition
+        // Get transition lines from the Petrify input. All the lines that do not start with '.' are the transition
         // lines.
         List<String> transitionLines = petrifyInput.stream().filter(line -> !line.startsWith(".")).toList();
         for (String transition: transitionLines) {
-            String[] components = transition.split(" ");
-            String sourceState = components[0];
-            String transitionLabel = components[1];
-            String targetState = components[2];
+            String[] elements = transition.split(" ");
+            Assert.check(elements.length == 3, "The transition line should contains exactly three elements.");
+            String sourceState = elements[0];
+            String transitionLabel = elements[1];
+            String targetState = elements[2];
             transitions.add(new Triple<>(sourceState, transitionLabel, targetState));
         }
         return transitions;
