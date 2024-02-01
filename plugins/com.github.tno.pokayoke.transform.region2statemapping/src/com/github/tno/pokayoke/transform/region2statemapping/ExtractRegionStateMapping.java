@@ -116,15 +116,15 @@ public class ExtractRegionStateMapping {
                 List<Place> sourcePlacesofTransition = transition.getInArcs().stream().map(arc -> arc.getSource())
                         .map(Place.class::cast).toList();
 
-                // If the source places of the transition are the subset of the current places, the transition can be
+                // If the source places of the transition are a subset of the current places, the transition can be
                 // fired.
                 if (currentPlaces.containsAll(sourcePlacesofTransition)) {
                     List<Place> targetPlacesofTransition = transition.getOutArcs().stream().map(arc -> arc.getTarget())
                             .map(Place.class::cast).toList();
 
-                    // The current place is removed from the next places and the target places of the transition are
-                    // added to the next places (i.e., the token is moved from the current place to the target places).
-                    nextPlaces.remove(currentPlace);
+                    // The source places are removed from the next places and the target places are
+                    // added to the next places (i.e., the tokens are moved from the source places to the target places).
+                    nextPlaces.removeAll(sourcePlacesofTransition);
                     nextPlaces.addAll(targetPlacesofTransition);
                 }
             }
