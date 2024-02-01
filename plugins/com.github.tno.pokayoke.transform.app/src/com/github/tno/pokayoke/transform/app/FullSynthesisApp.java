@@ -49,11 +49,8 @@ public class FullSynthesisApp {
         Specification cifSpec = FileHelper.loadCifSpec(inputPath);
 
         // Perform Synthesis.
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
-        CifDataSynthesisResult cifSynthesisResult = synthesize(cifSpec, settings);
+        CifDataSynthesisResult cifSynthesisResult = synthesize(cifSpec);
 
         // Convert synthesis result back to CIF.
         convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
@@ -99,7 +96,11 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    private static CifDataSynthesisResult synthesize(Specification spec, CifDataSynthesisSettings settings) {
+    private static CifDataSynthesisResult synthesize(Specification spec) {
+        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
+        settings.setDoForwardReach(true);
+        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
+
         // Perform preprocessing.
         CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
 
@@ -108,13 +109,10 @@ public class FullSynthesisApp {
         List<Integer> continuousUsedBddNodes = list();
         BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
 
-        // Perform synthesis.
         // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
         // way.
         CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
-
-        CifBddSpec cifBddSpec;
-        cifBddSpec = converter.convert(spec, settings, factory);
+        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
 
         // Perform synthesis.
         CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
