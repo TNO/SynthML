@@ -16,6 +16,8 @@ import org.eclipse.escet.common.java.Assert;
 import org.eclipse.escet.common.java.Triple;
 
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2ActivityHelper;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -43,7 +45,9 @@ public class ExtractRegionStateMapping {
         // initial state (i.e., loc0 as added in the CIF2Petrify step) and the initial marked place.
         List<Place> markedPlace = places.stream().filter(place -> PetriNet2ActivityHelper.isMarkedPlace(place))
                 .toList();
-        String initialState = "loc0";
+        String markingIdentifier = ".marking";
+        String initialState = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList().get(0)
+                .substring(markingIdentifier.length()).replace("{", "").replace("}", "").trim();
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
         queue.add(Pair.of(initialState, new LinkedHashSet<>(markedPlace)));
 
@@ -102,34 +106,37 @@ public class ExtractRegionStateMapping {
         return transitions;
     }
 
-    private static Set<Place> fire(String transitionLabel, Set<Place> currentPlaces) {
-        // Initialize the next places with a copy of the current places.
-        Set<Place> nextPlaces = currentPlaces.stream().collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+    private static Set<Place> fire(String transitionLabel, Set<Place> markedPlaces) {
+        // Obtain all fireable Petri net transitions with the specified label.
+        List<Transition> transitions = markedPlaces.stream().map(place -> place.getOutArcs())
+                .flatMap(arcs -> arcs.stream()).map(arc -> arc.getTarget()).map(Transition.class::cast)
+                .filter(t -> t.getName().getText().equals(transitionLabel)).toList();
 
-        // For each current place, the connected transitions are collected, and fired if allowed.
-        for (Place currentPlace: currentPlaces) {
-            Set<Transition> transitions = currentPlace.getOutArcs().stream().map(arc -> arc.getTarget())
-                    .map(Transition.class::cast).filter(t -> t.getName().getText().equals(transitionLabel))
-                    .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+        // Ensure there is exactly one such transition.
+        Preconditions.checkArgument(transitions.size() == 1,
+                String.format("Expected that there is only one transition with label %s.", transitionLabel));
 
-            for (Transition transition: transitions) {
-                List<Place> sourcePlacesofTransition = transition.getInArcs().stream().map(arc -> arc.getSource())
-                        .map(Place.class::cast).toList();
+        // Fire this single transition.
+        return fire(transitions.get(0), markedPlaces);
+    }
 
-                // If the source places of the transition are a subset of the current places, the transition can be
-                // fired.
-                if (currentPlaces.containsAll(sourcePlacesofTransition)) {
-                    List<Place> targetPlacesofTransition = transition.getOutArcs().stream().map(arc -> arc.getTarget())
-                            .map(Place.class::cast).toList();
+    private static Set<Place> fire(Transition transition, Set<Place> markedPlaces) {
+        // Obtain all source and target places of the transition.
+        Set<Place> sourcePlaces = transition.getInArcs().stream().map(arc -> arc.getSource()).map(Place.class::cast)
+                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+        Set<Place> targetPlaces = transition.getOutArcs().stream().map(arc -> arc.getTarget()).map(Place.class::cast)
+                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
-                    // The source places are removed from the next places and the target places are
-                    // added to the next places (i.e., the tokens are moved from the source places to the target places).
-                    nextPlaces.removeAll(sourcePlacesofTransition);
-                    nextPlaces.addAll(targetPlacesofTransition);
-                }
-            }
-        }
+        // Ensure the transition can actually fire.
+        Preconditions.checkArgument(markedPlaces.containsAll(sourcePlaces));
+        Preconditions
+                .checkArgument(!Sets.intersection(markedPlaces, Sets.difference(targetPlaces, sourcePlaces)).isEmpty());
 
-        return nextPlaces;
+        // Determine the new set of marked places.
+        Set<Place> newMarkedPlaces = new LinkedHashSet<>(markedPlaces);
+        newMarkedPlaces.removeAll(sourcePlaces);
+        newMarkedPlaces.addAll(targetPlaces);
+
+        return newMarkedPlaces;
     }
 }
