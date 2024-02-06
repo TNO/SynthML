@@ -65,7 +65,7 @@ public class ExtractRegionStateMapping {
         places.stream().forEach(place -> regionStateMap.put(place.getName().getText(), new LinkedHashSet<>()));
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
-        // initial state (i.e., loc0 as added in the CIF2Petrify step) and the initial marked place.
+        // initial state and the initial marked place.
         List<Place> markedPlace = places.stream().filter(place -> place.getInitialMarking() != null).toList();
         String markingIdentifier = ".marking";
         String initialState = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList().get(0)
@@ -89,22 +89,22 @@ public class ExtractRegionStateMapping {
 
                 // Get the current state and marked places.
                 String currentState = statePlacesPair.getLeft();
-                Set<Place> currentPlaces = statePlacesPair.getRight();
+                Set<Place> markedPlaces = statePlacesPair.getRight();
 
-                // Update the region-state map with current state for each current place.
-                currentPlaces.stream()
+                // Update the region-state map with current state for each marked place.
+                markedPlaces.stream()
                         .forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
 
                 // Get the transitions to be fired.
                 List<Triple<String, String, String>> transitionsToFire = transitions.stream()
                         .filter(transition -> transition.first.equals(currentState)).toList();
 
-                // Get the firing result of each transition and push the next pair of state and places into the queue.
+                // Get the firing result of each transition and push the new pair of state and places into the queue.
                 for (Triple<String, String, String> transition: transitionsToFire) {
                     String transitionLabel = transition.second;
-                    String nextState = transition.third;
-                    Set<Place> nextPlaces = fire(transitionLabel, currentPlaces);
-                    queue.add(Pair.of(nextState, nextPlaces));
+                    String newState = transition.third;
+                    Set<Place> newMarkedPlaces = fire(transitionLabel, markedPlaces);
+                    queue.add(Pair.of(newState, newMarkedPlaces));
                 }
             }
         }
