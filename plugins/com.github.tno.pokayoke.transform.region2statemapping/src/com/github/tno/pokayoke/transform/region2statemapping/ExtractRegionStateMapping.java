@@ -1,8 +1,9 @@
 
 package com.github.tno.pokayoke.transform.region2statemapping;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -21,9 +22,8 @@ import org.json.JSONObject;
 import com.github.tno.pokayoke.transform.petrify2uml.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -41,24 +41,24 @@ public class ExtractRegionStateMapping {
      * @param outputPath Output JSON file to which to write the map.
      * @throws IOException In case generating the output JSON failed.
      */
-    public static void extractMappingFromFiles(String petrifyInputPath, String petrifyOutputPath, String outputPath)
+    public static void extractMappingFromFiles(String petrifyOutputPath, String petrifyInputPath, String outputPath)
             throws IOException
     {
         List<String> petrifyInput = FileHelper.readFile(petrifyInputPath);
         List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
-        Map<String, Set<String>> map = extract(petriNet, petrifyInput);
+        Map<String, Set<String>> map = extract(petrifyInput, petriNet);
         Files.writeString(Paths.get(outputPath), new JSONObject(map).toString());
     }
 
     /**
      * Extracts a region-state map from the given Petri net and state machine.
      *
-     * @param petriNet The Petri Net.
      * @param petrifyInput The Petrify input that contains a state machine.
+     * @param petriNet The Petri net.
      * @return A map from state in the state machine to region (i.e., a set of places) in the Petri net.
      */
-    public static Map<String, Set<String>> extract(PetriNet petriNet, List<String> petrifyInput) {
+    public static Map<String, Set<String>> extract(List<String> petrifyInput, PetriNet petriNet) {
         // Initialize an empty map from place to states.
         List<Place> places = petriNet.getPages().get(0).getObjects().stream().filter(Place.class::isInstance)
                 .map(Place.class::cast).toList();
@@ -69,12 +69,14 @@ public class ExtractRegionStateMapping {
         // initial state and the initial marked place.
         List<Place> markedPlace = places.stream().filter(place -> place.getInitialMarking() != null).toList();
         String markingIdentifier = ".marking";
-        String initialState = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList().get(0)
-                .substring(markingIdentifier.length()).replace("{", "").replace("}", "").trim();
+        List<String> initialStates = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList();
+        Verify.verify(initialStates.size() == 1, "Expected that the state machine has only one initial state.");
+        String initialState = initialStates.get(0).substring(markingIdentifier.length()).replace("{", "")
+                .replace("}", "").trim();
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
         queue.add(Pair.of(initialState, new LinkedHashSet<>(markedPlace)));
 
-        // Initialize a list for the visited pairs of state and places.
+        // Initialize the visited pairs of state and places.
         Set<Pair<String, Set<Place>>> visited = new LinkedHashSet<>();
 
         // Get transitions of the state machine.
