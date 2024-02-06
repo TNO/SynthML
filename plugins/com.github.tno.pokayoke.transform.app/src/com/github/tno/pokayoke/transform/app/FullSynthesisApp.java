@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
@@ -51,6 +52,9 @@ public class FullSynthesisApp {
 
         // Remove state annotation for states that have uncontrollable events on its outgoing edges.
         Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
+        reduceStateAnnotation(cifStateSpace);
+
+        // Remove state annotation for all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
         removeStateAnnotation(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
 
@@ -83,7 +87,7 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    private static void removeStateAnnotation(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
+    private static void reduceStateAnnotation(Specification spec) {
         List<Event> events = new ArrayList<>();
         CifCollectUtils.collectEvents(spec, events);
         List<String> uncontrollableEventNames = events.stream().filter(event -> !event.getControllable())
@@ -104,7 +108,11 @@ public class FullSynthesisApp {
                 loc.getAnnotations().removeAll(annotationToRemove);
             }
         }
+    }
 
+    private static void removeStateAnnotation(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
+        RemoveAnnotations annotationRemover = new RemoveAnnotations();
+        annotationRemover.transform(spec);
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(spec, cifStateSpacePath.toString(), outputFolderPath.toString());
