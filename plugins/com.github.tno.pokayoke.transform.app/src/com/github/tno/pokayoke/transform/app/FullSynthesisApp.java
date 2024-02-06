@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -51,15 +52,18 @@ public class FullSynthesisApp {
         explorerApp.run(stateSpaceGenerationArgs, false);
 
         // Remove state annotation for states that have uncontrollable events on its outgoing edges.
+        Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotreduced.cif");
         Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
-        reduceStateAnnotation(cifStateSpace);
+        Specification cifReducedStateSpace = reduceStateAnnotations(cifStateSpace, cifAnnotReducedStateSpacePath,
+                outputFolderPath);
 
         // Remove state annotation for all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
-        removeStateAnnotation(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
+        Specification cifRemovedStateSpace = removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath,
+                outputFolderPath);
 
         // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace);
+        String preservedEvents = getPreservedEvents(cifRemovedStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.projected.cif");
         String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -87,14 +91,17 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    private static void reduceStateAnnotation(Specification spec) {
+    private static Specification reduceStateAnnotations(Specification spec, Path cifStateSpacePath,
+            Path outputFolderPath)
+    {
+        Specification reducedSpec = EcoreUtil.copy(spec);
         List<Event> events = new ArrayList<>();
-        CifCollectUtils.collectEvents(spec, events);
+        CifCollectUtils.collectEvents(reducedSpec, events);
         List<String> uncontrollableEventNames = events.stream().filter(event -> !event.getControllable())
                 .map(event -> event.getName()).toList();
 
         // Obtain the automaton in the CIF specification.
-        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
+        List<Automaton> automata = CifCollectUtils.collectAutomata(reducedSpec, new ArrayList<>());
         Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
         Automaton automaton = automata.get(0);
 
@@ -108,17 +115,28 @@ public class FullSynthesisApp {
                 loc.getAnnotations().removeAll(annotationToRemove);
             }
         }
-    }
-
-    private static void removeStateAnnotation(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
-        RemoveAnnotations annotationRemover = new RemoveAnnotations();
-        annotationRemover.transform(spec);
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, cifStateSpacePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(reducedSpec, cifStateSpacePath.toString(), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
+        return reducedSpec;
+    }
+
+    private static Specification removeStateAnnotations(Specification spec, Path cifStateSpacePath,
+            Path outputFolderPath)
+    {
+        Specification removedSpec = EcoreUtil.copy(spec);
+        RemoveAnnotations annotationRemover = new RemoveAnnotations();
+        annotationRemover.transform(removedSpec);
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(removedSpec, cifStateSpacePath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+        return removedSpec;
     }
 
     private static String getPreservedEvents(Specification spec) {
