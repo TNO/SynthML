@@ -22,7 +22,8 @@ import com.github.tno.pokayoke.transform.petrify2uml.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -37,7 +38,7 @@ public class ExtractRegionStateMapping {
      *
      * @param petrifyInputPath Petrify input file path.
      * @param petrifyOutputPath Petrify output file path.
-     * @param outputPath Output file that contains the map.
+     * @param outputPath Output JSON file to which to write the map.
      * @throws IOException In case generating the output JSON failed.
      */
     public static void extractMappingFromFiles(String petrifyInputPath, String petrifyOutputPath, String outputPath)
@@ -47,7 +48,7 @@ public class ExtractRegionStateMapping {
         List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
         Map<String, Set<String>> map = extract(petriNet, petrifyInput);
-        Files.write(new JSONObject(map).toString().getBytes(), new File(outputPath));
+        Files.writeString(Paths.get(outputPath), new JSONObject(map).toString());
     }
 
     /**
@@ -92,8 +93,7 @@ public class ExtractRegionStateMapping {
                 Set<Place> markedPlaces = statePlacesPair.getRight();
 
                 // Update the region-state map with current state for each marked place.
-                markedPlaces.stream()
-                        .forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
+                markedPlaces.stream().forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
 
                 // Get the transitions to be fired.
                 List<Triple<String, String, String>> transitionsToFire = transitions.stream()
