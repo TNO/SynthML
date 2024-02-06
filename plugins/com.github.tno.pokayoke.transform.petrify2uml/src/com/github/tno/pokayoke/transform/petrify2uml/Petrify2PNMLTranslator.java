@@ -29,9 +29,9 @@ public class Petrify2PNMLTranslator {
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
-    public static void transformFile(String inutPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inutPath);
-        PetriNet petriNet = transform(input);
+    public static void transformFile(String inputPath, String outputPath) throws IOException {
+        List<String> input = FileHelper.readFile(inputPath);
+        PetriNet petriNet = transform(input, true);
         FileHelper.writePetriNet(petriNet, outputPath);
     }
 
@@ -40,9 +40,10 @@ public class Petrify2PNMLTranslator {
      *
      * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
      *     removing elements from the head of the list is too expensive.
+     * @param removeLoop The removal of loop is enabled when it is {@code true}, otherwise, disabled.
      * @return The Petri Net.
      */
-    public static PetriNet transform(List<String> petrifyOutput) {
+    public static PetriNet transform(List<String> petrifyOutput, boolean removeLoop) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
@@ -112,10 +113,11 @@ public class Petrify2PNMLTranslator {
                 }
             }
 
-            // Create arcs from the source to its targets. In case the source is the 'end' transition, a final place is
+            // Create arcs from the source to its targets. In case the source is the 'end' transition and the
+            // 'removeLoop' is enabled, a final place is
             // created and connected to the 'end' transition.
             String source = elements.get(0);
-            if (source.equals("end")) {
+            if (source.equals("end") && removeLoop) {
                 String finalPlace = "FinalPlace";
                 createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
             } else {
