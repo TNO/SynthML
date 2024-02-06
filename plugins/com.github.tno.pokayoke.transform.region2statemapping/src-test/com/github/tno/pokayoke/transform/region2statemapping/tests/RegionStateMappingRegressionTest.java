@@ -34,21 +34,11 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        ExtractRegionStateMapping.extractMappingFromFiles(inputPath.toString(), getInputPathFrom(inputPath).toString(),
+        ExtractRegionStateMapping.extractMappingFromFiles(inputPath.toString(), getSecondInputPathFrom(inputPath).toString(),
                 outputPath.toString());
     }
 
-    @Override
-    protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
-        super.verifyTest(expectedPath, outputPath, message);
-    }
-
-    @Override
-    protected void tearDownTest(Path outputPath) throws IOException {
-        super.tearDownTest(outputPath);
-    }
-
-    private Path getInputPathFrom(Path inputPath) {
+    private Path getSecondInputPathFrom(Path inputPath) {
         String inputFilePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         return inputPath.getParent().resolve(inputFilePrefix + "." + INPUT_FILE_2_EXTENSION);
     }
