@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -21,9 +24,11 @@ import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
+import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
@@ -77,6 +82,20 @@ public class FullSynthesisApp {
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
         dfaMinimizationApp.run(dfaMinimizationArgs, false);
 
+        // Obtain the composite state mapping.
+        Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
+        Specification cifProjectedStateSpace = FileHelper.loadCifSpec(cifProjectedStateSpacePath);
+        Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
+        Specification cifMinimizedStateSpace = FileHelper.loadCifSpec(cifMinimizedStateSpacePath);
+        Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
+
+        Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
+                annotationFromProjectedSP);
+        Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
+                annotationFromReducedSP);
+
+        // TODO Guard computation.
+
         // Translate the CIF state space to Petrify input and output the Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
         Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
@@ -85,6 +104,8 @@ public class FullSynthesisApp {
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
+
+        // TODO Obtain region-state mapping.
 
         // Translate Petri Net to UML Activity and output the activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
@@ -146,6 +167,49 @@ public class FullSynthesisApp {
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
+    }
+
+    private static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
+        Map<Location, List<Annotation>> locationAnnotationMap = new HashMap<>();
+
+        // Obtain the automaton in the CIF specification.
+        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
+        Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
+        Automaton automaton = automata.get(0);
+
+        for (Location location: automaton.getLocations()) {
+            List<Annotation> annotations = location.getAnnotations().stream()
+                    .filter(annotation -> annotation.getName().equals("state")).toList();
+            locationAnnotationMap.put(location, annotations);
+        }
+
+        return locationAnnotationMap;
+    }
+
+    private static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
+            Map<Location, List<Annotation>> map2)
+    {
+        Map<Location, List<Annotation>> compositeMap = new HashMap<>();
+
+        for (var entry: map1.entrySet()) {
+            Location location = entry.getKey();
+            List<Annotation> mappedAnnotations = new ArrayList<>();
+
+            for (Annotation annotation: entry.getValue()) {
+                Preconditions.checkArgument(annotation.getArguments().size() == 1,
+                        "Expected the annotation to have one argument.");
+                AnnotationArgument arguement = annotation.getArguments().get(0);
+                String mappedLocationName = ((StringExpression)arguement.getValue()).getValue();
+                Location mappedLocation = map2.keySet().stream().filter(loc -> loc.getName().equals(mappedLocationName))
+                        .toList().get(0);
+                mappedAnnotations.addAll(map2.get(mappedLocation));
+            }
+
+            mappedAnnotations = mappedAnnotations.stream().distinct().collect(Collectors.toList());
+            compositeMap.put(location, mappedAnnotations);
+        }
+
+        return compositeMap;
     }
 
     /**
