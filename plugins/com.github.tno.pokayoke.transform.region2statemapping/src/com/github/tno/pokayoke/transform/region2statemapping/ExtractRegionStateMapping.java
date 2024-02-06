@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.escet.common.java.Assert;
 import org.eclipse.escet.common.java.Triple;
 import org.json.JSONObject;
 
@@ -70,7 +69,7 @@ public class ExtractRegionStateMapping {
         List<Place> markedPlace = places.stream().filter(place -> place.getInitialMarking() != null).toList();
         String markingIdentifier = ".marking";
         List<String> initialStates = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList();
-        Verify.verify(initialStates.size() == 1, "Expected that the state machine has only one initial state.");
+        Verify.verify(initialStates.size() == 1, "Expected that the state machine has eactly one initial state.");
         String initialState = initialStates.get(0).substring(markingIdentifier.length()).replace("{", "")
                 .replace("}", "").trim();
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
@@ -122,7 +121,7 @@ public class ExtractRegionStateMapping {
         List<String> transitionLines = petrifyInput.stream().filter(line -> !line.startsWith(".")).toList();
         for (String transition: transitionLines) {
             String[] elements = transition.split(" ");
-            Assert.check(elements.length == 3, "The transition line should contains exactly three elements.");
+            Verify.verify(elements.length == 3, "The transition line should contains exactly three elements.");
             String sourceState = elements[0];
             String transitionLabel = elements[1];
             String targetState = elements[2];
@@ -132,18 +131,18 @@ public class ExtractRegionStateMapping {
     }
 
     private static Set<Place> fire(String transitionLabel, Set<Place> markedPlaces) {
-        // Obtain all fireable Petri net transitions with the specified label.
-        Set<Transition> transitions = markedPlaces.stream().map(place -> place.getOutArcs())
-                .flatMap(arcs -> arcs.stream()).map(arc -> arc.getTarget()).map(Transition.class::cast)
+        // Obtain all potentially fireable Petri net transitions with the specified label.
+        Set<Transition> transitions = markedPlaces.stream().flatMap(place -> place.getOutArcs().stream())
+                .map(arc -> arc.getTarget()).map(Transition.class::cast)
                 .filter(t -> t.getName().getText().equals(transitionLabel))
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // Ensure there is exactly one such transition.
         Preconditions.checkArgument(transitions.size() == 1,
-                String.format("Expected that there is only one transition with label %s.", transitionLabel));
+                String.format("Expected that there is exactly one potentially fireable transition with label %s.", transitionLabel));
 
         // Fire this single transition.
-        return fire(transitions.stream().collect(Collectors.toList()).get(0), markedPlaces);
+        return fire(transitions.iterator().next(), markedPlaces);
     }
 
     private static Set<Place> fire(Transition transition, Set<Place> markedPlaces) {
