@@ -1,6 +1,8 @@
 
 package com.github.tno.pokayoke.transform.region2statemapping;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -14,10 +16,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.common.java.Assert;
 import org.eclipse.escet.common.java.Triple;
+import org.json.JSONObject;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2ActivityHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.FileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -25,6 +30,24 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 public class ExtractRegionStateMapping {
     private ExtractRegionStateMapping() {
+    }
+
+    /**
+     * Extracts region-state map from provided Petrify input and output files and writes the map into a JSON file.
+     *
+     * @param petrifyInputPath Petrify input file path.
+     * @param petrifyOutputPath Petrify output file path.
+     * @param outputPath Output file that contains the map.
+     * @throws IOException In case generating the output JSON failed.
+     */
+    public static void extractMappingFromFiles(String petrifyInputPath, String petrifyOutputPath, String outputPath)
+            throws IOException
+    {
+        List<String> petrifyInput = FileHelper.readFile(petrifyInputPath);
+        List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
+        Map<String, Set<String>> map = extract(petriNet, petrifyInput);
+        Files.write(new JSONObject(map).toString().getBytes(), new File(outputPath));
     }
 
     /**
@@ -43,8 +66,7 @@ public class ExtractRegionStateMapping {
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
         // initial state (i.e., loc0 as added in the CIF2Petrify step) and the initial marked place.
-        List<Place> markedPlace = places.stream().filter(place -> PetriNet2ActivityHelper.isMarkedPlace(place))
-                .toList();
+        List<Place> markedPlace = places.stream().filter(place -> place.getInitialMarking() != null).toList();
         String markingIdentifier = ".marking";
         String initialState = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList().get(0)
                 .substring(markingIdentifier.length()).replace("{", "").replace("}", "").trim();
@@ -65,7 +87,7 @@ public class ExtractRegionStateMapping {
             if (!visited.contains(statePlacesPair)) {
                 visited.add(statePlacesPair);
 
-                // Get the current state and places (with tokens).
+                // Get the current state and marked places.
                 String currentState = statePlacesPair.getLeft();
                 Set<Place> currentPlaces = statePlacesPair.getRight();
 
@@ -86,6 +108,7 @@ public class ExtractRegionStateMapping {
                 }
             }
         }
+
         return regionStateMap;
     }
 
@@ -108,16 +131,17 @@ public class ExtractRegionStateMapping {
 
     private static Set<Place> fire(String transitionLabel, Set<Place> markedPlaces) {
         // Obtain all fireable Petri net transitions with the specified label.
-        List<Transition> transitions = markedPlaces.stream().map(place -> place.getOutArcs())
+        Set<Transition> transitions = markedPlaces.stream().map(place -> place.getOutArcs())
                 .flatMap(arcs -> arcs.stream()).map(arc -> arc.getTarget()).map(Transition.class::cast)
-                .filter(t -> t.getName().getText().equals(transitionLabel)).toList();
+                .filter(t -> t.getName().getText().equals(transitionLabel))
+                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // Ensure there is exactly one such transition.
         Preconditions.checkArgument(transitions.size() == 1,
                 String.format("Expected that there is only one transition with label %s.", transitionLabel));
 
         // Fire this single transition.
-        return fire(transitions.get(0), markedPlaces);
+        return fire(transitions.stream().collect(Collectors.toList()).get(0), markedPlaces);
     }
 
     private static Set<Place> fire(Transition transition, Set<Place> markedPlaces) {
@@ -130,7 +154,7 @@ public class ExtractRegionStateMapping {
         // Ensure the transition can actually fire.
         Preconditions.checkArgument(markedPlaces.containsAll(sourcePlaces));
         Preconditions
-                .checkArgument(!Sets.intersection(markedPlaces, Sets.difference(targetPlaces, sourcePlaces)).isEmpty());
+                .checkArgument(Sets.intersection(markedPlaces, Sets.difference(targetPlaces, sourcePlaces)).isEmpty());
 
         // Determine the new set of marked places.
         Set<Place> newMarkedPlaces = new LinkedHashSet<>(markedPlaces);
