@@ -40,7 +40,9 @@ public class Petrify2PNMLTranslator {
      *
      * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
      *     removing elements from the head of the list is too expensive.
-     * @param removeLoop The removal of loop is enabled when it is {@code true}, otherwise, disabled.
+     * @param removeLoop When {@code true} removes the loop introduced when transforming CIF to Petrify input, that
+     *     connects initial locations to ones where the activity postcondition is satisfied. Such a loop is needed since
+     *     Petrify does not work well with sink states.
      * @return The Petri Net.
      */
     public static PetriNet transform(List<String> petrifyOutput, boolean removeLoop) {
