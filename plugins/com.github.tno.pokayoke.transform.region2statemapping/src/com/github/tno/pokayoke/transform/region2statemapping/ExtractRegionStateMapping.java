@@ -138,8 +138,8 @@ public class ExtractRegionStateMapping {
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // Ensure there is exactly one such transition.
-        Preconditions.checkArgument(transitions.size() == 1,
-                String.format("Expected that there is exactly one potentially fireable transition with label %s.", transitionLabel));
+        Preconditions.checkArgument(transitions.size() == 1, String.format(
+                "Expected that there is exactly one potentially fireable transition with label %s.", transitionLabel));
 
         // Fire this single transition.
         return fire(transitions.iterator().next(), markedPlaces);
@@ -153,9 +153,11 @@ public class ExtractRegionStateMapping {
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // Ensure the transition can actually fire.
-        Preconditions.checkArgument(markedPlaces.containsAll(sourcePlaces));
-        Preconditions
-                .checkArgument(Sets.intersection(markedPlaces, Sets.difference(targetPlaces, sourcePlaces)).isEmpty());
+        Preconditions.checkArgument(markedPlaces.containsAll(sourcePlaces),
+                "Expected that all the source places have a token to be fired.");
+        Preconditions.checkArgument(
+                Sets.intersection(markedPlaces, Sets.difference(targetPlaces, sourcePlaces)).isEmpty(),
+                "Expected that target places that are not source places should not have a token.");
 
         // Determine the new set of marked places.
         Set<Place> newMarkedPlaces = new LinkedHashSet<>(markedPlaces);
