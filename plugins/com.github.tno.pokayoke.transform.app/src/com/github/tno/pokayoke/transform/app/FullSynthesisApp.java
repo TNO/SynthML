@@ -136,7 +136,7 @@ public class FullSynthesisApp {
             Set<Event> edgeEvents = loc.getEdges().stream().flatMap(edge -> CifEventUtils.getEvents(edge).stream())
                     .collect(Collectors.toSet());
 
-            if (uncontrollableEvents.containsAll(edgeEvents)) {
+            if (uncontrollableEvents.containsAll(edgeEvents) && !edgeEvents.isEmpty()) {
                 List<Annotation> annotationToRemove = loc.getAnnotations().stream()
                         .filter(annotation -> annotation.getName().equals("state")).toList();
                 loc.getAnnotations().removeAll(annotationToRemove);
