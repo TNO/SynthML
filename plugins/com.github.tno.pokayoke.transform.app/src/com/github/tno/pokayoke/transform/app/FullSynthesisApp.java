@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -122,21 +123,21 @@ public class FullSynthesisApp {
      * @param outputFolderPath The path of the output folder.
      */
     private static void reduceStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
-        List<Event> events = new ArrayList<>();
-        CifCollectUtils.collectEvents(spec, events);
-        List<String> uncontrollableEventNames = events.stream().filter(event -> !event.getControllable())
-                .map(event -> event.getName()).toList();
+        Set<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>()).stream().collect(Collectors.toSet());
+        Set<Event> uncontrollableEvents = events.stream().filter(event -> !event.getControllable())
+                .collect(Collectors.toSet());
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
-        Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
+        Preconditions.checkArgument(automata.size() == 1,
+                "Expected the CIF specification to include exactly one automaton.");
         Automaton automaton = automata.get(0);
 
         for (Location loc: automaton.getLocations()) {
-            List<String> edgeEventNames = loc.getEdges().stream().map(edge -> CifEventUtils.getEvents(edge))
-                    .flatMap(set -> set.stream()).map(event -> event.getName()).toList();
+            Set<Event> edgeEvents = loc.getEdges().stream().flatMap(edge -> CifEventUtils.getEvents(edge).stream())
+                    .collect(Collectors.toSet());
 
-            if (new HashSet<>(edgeEventNames).equals(new HashSet<>(uncontrollableEventNames))) {
+            if (uncontrollableEvents.containsAll(edgeEvents)) {
                 List<Annotation> annotationToRemove = loc.getAnnotations().stream()
                         .filter(annotation -> annotation.getName().equals("state")).toList();
                 loc.getAnnotations().removeAll(annotationToRemove);
@@ -169,8 +170,7 @@ public class FullSynthesisApp {
     }
 
     private static String getPreservedEvents(Specification spec) {
-        List<Event> events = new ArrayList<>();
-        CifCollectUtils.collectEvents(spec, events);
+        List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
         List<String> eventNames = events.stream().filter(event -> event.getControllable())
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
