@@ -79,7 +79,7 @@ public class ExtractRegionStateMapping {
         String initialState = initialStateLines.get(0).substring(markingIdentifier.length()).replace("{", "")
                 .replace("}", "").trim();
         Verify.verify(initialStateLines.size() == 1 && initialState.split(",").length == 1,
-                "Expected that the state machine has eactly one initial state.");
+                "Expected that the state machine has exactly one initial state.");
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
         queue.add(Pair.of(initialState, initialMarkedPlace));
 
