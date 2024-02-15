@@ -63,7 +63,7 @@ public class ExtractRegionStateMapping {
      * @return A map from state in the state machine to region (i.e., a set of places) in the Petri net.
      */
     public static Map<Place, Set<String>> extract(List<String> petrifyInput, PetriNet petriNet) {
-        // Initialize an empty map from place to states.
+        // Initialize an empty map from places to states.
         List<Place> places = petriNet.getPages().get(0).getObjects().stream().filter(Place.class::isInstance)
                 .map(Place.class::cast).toList();
         Map<Place, Set<String>> regionStateMap = new LinkedHashMap<>();
@@ -71,14 +71,17 @@ public class ExtractRegionStateMapping {
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
         // initial state and the initial marked place.
-        List<Place> markedPlace = places.stream().filter(place -> place.getInitialMarking() != null).toList();
+        LinkedHashSet<Place> initialMarkedPlace = places.stream().filter(place -> place.getInitialMarking() != null)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         String markingIdentifier = ".marking";
-        List<String> initialStates = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier)).toList();
-        Verify.verify(initialStates.size() == 1, "Expected that the state machine has eactly one initial state.");
-        String initialState = initialStates.get(0).substring(markingIdentifier.length()).replace("{", "")
+        List<String> initialStateLines = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier))
+                .toList();
+        String initialState = initialStateLines.get(0).substring(markingIdentifier.length()).replace("{", "")
                 .replace("}", "").trim();
+        Verify.verify(initialStateLines.size() == 1 && initialState.split(",").length == 1,
+                "Expected that the state machine has eactly one initial state.");
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
-        queue.add(Pair.of(initialState, new LinkedHashSet<>(markedPlace)));
+        queue.add(Pair.of(initialState, initialMarkedPlace));
 
         // Initialize the visited pairs of state and places.
         Set<Pair<String, Set<Place>>> visited = new LinkedHashSet<>();
