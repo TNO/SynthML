@@ -114,7 +114,14 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
-    private static void reduceStateAnnotations(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
+    /**
+     * Remove state annotations from intermediate states, states that have uncontrollable events on its outgoing edges.
+     *
+     * @param spec CIF specification in which state annotations to be removed.
+     * @param outputFilePath The output path of the specification.
+     * @param outputFolderPath The path of the output folder.
+     */
+    private static void reduceStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
         List<Event> events = new ArrayList<>();
         CifCollectUtils.collectEvents(spec, events);
         List<String> uncontrollableEventNames = events.stream().filter(event -> !event.getControllable())
@@ -137,18 +144,25 @@ public class FullSynthesisApp {
         }
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, cifStateSpacePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
     }
 
-    private static void removeStateAnnotations(Specification spec, Path cifStateSpacePath, Path outputFolderPath) {
+    /**
+     * Remove state annotations.
+     *
+     * @param spec CIF specification in which state annotations to be removed.
+     * @param outputFilePath The output path of the specification.
+     * @param outputFolderPath The path of the output folder.
+     */
+    private static void removeStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
         RemoveAnnotations annotationRemover = new RemoveAnnotations();
         annotationRemover.transform(spec);
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, cifStateSpacePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
