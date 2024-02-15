@@ -65,11 +65,10 @@ public class FullSynthesisApp {
 
         // Remove state annotation for all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
-        Specification cifRemovedStateSpace = EcoreUtil.copy(cifStateSpace);
-        removeStateAnnotations(cifRemovedStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
+        removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
 
         // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifRemovedStateSpace);
+        String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath
                 .resolve(filePrefix + ".statespace.annotremoved.projected.cif");
         String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
