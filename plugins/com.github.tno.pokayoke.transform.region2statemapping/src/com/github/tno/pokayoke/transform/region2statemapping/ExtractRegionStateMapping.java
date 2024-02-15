@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,14 +41,18 @@ public class ExtractRegionStateMapping {
      * @param outputPath Output JSON file to which to write the map.
      * @throws IOException In case generating the output JSON failed.
      */
-    public static void extractMappingFromFiles(String petrifyOutputPath, String petrifyInputPath, String outputPath)
+    public static void extractMappingFromFiles(String petrifyInputPath, String petrifyOutputPath, String outputPath)
             throws IOException
     {
         List<String> petrifyInput = FileHelper.readFile(petrifyInputPath);
         List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
-        Map<String, Set<String>> map = extract(petrifyInput, petriNet);
-        Files.writeString(Paths.get(outputPath), new JSONObject(map).toString());
+        Map<Place, Set<String>> placeToStringsMap = extract(petrifyInput, petriNet);
+        Map<String, Set<String>> stringToStringsMap = new LinkedHashMap<>();
+        for (Entry<Place, Set<String>> entry: placeToStringsMap.entrySet()) {
+            stringToStringsMap.put(entry.getKey().getName().getText(), entry.getValue());
+        }
+        Files.writeString(Paths.get(outputPath), new JSONObject(stringToStringsMap).toString());
     }
 
     /**
@@ -57,12 +62,12 @@ public class ExtractRegionStateMapping {
      * @param petriNet The Petri net.
      * @return A map from state in the state machine to region (i.e., a set of places) in the Petri net.
      */
-    public static Map<String, Set<String>> extract(List<String> petrifyInput, PetriNet petriNet) {
+    public static Map<Place, Set<String>> extract(List<String> petrifyInput, PetriNet petriNet) {
         // Initialize an empty map from place to states.
         List<Place> places = petriNet.getPages().get(0).getObjects().stream().filter(Place.class::isInstance)
                 .map(Place.class::cast).toList();
-        Map<String, Set<String>> regionStateMap = new LinkedHashMap<>();
-        places.stream().forEach(place -> regionStateMap.put(place.getName().getText(), new LinkedHashSet<>()));
+        Map<Place, Set<String>> regionStateMap = new LinkedHashMap<>();
+        places.stream().forEach(place -> regionStateMap.put(place, new LinkedHashSet<>()));
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
         // initial state and the initial marked place.
@@ -94,7 +99,7 @@ public class ExtractRegionStateMapping {
                 Set<Place> markedPlaces = statePlacesPair.getRight();
 
                 // Update the region-state map with current state for each marked place.
-                markedPlaces.stream().forEach(place -> regionStateMap.get(place.getName().getText()).add(currentState));
+                markedPlaces.stream().forEach(place -> regionStateMap.get(place).add(currentState));
 
                 // Get the transitions to be fired.
                 List<Triple<String, String, String>> transitionsToFire = transitions.stream()
