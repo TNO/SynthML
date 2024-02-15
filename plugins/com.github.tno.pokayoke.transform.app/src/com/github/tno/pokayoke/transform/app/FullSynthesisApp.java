@@ -181,7 +181,8 @@ public class FullSynthesisApp {
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
-        Preconditions.checkArgument(automata.size() == 1, "Expected the CIF specification to include one automaton.");
+        Preconditions.checkArgument(automata.size() == 1,
+                "Expected the CIF specification to include exactly one automaton.");
         Automaton automaton = automata.get(0);
 
         for (Location location: automaton.getLocations()) {
@@ -204,15 +205,15 @@ public class FullSynthesisApp {
 
             for (Annotation annotation: entry.getValue()) {
                 Preconditions.checkArgument(annotation.getArguments().size() == 1,
-                        "Expected the annotation to have one argument.");
-                AnnotationArgument arguement = annotation.getArguments().get(0);
-                String mappedLocationName = ((StringExpression)arguement.getValue()).getValue();
+                        "Expected the annotation to have exactly one argument.");
+                AnnotationArgument argument = annotation.getArguments().get(0);
+                String mappedLocationName = ((StringExpression)argument.getValue()).getValue();
                 Location mappedLocation = map2.keySet().stream().filter(loc -> loc.getName().equals(mappedLocationName))
                         .toList().get(0);
                 mappedAnnotations.addAll(map2.get(mappedLocation));
             }
 
-            mappedAnnotations = mappedAnnotations.stream().distinct().collect(Collectors.toList());
+            mappedAnnotations = mappedAnnotations.stream().distinct().toList();
             compositeMap.put(location, mappedAnnotations);
         }
 
