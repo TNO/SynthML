@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,7 +69,7 @@ public class ExtractRegionStateMapping {
 
         // Initialize a queue that stores pairs of state and corresponding places to be visited. The first pair is the
         // initial state and the initial marked place.
-        LinkedHashSet<Place> initialMarkedPlace = places.stream().filter(place -> place.getInitialMarking() != null)
+        Set<Place> initialMarkedPlace = places.stream().filter(place -> place.getInitialMarking() != null)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         String markingIdentifier = ".marking";
         List<String> initialStateLines = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier))
@@ -79,9 +78,8 @@ public class ExtractRegionStateMapping {
                 "Expected the input state machine to have exactly one marking line.");
         String[] initialStates = initialStateLines.get(0).substring(markingIdentifier.length()).replace("{", "")
                 .replace("}", "").trim().split(",");
-        Verify.verify(initialStates.length==1,
-                "Expected the input state machine to have exactly one initial state.");
-        String initialState = initialStates[0];
+        Verify.verify(initialStates.length == 1, "Expected the input state machine to have exactly one initial state.");
+        String initialState = initialStates[0].trim();
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
         queue.add(Pair.of(initialState, initialMarkedPlace));
 
