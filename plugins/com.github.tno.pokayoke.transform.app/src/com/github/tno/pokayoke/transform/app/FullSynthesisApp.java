@@ -218,7 +218,7 @@ public class FullSynthesisApp {
                 List<Location> mappedLocations = map2.keySet().stream()
                         .filter(loc -> loc.getName().equals(mappedLocationName)).toList();
                 Preconditions.checkArgument(mappedLocations.size() == 1,
-                        String.format("Expected that there is only one location named %s.", mappedLocationName));
+                        String.format("Expected that there is exactly one location named %s.", mappedLocationName));
                 Location mappedLocation = mappedLocations.get(0);
                 mappedAnnotations.addAll(map2.get(mappedLocation));
             }
