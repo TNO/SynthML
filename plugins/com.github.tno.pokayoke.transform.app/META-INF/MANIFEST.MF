@@ -31,7 +31,10 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.tno.pokayoke.transform.uml;bundle-version="0.0.1",
  org.eclipse.escet.cif.eventbased;bundle-version="3.0.0",
  org.eclipse.escet.common.java;bundle-version="3.0.0",
- org.eclipse.escet.cif.cif2cif;bundle-version="3.0.0"
+ org.eclipse.escet.cif.cif2cif;bundle-version="3.0.0",
+ org.eclipse.escet.cif.datasynth;bundle-version="3.0.0",
+ org.eclipse.escet.cif.bdd;bundle-version="3.0.0",
+ com.github.com-github-javabdd.com.github.javabdd;bundle-version="6.0.0"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-17
