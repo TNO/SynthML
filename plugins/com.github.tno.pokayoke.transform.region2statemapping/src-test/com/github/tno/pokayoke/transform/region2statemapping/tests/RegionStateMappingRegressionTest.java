@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/** Regression tests for translating UML models to GAL specifications. */
+/** Regression tests for extracting region-state map. */
 public class RegionStateMappingRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_1_EXTENSION = "g";
 
