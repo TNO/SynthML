@@ -34,7 +34,7 @@ public class ExtractRegionStateMapping {
     }
 
     /**
-     * Extracts region-state map from provided Petrify input and output files and writes the map into a JSON file.
+     * Extracts region-state map from provided Petrify input and output files and writes the map as a JSON file.
      *
      * @param petrifyInputPath Petrify input file path.
      * @param petrifyOutputPath Petrify output file path.
@@ -47,20 +47,19 @@ public class ExtractRegionStateMapping {
         List<String> petrifyInput = FileHelper.readFile(petrifyInputPath);
         List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
-        Map<Place, Set<String>> placeToStringsMap = extract(petrifyInput, petriNet);
-        Map<String, Set<String>> stringToStringsMap = new LinkedHashMap<>();
-        for (Entry<Place, Set<String>> entry: placeToStringsMap.entrySet()) {
-            stringToStringsMap.put(entry.getKey().getName().getText(), entry.getValue());
-        }
-        Files.writeString(Paths.get(outputPath), new JSONObject(stringToStringsMap).toString());
+        Map<Place, Set<String>> regionMapping1 = extract(petrifyInput, petriNet);
+        Map<String, Set<String>> regionMapping2 = new LinkedHashMap<>();
+        regionMapping1.entrySet()
+                .forEach(entry -> regionMapping2.put(entry.getKey().getName().getText(), entry.getValue()));
+        Files.writeString(Paths.get(outputPath), new JSONObject(regionMapping2).toString());
     }
 
     /**
-     * Extracts a region-state map from the given Petri net and state machine.
+     * Extracts a region-state map from a given state machine and Petri net that is synthesized for it.
      *
      * @param petrifyInput The Petrify input that contains a state machine.
-     * @param petriNet The Petri net.
-     * @return A map from state in the state machine to region (i.e., a set of places) in the Petri net.
+     * @param petriNet The Petri net that is synthesized by Petrify from the input state machine.
+     * @return A map from places in the Petri net to the corresponding states that are in the region of the place.
      */
     public static Map<Place, Set<String>> extract(List<String> petrifyInput, PetriNet petriNet) {
         // Initialize an empty map from places to states.
@@ -76,10 +75,13 @@ public class ExtractRegionStateMapping {
         String markingIdentifier = ".marking";
         List<String> initialStateLines = petrifyInput.stream().filter(line -> line.startsWith(markingIdentifier))
                 .toList();
-        String initialState = initialStateLines.get(0).substring(markingIdentifier.length()).replace("{", "")
-                .replace("}", "").trim();
-        Verify.verify(initialStateLines.size() == 1 && initialState.split(",").length == 1,
-                "Expected that the state machine has exactly one initial state.");
+        Verify.verify(initialStateLines.size() == 1,
+                "Expected the input state machine to have exactly one marking line.");
+        String[] initialStates = initialStateLines.get(0).substring(markingIdentifier.length()).replace("{", "")
+                .replace("}", "").trim().split(",");
+        Verify.verify(initialStates.length==1,
+                "Expected the input state machine to have exactly one initial state.");
+        String initialState = initialStates[0];
         Queue<Pair<String, Set<Place>>> queue = new LinkedList<>();
         queue.add(Pair.of(initialState, initialMarkedPlace));
 
@@ -104,11 +106,11 @@ public class ExtractRegionStateMapping {
                 // Update the region-state map with current state for each marked place.
                 markedPlaces.stream().forEach(place -> regionStateMap.get(place).add(currentState));
 
-                // Get the transitions to be fired.
+                // Get the transitions to be taken.
                 List<Triple<String, String, String>> transitionsToFire = transitions.stream()
                         .filter(transition -> transition.first.equals(currentState)).toList();
 
-                // Get the firing result of each transition and push the new pair of state and places into the queue.
+                // Get the result of each transition and push the new pair of state and places into the queue.
                 for (Triple<String, String, String> transition: transitionsToFire) {
                     String transitionLabel = transition.second;
                     String newState = transition.third;
