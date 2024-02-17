@@ -95,7 +95,7 @@ public class PetriNet2ActivityHelper {
      * @param place The place to check.
      * @return {@code true} if the place is marked, otherwise {@code false}.
      */
-    private static boolean isMarkedPlace(Place place) {
+    public static boolean isMarkedPlace(Place place) {
         if (place.getInitialMarking() != null) {
             int numInArcs = place.getInArcs().size();
             int numOutArcs = place.getOutArcs().size();
