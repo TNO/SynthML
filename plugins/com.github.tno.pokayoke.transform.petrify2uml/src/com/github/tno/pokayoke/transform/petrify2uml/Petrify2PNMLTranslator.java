@@ -30,9 +30,9 @@ public class Petrify2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = transform(input, true);
-        FileHelper.writePetriNet(petriNet, outputPath);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, outputPath);
     }
 
     /**
