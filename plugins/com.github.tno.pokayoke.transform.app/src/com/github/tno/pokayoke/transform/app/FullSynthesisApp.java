@@ -64,7 +64,9 @@ public class FullSynthesisApp {
 
         // Perform Synthesis.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
-        CifDataSynthesisResult cifSynthesisResult = synthesize(cifSpec);
+        CifDataSynthesisSettings settings = getSynthesisSetting();
+        CifBddSpec cifBddSpec = getcifBddSpec(cifSpec, settings);
+        CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
         convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
@@ -136,6 +138,55 @@ public class FullSynthesisApp {
         PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
     }
 
+    private static CifDataSynthesisSettings getSynthesisSetting() {
+        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
+        settings.setDoForwardReach(true);
+        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
+        return settings;
+    }
+
+    private static CifBddSpec getcifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
+        // Perform preprocessing.
+        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
+
+        // Create BDD factory.
+        List<Long> continuousOpMisses = list();
+        List<Integer> continuousUsedBddNodes = list();
+        BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
+
+        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
+        // way.
+        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
+        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
+
+        return cifBddSpec;
+    }
+
+    private static CifDataSynthesisResult synthesize(CifBddSpec cifBddSpec, CifDataSynthesisSettings settings) {
+        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
+                new CifDataSynthesisTiming());
+        return synthResult;
+    }
+
+    private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
+            String outPutFilePath, String outFolderPath)
+    {
+        Specification rslt;
+
+        // Construct output CIF specification.
+        SynthesisToCifConverter converter = new SynthesisToCifConverter();
+        rslt = converter.convert(synthResult, spec);
+
+        // Write output CIF specification.
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(rslt, outPutFilePath, outFolderPath);
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+        return rslt;
+    }
+
     /**
      * Remove state annotations from intermediate states, states that have uncontrollable events on their outgoing
      * edges.
@@ -195,50 +246,6 @@ public class FullSynthesisApp {
         } finally {
             AppEnv.unregisterApplication();
         }
-    }
-
-    private static CifDataSynthesisResult synthesize(Specification spec) {
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
-
-        // Perform preprocessing.
-        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
-
-        // Create BDD factory.
-        List<Long> continuousOpMisses = list();
-        List<Integer> continuousUsedBddNodes = list();
-        BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
-
-        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
-        // way.
-        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
-        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
-
-        // Perform synthesis.
-        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
-                new CifDataSynthesisTiming());
-
-        return synthResult;
-    }
-
-    private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
-            String outPutFilePath, String outFolderPath)
-    {
-        Specification rslt;
-
-        // Construct output CIF specification.
-        SynthesisToCifConverter converter = new SynthesisToCifConverter();
-        rslt = converter.convert(synthResult, spec);
-
-        // Write output CIF specification.
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(rslt, outPutFilePath, outFolderPath);
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-        return rslt;
     }
 
     private static String getPreservedEvents(Specification spec) {
