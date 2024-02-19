@@ -42,13 +42,18 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
+import org.eclipse.uml2.uml.Activity;
 
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
-import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
+import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+
+import fr.lip6.move.pnml.ptnet.PetriNet;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -60,7 +65,7 @@ public class FullSynthesisApp {
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
         // Load CIF specification.
-        Specification cifSpec = FileHelper.loadCifSpec(inputPath);
+        Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
         // Perform Synthesis.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
@@ -83,7 +88,7 @@ public class FullSynthesisApp {
 
         // Remove state annotations from intermediate states.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotreduced.cif");
-        Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
+        Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath, outputFolderPath);
 
@@ -110,9 +115,9 @@ public class FullSynthesisApp {
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
-        Specification cifProjectedStateSpace = FileHelper.loadCifSpec(cifProjectedStateSpacePath);
+        Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
-        Specification cifMinimizedStateSpace = FileHelper.loadCifSpec(cifMinimizedStateSpacePath);
+        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
 
         Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
@@ -133,9 +138,16 @@ public class FullSynthesisApp {
 
         // TODO Obtain region-state mapping.
 
-        // Translate Petri Net to UML Activity and output the activity.
+        // Translate Petrify output into PNML.
+        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        List<String> input = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(input, true);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
+
+        // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
+        Activity activity = PetriNet2Activity.transform(petriNet);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSetting() {
