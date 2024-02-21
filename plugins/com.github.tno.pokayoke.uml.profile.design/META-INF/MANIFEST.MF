@@ -16,8 +16,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.escet.cif.parser,
  org.eclipse.escet.setext.runtime,
  org.eclipse.escet.common.java,
- com.github.tno.pokayoke.transform.uml,
- com.github.tno.pokayoke.uml.profile.plugin
+ com.github.tno.pokayoke.transform.uml;bundle-version="0.0.1",
+ com.github.tno.pokayoke.uml.profile.util;bundle-version="0.0.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: %providerName

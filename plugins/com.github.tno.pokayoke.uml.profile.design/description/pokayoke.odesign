@@ -16,6 +16,7 @@
       </validationSet>
     </ownedRepresentationExtensions>
     <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.design.PokaYokeProfileServices"/>
+    <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.util.GuardsEffectsUtil"/>
   </ownedViewpoints>
   <extensions xsi:type="properties:ViewExtensionDescription" name="PokaYokeProperties">
     <categories name="PR_PokaYoke">
