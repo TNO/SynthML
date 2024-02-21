@@ -193,6 +193,10 @@
     <requirement
         name="org.eclipse.uml2.uml.resources"/>
     <requirement
+        name="org.eclipse.pde.feature.group"/>
+    <requirement
+        name="org.eclipse.e4.core.tools.feature.source.feature.group"/>
+    <requirement
         name="org.eclipse.emf.sdk.feature.group"/>
     <requirement
         name="org.eclipse.sirius.specifier.feature.group"/>
