@@ -43,9 +43,7 @@ public class ASvgIn extends AIoDecl {
      * @param svgFile The SVG file to which the mapping applies, or {@code null} to inherit the SVG file.
      * @param position Position information.
      */
-    public ASvgIn(AExpression svgId, ASvgInEvent event, List<AUpdate> updates, ASvgFile svgFile,
-            TextPosition position)
-    {
+    public ASvgIn(AExpression svgId, ASvgInEvent event, List<AUpdate> updates, ASvgFile svgFile, TextPosition position) {
         super(position);
         this.svgId = svgId;
         this.event = event;
