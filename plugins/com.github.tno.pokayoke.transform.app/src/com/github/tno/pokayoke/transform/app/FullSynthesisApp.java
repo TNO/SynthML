@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
@@ -44,23 +45,28 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
 
+import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Place;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath)
+            throws IOException, SecurityException, IllegalArgumentException, UnsupportedPredicateException
+    {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
@@ -70,14 +76,16 @@ public class FullSynthesisApp {
         // Perform Synthesis.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
         CifDataSynthesisSettings settings = getSynthesisSetting();
-        CifBddSpec cifBddSpec = getcifBddSpec(cifSpec, settings);
+        CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
+
+        // Get BDD of event guards before performing synthesis.
+        Map<Event, BDD> eventGuards = ChoiceEventGuardComputationHelper.collectBddOfEventGuards(cifBddSpec);
+
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
         convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
-
-        // TODO Extract action guards from specification and synthesized guards from the synthesis result.
 
         // Perform state space generation.
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".ctrlsys.statespace.cif");
@@ -92,7 +100,7 @@ public class FullSynthesisApp {
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath, outputFolderPath);
 
-        // Remove state annotation for all states.
+        // Remove state annotations from all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
         removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
 
@@ -113,6 +121,31 @@ public class FullSynthesisApp {
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
         dfaMinimizationApp.run(dfaMinimizationArgs, false);
 
+        // Translate the CIF state space to Petrify input and output the Petrify input.
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
+        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
+
+        // Petrify the state space and output the generated Petri Net.
+        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
+        Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
+
+        // Translate Petrify output into PNML.
+        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+        PetriNet petriNetWithoutLoop = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput), true);
+        PetriNetUMLFileHelper.writePetriNet(petriNetWithoutLoop, pnmlOutputPath.toString());
+
+        // Translate PNML into UML activity.
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
+        Activity activity = PetriNet2Activity.transform(petriNetWithoutLoop);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+
+        // Get region-state mapping.
+        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        PetriNet petriNetWithLoop = Petrify2PNMLTranslator.transform(petrifyOutput, false);
+        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNetWithLoop);
+
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
@@ -125,29 +158,10 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
                 annotationFromReducedSP);
 
-        // TODO Guard computation.
-
-        // Translate the CIF state space to Petrify input and output the Petrify input.
-        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
-
-        // Petrify the state space and output the generated Petri Net.
-        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
-        Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
-
-        // TODO Obtain region-state mapping.
-
-        // Translate Petrify output into PNML.
-        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        List<String> input = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(input, true);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
-
-        // Translate PNML into UML activity.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        Activity activity = PetriNet2Activity.transform(petriNet);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        // Compute the guards of the choice events.
+        ChoiceEventGuardComputation guardComputation = new ChoiceEventGuardComputation(cifMinimizedStateSpace,
+                eventGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
+        guardComputation.computeChoiceGuards();
     }
 
     private static CifDataSynthesisSettings getSynthesisSetting() {
@@ -157,7 +171,7 @@ public class FullSynthesisApp {
         return settings;
     }
 
-    private static CifBddSpec getcifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
+    private static CifBddSpec getCifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
         // Perform preprocessing.
         CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
 

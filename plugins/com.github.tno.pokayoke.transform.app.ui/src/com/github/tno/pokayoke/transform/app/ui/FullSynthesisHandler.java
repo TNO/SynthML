@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.github.tno.pokayoke.transform.app.FullSynthesisApp;
@@ -32,7 +33,7 @@ public class FullSynthesisHandler {
                 inputResource.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 
                 return Status.OK_STATUS;
-            } catch (IOException | CoreException e) {
+            } catch (IOException | CoreException | SecurityException | IllegalArgumentException | UnsupportedPredicateException e) {
                 return new Status(IStatus.ERROR, getClass().getPackageName(),
                         "Failed to perform full synthesis: " + inputPath, e);
             }
