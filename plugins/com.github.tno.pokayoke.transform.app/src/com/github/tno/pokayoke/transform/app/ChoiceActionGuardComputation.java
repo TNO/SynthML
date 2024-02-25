@@ -54,16 +54,16 @@ public class ChoiceActionGuardComputation {
     }
 
     public void computeChoiceGuards() {
-        // Get the map from choice places to events.
-        Map<Place, List<Event>> place2Events = ChoiceActionGuardComputationHelper.getPlaceEvents(petriNet,
+        // Get the map from choice places to their choice events (outgoing events).
+        Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper.getPlaceEvents(petriNet,
                 cifBddSpec.alphabet);
-        Map<Place, Map<Event, BDD>> place2EventBddMap = new HashMap<>();
 
         // Compute event guards for each choice place.
-        for (Entry<Place, List<Event>> entry: place2Events.entrySet()) {
+        Map<Place, Map<Event, BDD>> choicePlaceToChoiceEventToGuard = new HashMap<>();
+        for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
-            Map<Event, BDD> event2BddMap = new HashMap<>();
+            Map<Event, BDD> choiceEventToGuard = new HashMap<>();
 
             // Get guards of the choice events from the CIF specification.
             Map<Event, BDD> event2BDD4SpecGuards = actionGuards.entrySet().stream()
@@ -83,7 +83,7 @@ public class ChoiceActionGuardComputation {
             // Get state annotations of these locations.
             List<Annotation> annotations = locs.stream().flatMap(loc -> compositeStateMap.get(loc).stream()).toList();
 
-            // Get BDD of these state annotations.
+            // Get BDDs of these state annotations.
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
                 Expression expression = ChoiceActionGuardComputationHelper.getExpression(annotation, cifBddSpec);
@@ -107,9 +107,9 @@ public class ChoiceActionGuardComputation {
                 BDD simplicationResult = event2BDD4SynthesisGuards.get(choiceEvent)
                         .simplify(event2BDD4SpecGuards.get(choiceEvent)).simplify(disjunction);
 
-                event2BddMap.put(choiceEvent, simplicationResult);
+                choiceEventToGuard.put(choiceEvent, simplicationResult);
             }
-            place2EventBddMap.put(choicePlace, event2BddMap);
+            choicePlaceToChoiceEventToGuard.put(choicePlace, choiceEventToGuard);
         }
     }
 }
