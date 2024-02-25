@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.escet.cif.bdd.spec.CifBddDiscVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
 import org.eclipse.escet.cif.bdd.spec.CifBddLocPtrVariable;
@@ -52,7 +51,7 @@ public class ChoiceActionGuardComputationHelper {
     private ChoiceActionGuardComputationHelper() {
     }
 
-    public static Map<Event, BDD> collectBddOfEventGuards(CifBddSpec cifBddSpec) {
+    public static Map<Event, BDD> collectEventGuards(CifBddSpec cifBddSpec) {
         Map<Event, BDD> guards = new HashMap<>();
         for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
             List<CifBddEdge> cifBDDEdges = entry.getValue();
@@ -64,7 +63,7 @@ public class ChoiceActionGuardComputationHelper {
         return guards;
     }
 
-    public static Map<Place, List<Event>> getPlaceEvents(PetriNet petriNet, Set<Event> allEvents) {
+    public static Map<Place, List<Event>> getChoiceEventsPerChoicePlace(PetriNet petriNet, Set<Event> allEvents) {
         List<Page> pnPages = petriNet.getPages();
         Map<Place, List<Event>> place2Event = new HashMap<>();
         Preconditions.checkArgument(pnPages.size() == 1, "Expected the Petri Net to have exactly one Petri Net page.");
@@ -111,7 +110,7 @@ public class ChoiceActionGuardComputationHelper {
         return matchedLocations;
     }
 
-    public static Expression getExpression(Annotation annotation, CifBddSpec cifBddSpec) {
+    public static Expression stateAnnoToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
         List<Expression> expressions = new ArrayList<>();
         List<CifBddVariable> bddVariables = Arrays.asList(cifBddSpec.variables);
 
@@ -154,7 +153,7 @@ public class ChoiceActionGuardComputationHelper {
 
                     if (variableType instanceof EnumType enumType) {
                         String variableValue = ((StringExpression)expression).getValue();
-                        EList<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals();
+                        List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals();
                         EnumLiteral enumliteral = enumLiterals.stream()
                                 .filter(literal -> literal.getName().equals(variableValue)).toList().get(0);
 

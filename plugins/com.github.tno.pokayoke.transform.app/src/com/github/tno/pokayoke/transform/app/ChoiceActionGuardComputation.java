@@ -55,7 +55,7 @@ public class ChoiceActionGuardComputation {
 
     public void computeChoiceGuards() {
         // Get the map from choice places to their choice events (outgoing events).
-        Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper.getPlaceEvents(petriNet,
+        Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper.getChoiceEventsPerChoicePlace(petriNet,
                 cifBddSpec.alphabet);
 
         // Compute event guards for each choice place.
@@ -86,7 +86,7 @@ public class ChoiceActionGuardComputation {
             // Get BDDs of these state annotations.
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
-                Expression expression = ChoiceActionGuardComputationHelper.getExpression(annotation, cifBddSpec);
+                Expression expression = ChoiceActionGuardComputationHelper.stateAnnoToCifPred(annotation, cifBddSpec);
                 BDD bdd = null;
                 try {
                     bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);

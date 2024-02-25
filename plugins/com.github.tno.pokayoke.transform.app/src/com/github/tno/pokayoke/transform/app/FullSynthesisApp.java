@@ -76,7 +76,7 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get BDD of event guards before performing synthesis.
-        Map<Event, BDD> actionGuards = ChoiceActionGuardComputationHelper.collectBddOfEventGuards(cifBddSpec);
+        Map<Event, BDD> actionGuards = ChoiceActionGuardComputationHelper.collectEventGuards(cifBddSpec);
 
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
