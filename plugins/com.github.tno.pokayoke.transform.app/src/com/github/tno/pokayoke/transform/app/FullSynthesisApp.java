@@ -64,9 +64,7 @@ public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(Path inputPath, Path outputFolderPath)
-            throws IOException, SecurityException, IllegalArgumentException, UnsupportedPredicateException
-    {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
@@ -75,7 +73,7 @@ public class FullSynthesisApp {
 
         // Perform Synthesis.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
-        CifDataSynthesisSettings settings = getSynthesisSetting();
+        CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get BDD of event guards before performing synthesis.
@@ -161,10 +159,14 @@ public class FullSynthesisApp {
         // Compute the guards of the choice events.
         ChoiceEventGuardComputation guardComputation = new ChoiceEventGuardComputation(cifMinimizedStateSpace,
                 eventGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
-        guardComputation.computeChoiceGuards();
+        try {
+            guardComputation.computeChoiceGuards();
+        } catch (SecurityException | IllegalArgumentException | UnsupportedPredicateException e) {
+            throw new RuntimeException("Runtime exception during guard computation.", e);
+        }
     }
 
-    private static CifDataSynthesisSettings getSynthesisSetting() {
+    private static CifDataSynthesisSettings getSynthesisSettings() {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
         settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));

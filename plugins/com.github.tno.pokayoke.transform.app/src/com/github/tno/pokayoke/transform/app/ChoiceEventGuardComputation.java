@@ -40,12 +40,12 @@ public class ChoiceEventGuardComputation {
 
     private Map<Place, Set<String>> regionMap;
 
-    public ChoiceEventGuardComputation(Specification cifSpec, Map<Event, BDD> actionGuards,
+    public ChoiceEventGuardComputation(Specification cifSpec, Map<Event, BDD> eventGuards,
             CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet, CifBddSpec cifBddSpec,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
         this.cifSpec = cifSpec;
-        this.eventGuards = actionGuards;
+        this.eventGuards = eventGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
         this.cifBddSpec = cifBddSpec;
@@ -61,18 +61,18 @@ public class ChoiceEventGuardComputation {
                 cifBddSpec.alphabet);
         Map<Place, Map<Event, BDD>> place2EventBddMap = new HashMap<>();
 
-        // Compute action/event guards for each choice place.
+        // Compute event guards for each choice place.
         for (Entry<Place, List<Event>> entry: place2Events.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
             Map<Event, BDD> event2BddMap = new HashMap<>();
 
-            // Get guards of the choice event from the CIF specification.
+            // Get guards of the choice events from the CIF specification.
             Map<Event, BDD> event2BDD4SpecGuards = eventGuards.entrySet().stream()
                     .filter(x -> choiceEvents.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            // Get guards of the choice event from the synthesis result.
+            // Get guards of the choice events from the synthesis result.
             Map<Event, BDD> event2BDD4SynthesisGuards = cifSynthesisResult.outputGuards.entrySet().stream()
                     .filter(x -> choiceEvents.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
