@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
@@ -161,7 +160,7 @@ public class FullSynthesisApp {
                 actionGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
         try {
             guardComputation.computeChoiceGuards();
-        } catch (SecurityException | IllegalArgumentException | UnsupportedPredicateException e) {
+        } catch (SecurityException | IllegalArgumentException e) {
             throw new RuntimeException("Runtime exception during guard computation.", e);
         }
     }

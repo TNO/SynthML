@@ -53,9 +53,7 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public void computeChoiceGuards()
-            throws SecurityException, IllegalArgumentException, UnsupportedPredicateException
-    {
+    public void computeChoiceGuards() {
         // Get the map from choice places to events.
         Map<Place, List<Event>> place2Events = ChoiceActionGuardComputationHelper.getPlaceEvents(petriNet,
                 cifBddSpec.alphabet);
@@ -79,7 +77,8 @@ public class ChoiceActionGuardComputation {
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
-            List<Location> locs = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace, choiceLocations);
+            List<Location> locs = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace,
+                    choiceLocations);
 
             // Get state annotations of these locations.
             List<Annotation> annotations = locs.stream().flatMap(loc -> compositeStateMap.get(loc).stream()).toList();
@@ -88,7 +87,12 @@ public class ChoiceActionGuardComputation {
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
                 Expression expression = ChoiceActionGuardComputationHelper.getExpression(annotation, cifBddSpec);
-                BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
+                BDD bdd = null;
+                try {
+                    bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
+                } catch (UnsupportedPredicateException e) {
+                    throw new RuntimeException("Exception when converting CIF expression into BDD.", e);
+                }
                 bdds.add(bdd);
             }
 
