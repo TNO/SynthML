@@ -77,7 +77,7 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get BDD of event guards before performing synthesis.
-        Map<Event, BDD> eventGuards = ChoiceEventGuardComputationHelper.collectBddOfEventGuards(cifBddSpec);
+        Map<Event, BDD> actionGuards = ChoiceActionGuardComputationHelper.collectBddOfEventGuards(cifBddSpec);
 
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
@@ -157,8 +157,8 @@ public class FullSynthesisApp {
                 annotationFromReducedSP);
 
         // Compute the guards of the choice events.
-        ChoiceEventGuardComputation guardComputation = new ChoiceEventGuardComputation(cifMinimizedStateSpace,
-                eventGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
+        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
+                actionGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
         try {
             guardComputation.computeChoiceGuards();
         } catch (SecurityException | IllegalArgumentException | UnsupportedPredicateException e) {

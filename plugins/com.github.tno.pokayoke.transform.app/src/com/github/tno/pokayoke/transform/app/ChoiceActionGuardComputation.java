@@ -24,11 +24,11 @@ import com.github.javabdd.BDD;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
 
-/** Compute the guards of the events from choices. */
-public class ChoiceEventGuardComputation {
-    private Specification cifSpec;
+/** Compute the event guards of the actions for choices. */
+public class ChoiceActionGuardComputation {
+    private Specification cifMinimizedStateSpace;
 
-    private Map<Event, BDD> eventGuards;
+    private Map<Event, BDD> actionGuards;
 
     private CifDataSynthesisResult cifSynthesisResult;
 
@@ -40,12 +40,12 @@ public class ChoiceEventGuardComputation {
 
     private Map<Place, Set<String>> regionMap;
 
-    public ChoiceEventGuardComputation(Specification cifSpec, Map<Event, BDD> eventGuards,
+    public ChoiceActionGuardComputation(Specification cifSpec, Map<Event, BDD> actionGuards,
             CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet, CifBddSpec cifBddSpec,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
-        this.cifSpec = cifSpec;
-        this.eventGuards = eventGuards;
+        this.cifMinimizedStateSpace = cifSpec;
+        this.actionGuards = actionGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
         this.cifBddSpec = cifBddSpec;
@@ -57,7 +57,7 @@ public class ChoiceEventGuardComputation {
             throws SecurityException, IllegalArgumentException, UnsupportedPredicateException
     {
         // Get the map from choice places to events.
-        Map<Place, List<Event>> place2Events = ChoiceEventGuardComputationHelper.getPlaceEvents(petriNet,
+        Map<Place, List<Event>> place2Events = ChoiceActionGuardComputationHelper.getPlaceEvents(petriNet,
                 cifBddSpec.alphabet);
         Map<Place, Map<Event, BDD>> place2EventBddMap = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class ChoiceEventGuardComputation {
             Map<Event, BDD> event2BddMap = new HashMap<>();
 
             // Get guards of the choice events from the CIF specification.
-            Map<Event, BDD> event2BDD4SpecGuards = eventGuards.entrySet().stream()
+            Map<Event, BDD> event2BDD4SpecGuards = actionGuards.entrySet().stream()
                     .filter(x -> choiceEvents.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
@@ -79,7 +79,7 @@ public class ChoiceEventGuardComputation {
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
-            List<Location> locs = ChoiceEventGuardComputationHelper.getLocations(cifSpec, choiceLocations);
+            List<Location> locs = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace, choiceLocations);
 
             // Get state annotations of these locations.
             List<Annotation> annotations = locs.stream().flatMap(loc -> compositeStateMap.get(loc).stream()).toList();
@@ -87,7 +87,7 @@ public class ChoiceEventGuardComputation {
             // Get BDD of these state annotations.
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
-                Expression expression = ChoiceEventGuardComputationHelper.getExpression(annotation, cifBddSpec);
+                Expression expression = ChoiceActionGuardComputationHelper.getExpression(annotation, cifBddSpec);
                 BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
                 bdds.add(bdd);
             }

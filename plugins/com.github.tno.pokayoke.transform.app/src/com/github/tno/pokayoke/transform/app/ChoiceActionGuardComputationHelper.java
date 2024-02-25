@@ -48,8 +48,8 @@ import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
 
-public class ChoiceEventGuardComputationHelper {
-    private ChoiceEventGuardComputationHelper() {
+public class ChoiceActionGuardComputationHelper {
+    private ChoiceActionGuardComputationHelper() {
     }
 
     public static Map<Event, BDD> collectBddOfEventGuards(CifBddSpec cifBddSpec) {
