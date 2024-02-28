@@ -89,7 +89,7 @@ public class ChoiceActionGuardComputation {
             // Get disjunction of these BDDs.
             BDD disjunction = bdds.get(0);
             for (int i = 1; i < bdds.size(); i++) {
-                disjunction = disjunction.or(bdds.get(i));
+                disjunction = disjunction.orWith(bdds.get(i));
             }
 
             // Perform simplification for each event of the choice.
