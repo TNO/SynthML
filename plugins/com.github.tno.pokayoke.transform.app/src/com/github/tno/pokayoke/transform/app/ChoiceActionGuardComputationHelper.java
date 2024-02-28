@@ -81,8 +81,7 @@ public class ChoiceActionGuardComputationHelper {
 
             List<Event> choiceEvents = new ArrayList<>();
             for (String eventName: eventNames) {
-                List<Event> events = allEvents.stream()
-                        .filter(event -> event.getName().equals(eventName)).toList();
+                List<Event> events = allEvents.stream().filter(event -> event.getName().equals(eventName)).toList();
                 Preconditions.checkArgument(events.size() == 1,
                         String.format("Expected that there is exactly one event named %s.", eventName));
                 choiceEvents.add(events.get(0));
@@ -158,10 +157,13 @@ public class ChoiceActionGuardComputationHelper {
 
                     if (variableType instanceof EnumType enumType) {
                         String variableValue = ((StringExpression)expression).getValue();
-                        List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals();
-                        EnumLiteral enumliteral = enumLiterals.stream()
+                        List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals().stream()
                                 .filter(literal -> CifTextUtils.getAbsName(literal, false).equals(variableValue))
-                                .toList().get(0);
+                                .toList();
+                        Preconditions.checkArgument(enumLiterals.size() == 1, String.format(
+                                "Expected that there is exactly one enummeration literal named %s.", variableValue));
+
+                        EnumLiteral enumliteral = enumLiterals.get(0);
 
                         binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
