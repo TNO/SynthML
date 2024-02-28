@@ -82,7 +82,7 @@ public class ChoiceActionGuardComputationHelper {
             List<Event> choiceEvents = new ArrayList<>();
             for (String eventName: eventNames) {
                 List<Event> events = allEvents.stream()
-                        .filter(event -> CifTextUtils.getAbsName(event, false).equals(eventName)).toList();
+                        .filter(event -> event.getName().equals(eventName)).toList();
                 Preconditions.checkArgument(events.size() == 1,
                         String.format("Expected that there is exactly one event named %s.", eventName));
                 choiceEvents.add(events.get(0));
@@ -107,7 +107,7 @@ public class ChoiceActionGuardComputationHelper {
         List<Location> matchedLocations = new ArrayList<>();
         for (String locationName: locationNames) {
             List<Location> locations = automaton.getLocations().stream()
-                    .filter(location -> CifTextUtils.getAbsName(location, false).equals(locationName)).toList();
+                    .filter(location -> location.getName().equals(locationName)).toList();
             Preconditions.checkArgument(locations.size() == 1,
                     String.format("Expected that there is exactly one location named %s.", locationName));
             matchedLocations.add(locations.get(0));
@@ -138,7 +138,7 @@ public class ChoiceActionGuardComputationHelper {
                     locationExpression.setType(newBoolType());
                     String locationName = ((StringExpression)expression).getValue();
                     List<Location> locations = locVariable.aut.getLocations().stream()
-                            .filter(loc -> CifTextUtils.getAbsName(loc, false).equals(locationName)).toList();
+                            .filter(loc -> loc.getName().equals(locationName)).toList();
                     Preconditions.checkArgument(locations.size() == 1,
                             String.format("Expected that there is exactly one location named %s", locationName));
                     Location location = locations.get(0);
