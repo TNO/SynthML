@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
@@ -20,6 +19,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 
 import com.github.javabdd.BDD;
+import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -65,16 +65,6 @@ public class ChoiceActionGuardComputation {
             List<Event> choiceEvents = entry.getValue();
             Map<Event, BDD> choiceEventToGuard = new HashMap<>();
 
-            // Get guards of the choice events from the CIF specification.
-            Map<Event, BDD> event2BDD4SpecGuards = actionGuards.entrySet().stream()
-                    .filter(x -> choiceEvents.contains(x.getKey()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            // Get guards of the choice events from the synthesis result.
-            Map<Event, BDD> event2BDD4SynthesisGuards = cifSynthesisResult.outputGuards.entrySet().stream()
-                    .filter(x -> choiceEvents.contains(x.getKey()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
             List<Location> locs = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace,
@@ -104,8 +94,21 @@ public class ChoiceActionGuardComputation {
 
             // Perform simplification for each event of the choice.
             for (Event choiceEvent: choiceEvents) {
-                BDD simplicationResult = event2BDD4SynthesisGuards.get(choiceEvent)
-                        .simplify(event2BDD4SpecGuards.get(choiceEvent)).simplify(disjunction);
+                // Get guard of the choice event from the CIF specification.
+                List<BDD> eventSpecGuards = actionGuards.entrySet().stream().filter(x -> x.getKey().equals(choiceEvent))
+                        .map(x -> x.getValue()).toList();
+                Preconditions.checkArgument(eventSpecGuards.size() == 1, String
+                        .format("Expected that there is exactly one specificaion guard for event %s", choiceEvent));
+
+                // Get guard of the choice event from the synthesis result.
+                List<BDD> eventSynthesisGuards = cifSynthesisResult.outputGuards.entrySet().stream()
+                        .filter(x -> x.getKey().equals(choiceEvent)).map(x -> x.getValue()).toList();
+                Preconditions.checkArgument(eventSynthesisGuards.size() == 1,
+                        String.format("Expected that there is exactly one synthesis guard for event %s", choiceEvent));
+
+                // Perform simplification.
+                BDD simplicationResult = eventSynthesisGuards.get(0).simplify(eventSpecGuards.get(0))
+                        .simplify(disjunction);
 
                 choiceEventToGuard.put(choiceEvent, simplicationResult);
             }
