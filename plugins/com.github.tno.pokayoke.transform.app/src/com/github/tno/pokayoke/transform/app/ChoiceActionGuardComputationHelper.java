@@ -151,7 +151,7 @@ public class ChoiceActionGuardComputationHelper {
 
                     BinaryExpression binaryExpression = newBinaryExpression();
                     binaryExpression.setType(newBoolType());
-                    binaryExpression.setLeft(deepclone(variableExpression));
+                    binaryExpression.setLeft(variableExpression);
                     binaryExpression.setOperator(BinaryOperator.EQUAL);
 
                     CifType variableType = discVariable.type;
@@ -165,7 +165,7 @@ public class ChoiceActionGuardComputationHelper {
 
                         binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
-                        binaryExpression.setRight(expression);
+                        binaryExpression.setRight(deepclone(expression));
                     }
                     expressions.add(binaryExpression);
                 }
