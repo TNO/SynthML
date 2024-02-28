@@ -53,7 +53,7 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public void computeChoiceGuards() {
+    public Map<Place, Map<Event, BDD>> computeChoiceGuards() {
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
@@ -114,5 +114,7 @@ public class ChoiceActionGuardComputation {
             }
             choicePlaceToChoiceEventToGuard.put(choicePlace, choiceEventToGuard);
         }
+
+        return choicePlaceToChoiceEventToGuard;
     }
 }

@@ -22,6 +22,7 @@ import org.eclipse.escet.cif.bdd.spec.CifBddLocPtrVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
@@ -42,6 +43,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -79,12 +81,15 @@ public class ChoiceActionGuardComputationHelper {
 
             List<Event> choiceEvents = new ArrayList<>();
             for (String eventName: eventNames) {
-                List<Event> events = allEvents.stream().filter(event -> event.getName().equals(eventName)).toList();
+                List<Event> events = allEvents.stream()
+                        .filter(event -> CifTextUtils.getAbsName(event, false).equals(eventName)).toList();
                 Preconditions.checkArgument(events.size() == 1,
                         String.format("Expected that there is exactly one event named %s.", eventName));
                 choiceEvents.add(events.get(0));
             }
 
+            Verify.verify(!place2Event.values().contains(choiceEvents),
+                    String.format("Expected that there are no duplicate choice events."));
             place2Event.put(choicePlace, choiceEvents);
         }
 
@@ -102,7 +107,7 @@ public class ChoiceActionGuardComputationHelper {
         List<Location> matchedLocations = new ArrayList<>();
         for (String locationName: locationNames) {
             List<Location> locations = automaton.getLocations().stream()
-                    .filter(location -> location.getName().equals(locationName)).toList();
+                    .filter(location -> CifTextUtils.getAbsName(location, false).equals(locationName)).toList();
             Preconditions.checkArgument(locations.size() == 1,
                     String.format("Expected that there is exactly one location named %s.", locationName));
             matchedLocations.add(locations.get(0));
@@ -123,7 +128,7 @@ public class ChoiceActionGuardComputationHelper {
             // variables.
             if (!variableName.equals("sup") && !variableName.equals("Spec")) {
                 List<CifBddVariable> variables = bddVariables.stream()
-                        .filter(variable -> variable.name.equals(variableName)).toList();
+                        .filter(variable -> variable.rawName.equals(variableName)).toList();
                 Preconditions.checkArgument(variables.size() == 1,
                         String.format("Expected that there is exactly one BDD variable named %s", variableName));
                 CifBddVariable variable = variables.get(0);
@@ -133,7 +138,7 @@ public class ChoiceActionGuardComputationHelper {
                     locationExpression.setType(newBoolType());
                     String locationName = ((StringExpression)expression).getValue();
                     List<Location> locations = locVariable.aut.getLocations().stream()
-                            .filter(loc -> loc.getName().equals(locationName)).toList();
+                            .filter(loc -> CifTextUtils.getAbsName(loc, false).equals(locationName)).toList();
                     Preconditions.checkArgument(locations.size() == 1,
                             String.format("Expected that there is exactly one location named %s", locationName));
                     Location location = locations.get(0);
@@ -155,7 +160,8 @@ public class ChoiceActionGuardComputationHelper {
                         String variableValue = ((StringExpression)expression).getValue();
                         List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals();
                         EnumLiteral enumliteral = enumLiterals.stream()
-                                .filter(literal -> literal.getName().equals(variableValue)).toList().get(0);
+                                .filter(literal -> CifTextUtils.getAbsName(literal, false).equals(variableValue))
+                                .toList().get(0);
 
                         binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
