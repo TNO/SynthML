@@ -41,22 +41,22 @@ public class ChoiceActionGuardComputation {
     private Map<Place, Set<String>> regionMap;
 
     public ChoiceActionGuardComputation(Specification cifSpec, Map<Event, BDD> actionGuards,
-            CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet, CifBddSpec cifBddSpec,
+            CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
         this.cifMinimizedStateSpace = cifSpec;
         this.actionGuards = actionGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
-        this.cifBddSpec = cifBddSpec;
+        this.cifBddSpec = cifSynthesisResult.cifBddSpec;
         this.compositeStateMap = compositeStateMap;
         this.regionMap = regionMap;
     }
 
     public void computeChoiceGuards() {
         // Get the map from choice places to their choice events (outgoing events).
-        Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper.getChoiceEventsPerChoicePlace(petriNet,
-                cifBddSpec.alphabet);
+        Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
+                .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
         // Compute event guards for each choice place.
         Map<Place, Map<Event, BDD>> choicePlaceToChoiceEventToGuard = new HashMap<>();

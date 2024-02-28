@@ -157,7 +157,7 @@ public class FullSynthesisApp {
 
         // Compute the guards of the choice events.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                actionGuards, cifSynthesisResult, petriNetWithLoop, cifBddSpec, minimizedToReduced, regionMap);
+                actionGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
         try {
             guardComputation.computeChoiceGuards();
         } catch (SecurityException | IllegalArgumentException e) {
