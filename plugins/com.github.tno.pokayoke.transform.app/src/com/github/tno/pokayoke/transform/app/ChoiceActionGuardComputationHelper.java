@@ -123,8 +123,8 @@ public class ChoiceActionGuardComputationHelper {
             String variableName = argument.getName();
             Expression expression = argument.getValue();
 
-            // Extract the expression.
-            if (!isSkippable(variableName, bddVariables)) {
+            // Extract the expression from the argument that contains synthesis variable.
+            if (isSynthesisVariable(variableName, bddVariables)) {
                 List<CifBddVariable> variables = bddVariables.stream()
                         .filter(variable -> variable.rawName.equals(variableName)).toList();
                 Preconditions.checkArgument(variables.size() == 1,
@@ -185,8 +185,8 @@ public class ChoiceActionGuardComputationHelper {
         return expression;
     }
 
-    private static boolean isSkippable(String variableName, List<CifBddVariable> bddVariables) {
+    private static boolean isSynthesisVariable(String variableName, List<CifBddVariable> bddVariables) {
         List<String> synthesisVariableNames = bddVariables.stream().map(variable -> variable.rawName).toList();
-        return !synthesisVariableNames.contains(variableName);
+        return synthesisVariableNames.contains(variableName);
     }
 }
