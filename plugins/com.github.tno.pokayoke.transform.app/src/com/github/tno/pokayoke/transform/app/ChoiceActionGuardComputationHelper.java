@@ -123,9 +123,8 @@ public class ChoiceActionGuardComputationHelper {
             String variableName = argument.getName();
             Expression expression = argument.getValue();
 
-            // Extract the expression if the variable is not named as "sup" or "Spec" because they are not synthesis
-            // variables.
-            if (!variableName.equals("sup") && !variableName.equals("Spec")) {
+            // Extract the expression.
+            if (!isSkippable(variableName, bddVariables)) {
                 List<CifBddVariable> variables = bddVariables.stream()
                         .filter(variable -> variable.rawName.equals(variableName)).toList();
                 Preconditions.checkArgument(variables.size() == 1,
@@ -168,8 +167,15 @@ public class ChoiceActionGuardComputationHelper {
                         binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
                         binaryExpression.setRight(deepclone(expression));
+                    } else {
+                        throw new RuntimeException(
+                                String.format("Variable type %s is not supported in guard computation.",
+                                        variableType.getClass().getName()));
                     }
                     expressions.add(binaryExpression);
+                } else {
+                    throw new RuntimeException(String.format("Variable %s is not supported in guard computation.",
+                            variable.getClass().getName()));
                 }
             }
         }
@@ -177,5 +183,10 @@ public class ChoiceActionGuardComputationHelper {
         BinaryExpression expression = (BinaryExpression)CifValueUtils.createConjunction(expressions, true);
 
         return expression;
+    }
+
+    private static boolean isSkippable(String variableName, List<CifBddVariable> bddVariables) {
+        List<String> synthesisVariableNames = bddVariables.stream().map(variable -> variable.rawName).toList();
+        return !synthesisVariableNames.contains(variableName);
     }
 }
