@@ -31,7 +31,7 @@ public class Petrify2PNMLTranslator {
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
         List<String> input = FileHelper.readFile(inputPath);
-        PetriNet petriNet = transform(input, true);
+        PetriNet petriNet = transform(input);
         FileHelper.writePetriNet(petriNet, outputPath);
     }
 
@@ -40,12 +40,9 @@ public class Petrify2PNMLTranslator {
      *
      * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
      *     removing elements from the head of the list is too expensive.
-     * @param removeLoop When {@code true} removes the loop introduced when transforming CIF to Petrify input, that
-     *     connects initial locations to ones where the activity postcondition is satisfied. Such a loop is needed since
-     *     Petrify does not work well with sink states.
      * @return The Petri Net.
      */
-    public static PetriNet transform(List<String> petrifyOutput, boolean removeLoop) {
+    public static PetriNet transform(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
@@ -119,7 +116,7 @@ public class Petrify2PNMLTranslator {
             // 'removeLoop' is enabled, a final place is
             // created and connected to the 'end' transition.
             String source = elements.get(0);
-            if (source.equals("end") && removeLoop) {
+            if (source.equals("end")) {
                 String finalPlace = "FinalPlace";
                 createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
             } else {
