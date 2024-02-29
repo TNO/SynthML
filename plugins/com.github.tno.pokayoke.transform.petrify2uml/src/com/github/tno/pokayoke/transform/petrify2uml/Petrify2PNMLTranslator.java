@@ -32,6 +32,7 @@ public class Petrify2PNMLTranslator {
     public static void transformFile(String inputPath, String outputPath) throws IOException {
         List<String> input = FileHelper.readFile(inputPath);
         PetriNet petriNet = transform(input);
+        PostProcessPNML.removeLoop(petriNet);
         FileHelper.writePetriNet(petriNet, outputPath);
     }
 
@@ -111,18 +112,12 @@ public class Petrify2PNMLTranslator {
                     }
                 }
             }
-
-            // Create arcs from the source to its targets. In case the source is the 'end' transition and the
-            // 'removeLoop' is enabled, a final place is
-            // created and connected to the 'end' transition.
+            // Create arcs from the source to its targets.
             String source = elements.get(0);
-            if (source.equals("end")) {
-                String finalPlace = "FinalPlace";
-                createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
-            } else {
-                elements.stream().skip(1).forEach(target -> createArc(transitionsPlacesMap.get(source),
-                        transitionsPlacesMap.get(target), petriNetPage));
-            }
+
+            elements.stream().skip(1).forEach(target -> createArc(transitionsPlacesMap.get(source),
+                    transitionsPlacesMap.get(target), petriNetPage));
+
             petrifyOutput.remove(0);
             currentLine = petrifyOutput.get(0);
         }
@@ -195,7 +190,7 @@ public class Petrify2PNMLTranslator {
         return transition;
     }
 
-    private static Place createPlace(String name, Page page) {
+    public static Place createPlace(String name, Page page) {
         Place place = PETRI_NET_FACTORY.createPlace();
         place.setId(name);
         place.setName(createName(name));
@@ -203,7 +198,7 @@ public class Petrify2PNMLTranslator {
         return place;
     }
 
-    private static Arc createArc(Node source, Node target, Page page) {
+    public static Arc createArc(Node source, Node target, Page page) {
         Arc arc = PETRI_NET_FACTORY.createArc();
         arc.setContainerPage(page);
         arc.setId(source.getId() + "__to__" + target.getId());

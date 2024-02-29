@@ -45,7 +45,7 @@ public class ExtractRegionStateMapping {
     {
         List<String> petrifyInput = FileHelper.readFile(petrifyInputPath);
         List<String> petrifyOutput = FileHelper.readFile(petrifyOutputPath);
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput, false);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
         Map<Place, Set<String>> regionMapping1 = extract(petrifyInput, petriNet);
         Map<String, Set<String>> regionMapping2 = new LinkedHashMap<>();
         regionMapping1.entrySet()

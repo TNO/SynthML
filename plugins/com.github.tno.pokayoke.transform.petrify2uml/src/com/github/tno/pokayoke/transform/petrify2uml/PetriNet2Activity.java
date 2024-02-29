@@ -19,6 +19,7 @@ public class PetriNet2Activity {
     public static void transformFile(String inputPath, String outputPath) throws IOException {
         List<String> input = FileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
+        PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
