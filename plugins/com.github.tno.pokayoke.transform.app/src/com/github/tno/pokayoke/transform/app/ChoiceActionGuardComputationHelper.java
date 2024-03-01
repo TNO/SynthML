@@ -48,6 +48,7 @@ import com.google.common.base.Verify;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 public class ChoiceActionGuardComputationHelper {
     private ChoiceActionGuardComputationHelper() {
@@ -188,5 +189,17 @@ public class ChoiceActionGuardComputationHelper {
     private static boolean isSynthesisVariable(String variableName, List<CifBddVariable> bddVariables) {
         List<String> synthesisVariableNames = bddVariables.stream().map(variable -> variable.rawName).toList();
         return synthesisVariableNames.contains(variableName);
+    }
+
+    public static Transition getTransition(Place place, Event event) {
+        List<Transition> targetTransitions = place.getOutArcs().stream().map(arc -> arc.getTarget())
+                .map(Transition.class::cast).toList();
+        List<Transition> transitions = targetTransitions.stream()
+                .filter(transition -> transition.getName().getText().equals(event.getName())).toList();
+        Preconditions.checkArgument(transitions.size() == 1,
+                String.format("Expected that there is exactly one transition named %s from the choice %s.",
+                        event.getName(), place.getName()));
+
+        return transitions.get(0);
     }
 }

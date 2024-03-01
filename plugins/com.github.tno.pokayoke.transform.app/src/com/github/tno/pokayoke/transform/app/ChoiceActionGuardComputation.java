@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Compute the event guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
@@ -53,17 +54,17 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public Map<Place, Map<Event, BDD>> computeChoiceGuards() {
+    public Map<Place, Map<Transition, BDD>> computeChoiceGuards() {
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
         // Compute event guards for each choice place.
-        Map<Place, Map<Event, BDD>> choicePlaceToChoiceEventToGuard = new HashMap<>();
+        Map<Place, Map<Transition, BDD>> choicePlaceToChoiceTransitionToGuard = new HashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
-            Map<Event, BDD> choiceEventToGuard = new HashMap<>();
+            Map<Transition, BDD> choiceTransitionToGuard = new HashMap<>();
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
@@ -110,11 +111,12 @@ public class ChoiceActionGuardComputation {
                 BDD simplicationResult = eventSynthesisGuards.get(0).simplify(eventSpecGuards.get(0))
                         .simplify(disjunction);
 
-                choiceEventToGuard.put(choiceEvent, simplicationResult);
+                choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getTransition(choicePlace, choiceEvent),
+                        simplicationResult);
             }
-            choicePlaceToChoiceEventToGuard.put(choicePlace, choiceEventToGuard);
+            choicePlaceToChoiceTransitionToGuard.put(choicePlace, choiceTransitionToGuard);
         }
 
-        return choicePlaceToChoiceEventToGuard;
+        return choicePlaceToChoiceTransitionToGuard;
     }
 }

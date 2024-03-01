@@ -57,6 +57,7 @@ import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -158,7 +159,7 @@ public class FullSynthesisApp {
         // Compute the guards of the choice events.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
                 actionGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
-        Map<Place, Map<Event, BDD>> guardComputationResult = new HashMap<>();
+        Map<Place, Map<Transition, BDD>> guardComputationResult = new HashMap<>();
         try {
             guardComputationResult = guardComputation.computeChoiceGuards();
         } catch (SecurityException | IllegalArgumentException e) {
