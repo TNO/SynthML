@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" name="statespace">
   <packagedElement xsi:type="uml:Class" name="Class">
-<<<<<<< HEAD
-    <ownedBehavior xsi:type="uml:Activity" name="statespace" node="//Class/statespace/c_act1 //Class/statespace/c_act2 //Class/statespace/c_act3 //Class/statespace/c_act4 //Class/statespace/c_act5 //Class/statespace/c_act6 //Class/statespace/c_act7 //Class/statespace/c_act8 //Class/statespace/c_act9 //Class/statespace/u_act10 //Class/statespace/c_act11 //Class/statespace/c_act12 //Class/statespace/c_act13 //Class/statespace/c_act14 //Class/statespace/u_act10.1 //Class/statespace/c_act6.1 //Class/statespace/@ownedNode.16 //Class/statespace/@ownedNode.17 //Class/statespace/Merge__p3 //Class/statespace/Decision__p3 //Class/statespace/Fork //Class/statespace/Fork.1 //Class/statespace/Join //Class/statespace/Join.1">
-=======
-    <ownedBehavior xsi:type="uml:Activity" name="statespace" node="//Class/statespace/start //Class/statespace/end //Class/statespace/c_act1 //Class/statespace/c_act2 //Class/statespace/c_act3 //Class/statespace/c_act4 //Class/statespace/c_act5 //Class/statespace/c_act6 //Class/statespace/c_act7 //Class/statespace/c_act8 //Class/statespace/c_act9 //Class/statespace/u_act10 //Class/statespace/c_act11 //Class/statespace/c_act12 //Class/statespace/c_act13 //Class/statespace/c_act14 //Class/statespace/c_satisfied //Class/statespace/u_act10.1 //Class/statespace/c_act6.1 //Class/statespace/InitialNode //Class/statespace/FinalNode //Class/statespace/Merge__p3 //Class/statespace/Decision__p3 //Class/statespace/Fork //Class/statespace/Fork.1 //Class/statespace/Join //Class/statespace/Join.1">
-      <edge xsi:type="uml:ControlFlow" name="InitialNode__to__start" target="//Class/statespace/start" source="//Class/statespace/InitialNode"/>
-      <edge xsi:type="uml:ControlFlow" name="end__to__FinalNode" target="//Class/statespace/FinalNode" source="//Class/statespace/end"/>
->>>>>>> refs/remotes/origin/main
+    <ownedBehavior xsi:type="uml:Activity" name="statespace" node="//Class/statespace/c_act1 //Class/statespace/c_act2 //Class/statespace/c_act3 //Class/statespace/c_act4 //Class/statespace/c_act5 //Class/statespace/c_act6 //Class/statespace/c_act7 //Class/statespace/c_act8 //Class/statespace/c_act9 //Class/statespace/u_act10 //Class/statespace/c_act11 //Class/statespace/c_act12 //Class/statespace/c_act13 //Class/statespace/c_act14 //Class/statespace/u_act10.1 //Class/statespace/c_act6.1 //Class/statespace/InitialNode //Class/statespace/FinalNode //Class/statespace/Merge__p3 //Class/statespace/Decision__p3 //Class/statespace/Fork //Class/statespace/Fork.1 //Class/statespace/Join //Class/statespace/Join.1">
       <edge xsi:type="uml:ControlFlow" name="Fork__to__c_act8" target="//Class/statespace/c_act8" source="//Class/statespace/Fork"/>
       <edge xsi:type="uml:ControlFlow" name="Fork__to__c_act1" target="//Class/statespace/c_act1" source="//Class/statespace/Fork"/>
       <edge xsi:type="uml:ControlFlow" name="c_act1__to__c_act6" target="//Class/statespace/c_act6" source="//Class/statespace/c_act1"/>
@@ -36,14 +30,8 @@
       <edge xsi:type="uml:ControlFlow" name="Fork__to__c_act9" target="//Class/statespace/c_act9" source="//Class/statespace/Fork.1"/>
       <edge xsi:type="uml:ControlFlow" name="c_act6/1__to__Fork" target="//Class/statespace/Fork.1" source="//Class/statespace/c_act6.1"/>
       <edge xsi:type="uml:ControlFlow" name="Join__to__c_act2" target="//Class/statespace/c_act2" source="//Class/statespace/Join"/>
-<<<<<<< HEAD
-      <edge xsi:type="uml:ControlFlow" name="null__to__Fork" target="//Class/statespace/Fork" source="//Class/statespace/@ownedNode.16"/>
-      <edge xsi:type="uml:ControlFlow" name="Join__to__null" target="//Class/statespace/@ownedNode.17" source="//Class/statespace/Join.1"/>
-=======
-      <edge xsi:type="uml:ControlFlow" name="Join__to__c_satisfied" target="//Class/statespace/c_satisfied" source="//Class/statespace/Join.1"/>
-      <ownedNode xsi:type="uml:OpaqueAction" name="start" incoming="//Class/statespace/InitialNode__to__start" outgoing="//Class/statespace/start__to__Fork"/>
-      <ownedNode xsi:type="uml:OpaqueAction" name="end" incoming="//Class/statespace/c_satisfied__to__end" outgoing="//Class/statespace/end__to__FinalNode"/>
->>>>>>> refs/remotes/origin/main
+      <edge xsi:type="uml:ControlFlow" name="InitialNode__to__Fork" target="//Class/statespace/Fork" source="//Class/statespace/InitialNode"/>
+      <edge xsi:type="uml:ControlFlow" name="Join__to__FinalNode" target="//Class/statespace/FinalNode" source="//Class/statespace/Join.1"/>
       <ownedNode xsi:type="uml:OpaqueAction" name="c_act1" incoming="//Class/statespace/Fork__to__c_act1" outgoing="//Class/statespace/c_act1__to__c_act6"/>
       <ownedNode xsi:type="uml:OpaqueAction" name="c_act2" incoming="//Class/statespace/Join__to__c_act2" outgoing="//Class/statespace/c_act2__to__c_act7"/>
       <ownedNode xsi:type="uml:OpaqueAction" name="c_act3" incoming="//Class/statespace/u_act10__to__c_act3" outgoing="//Class/statespace/c_act3__to__Merge__p3"/>
@@ -60,19 +48,14 @@
       <ownedNode xsi:type="uml:OpaqueAction" name="c_act14" incoming="//Class/statespace/c_act8__to__c_act14" outgoing="//Class/statespace/c_act14__to__c_act11"/>
       <ownedNode xsi:type="uml:OpaqueAction" name="u_act10" incoming="//Class/statespace/Decision__p3__to__u_act10%2F1" outgoing="//Class/statespace/u_act10%2F1__to__c_act6%2F1"/>
       <ownedNode xsi:type="uml:OpaqueAction" name="c_act6" incoming="//Class/statespace/u_act10%2F1__to__c_act6%2F1" outgoing="//Class/statespace/c_act6%2F1__to__Fork"/>
-<<<<<<< HEAD
-      <ownedNode xsi:type="uml:InitialNode" outgoing="//Class/statespace/null__to__Fork"/>
-      <ownedNode xsi:type="uml:ActivityFinalNode" incoming="//Class/statespace/Join__to__null"/>
-=======
-      <ownedNode xsi:type="uml:InitialNode" name="InitialNode" outgoing="//Class/statespace/InitialNode__to__start"/>
-      <ownedNode xsi:type="uml:ActivityFinalNode" name="FinalNode" incoming="//Class/statespace/end__to__FinalNode"/>
->>>>>>> refs/remotes/origin/main
+      <ownedNode xsi:type="uml:InitialNode" name="InitialNode" outgoing="//Class/statespace/InitialNode__to__Fork"/>
+      <ownedNode xsi:type="uml:ActivityFinalNode" name="FinalNode" incoming="//Class/statespace/Join__to__FinalNode"/>
       <ownedNode xsi:type="uml:MergeNode" name="Merge__p3" incoming="//Class/statespace/c_act7__to__Merge__p3 //Class/statespace/c_act3__to__Merge__p3" outgoing="//Class/statespace/Merge__p3__to__Decision__p3"/>
       <ownedNode xsi:type="uml:DecisionNode" name="Decision__p3" incoming="//Class/statespace/Merge__p3__to__Decision__p3" outgoing="//Class/statespace/Decision__p3__to__u_act10 //Class/statespace/Decision__p3__to__u_act10%2F1"/>
-      <ownedNode xsi:type="uml:ForkNode" name="Fork" incoming="//Class/statespace/null__to__Fork" outgoing="//Class/statespace/Fork__to__c_act8 //Class/statespace/Fork__to__c_act1"/>
+      <ownedNode xsi:type="uml:ForkNode" name="Fork" incoming="//Class/statespace/InitialNode__to__Fork" outgoing="//Class/statespace/Fork__to__c_act8 //Class/statespace/Fork__to__c_act1"/>
       <ownedNode xsi:type="uml:ForkNode" name="Fork" incoming="//Class/statespace/c_act6%2F1__to__Fork" outgoing="//Class/statespace/Fork__to__c_act5 //Class/statespace/Fork__to__c_act9"/>
       <ownedNode xsi:type="uml:JoinNode" name="Join" incoming="//Class/statespace/c_act6__to__Join //Class/statespace/c_act11__to__Join" outgoing="//Class/statespace/Join__to__c_act2"/>
-      <ownedNode xsi:type="uml:JoinNode" name="Join" incoming="//Class/statespace/c_act4__to__Join //Class/statespace/c_act13__to__Join" outgoing="//Class/statespace/Join__to__null"/>
+      <ownedNode xsi:type="uml:JoinNode" name="Join" incoming="//Class/statespace/c_act4__to__Join //Class/statespace/c_act13__to__Join" outgoing="//Class/statespace/Join__to__FinalNode"/>
     </ownedBehavior>
   </packagedElement>
 </uml:Model>
