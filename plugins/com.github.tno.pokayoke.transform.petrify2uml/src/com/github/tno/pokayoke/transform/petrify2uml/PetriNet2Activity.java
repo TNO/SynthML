@@ -20,6 +20,9 @@ public class PetriNet2Activity {
         List<String> input = FileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input, true);
         Activity activity = transform(petriNet);
+        PostProcessActivity.removeOpaqueActions("start", activity);
+        PostProcessActivity.removeOpaqueActions("end", activity);
+        PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
 

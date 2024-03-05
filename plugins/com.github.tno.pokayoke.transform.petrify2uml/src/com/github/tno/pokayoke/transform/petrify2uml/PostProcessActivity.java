@@ -9,25 +9,48 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 
+import com.google.common.base.Preconditions;
+
 public class PostProcessActivity {
     private PostProcessActivity() {
     }
 
-    public static void removeAction(String actionName, Activity activity) {
-        OpaqueAction action = (OpaqueAction)activity.getNode(actionName);
-        List<ActivityEdge> incomingEdges = action.getIncomings();
-        List<ActivityEdge> outgoingEdges = action.getOutgoings();
-        List<ActivityNode> sources = incomingEdges.stream().map(incomingEdge -> incomingEdge.getSource()).toList();
-        List<ActivityNode> targets = outgoingEdges.stream().map(outgoingEdge -> outgoingEdge.getTarget()).toList();
+    /**
+     * Remove opaque actions from activity.
+     *
+     * @param actionName The name of the opaque actions.
+     * @param activity The activity to remove the actions.
+     */
+    public static void removeOpaqueActions(String actionName, Activity activity) {
+        List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
+                .filter(node -> node.getName().equals(actionName)).toList();
+        Preconditions.checkArgument(nodes.size() != 0,
+                String.format("Expected that there exists at least one node named %s.", actionName));
 
-        // Add new control flows from each source to the targets.
-        for (ActivityNode source: sources) {
-            targets.stream().forEach(target -> PetriNet2ActivityHelper.createControlFlow(activity, source, target));
+        for (ActivityNode node: new ArrayList<>(nodes)) {
+            Preconditions.checkArgument(node instanceof OpaqueAction,
+                    String.format("Expected that node %s is an opaque action.", actionName));
+
+            List<ActivityEdge> incomingEdges = node.getIncomings();
+            Preconditions.checkArgument(incomingEdges.size() == 1,
+                    "Expected that an opaque action has exactly one incoming edge.");
+            ActivityEdge incomingEdge = incomingEdges.get(0);
+
+            List<ActivityEdge> outgoingEdges = node.getOutgoings();
+            Preconditions.checkArgument(outgoingEdges.size() == 1,
+                    "Expected that an opaque action has exactly one ougoing edge.");
+            ActivityEdge outgoingEdge = outgoingEdges.get(0);
+
+            ActivityNode source = incomingEdge.getSource();
+            ActivityNode target = outgoingEdge.getTarget();
+
+            // Add a new control flow from source to target.
+            PetriNet2ActivityHelper.createControlFlow(activity, source, target);
+
+            // Destroy the action and its incoming and outgoing edges.
+            incomingEdge.destroy();
+            outgoingEdge.destroy();
+            node.destroy();
         }
-
-        // Destroy the action and its incoming and outgoing edges.
-        new ArrayList<>(incomingEdges).stream().forEach(edge -> edge.destroy());
-        new ArrayList<>(outgoingEdges).stream().forEach(edge -> edge.destroy());
-        action.destroy();
     }
 }
