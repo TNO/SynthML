@@ -143,7 +143,7 @@ public class ChoiceActionGuardComputationHelper {
      * @param cifBddSpec The CIF specification.
      * @return A CIF expression.
      */
-    public static Expression stateAnnoToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
+    public static Expression stateAnnotationToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
         List<Expression> expressions = new ArrayList<>();
         List<CifBddVariable> bddVariables = Arrays.asList(cifBddSpec.variables);
 

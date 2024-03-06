@@ -76,7 +76,7 @@ public class ChoiceActionGuardComputation {
             // Get BDDs of these state annotations.
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
-                Expression expression = ChoiceActionGuardComputationHelper.stateAnnoToCifPred(annotation, cifBddSpec);
+                Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation, cifBddSpec);
                 BDD bdd = null;
                 try {
                     bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
