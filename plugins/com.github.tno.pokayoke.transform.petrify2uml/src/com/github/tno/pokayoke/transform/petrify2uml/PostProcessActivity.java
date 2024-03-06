@@ -18,25 +18,22 @@ public class PostProcessActivity {
     /**
      * Remove opaque actions from activity.
      *
-     * @param actionName The name of the opaque actions.
-     * @param activity The activity to remove the actions.
+     * @param actionName The name of the opaque actions to remove.
+     * @param activity The activity from which to remove the actions.
      */
     public static void removeOpaqueActions(String actionName, Activity activity) {
         List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
                 .filter(node -> node.getName().equals(actionName)).toList();
-        Preconditions.checkArgument(nodes.size() != 0,
-                String.format("Expected that there exists at least one node named %s.", actionName));
+        List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
+                .toList();
 
-        for (ActivityNode node: new ArrayList<>(nodes)) {
-            Preconditions.checkArgument(node instanceof OpaqueAction,
-                    String.format("Expected that node %s is an opaque action.", actionName));
-
-            List<ActivityEdge> incomingEdges = node.getIncomings();
+        for (OpaqueAction action: new ArrayList<>(actions)) {
+            List<ActivityEdge> incomingEdges = action.getIncomings();
             Preconditions.checkArgument(incomingEdges.size() == 1,
                     "Expected that an opaque action has exactly one incoming edge.");
             ActivityEdge incomingEdge = incomingEdges.get(0);
 
-            List<ActivityEdge> outgoingEdges = node.getOutgoings();
+            List<ActivityEdge> outgoingEdges = action.getOutgoings();
             Preconditions.checkArgument(outgoingEdges.size() == 1,
                     "Expected that an opaque action has exactly one ougoing edge.");
             ActivityEdge outgoingEdge = outgoingEdges.get(0);
@@ -50,7 +47,7 @@ public class PostProcessActivity {
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
             outgoingEdge.destroy();
-            node.destroy();
+            action.destroy();
         }
     }
 }
