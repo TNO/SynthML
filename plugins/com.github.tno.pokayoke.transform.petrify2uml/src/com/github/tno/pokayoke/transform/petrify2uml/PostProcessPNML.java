@@ -33,18 +33,21 @@ public class PostProcessPNML {
         Preconditions.checkArgument(markedPlaces.size() == 1, "Expected that there is exactly one marked place.");
         Place markedPlace = markedPlaces.get(0);
 
-        // Get the source of the incoming arc.
+        // Get the source of the incoming arc into the marked place.
         List<Arc> inArcs = markedPlace.getInArcs();
         Preconditions.checkArgument(inArcs.size() == 1,
                 "Expected that there is exactly one incoming arc for the marked place.");
         Transition sourceTransition = (Transition)inArcs.get(0).getSource();
 
         // Remove the arc between end transition and the marked place.
-        sourceTransition.getOutArcs().stream().forEach(arc -> page.getObjects().remove(arc));
+        List<Arc> outArcs = sourceTransition.getOutArcs();
+        Preconditions.checkArgument(outArcs.size() == 1, String.format(
+                "Expected that there is exactly one outgoing arc for transition %s.", sourceTransition.getName()));
+        page.getObjects().remove(outArcs.get(0));
         markedPlace.getInArcs().remove(0);
         sourceTransition.getOutArcs().remove(0);
 
-        // Add a new arc between the transition and the final place.
+        // Add a new arc between the transition and a newly created final place.
         String finalPlace = "FinalPlace";
         Petrify2PNMLTranslator.createArc(sourceTransition, Petrify2PNMLTranslator.createPlace(finalPlace, page), page);
     }
