@@ -119,11 +119,11 @@ public class FullSynthesisApp {
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
         dfaMinimizationApp.run(dfaMinimizationArgs, false);
 
-        // Translate the CIF state space to Petrify input and output the Petrify input.
+        // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
         Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
 
-        // Petrify the state space and output the generated Petri Net.
+        // Petrify the state space.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
@@ -134,15 +134,15 @@ public class FullSynthesisApp {
         PetriNet petriNetWithoutLoop = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput), true);
         PetriNetUMLFileHelper.writePetriNet(petriNetWithoutLoop, pnmlOutputPath.toString());
 
-        // Translate PNML into UML activity.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        Activity activity = PetriNet2Activity.transform(petriNetWithoutLoop);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
-
         // Get region-state mapping.
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
         PetriNet petriNetWithLoop = Petrify2PNMLTranslator.transform(petrifyOutput, false);
         Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNetWithLoop);
+
+        // Translate PNML into UML activity.
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
+        Activity activity = PetriNet2Activity.transform(petriNetWithoutLoop);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -200,20 +200,20 @@ public class FullSynthesisApp {
     private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
             String outPutFilePath, String outFolderPath)
     {
-        Specification rslt;
+        Specification result;
 
         // Construct output CIF specification.
         SynthesisToCifConverter converter = new SynthesisToCifConverter();
-        rslt = converter.convert(synthResult, spec);
+        result = converter.convert(synthResult, spec);
 
         // Write output CIF specification.
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(rslt, outPutFilePath, outFolderPath);
+            CifWriter.writeCifSpec(result, outPutFilePath, outFolderPath);
         } finally {
             AppEnv.unregisterApplication();
         }
-        return rslt;
+        return result;
     }
 
     /**
