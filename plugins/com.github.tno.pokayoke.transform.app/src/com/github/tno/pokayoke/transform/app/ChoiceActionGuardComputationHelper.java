@@ -103,7 +103,7 @@ public class ChoiceActionGuardComputationHelper {
             }
 
             Verify.verify(!place2Event.values().contains(choiceEvents),
-                    String.format("Expected that there are no duplicate choice events."));
+                    "Expected that the choice events are unique to a choice place.");
             place2Event.put(choicePlace, choiceEvents);
         }
 
