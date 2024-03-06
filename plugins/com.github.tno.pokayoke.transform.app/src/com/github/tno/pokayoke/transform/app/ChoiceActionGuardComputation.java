@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,26 +36,24 @@ public class ChoiceActionGuardComputation {
 
     private PetriNet petriNet;
 
-    private CifBddSpec cifBddSpec;
-
     private Map<Location, List<Annotation>> compositeStateMap;
 
     private Map<Place, Set<String>> regionMap;
 
-    public ChoiceActionGuardComputation(Specification cifSpec, Map<Event, BDD> actionGuards,
+    public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> actionGuards,
             CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
-        this.cifMinimizedStateSpace = cifSpec;
+        this.cifMinimizedStateSpace = cifMinimizedStateSpace;
         this.actionGuards = actionGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
-        this.cifBddSpec = cifSynthesisResult.cifBddSpec;
         this.compositeStateMap = compositeStateMap;
         this.regionMap = regionMap;
     }
 
     public Map<Place, Map<Transition, BDD>> computeChoiceGuards() {
+        CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
@@ -64,7 +63,7 @@ public class ChoiceActionGuardComputation {
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
-            Map<Transition, BDD> choiceTransitionToGuard = new HashMap<>();
+            Map<Transition, BDD> choiceTransitionToGuard = new LinkedHashMap<>();
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);

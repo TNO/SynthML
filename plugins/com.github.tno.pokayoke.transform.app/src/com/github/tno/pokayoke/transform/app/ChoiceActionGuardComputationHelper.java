@@ -11,6 +11,7 @@ import static org.eclipse.escet.common.emf.EMFHelper.deepclone;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,6 +55,12 @@ public class ChoiceActionGuardComputationHelper {
     private ChoiceActionGuardComputationHelper() {
     }
 
+    /**
+     * Collect guards of CIF events from a CIF BDD specification.
+     *
+     * @param cifBddSpec The CIF specification.
+     * @return A map from CIF events to their guards in BDDs.
+     */
     public static Map<Event, BDD> collectEventGuards(CifBddSpec cifBddSpec) {
         Map<Event, BDD> guards = new HashMap<>();
         for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
@@ -66,9 +73,16 @@ public class ChoiceActionGuardComputationHelper {
         return guards;
     }
 
+    /**
+     * Get CIF events that corresponds to the transitions from all the choice places in the Petri net.
+     *
+     * @param petriNet The Petri net.
+     * @param allEvents Events from the CIF specification corresponding to the Petri net.
+     * @return A map from choice place in Petri net to choice events in CIF specification.
+     */
     public static Map<Place, List<Event>> getChoiceEventsPerChoicePlace(PetriNet petriNet, Set<Event> allEvents) {
         List<Page> pnPages = petriNet.getPages();
-        Map<Place, List<Event>> place2Event = new HashMap<>();
+        Map<Place, List<Event>> place2Event = new LinkedHashMap<>();
         Preconditions.checkArgument(pnPages.size() == 1, "Expected the Petri Net to have exactly one Petri Net page.");
         Page pnPage = pnPages.get(0);
 
@@ -96,6 +110,13 @@ public class ChoiceActionGuardComputationHelper {
         return place2Event;
     }
 
+    /**
+     * Get locations from a CIF specification.
+     *
+     * @param spec The CIF specification that contains the locations.
+     * @param locationNames The names of the locations.
+     * @return The locations from the CIF specification.
+     */
     public static List<Location> getLocations(Specification spec, Set<String> locationNames) {
         // Obtain the automaton from the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
@@ -115,6 +136,13 @@ public class ChoiceActionGuardComputationHelper {
         return matchedLocations;
     }
 
+    /**
+     * Transforms a state annotation into a CIF expression.
+     *
+     * @param annotation The state annotation to transform.
+     * @param cifBddSpec The CIF specification.
+     * @return A CIF expression.
+     */
     public static Expression stateAnnoToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
         List<Expression> expressions = new ArrayList<>();
         List<CifBddVariable> bddVariables = Arrays.asList(cifBddSpec.variables);
@@ -191,6 +219,13 @@ public class ChoiceActionGuardComputationHelper {
         return synthesisVariableNames.contains(variableName);
     }
 
+    /**
+     * Get the transition that corresponds to a CIF event from a choice place.
+     *
+     * @param place The choice place.
+     * @param event The CIF event.
+     * @return The corresponding transition.
+     */
     public static Transition getTransition(Place place, Event event) {
         List<Transition> targetTransitions = place.getOutArcs().stream().map(arc -> arc.getTarget())
                 .map(Transition.class::cast).toList();
