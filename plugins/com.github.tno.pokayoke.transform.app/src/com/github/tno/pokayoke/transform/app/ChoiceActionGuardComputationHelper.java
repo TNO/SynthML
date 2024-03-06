@@ -121,7 +121,7 @@ public class ChoiceActionGuardComputationHelper {
         // Obtain the automaton from the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
         Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to include exactly one automaton.");
+                "Expected the CIF specification to contain exactly one automaton.");
         Automaton automaton = automata.get(0);
 
         // Collect the locations from the automaton.
@@ -147,7 +147,8 @@ public class ChoiceActionGuardComputationHelper {
         List<Expression> expressions = new ArrayList<>();
         List<CifBddVariable> bddVariables = Arrays.asList(cifBddSpec.variables);
 
-        // Extract an expression from each argument.
+        // Extract an expression from each annotation argument. These expressions are later converted into a single
+        // expression capturing the whole annotation.
         for (AnnotationArgument argument: annotation.getArguments()) {
             String variableName = argument.getName();
             Expression expression = argument.getValue();
@@ -157,7 +158,7 @@ public class ChoiceActionGuardComputationHelper {
                 List<CifBddVariable> variables = bddVariables.stream()
                         .filter(variable -> variable.rawName.equals(variableName)).toList();
                 Preconditions.checkArgument(variables.size() == 1,
-                        String.format("Expected that there is exactly one BDD variable named %s", variableName));
+                        String.format("Expected that there is exactly one BDD variable named %s.", variableName));
                 CifBddVariable variable = variables.get(0);
 
                 if (variable instanceof CifBddLocPtrVariable locVariable) {
@@ -167,7 +168,7 @@ public class ChoiceActionGuardComputationHelper {
                     List<Location> locations = locVariable.aut.getLocations().stream()
                             .filter(loc -> loc.getName().equals(locationName)).toList();
                     Preconditions.checkArgument(locations.size() == 1,
-                            String.format("Expected that there is exactly one location named %s", locationName));
+                            String.format("Expected that there is exactly one location named %s.", locationName));
                     Location location = locations.get(0);
                     locationExpression.setLocation(location);
                     expressions.add(locationExpression);
