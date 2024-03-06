@@ -67,11 +67,11 @@ public class ChoiceActionGuardComputation {
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
-            List<Location> locs = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace,
+            List<Location> locations = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace,
                     choiceLocations);
 
             // Get state annotations of these locations.
-            List<Annotation> annotations = locs.stream().flatMap(loc -> compositeStateMap.get(loc).stream()).toList();
+            List<Annotation> annotations = locations.stream().flatMap(location -> compositeStateMap.get(location).stream()).toList();
 
             // Get BDDs of these state annotations.
             List<BDD> bdds = new ArrayList<>();
