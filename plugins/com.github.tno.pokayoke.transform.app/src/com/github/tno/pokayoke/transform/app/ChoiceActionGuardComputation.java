@@ -20,7 +20,6 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 
 import com.github.javabdd.BDD;
-import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -71,44 +70,35 @@ public class ChoiceActionGuardComputation {
                     choiceLocations);
 
             // Get state annotations of these locations.
-            List<Annotation> annotations = locations.stream().flatMap(location -> compositeStateMap.get(location).stream()).toList();
+            List<Annotation> annotations = locations.stream()
+                    .flatMap(location -> compositeStateMap.get(location).stream()).toList();
 
             // Get BDDs of these state annotations.
             List<BDD> bdds = new ArrayList<>();
             for (Annotation annotation: annotations) {
-                Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation, cifBddSpec);
-                BDD bdd = null;
+                Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation,
+                        cifBddSpec);
                 try {
-                    bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
+                    BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
+                    bdds.add(bdd);
                 } catch (UnsupportedPredicateException e) {
                     throw new RuntimeException("Exception when converting CIF expression into BDD.", e);
                 }
-                bdds.add(bdd);
             }
 
             // Get disjunction of these BDDs.
-            BDD disjunction = bdds.get(0);
-            for (int i = 1; i < bdds.size(); i++) {
-                disjunction = disjunction.orWith(bdds.get(i));
-            }
+            BDD disjunction = bdds.stream().reduce((left, right) -> left.orWith(right)).get();
 
             // Perform simplification for each event of the choice.
             for (Event choiceEvent: choiceEvents) {
                 // Get guard of the choice event from the CIF specification.
-                List<BDD> eventSpecGuards = actionGuards.entrySet().stream().filter(x -> x.getKey().equals(choiceEvent))
-                        .map(x -> x.getValue()).toList();
-                Preconditions.checkArgument(eventSpecGuards.size() == 1, String
-                        .format("Expected that there is exactly one specificaion guard for event %s", choiceEvent));
+                BDD eventSpecGuard = actionGuards.get(choiceEvent);
 
                 // Get guard of the choice event from the synthesis result.
-                List<BDD> eventSynthesisGuards = cifSynthesisResult.outputGuards.entrySet().stream()
-                        .filter(x -> x.getKey().equals(choiceEvent)).map(x -> x.getValue()).toList();
-                Preconditions.checkArgument(eventSynthesisGuards.size() == 1,
-                        String.format("Expected that there is exactly one synthesis guard for event %s", choiceEvent));
+                BDD eventSynthesisGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
 
                 // Perform simplification.
-                BDD simplicationResult = eventSynthesisGuards.get(0).simplify(eventSpecGuards.get(0))
-                        .simplify(disjunction);
+                BDD simplicationResult = eventSynthesisGuard.simplify(eventSpecGuard).simplify(disjunction);
 
                 choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getTransition(choicePlace, choiceEvent),
                         simplicationResult);
