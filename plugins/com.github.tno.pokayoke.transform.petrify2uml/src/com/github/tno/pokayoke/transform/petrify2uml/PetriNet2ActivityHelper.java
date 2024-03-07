@@ -141,7 +141,7 @@ public class PetriNet2ActivityHelper {
         return edge;
     }
 
-    private static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
+    public static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
         return createControlFlow(concatenateNamesOfNodes(source, target), activity, source, target);
     }
 
