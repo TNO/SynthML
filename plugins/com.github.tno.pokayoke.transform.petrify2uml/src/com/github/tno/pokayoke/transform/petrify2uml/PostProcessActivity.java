@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.uml2.uml.Activity;
@@ -27,7 +26,7 @@ public class PostProcessActivity {
         List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
                 .toList();
 
-        for (OpaqueAction action: new ArrayList<>(actions)) {
+        for (OpaqueAction action: actions) {
             List<ActivityEdge> incomingEdges = action.getIncomings();
             Preconditions.checkArgument(incomingEdges.size() == 1,
                     "Expected that an opaque action has exactly one incoming edge.");
