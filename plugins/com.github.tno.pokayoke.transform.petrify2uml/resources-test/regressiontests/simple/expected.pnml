@@ -207,13 +207,6 @@
   <text>1</text>
 </initialMarking>
 </place>
-<place id="FinalPlace">
-<name>
-  <text>FinalPlace</text>
-</name>
-</place>
-<arc id="end__to__FinalPlace" source="end" target="FinalPlace">
-</arc>
 <transition id="u_act10/1">
 <name>
   <text>u_act10</text>
@@ -286,6 +279,13 @@
 <arc id="p18__to__c_satisfied" source="p18" target="c_satisfied">
 </arc>
 <arc id="p19__to__c_act4" source="p19" target="c_act4">
+</arc>
+<place id="FinalPlace">
+<name>
+  <text>FinalPlace</text>
+</name>
+</place>
+<arc id="end__to__FinalPlace" source="end" target="FinalPlace">
 </arc>
 </page>
 </net>
