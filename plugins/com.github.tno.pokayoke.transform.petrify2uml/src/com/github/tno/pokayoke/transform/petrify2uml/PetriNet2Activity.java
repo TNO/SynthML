@@ -17,14 +17,14 @@ public class PetriNet2Activity {
     }
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
         PostProcessActivity.removeOpaqueActions("start", activity);
         PostProcessActivity.removeOpaqueActions("end", activity);
         PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
-        FileHelper.storeModel(activity.getModel(), outputPath);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), outputPath);
     }
 
     public static Activity transform(PetriNet petriNet) {

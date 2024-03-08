@@ -33,7 +33,7 @@ public class Cif2Petrify {
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Specification specification = FileHelper.loadCifSpec(Paths.get(sourcePath));
+        Specification specification = CifFileHelper.loadCifSpec(Paths.get(sourcePath));
         String body = Cif2Petrify.transform(specification);
         Files.writeString(Paths.get(targetPath), body);
     }
