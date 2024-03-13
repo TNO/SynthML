@@ -99,7 +99,7 @@ public class ChoiceActionGuardComputation {
                 // Perform simplification.
                 BDD simplicationResult = controlledSystemGuard.simplify(uncontrolledSystemGuard).simplify(disjunctionOfChoiceStatePreds);
 
-                choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getTransition(choicePlace, choiceEvent),
+                choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
                         simplicationResult);
             }
             choicePlaceToChoiceTransitionToGuard.put(choicePlace, choiceTransitionToGuard);

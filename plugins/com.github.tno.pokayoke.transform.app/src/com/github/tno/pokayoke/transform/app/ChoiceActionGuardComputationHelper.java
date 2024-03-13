@@ -154,7 +154,9 @@ public class ChoiceActionGuardComputationHelper {
             String variableName = argument.getName();
             Expression expression = argument.getValue();
 
-            // Extract the expression from the argument that contains synthesis variable.
+            // Get from the annotation argument an expression representing the value of the synthesis variable. Skip
+            // annotation arguments that do not correspond to synthesis variables, such as for automata with only one
+            // location.
             if (isSynthesisVariable(variableName, bddVariables)) {
                 List<CifBddVariable> variables = bddVariables.stream()
                         .filter(variable -> variable.rawName.equals(variableName)).toList();
@@ -188,7 +190,7 @@ public class ChoiceActionGuardComputationHelper {
                     if (variableType instanceof EnumType enumType) {
                         String variableValue = ((StringExpression)expression).getValue();
                         List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals().stream()
-                                .filter(literal -> CifTextUtils.getAbsName(literal, false).equals(variableValue))
+                                .filter(literal -> literal.getName().equals(variableValue))
                                 .toList();
                         Preconditions.checkArgument(enumLiterals.size() == 1, String.format(
                                 "Expected that there is exactly one enummeration literal named %s.", variableValue));
@@ -228,7 +230,7 @@ public class ChoiceActionGuardComputationHelper {
      * @param event The CIF event.
      * @return The corresponding transition.
      */
-    public static Transition getTransition(Place place, Event event) {
+    public static Transition getChoiceTransition(Place place, Event event) {
         List<Transition> targetTransitions = place.getOutArcs().stream().map(arc -> arc.getTarget())
                 .map(Transition.class::cast).toList();
         List<Transition> transitions = targetTransitions.stream()
