@@ -39,6 +39,7 @@ import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
@@ -163,7 +164,7 @@ public class FullSynthesisApp {
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
                 uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
-        Map<Transition, BDD> guardComputationResult = guardComputation.computeChoiceGuards();
+        Map<Transition, Expression> guardComputationResult = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.entrySet().stream().forEach(e -> e.getValue().free());
     }
 

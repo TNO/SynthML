@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -50,14 +51,14 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public Map<Transition, BDD> computeChoiceGuards() {
+    public Map<Transition, Expression> computeChoiceGuards() {
         CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
         // Compute guards for each choice place.
-        Map<Transition, BDD> choiceTransitionToGuard = new LinkedHashMap<>();
+        Map<Transition, Expression> choiceTransitionToGuard = new LinkedHashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
@@ -101,9 +102,11 @@ public class ChoiceActionGuardComputation {
                 BDD simplicationResult2 = simplificationResult1.simplify(disjunctionOfChoiceStatePreds);
                 simplificationResult1.free();
 
+                Expression expression = BddToCif.bddToCifPred(simplicationResult2, cifBddSpec);
+                simplicationResult2.free();
+
                 choiceTransitionToGuard.put(
-                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
-                        simplicationResult2);
+                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent), expression);
             }
             disjunctionOfChoiceStatePreds.free();
         }
