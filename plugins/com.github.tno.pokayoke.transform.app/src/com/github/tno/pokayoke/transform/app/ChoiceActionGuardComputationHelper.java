@@ -56,17 +56,17 @@ public class ChoiceActionGuardComputationHelper {
     }
 
     /**
-     * Collect guards of CIF events from a CIF BDD specification.
+     * Collect uncontrolled system guards from a CIF/BDD specification.
      *
-     * @param cifBddSpec The CIF specification.
+     * @param cifBddSpec The CIF/BDD specification.
      * @return A map from CIF events to their guards in BDDs.
      */
-    public static Map<Event, BDD> collectEventGuards(CifBddSpec cifBddSpec) {
+    public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec) {
         Map<Event, BDD> guards = new HashMap<>();
         for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
             List<CifBddEdge> cifBDDEdges = entry.getValue();
             Preconditions.checkArgument(cifBDDEdges.size() == 1,
-                    "Expected that each event has exactly one CIF BDD edge.");
+                    "Expected that each event has exactly one CIF/BDD edge.");
             BDD bdd = cifBDDEdges.get(0).guard.id();
             guards.put(entry.getKey(), bdd);
         }
