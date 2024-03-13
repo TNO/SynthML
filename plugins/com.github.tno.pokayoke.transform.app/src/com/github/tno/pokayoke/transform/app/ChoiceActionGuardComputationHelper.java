@@ -44,7 +44,6 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -99,11 +98,13 @@ public class ChoiceActionGuardComputationHelper {
                 List<Event> events = allEvents.stream().filter(event -> event.getName().equals(eventName)).toList();
                 Preconditions.checkArgument(events.size() == 1,
                         String.format("Expected that there is exactly one event named %s.", eventName));
-                choiceEvents.add(events.get(0));
+                Event event = events.get(0);
+                Preconditions.checkArgument(!choiceEvents.contains(event), String.format(
+                        "There is a duplicate of choice event %s. Expected to have no duplicates as choices should be deterministic.",
+                        eventName));
+                choiceEvents.add(event);
             }
 
-            Verify.verify(!place2Event.values().contains(choiceEvents),
-                    "Expected that the choice events are unique to a choice place.");
             place2Event.put(choicePlace, choiceEvents);
         }
 
