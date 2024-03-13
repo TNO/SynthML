@@ -143,7 +143,8 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        Activity activity = PetriNet2Activity.transform(petriNetWithoutLoop);
+        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        Activity activity = petriNet2Activity.transform(petriNetWithoutLoop);
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Obtain the composite state mapping.

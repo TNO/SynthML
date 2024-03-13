@@ -3,20 +3,25 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Transforms Petri Net to Activity. */
 public class PetriNet2Activity {
-    private PetriNet2Activity() {
+    private Map<Transition, OpaqueAction> transition2Action;
+
+    public PetriNet2Activity() {
     }
 
-    public static void transformFile(String inputPath, String outputPath) throws IOException {
+    public void transformFile(String inputPath, String outputPath) throws IOException {
         List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
@@ -27,7 +32,7 @@ public class PetriNet2Activity {
         PetriNetUMLFileHelper.storeModel(activity.getModel(), outputPath);
     }
 
-    public static Activity transform(PetriNet petriNet) {
+    public Activity transform(PetriNet petriNet) {
         // According to PNML documents, each Petri Net needs to contain at least one page. Users can add multiple pages
         // to structure their Petri Net in various ways. In our transformation, we add only one page that is mandatory.
         // See more info in : https://dev.lip6.fr/trac/research/ISOIEC15909/wiki/English/User/Structure.
@@ -38,7 +43,7 @@ public class PetriNet2Activity {
         PetriNet2ActivityHelper petriNet2ActivityHelper = new PetriNet2ActivityHelper();
         Activity activity = petriNet2ActivityHelper.initializeUMLActivity(page);
 
-        petriNet2ActivityHelper.transformTransitions(page, activity);
+        transition2Action = petriNet2ActivityHelper.transformTransitions(page, activity);
         petriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
         petriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
         petriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
@@ -46,5 +51,9 @@ public class PetriNet2Activity {
         petriNet2ActivityHelper.renameDuplicateActions();
 
         return activity;
+    }
+
+    public Map<Transition, OpaqueAction> getTransitionActionMap() {
+        return transition2Action;
     }
 }
