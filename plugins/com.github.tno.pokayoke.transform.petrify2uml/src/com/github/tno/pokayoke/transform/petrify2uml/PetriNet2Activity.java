@@ -20,9 +20,17 @@ public class PetriNet2Activity {
         List<String> input = FileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input, true);
         Activity activity = transform(petriNet);
-        PostProcessActivity.removeOpaqueActions("start", activity);
-        PostProcessActivity.removeOpaqueActions("end", activity);
-        PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
+
+        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'start' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'end' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'c_satisfied' action removed.");
+
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
 
