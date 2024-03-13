@@ -97,13 +97,15 @@ public class ChoiceActionGuardComputation {
                 BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
 
                 // Perform simplification.
-                BDD simplicationResult = controlledSystemGuard.simplify(uncontrolledSystemGuard)
-                        .simplify(disjunctionOfChoiceStatePreds);
+                BDD simplificationResult1 = controlledSystemGuard.simplify(uncontrolledSystemGuard);
+                BDD simplicationResult2 = simplificationResult1.simplify(disjunctionOfChoiceStatePreds);
+                simplificationResult1.free();
 
                 choiceTransitionToGuard.put(
                         ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
-                        simplicationResult);
+                        simplicationResult2);
             }
+            disjunctionOfChoiceStatePreds.free();
         }
 
         return choiceTransitionToGuard;

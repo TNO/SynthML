@@ -22,7 +22,6 @@ import org.eclipse.escet.cif.bdd.spec.CifBddLocPtrVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifCollectUtils;
-import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
@@ -190,8 +189,7 @@ public class ChoiceActionGuardComputationHelper {
                     if (variableType instanceof EnumType enumType) {
                         String variableValue = ((StringExpression)expression).getValue();
                         List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals().stream()
-                                .filter(literal -> literal.getName().equals(variableValue))
-                                .toList();
+                                .filter(literal -> literal.getName().equals(variableValue)).toList();
                         Preconditions.checkArgument(enumLiterals.size() == 1, String.format(
                                 "Expected that there is exactly one enummeration literal named %s.", variableValue));
 
