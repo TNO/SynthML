@@ -73,15 +73,16 @@ public class ChoiceActionGuardComputationHelper {
     }
 
     /**
-     * Get CIF events that corresponds to the transitions from all the choice places in the Petri net.
+     * Get CIF events that correspond to the transitions from all the choice places in the Petri net.
      *
      * @param petriNet The Petri net.
      * @param allEvents Events from the CIF specification corresponding to the Petri net.
-     * @return A map from choice place in Petri net to choice events in CIF specification.
+     * @return Per choice place in the Petri net, the CIF events corresponding to the choices (outgoing transitions from
+     *     the choice place).
      */
     public static Map<Place, List<Event>> getChoiceEventsPerChoicePlace(PetriNet petriNet, Set<Event> allEvents) {
         List<Page> pnPages = petriNet.getPages();
-        Map<Place, List<Event>> place2Event = new LinkedHashMap<>();
+        Map<Place, List<Event>> placeToEvent = new LinkedHashMap<>();
         Preconditions.checkArgument(pnPages.size() == 1, "Expected the Petri Net to have exactly one Petri Net page.");
         Page pnPage = pnPages.get(0);
 
@@ -105,10 +106,10 @@ public class ChoiceActionGuardComputationHelper {
                 choiceEvents.add(event);
             }
 
-            place2Event.put(choicePlace, choiceEvents);
+            placeToEvent.put(choicePlace, choiceEvents);
         }
 
-        return place2Event;
+        return placeToEvent;
     }
 
     /**
@@ -141,7 +142,7 @@ public class ChoiceActionGuardComputationHelper {
      * Transforms a state annotation into a CIF expression.
      *
      * @param annotation The state annotation to transform.
-     * @param cifBddSpec The CIF specification.
+     * @param cifBddSpec The CIF/BDD specification.
      * @return A CIF expression.
      */
     public static Expression stateAnnotationToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
@@ -234,7 +235,7 @@ public class ChoiceActionGuardComputationHelper {
         List<Transition> transitions = targetTransitions.stream()
                 .filter(transition -> transition.getName().getText().equals(event.getName())).toList();
         Preconditions.checkArgument(transitions.size() == 1,
-                String.format("Expected that there is exactly one transition named %s from the choice %s.",
+                String.format("Expected that there is exactly one transition named %s from choice place %s.",
                         event.getName(), place.getName()));
 
         return transitions.get(0);
