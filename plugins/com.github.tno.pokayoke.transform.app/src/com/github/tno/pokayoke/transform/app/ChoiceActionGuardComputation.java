@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class ChoiceActionGuardComputation {
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
         // Compute guards for each choice place.
-        Map<Place, Map<Transition, BDD>> choicePlaceToChoiceTransitionToGuard = new HashMap<>();
+        Map<Place, Map<Transition, BDD>> choicePlaceToChoiceTransitionToGuard = new LinkedHashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();

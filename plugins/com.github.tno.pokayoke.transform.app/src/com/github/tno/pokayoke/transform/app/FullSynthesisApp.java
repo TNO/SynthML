@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -284,7 +284,7 @@ public class FullSynthesisApp {
     }
 
     private static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
-        Map<Location, List<Annotation>> locationAnnotationMap = new HashMap<>();
+        Map<Location, List<Annotation>> locationAnnotationMap = new LinkedHashMap<>();
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
@@ -304,7 +304,7 @@ public class FullSynthesisApp {
     private static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
             Map<Location, List<Annotation>> map2)
     {
-        Map<Location, List<Annotation>> compositeMap = new HashMap<>();
+        Map<Location, List<Annotation>> compositeMap = new LinkedHashMap<>();
 
         for (var entry: map1.entrySet()) {
             Location location = entry.getKey();

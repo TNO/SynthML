@@ -10,7 +10,6 @@ import static org.eclipse.escet.common.emf.EMFHelper.deepclone;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class ChoiceActionGuardComputationHelper {
      * @return A map from CIF events to their guards in BDDs.
      */
     public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec) {
-        Map<Event, BDD> guards = new HashMap<>();
+        Map<Event, BDD> guards = new LinkedHashMap<>();
         for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
             List<CifBddEdge> cifBDDEdges = entry.getValue();
             Preconditions.checkArgument(cifBDDEdges.size() == 1,
