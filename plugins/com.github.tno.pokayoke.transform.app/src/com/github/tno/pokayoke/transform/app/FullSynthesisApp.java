@@ -78,7 +78,8 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper.collectUncontrolledSystemGuards(cifBddSpec);
+        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
+                .collectUncontrolledSystemGuards(cifBddSpec);
 
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
@@ -162,7 +163,7 @@ public class FullSynthesisApp {
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
                 uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
-        Map<Place, Map<Transition, BDD>> guardComputationResult = guardComputation.computeChoiceGuards();
+        Map<Transition, BDD> guardComputationResult = guardComputation.computeChoiceGuards();
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {

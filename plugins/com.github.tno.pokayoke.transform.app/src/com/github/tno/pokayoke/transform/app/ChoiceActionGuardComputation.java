@@ -50,18 +50,17 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public Map<Place, Map<Transition, BDD>> computeChoiceGuards() {
+    public Map<Transition, BDD> computeChoiceGuards() {
         CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
         // Compute guards for each choice place.
-        Map<Place, Map<Transition, BDD>> choicePlaceToChoiceTransitionToGuard = new LinkedHashMap<>();
+        Map<Transition, BDD> choiceTransitionToGuard = new LinkedHashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
-            Map<Transition, BDD> choiceTransitionToGuard = new LinkedHashMap<>();
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
@@ -86,7 +85,8 @@ public class ChoiceActionGuardComputation {
             }
 
             // Get disjunction of these BDDs.
-            BDD disjunctionOfChoiceStatePreds = choiceStatePreds.stream().reduce((left, right) -> left.orWith(right)).get();
+            BDD disjunctionOfChoiceStatePreds = choiceStatePreds.stream().reduce((left, right) -> left.orWith(right))
+                    .get();
 
             // Perform simplification to obtain choice guards.
             for (Event choiceEvent: choiceEvents) {
@@ -97,14 +97,15 @@ public class ChoiceActionGuardComputation {
                 BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
 
                 // Perform simplification.
-                BDD simplicationResult = controlledSystemGuard.simplify(uncontrolledSystemGuard).simplify(disjunctionOfChoiceStatePreds);
+                BDD simplicationResult = controlledSystemGuard.simplify(uncontrolledSystemGuard)
+                        .simplify(disjunctionOfChoiceStatePreds);
 
-                choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
+                choiceTransitionToGuard.put(
+                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
                         simplicationResult);
             }
-            choicePlaceToChoiceTransitionToGuard.put(choicePlace, choiceTransitionToGuard);
         }
 
-        return choicePlaceToChoiceTransitionToGuard;
+        return choiceTransitionToGuard;
     }
 }
