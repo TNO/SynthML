@@ -16,7 +16,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.uml.profile.util.GuardsEffectsUtil;
+import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
 
 /**
  * 
@@ -49,7 +49,7 @@ public class ApplyPokaYokeUmlProfile {
     		return;
     	}
     	Iterator<String> bodiesIterator = action.getBodies().iterator();
-    	GuardsEffectsUtil.setGuard(action, bodiesIterator.next());
+    	GuardEffectsUtil.setGuard(action, bodiesIterator.next());
     	if (!bodiesIterator.hasNext()) {
     		return;
     	}
@@ -57,6 +57,6 @@ public class ApplyPokaYokeUmlProfile {
     	while (bodiesIterator.hasNext()) {
     		effects.append(",\n").append(bodiesIterator.next());
     	}
-    	GuardsEffectsUtil.setEffects(action, effects.toString());
+    	GuardEffectsUtil.setEffects(action, effects.toString());
     }
 }

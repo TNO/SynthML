@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Ecore="http://www.eclipse.org/uml2/schemas/Ecore/5" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http://www.eclipse.org/uml2/schemas/Ecore/5 pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA">
-  <uml:Profile xmi:id="_SOCIsMDxEe6C9dKnjVMyDQ" name="PokaYoke" URI="https://github.com/TNO/PokaYoke/0.0.1/" metaclassReference="_y5TFAMDxEe6C9dKnjVMyDQ">
-    <eAnnotations xmi:id="_TB48AM_uEe6QioSmOybrPw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <contents xmi:type="ecore:EPackage" xmi:id="_TB48Ac_uEe6QioSmOybrPw" name="PokaYoke" nsURI="https://github.com/TNO/PokaYoke/0.0.1" nsPrefix="PokaYoke">
-        <eAnnotations xmi:id="_TB48Cs_uEe6QioSmOybrPw" source="UMLDesignerProfileVersion">
-          <details xmi:id="_TB48C8_uEe6QioSmOybrPw" key="Version" value="0.0.1"/>
-          <details xmi:id="_TB48DM_uEe6QioSmOybrPw" key="Date" value="2024-02-20"/>
-          <details xmi:id="_TB48Dc_uEe6QioSmOybrPw" key="Author" value="Yuri Blankenstein"/>
-          <details xmi:id="_TB48Ds_uEe6QioSmOybrPw" key="Copyright" value="TNO"/>
-          <details xmi:id="_TB48D8_uEe6QioSmOybrPw" key="Comment" value="UML profile for Poka Yoke modeling"/>
+  <uml:Profile xmi:id="_SOCIsMDxEe6C9dKnjVMyDQ" name="PokaYoke" URI="https://github.com/TNO/PokaYoke/0.0.1/" metaclassReference="_y5TFAMDxEe6C9dKnjVMyDQ _2Y7RgOFGEe6znIBCkYA9vw">
+    <eAnnotations xmi:id="_pqk5EOIWEe6P24QUHJVajQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <contents xmi:type="ecore:EPackage" xmi:id="_pqk5EeIWEe6P24QUHJVajQ" name="PokaYoke" nsURI="https://github.com/TNO/PokaYoke/0.0.1" nsPrefix="PokaYoke">
+        <eAnnotations xmi:id="_pqlgKeIWEe6P24QUHJVajQ" source="UMLDesignerProfileVersion">
+          <details xmi:id="_pqlgKuIWEe6P24QUHJVajQ" key="Version" value="0.0.2"/>
+          <details xmi:id="_pqlgK-IWEe6P24QUHJVajQ" key="Date" value="2024-03-14"/>
+          <details xmi:id="_pqlgLOIWEe6P24QUHJVajQ" key="Author" value="Yuri Blankenstein"/>
+          <details xmi:id="_pqlgLeIWEe6P24QUHJVajQ" key="Copyright" value="TNO"/>
+          <details xmi:id="_pqlgLuIWEe6P24QUHJVajQ" key="Comment" value="UML profile for Poka Yoke modeling"/>
         </eAnnotations>
-        <eClassifiers xmi:type="ecore:EClass" xmi:id="_TB48As_uEe6QioSmOybrPw" name="GuardEffectsAction">
-          <eAnnotations xmi:id="_TB48A8_uEe6QioSmOybrPw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_-PN0YMDxEe6C9dKnjVMyDQ"/>
-          <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_TB48BM_uEe6QioSmOybrPw" name="base_OpaqueAction" ordered="false" lowerBound="1">
+        <eClassifiers xmi:type="ecore:EClass" xmi:id="_pqk5EuIWEe6P24QUHJVajQ" name="GuardEffectsAction">
+          <eAnnotations xmi:id="_pqlgIOIWEe6P24QUHJVajQ" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_-PN0YMDxEe6C9dKnjVMyDQ"/>
+          <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_pqlgIeIWEe6P24QUHJVajQ" name="base_OpaqueAction" ordered="false" lowerBound="1">
             <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//OpaqueAction"/>
           </eStructuralFeatures>
-          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_TB48Bs_uEe6QioSmOybrPw" name="guard" ordered="false">
+          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_pqlgI-IWEe6P24QUHJVajQ" name="guard" ordered="false">
             <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
           </eStructuralFeatures>
-          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_TB48CM_uEe6QioSmOybrPw" name="effects" ordered="false" unique="false">
+          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_pqlgJeIWEe6P24QUHJVajQ" name="effects" ordered="false" unique="false">
             <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+          </eStructuralFeatures>
+          <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_pqlgJ-IWEe6P24QUHJVajQ" name="base_CallBehaviorAction" ordered="false" lowerBound="1">
+            <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallBehaviorAction"/>
           </eStructuralFeatures>
         </eClassifiers>
       </contents>
     </eAnnotations>
     <elementImport xmi:id="_y5TFAMDxEe6C9dKnjVMyDQ">
       <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#OpaqueAction"/>
+    </elementImport>
+    <elementImport xmi:id="_2Y7RgOFGEe6znIBCkYA9vw">
+      <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#CallBehaviorAction"/>
     </elementImport>
     <packagedElement xmi:type="uml:Stereotype" xmi:id="_-PN0YMDxEe6C9dKnjVMyDQ" name="GuardEffectsAction">
       <ownedAttribute xmi:id="_HqgqIMDyEe6C9dKnjVMyDQ" name="base_OpaqueAction" association="_HqhRMMDyEe6C9dKnjVMyDQ">
@@ -41,16 +47,22 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_d-55QMDyEe6C9dKnjVMyDQ"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_d-55QcDyEe6C9dKnjVMyDQ" value="1"/>
       </ownedAttribute>
+      <ownedAttribute xmi:id="_3ru9MOFGEe6znIBCkYA9vw" name="base_CallBehaviorAction" association="_3rvkQOFGEe6znIBCkYA9vw">
+        <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#CallBehaviorAction"/>
+      </ownedAttribute>
     </packagedElement>
     <packagedElement xmi:type="uml:Extension" xmi:id="_HqhRMMDyEe6C9dKnjVMyDQ" memberEnd="_HqhRMcDyEe6C9dKnjVMyDQ _HqgqIMDyEe6C9dKnjVMyDQ">
       <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_HqhRMcDyEe6C9dKnjVMyDQ" name="extension_GuardUpdateAction" type="_-PN0YMDxEe6C9dKnjVMyDQ" association="_HqhRMMDyEe6C9dKnjVMyDQ"/>
     </packagedElement>
-    <profileApplication xmi:id="_TMTcQM_uEe6QioSmOybrPw">
-      <eAnnotations xmi:id="_TMWfkM_uEe6QioSmOybrPw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <packagedElement xmi:type="uml:Extension" xmi:id="_3rvkQOFGEe6znIBCkYA9vw" memberEnd="_3rvkQeFGEe6znIBCkYA9vw _3ru9MOFGEe6znIBCkYA9vw">
+      <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_3rvkQeFGEe6znIBCkYA9vw" name="extension_GuardEffectsAction" type="_-PN0YMDxEe6C9dKnjVMyDQ" association="_3rvkQOFGEe6znIBCkYA9vw"/>
+    </packagedElement>
+    <profileApplication xmi:id="_p5e3wOIWEe6P24QUHJVajQ">
+      <eAnnotations xmi:id="_p5jJMOIWEe6P24QUHJVajQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILES/Ecore.profile.uml#_z1OFcHjqEdy8S4Cr8Rc_NA"/>
       </eAnnotations>
       <appliedProfile href="pathmap://UML_PROFILES/Ecore.profile.uml#_0"/>
     </profileApplication>
   </uml:Profile>
-  <Ecore:EPackage xmi:id="_TM88gM_uEe6QioSmOybrPw" base_Package="_SOCIsMDxEe6C9dKnjVMyDQ" packageName="PokaYoke" nsPrefix="PokaYoke" nsURI="https://github.com/TNO/PokaYoke/0.0.1/" prefix="PokaYoke"/>
+  <Ecore:EPackage xmi:id="_p6N3kOIWEe6P24QUHJVajQ" base_Package="_SOCIsMDxEe6C9dKnjVMyDQ" packageName="PokaYoke" nsPrefix="PokaYoke" nsURI="https://github.com/TNO/PokaYoke/0.0.1/" prefix="PokaYoke"/>
 </xmi:XMI>

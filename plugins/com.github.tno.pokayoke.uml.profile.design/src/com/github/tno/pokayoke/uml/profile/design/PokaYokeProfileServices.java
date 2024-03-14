@@ -1,27 +1,48 @@
 package com.github.tno.pokayoke.uml.profile.design;
 
+import static com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil.QN_GUARD_EFFECTS_ACTION;
+
 import java.util.List;
 
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.setext.runtime.exceptions.ParseException;
-import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.Action;
 
 import com.github.tno.pokayoke.transform.uml.CifToPythonTranslator;
 import com.github.tno.pokayoke.transform.uml.ModelTyping;
-import com.github.tno.pokayoke.uml.profile.util.GuardsEffectsUtil;
+import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
 
 /**
  * The services class used by VSM.
  */
 public class PokaYokeProfileServices {
-	public boolean isValidGuard(OpaqueAction action) {
+	public static boolean isGuardEffectsAction(Action action) {
+		return GuardEffectsUtil.getAppliedStereotype(action, QN_GUARD_EFFECTS_ACTION).isPresent();
+	}
+	
+	public static String getGuard(Action action) {
+		return GuardEffectsUtil.getGuard(action);
+	}
+
+	public static void setGuard(Action action, String newValue) {
+		if (newValue == null || newValue.isEmpty()) {
+			String effects = getEffects(action);
+			if (effects == null || effects.isEmpty()) {
+				GuardEffectsUtil.unapplyStereotype(action, QN_GUARD_EFFECTS_ACTION);
+				return;
+			}
+		}
+		GuardEffectsUtil.setGuard(action, newValue);
+	}
+
+	public boolean isValidGuard(Action action) {
 		return getValidGuardErrorMessage(action) == null;
 	}
 
-	public String getValidGuardErrorMessage(OpaqueAction action) {
+	public String getValidGuardErrorMessage(Action action) {
 		try {
-			AExpression guardExpr = GuardsEffectsUtil.getGuardExpression(action);
+			AExpression guardExpr = GuardEffectsUtil.getGuardExpression(action);
 			if (guardExpr == null) {
 				// Not stereotyped or guard not set, skip validation
 				return null;
@@ -29,20 +50,35 @@ public class PokaYokeProfileServices {
 			CifToPythonTranslator cifToPythonTranslator = new CifToPythonTranslator(new ModelTyping(action.getModel()));
 			cifToPythonTranslator.translateExpression(guardExpr);
 		} catch (ParseException pe) {
-			return "Parsing of \"" + GuardsEffectsUtil.getGuard(action) + "\" failed: " + pe.getLocalizedMessage();
+			return "Parsing of \"" + GuardEffectsUtil.getGuard(action) + "\" failed: " + pe.getLocalizedMessage();
 		} catch (RuntimeException re) {
 			return re.getLocalizedMessage();
 		}
 		return null;
 	}
 	
-	public boolean isValidEffects(OpaqueAction action) {
+	public static String getEffects(Action action) {
+		return GuardEffectsUtil.getEffects(action);
+	}
+
+	public static void setEffects(Action action, String newValue) {
+		if (newValue == null || newValue.isEmpty()) {
+			String guard = getGuard(action);
+			if (guard == null || guard.isEmpty()) {
+				GuardEffectsUtil.unapplyStereotype(action, QN_GUARD_EFFECTS_ACTION);
+				return;
+			}
+		}
+		GuardEffectsUtil.setEffects(action, newValue);
+	}
+
+	public boolean isValidEffects(Action action) {
 		return getValidEffectsErrorMessage(action) == null;
 	}
 
-	public String getValidEffectsErrorMessage(OpaqueAction action) {
+	public String getValidEffectsErrorMessage(Action action) {
 		try {
-			List<AUpdate> effectsUpdates = GuardsEffectsUtil.getEffectsUpdates(action);
+			List<AUpdate> effectsUpdates = GuardEffectsUtil.getEffectsUpdates(action);
 			if (effectsUpdates == null) {
 				// Not stereotyped or effects not set, skip validation
 				return null;
@@ -52,7 +88,7 @@ public class PokaYokeProfileServices {
 				cifToPythonTranslator.translateUpdate(effectsUpdate);
 			}
 		} catch (ParseException pe) {
-			return "Parsing of \"" + GuardsEffectsUtil.getEffects(action) + "\" failed: " + pe.getLocalizedMessage();
+			return "Parsing of \"" + GuardEffectsUtil.getEffects(action) + "\" failed: " + pe.getLocalizedMessage();
 		} catch (RuntimeException re) {
 			return re.getLocalizedMessage();
 		}

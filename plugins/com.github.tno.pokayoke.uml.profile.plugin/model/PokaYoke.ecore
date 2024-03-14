@@ -8,5 +8,7 @@
         eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="effects" ordered="false"
         unique="false" eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="base_CallBehaviorAction"
+        ordered="false" lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//CallBehaviorAction"/>
   </eClassifiers>
 </ecore:EPackage>

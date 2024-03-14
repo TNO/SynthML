@@ -207,7 +207,7 @@
     <repository
         url="https://nodeclipse.github.io/updates/markdown/"/>
     <repository
-        url="https://tno.github.io/UML-Designer/9.0.0-2023-03/repository/"/>
+        url="https://tno.github.io/UML-Designer/9.0.1-2023-03/repository/"/>
     <description>
       Install the tools needed in the IDE to work with the source
       code for ${scope.project.label}.

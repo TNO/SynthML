@@ -94,13 +94,22 @@ public interface PokaYokePackage extends EPackage {
 	int GUARD_EFFECTS_ACTION__EFFECTS = 2;
 
 	/**
+	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION = 3;
+
+	/**
 	 * The number of structural features of the '<em>Guard Effects Action</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION_FEATURE_COUNT = 3;
+	int GUARD_EFFECTS_ACTION_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>Guard Effects Action</em>' class.
@@ -154,6 +163,17 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getGuardEffectsAction_Effects();
+
+	/**
+	 * Returns the meta object for the reference '{@link PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Call Behavior Action</em>'.
+	 * @see PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction()
+	 * @see #getGuardEffectsAction()
+	 * @generated
+	 */
+	EReference getGuardEffectsAction_Base_CallBehaviorAction();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -211,6 +231,14 @@ public interface PokaYokePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute GUARD_EFFECTS_ACTION__EFFECTS = eINSTANCE.getGuardEffectsAction_Effects();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION = eINSTANCE.getGuardEffectsAction_Base_CallBehaviorAction();
 
 	}
 

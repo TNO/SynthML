@@ -67,6 +67,7 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public GuardEffectsAction createGuardEffectsAction() {
 		GuardEffectsActionImpl guardEffectsAction = new GuardEffectsActionImpl();
 		return guardEffectsAction;
@@ -77,6 +78,7 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PokaYokePackage getPokaYokePackage() {
 		return (PokaYokePackage)getEPackage();
 	}

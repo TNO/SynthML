@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
  *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getBase_OpaqueAction <em>Base Opaque Action</em>}</li>
  *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getGuard <em>Guard</em>}</li>
  *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getEffects <em>Effects</em>}</li>
+ *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
  * @generated
@@ -82,6 +84,16 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	protected String effects = EFFECTS_EDEFAULT;
 
 	/**
+	 * The cached value of the '{@link #getBase_CallBehaviorAction() <em>Base Call Behavior Action</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getBase_CallBehaviorAction()
+	 * @generated
+	 * @ordered
+	 */
+	protected CallBehaviorAction base_CallBehaviorAction;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -105,6 +117,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public OpaqueAction getBase_OpaqueAction() {
 		if (base_OpaqueAction != null && base_OpaqueAction.eIsProxy()) {
 			InternalEObject oldBase_OpaqueAction = (InternalEObject)base_OpaqueAction;
@@ -131,6 +144,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setBase_OpaqueAction(OpaqueAction newBase_OpaqueAction) {
 		OpaqueAction oldBase_OpaqueAction = base_OpaqueAction;
 		base_OpaqueAction = newBase_OpaqueAction;
@@ -143,6 +157,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getGuard() {
 		return guard;
 	}
@@ -152,6 +167,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setGuard(String newGuard) {
 		String oldGuard = guard;
 		guard = newGuard;
@@ -164,6 +180,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getEffects() {
 		return effects;
 	}
@@ -173,11 +190,52 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setEffects(String newEffects) {
 		String oldEffects = effects;
 		effects = newEffects;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS, oldEffects, effects));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public CallBehaviorAction getBase_CallBehaviorAction() {
+		if (base_CallBehaviorAction != null && base_CallBehaviorAction.eIsProxy()) {
+			InternalEObject oldBase_CallBehaviorAction = (InternalEObject)base_CallBehaviorAction;
+			base_CallBehaviorAction = (CallBehaviorAction)eResolveProxy(oldBase_CallBehaviorAction);
+			if (base_CallBehaviorAction != oldBase_CallBehaviorAction) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION, oldBase_CallBehaviorAction, base_CallBehaviorAction));
+			}
+		}
+		return base_CallBehaviorAction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public CallBehaviorAction basicGetBase_CallBehaviorAction() {
+		return base_CallBehaviorAction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setBase_CallBehaviorAction(CallBehaviorAction newBase_CallBehaviorAction) {
+		CallBehaviorAction oldBase_CallBehaviorAction = base_CallBehaviorAction;
+		base_CallBehaviorAction = newBase_CallBehaviorAction;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION, oldBase_CallBehaviorAction, base_CallBehaviorAction));
 	}
 
 	/**
@@ -195,6 +253,9 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 				return getGuard();
 			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
 				return getEffects();
+			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION:
+				if (resolve) return getBase_CallBehaviorAction();
+				return basicGetBase_CallBehaviorAction();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -215,6 +276,9 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 				return;
 			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
 				setEffects((String)newValue);
+				return;
+			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION:
+				setBase_CallBehaviorAction((CallBehaviorAction)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -237,6 +301,9 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
 				setEffects(EFFECTS_EDEFAULT);
 				return;
+			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION:
+				setBase_CallBehaviorAction((CallBehaviorAction)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -255,6 +322,8 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 				return GUARD_EDEFAULT == null ? guard != null : !GUARD_EDEFAULT.equals(guard);
 			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
 				return EFFECTS_EDEFAULT == null ? effects != null : !EFFECTS_EDEFAULT.equals(effects);
+			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION:
+				return base_CallBehaviorAction != null;
 		}
 		return super.eIsSet(featureID);
 	}

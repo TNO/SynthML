@@ -4,6 +4,7 @@ package PokaYoke;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 /**
@@ -18,6 +19,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
  *   <li>{@link PokaYoke.GuardEffectsAction#getBase_OpaqueAction <em>Base Opaque Action</em>}</li>
  *   <li>{@link PokaYoke.GuardEffectsAction#getGuard <em>Guard</em>}</li>
  *   <li>{@link PokaYoke.GuardEffectsAction#getEffects <em>Effects</em>}</li>
+ *   <li>{@link PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
  * @see PokaYoke.PokaYokePackage#getGuardEffectsAction()
@@ -90,5 +92,27 @@ public interface GuardEffectsAction extends EObject {
 	 * @generated
 	 */
 	void setEffects(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Base Call Behavior Action</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Base Call Behavior Action</em>' reference.
+	 * @see #setBase_CallBehaviorAction(CallBehaviorAction)
+	 * @see PokaYoke.PokaYokePackage#getGuardEffectsAction_Base_CallBehaviorAction()
+	 * @model required="true" ordered="false"
+	 * @generated
+	 */
+	CallBehaviorAction getBase_CallBehaviorAction();
+
+	/**
+	 * Sets the value of the '{@link PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Base Call Behavior Action</em>' reference.
+	 * @see #getBase_CallBehaviorAction()
+	 * @generated
+	 */
+	void setBase_CallBehaviorAction(CallBehaviorAction value);
 
 } // GuardEffectsAction

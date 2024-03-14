@@ -102,6 +102,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getGuardEffectsAction() {
 		return guardEffectsActionEClass;
 	}
@@ -111,6 +112,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getGuardEffectsAction_Base_OpaqueAction() {
 		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(0);
 	}
@@ -120,6 +122,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGuardEffectsAction_Guard() {
 		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(1);
 	}
@@ -129,6 +132,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getGuardEffectsAction_Effects() {
 		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(2);
 	}
@@ -138,6 +142,17 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public EReference getGuardEffectsAction_Base_CallBehaviorAction() {
+		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public PokaYokeFactory getPokaYokeFactory() {
 		return (PokaYokeFactory)getEFactoryInstance();
 	}
@@ -165,6 +180,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_OPAQUE_ACTION);
 		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__GUARD);
 		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__EFFECTS);
+		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION);
 	}
 
 	/**
@@ -205,6 +221,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		initEReference(getGuardEffectsAction_Base_OpaqueAction(), theUMLPackage.getOpaqueAction(), null, "base_OpaqueAction", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getGuardEffectsAction_Guard(), theTypesPackage.getString(), "guard", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getGuardEffectsAction_Effects(), theTypesPackage.getString(), "effects", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getGuardEffectsAction_Base_CallBehaviorAction(), theUMLPackage.getCallBehaviorAction(), null, "base_CallBehaviorAction", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
