@@ -24,7 +24,7 @@ public class PostProcessPNML {
     public static void removeLoop(PetriNet petriNet) {
         List<Page> pages = petriNet.getPages();
         Preconditions.checkArgument(pages.size() == 1,
-                "Expected that there is exactly one Petri Net in the Petri Net page.");
+                "Expected that there is exactly one Petri Net page in the Petri Net.");
         Page page = pages.get(0);
 
         // Get the marked place.

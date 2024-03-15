@@ -19,12 +19,14 @@ public class PostProcessActivity {
      *
      * @param actionName The name of the opaque actions to remove.
      * @param activity The activity from which to remove the actions.
+     * @return Number of actions that were removed.
      */
-    public static void removeOpaqueActions(String actionName, Activity activity) {
+    public static int removeOpaqueActions(String actionName, Activity activity) {
         List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
                 .filter(node -> node.getName().equals(actionName)).toList();
         List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
                 .toList();
+        int numerOfActions = actions.size();
 
         for (OpaqueAction action: actions) {
             List<ActivityEdge> incomingEdges = action.getIncomings();
@@ -48,5 +50,6 @@ public class PostProcessActivity {
             outgoingEdge.destroy();
             action.destroy();
         }
+        return numerOfActions;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Page;
@@ -26,10 +27,18 @@ public class PetriNet2Activity {
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
-        PostProcessActivity.removeOpaqueActions("start", activity);
-        PostProcessActivity.removeOpaqueActions("end", activity);
-        PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), outputPath);
+
+        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'start' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'end' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'c_satisfied' action removed.");
+
+        FileHelper.storeModel(activity.getModel(), outputPath);
     }
 
     public Activity transform(PetriNet petriNet) {
