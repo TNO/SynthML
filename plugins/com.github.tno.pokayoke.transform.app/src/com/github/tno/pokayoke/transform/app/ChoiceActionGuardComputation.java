@@ -86,8 +86,7 @@ public class ChoiceActionGuardComputation {
             }
 
             // Get disjunction of these BDDs.
-            BDD choiceStatesPred = choiceStatesPreds.stream().reduce((left, right) -> left.orWith(right))
-                    .get();
+            BDD choiceStatesPred = choiceStatesPreds.stream().reduce((left, right) -> left.orWith(right)).get();
 
             // Perform simplification to obtain choice guards.
             for (Event choiceEvent: choiceEvents) {
@@ -106,7 +105,8 @@ public class ChoiceActionGuardComputation {
                 choiceGuardBdd.free();
 
                 choiceTransitionToGuard.put(
-                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent), choiceGuardExpr);
+                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
+                        choiceGuardExpr);
             }
             choiceStatesPred.free();
         }
