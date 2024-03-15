@@ -24,8 +24,13 @@ public class ApplyPokaYokeUmlProfileHandler {
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) IStructuredSelection selection) {
         IResource inputResource = (IResource)selection.getFirstElement();
         Path inputPath = Paths.get(inputResource.getLocationURI());
-        String outputName = inputResource.getName().replaceFirst("\\.uml$", "_py.uml");
-        Path outputPath = inputPath.resolveSibling(outputName);
+        Path outputPath;
+        if (!inputResource.getName().endsWith("_py.uml")) {
+            String outputName = inputResource.getName().replaceFirst("\\.uml$", "_py.uml");
+            outputPath = inputPath.resolveSibling(outputName);
+        } else {
+            outputPath = inputPath;
+        }
         Job job = Job.create("Applying Poka Yoke UML profile", monitor -> {
             try {
                 ApplyPokaYokeUmlProfile.applyUmlProfile(inputPath.toString(), outputPath.toString());

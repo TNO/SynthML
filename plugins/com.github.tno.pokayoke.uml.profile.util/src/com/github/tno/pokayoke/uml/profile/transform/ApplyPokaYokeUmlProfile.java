@@ -4,6 +4,7 @@
 package com.github.tno.pokayoke.uml.profile.transform;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -45,7 +46,17 @@ public class ApplyPokaYokeUmlProfile {
     }
 
     private static void applyUmlProfile(OpaqueAction action) {
-    	if (action.getBodies().isEmpty()) {
+    	String guard = GuardEffectsUtil.getGuard(action);
+    	String effects = GuardEffectsUtil.getEffects(action);
+    	if (guard != null || effects != null ) {
+    		// Data provisioned on stereotype, copy to bodies
+    		action.getBodies().clear();
+    		action.getBodies().add(guard == null || guard.isEmpty() ? "true" : guard);
+    		if (effects != null) {
+    			action.getBodies().addAll(Arrays.asList(effects.split(",")));
+    		}
+    		return;
+    	} else if (action.getBodies().isEmpty()) {
     		return;
     	}
     	Iterator<String> bodiesIterator = action.getBodies().iterator();
@@ -53,10 +64,10 @@ public class ApplyPokaYokeUmlProfile {
     	if (!bodiesIterator.hasNext()) {
     		return;
     	}
-    	StringBuilder effects = new StringBuilder(bodiesIterator.next());
+    	StringBuilder effectsBuilder = new StringBuilder(bodiesIterator.next());
     	while (bodiesIterator.hasNext()) {
-    		effects.append(",\n").append(bodiesIterator.next());
+    		effectsBuilder.append(",\n").append(bodiesIterator.next());
     	}
-    	GuardEffectsUtil.setEffects(action, effects.toString());
+    	GuardEffectsUtil.setEffects(action, effectsBuilder.toString());
     }
 }
