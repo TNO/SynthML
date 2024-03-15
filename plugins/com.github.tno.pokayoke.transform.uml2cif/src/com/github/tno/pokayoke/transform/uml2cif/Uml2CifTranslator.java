@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.AlgParameter;
 import org.eclipse.escet.cif.metamodel.cif.ComponentDef;
+import org.eclipse.escet.cif.metamodel.cif.ComponentInst;
+import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -34,6 +36,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.InstanceSpecification;
@@ -53,15 +56,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 public abstract class Uml2CifTranslator {
-    protected final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
+    protected final ComponentDef postconditionComponent = createPostconditionAutomaton();
 
     protected final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
+
+    protected final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
 
     protected final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
 
     protected final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
 
     public abstract Expression parseExpression(String expr);
+
+    public abstract Invariant parseInvariant(String invariant);
 
     public abstract Update parseUpdate(String update);
 
@@ -84,20 +91,34 @@ public abstract class Uml2CifTranslator {
     public Specification translateModel(Model umlModel) {
         Specification cifSpec = CifConstructors.newSpecification();
 
-        // Add predefined components.
-        cifSpec.getDefinitions().add(createPostconditionAutomaton());
+        // Add all predefined CIF components to the specification.
+        cifSpec.getDefinitions().add(postconditionComponent);
 
-        // Translate all enumerations.
+        // Translate all UML enumerations to CIF enumerations.
         for (PackageableElement element: umlModel.getPackagedElements()) {
             if (element instanceof Enumeration umlEnumeration) {
                 cifSpec.getDeclarations().add(translateEnumeration(umlEnumeration));
             }
         }
 
-        // Translate all classes.
+        // Translate all UML classes to CIF plants, and their postconditions to CIF component instantiations.
         for (PackageableElement element: umlModel.getPackagedElements()) {
             if (element instanceof Class umlClass) {
+                // Translate the current class.
                 cifSpec.getComponents().add(translateClass(umlClass));
+
+                // Translate all postconditions of the classifier behavior of the current class.
+                for (Constraint postcondition: umlClass.getClassifierBehavior().getPostconditions()) {
+                    Invariant cifInvariant = translateConstraint(postcondition);
+                    String cifInvariantName = cifInvariant.getName();
+                    Preconditions.checkArgument(!Strings.isNullOrEmpty(cifInvariantName),
+                            "Expected postconditions to be named.");
+                    ComponentInst cifCompInst = CifConstructors.newComponentInst();
+                    cifCompInst.getArguments().add(cifInvariant.getPredicate());
+                    cifCompInst.setDefinition(CifConstructors.newComponentDefType(postconditionComponent, null));
+                    cifCompInst.setName(cifInvariantName);
+                    cifSpec.getComponents().add(cifCompInst);
+                }
             }
         }
 
@@ -135,12 +156,6 @@ public abstract class Uml2CifTranslator {
         return cifEnumLiteral;
     }
 
-    /**
-     * Translates a UML class to a CIF plant automaton.
-     *
-     * @param umlClass The UML class to translate.
-     * @return The translated CIF plant automaton.
-     */
     public Automaton translateClass(Class umlClass) {
         // Construct a CIF plant automaton for the specified UML class.
         String umlClassName = umlClass.getLabel();
@@ -198,6 +213,9 @@ public abstract class Uml2CifTranslator {
                 }
             }
         }
+
+        // Translate all class constraints as CIF invariants.
+        cifPlant.getInvariants().addAll(umlClass.getOwnedRules().stream().map(this::translateConstraint).toList());
 
         return cifPlant;
     }
@@ -311,6 +329,19 @@ public abstract class Uml2CifTranslator {
         return parseExpression(umlExpr.getBodies().get(0));
     }
 
+    public Invariant translateConstraint(Constraint umlConstraint) {
+        ValueSpecification umlSpec = umlConstraint.getSpecification();
+
+        if (umlSpec instanceof OpaqueExpression umlExpr) {
+            Preconditions.checkArgument(umlExpr.getBodies().size() == 1, "Expected exactly one body.");
+            Invariant cifInvariant = parseInvariant(umlExpr.getBodies().get(0));
+            cifInvariant.setName(umlConstraint.getName());
+            return cifInvariant;
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + umlSpec);
+        }
+    }
+
     protected BoolExpression createBoolExpression(boolean value) {
         BoolExpression cifBoolExpr = CifConstructors.newBoolExpression();
         cifBoolExpr.setType(CifConstructors.newBoolType());
@@ -318,7 +349,7 @@ public abstract class Uml2CifTranslator {
         return cifBoolExpr;
     }
 
-    protected ComponentDef createPostconditionAutomaton() {
+    private ComponentDef createPostconditionAutomaton() {
         ComponentDef component = CifConstructors.newComponentDef();
 
         // Create the component parameter.

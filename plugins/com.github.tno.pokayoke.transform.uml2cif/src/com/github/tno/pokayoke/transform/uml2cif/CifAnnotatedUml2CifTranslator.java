@@ -1,26 +1,34 @@
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.metamodel.cif.InvKind;
+import org.eclipse.escet.cif.metamodel.cif.Invariant;
+import org.eclipse.escet.cif.metamodel.cif.SupKind;
 import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
 import org.eclipse.escet.cif.metamodel.cif.automata.Update;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.ElifExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.IfExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.CifExpressionParser;
+import org.eclipse.escet.cif.parser.CifInvariantParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
@@ -33,10 +41,14 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
+import com.google.common.base.Preconditions;
+
 public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
     private final String inputPath;
 
     private final CifExpressionParser expressionParser = new CifExpressionParser();
+
+    private final CifInvariantParser invariantParser = new CifInvariantParser();
 
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
@@ -154,8 +166,8 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
     }
 
     public Update parseUpdate(AUpdate update) {
-        if (update instanceof AAssignmentUpdate assignment) {
-            return parseAssignmentUpdate(assignment);
+        if (update instanceof AAssignmentUpdate assignmentUpdate) {
+            return parseAssignmentUpdate(assignmentUpdate);
         } else {
             throw new RuntimeException("Unsupported update: " + update);
         }
@@ -166,5 +178,46 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         cifAssignment.setAddressable(parseExpression(update.addressable));
         cifAssignment.setValue(parseExpression(update.value));
         return cifAssignment;
+    }
+
+    @Override
+    public Invariant parseInvariant(String invariant) {
+        return parseInvariant(invariantParser.parseString(invariant, inputPath));
+    }
+
+    public Invariant parseInvariant(AInvariant invariant) {
+        Invariant cifInvariant = CifConstructors.newInvariant();
+
+        // Parse the invariant kind.
+        if (invariant.invKind == null) {
+            cifInvariant.setInvKind(InvKind.STATE);
+        } else if (invariant.invKind.text.equals("needs")) {
+            cifInvariant.setInvKind(InvKind.EVENT_NEEDS);
+        } else if (invariant.invKind.text.equals("disables")) {
+            cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
+        } else {
+            throw new RuntimeException("Unsupported invariant kind: " + invariant.invKind);
+        }
+
+        if (invariant.events != null) {
+            // Parse the event. For now only a single event is supported.
+            Preconditions.checkArgument(invariant.events.size() == 1, "Expected exactly one event.");
+            String eventName = invariant.events.get(0).name;
+            List<Event> events = eventMap.entrySet().stream().filter(e -> e.getKey().getLabel().equals(eventName))
+                    .map(Entry::getValue).toList();
+            Preconditions.checkArgument(events.size() == 1,
+                    "Expected to find exactly one event named '" + eventName + "', but found '" + events.size() + "'.");
+            Event event = events.get(0);
+
+            EventExpression eventExpr = CifConstructors.newEventExpression();
+            eventExpr.setEvent(event);
+            eventExpr.setType(CifConstructors.newBoolType());
+            cifInvariant.setEvent(eventExpr);
+        }
+
+        cifInvariant.setPredicate(parseExpression(invariant.predicate));
+        cifInvariant.setSupKind(SupKind.REQUIREMENT);
+
+        return cifInvariant;
     }
 }
