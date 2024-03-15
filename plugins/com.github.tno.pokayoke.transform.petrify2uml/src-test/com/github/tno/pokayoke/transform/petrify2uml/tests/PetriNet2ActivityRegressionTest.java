@@ -38,7 +38,6 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
-        petriNet2Activity.transformFile(inputPath.toString(), outputPath.toString());
+        PetriNet2Activity.transformFile(inputPath.toString(), outputPath.toString());
     }
 }
