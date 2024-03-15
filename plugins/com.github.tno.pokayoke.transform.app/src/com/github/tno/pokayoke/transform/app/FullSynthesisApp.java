@@ -163,8 +163,8 @@ public class FullSynthesisApp {
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
                 uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
-        Map<Transition, Expression> guardComputationResult = guardComputation.computeChoiceGuards();
-        uncontrolledSystemGuards.entrySet().stream().forEach(e -> e.getValue().free());
+        Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
+        uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {

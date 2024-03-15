@@ -73,42 +73,42 @@ public class ChoiceActionGuardComputation {
                     .flatMap(location -> compositeStateMap.get(location).stream()).toList();
 
             // Get BDDs of these state annotations.
-            List<BDD> choiceStatePreds = new ArrayList<>();
+            List<BDD> choiceStatesPreds = new ArrayList<>();
             for (Annotation annotation: annotations) {
                 Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation,
                         cifBddSpec);
                 try {
                     BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
-                    choiceStatePreds.add(bdd);
+                    choiceStatesPreds.add(bdd);
                 } catch (UnsupportedPredicateException e) {
                     throw new RuntimeException("Failed to convert CIF expression into BDD.", e);
                 }
             }
 
             // Get disjunction of these BDDs.
-            BDD disjunctionOfChoiceStatePreds = choiceStatePreds.stream().reduce((left, right) -> left.orWith(right))
+            BDD choiceStatesPred = choiceStatesPreds.stream().reduce((left, right) -> left.orWith(right))
                     .get();
 
             // Perform simplification to obtain choice guards.
             for (Event choiceEvent: choiceEvents) {
-                // Get the uncontrolled system guards from the CIF specification.
+                // Get the uncontrolled system guard from the CIF specification.
                 BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(choiceEvent);
 
-                // Get the controlled system guards from the synthesis result.
+                // Get the controlled system guard from the synthesis result.
                 BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
 
                 // Perform simplification.
-                BDD simplificationResult1 = controlledSystemGuard.simplify(uncontrolledSystemGuard);
-                BDD simplicationResult2 = simplificationResult1.simplify(disjunctionOfChoiceStatePreds);
-                simplificationResult1.free();
+                BDD supervisorExtraGuard = controlledSystemGuard.simplify(uncontrolledSystemGuard);
+                BDD choiceGuardBdd = supervisorExtraGuard.simplify(choiceStatesPred);
+                supervisorExtraGuard.free();
 
-                Expression expression = BddToCif.bddToCifPred(simplicationResult2, cifBddSpec);
-                simplicationResult2.free();
+                Expression choiceGuardExpr = BddToCif.bddToCifPred(choiceGuardBdd, cifBddSpec);
+                choiceGuardBdd.free();
 
                 choiceTransitionToGuard.put(
-                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent), expression);
+                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent), choiceGuardExpr);
             }
-            disjunctionOfChoiceStatePreds.free();
+            choiceStatesPred.free();
         }
 
         return choiceTransitionToGuard;
