@@ -8,6 +8,11 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.setext.runtime.exceptions.ParseException;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.uml.CifToPythonTranslator;
 import com.github.tno.pokayoke.transform.uml.ModelTyping;
@@ -93,5 +98,35 @@ public class PokaYokeProfileServices {
 			return re.getLocalizedMessage();
 		}
 		return null;
+	}
+
+	public static String getGuard(ControlFlow contolFlow) {
+		ValueSpecification guard = contolFlow.getGuard();
+		return guard == null ? null : guard.stringValue();
+	}
+
+	public static void setGuard(ControlFlow contolFlow, String newValue) {
+		if (newValue == null || newValue.isEmpty()) {
+			if (contolFlow.getGuard() != null) {
+				contolFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+			}
+			return;
+		} else if ("true".equals(newValue) || "false".equals(newValue)) {
+			// Supports resetting the value to the default 'true'
+			ValueSpecification guard = contolFlow.getGuard();
+			if (!(guard instanceof LiteralBoolean)) {
+				guard = UMLFactory.eINSTANCE.createLiteralBoolean();
+				contolFlow.setGuard(guard);
+			}
+			((LiteralBoolean)guard).setValue(Boolean.valueOf(newValue));
+			return;
+		}
+		ValueSpecification guard = contolFlow.getGuard();
+		if (!(guard instanceof OpaqueExpression)) {
+			guard = UMLFactory.eINSTANCE.createOpaqueExpression();
+			contolFlow.setGuard(guard);
+		}
+		((OpaqueExpression) guard).getBodies().clear();
+		((OpaqueExpression) guard).getBodies().add(newValue);
 	}
 }

@@ -31,15 +31,26 @@
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <groups name="PR_GuardEffectsActionGroup" labelExpression="Guard and Effects" domainClass="uml::Action">
-        <controls xsi:type="properties:TextDescription" name="PR_PY_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow">
+        <groups href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+        <groups href="#//@extensions.0/@categories.0/@groups.1"/>
+      </pages>
+      <groups name="PR_GuardEffectsActionGroup" labelExpression="Guard and Effects">
+        <controls xsi:type="properties:TextDescription" name="PR_GE_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_PY_Effects" labelExpression="Effects" lineCount="10" valueExpression="service:self.getEffects()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_GE_Effects" labelExpression="Effects" lineCount="10" valueExpression="service:self.getEffects()">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_ControlFlowGuardGroup" labelExpression="Guard" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
