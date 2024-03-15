@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -9,25 +10,24 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.escet.cif.metamodel.cif.AlgParameter;
-import org.eclipse.escet.cif.metamodel.cif.ComponentDef;
-import org.eclipse.escet.cif.metamodel.cif.ComponentInst;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
+import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.EdgeEvent;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.automata.Update;
-import org.eclipse.escet.cif.metamodel.cif.declarations.AlgVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.declarations.VariableValue;
-import org.eclipse.escet.cif.metamodel.cif.expressions.AlgVariableExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
@@ -37,11 +37,15 @@ import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.InstanceSpecification;
 import org.eclipse.uml2.uml.InstanceValue;
+import org.eclipse.uml2.uml.Interval;
+import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -56,8 +60,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 public abstract class Uml2CifTranslator {
-    protected final ComponentDef postconditionComponent = createPostconditionAutomaton();
-
     protected final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
 
     protected final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
@@ -91,9 +93,6 @@ public abstract class Uml2CifTranslator {
     public Specification translateModel(Model umlModel) {
         Specification cifSpec = CifConstructors.newSpecification();
 
-        // Add all predefined CIF components to the specification.
-        cifSpec.getDefinitions().add(postconditionComponent);
-
         // Translate all UML enumerations to CIF enumerations.
         for (PackageableElement element: umlModel.getPackagedElements()) {
             if (element instanceof Enumeration umlEnumeration) {
@@ -110,14 +109,16 @@ public abstract class Uml2CifTranslator {
                 // Translate all postconditions of the classifier behavior of the current class.
                 for (Constraint postcondition: umlClass.getClassifierBehavior().getPostconditions()) {
                     Invariant cifInvariant = translateConstraint(postcondition);
-                    String cifInvariantName = cifInvariant.getName();
-                    Preconditions.checkArgument(!Strings.isNullOrEmpty(cifInvariantName),
-                            "Expected postconditions to be named.");
-                    ComponentInst cifCompInst = CifConstructors.newComponentInst();
-                    cifCompInst.getArguments().add(cifInvariant.getPredicate());
-                    cifCompInst.setDefinition(CifConstructors.newComponentDefType(postconditionComponent, null));
-                    cifCompInst.setName(cifInvariantName);
-                    cifSpec.getComponents().add(cifCompInst);
+                    String name = cifInvariant.getName();
+                    Expression predicate = cifInvariant.getPredicate();
+                    cifSpec.getComponents().add(createPostconditionAutomaton(name, predicate));
+                }
+
+                // Translate all interval constraints of the classifier behavior.
+                for (Constraint constraint: umlClass.getClassifierBehavior().getOwnedRules()) {
+                    if (constraint instanceof IntervalConstraint intervalConstraint) {
+                        cifSpec.getComponents().addAll(translateIntervalConstraint(intervalConstraint));
+                    }
                 }
             }
         }
@@ -154,6 +155,38 @@ public abstract class Uml2CifTranslator {
         cifEnumLiteral.setName(name);
         enumLiteralMap.put(umlEnumLiteral, cifEnumLiteral);
         return cifEnumLiteral;
+    }
+
+    public List<Automaton> translateIntervalConstraint(IntervalConstraint constraint) {
+        ValueSpecification constraintValue = constraint.getSpecification();
+
+        if (constraintValue instanceof Interval interval) {
+            int min = 0;
+            Integer max = null;
+
+            if (interval.getMin() instanceof LiteralInteger literal) {
+                min = literal.getValue();
+            }
+
+            if (interval.getMax() instanceof LiteralInteger literal) {
+                max = literal.getValue();
+            }
+
+            List<Automaton> automata = new ArrayList<>();
+
+            for (Element element: constraint.getConstrainedElements()) {
+                if (element instanceof OpaqueBehavior behavior) {
+                    String name = behavior.getName() + "__" + constraint.getName();
+                    automata.add(createIntervalAutomaton(name, eventMap.get(behavior), min, max));
+                } else {
+                    throw new RuntimeException("Unsupported element: " + element);
+                }
+            }
+
+            return automata;
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + constraintValue);
+        }
     }
 
     public Automaton translateClass(Class umlClass) {
@@ -349,22 +382,76 @@ public abstract class Uml2CifTranslator {
         return cifBoolExpr;
     }
 
-    private ComponentDef createPostconditionAutomaton() {
-        ComponentDef component = CifConstructors.newComponentDef();
+    private Automaton createIntervalAutomaton(String name, Event event, int min, Integer max) {
+        Preconditions.checkArgument(0 <= min, "Expected the min value to be at least 0.");
 
-        // Create the component parameter.
-        AlgParameter parameter = CifConstructors.newAlgParameter();
-        component.getParameters().add(parameter);
-        AlgVariable variable = CifConstructors.newAlgVariable();
-        variable.setName("postcondition");
-        variable.setType(CifConstructors.newBoolType());
-        parameter.setVariable(variable);
+        if (max != null) {
+            Preconditions.checkArgument(min <= max, "Expected the max value to be at least the min value.");
+        }
 
-        // Create the component body, which is the requirement automaton.
+        // Create the requirement automaton.
         Automaton automaton = CifConstructors.newAutomaton();
         automaton.setKind(SupKind.REQUIREMENT);
-        automaton.setName("Postcondition");
-        component.setBody(automaton);
+        automaton.setName(name);
+
+        // Create the discrete variable that tracks the number of occurrences for the specified event.
+        DiscVariable variable = CifConstructors.newDiscVariable();
+        CifType variableType = CifConstructors.newIntType(0, null, max);
+        variable.setName("occurrences");
+        variable.setType(variableType);
+        automaton.getDeclarations().add(variable);
+
+        // Create the single location in the automaton.
+        Location location = CifConstructors.newLocation();
+        location.getInitials().add(createBoolExpression(true));
+        automaton.getLocations().add(location);
+
+        // Define the marked predicate for the created location.
+        DiscVariableExpression variableExpression = CifConstructors.newDiscVariableExpression();
+        variableExpression.setType(EcoreUtil.copy(variableType));
+        variableExpression.setVariable(variable);
+        BinaryExpression markedExpression = CifConstructors.newBinaryExpression();
+        markedExpression.setLeft(variableExpression);
+        markedExpression.setOperator(BinaryOperator.GREATER_EQUAL);
+        markedExpression.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), min));
+        markedExpression.setType(CifConstructors.newBoolType());
+        location.getMarkeds().add(markedExpression);
+
+        // Create the single edge in the automaton.
+        EventExpression eventExpr = CifConstructors.newEventExpression();
+        eventExpr.setEvent(event);
+        eventExpr.setType(CifConstructors.newBoolType());
+        EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
+        edgeEvent.setEvent(eventExpr);
+        Edge edge = CifConstructors.newEdge();
+        edge.getEvents().add(edgeEvent);
+        location.getEdges().add(edge);
+
+        // Define the edge guard.
+        BinaryExpression edgeGuard = CifConstructors.newBinaryExpression();
+        edgeGuard.setLeft(EcoreUtil.copy(variableExpression));
+        edgeGuard.setOperator(BinaryOperator.LESS_THAN);
+        edgeGuard.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), max));
+        edge.getGuards().add(edgeGuard);
+
+        // Define the edge update.
+        Assignment update = CifConstructors.newAssignment();
+        update.setAddressable(EcoreUtil.copy(variableExpression));
+        BinaryExpression updateExpression = CifConstructors.newBinaryExpression();
+        updateExpression.setLeft(EcoreUtil.copy(variableExpression));
+        updateExpression.setOperator(BinaryOperator.ADDITION);
+        updateExpression.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), 1));
+        update.setValue(updateExpression);
+        edge.getUpdates().add(update);
+
+        return automaton;
+    }
+
+    private Automaton createPostconditionAutomaton(String name, Expression predicate) {
+        // Create the requirement automaton.
+        Automaton automaton = CifConstructors.newAutomaton();
+        automaton.setKind(SupKind.REQUIREMENT);
+        automaton.setName(name);
 
         // Define the event that indicates that the postcondition is satisfied.
         Event event = CifConstructors.newEvent();
@@ -388,15 +475,12 @@ public abstract class Uml2CifTranslator {
         eventExpr.setType(CifConstructors.newBoolType());
         EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
         edgeEvent.setEvent(eventExpr);
-        AlgVariableExpression guard = CifConstructors.newAlgVariableExpression();
-        guard.setType(CifConstructors.newBoolType());
-        guard.setVariable(variable);
         Edge edge = CifConstructors.newEdge();
         edge.getEvents().add(edgeEvent);
-        edge.getGuards().add(guard);
+        edge.getGuards().add(predicate);
         edge.setTarget(satisfied);
         notSatisfied.getEdges().add(edge);
 
-        return component;
+        return automaton;
     }
 }
