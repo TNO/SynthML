@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Activity;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Page;
@@ -17,7 +18,7 @@ public class PetriNet2Activity {
     }
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
