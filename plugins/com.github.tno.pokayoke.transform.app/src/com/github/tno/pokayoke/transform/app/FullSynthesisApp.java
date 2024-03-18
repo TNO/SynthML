@@ -43,6 +43,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
@@ -145,6 +146,7 @@ public class FullSynthesisApp {
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
         Activity activity = petriNet2Activity.transform(petriNetWithoutLoop);
+        Map<Transition, OpaqueAction> transition2Action = petriNet2Activity.getTransitionActionMap();
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Obtain the composite state mapping.
