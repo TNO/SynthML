@@ -23,11 +23,9 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.declarations.VariableValue;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
@@ -59,104 +57,137 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
+// TODO order of methods (scan file from top to bottom)
+
+/** Translates annotated UML models to CIF specifications. */
 public abstract class Uml2CifTranslator {
+    /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
     protected final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
 
+    /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
     protected final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
 
+    /** The mapping from UML opaque behaviors to corresponding translated CIF events. */
     protected final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
 
+    /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     protected final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
 
+    /**
+     * Parses the given string as a CIF expression.
+     *
+     * @param expr The string to parse.
+     * @return The parsed CIF expression.
+     */
     public abstract Expression parseExpression(String expr);
 
+    /**
+     * Parses the given string as a CIF invariant.
+     *
+     * @param invariant The string to parse.
+     * @return The parsed CIF invariant.
+     */
     public abstract Invariant parseInvariant(String invariant);
 
+    /**
+     * Parses the given string as a CIF update.
+     *
+     * @param update The string to parse.
+     * @return The parsed CIF update.
+     */
     public abstract Update parseUpdate(String update);
 
     /**
-     * Parses a given comma-separated sequence of updates into a list of CIF updates.
+     * Parses the given string as a list of CIF updates.
      *
-     * @param updates The sequence of updates to parse.
-     * @return The parsed updates.
+     * @param updates The string to parse.
+     * @return The list of CIF updates.
      */
     public List<Update> parseUpdates(String updates) {
+        // TODO I think this could be done more conveniently
         return Arrays.stream(updates.split(",")).map(this::parseUpdate).toList();
     }
 
     /**
      * Translates an UML model to a CIF specification.
      *
-     * @param umlModel The UML model to translate.
+     * @param model The UML model to translate.
      * @return The translated CIF specification.
      */
-    public Specification translateModel(Model umlModel) {
-        Specification cifSpec = CifConstructors.newSpecification();
+    public Specification translateModel(Model model) {
+        Specification specification = CifConstructors.newSpecification();
 
         // Translate all UML enumerations to CIF enumerations.
-        for (PackageableElement element: umlModel.getPackagedElements()) {
-            if (element instanceof Enumeration umlEnumeration) {
-                cifSpec.getDeclarations().add(translateEnumeration(umlEnumeration));
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof Enumeration enumeration) {
+                specification.getDeclarations().add(translateEnumeration(enumeration));
             }
         }
 
-        // Translate all UML classes to CIF plants, and their postconditions to CIF component instantiations.
-        for (PackageableElement element: umlModel.getPackagedElements()) {
+        // Translate all UML classes to CIF plants, and while doing so, collect their classifier behaviors.
+        List<Behavior> classifierBehaviors = new LinkedList<>();
+
+        for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Class umlClass) {
-                // Translate the current class.
-                cifSpec.getComponents().add(translateClass(umlClass));
+                specification.getComponents().add(translateClass(umlClass));
+                classifierBehaviors.add(umlClass.getClassifierBehavior());
+            }
+        }
 
-                // Translate all postconditions of the classifier behavior of the current class.
-                for (Constraint postcondition: umlClass.getClassifierBehavior().getPostconditions()) {
-                    Invariant cifInvariant = translateConstraint(postcondition);
-                    String name = cifInvariant.getName();
-                    Expression predicate = cifInvariant.getPredicate();
-                    cifSpec.getComponents().add(createPostconditionAutomaton(name, predicate));
-                }
+        // Translate all postconditions of all collected classifier behaviors.
+        for (Behavior behavior: classifierBehaviors) {
+            for (Constraint postcondition: behavior.getPostconditions()) {
+                Invariant invariant = translateConstraint(postcondition);
+                String name = invariant.getName();
+                Expression predicate = invariant.getPredicate();
+                specification.getComponents().add(createPostconditionAutomaton(name, predicate));
+            }
+        }
 
-                // Translate all interval constraints of the classifier behavior.
-                for (Constraint constraint: umlClass.getClassifierBehavior().getOwnedRules()) {
-                    if (constraint instanceof IntervalConstraint intervalConstraint) {
-                        cifSpec.getComponents().addAll(translateIntervalConstraint(intervalConstraint));
-                    }
+        // Translate all interval constraints of all collected classifier behaviors.
+        for (Behavior behavior: classifierBehaviors) {
+            for (Constraint constraint: behavior.getOwnedRules()) {
+                if (constraint instanceof IntervalConstraint intervalConstraint) {
+                    specification.getComponents().addAll(translateIntervalConstraint(intervalConstraint));
                 }
             }
         }
 
-        return cifSpec;
+        return specification;
     }
 
     /**
      * Translates an UML enumeration to a CIF enumeration declaration.
      *
-     * @param umlEnumeration The UML enumeration to translate.
+     * @param enumeration The UML enumeration to translate.
      * @return The translated CIF enumeration declaration.
      */
-    public EnumDecl translateEnumeration(Enumeration umlEnumeration) {
-        String name = umlEnumeration.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Expected a non-empty enumeration name.");
-        EnumDecl cifEnum = CifConstructors.newEnumDecl();
-        cifEnum.setName(name);
-        umlEnumeration.getOwnedLiterals().forEach(l -> cifEnum.getLiterals().add(translateEnumerationLiteral(l)));
-        enumMap.put(umlEnumeration, cifEnum);
-        return cifEnum;
+    public EnumDecl translateEnumeration(Enumeration enumeration) {
+        EnumDecl cifEnumeration = CifConstructors.newEnumDecl(ImmutableList.of(),
+                enumeration.getOwnedLiterals().stream().map(this::translateEnumerationLiteral).toList(),
+                enumeration.getLabel(), null);
+        enumMap.put(enumeration, cifEnumeration);
+        return cifEnumeration;
     }
 
     /**
      * Translates an UML enumeration literal to a CIF enumeration literal.
      *
-     * @param umlEnumLiteral The UML enumeration literal to translate.
+     * @param literal The UML enumeration literal to translate.
      * @return The translated CIF enumeration literal.
      */
-    public EnumLiteral translateEnumerationLiteral(EnumerationLiteral umlEnumLiteral) {
-        String name = umlEnumLiteral.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Expected a non-empty literal name.");
-        EnumLiteral cifEnumLiteral = CifConstructors.newEnumLiteral();
-        cifEnumLiteral.setName(name);
-        enumLiteralMap.put(umlEnumLiteral, cifEnumLiteral);
-        return cifEnumLiteral;
+    public EnumLiteral translateEnumerationLiteral(EnumerationLiteral literal) {
+        EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(literal.getLabel(), null);
+        enumLiteralMap.put(literal, cifLiteral);
+        return cifLiteral;
     }
 
+    /**
+     * Translates an UML interval constraint to a list of CIF (requirement) automata.
+     *
+     * @param constraint The UML interval constraint to translate.
+     * @return The translated list of CIF automata.
+     */
     public List<Automaton> translateIntervalConstraint(IntervalConstraint constraint) {
         ValueSpecification constraintValue = constraint.getSpecification();
 
@@ -189,42 +220,44 @@ public abstract class Uml2CifTranslator {
         }
     }
 
+    /**
+     * Translates an UML class to a CIF automaton.
+     *
+     * @param umlClass The UML class to translate.
+     * @return The translated CIF automaton.
+     */
     public Automaton translateClass(Class umlClass) {
-        // Construct a CIF plant automaton for the specified UML class.
-        String umlClassName = umlClass.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(umlClassName), "Expected a non-empty class name.");
-        Automaton cifPlant = CifConstructors.newAutomaton();
-        cifPlant.setKind(SupKind.PLANT);
-        cifPlant.setName(umlClassName);
+        Automaton automaton = CifConstructors.newAutomaton();
+        automaton.setKind(SupKind.PLANT);
+        automaton.setName(umlClass.getLabel());
 
         // Define discrete CIF variable declarations for every UML class property.
-        umlClass.getOwnedAttributes().forEach(p -> cifPlant.getDeclarations().add(translateProperty(p)));
+        for (Property property: umlClass.getOwnedAttributes()) {
+            automaton.getDeclarations().add(translateProperty(property));
+        }
 
         // Define CIF event declarations for every opaque UML class behavior.
-        for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
-            if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                cifPlant.getDeclarations().add(translateOpaqueBehavior(umlOpaqueBehavior));
+        for (Behavior behavior: umlClass.getOwnedBehaviors()) {
+            if (behavior instanceof OpaqueBehavior opaqueBehavior) {
+                automaton.getDeclarations().add(translateOpaqueBehavior(opaqueBehavior));
             }
         }
 
-        // Create the single location within the CIF plant.
-        Location cifLocation = CifConstructors.newLocation();
-        cifLocation.getInitials().add(createBoolExpression(true));
-        cifLocation.getMarkeds().add(createBoolExpression(true));
-        cifPlant.getLocations().add(cifLocation);
+        // Create the single location within the plant automaton.
+        Location location = CifConstructors.newLocation();
+        location.getInitials().add(createBoolExpression(true));
+        location.getMarkeds().add(createBoolExpression(true));
+        automaton.getLocations().add(location);
 
         // Create CIF edges for every opaque UML class behavior.
-        for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
-            if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                // Obtain the CIF event that has been created for the current UML behavior.
-                Event cifEvent = eventMap.get(umlOpaqueBehavior);
-                Preconditions.checkNotNull(cifEvent, "Expected a non-null event.");
+        for (Behavior behavior: umlClass.getOwnedBehaviors()) {
+            if (behavior instanceof OpaqueBehavior opaqueBehavior) {
+                List<String> bodies = opaqueBehavior.getBodies();
 
-                // Obtain the guard and updates for the current UML behavior.
-                List<Expression> guards = umlOpaqueBehavior.getBodies().stream().limit(1).map(this::parseExpression)
-                        .toList();
-                List<List<Update>> updateClauses = umlOpaqueBehavior.getBodies().stream().skip(1)
-                        .map(this::parseUpdates).collect(Collectors.toCollection(LinkedList::new));
+                // Obtain all update clauses for the current opaque behavior.
+                // If there are multiple update clauses, the opaque behavior is nondeterministic.
+                List<List<Update>> updateClauses = bodies.stream().skip(1).map(this::parseUpdates)
+                        .collect(Collectors.toCollection(LinkedList::new));
 
                 // Ensure there is at least one update clause.
                 if (updateClauses.isEmpty()) {
@@ -233,153 +266,205 @@ public abstract class Uml2CifTranslator {
 
                 // Create a CIF edge for every update clause.
                 for (List<Update> updates: updateClauses) {
-                    EventExpression cifEventExpr = CifConstructors.newEventExpression();
-                    cifEventExpr.setEvent(cifEvent);
-                    cifEventExpr.setType(CifConstructors.newBoolType());
-                    EdgeEvent cifEdgeEvent = CifConstructors.newEdgeEvent();
-                    cifEdgeEvent.setEvent(cifEventExpr);
-                    Edge cifEdge = CifConstructors.newEdge();
-                    cifEdge.getEvents().add(cifEdgeEvent);
-                    cifEdge.getGuards().addAll(EcoreUtil.copyAll(guards));
-                    cifEdge.getUpdates().addAll(updates);
-                    cifLocation.getEdges().add(cifEdge);
+                    EventExpression eventExpr = CifConstructors.newEventExpression();
+                    eventExpr.setEvent(eventMap.get(opaqueBehavior));
+                    eventExpr.setType(CifConstructors.newBoolType());
+                    EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
+                    edgeEvent.setEvent(eventExpr);
+                    Edge edge = CifConstructors.newEdge();
+                    edge.getEvents().add(edgeEvent);
+                    edge.getGuards().addAll(bodies.stream().limit(1).map(this::parseExpression).toList());
+                    edge.getUpdates().addAll(updates);
+                    location.getEdges().add(edge);
                 }
             }
         }
 
         // Translate all class constraints as CIF invariants.
-        cifPlant.getInvariants().addAll(umlClass.getOwnedRules().stream().map(this::translateConstraint).toList());
+        automaton.getInvariants().addAll(umlClass.getOwnedRules().stream().map(this::translateConstraint).toList());
 
-        return cifPlant;
-    }
-
-    public Event translateOpaqueBehavior(OpaqueBehavior umlBehavior) {
-        String umlBehaviorName = umlBehavior.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(umlBehaviorName), "Expected a non-empty behavior name.");
-        Event cifEvent = CifConstructors.newEvent();
-
-        // Populate the CIF event depending on whether the UML behavior is deterministic or not.
-        if (umlBehavior.getBodies().size() > 2) {
-            cifEvent.setControllable(false);
-            cifEvent.setName("u_" + umlBehaviorName);
-        } else {
-            cifEvent.setControllable(true);
-            cifEvent.setName("c_" + umlBehaviorName);
-        }
-
-        eventMap.put(umlBehavior, cifEvent);
-
-        return cifEvent;
+        return automaton;
     }
 
     /**
-     * Translates a UML class property to a CIF discrete variable.
+     * Translates an UML opaque behavior to a CIF event.
      *
-     * @param umlProperty The UML class property to translate.
+     * @param behavior The UML opaque behavior to translate.
+     * @return The translated CIF event.
+     */
+    public Event translateOpaqueBehavior(OpaqueBehavior behavior) {
+        String behaviorName = behavior.getLabel();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(behaviorName), "Expected a non-empty behavior name.");
+
+        // Construct a CIF event depending on whether the UML behavior is deterministic or not.
+        Event event = CifConstructors.newEvent();
+        eventMap.put(behavior, event);
+
+        if (behavior.getBodies().size() > 2) {
+            event.setControllable(false);
+            event.setName("u_" + behaviorName);
+        } else {
+            event.setControllable(true);
+            event.setName("c_" + behaviorName);
+        }
+
+        return event;
+    }
+
+    /**
+     * Translates an UML class property to a CIF discrete variable.
+     *
+     * @param property The UML class property to translate.
+     *
      * @return The translated CIF discrete variable.
      */
-    public DiscVariable translateProperty(Property umlProperty) {
-        String umlPropertyName = umlProperty.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(umlPropertyName), "Expected a non-empty property name.");
-        DiscVariable cifVariable = CifConstructors.newDiscVariable();
-        cifVariable.setName(umlPropertyName);
-        cifVariable.setType(translateType(umlProperty.getType()));
+    public DiscVariable translateProperty(Property property) {
+        DiscVariable variable = CifConstructors.newDiscVariable();
+        variable.setName(property.getLabel());
+        variable.setType(translateType(property.getType()));
+        variableMap.put(property, variable);
 
-        // Translate the default value if set.
-        ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
-        if (umlDefaultValue != null) {
-            VariableValue cifDefaultValue = CifConstructors.newVariableValue();
-            cifDefaultValue.getValues().add(translateValueSpecification(umlDefaultValue));
-            cifVariable.setValue(cifDefaultValue);
+        // Translate the default property value, if set.
+        ValueSpecification defaultValue = property.getDefaultValue();
+        if (defaultValue != null) {
+            variable.setValue(CifConstructors.newVariableValue(null,
+                    ImmutableList.of(translateValueSpecification(defaultValue))));
         }
 
-        variableMap.put(umlProperty, cifVariable);
-
-        return cifVariable;
+        return variable;
     }
 
-    public CifType translateType(Type umlType) {
-        if (umlType instanceof Enumeration umlEnumeration) {
-            return translateEnumerationType(umlEnumeration);
-        } else if (umlType instanceof PrimitiveType umlPrimitiveType) {
-            return translatePrimitiveType(umlPrimitiveType);
+    /**
+     * Translates an UML type to a CIF type.
+     *
+     * @param type The UML type to translate.
+     * @return The translated CIF type.
+     */
+    public CifType translateType(Type type) {
+        if (type instanceof Enumeration enumeration) {
+            return translateEnumerationType(enumeration);
+        } else if (type instanceof PrimitiveType primitiveType) {
+            return translatePrimitiveType(primitiveType);
         } else {
-            throw new RuntimeException("Unsupported type: " + umlType);
+            throw new RuntimeException("Unsupported type: " + type);
         }
     }
 
-    public CifType translateEnumerationType(Enumeration umlEnumeration) {
-        EnumDecl cifEnumDecl = enumMap.get(umlEnumeration);
-        Preconditions.checkNotNull(cifEnumDecl, "Expected a non-null enumeration declaration.");
-        EnumType cifEnumType = CifConstructors.newEnumType();
-        cifEnumType.setEnum(cifEnumDecl);
-        return cifEnumType;
+    /**
+     * Translates an UML enumeration to a CIF enumeration type.
+     *
+     * @param enumeration The UML enumeration to translate.
+     * @return The translated CIF enumeration type.
+     */
+    public EnumType translateEnumerationType(Enumeration enumeration) {
+        return CifConstructors.newEnumType(enumMap.get(enumeration), null);
     }
 
-    public CifType translatePrimitiveType(PrimitiveType umlPrimitiveType) {
-        if (umlPrimitiveType.getLabel().equals("Boolean")) {
+    /**
+     * Translates an UML primitive type to a CIF type.
+     *
+     * @param type The UML primitive type to translate.
+     * @return The translated CIF type.
+     */
+    public CifType translatePrimitiveType(PrimitiveType type) {
+        if (type.getLabel().equals("Boolean")) {
             return CifConstructors.newBoolType();
         } else {
-            throw new RuntimeException("Unsupported primitive type: " + umlPrimitiveType);
+            throw new RuntimeException("Unsupported primitive type: " + type);
         }
     }
 
-    public Expression translateValueSpecification(ValueSpecification umlSpec) {
-        if (umlSpec instanceof InstanceValue umlValue) {
-            return translateInstanceValue(umlValue);
-        } else if (umlSpec instanceof LiteralBoolean umlLiteral) {
-            return translateLiteralBoolean(umlLiteral);
-        } else if (umlSpec instanceof OpaqueExpression umlExpr) {
-            return translateOpaqueExpression(umlExpr);
+    /**
+     * Translates an UML value specification to a CIF expression.
+     *
+     * @param value The UML value specification to translate.
+     * @return The translated CIF expression.
+     */
+    public Expression translateValueSpecification(ValueSpecification value) {
+        if (value instanceof InstanceValue instanceValue) {
+            return translateInstanceValue(instanceValue);
+        } else if (value instanceof LiteralBoolean literal) {
+            return translateLiteralBoolean(literal);
+        } else if (value instanceof OpaqueExpression expr) {
+            return translateOpaqueExpression(expr);
         } else {
-            throw new RuntimeException("Unsupported value specification: " + umlSpec);
+            throw new RuntimeException("Unsupported value specification: " + value);
         }
     }
 
-    public Expression translateInstanceValue(InstanceValue umlValue) {
-        return translateInstanceSpecification(umlValue.getInstance());
+    /**
+     * Translates an UML instance value to a CIF enumeration literal expression.
+     *
+     * @param value The UML instance value to translate.
+     * @return The translated CIF enumeration literal expression.
+     */
+    public EnumLiteralExpression translateInstanceValue(InstanceValue value) {
+        return translateInstanceSpecification(value.getInstance());
     }
 
-    public Expression translateInstanceSpecification(InstanceSpecification umlInstance) {
-        if (umlInstance instanceof EnumerationLiteral umlLiteral) {
-            EnumLiteral cifLiteral = enumLiteralMap.get(umlLiteral);
-            Preconditions.checkNotNull(cifLiteral, "Expected a non-null enumeration literal.");
-            EnumLiteralExpression cifExpr = CifConstructors.newEnumLiteralExpression();
-            cifExpr.setLiteral(cifLiteral);
-            cifExpr.setType(translateEnumerationType(umlLiteral.getEnumeration()));
-            return cifExpr;
+    /**
+     * Translates an UML instance specification to a CIF enumeration literal expression.
+     *
+     * @param instance The UML instance specification to translate.
+     * @return The translated CIF enumeration literal expression.
+     */
+    public EnumLiteralExpression translateInstanceSpecification(InstanceSpecification instance) {
+        if (instance instanceof EnumerationLiteral literal) {
+            return CifConstructors.newEnumLiteralExpression(enumLiteralMap.get(literal), null,
+                    translateEnumerationType(literal.getEnumeration()));
         } else {
-            throw new RuntimeException("Unsupported instance specification: " + umlInstance);
+            throw new RuntimeException("Unsupported instance specification: " + instance);
         }
     }
 
-    public Expression translateLiteralBoolean(LiteralBoolean umlLiteral) {
-        return createBoolExpression(umlLiteral.isValue());
+    /**
+     * Translates an UML literal Boolean to a CIF expression.
+     *
+     * @param literal The UML literal Boolean to translate.
+     * @return The translated CIF expression.
+     */
+    public Expression translateLiteralBoolean(LiteralBoolean literal) {
+        return createBoolExpression(literal.isValue());
     }
 
-    public Expression translateOpaqueExpression(OpaqueExpression umlExpr) {
-        Preconditions.checkArgument(umlExpr.getBodies().size() == 1, "Expected exactly one opaque expression body.");
-        return parseExpression(umlExpr.getBodies().get(0));
+    /**
+     * Translates an UML opaque expression to a CIF expression.
+     *
+     * @param expr The UML opaque expression to translate.
+     * @return The translated CIF expression.
+     */
+    public Expression translateOpaqueExpression(OpaqueExpression expr) {
+        Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected exactly one opaque expression body.");
+        return parseExpression(expr.getBodies().get(0));
     }
 
-    public Invariant translateConstraint(Constraint umlConstraint) {
-        ValueSpecification umlSpec = umlConstraint.getSpecification();
+    /**
+     * Translates an UML constraint to a CIF invariant.
+     *
+     * @param constraint The UML constraint to translate.
+     * @return The translated CIF invariant.
+     */
+    public Invariant translateConstraint(Constraint constraint) {
+        ValueSpecification constraintValue = constraint.getSpecification();
 
-        if (umlSpec instanceof OpaqueExpression umlExpr) {
-            Preconditions.checkArgument(umlExpr.getBodies().size() == 1, "Expected exactly one body.");
-            Invariant cifInvariant = parseInvariant(umlExpr.getBodies().get(0));
-            cifInvariant.setName(umlConstraint.getName());
-            return cifInvariant;
+        if (constraintValue instanceof OpaqueExpression expr) {
+            Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected exactly one body.");
+            Invariant invariant = parseInvariant(expr.getBodies().get(0));
+            invariant.setName(constraint.getName());
+            return invariant;
         } else {
-            throw new RuntimeException("Unsupported value specification: " + umlSpec);
+            throw new RuntimeException("Unsupported value specification: " + constraintValue);
         }
     }
 
+    /**
+     * Creates a CIF Boolean expression with the indicated value.
+     *
+     * @param value The value of the CIF Boolean expression.
+     * @return The created CIF Boolean expression.
+     */
     protected BoolExpression createBoolExpression(boolean value) {
-        BoolExpression cifBoolExpr = CifConstructors.newBoolExpression();
-        cifBoolExpr.setType(CifConstructors.newBoolType());
-        cifBoolExpr.setValue(value);
-        return cifBoolExpr;
+        return CifConstructors.newBoolExpression(null, CifConstructors.newBoolType(), value);
     }
 
     private Automaton createIntervalAutomaton(String name, Event event, int min, Integer max) {
@@ -394,54 +479,49 @@ public abstract class Uml2CifTranslator {
         automaton.setKind(SupKind.REQUIREMENT);
         automaton.setName(name);
 
-        // Create the discrete variable that tracks the number of occurrences for the specified event.
+        // Create the discrete variable that tracks the number of occurrences of the specified event.
         DiscVariable variable = CifConstructors.newDiscVariable();
         CifType variableType = CifConstructors.newIntType(0, null, max);
         variable.setName("occurrences");
         variable.setType(variableType);
         automaton.getDeclarations().add(variable);
 
-        // Create the single location in the automaton.
+        // Create the single location of the automaton.
         Location location = CifConstructors.newLocation();
         location.getInitials().add(createBoolExpression(true));
         automaton.getLocations().add(location);
 
-        // Define the marked predicate for the created location.
-        DiscVariableExpression variableExpression = CifConstructors.newDiscVariableExpression();
-        variableExpression.setType(EcoreUtil.copy(variableType));
-        variableExpression.setVariable(variable);
-        BinaryExpression markedExpression = CifConstructors.newBinaryExpression();
-        markedExpression.setLeft(variableExpression);
-        markedExpression.setOperator(BinaryOperator.GREATER_EQUAL);
-        markedExpression.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), min));
-        markedExpression.setType(CifConstructors.newBoolType());
-        location.getMarkeds().add(markedExpression);
+        // Define the marked predicate for the single location.
+        Expression varExpr = CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(variableType), variable);
+        BinaryExpression markedExpr = CifConstructors.newBinaryExpression();
+        markedExpr.setLeft(varExpr);
+        markedExpr.setOperator(BinaryOperator.GREATER_EQUAL);
+        markedExpr.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), min));
+        markedExpr.setType(CifConstructors.newBoolType());
+        location.getMarkeds().add(markedExpr);
 
         // Create the single edge in the automaton.
-        EventExpression eventExpr = CifConstructors.newEventExpression();
-        eventExpr.setEvent(event);
-        eventExpr.setType(CifConstructors.newBoolType());
         EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
-        edgeEvent.setEvent(eventExpr);
+        edgeEvent.setEvent(CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType()));
         Edge edge = CifConstructors.newEdge();
         edge.getEvents().add(edgeEvent);
         location.getEdges().add(edge);
 
         // Define the edge guard.
         BinaryExpression edgeGuard = CifConstructors.newBinaryExpression();
-        edgeGuard.setLeft(EcoreUtil.copy(variableExpression));
+        edgeGuard.setLeft(EcoreUtil.copy(varExpr));
         edgeGuard.setOperator(BinaryOperator.LESS_THAN);
         edgeGuard.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), max));
         edge.getGuards().add(edgeGuard);
 
         // Define the edge update.
         Assignment update = CifConstructors.newAssignment();
-        update.setAddressable(EcoreUtil.copy(variableExpression));
-        BinaryExpression updateExpression = CifConstructors.newBinaryExpression();
-        updateExpression.setLeft(EcoreUtil.copy(variableExpression));
-        updateExpression.setOperator(BinaryOperator.ADDITION);
-        updateExpression.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), 1));
-        update.setValue(updateExpression);
+        update.setAddressable(EcoreUtil.copy(varExpr));
+        BinaryExpression updateExpr = CifConstructors.newBinaryExpression();
+        updateExpr.setLeft(EcoreUtil.copy(varExpr));
+        updateExpr.setOperator(BinaryOperator.ADDITION);
+        updateExpr.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), 1));
+        update.setValue(updateExpr);
         edge.getUpdates().add(update);
 
         return automaton;
@@ -469,16 +549,13 @@ public abstract class Uml2CifTranslator {
         satisfied.getMarkeds().add(createBoolExpression(true));
         automaton.getLocations().add(satisfied);
 
-        // Define the edge between the two locations defined above.
-        EventExpression eventExpr = CifConstructors.newEventExpression();
-        eventExpr.setEvent(event);
-        eventExpr.setType(CifConstructors.newBoolType());
-        EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
-        edgeEvent.setEvent(eventExpr);
+        // Define the edge between the two locations.
+        EventExpression eventExpr = CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType());
         Edge edge = CifConstructors.newEdge();
-        edge.getEvents().add(edgeEvent);
+        edge.getEvents().add(CifConstructors.newEdgeEvent(eventExpr, null));
         edge.getGuards().add(predicate);
         edge.setTarget(satisfied);
+        edge.setUrgent(false);
         notSatisfied.getEdges().add(edge);
 
         return automaton;

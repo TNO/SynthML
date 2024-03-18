@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -16,10 +15,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.ElifExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.IfExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
@@ -43,6 +39,7 @@ import org.eclipse.uml2.uml.Property;
 
 import com.google.common.base.Preconditions;
 
+/** Translates annotated UML models to CIF specifications where CIF is also the annotation language. */
 public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
     private final String inputPath;
 
@@ -52,6 +49,9 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
 
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
+    /**
+     * @param inputPath The location of the source UML file to be translated.
+     */
     public CifAnnotatedUml2CifTranslator(String inputPath) {
         this.inputPath = inputPath;
     }
@@ -61,7 +61,17 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         return parseExpression(expressionParser.parseString(expr, inputPath));
     }
 
-    public Expression parseExpression(AExpression expr) {
+    @Override
+    public Invariant parseInvariant(String invariant) {
+        return parseInvariant(invariantParser.parseString(invariant, inputPath));
+    }
+
+    @Override
+    public Update parseUpdate(String update) {
+        return parseUpdate(updateParser.parseString(update, inputPath));
+    }
+
+    private Expression parseExpression(AExpression expr) {
         if (expr instanceof ABinaryExpression binExpr) {
             return parseBinaryExpression(binExpr);
         } else if (expr instanceof ABoolExpression boolExpr) {
@@ -77,7 +87,7 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         }
     }
 
-    public BinaryExpression parseBinaryExpression(ABinaryExpression expr) {
+    private BinaryExpression parseBinaryExpression(ABinaryExpression expr) {
         BinaryExpression cifExpr = CifConstructors.newBinaryExpression();
         cifExpr.setLeft(parseExpression(expr.left));
         cifExpr.setOperator(parseBinaryOperator(expr.operator));
@@ -86,7 +96,7 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         return cifExpr;
     }
 
-    public BinaryOperator parseBinaryOperator(String operator) {
+    private BinaryOperator parseBinaryOperator(String operator) {
         return switch (operator) {
             case "and" -> BinaryOperator.CONJUNCTION;
             case "or" -> BinaryOperator.DISJUNCTION;
@@ -95,11 +105,11 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         };
     }
 
-    public BoolExpression parseBooleanExpression(ABoolExpression boolExpr) {
-        return createBoolExpression(boolExpr.value);
+    private BoolExpression parseBooleanExpression(ABoolExpression expr) {
+        return createBoolExpression(expr.value);
     }
 
-    public IfExpression parseIfExpression(AIfExpression expr) {
+    private IfExpression parseIfExpression(AIfExpression expr) {
         IfExpression ifExpr = CifConstructors.newIfExpression();
         ifExpr.getElifs().addAll(expr.elifs.stream().map(this::parseElifExpression).toList());
         ifExpr.getGuards().addAll(expr.guards.stream().map(this::parseExpression).toList());
@@ -109,63 +119,50 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         return ifExpr;
     }
 
-    public ElifExpression parseElifExpression(AElifExpression expr) {
+    private ElifExpression parseElifExpression(AElifExpression expr) {
         ElifExpression elifExpr = CifConstructors.newElifExpression();
         elifExpr.getGuards().addAll(expr.guards.stream().map(this::parseExpression).toList());
         elifExpr.setThen(parseExpression(expr.then));
         return elifExpr;
     }
 
-    public Expression parseNameExpression(ANameExpression nameExpr) {
-        // Try to parse the given expression as an enumeration literal.
+    private Expression parseNameExpression(ANameExpression expr) {
+        // Try to parse the expression as an enumeration literal.
         for (Entry<EnumerationLiteral, EnumLiteral> entry: enumLiteralMap.entrySet()) {
-            EnumerationLiteral umlLiteral = entry.getKey();
+            EnumerationLiteral literal = entry.getKey();
 
-            if (umlLiteral.getLabel().equals(nameExpr.name.name)) {
-                EnumLiteralExpression cifExpr = CifConstructors.newEnumLiteralExpression();
-                cifExpr.setLiteral(entry.getValue());
-                cifExpr.setType(translateEnumerationType(umlLiteral.getEnumeration()));
-                return cifExpr;
+            if (literal.getLabel().equals(expr.name.name)) {
+                return CifConstructors.newEnumLiteralExpression(entry.getValue(), null,
+                        translateEnumerationType(literal.getEnumeration()));
             }
         }
 
-        // Try to parse the given expression as a discrete variable.
+        // Try to parse the expression as a discrete variable.
         for (Entry<Property, DiscVariable> entry: variableMap.entrySet()) {
-            Property umlProperty = entry.getKey();
+            Property property = entry.getKey();
+            DiscVariable variable = entry.getValue();
 
-            if (umlProperty.getLabel().equals(nameExpr.name.name)) {
-                DiscVariable cifVariable = entry.getValue();
-                DiscVariableExpression cifExpr = CifConstructors.newDiscVariableExpression();
-                cifExpr.setType(EcoreUtil.copy(cifVariable.getType()));
-                cifExpr.setVariable(cifVariable);
-                return cifExpr;
+            if (property.getLabel().equals(expr.name.name)) {
+                return CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(variable.getType()), variable);
             }
         }
 
-        throw new RuntimeException("Unsupported name expression: " + nameExpr);
+        throw new RuntimeException("Unsupported name expression: " + expr);
     }
 
-    public UnaryExpression parseUnaryExpression(AUnaryExpression expr) {
-        UnaryExpression cifExpr = CifConstructors.newUnaryExpression();
-        cifExpr.setChild(parseExpression(expr.child));
-        cifExpr.setOperator(parseUnaryOperator(expr.operator));
-        cifExpr.setType(CifConstructors.newBoolType());
-        return cifExpr;
+    private UnaryExpression parseUnaryExpression(AUnaryExpression expr) {
+        return CifConstructors.newUnaryExpression(parseExpression(expr.child), parseUnaryOperator(expr.operator), null,
+                CifConstructors.newBoolType());
     }
 
-    public UnaryOperator parseUnaryOperator(String operator) {
+    private UnaryOperator parseUnaryOperator(String operator) {
         return switch (operator) {
             case "not" -> UnaryOperator.INVERSE;
             default -> throw new RuntimeException("Unsupported unary operator: " + operator);
         };
     }
 
-    @Override
-    public Update parseUpdate(String update) {
-        return parseUpdate(updateParser.parseString(update, inputPath));
-    }
-
-    public Update parseUpdate(AUpdate update) {
+    private Update parseUpdate(AUpdate update) {
         if (update instanceof AAssignmentUpdate assignmentUpdate) {
             return parseAssignmentUpdate(assignmentUpdate);
         } else {
@@ -173,20 +170,14 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
         }
     }
 
-    public Assignment parseAssignmentUpdate(AAssignmentUpdate update) {
-        Assignment cifAssignment = CifConstructors.newAssignment();
-        cifAssignment.setAddressable(parseExpression(update.addressable));
-        cifAssignment.setValue(parseExpression(update.value));
-        return cifAssignment;
+    private Assignment parseAssignmentUpdate(AAssignmentUpdate update) {
+        return CifConstructors.newAssignment(parseExpression(update.addressable), null, parseExpression(update.value));
     }
 
-    @Override
-    public Invariant parseInvariant(String invariant) {
-        return parseInvariant(invariantParser.parseString(invariant, inputPath));
-    }
-
-    public Invariant parseInvariant(AInvariant invariant) {
+    private Invariant parseInvariant(AInvariant invariant) {
         Invariant cifInvariant = CifConstructors.newInvariant();
+        cifInvariant.setPredicate(parseExpression(invariant.predicate));
+        cifInvariant.setSupKind(SupKind.REQUIREMENT);
 
         // Parse the invariant kind.
         if (invariant.invKind == null) {
@@ -199,24 +190,14 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
             throw new RuntimeException("Unsupported invariant kind: " + invariant.invKind);
         }
 
+        // Parse the event. For now, invariants can have at most one invariant.
         if (invariant.events != null) {
-            // Parse the event. For now only a single event is supported.
-            Preconditions.checkArgument(invariant.events.size() == 1, "Expected exactly one event.");
+            Preconditions.checkArgument(invariant.events.size() == 1, "Expected at most one event.");
             String eventName = invariant.events.get(0).name;
-            List<Event> events = eventMap.entrySet().stream().filter(e -> e.getKey().getLabel().equals(eventName))
-                    .map(Entry::getValue).toList();
-            Preconditions.checkArgument(events.size() == 1,
-                    "Expected to find exactly one event named '" + eventName + "', but found '" + events.size() + "'.");
-            Event event = events.get(0);
-
-            EventExpression eventExpr = CifConstructors.newEventExpression();
-            eventExpr.setEvent(event);
-            eventExpr.setType(CifConstructors.newBoolType());
-            cifInvariant.setEvent(eventExpr);
+            Event event = eventMap.entrySet().stream().filter(e -> e.getKey().getLabel().equals(eventName))
+                    .map(Entry::getValue).findFirst().get();
+            cifInvariant.setEvent(CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType()));
         }
-
-        cifInvariant.setPredicate(parseExpression(invariant.predicate));
-        cifInvariant.setSupKind(SupKind.REQUIREMENT);
 
         return cifInvariant;
     }
