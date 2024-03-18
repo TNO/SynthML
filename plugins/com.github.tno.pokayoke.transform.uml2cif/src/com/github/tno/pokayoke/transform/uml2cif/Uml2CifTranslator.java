@@ -57,8 +57,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
-// TODO order of methods (scan file from top to bottom)
-
 /** Translates annotated UML models to CIF specifications. */
 public abstract class Uml2CifTranslator {
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
@@ -183,44 +181,6 @@ public abstract class Uml2CifTranslator {
     }
 
     /**
-     * Translates an UML interval constraint to a list of CIF (requirement) automata.
-     *
-     * @param constraint The UML interval constraint to translate.
-     * @return The translated list of CIF automata.
-     */
-    public List<Automaton> translateIntervalConstraint(IntervalConstraint constraint) {
-        ValueSpecification constraintValue = constraint.getSpecification();
-
-        if (constraintValue instanceof Interval interval) {
-            int min = 0;
-            Integer max = null;
-
-            if (interval.getMin() instanceof LiteralInteger literal) {
-                min = literal.getValue();
-            }
-
-            if (interval.getMax() instanceof LiteralInteger literal) {
-                max = literal.getValue();
-            }
-
-            List<Automaton> automata = new ArrayList<>();
-
-            for (Element element: constraint.getConstrainedElements()) {
-                if (element instanceof OpaqueBehavior behavior) {
-                    String name = behavior.getName() + "__" + constraint.getName();
-                    automata.add(createIntervalAutomaton(name, eventMap.get(behavior), min, max));
-                } else {
-                    throw new RuntimeException("Unsupported element: " + element);
-                }
-            }
-
-            return automata;
-        } else {
-            throw new RuntimeException("Unsupported value specification: " + constraintValue);
-        }
-    }
-
-    /**
      * Translates an UML class to a CIF automaton.
      *
      * @param umlClass The UML class to translate.
@@ -284,31 +244,6 @@ public abstract class Uml2CifTranslator {
         automaton.getInvariants().addAll(umlClass.getOwnedRules().stream().map(this::translateConstraint).toList());
 
         return automaton;
-    }
-
-    /**
-     * Translates an UML opaque behavior to a CIF event.
-     *
-     * @param behavior The UML opaque behavior to translate.
-     * @return The translated CIF event.
-     */
-    public Event translateOpaqueBehavior(OpaqueBehavior behavior) {
-        String behaviorName = behavior.getLabel();
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(behaviorName), "Expected a non-empty behavior name.");
-
-        // Construct a CIF event depending on whether the UML behavior is deterministic or not.
-        Event event = CifConstructors.newEvent();
-        eventMap.put(behavior, event);
-
-        if (behavior.getBodies().size() > 2) {
-            event.setControllable(false);
-            event.setName("u_" + behaviorName);
-        } else {
-            event.setControllable(true);
-            event.setName("c_" + behaviorName);
-        }
-
-        return event;
     }
 
     /**
@@ -439,6 +374,31 @@ public abstract class Uml2CifTranslator {
     }
 
     /**
+     * Translates an UML opaque behavior to a CIF event.
+     *
+     * @param behavior The UML opaque behavior to translate.
+     * @return The translated CIF event.
+     */
+    public Event translateOpaqueBehavior(OpaqueBehavior behavior) {
+        String behaviorName = behavior.getLabel();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(behaviorName), "Expected a non-empty behavior name.");
+
+        // Construct a CIF event depending on whether the UML behavior is deterministic or not.
+        Event event = CifConstructors.newEvent();
+        eventMap.put(behavior, event);
+
+        if (behavior.getBodies().size() > 2) {
+            event.setControllable(false);
+            event.setName("u_" + behaviorName);
+        } else {
+            event.setControllable(true);
+            event.setName("c_" + behaviorName);
+        }
+
+        return event;
+    }
+
+    /**
      * Translates an UML constraint to a CIF invariant.
      *
      * @param constraint The UML constraint to translate.
@@ -452,6 +412,44 @@ public abstract class Uml2CifTranslator {
             Invariant invariant = parseInvariant(expr.getBodies().get(0));
             invariant.setName(constraint.getName());
             return invariant;
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + constraintValue);
+        }
+    }
+
+    /**
+     * Translates an UML interval constraint to a list of CIF (requirement) automata.
+     *
+     * @param constraint The UML interval constraint to translate.
+     * @return The translated list of CIF automata.
+     */
+    public List<Automaton> translateIntervalConstraint(IntervalConstraint constraint) {
+        ValueSpecification constraintValue = constraint.getSpecification();
+
+        if (constraintValue instanceof Interval interval) {
+            int min = 0;
+            Integer max = null;
+
+            if (interval.getMin() instanceof LiteralInteger literal) {
+                min = literal.getValue();
+            }
+
+            if (interval.getMax() instanceof LiteralInteger literal) {
+                max = literal.getValue();
+            }
+
+            List<Automaton> automata = new ArrayList<>();
+
+            for (Element element: constraint.getConstrainedElements()) {
+                if (element instanceof OpaqueBehavior behavior) {
+                    String name = behavior.getName() + "__" + constraint.getName();
+                    automata.add(createIntervalAutomaton(name, eventMap.get(behavior), min, max));
+                } else {
+                    throw new RuntimeException("Unsupported element: " + element);
+                }
+            }
+
+            return automata;
         } else {
             throw new RuntimeException("Unsupported value specification: " + constraintValue);
         }
