@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,7 @@ import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
@@ -78,8 +79,9 @@ public class FullSynthesisApp {
         CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
-        // Get the BDDs of all event guards before performing synthesis.
-        Map<Event, BDD> actionGuards = ChoiceActionGuardComputationHelper.collectEventGuards(cifBddSpec);
+        // Get the BDDs of uncontrolled system guards before performing synthesis.
+        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
+                .collectUncontrolledSystemGuards(cifBddSpec);
 
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
@@ -161,15 +163,11 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
                 annotationFromReducedSP);
 
-        // Compute the guards of the choice events.
+        // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                actionGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
-        Map<Place, Map<Transition, BDD>> guardComputationResult = new HashMap<>();
-        try {
-            guardComputationResult = guardComputation.computeChoiceGuards();
-        } catch (SecurityException | IllegalArgumentException e) {
-            throw new RuntimeException("Runtime exception during guard computation.", e);
-        }
+                uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
+        Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
+        uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {
@@ -291,7 +289,7 @@ public class FullSynthesisApp {
     }
 
     private static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
-        Map<Location, List<Annotation>> locationAnnotationMap = new HashMap<>();
+        Map<Location, List<Annotation>> locationAnnotationMap = new LinkedHashMap<>();
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
@@ -311,7 +309,7 @@ public class FullSynthesisApp {
     private static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
             Map<Location, List<Annotation>> map2)
     {
-        Map<Location, List<Annotation>> compositeMap = new HashMap<>();
+        Map<Location, List<Annotation>> compositeMap = new LinkedHashMap<>();
 
         for (var entry: map1.entrySet()) {
             Location location = entry.getKey();

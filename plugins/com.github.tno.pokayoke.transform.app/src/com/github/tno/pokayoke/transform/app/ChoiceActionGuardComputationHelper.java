@@ -10,7 +10,6 @@ import static org.eclipse.escet.common.emf.EMFHelper.deepclone;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import org.eclipse.escet.cif.bdd.spec.CifBddLocPtrVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifCollectUtils;
-import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
@@ -44,7 +42,6 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -56,17 +53,17 @@ public class ChoiceActionGuardComputationHelper {
     }
 
     /**
-     * Collect guards of CIF events from a CIF BDD specification.
+     * Collect uncontrolled system guards from a CIF/BDD specification.
      *
-     * @param cifBddSpec The CIF specification.
+     * @param cifBddSpec The CIF/BDD specification.
      * @return A map from CIF events to their guards in BDDs.
      */
-    public static Map<Event, BDD> collectEventGuards(CifBddSpec cifBddSpec) {
-        Map<Event, BDD> guards = new HashMap<>();
+    public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec) {
+        Map<Event, BDD> guards = new LinkedHashMap<>();
         for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
             List<CifBddEdge> cifBDDEdges = entry.getValue();
             Preconditions.checkArgument(cifBDDEdges.size() == 1,
-                    "Expected that each event has exactly one CIF BDD edge.");
+                    "Expected that each event has exactly one CIF/BDD edge.");
             BDD bdd = cifBDDEdges.get(0).guard.id();
             guards.put(entry.getKey(), bdd);
         }
@@ -74,15 +71,16 @@ public class ChoiceActionGuardComputationHelper {
     }
 
     /**
-     * Get CIF events that corresponds to the transitions from all the choice places in the Petri net.
+     * Get CIF events that correspond to the transitions from all the choice places in the Petri net.
      *
      * @param petriNet The Petri net.
      * @param allEvents Events from the CIF specification corresponding to the Petri net.
-     * @return A map from choice place in Petri net to choice events in CIF specification.
+     * @return Per choice place in the Petri net, the CIF events corresponding to the choices (outgoing transitions from
+     *     the choice place).
      */
     public static Map<Place, List<Event>> getChoiceEventsPerChoicePlace(PetriNet petriNet, Set<Event> allEvents) {
         List<Page> pnPages = petriNet.getPages();
-        Map<Place, List<Event>> place2Event = new LinkedHashMap<>();
+        Map<Place, List<Event>> placeToEvent = new LinkedHashMap<>();
         Preconditions.checkArgument(pnPages.size() == 1, "Expected the Petri Net to have exactly one Petri Net page.");
         Page pnPage = pnPages.get(0);
 
@@ -99,15 +97,17 @@ public class ChoiceActionGuardComputationHelper {
                 List<Event> events = allEvents.stream().filter(event -> event.getName().equals(eventName)).toList();
                 Preconditions.checkArgument(events.size() == 1,
                         String.format("Expected that there is exactly one event named %s.", eventName));
-                choiceEvents.add(events.get(0));
+                Event event = events.get(0);
+                Preconditions.checkArgument(!choiceEvents.contains(event), String.format(
+                        "There is a duplicate of choice event %s. Expected to have no duplicates as choices should be deterministic.",
+                        eventName));
+                choiceEvents.add(event);
             }
 
-            Verify.verify(!place2Event.values().contains(choiceEvents),
-                    "Expected that the choice events are unique to a choice place.");
-            place2Event.put(choicePlace, choiceEvents);
+            placeToEvent.put(choicePlace, choiceEvents);
         }
 
-        return place2Event;
+        return placeToEvent;
     }
 
     /**
@@ -140,7 +140,7 @@ public class ChoiceActionGuardComputationHelper {
      * Transforms a state annotation into a CIF expression.
      *
      * @param annotation The state annotation to transform.
-     * @param cifBddSpec The CIF specification.
+     * @param cifBddSpec The CIF/BDD specification.
      * @return A CIF expression.
      */
     public static Expression stateAnnotationToCifPred(Annotation annotation, CifBddSpec cifBddSpec) {
@@ -153,7 +153,9 @@ public class ChoiceActionGuardComputationHelper {
             String variableName = argument.getName();
             Expression expression = argument.getValue();
 
-            // Extract the expression from the argument that contains synthesis variable.
+            // Get from the annotation argument an expression representing the value of the synthesis variable. Skip
+            // annotation arguments that do not correspond to synthesis variables, such as for automata with only one
+            // location.
             if (isSynthesisVariable(variableName, bddVariables)) {
                 List<CifBddVariable> variables = bddVariables.stream()
                         .filter(variable -> variable.rawName.equals(variableName)).toList();
@@ -187,8 +189,7 @@ public class ChoiceActionGuardComputationHelper {
                     if (variableType instanceof EnumType enumType) {
                         String variableValue = ((StringExpression)expression).getValue();
                         List<EnumLiteral> enumLiterals = enumType.getEnum().getLiterals().stream()
-                                .filter(literal -> CifTextUtils.getAbsName(literal, false).equals(variableValue))
-                                .toList();
+                                .filter(literal -> literal.getName().equals(variableValue)).toList();
                         Preconditions.checkArgument(enumLiterals.size() == 1, String.format(
                                 "Expected that there is exactly one enummeration literal named %s.", variableValue));
 
@@ -227,13 +228,13 @@ public class ChoiceActionGuardComputationHelper {
      * @param event The CIF event.
      * @return The corresponding transition.
      */
-    public static Transition getTransition(Place place, Event event) {
+    public static Transition getChoiceTransition(Place place, Event event) {
         List<Transition> targetTransitions = place.getOutArcs().stream().map(arc -> arc.getTarget())
                 .map(Transition.class::cast).toList();
         List<Transition> transitions = targetTransitions.stream()
                 .filter(transition -> transition.getName().getText().equals(event.getName())).toList();
         Preconditions.checkArgument(transitions.size() == 1,
-                String.format("Expected that there is exactly one transition named %s from the choice %s.",
+                String.format("Expected that there is exactly one transition named %s from choice place %s.",
                         event.getName(), place.getName()));
 
         return transitions.get(0);

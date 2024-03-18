@@ -2,13 +2,13 @@
 package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -25,11 +25,11 @@ import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.Transition;
 
-/** Compute the event guards of the actions for choices. */
+/** Compute the guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
     private Specification cifMinimizedStateSpace;
 
-    private Map<Event, BDD> actionGuards;
+    private Map<Event, BDD> uncontrolledSystemGuards;
 
     private CifDataSynthesisResult cifSynthesisResult;
 
@@ -39,30 +39,29 @@ public class ChoiceActionGuardComputation {
 
     private Map<Place, Set<String>> regionMap;
 
-    public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> actionGuards,
+    public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> uncontrolledSystemGuards,
             CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
         this.cifMinimizedStateSpace = cifMinimizedStateSpace;
-        this.actionGuards = actionGuards;
+        this.uncontrolledSystemGuards = uncontrolledSystemGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
         this.compositeStateMap = compositeStateMap;
         this.regionMap = regionMap;
     }
 
-    public Map<Place, Map<Transition, BDD>> computeChoiceGuards() {
+    public Map<Transition, Expression> computeChoiceGuards() {
         CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
         // Get the map from choice places to their choice events (outgoing events).
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
                 .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
 
-        // Compute event guards for each choice place.
-        Map<Place, Map<Transition, BDD>> choicePlaceToChoiceTransitionToGuard = new HashMap<>();
+        // Compute guards for each choice place.
+        Map<Transition, Expression> choiceTransitionToGuard = new LinkedHashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
-            Map<Transition, BDD> choiceTransitionToGuard = new LinkedHashMap<>();
 
             // Get the locations corresponding to the choice place.
             Set<String> choiceLocations = regionMap.get(choicePlace);
@@ -74,38 +73,44 @@ public class ChoiceActionGuardComputation {
                     .flatMap(location -> compositeStateMap.get(location).stream()).toList();
 
             // Get BDDs of these state annotations.
-            List<BDD> bdds = new ArrayList<>();
+            List<BDD> choiceStatesPreds = new ArrayList<>();
             for (Annotation annotation: annotations) {
                 Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation,
                         cifBddSpec);
                 try {
                     BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
-                    bdds.add(bdd);
+                    choiceStatesPreds.add(bdd);
                 } catch (UnsupportedPredicateException e) {
-                    throw new RuntimeException("Exception when converting CIF expression into BDD.", e);
+                    throw new RuntimeException("Failed to convert CIF expression into BDD.", e);
                 }
             }
 
             // Get disjunction of these BDDs.
-            BDD disjunction = bdds.stream().reduce((left, right) -> left.orWith(right)).get();
+            BDD choiceStatesPred = choiceStatesPreds.stream().reduce((left, right) -> left.orWith(right)).get();
 
-            // Perform simplification for each event of the choice.
+            // Perform simplification to obtain choice guards.
             for (Event choiceEvent: choiceEvents) {
-                // Get guard of the choice event from the CIF specification.
-                BDD eventSpecGuard = actionGuards.get(choiceEvent);
+                // Get the uncontrolled system guard from the CIF specification.
+                BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(choiceEvent);
 
-                // Get guard of the choice event from the synthesis result.
-                BDD eventSynthesisGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
+                // Get the controlled system guard from the synthesis result.
+                BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
 
                 // Perform simplification.
-                BDD simplicationResult = eventSynthesisGuard.simplify(eventSpecGuard).simplify(disjunction);
+                BDD supervisorExtraGuard = controlledSystemGuard.simplify(uncontrolledSystemGuard);
+                BDD choiceGuardBdd = supervisorExtraGuard.simplify(choiceStatesPred);
+                supervisorExtraGuard.free();
 
-                choiceTransitionToGuard.put(ChoiceActionGuardComputationHelper.getTransition(choicePlace, choiceEvent),
-                        simplicationResult);
+                Expression choiceGuardExpr = BddToCif.bddToCifPred(choiceGuardBdd, cifBddSpec);
+                choiceGuardBdd.free();
+
+                choiceTransitionToGuard.put(
+                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
+                        choiceGuardExpr);
             }
-            choicePlaceToChoiceTransitionToGuard.put(choicePlace, choiceTransitionToGuard);
+            choiceStatesPred.free();
         }
 
-        return choicePlaceToChoiceTransitionToGuard;
+        return choiceTransitionToGuard;
     }
 }
