@@ -19,6 +19,8 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
 
+import PokaYoke.GuardEffectsAction;
+
 /**
  * 
  */
@@ -45,6 +47,17 @@ public class ApplyPokaYokeUmlProfile {
 		});
     }
 
+	/**
+	 * Applies {@link GuardEffectsAction} stereotype and copies the
+	 * {@link OpaqueAction#getBodies()} to its
+	 * {@link GuardEffectsAction#setGuard(String)} and
+	 * {@link GuardEffectsAction#setEffects(String)}. If the
+	 * {@link GuardEffectsAction} stereotype is already applied, copies its
+	 * <code>guard</code> and <code>effects</code> back to the <code>bodies</code>
+	 * of the <code>action</code>.
+	 * 
+	 * @param action the action to transform
+	 */
     private static void applyUmlProfile(OpaqueAction action) {
     	String guard = GuardEffectsUtil.getGuard(action);
     	String effects = GuardEffectsUtil.getEffects(action);

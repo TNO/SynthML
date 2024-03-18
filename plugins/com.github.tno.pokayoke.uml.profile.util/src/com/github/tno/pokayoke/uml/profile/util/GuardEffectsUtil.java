@@ -81,7 +81,7 @@ public class GuardEffectsUtil {
 			return st.get();
 		}
 
-		// FIXME: Refactor this to avoid dependency on UML designer plugin
+		// TODO: We may need to embed this code to avoid dependency on UML designer plugin
 		ReusedDescriptionServices rds = new ReusedDescriptionServices();
 		st = rds.getAllStereotypesAndProfiles(element).stream().filter(
 				sp -> sp instanceof Stereotype && Objects.equals(((Stereotype) sp).getQualifiedName(), qualifiedName))
