@@ -12,10 +12,10 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-    // The plug-in ID
+    /** The plug-in ID. */
     public static final String PLUGIN_ID = "com.github.tno.pokayoke.uml.profile.design";
 
-    // The shared instance
+    /** The shared instance. */
     private static Activator plugin;
 
     private static Set<Viewpoint> viewpoints; 
@@ -56,9 +56,9 @@ public class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Returns the shared instance
+     * Returns the shared instance.
      * 
-     * @return the shared instance
+     * @return the shared instance.
      */
     public static Activator getDefault() {
 	return plugin;

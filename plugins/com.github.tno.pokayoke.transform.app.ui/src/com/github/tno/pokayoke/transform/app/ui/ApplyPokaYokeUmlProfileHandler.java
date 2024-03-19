@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.github.tno.pokayoke.uml.profile.transform.ApplyPokaYokeUmlProfile;
 
-/** Menu action handler for translating UML models to GAL specifications. */
+/** Menu action handler for applying the Poka Yoke UML profile to an existing UML file. */
 public class ApplyPokaYokeUmlProfileHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) IStructuredSelection selection) {

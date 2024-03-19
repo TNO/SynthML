@@ -88,8 +88,8 @@ public class PokaYokeProfileServices {
 
 	/**
 	 * Validates the {@link GuardEffectsAction#getGuard()} property and returns
-	 * <code>null</code> if it is a valid CIF expression, a non <code>null</code>
-	 * string contains a user message that explains the violation.
+	 * <code>null</code> if it is a valid CIF expression, or a non <code>null</code>
+	 * string that contains a user message that explains the violation.
 	 * 
 	 * @param action the action to interrogate.
 	 * @return <code>true</code> if {@link GuardEffectsAction#getGuard()} is a valid
@@ -99,7 +99,7 @@ public class PokaYokeProfileServices {
 		try {
 			AExpression guardExpr = GuardEffectsUtil.getGuardExpression(action);
 			if (guardExpr == null) {
-				// Not stereotyped or guard not set, skip validation
+				// Not stereotyped or guard not set, skip validation.
 				return null;
 			}
 			CifToPythonTranslator cifToPythonTranslator = new CifToPythonTranslator(new ModelTyping(action.getModel()));
@@ -163,8 +163,8 @@ public class PokaYokeProfileServices {
 
 	/**
 	 * Validates the {@link EffectsEffectsAction#getEffects()} property and returns
-	 * <code>null</code> if it is a valid CIF expression, a non <code>null</code>
-	 * string contains a user message that explains the violation.
+	 * <code>null</code> if it is a valid CIF expression, or a non <code>null</code>
+	 * string that contains a user message that explains the violation.
 	 * 
 	 * @param action the action to interrogate.
 	 * @return <code>true</code> if {@link EffectsEffectsAction#getEffects()} is a valid
@@ -174,7 +174,7 @@ public class PokaYokeProfileServices {
 		try {
 			List<AUpdate> effectsUpdates = GuardEffectsUtil.getEffectsUpdates(action);
 			if (effectsUpdates == null) {
-				// Not stereotyped or effects not set, skip validation
+				// Not stereotyped or effects not set, skip validation.
 				return null;
 			}
 			CifToPythonTranslator cifToPythonTranslator = new CifToPythonTranslator(new ModelTyping(action.getModel()));
@@ -223,7 +223,7 @@ public class PokaYokeProfileServices {
 			}
 			return;
 		} else if ("true".equals(newValue) || "false".equals(newValue)) {
-			// Supports resetting the value to the default 'true'
+			// Supports resetting the value to the default 'true'.
 			ValueSpecification guard = contolFlow.getGuard();
 			if (!(guard instanceof LiteralBoolean)) {
 				guard = UMLFactory.eINSTANCE.createLiteralBoolean();

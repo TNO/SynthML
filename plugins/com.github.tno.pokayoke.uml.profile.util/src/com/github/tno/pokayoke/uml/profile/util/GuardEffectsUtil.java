@@ -37,7 +37,7 @@ public class GuardEffectsUtil {
 		Optional<String> guard = getAppliedStereotype(action, QN_GUARD_EFFECTS_ACTION)
 				.map(st -> (String) action.getValue(st, QN_GUARD_EFFECTS_ACTION__GUARD));
 		if (guard.isEmpty() || guard.get().isEmpty()) {
-			// Not stereotyped or guard not set, return null
+			// Not stereotyped or guard not set, return null.
 			return null;
 		}
 		CifExpressionParser expressionParser = new CifExpressionParser();
@@ -58,7 +58,7 @@ public class GuardEffectsUtil {
 		Optional<String> effects = getAppliedStereotype(action, QN_GUARD_EFFECTS_ACTION)
 				.map(st -> (String) action.getValue(st, QN_GUARD_EFFECTS_ACTION__EFFECTS));
 		if (effects.isEmpty() || effects.get().isEmpty()) {
-			// Not stereotyped or effects not set, skip validation
+			// Not stereotyped or effects not set, skip validation.
 			return null;
 		}
 		CifUpdatesParser updatesParser = new CifUpdatesParser();

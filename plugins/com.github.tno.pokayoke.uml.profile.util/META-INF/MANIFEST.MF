@@ -13,6 +13,6 @@ Require-Bundle: com.github.tno.pokayoke.uml.profile.plugin;bundle-version="0.0.1
  org.obeonetwork.dsl.uml2.core.design;bundle-version="9.0.0",
  com.github.tno.pokayoke.transform.common,
  org.eclipse.uml2.uml.resources
-Bundle-Vendor: ESI (TNO)
+Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.pokayoke.uml.profile.util
 Bundle-RequiredExecutionEnvironment: JavaSE-17
