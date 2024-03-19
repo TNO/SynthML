@@ -102,7 +102,7 @@ public abstract class Uml2CifTranslator {
      * @return The list of CIF updates.
      */
     public List<Update> parseUpdates(String updates) {
-        // TODO I think this could be done more conveniently
+        // TODO Use the parser from Git issue #172 / PR #187.
         return Arrays.stream(updates.split(",")).map(this::parseUpdate).toList();
     }
 

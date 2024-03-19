@@ -50,6 +50,8 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
     private final CifUpdateParser updateParser = new CifUpdateParser();
 
     /**
+     * Gives a translator for annotated UML models, with CIF as the annotation language.
+     *
      * @param inputPath The location of the source UML file to be translated.
      */
     public CifAnnotatedUml2CifTranslator(String inputPath) {
