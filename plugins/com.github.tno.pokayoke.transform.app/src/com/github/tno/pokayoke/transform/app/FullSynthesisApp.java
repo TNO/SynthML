@@ -53,6 +53,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.google.common.base.Preconditions;
@@ -132,24 +133,22 @@ public class FullSynthesisApp {
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
+        // Get region-state mapping.
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
+
         // Translate Petrify output into PNML.
         Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
-        PetriNet petriNetWithoutLoop = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
-        PostProcessPNML.removeLoop(petriNetWithoutLoop);
-        PetriNetUMLFileHelper.writePetriNet(petriNetWithoutLoop, pnmlOutputPath.toString());
-
-        // Get region-state mapping.
-        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
-        PetriNet petriNetWithLoop = Petrify2PNMLTranslator.transform(petrifyOutput);
-        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNetWithLoop);
+        PostProcessPNML.removeLoop(petriNet);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
-        Activity activity = petriNet2Activity.transform(petriNetWithoutLoop);
-        Map<Transition, OpaqueAction> transition2Action = petriNet2Activity.getTransitionActionMap();
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        Activity activity = petriNet2Activity.transform(petriNet);
+        Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -165,9 +164,29 @@ public class FullSynthesisApp {
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
+                uncontrolledSystemGuards, cifSynthesisResult, petriNet, minimizedToReduced, regionMap);
         Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
+
+        // Get a map from actions to guards.
+        Map<OpaqueAction, Expression> choiceActionToGuard = new LinkedHashMap<>();
+        choiceTransitionToGuard.forEach(
+                (transition, expression) -> choiceActionToGuard.put(transitionToAction.get(transition), expression));
+
+        // Add the guards to the activity.
+        AddGuardsToChoiceActions.addGuards(choiceActionToGuard);
+
+        // Post-process the activity to remove the actions added in CIF specification and Petrification.
+        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'start' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'end' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'c_satisfied' action removed.");
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {

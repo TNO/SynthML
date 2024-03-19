@@ -17,7 +17,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Transforms Petri Net to Activity. */
 public class PetriNet2Activity {
-    private Map<Transition, OpaqueAction> transition2Action;
+    private Map<Transition, OpaqueAction> transitionToAction;
 
     public PetriNet2Activity() {
     }
@@ -52,7 +52,7 @@ public class PetriNet2Activity {
         PetriNet2ActivityHelper petriNet2ActivityHelper = new PetriNet2ActivityHelper();
         Activity activity = petriNet2ActivityHelper.initializeUMLActivity(page);
 
-        transition2Action = petriNet2ActivityHelper.transformTransitions(page, activity);
+        transitionToAction = petriNet2ActivityHelper.transformTransitions(page, activity);
         petriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
         petriNet2ActivityHelper.transformPlaceBasedPatterns(page, activity);
         petriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
@@ -63,6 +63,6 @@ public class PetriNet2Activity {
     }
 
     public Map<Transition, OpaqueAction> getTransitionActionMap() {
-        return transition2Action;
+        return transitionToAction;
     }
 }

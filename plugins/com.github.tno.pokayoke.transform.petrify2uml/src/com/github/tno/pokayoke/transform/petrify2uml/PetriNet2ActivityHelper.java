@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,10 +63,10 @@ public class PetriNet2ActivityHelper {
      * @return The map from Petri net transitions to activity actions.
      */
     public Map<Transition, OpaqueAction> transformTransitions(Page page, Activity activity) {
-        Map<Transition, OpaqueAction> transition2Action = new HashMap<>();
+        Map<Transition, OpaqueAction> transitionToAction = new LinkedHashMap<>();
         page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast).forEach(
-                transition -> transition2Action.put(transition, transformTransition(transition.getId(), activity)));
-        return transition2Action;
+                transition -> transitionToAction.put(transition, transformTransition(transition.getId(), activity)));
+        return transitionToAction;
     }
 
     private OpaqueAction transformTransition(String name, Activity activity) {
