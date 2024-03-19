@@ -169,12 +169,16 @@ public class FullSynthesisApp {
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
         // Get a map from actions to guards.
-        Map<OpaqueAction, Expression> choiceActionToGuard = new LinkedHashMap<>();
-        choiceTransitionToGuard.forEach(
-                (transition, expression) -> choiceActionToGuard.put(transitionToAction.get(transition), expression));
+        Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
+        choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
+                .put(transitionToAction.get(transition), expression));
+
+        // Convert guard CIF expression to CIF expression text.
+        ConvertExpressionToText converter = new ConvertExpressionToText();
+        Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
         // Add the guards to the activity.
-        AddGuardsToChoiceActions.addGuards(choiceActionToGuard);
+        AddGuardsToChoiceActions.addGuards(choiceActionToGuardText);
 
         // Post-process the activity to remove the actions added in CIF specification and Petrification.
         int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
