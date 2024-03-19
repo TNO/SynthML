@@ -79,8 +79,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		isInited = true;
 
 		// Initialize simple dependencies
-		UMLPackage.eINSTANCE.eClass();
 		TypesPackage.eINSTANCE.eClass();
+		UMLPackage.eINSTANCE.eClass();
 		EcorePackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
@@ -113,18 +113,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EReference getGuardEffectsAction_Base_OpaqueAction() {
-		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EAttribute getGuardEffectsAction_Guard() {
-		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(1);
+		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -134,7 +124,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 */
 	@Override
 	public EAttribute getGuardEffectsAction_Effects() {
-		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(2);
+		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -143,8 +133,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EReference getGuardEffectsAction_Base_CallBehaviorAction() {
-		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(3);
+	public EReference getGuardEffectsAction_Base_Action() {
+		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -177,10 +167,9 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 
 		// Create classes and their features
 		guardEffectsActionEClass = createEClass(GUARD_EFFECTS_ACTION);
-		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_OPAQUE_ACTION);
 		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__GUARD);
 		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__EFFECTS);
-		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION);
+		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_ACTION);
 	}
 
 	/**
@@ -207,8 +196,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		UMLPackage theUMLPackage = (UMLPackage)EPackage.Registry.INSTANCE.getEPackage(UMLPackage.eNS_URI);
 		TypesPackage theTypesPackage = (TypesPackage)EPackage.Registry.INSTANCE.getEPackage(TypesPackage.eNS_URI);
+		UMLPackage theUMLPackage = (UMLPackage)EPackage.Registry.INSTANCE.getEPackage(UMLPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -218,10 +207,9 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(guardEffectsActionEClass, GuardEffectsAction.class, "GuardEffectsAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGuardEffectsAction_Base_OpaqueAction(), theUMLPackage.getOpaqueAction(), null, "base_OpaqueAction", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getGuardEffectsAction_Guard(), theTypesPackage.getString(), "guard", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getGuardEffectsAction_Effects(), theTypesPackage.getString(), "effects", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
-		initEReference(getGuardEffectsAction_Base_CallBehaviorAction(), theUMLPackage.getCallBehaviorAction(), null, "base_CallBehaviorAction", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getGuardEffectsAction_Base_Action(), theUMLPackage.getAction(), null, "base_Action", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

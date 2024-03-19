@@ -67,22 +67,13 @@ public interface PokaYokePackage extends EPackage {
 	int GUARD_EFFECTS_ACTION = 0;
 
 	/**
-	 * The feature id for the '<em><b>Base Opaque Action</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GUARD_EFFECTS_ACTION__BASE_OPAQUE_ACTION = 0;
-
-	/**
 	 * The feature id for the '<em><b>Guard</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__GUARD = 1;
+	int GUARD_EFFECTS_ACTION__GUARD = 0;
 
 	/**
 	 * The feature id for the '<em><b>Effects</b></em>' attribute.
@@ -91,16 +82,16 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__EFFECTS = 2;
+	int GUARD_EFFECTS_ACTION__EFFECTS = 1;
 
 	/**
-	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
+	 * The feature id for the '<em><b>Base Action</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION = 3;
+	int GUARD_EFFECTS_ACTION__BASE_ACTION = 2;
 
 	/**
 	 * The number of structural features of the '<em>Guard Effects Action</em>' class.
@@ -109,7 +100,7 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION_FEATURE_COUNT = 4;
+	int GUARD_EFFECTS_ACTION_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>Guard Effects Action</em>' class.
@@ -130,17 +121,6 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 */
 	EClass getGuardEffectsAction();
-
-	/**
-	 * Returns the meta object for the reference '{@link PokaYoke.GuardEffectsAction#getBase_OpaqueAction <em>Base Opaque Action</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Base Opaque Action</em>'.
-	 * @see PokaYoke.GuardEffectsAction#getBase_OpaqueAction()
-	 * @see #getGuardEffectsAction()
-	 * @generated
-	 */
-	EReference getGuardEffectsAction_Base_OpaqueAction();
 
 	/**
 	 * Returns the meta object for the attribute '{@link PokaYoke.GuardEffectsAction#getGuard <em>Guard</em>}'.
@@ -165,15 +145,15 @@ public interface PokaYokePackage extends EPackage {
 	EAttribute getGuardEffectsAction_Effects();
 
 	/**
-	 * Returns the meta object for the reference '{@link PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
+	 * Returns the meta object for the reference '{@link PokaYoke.GuardEffectsAction#getBase_Action <em>Base Action</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Base Call Behavior Action</em>'.
-	 * @see PokaYoke.GuardEffectsAction#getBase_CallBehaviorAction()
+	 * @return the meta object for the reference '<em>Base Action</em>'.
+	 * @see PokaYoke.GuardEffectsAction#getBase_Action()
 	 * @see #getGuardEffectsAction()
 	 * @generated
 	 */
-	EReference getGuardEffectsAction_Base_CallBehaviorAction();
+	EReference getGuardEffectsAction_Base_Action();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -209,14 +189,6 @@ public interface PokaYokePackage extends EPackage {
 		EClass GUARD_EFFECTS_ACTION = eINSTANCE.getGuardEffectsAction();
 
 		/**
-		 * The meta object literal for the '<em><b>Base Opaque Action</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference GUARD_EFFECTS_ACTION__BASE_OPAQUE_ACTION = eINSTANCE.getGuardEffectsAction_Base_OpaqueAction();
-
-		/**
 		 * The meta object literal for the '<em><b>Guard</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -233,12 +205,12 @@ public interface PokaYokePackage extends EPackage {
 		EAttribute GUARD_EFFECTS_ACTION__EFFECTS = eINSTANCE.getGuardEffectsAction_Effects();
 
 		/**
-		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Base Action</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GUARD_EFFECTS_ACTION__BASE_CALL_BEHAVIOR_ACTION = eINSTANCE.getGuardEffectsAction_Base_CallBehaviorAction();
+		EReference GUARD_EFFECTS_ACTION__BASE_ACTION = eINSTANCE.getGuardEffectsAction_Base_Action();
 
 	}
 
