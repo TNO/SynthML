@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.github.tno.pokayoke.uml.profile.transform;
 
 import java.io.IOException;
@@ -21,9 +18,6 @@ import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
 
 import PokaYoke.GuardEffectsAction;
 
-/**
- * 
- */
 public class ApplyPokaYokeUmlProfile {
     public static void applyUmlProfile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
@@ -42,8 +36,9 @@ public class ApplyPokaYokeUmlProfile {
 
     private static void applyUmlProfile(Model model) {
     	model.eAllContents().forEachRemaining(o -> {
-    		if (o instanceof OpaqueAction) 
-    			applyUmlProfile((OpaqueAction) o);
+    		if (o instanceof OpaqueAction oa) {
+    			applyUmlProfile(oa);
+    		}
 		});
     }
 
