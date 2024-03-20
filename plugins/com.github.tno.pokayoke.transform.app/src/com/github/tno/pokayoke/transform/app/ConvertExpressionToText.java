@@ -42,7 +42,7 @@ public class ConvertExpressionToText {
                 (action, expression) -> choiceActionToGuardText.put(action, CifTextUtils.exprToStr(expression)));
 
         // Move the declarations back to their original scopes. This may change the order of the declarations.
-        revertMove();
+        revertVariableMove();
 
         return choiceActionToGuardText;
     }
@@ -60,7 +60,7 @@ public class ConvertExpressionToText {
         enumDeclToParent.keySet().stream().forEach(decalaration -> cifSpec.getDeclarations().add(decalaration));
     }
 
-    private void revertMove() {
+    private void revertVariableMove() {
         discVariableToParent.entrySet()
                 .forEach(e -> ((ComplexComponent)e.getValue()).getDeclarations().add(e.getKey()));
     }
