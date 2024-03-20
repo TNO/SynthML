@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 
 /** Add computed guards to the choices in the translated activity. */
 public class AddGuardsToChoiceActions {
-    public static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
+    private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
     private AddGuardsToChoiceActions() {
     }
