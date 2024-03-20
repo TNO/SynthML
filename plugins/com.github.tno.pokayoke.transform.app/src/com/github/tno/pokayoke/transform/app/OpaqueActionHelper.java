@@ -12,10 +12,10 @@ import org.eclipse.uml2.uml.UMLFactory;
 import com.google.common.base.Preconditions;
 
 /** Add computed guards to the choices in the translated activity. */
-public class AddGuardsToChoiceActions {
+public class OpaqueActionHelper{
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
-    private AddGuardsToChoiceActions() {
+    private OpaqueActionHelper() {
     }
 
     /**

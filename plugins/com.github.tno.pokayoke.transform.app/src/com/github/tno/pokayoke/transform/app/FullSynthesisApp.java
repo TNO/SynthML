@@ -178,7 +178,7 @@ public class FullSynthesisApp {
         Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
         // Add the guards to the activity.
-        AddGuardsToChoiceActions.addGuards(choiceActionToGuardText);
+        OpaqueActionHelper.addGuards(choiceActionToGuardText);
 
         // Post-process the activity to remove the actions added in CIF specification and Petrification.
         int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
