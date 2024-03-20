@@ -1,19 +1,16 @@
 package com.github.tno.pokayoke.uml.profile.design;
 
-import static com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil.QN_GUARD_EFFECTS_ACTION;
+import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE;
 
-import java.util.List;
-
-import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
-import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
-import org.eclipse.escet.setext.runtime.exceptions.ParseException;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralNull;
+import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.transform.uml.CifToPythonTranslator;
-import com.github.tno.pokayoke.transform.uml.ModelTyping;
-import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 
 import PokaYoke.GuardEffectsAction;
@@ -31,7 +28,7 @@ public class PokaYokeProfileServices {
 	 * on action.
 	 */
 	public static boolean isGuardEffectsAction(Action action) {
-		return GuardEffectsUtil.getAppliedStereotype(action, QN_GUARD_EFFECTS_ACTION).isPresent();
+		return PokaYokeUmlProfileUtil.getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE).isPresent();
 	}
 	
 	/**
@@ -43,7 +40,7 @@ public class PokaYokeProfileServices {
 	 * <code>action</code> is stereotype, <code>null</code> otherwise.
 	 */
 	public static String getGuard(Action action) {
-		return GuardEffectsUtil.getGuard(action);
+		return PokaYokeUmlProfileUtil.getGuard(action);
 	}
 
 	/**
@@ -64,51 +61,13 @@ public class PokaYokeProfileServices {
 		if (Strings.isNullOrEmpty(newValue)) {
 			String effects = getEffects(action);
 			if (Strings.isNullOrEmpty(effects)) {
-				GuardEffectsUtil.unapplyStereotype(action, QN_GUARD_EFFECTS_ACTION);
+				PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
 				return;
 			}
 		}
-		GuardEffectsUtil.setGuard(action, newValue);
+		PokaYokeUmlProfileUtil.setGuard(action, newValue);
 	}
 
-	/**
-	 * Validates the {@link GuardEffectsAction#getGuard()} property and returns
-	 * <code>true</code> if it is a valid CIF expression.
-	 * 
-	 * @param action the action to interrogate.
-	 * @return <code>true</code> if {@link GuardEffectsAction#getGuard()} is a valid
-	 *         CIF expression.
-	 */
-	public boolean isValidGuard(Action action) {
-		return getValidGuardErrorMessage(action) == null;
-	}
-
-	/**
-	 * Validates the {@link GuardEffectsAction#getGuard()} property and returns
-	 * <code>null</code> if it is a valid CIF expression, or a non <code>null</code>
-	 * string that contains a user message that explains the violation.
-	 * 
-	 * @param action the action to interrogate.
-	 * @return <code>true</code> if {@link GuardEffectsAction#getGuard()} is a valid
-	 *         CIF expression.
-	 */
-	public String getValidGuardErrorMessage(Action action) {
-		try {
-			AExpression guardExpr = GuardEffectsUtil.getGuardExpression(action);
-			if (guardExpr == null) {
-				// Not stereotyped or guard not set, skip validation.
-				return null;
-			}
-			CifToPythonTranslator cifToPythonTranslator = new CifToPythonTranslator(new ModelTyping(action.getModel()));
-			cifToPythonTranslator.translateExpression(guardExpr);
-		} catch (ParseException pe) {
-			return "Parsing of \"" + GuardEffectsUtil.getGuard(action) + "\" failed: " + pe.getLocalizedMessage();
-		} catch (RuntimeException re) {
-			return re.getLocalizedMessage();
-		}
-		return null;
-	}
-	
 	/**
 	 * Returns the {@link GuardEffectsAction#getEffects()} property value if
 	 * <code>action</code> is stereotype, <code>null</code> otherwise.
@@ -118,7 +77,7 @@ public class PokaYokeProfileServices {
 	 * <code>action</code> is stereotype, <code>null</code> otherwise.
 	 */
 	public static String getEffects(Action action) {
-		return GuardEffectsUtil.getEffects(action);
+		return PokaYokeUmlProfileUtil.getEffects(action);
 	}
 
 	/**
@@ -139,51 +98,11 @@ public class PokaYokeProfileServices {
 		if (Strings.isNullOrEmpty(newValue)) {
 			String effects = getEffects(action);
 			if (Strings.isNullOrEmpty(effects)) {
-				GuardEffectsUtil.unapplyStereotype(action, QN_GUARD_EFFECTS_ACTION);
+				PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
 				return;
 			}
 		}
-		GuardEffectsUtil.setEffects(action, newValue);
-	}
-
-	/**
-	 * Validates the {@link GuardEffectsAction#getEffects()} property and returns
-	 * <code>true</code> if it is a valid CIF expression.
-	 * 
-	 * @param action the action to interrogate.
-	 * @return <code>true</code> if {@link GuardEffectsAction#getEffects()} is a valid
-	 *         CIF expression.
-	 */
-	public boolean isValidEffects(Action action) {
-		return getValidEffectsErrorMessage(action) == null;
-	}
-
-	/**
-	 * Validates the {@link GuardEffectsAction#getEffects()} property and returns
-	 * <code>null</code> if it is a valid CIF expression, or a non <code>null</code>
-	 * string that contains a user message that explains the violation.
-	 * 
-	 * @param action the action to interrogate.
-	 * @return <code>true</code> if {@link GuardEffectsAction#getEffects()} is a valid
-	 *         CIF expression.
-	 */
-	public String getValidEffectsErrorMessage(Action action) {
-		try {
-			List<AUpdate> effectsUpdates = GuardEffectsUtil.getEffectsUpdates(action);
-			if (effectsUpdates == null) {
-				// Not stereotyped or effects not set, skip validation.
-				return null;
-			}
-			CifToPythonTranslator cifToPythonTranslator = new CifToPythonTranslator(new ModelTyping(action.getModel()));
-			for (AUpdate effectsUpdate : effectsUpdates) {
-				cifToPythonTranslator.translateUpdate(effectsUpdate);
-			}
-		} catch (ParseException pe) {
-			return "Parsing of \"" + GuardEffectsUtil.getEffects(action) + "\" failed: " + pe.getLocalizedMessage();
-		} catch (RuntimeException re) {
-			return re.getLocalizedMessage();
-		}
-		return null;
+		PokaYokeUmlProfileUtil.setEffects(action, newValue);
 	}
 
 	/**
@@ -193,20 +112,48 @@ public class PokaYokeProfileServices {
 	 * @param controlFlow the control-flow to interrogate.
 	 * @return the {@link ControlFlow#getGuard()} value as a
 	 *         {@link ValueSpecification#stringValue() String}.
-	 * @see GuardEffectsUtil#getGuard(ControlFlow)
 	 */
 	public static String getGuard(ControlFlow controlFlow) {
-		return GuardEffectsUtil.getGuard(controlFlow);
+		ValueSpecification guard = controlFlow.getGuard();
+		return guard == null ? null : guard.stringValue();
 	}
 
 	/**
-	 * Set the {@link ControlFlow#getGuard()} value to <code>newValue</code>.
+	 * Set the {@link ControlFlow#getGuard()} value to <code>newValue</code> where:
+	 * <ul>
+	 * <li><code>null</code></li>: <code>null</code> if guard is already
+	 * <code>null</code>, {@link LiteralNull} otherwise.
+	 * <li><code>true</code> or <code>false</code></li>: {@link LiteralBoolean}
+	 * holding the {@link LiteralBoolean#setValue(boolean) value}
+	 * <li>default: {@link OpaqueExpression} holding the value in its
+	 * {@link OpaqueExpression#getBodies() first body}</li>
+	 * </ul>
 	 * 
 	 * @param controlFlow the control-flow to set the guard value on.
 	 * @param newValue    the new guard value.
-	 * @see GuardEffectsUtil#setGuard(ControlFlow, String)
 	 */
 	public static void setGuard(ControlFlow controlFlow, String newValue) {
-		GuardEffectsUtil.setGuard(controlFlow, newValue);
+		if (newValue == null || newValue.isEmpty()) {
+			if (controlFlow.getGuard() != null) {
+				controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+			}
+			return;
+		} else if ("true".equals(newValue) || "false".equals(newValue)) {
+			// Supports resetting the value to the default 'true'.
+			ValueSpecification guard = controlFlow.getGuard();
+			if (!(guard instanceof LiteralBoolean)) {
+				guard = UMLFactory.eINSTANCE.createLiteralBoolean();
+				controlFlow.setGuard(guard);
+			}
+			((LiteralBoolean)guard).setValue(Boolean.valueOf(newValue));
+			return;
+		}
+		ValueSpecification guard = controlFlow.getGuard();
+		if (!(guard instanceof OpaqueExpression)) {
+			guard = UMLFactory.eINSTANCE.createOpaqueExpression();
+			controlFlow.setGuard(guard);
+		}
+		((OpaqueExpression) guard).getBodies().clear();
+		((OpaqueExpression) guard).getBodies().add(newValue);
 	}
 }

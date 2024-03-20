@@ -1,0 +1,49 @@
+package com.github.tno.pokayoke.uml.profile.cif;
+
+import java.util.List;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.escet.cif.parser.CifExpressionParser;
+import org.eclipse.escet.cif.parser.CifUpdatesParser;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.ValueSpecification;
+
+/** Helps parsing CIF expressions. */
+public class CifParserHelper {
+	private CifParserHelper() {
+		// Empty for utility classes
+	}
+
+	public static AExpression parseExpression(String expression, Element context) throws SyntaxException {
+		if (expression == null) {
+			return null;
+		}
+		CifExpressionParser expressionParser = new CifExpressionParser();
+		return expressionParser.parseString(expression, getLocation(context));
+	}
+
+	public static AExpression parseExpression(ValueSpecification valueSpecification) throws SyntaxException {
+		if (valueSpecification == null) {
+			return null;
+		}
+		return parseExpression(valueSpecification.stringValue(), valueSpecification);
+	}
+
+	public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
+		if (updates == null) {
+			return null;
+		}
+		CifUpdatesParser updatesParser = new CifUpdatesParser();
+		return updatesParser.parseString(updates, getLocation(context));
+	}
+
+	private static String getLocation(Element context) {
+		Resource resource = context == null ? null : context.eResource();
+		URI uri = resource == null ? null : resource.getURI();
+		return uri == null ? "unknown" : uri.toString();
+	}
+}

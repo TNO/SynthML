@@ -14,7 +14,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.uml.profile.util.GuardEffectsUtil;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
 import PokaYoke.GuardEffectsAction;
 
@@ -54,8 +54,8 @@ public class ApplyPokaYokeUmlProfile {
 	 * @param action the action to transform
 	 */
     private static void applyUmlProfile(OpaqueAction action) {
-    	String guard = GuardEffectsUtil.getGuard(action);
-    	String effects = GuardEffectsUtil.getEffects(action);
+    	String guard = PokaYokeUmlProfileUtil.getGuard(action);
+    	String effects = PokaYokeUmlProfileUtil.getEffects(action);
     	if (guard != null || effects != null ) {
     		// Data provisioned on stereotype, copy to bodies
     		action.getBodies().clear();
@@ -68,7 +68,7 @@ public class ApplyPokaYokeUmlProfile {
     		return;
     	}
     	Iterator<String> bodiesIterator = action.getBodies().iterator();
-    	GuardEffectsUtil.setGuard(action, bodiesIterator.next());
+    	PokaYokeUmlProfileUtil.setGuard(action, bodiesIterator.next());
     	if (!bodiesIterator.hasNext()) {
     		return;
     	}
@@ -76,6 +76,6 @@ public class ApplyPokaYokeUmlProfile {
     	while (bodiesIterator.hasNext()) {
     		effectsBuilder.append(",\n").append(bodiesIterator.next());
     	}
-    	GuardEffectsUtil.setEffects(action, effectsBuilder.toString());
+    	PokaYokeUmlProfileUtil.setEffects(action, effectsBuilder.toString());
     }
 }
