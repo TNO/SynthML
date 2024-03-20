@@ -177,19 +177,19 @@ public class FullSynthesisApp {
         ConvertExpressionToText converter = new ConvertExpressionToText();
         Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
-        // Add the guards to the activity.
+        // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuards(choiceActionToGuardText);
 
-        // Post-process the activity to remove the actions added in CIF specification and Petrification.
+        // Post-process the activity to remove the actions added in CIF specification and petrification.
         int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'start' action removed.");
+                "Expected that there is exactly one 'start' action removed.");
         numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'end' action removed.");
+                "Expected that there is exactly one 'end' action removed.");
         numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'c_satisfied' action removed.");
+                "Expected that there is exactly one 'c_satisfied' action removed.");
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 

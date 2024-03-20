@@ -30,13 +30,13 @@ public class PetriNet2Activity {
 
         int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'start' action removed.");
+                "Expected that there is exactly one 'start' action removed.");
         numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'end' action removed.");
+                "Expected that there is exactly one 'end' action removed.");
         numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is extactly one 'c_satisfied' action removed.");
+                "Expected that there is exactly one 'c_satisfied' action removed.");
 
         FileHelper.storeModel(activity.getModel(), outputPath);
     }

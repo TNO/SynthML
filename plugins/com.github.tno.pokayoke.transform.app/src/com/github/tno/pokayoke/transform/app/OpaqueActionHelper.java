@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.google.common.base.Preconditions;
 
-/** Add computed guards to the choices in the translated activity. */
+/** Helper for adding guards to the incoming edges of opaque actions. */
 public class OpaqueActionHelper{
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
@@ -19,12 +19,12 @@ public class OpaqueActionHelper{
     }
 
     /**
-     * Add guards to the incoming edges of choice actions.
+     * Add guards to the incoming edges of opaque actions.
      *
-     * @param choiceActionToGuard The map from the choice actions to the CIF expressions of the guards.
+     * @param actionToGuard The map from the opaque actions to the CIF expressions of the guards.
      */
-    public static void addGuards(Map<OpaqueAction, String> choiceActionToGuard) {
-        choiceActionToGuard.forEach((action, expression) -> addGuard(action, expression));
+    public static void addGuards(Map<OpaqueAction, String> actionToGuard) {
+        actionToGuard.forEach((action, expression) -> addGuard(action, expression));
     }
 
     private static void addGuard(OpaqueAction action, String expression) {

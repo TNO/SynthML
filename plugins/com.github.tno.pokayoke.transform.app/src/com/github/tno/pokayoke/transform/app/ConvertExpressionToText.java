@@ -31,7 +31,7 @@ public class ConvertExpressionToText {
      */
     public Map<OpaqueAction, String> convert(Specification cifSpec, Map<OpaqueAction, Expression> actionToExpression) {
         CheckGuard checkGuard = new CheckGuard();
-        actionToExpression.values().stream().forEach(expression -> checkGuard.check(expression));
+        actionToExpression.values().stream().forEach(checkGuard::check);
 
         // Move the declarations to the upper layer.
         moveVariables(cifSpec);
@@ -56,8 +56,8 @@ public class ConvertExpressionToText {
         declarations.stream().filter(EnumDecl.class::isInstance).map(EnumDecl.class::cast)
                 .forEach(v -> enumDeclToParent.put(v, v.eContainer()));
 
-        discVariableToParent.keySet().stream().forEach(decalaration -> cifSpec.getDeclarations().add(decalaration));
-        enumDeclToParent.keySet().stream().forEach(decalaration -> cifSpec.getDeclarations().add(decalaration));
+        discVariableToParent.keySet().stream().forEach(declaration -> cifSpec.getDeclarations().add(declaration));
+        enumDeclToParent.keySet().stream().forEach(declaration -> cifSpec.getDeclarations().add(declaration));
     }
 
     private void revertVariableMove() {
