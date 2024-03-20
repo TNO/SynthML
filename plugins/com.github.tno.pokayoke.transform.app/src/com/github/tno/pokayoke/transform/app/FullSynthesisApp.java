@@ -168,7 +168,7 @@ public class FullSynthesisApp {
         Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
-        // Get a map from actions to guards.
+        // Get a map from actions to the guards of the incoming edges of the actions.
         Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
