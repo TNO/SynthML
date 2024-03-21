@@ -39,7 +39,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 		CifContext ctx = new CifContext(elem);
 		Type exprType = typeChecker.visit(expr, ctx);
 		if (!ctx.getBooleanType().equals(exprType)) {
-			throw new RuntimeException("Expected Boolean but got " + getLabel(exprType));
+			throw new RuntimeException("Expected Boolean return type but got " + getLabel(exprType));
 		}
 		return exprType;
 	}
@@ -129,7 +129,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 	protected Type visit(Type addressable, Type value, CifContext ctx) {
 		if (!Objects.equals(addressable, value)) {
 			throw new RuntimeException(
-					lenientFormat("Expected %s but got %s", getLabel(addressable), getLabel(value)));
+					lenientFormat("Expected %s but got %s near keyword ':='", getLabel(addressable), getLabel(value)));
 		}
 		return addressable;
 	}
@@ -172,12 +172,14 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 		switch (operator) {
 		case NOT:
 			if (!ctx.getBooleanType().equals(child)) {
-				throw new RuntimeException("Expected Boolean but got " + getLabel(child));
+				throw new RuntimeException(lenientFormat("Expected Boolean but got %s near keyword '%s'",
+						getLabel(child), operator.cifValue()));
 			}
 			break;
 		case MINUS:
 			if (!ctx.getIntegerType().equals(child)) {
-				throw new RuntimeException("Expected Integer but got " + getLabel(child));
+				throw new RuntimeException(lenientFormat("Expected Integer but got %s near keyword '%s'",
+						getLabel(child), operator.cifValue()));
 			}
 			break;
 		}

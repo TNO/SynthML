@@ -28,7 +28,7 @@ public class PokaYokeProfileServices {
 	 * on action.
 	 */
 	public static boolean isGuardEffectsAction(Action action) {
-		return PokaYokeUmlProfileUtil.getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE).isPresent();
+		return PokaYokeUmlProfileUtil.isGuardEffectsAction(action);
 	}
 	
 	/**

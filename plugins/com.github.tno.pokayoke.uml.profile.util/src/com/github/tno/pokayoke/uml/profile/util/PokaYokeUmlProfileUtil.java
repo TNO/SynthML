@@ -31,6 +31,18 @@ public class PokaYokeUmlProfileUtil {
 		// Empty for utility classes
 	}
 	
+	/**
+	 * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied
+	 * on {@link Action action}.
+	 * 
+	 * @param action the action to interrogate.
+	 * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied
+	 * on action.
+	 */
+	public static boolean isGuardEffectsAction(Action action) {
+		return PokaYokeUmlProfileUtil.getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE).isPresent();
+	}
+
 	public static String getGuard(Action action) {
 		return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
 				.map(st -> (String) action.getValue(st, PROP_GUARD_EFFECTS_ACTION__GUARD)).orElse(null);

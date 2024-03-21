@@ -5,18 +5,16 @@ package com.github.tno.pokayoke.uml.profile.validation;
 
 import static com.google.common.base.Strings.lenientFormat;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -83,6 +81,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 	 * This validation is only applied if the {@link PokaYokePackage Poka Yoke
 	 * profile} is applied.
 	 * </p>
+	 * 
 	 * @param controlFlow the control-flow to validate.
 	 */
 	@Check
@@ -118,11 +117,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 		if (action instanceof CallBehaviorAction || action instanceof OpaqueAction) {
 			return;
 		}
-		Optional<Stereotype> stereotype = PokaYokeUmlProfileUtil.getAppliedStereotype(action,
-				PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE);
-		if (stereotype.isPresent()) {
+		if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
 			error(lenientFormat("Stereotype %s can only be applied on call-behavior actions or opaque actions.",
-					stereotype.get().getLabel(true)), null);
+					PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE), null);
+		}
+	}
+
+	@Check
+	private void checkShadowedGuardEffectsAction(CallBehaviorAction action) {
+		Behavior behavior = action.getBehavior();
+		if (behavior instanceof Activity subActivity) {
+			if (!PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+				// No shadowing
+				return;
+			}
+			
+			boolean subActivityContainsGuardEffectsActions = subActivity.getOwnedNodes().stream()
+					.filter(Action.class::isInstance).map(Action.class::cast)
+					.anyMatch(PokaYokeUmlProfileUtil::isGuardEffectsAction);
+			if (subActivityContainsGuardEffectsActions) {
+				warning("The guard and effects on this call behavior action override the guards and effects of its sub-activity" , null);
+			}
 		}
 	}
 
@@ -160,13 +175,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 			return;
 		}
 		try {
-			List<AUpdate> effectsUpd = CifParserHelper.parseUpdates(effects, action);
-			effectsUpd.forEach(e -> CifTypeChecker.checkUpdate(action, e));
+			for (AUpdate update : CifParserHelper.parseUpdates(effects, action)) {
+				try {
+					CifTypeChecker.checkUpdate(action, update);
+				} catch (RuntimeException re) {
+					error("Invalid effects: " + re.getLocalizedMessage(), null);
+				}
+			}
 		} catch (SyntaxException se) {
 			error("Failed to parse effects: " + se.getLocalizedMessage(), null);
-		} catch (RuntimeException re) {
-			re.printStackTrace();
-			error("Invalid effects: " + re.getLocalizedMessage(), null);
 		}
 	}
 }
