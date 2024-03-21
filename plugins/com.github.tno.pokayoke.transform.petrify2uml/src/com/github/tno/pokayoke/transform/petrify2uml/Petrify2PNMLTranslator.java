@@ -30,9 +30,10 @@ public class Petrify2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
-        PetriNet petriNet = transform(input, true);
-        FileHelper.writePetriNet(petriNet, outputPath);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
+        PetriNet petriNet = transform(input);
+        PostProcessPNML.removeLoop(petriNet);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, outputPath);
     }
 
     /**
@@ -40,12 +41,9 @@ public class Petrify2PNMLTranslator {
      *
      * @param petrifyOutput Petrify output in a list of strings. A {@link LinkedList} should be provided, as otherwise
      *     removing elements from the head of the list is too expensive.
-     * @param removeLoop When {@code true} removes the loop introduced when transforming CIF to Petrify input, that
-     *     connects initial locations to ones where the activity postcondition is satisfied. Such a loop is needed since
-     *     Petrify does not work well with sink states.
      * @return The Petri Net.
      */
-    public static PetriNet transform(List<String> petrifyOutput, boolean removeLoop) {
+    public static PetriNet transform(List<String> petrifyOutput) {
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
                 "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
 
@@ -114,18 +112,12 @@ public class Petrify2PNMLTranslator {
                     }
                 }
             }
-
-            // Create arcs from the source to its targets. In case the source is the 'end' transition and the
-            // 'removeLoop' is enabled, a final place is
-            // created and connected to the 'end' transition.
+            // Create arcs from the source to its targets.
             String source = elements.get(0);
-            if (source.equals("end") && removeLoop) {
-                String finalPlace = "FinalPlace";
-                createArc(transitionsPlacesMap.get(source), createPlace(finalPlace, petriNetPage), petriNetPage);
-            } else {
-                elements.stream().skip(1).forEach(target -> createArc(transitionsPlacesMap.get(source),
-                        transitionsPlacesMap.get(target), petriNetPage));
-            }
+
+            elements.stream().skip(1).forEach(target -> createArc(transitionsPlacesMap.get(source),
+                    transitionsPlacesMap.get(target), petriNetPage));
+
             petrifyOutput.remove(0);
             currentLine = petrifyOutput.get(0);
         }
@@ -198,7 +190,7 @@ public class Petrify2PNMLTranslator {
         return transition;
     }
 
-    private static Place createPlace(String name, Page page) {
+    public static Place createPlace(String name, Page page) {
         Place place = PETRI_NET_FACTORY.createPlace();
         place.setId(name);
         place.setName(createName(name));
@@ -206,7 +198,7 @@ public class Petrify2PNMLTranslator {
         return place;
     }
 
-    private static Arc createArc(Node source, Node target, Page page) {
+    public static Arc createArc(Node source, Node target, Page page) {
         Arc arc = PETRI_NET_FACTORY.createArc();
         arc.setContainerPage(page);
         arc.setId(source.getId() + "__to__" + target.getId());

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Activity;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Page;
@@ -17,9 +18,21 @@ public class PetriNet2Activity {
     }
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(input, true);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
+        PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
+
+        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'start' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'end' action removed.");
+        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
+        Preconditions.checkArgument(numberOfRemovedActions == 1,
+                "Expected that there is extactly one 'c_satisfied' action removed.");
+
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
 

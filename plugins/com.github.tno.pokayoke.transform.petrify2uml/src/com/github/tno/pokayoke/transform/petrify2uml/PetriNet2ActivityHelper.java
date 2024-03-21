@@ -121,11 +121,12 @@ public class PetriNet2ActivityHelper {
     private void transformMarkedPlace(Place place, Activity activity) {
         InitialNode initialNode = UML_FACTORY.createInitialNode();
         initialNode.setActivity(activity);
+        initialNode.setName("InitialNode");
 
         Node targetNode = place.getOutArcs().get(0).getTarget();
         OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
 
-        createControlFlow(place.getId(), activity, initialNode, targetAction);
+        createControlFlow(activity, initialNode, targetAction);
     }
 
     private static ControlFlow createControlFlow(String edgeName, Activity activity, ActivityNode source,
@@ -140,7 +141,7 @@ public class PetriNet2ActivityHelper {
         return edge;
     }
 
-    private static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
+    public static ControlFlow createControlFlow(Activity activity, ActivityNode source, ActivityNode target) {
         return createControlFlow(concatenateNamesOfNodes(source, target), activity, source, target);
     }
 
@@ -176,11 +177,12 @@ public class PetriNet2ActivityHelper {
     private void transformFinalPlace(Place place, Activity activity) {
         ActivityFinalNode finalNode = UML_FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
+        finalNode.setName("FinalNode");
 
         Node sourceNode = place.getInArcs().get(0).getSource();
         OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
 
-        createControlFlow(place.getId(), activity, sourceAction, finalNode);
+        createControlFlow(activity, sourceAction, finalNode);
     }
 
     /**
