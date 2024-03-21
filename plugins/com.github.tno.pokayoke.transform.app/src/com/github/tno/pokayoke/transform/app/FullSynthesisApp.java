@@ -133,16 +133,22 @@ public class FullSynthesisApp {
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
-        // Get region-state mapping.
+        // Load Petrify input and output.
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
-        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
 
         // Translate Petrify output into PNML.
-        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
+
+        // Extract region-state mapping.
+        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
+
+        // Remove the loop that was added for petrification.
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
@@ -180,16 +186,8 @@ public class FullSynthesisApp {
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuards(choiceActionToGuardText);
 
-        // Post-process the activity to remove the actions added in CIF specification and petrification.
-        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'start' action removed.");
-        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'end' action removed.");
-        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'c_satisfied' action removed.");
+        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
+        PostProcessActivity.removeInternalActions(activity);
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 

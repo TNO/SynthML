@@ -19,25 +19,12 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PetriNet2Activity {
     private Map<Transition, OpaqueAction> transitionToAction;
 
-    public PetriNet2Activity() {
-    }
-
     public void transformFile(String inputPath, String outputPath) throws IOException {
         List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
         Activity activity = transform(petriNet);
-
-        int numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("start", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'start' action removed.");
-        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("end", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'end' action removed.");
-        numberOfRemovedActions = PostProcessActivity.removeOpaqueActions("c_satisfied", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'c_satisfied' action removed.");
-
+        PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), outputPath);
     }
 
