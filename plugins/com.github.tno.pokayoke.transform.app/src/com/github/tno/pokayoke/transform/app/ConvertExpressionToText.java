@@ -17,6 +17,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.uml2.uml.OpaqueAction;
 
+/** Convert CIF expressions into CIF expression texts. */
 public class ConvertExpressionToText {
     private Map<DiscVariable, EObject> discVariableToParent = new LinkedHashMap<>();
 
@@ -30,37 +31,40 @@ public class ConvertExpressionToText {
      * @return A map from opaque actions to CIF expression texts.
      */
     public Map<OpaqueAction, String> convert(Specification cifSpec, Map<OpaqueAction, Expression> actionToExpression) {
+        // Check that the guard expressions do not contain location expressions and input variable expressions as they
+        // not expected in choice guards.
         CheckGuard checkGuard = new CheckGuard();
         actionToExpression.values().stream().forEach(checkGuard::check);
 
-        // Move the declarations to the upper layer.
-        moveVariables(cifSpec);
+        // Move the declarations to the root of the CIF specification.
+        moveDeclarations(cifSpec);
 
         // Convert the expressions to texts.
+
         Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
         actionToExpression.forEach(
                 (action, expression) -> choiceActionToGuardText.put(action, CifTextUtils.exprToStr(expression)));
 
         // Move the declarations back to their original scopes. This may change the order of the declarations.
-        revertVariableMove();
+        revertDeclarationsMove();
 
         return choiceActionToGuardText;
     }
 
-    private void moveVariables(Specification cifSpec) {
+    private void moveDeclarations(Specification cifSpec) {
         List<Declaration> declarations = CifCollectUtils.collectDeclarations(cifSpec, new ArrayList<>());
 
         declarations.stream().filter(DiscVariable.class::isInstance).map(DiscVariable.class::cast)
                 .forEach(v -> discVariableToParent.put(v, v.eContainer()));
 
         declarations.stream().filter(EnumDecl.class::isInstance).map(EnumDecl.class::cast)
-                .forEach(v -> enumDeclToParent.put(v, v.eContainer()));
+                .forEach(e -> enumDeclToParent.put(e, e.eContainer()));
 
-        discVariableToParent.keySet().stream().forEach(declaration -> cifSpec.getDeclarations().add(declaration));
-        enumDeclToParent.keySet().stream().forEach(declaration -> cifSpec.getDeclarations().add(declaration));
+        cifSpec.getDeclarations().addAll(discVariableToParent.keySet());
+        cifSpec.getDeclarations().addAll(enumDeclToParent.keySet());
     }
 
-    private void revertVariableMove() {
+    private void revertDeclarationsMove() {
         discVariableToParent.entrySet()
                 .forEach(e -> ((ComplexComponent)e.getValue()).getDeclarations().add(e.getKey()));
     }
