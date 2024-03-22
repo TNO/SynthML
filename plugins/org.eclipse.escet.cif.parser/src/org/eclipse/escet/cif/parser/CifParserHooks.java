@@ -604,9 +604,9 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new AInputVariableDecl(l1, a3, l4, t2.position);
     }
 
-    @Override // Decl : @CONTKW ContDecls SEMICOLTK;
-    public ADecl parseDecl10(Token t1, List<AContVariable> l2) {
-        return new AContVariableDecl(l2, t1.position);
+    @Override // Decl : OptAnnos @CONTKW ContDecls SEMICOLTK;
+    public ADecl parseDecl10(List<AAnnotation> l1, Token t2, List<AContVariable> l3) {
+        return new AContVariableDecl(l1, l3, t2.position);
     }
 
     @Override // Decl : @EQUATIONKW Equations SEMICOLTK;

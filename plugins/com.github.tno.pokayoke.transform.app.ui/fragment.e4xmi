@@ -11,6 +11,9 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_b6g5wN4FEeqZ0qkYlTZN4x" elementId="com.github.tno.pokayoke.transform.app.ui.Uml2GalTranslationMenuItem" label="Translate UML to GAL" tooltip="Translate UML to GAL" command="_v1beIN4HEeqZ0qkYlTZN4x">
         <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_KUdLgOO3EeqRGIZRdH8HYB" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneUmlFile"/>
       </children>
+      <children xsi:type="menu:DirectMenuItem" xmi:id="_nN8mwNDMEe6l-vj379mKWQ" elementId="com.github.tno.pokayoke.transform.app.ui.directmenuitem.applypokayokeumlprofile" label="Apply Poka Yoke UML profile" contributionURI="bundleclass://com.github.tno.pokayoke.transform.app.ui/com.github.tno.pokayoke.transform.app.ui.ApplyPokaYokeUmlProfileHandler">
+        <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_ofdR8NDMEe6l-vj379mKWQ" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneUmlFile"/>
+      </children>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_tOzaIN4HEeqZ0qkYlTZN4w" featurename="commands" parentElementId="org.eclipse.e4.legacy.ide.application">

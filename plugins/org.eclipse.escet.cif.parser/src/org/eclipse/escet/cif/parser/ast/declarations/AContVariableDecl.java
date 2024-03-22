@@ -16,21 +16,27 @@ package org.eclipse.escet.cif.parser.ast.declarations;
 import java.util.List;
 
 import org.eclipse.escet.cif.parser.ast.ADecl;
+import org.eclipse.escet.cif.parser.ast.annotations.AAnnotation;
 import org.eclipse.escet.common.java.TextPosition;
 
 /** Continuous variable declaration. */
 public class AContVariableDecl extends ADecl {
+    /** The annotations of the continuous variables. */
+    public final List<AAnnotation> annotations;
+
     /** The continuous variables that are part of this continuous variable declaration. */
     public final List<AContVariable> variables;
 
     /**
      * Constructor for the {@link AContVariableDecl} class.
      *
+     * @param annotations The annotations of the continuous variables.
      * @param variables The continuous variables that are part of this continuous variable declaration.
      * @param position Position information.
      */
-    public AContVariableDecl(List<AContVariable> variables, TextPosition position) {
+    public AContVariableDecl(List<AAnnotation> annotations, List<AContVariable> variables, TextPosition position) {
         super(position);
+        this.annotations = annotations;
         this.variables = variables;
     }
 }
