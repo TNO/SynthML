@@ -32,7 +32,7 @@ public class ConvertExpressionToText {
      */
     public Map<OpaqueAction, String> convert(Specification cifSpec, Map<OpaqueAction, Expression> actionToExpression) {
         // Check that the guard expressions do not contain location expressions and input variable expressions as they
-        // not expected in choice guards.
+        // are not expected in choice guards.
         CheckGuard checkGuard = new CheckGuard();
         actionToExpression.values().stream().forEach(checkGuard::check);
 
@@ -40,7 +40,6 @@ public class ConvertExpressionToText {
         moveDeclarations(cifSpec);
 
         // Convert the expressions to texts.
-
         Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
         actionToExpression.forEach(
                 (action, expression) -> choiceActionToGuardText.put(action, CifTextUtils.exprToStr(expression)));

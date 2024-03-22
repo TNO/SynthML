@@ -23,11 +23,11 @@ public class OpaqueActionHelper {
      *
      * @param actionToGuard The map from the opaque actions to the CIF expressions of the guards.
      */
-    public static void addGuards(Map<OpaqueAction, String> actionToGuard) {
-        actionToGuard.forEach((action, expression) -> addGuard(action, expression));
+    public static void addGuardToIncomingEdges(Map<OpaqueAction, String> actionToGuard) {
+        actionToGuard.forEach((action, expression) -> addGuardToSingleIncomingEdge(action, expression));
     }
 
-    private static void addGuard(OpaqueAction action, String expression) {
+    private static void addGuardToSingleIncomingEdge(OpaqueAction action, String expression) {
         List<ActivityEdge> incomingEdges = action.getIncomings();
         Preconditions.checkArgument(incomingEdges.size() == 1,
                 "Expected that each opaque action has exactly one incoming edge.");

@@ -134,8 +134,8 @@ public class FullSynthesisApp {
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
         // Load Petrify input and output.
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
@@ -184,7 +184,7 @@ public class FullSynthesisApp {
         Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
-        OpaqueActionHelper.addGuards(choiceActionToGuardText);
+        OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
         // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
         PostProcessActivity.removeInternalActions(activity);
