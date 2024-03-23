@@ -44,6 +44,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
@@ -52,6 +53,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.google.common.base.Preconditions;
@@ -131,22 +133,28 @@ public class FullSynthesisApp {
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
-        // Translate Petrify output into PNML.
-        Path pnmlOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
-        PetriNet petriNetWithoutLoop = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
-        PostProcessPNML.removeLoop(petriNetWithoutLoop);
-        PetriNetUMLFileHelper.writePetriNet(petriNetWithoutLoop, pnmlOutputPath.toString());
-
-        // Get region-state mapping.
+        // Load Petrify input and output.
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
-        PetriNet petriNetWithLoop = Petrify2PNMLTranslator.transform(petrifyOutput);
-        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNetWithLoop);
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+
+        // Translate Petrify output into PNML.
+        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
+
+        // Extract region-state mapping.
+        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
+
+        // Remove the loop that was added for petrification.
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".loopremoved.pnml");
+        PostProcessPNML.removeLoop(petriNet);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        Activity activity = PetriNet2Activity.transform(petriNetWithoutLoop);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        Activity activity = petriNet2Activity.transform(petriNet);
+        Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -162,9 +170,25 @@ public class FullSynthesisApp {
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, cifSynthesisResult, petriNetWithLoop, minimizedToReduced, regionMap);
+                uncontrolledSystemGuards, cifSynthesisResult, petriNet, minimizedToReduced, regionMap);
         Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
+
+        // Get a map from actions to the guards of the incoming edges of the actions.
+        Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
+        choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
+                .put(transitionToAction.get(transition), expression));
+
+        // Convert guard CIF expression to CIF expression text.
+        ConvertExpressionToText converter = new ConvertExpressionToText();
+        Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
+
+        // Add the guards for the edges that go from decision nodes to the opaque actions.
+        OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+
+        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
+        PostProcessActivity.removeInternalActions(activity);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {
