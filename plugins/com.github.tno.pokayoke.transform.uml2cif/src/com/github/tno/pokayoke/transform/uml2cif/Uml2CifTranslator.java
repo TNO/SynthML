@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,23 +87,12 @@ public abstract class Uml2CifTranslator {
     public abstract Invariant parseInvariant(String invariant);
 
     /**
-     * Parses the given string as a CIF update.
-     *
-     * @param update The string to parse.
-     * @return The parsed CIF update.
-     */
-    public abstract Update parseUpdate(String update);
-
-    /**
      * Parses the given string as a list of CIF updates.
      *
      * @param updates The string to parse.
      * @return The list of CIF updates.
      */
-    public List<Update> parseUpdates(String updates) {
-        // TODO Use the parser from Git issue #172 / PR #187.
-        return Arrays.stream(updates.split(",")).map(this::parseUpdate).toList();
-    }
+    public abstract List<Update> parseUpdates(String updates);
 
     /**
      * Translates an UML model to a CIF specification.

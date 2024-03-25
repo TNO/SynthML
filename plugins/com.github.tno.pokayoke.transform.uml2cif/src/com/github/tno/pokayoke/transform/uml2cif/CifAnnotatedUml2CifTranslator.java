@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -23,7 +24,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifInvariantParser;
-import org.eclipse.escet.cif.parser.CifUpdateParser;
+import org.eclipse.escet.cif.parser.CifUpdatesParser;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -47,7 +48,7 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
 
     private final CifInvariantParser invariantParser = new CifInvariantParser();
 
-    private final CifUpdateParser updateParser = new CifUpdateParser();
+    private final CifUpdatesParser updatesParser = new CifUpdatesParser();
 
     /**
      * Gives a translator for annotated UML models, with CIF as the annotation language.
@@ -69,8 +70,8 @@ public class CifAnnotatedUml2CifTranslator extends Uml2CifTranslator {
     }
 
     @Override
-    public Update parseUpdate(String update) {
-        return parseUpdate(updateParser.parseString(update, inputPath));
+    public List<Update> parseUpdates(String updates) {
+        return updatesParser.parseString(updates, inputPath).stream().map(this::parseUpdate).toList();
     }
 
     private Expression parseExpression(AExpression expr) {
