@@ -1,5 +1,6 @@
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -8,6 +9,8 @@ import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdatesParser;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -21,6 +24,9 @@ public class CifParserHelper {
 	public static AExpression parseExpression(String expression, Element context) throws SyntaxException {
 		if (expression == null) {
 			return null;
+		} else if (expression.isBlank()) {
+			throw new CustomSyntaxException("cannot be blank.",
+					TextPosition.createDummy(getLocation(context)));
 		}
 		CifExpressionParser expressionParser = new CifExpressionParser();
 		return expressionParser.parseString(expression, getLocation(context));
@@ -35,7 +41,10 @@ public class CifParserHelper {
 
 	public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
 		if (updates == null) {
-			return null;
+			return Collections.emptyList();
+		} else if (updates.isBlank()) {
+			throw new CustomSyntaxException("cannot be blank.",
+					TextPosition.createDummy(getLocation(context)));
 		}
 		CifUpdatesParser updatesParser = new CifUpdatesParser();
 		return updatesParser.parseString(updates, getLocation(context));

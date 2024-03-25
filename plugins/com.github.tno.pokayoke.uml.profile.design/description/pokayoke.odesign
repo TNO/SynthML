@@ -23,7 +23,7 @@
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow">
+      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" preconditionExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)">
         <groups href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
         <groups href="#//@extensions.0/@categories.0/@groups.1"/>
       </pages>

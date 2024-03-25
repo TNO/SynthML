@@ -3,11 +3,14 @@
  */
 package com.github.tno.pokayoke.uml.profile.validation;
 
-import static com.google.common.base.Strings.lenientFormat;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
-import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
@@ -17,14 +20,12 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.google.common.base.Strings;
 
 import PokaYoke.GuardEffectsAction;
 import PokaYoke.PokaYokePackage;
@@ -49,29 +50,23 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 		Type propType;
 		try {
 			propType = CifTypeChecker.checkSupportedType(property);
-		} catch (RuntimeException re) {
-			error("Invalid property: " + re.getLocalizedMessage(), UMLPackage.Literals.TYPED_ELEMENT__TYPE);
+		} catch (RuntimeException e) {
+			error("Invalid property: " + e.getLocalizedMessage(), UMLPackage.Literals.TYPED_ELEMENT__TYPE);
 			return;
 		}
-		ValueSpecification propDefault = property.getDefaultValue();
-		if (propType == null || propDefault == null) {
-			return;
-		}
+
 		try {
-			AExpression propDefaultExpr = CifParserHelper.parseExpression(propDefault);
+			AExpression propDefaultExpr = CifParserHelper.parseExpression(property.getDefaultValue());
 			if (propDefaultExpr == null) {
 				return;
 			}
 			Type propDefaultType = CifTypeChecker.checkExpression(property, propDefaultExpr);
 			if (!propDefaultType.equals(propType)) {
-				error(lenientFormat("Invalid property default: Expected %s but got %s", propType.getLabel(true),
+				error(String.format("Invalid property default: Expected %s but got %s", propType.getLabel(true),
 						propDefaultType.getLabel(true)), UMLPackage.Literals.PROPERTY__DEFAULT);
 			}
-		} catch (SyntaxException se) {
-			error("Failed to parse property default: " + se.getLocalizedMessage(),
-					UMLPackage.Literals.PROPERTY__DEFAULT);
-		} catch (RuntimeException re) {
-			error("Invalid property default: " + re.getLocalizedMessage(), null);
+		} catch (RuntimeException e) {
+			error("Invalid property default: " + e.getLocalizedMessage(), UMLPackage.Literals.PROPERTY__DEFAULT);
 		}
 	}
 
@@ -89,20 +84,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 		if (PokaYokeUmlProfileUtil.getAppliedProfile(controlFlow, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isEmpty()) {
 			return;
 		}
-		ValueSpecification guard = controlFlow.getGuard();
-		if (guard == null) {
-			return;
-		}
 		try {
-			AExpression guardExpr = CifParserHelper.parseExpression(guard);
+			AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
 			if (guardExpr == null) {
 				return;
 			}
 			CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
-		} catch (SyntaxException se) {
-			error("Failed to parse guard: " + se.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
-		} catch (RuntimeException re) {
-			error("Invalid guard: " + re.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+		} catch (RuntimeException e) {
+			error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
 		}
 	}
 
@@ -118,7 +107,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 			return;
 		}
 		if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
-			error(lenientFormat("Stereotype %s can only be applied on call-behavior actions or opaque actions.",
+			error(String.format("Stereotype %s can only be applied on call-behavior actions or opaque actions.",
 					PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE), null);
 		}
 	}
@@ -131,14 +120,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 				// No shadowing
 				return;
 			}
-			
-			boolean subActivityContainsGuardEffectsActions = subActivity.getOwnedNodes().stream()
-					.filter(Action.class::isInstance).map(Action.class::cast)
-					.anyMatch(PokaYokeUmlProfileUtil::isGuardEffectsAction);
-			if (subActivityContainsGuardEffectsActions) {
-				warning("The guard and effects on this call behavior action override the guards and effects of its sub-activity" , null);
+			if (isGuardEffectsActivity(subActivity, new HashSet<>())) {
+				warning("The guard and effects on this call behavior action overrides the guards and effects of its sub-activity" , null);
 			}
 		}
+	}
+
+	private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
+		boolean containsGuardEffectsActions = activity.getOwnedNodes().stream()
+				.filter(Action.class::isInstance).map(Action.class::cast)
+				.anyMatch(PokaYokeUmlProfileUtil::isGuardEffectsAction);
+		if (containsGuardEffectsActions) {
+			return true;
+		} else if (!history.add(activity)) {
+			// Cope with cycles
+			return false;
+		}
+		return activity.getOwnedNodes().stream()
+				.filter(CallBehaviorAction.class::isInstance).map(CallBehaviorAction.class::cast)
+				.map(CallBehaviorAction::getBehavior)
+				.filter(Activity.class::isInstance).map(Activity.class::cast)
+				.anyMatch(a -> isGuardEffectsActivity(a, history));
 	}
 
 	/**
@@ -149,17 +151,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 	@Check
 	private void checkValidGuard(Action action) {
 		String guard = PokaYokeUmlProfileUtil.getGuard(action);
-		if (Strings.isNullOrEmpty(guard)) {
-			return;
-		}
 		try {
 			AExpression guardExpr = CifParserHelper.parseExpression(guard, action);
+			if (guardExpr == null) {
+				return;
+			}
 			CifTypeChecker.checkBooleanExpression(action, guardExpr);
-		} catch (SyntaxException se) {
-			error("Failed to parse guard: " + se.getLocalizedMessage(), null);
-		} catch (RuntimeException re) {
-			re.printStackTrace();
-			error("Invalid guard: " + re.getLocalizedMessage(), null);
+		} catch (RuntimeException e) {
+			error("Invalid guard: " + e.getLocalizedMessage(), null);
 		}
 	}
 
@@ -171,19 +170,21 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 	@Check
 	private void checkValidEffects(Action action) {
 		String effects = PokaYokeUmlProfileUtil.getEffects(action);
-		if (Strings.isNullOrEmpty(effects)) {
-			return;
-		}
 		try {
+			HashSet<String> updatedVariables = new HashSet<>();
 			for (AUpdate update : CifParserHelper.parseUpdates(effects, action)) {
-				try {
-					CifTypeChecker.checkUpdate(action, update);
-				} catch (RuntimeException re) {
-					error("Invalid effects: " + re.getLocalizedMessage(), null);
+				CifTypeChecker.checkUpdate(action, update);
+
+				// Update is checked above, so ClassCastException is not possible on next lines
+				AExpression variableExpr = ((AAssignmentUpdate) update).addressable;
+				String variable = ((ANameExpression) variableExpr).name.name;
+				if (!updatedVariables.add(variable)) {
+					throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
+							variableExpr.position);
 				}
 			}
-		} catch (SyntaxException se) {
-			error("Failed to parse effects: " + se.getLocalizedMessage(), null);
+		} catch (RuntimeException e) {
+			error("Invalid effects: " + e.getLocalizedMessage(), null);
 		}
 	}
 }
