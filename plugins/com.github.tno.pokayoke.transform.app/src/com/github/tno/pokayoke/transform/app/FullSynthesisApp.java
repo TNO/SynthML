@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,16 +39,29 @@ import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.Sets;
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.OpaqueAction;
 
+import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
-import com.github.tno.pokayoke.transform.cif2petrify.FileHelper;
+import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
+import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
+import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
+
+import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Place;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -60,17 +73,22 @@ public class FullSynthesisApp {
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
         // Load CIF specification.
-        Specification cifSpec = FileHelper.loadCifSpec(inputPath);
+        Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
         // Perform Synthesis.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
-        CifDataSynthesisResult cifSynthesisResult = synthesize(cifSpec);
+        CifDataSynthesisSettings settings = getSynthesisSettings();
+        CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
+
+        // Get the BDDs of uncontrolled system guards before performing synthesis.
+        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
+                .collectUncontrolledSystemGuards(cifBddSpec);
+
+        CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
         convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
-
-        // TODO Extract action guards from specification and synthesized guards from the synthesis result.
 
         // Perform state space generation.
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".ctrlsys.statespace.cif");
@@ -81,11 +99,11 @@ public class FullSynthesisApp {
 
         // Remove state annotations from intermediate states.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotreduced.cif");
-        Specification cifStateSpace = FileHelper.loadCifSpec(cifStateSpacePath);
+        Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath, outputFolderPath);
 
-        // Remove state annotation for all states.
+        // Remove state annotations from all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotremoved.cif");
         removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
 
@@ -106,11 +124,43 @@ public class FullSynthesisApp {
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
         dfaMinimizationApp.run(dfaMinimizationArgs, false);
 
+        // Translate the CIF state space to Petrify input.
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
+        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
+
+        // Petrify the state space.
+        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
+        Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
+        convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
+
+        // Load Petrify input and output.
+        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+
+        // Translate Petrify output into PNML.
+        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
+
+        // Extract region-state mapping.
+        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
+
+        // Remove the loop that was added for petrification.
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".loopremoved.pnml");
+        PostProcessPNML.removeLoop(petriNet);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
+
+        // Translate PNML into UML activity.
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
+        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        Activity activity = petriNet2Activity.transform(petriNet);
+        Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
+
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
-        Specification cifProjectedStateSpace = FileHelper.loadCifSpec(cifProjectedStateSpacePath);
+        Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
-        Specification cifMinimizedStateSpace = FileHelper.loadCifSpec(cifMinimizedStateSpacePath);
+        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
 
         Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
@@ -118,22 +168,76 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
                 annotationFromReducedSP);
 
-        // TODO Guard computation.
+        // Compute choice guards.
+        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
+                uncontrolledSystemGuards, cifSynthesisResult, petriNet, minimizedToReduced, regionMap);
+        Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
+        uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
-        // Translate the CIF state space to Petrify input and output the Petrify input.
-        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
+        // Get a map from actions to the guards of the incoming edges of the actions.
+        Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
+        choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
+                .put(transitionToAction.get(transition), expression));
 
-        // Petrify the state space and output the generated Petri Net.
-        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
-        Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
-        convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
+        // Convert guard CIF expression to CIF expression text.
+        ConvertExpressionToText converter = new ConvertExpressionToText();
+        Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
-        // TODO Obtain region-state mapping.
+        // Add the guards for the edges that go from decision nodes to the opaque actions.
+        OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Translate Petri Net to UML Activity and output the activity.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        PetriNet2Activity.transformFile(petrifyOutputPath.toString(), umlOutputPath.toString());
+        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
+        PostProcessActivity.removeInternalActions(activity);
+        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+    }
+
+    private static CifDataSynthesisSettings getSynthesisSettings() {
+        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
+        settings.setDoForwardReach(true);
+        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
+        return settings;
+    }
+
+    private static CifBddSpec getCifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
+        // Perform preprocessing.
+        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
+
+        // Create BDD factory.
+        List<Long> continuousOpMisses = list();
+        List<Integer> continuousUsedBddNodes = list();
+        BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
+
+        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
+        // way.
+        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
+        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
+
+        return cifBddSpec;
+    }
+
+    private static CifDataSynthesisResult synthesize(CifBddSpec cifBddSpec, CifDataSynthesisSettings settings) {
+        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
+                new CifDataSynthesisTiming());
+        return synthResult;
+    }
+
+    private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
+            String outPutFilePath, String outFolderPath)
+    {
+        Specification result;
+
+        // Construct output CIF specification.
+        SynthesisToCifConverter converter = new SynthesisToCifConverter();
+        result = converter.convert(synthResult, spec);
+
+        // Write output CIF specification.
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(result, outPutFilePath, outFolderPath);
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+        return result;
     }
 
     /**
@@ -197,50 +301,6 @@ public class FullSynthesisApp {
         }
     }
 
-    private static CifDataSynthesisResult synthesize(Specification spec) {
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
-
-        // Perform preprocessing.
-        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
-
-        // Create BDD factory.
-        List<Long> continuousOpMisses = list();
-        List<Integer> continuousUsedBddNodes = list();
-        BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
-
-        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
-        // way.
-        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
-        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
-
-        // Perform synthesis.
-        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
-                new CifDataSynthesisTiming());
-
-        return synthResult;
-    }
-
-    private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
-            String outPutFilePath, String outFolderPath)
-    {
-        Specification rslt;
-
-        // Construct output CIF specification.
-        SynthesisToCifConverter converter = new SynthesisToCifConverter();
-        rslt = converter.convert(synthResult, spec);
-
-        // Write output CIF specification.
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(rslt, outPutFilePath, outFolderPath);
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-        return rslt;
-    }
-
     private static String getPreservedEvents(Specification spec) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
         List<String> eventNames = events.stream().filter(event -> event.getControllable())
@@ -250,7 +310,7 @@ public class FullSynthesisApp {
     }
 
     private static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
-        Map<Location, List<Annotation>> locationAnnotationMap = new HashMap<>();
+        Map<Location, List<Annotation>> locationAnnotationMap = new LinkedHashMap<>();
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
@@ -270,7 +330,7 @@ public class FullSynthesisApp {
     private static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
             Map<Location, List<Annotation>> map2)
     {
-        Map<Location, List<Annotation>> compositeMap = new HashMap<>();
+        Map<Location, List<Annotation>> compositeMap = new LinkedHashMap<>();
 
         for (var entry: map1.entrySet()) {
             Location location = entry.getKey();

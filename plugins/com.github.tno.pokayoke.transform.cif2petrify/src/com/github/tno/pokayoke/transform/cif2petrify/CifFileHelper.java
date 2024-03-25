@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import org.eclipse.escet.cif.io.CifReader;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 
-public class FileHelper {
-    private FileHelper() {
+public class CifFileHelper {
+    private CifFileHelper() {
     }
 
     public static Specification loadCifSpec(Path sourcePath) {

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" name="pokayoke" version="12.0.0.2017041100">
+  <ownedViewpoints name="PokaYoke" modelFileExtension="uml">
+    <ownedRepresentationExtensions xsi:type="description_1:DiagramExtensionDescription" name="Poka Yoke Activity Diagram" viewpointURI="viewpoint:/org.obeonetwork.dsl.uml2.core.design/Reused" representationName="Activity Diagram">
+      <metamodel href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
+      <metamodel href="http://www.eclipse.org/sirius/1.1.0#/"/>
+      <metamodel href="http://www.eclipse.org/sirius/diagram/1.1.0#/"/>
+      <metamodel href="../../com.github.tno.pokayoke.uml.profile.plugin/model/PokaYoke.ecore#/"/>
+      <layers name="Poka Yoke" optional="false">
+        <decorationDescriptionsSet>
+          <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="DC_GuardEffectsAction" preconditionExpression="service:self.isGuardEffectsAction()" imageExpression="/com.github.tno.pokayoke.uml.profile.design/icons/pokayoke3.png">
+            <mappings xsi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_CallBehaviorAction']"/>
+            <mappings xsi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_OpaqueAction']"/>
+          </decorationDescriptions>
+        </decorationDescriptionsSet>
+      </layers>
+      <validationSet name="Poka Yoke">
+        <ownedRules xsi:type="validation:SemanticValidationRule" name="validGuardError" level="ERROR" message="service:self.getValidGuardErrorMessage()" targetClass="uml.OpaqueAction">
+          <audits auditExpression="service:self.isValidGuard()"/>
+        </ownedRules>
+        <ownedRules xsi:type="validation:SemanticValidationRule" name="validEffectsError" level="ERROR" message="service:self.getValidEffectsErrorMessage()" targetClass="uml.OpaqueAction">
+          <audits auditExpression="service:self.isValidEffects()"/>
+        </ownedRules>
+      </validationSet>
+    </ownedRepresentationExtensions>
+    <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.design.PokaYokeProfileServices"/>
+  </ownedViewpoints>
+  <extensions xsi:type="properties:ViewExtensionDescription" name="PokaYokeProperties">
+    <metamodels href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
+    <metamodels href="../../com.github.tno.pokayoke.uml.profile.plugin/model/PokaYoke.ecore#/"/>
+    <categories name="PR_PokaYoke">
+      <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
+      <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
+      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow">
+        <groups href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
+        <groups href="#//@extensions.0/@categories.0/@groups.1"/>
+      </pages>
+      <groups name="PR_GuardEffectsActionGroup" labelExpression="Guard and Effects">
+        <controls xsi:type="properties:TextDescription" name="PR_GE_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextAreaDescription" name="PR_GE_Effects" labelExpression="Effects" lineCount="10" valueExpression="service:self.getEffects()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_ControlFlowGuardGroup" labelExpression="Guard" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+    </categories>
+  </extensions>
+</description:Group>

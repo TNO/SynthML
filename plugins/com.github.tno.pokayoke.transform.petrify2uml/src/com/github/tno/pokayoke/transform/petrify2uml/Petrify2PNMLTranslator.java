@@ -4,7 +4,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +30,10 @@ public class Petrify2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = FileHelper.readFile(inputPath);
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = transform(input);
         PostProcessPNML.removeLoop(petriNet);
-        FileHelper.writePetriNet(petriNet, outputPath);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, outputPath);
     }
 
     /**
@@ -80,7 +80,7 @@ public class Petrify2PNMLTranslator {
                 "Expected transition names to be unique.");
 
         // Create transitions and add them to the map that stores objects and their names.
-        Map<String, Node> transitionsPlacesMap = new HashMap<>();
+        Map<String, Node> transitionsPlacesMap = new LinkedHashMap<>();
         transitionNames.forEach(t -> transitionsPlacesMap.put(t, createTransition(t, petriNetPage)));
 
         // In case a transition appears multiple times in a Petri Net, Petrify distinguishes each duplicate by

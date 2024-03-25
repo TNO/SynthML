@@ -78,15 +78,15 @@ import org.eclipse.escet.setext.runtime.Token;
  * <ul>
  *  <li>{@link CifParser}</li>
  *  <li>{@link CifExpressionParser}</li>
- *  <li>{@link CifInvariantParser}</li>
  *  <li>{@link CifUpdateParser}</li>
+ *  <li>{@link CifUpdatesParser}</li>
  * </ul>
  */
 public final class CifParserHooks
 implements CifParser.Hooks,
            CifExpressionParser.Hooks,
-           CifInvariantParser.Hooks,
-           CifUpdateParser.Hooks
+           CifUpdateParser.Hooks,
+           CifUpdatesParser.Hooks
 {
     @Override
     public void setParser(Parser<?> parser) {
@@ -497,8 +497,8 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // Decl : OptAnnos @ALGKW Type AlgVarsDefs SEMICOLTK;
-    public ADecl parseDecl08(List<AAnnotation> l1, Token t2, ACifType a3, List<AAlgVariable> l4) {
+    @Override // Decl : @ALGKW Type AlgVarsDefs SEMICOLTK;
+    public ADecl parseDecl08(Token t1, ACifType a2, List<AAlgVariable> l3) {
         // return null;
     }
 

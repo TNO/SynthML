@@ -19,8 +19,8 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 
-public class FileHelper {
-    private FileHelper() {
+public class PetriNetUMLFileHelper {
+    private PetriNetUMLFileHelper() {
     }
 
     public static List<String> readFile(String sourcePath) throws IOException {

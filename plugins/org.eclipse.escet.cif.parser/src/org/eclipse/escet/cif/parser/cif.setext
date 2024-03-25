@@ -234,6 +234,7 @@ end
 @start Expression: org.eclipse.escet.cif.parser.CifExpressionParser;
 @start Invariant: org.eclipse.escet.cif.parser.CifInvariantParser;
 @start Update: org.eclipse.escet.cif.parser.CifUpdateParser;
+@start Updates: org.eclipse.escet.cif.parser.CifUpdatesParser;
 
 @hooks org.eclipse.escet.cif.parser.CifParserHooks;
 
