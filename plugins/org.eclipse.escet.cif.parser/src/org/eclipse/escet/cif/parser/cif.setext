@@ -231,6 +231,10 @@ end
 
 @main Specification: org.eclipse.escet.cif.parser.CifParser;
 
+@start Expression: org.eclipse.escet.cif.parser.CifExpressionParser;
+@start Update: org.eclipse.escet.cif.parser.CifUpdateParser;
+@start Updates: org.eclipse.escet.cif.parser.CifUpdatesParser;
+
 @hooks org.eclipse.escet.cif.parser.CifParserHooks;
 
 @import org.eclipse.escet.common.java as common_java;
@@ -301,8 +305,8 @@ Decl : @TYPEKW TypeDefs SEMICOLTK
      | OptControllability @EVENTKW EventType Identifiers SEMICOLTK
      |    Controllability                    Identifiers SEMICOLTK
      |    Controllability          EventType Identifiers SEMICOLTK
-     | OptAnnos @CONSTKW Type ConstantDefs SEMICOLTK
-     | OptAnnos @ALGKW Type AlgVarsDefs SEMICOLTK
+     | @CONSTKW Type ConstantDefs SEMICOLTK
+     | @ALGKW Type AlgVarsDefs SEMICOLTK
      | OptAnnos @INPUTKW Type Identifiers SEMICOLTK
      | OptAnnos @CONTKW ContDecls SEMICOLTK
      | @EQUATIONKW Equations SEMICOLTK

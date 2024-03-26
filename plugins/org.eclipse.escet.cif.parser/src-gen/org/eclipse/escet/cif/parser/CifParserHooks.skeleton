@@ -77,10 +77,16 @@ import org.eclipse.escet.setext.runtime.Token;
  * Call back hook methods for:
  * <ul>
  *  <li>{@link CifParser}</li>
+ *  <li>{@link CifExpressionParser}</li>
+ *  <li>{@link CifUpdateParser}</li>
+ *  <li>{@link CifUpdatesParser}</li>
  * </ul>
  */
 public final class CifParserHooks
-implements CifParser.Hooks
+implements CifParser.Hooks,
+           CifExpressionParser.Hooks,
+           CifUpdateParser.Hooks,
+           CifUpdatesParser.Hooks
 {
     @Override
     public void setParser(Parser<?> parser) {
