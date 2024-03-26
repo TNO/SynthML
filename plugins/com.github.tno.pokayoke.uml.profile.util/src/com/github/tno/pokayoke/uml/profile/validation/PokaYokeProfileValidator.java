@@ -1,6 +1,3 @@
-/**
- * 
- */
 
 package com.github.tno.pokayoke.uml.profile.validation;
 
@@ -43,7 +40,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     /**
      * Validates if the names of all {@link CifContext#queryContextElements(Model) context elements} are unique within
      * the {@code model}.
-     * 
+     *
      * @param model the model to validate
      * @see CifContext
      */
@@ -71,7 +68,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      * <p>
      * This validation is only applied if the {@link PokaYokePackage Poka Yoke profile} is applied.
      * </p>
-     * 
+     *
      * @param property the property to validate.
      */
     @Check
@@ -113,7 +110,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      * <p>
      * This validation is only applied if the {@link PokaYokePackage Poka Yoke profile} is applied.
      * </p>
-     * 
+     *
      * @param controlFlow the control-flow to validate.
      */
     @Check
@@ -138,7 +135,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     /**
      * Validates if {@link GuardEffectsAction} stereotype is only applied to {@link CallBehaviorAction} or
      * {@link OpaqueAction}.
-     * 
+     *
      * @param action the action to validate.
      */
     @Check
@@ -152,6 +149,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
+    /**
+     * Validates when {@link PokaYokeUmlProfileUtil#isGuardEffectsAction(Action) guards and effects} are set on
+     * {@code action}, that its behavioral activity doesn't also have guards and effects specified.
+     *
+     * @param action the action to validate.
+     */
     @Check
     private void checkShadowedGuardEffectsAction(CallBehaviorAction action) {
         Behavior behavior = action.getBehavior();
@@ -183,7 +186,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     /**
      * Validates the {@link GuardEffectsAction#getGuard()} property if set.
-     * 
+     *
      * @param action the action to validate.
      */
     @Check
@@ -202,7 +205,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     /**
      * Validates the {@link GuardEffectsAction#getEffects()} property if set.
-     * 
+     *
      * @param action the action to validate.
      */
     @Check
