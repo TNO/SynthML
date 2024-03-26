@@ -7,21 +7,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
+import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -32,11 +39,14 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Strings;
 
 import PokaYoke.GuardEffectsAction;
 import PokaYoke.PokaYokePackage;
 
 public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
+    private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^[a-zA-Z_][0-9a-zA-Z_]*$");
+
     /**
      * Validates if the names of all {@link CifContext#queryContextElements(Model) context elements} are unique within
      * the {@code model}.
@@ -46,18 +56,45 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkGlobalUniqueNames(Model model) {
-        if (PokaYokeUmlProfileUtil.getAppliedProfile(model, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isEmpty()) {
+        if (!isPokaYokaUmlProfileApplied(model)) {
             return;
         }
         Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
                 .groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
-            if (entry.getValue().size() <= 1) {
-                continue;
+            if (entry.getKey() == null) {
+                for (NamedElement element: entry.getValue()) {
+                    error("Required name not set.", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+                }
+            } else if (entry.getValue().size() > 1) {
+                for (NamedElement duplicate: entry.getValue()) {
+                    error("Name should be unique within model.", duplicate, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+                }
             }
-            for (NamedElement duplicate: entry.getValue()) {
-                error("Name should be unique within model", duplicate, UMLPackage.Literals.NAMED_ELEMENT__NAME);
-            }
+        }
+    }
+
+    @Check
+    private void checkValidClass(Class clazz) {
+        if (!isPokaYokaUmlProfileApplied(clazz)) {
+            return;
+        }
+        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        if (!clazz.getNestedClassifiers().isEmpty()) {
+            error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
+        }
+
+        if (clazz instanceof Behavior) {
+            // Activities are also a Class in UML. Skip the next validations for all behaviors.
+            return;
+        }
+        if (clazz.getClassifierBehavior() == null) {
+            error("Required classifier behavior not set.",
+                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+        } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
+            error("Expected class to own its classifier behavior.",
+                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
     }
 
@@ -73,7 +110,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidProperty(Property property) {
-        if (PokaYokeUmlProfileUtil.getAppliedProfile(property, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isEmpty()) {
+        if (!isPokaYokaUmlProfileApplied(property)) {
             return;
         }
         if (property.getUpper() != 1) {
@@ -105,8 +142,62 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
+    @Check
+    private void checkValidEnumeration(Enumeration enumeration) {
+        if (!isPokaYokaUmlProfileApplied(enumeration)) {
+            return;
+        }
+        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        if (!(enumeration.eContainer() instanceof Model)) {
+            error("Expected enumeration to be declared in model.", null);
+        } else if (enumeration.eContainer().eContainer() != null) {
+            error("Expected enumeration to be declared on the outer-most level.", null);
+        }
+        if (enumeration.getOwnedLiterals().isEmpty()) {
+            error("Expected enumeration to have at least one literal.", null);
+        }
+    }
+
+    @Check
+    private void checkValidOpaqueExpression(OpaqueExpression expression) {
+        if (!isPokaYokaUmlProfileApplied(expression)) {
+            return;
+        }
+        checkNamingConventions(expression, true, false);
+        if (expression.getBodies().size() != 1) {
+            error("Expected opaque expression to have exactly one expression body.",
+                    UMLPackage.Literals.OPAQUE_EXPRESSION__BODY);
+        }
+    }
+
+    @Check
+    private void checkValidActivity(Activity activity) {
+        if (!isPokaYokaUmlProfileApplied(activity)) {
+            return;
+        }
+        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        if (!activity.getMembers().isEmpty()) {
+            error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
+        }
+        if (activity.getClassifierBehavior() != null) {
+            error("Expected activity to not have a classifier behavior.",
+                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+        }
+        QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
+        if (initialNodes.size() > 1) {
+            for (InitialNode node : initialNodes) {
+                error("Expected activity to have exactly one initial node.", node, null);
+            }
+        }
+
+        // Embed these child validations in this validator for performance as profile does not need to be checked
+        activity.getNodes().forEach(n -> checkNamingConventions(n, true, true));
+    }
+
     /**
-     * Validates the {@link ControlFlow#getGuard() control-flow guard}.
+     * Validates the {@code controlFlow}.
      * <p>
      * This validation is only applied if the {@link PokaYokePackage Poka Yoke profile} is applied.
      * </p>
@@ -114,11 +205,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      * @param controlFlow the control-flow to validate.
      */
     @Check
-    private void checkValidGuard(ControlFlow controlFlow) {
-        if (!(controlFlow.getSource() instanceof DecisionNode)) {
+    private void checkValidControlFlow(ControlFlow controlFlow) {
+        if (!isPokaYokaUmlProfileApplied(controlFlow)) {
             return;
         }
-        if (PokaYokeUmlProfileUtil.getAppliedProfile(controlFlow, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isEmpty()) {
+        checkNamingConventions(controlFlow, true, false);
+        if (!(controlFlow.getSource() instanceof DecisionNode)) {
             return;
         }
         try {
@@ -157,6 +249,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkShadowedGuardEffectsAction(CallBehaviorAction action) {
+        if (!isPokaYokaUmlProfileApplied(action)) {
+            return;
+        }
         Behavior behavior = action.getBehavior();
         if (behavior instanceof Activity subActivity) {
             if (!PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
@@ -167,6 +262,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 warning("The guard and effects on this call behavior action overrides the guards and effects of its sub-activity",
                         null);
             }
+        } else {
+            error("Expected the behavior to be an activity", UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
         }
     }
 
@@ -227,5 +324,25 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } catch (RuntimeException e) {
             error("Invalid effects: " + e.getLocalizedMessage(), null);
         }
+    }
+
+    private void checkNamingConventions(NamedElement element, boolean checkDoubleUnderscore,
+            boolean checkProperIdentifierName)
+    {
+        String name = element.getName();
+        if (Strings.isNullOrEmpty(name)) {
+            return;
+        }
+        if (checkDoubleUnderscore && name.contains("__")) {
+            error("Name cannot not contain '__'", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+        }
+        if (checkProperIdentifierName && !IDENTIFIER_PATTERN.matcher(name).matches()) {
+            error("Expected name to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*", element,
+                    UMLPackage.Literals.NAMED_ELEMENT__NAME);
+        }
+    }
+
+    private boolean isPokaYokaUmlProfileApplied(Element element) {
+        return PokaYokeUmlProfileUtil.getAppliedProfile(element, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isPresent();
     }
 }

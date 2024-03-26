@@ -49,7 +49,7 @@ public class CifContext {
      * @return all contextual elements in the {@code model}.
      */
     public static QueryableIterable<NamedElement> queryContextElements(Model model) {
-        return QueryableIterable.from(model.eAllContents()).select(e -> CONTEXT_TYPES.contains(e.eClass()))
+        return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
                 .asType(NamedElement.class);
     }
 
