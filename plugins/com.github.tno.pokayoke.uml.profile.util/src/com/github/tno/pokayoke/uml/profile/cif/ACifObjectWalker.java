@@ -29,7 +29,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 		private static BinaryOperator valueOfCif(String operator) {
 			return from(values()).any(v -> v.cifOperator.equals(operator));
 		}
-	};
+	}
 
 	protected enum UnaryOperator {
 		NOT("not"), MINUS("-");
@@ -47,7 +47,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 		private static UnaryOperator valueOfCif(String operator) {
 			return from(values()).any(v -> v.cifOperator.equals(operator));
 		}
-	};
+	}
 
 	@Override
 	protected T visit(AAssignmentUpdate update, CifContext ctx) {
