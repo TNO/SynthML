@@ -1,6 +1,6 @@
 package com.github.tno.pokayoke.uml.profile.cif;
 
-import java.util.Arrays;
+import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
@@ -9,6 +9,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
 
 public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContext> {
@@ -25,9 +26,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 			return cifOperator;
 		}
 
-		private static BinaryOperator valueOfCif(String operator, TextPosition operatorPos) {
-			return Arrays.stream(values()).filter(v -> v.cifOperator.equals(operator)).findAny()
-					.orElseThrow(() -> new CustomSyntaxException("unsupported operator: " + operator, operatorPos));
+		private static BinaryOperator valueOfCif(String operator) {
+			return from(values()).any(v -> v.cifOperator.equals(operator));
 		}
 	};
 
@@ -44,9 +44,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 			return cifOperator;
 		}
 
-		private static UnaryOperator valueOfCif(String operator, TextPosition operatorPos) {
-			return Arrays.stream(values()).filter(v -> v.cifOperator.equals(operator)).findAny()
-					.orElseThrow(() -> new CustomSyntaxException("unsupported operator: " + operator, operatorPos));
+		private static UnaryOperator valueOfCif(String operator) {
+			return from(values()).any(v -> v.cifOperator.equals(operator));
 		}
 	};
 
@@ -68,7 +67,10 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 	@Override
 	protected T visit(ABinaryExpression expr, CifContext ctx) {
 		TextPosition operatorPos = expr.right.position;
-		BinaryOperator operator = BinaryOperator.valueOfCif(expr.operator, operatorPos);
+		BinaryOperator operator = BinaryOperator.valueOfCif(expr.operator);
+		if (operator == null) {
+			throw new CustomSyntaxException("unsupported operator: " + operator, operatorPos);
+		}
 		return visit(operator, operatorPos, visit(expr.left, ctx), visit(expr.right, ctx), ctx);
 	}
 
@@ -81,10 +83,11 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 			throw new CustomSyntaxException("expected a non-derivative name", expr.position);
 		}
 
-		if (ctx.isEnumerationLiteral(name)) {
-			return visit(ctx.getEnumerationLiteral(name), expr.position, ctx);
-		} else if (ctx.isVariable(name)) {
-			return visit(ctx.getVariable(name), expr.position, ctx);
+		NamedElement element = ctx.getElement(name);
+		if (element instanceof EnumerationLiteral literal) {
+			return visit(literal, expr.position, ctx);
+		} else if (element instanceof Property property) {
+			return visit(property, expr.position, ctx);
 		} else {
 			throw new CustomSyntaxException(String.format("unresolved name '%s'", name), expr.position);
 		}
@@ -97,7 +100,10 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 	@Override
 	protected T visit(AUnaryExpression expr, CifContext ctx) {
 		TextPosition operatorPos = expr.position;
-		UnaryOperator operator = UnaryOperator.valueOfCif(expr.operator, operatorPos);
+		UnaryOperator operator = UnaryOperator.valueOfCif(expr.operator);
+		if (operator == null) {
+			throw new CustomSyntaxException("unsupported operator: " + operator, operatorPos);
+		}
 		return visit(operator, operatorPos, visit(expr.child, ctx), ctx);
 	}
 
