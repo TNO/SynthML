@@ -1,3 +1,4 @@
+
 package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.Collections;
@@ -17,42 +18,40 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 /** Helps parsing CIF expressions. */
 public class CifParserHelper {
-	private CifParserHelper() {
-		// Empty for utility classes
-	}
+    private CifParserHelper() {
+        // Empty for utility classes
+    }
 
-	public static AExpression parseExpression(String expression, Element context) throws SyntaxException {
-		if (expression == null) {
-			return null;
-		} else if (expression.isBlank()) {
-			throw new CustomSyntaxException("cannot be blank.",
-					TextPosition.createDummy(getLocation(context)));
-		}
-		CifExpressionParser expressionParser = new CifExpressionParser();
-		return expressionParser.parseString(expression, getLocation(context));
-	}
+    public static AExpression parseExpression(String expression, Element context) throws SyntaxException {
+        if (expression == null) {
+            return null;
+        } else if (expression.isBlank()) {
+            throw new CustomSyntaxException("cannot be blank.", TextPosition.createDummy(getLocation(context)));
+        }
+        CifExpressionParser expressionParser = new CifExpressionParser();
+        return expressionParser.parseString(expression, getLocation(context));
+    }
 
-	public static AExpression parseExpression(ValueSpecification valueSpecification) throws SyntaxException {
-		if (valueSpecification == null) {
-			return null;
-		}
-		return parseExpression(valueSpecification.stringValue(), valueSpecification);
-	}
+    public static AExpression parseExpression(ValueSpecification valueSpecification) throws SyntaxException {
+        if (valueSpecification == null) {
+            return null;
+        }
+        return parseExpression(valueSpecification.stringValue(), valueSpecification);
+    }
 
-	public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
-		if (updates == null) {
-			return Collections.emptyList();
-		} else if (updates.isBlank()) {
-			throw new CustomSyntaxException("cannot be blank.",
-					TextPosition.createDummy(getLocation(context)));
-		}
-		CifUpdatesParser updatesParser = new CifUpdatesParser();
-		return updatesParser.parseString(updates, getLocation(context));
-	}
+    public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
+        if (updates == null) {
+            return Collections.emptyList();
+        } else if (updates.isBlank()) {
+            throw new CustomSyntaxException("cannot be blank.", TextPosition.createDummy(getLocation(context)));
+        }
+        CifUpdatesParser updatesParser = new CifUpdatesParser();
+        return updatesParser.parseString(updates, getLocation(context));
+    }
 
-	private static String getLocation(Element context) {
-		Resource resource = context == null ? null : context.eResource();
-		URI uri = resource == null ? null : resource.getURI();
-		return uri == null ? "unknown" : uri.toString();
-	}
+    private static String getLocation(Element context) {
+        Resource resource = context == null ? null : context.eResource();
+        URI uri = resource == null ? null : resource.getURI();
+        return uri == null ? "unknown" : uri.toString();
+    }
 }
