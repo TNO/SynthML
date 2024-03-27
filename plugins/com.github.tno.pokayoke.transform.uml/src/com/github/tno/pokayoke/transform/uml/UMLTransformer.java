@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.CifExpressionParser;
 import org.eclipse.escet.cif.parser.CifUpdateParser;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -37,7 +38,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
-import com.github.tno.pokayoke.transform.common.UMLValidatorSwitch;
+import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.google.common.base.Preconditions;
 
 /**
@@ -67,7 +68,7 @@ public class UMLTransformer {
         this.translator = new CifToPythonTranslator(this.typing);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, CoreException {
         if (args.length == 2) {
             transformFile(args[0], args[1]);
         } else {
@@ -75,15 +76,15 @@ public class UMLTransformer {
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
+    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
         new UMLTransformer(model, sourcePath).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transformModel() {
+    public void transformModel() throws CoreException {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
-        new UMLValidatorSwitch().doSwitch(model);
+        ValidationHelper.validateModel(model);
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");

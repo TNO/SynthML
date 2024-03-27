@@ -32,7 +32,7 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
     @Override
     @ParameterizedTest
     @MethodSource("provideArguments")
-    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
+    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
         super.regressionTest(inputPath, expectedPath, outputPath, message);
     }
 
