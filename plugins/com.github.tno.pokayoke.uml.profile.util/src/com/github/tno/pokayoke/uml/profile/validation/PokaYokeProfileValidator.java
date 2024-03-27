@@ -32,11 +32,34 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.collect.Sets;
 
 import PokaYoke.GuardEffectsAction;
 import PokaYoke.PokaYokePackage;
 
 public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
+    /**
+     * Reports an error if cycles are found in activities.
+     * 
+     * @param action the action to check
+     */
+    @Check
+    private void checkNoCyclesInActivities(CallBehaviorAction action) {
+        if (hasCycle(action, Sets.newHashSet(action.getActivity()))) {
+            error("Detected cycle in activities", action, null);
+        }
+    }
+
+    private static boolean hasCycle(CallBehaviorAction action, Set<Activity> history) {
+        if (action.getBehavior() instanceof Activity activity) {
+            if (!history.add(activity)) {
+                return true;
+            }
+            return from(activity.getNodes()).objectsOfKind(CallBehaviorAction.class).exists(a -> hasCycle(a, history));
+        }
+        return false;
+    }
+
     /**
      * Validates if the names of all {@link CifContext#queryContextElements(Model) context elements} are unique within
      * the {@code model}.
