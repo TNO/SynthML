@@ -17,10 +17,13 @@ import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -191,53 +194,42 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 error("Expected activity to have exactly one initial node.", node, null);
             }
         }
-
-        // Embed these child validations in this validator for performance as profile does not need to be checked
-        activity.getNodes().forEach(n -> checkNamingConventions(n, true, true));
     }
 
-    /**
-     * Validates the {@code controlFlow}.
-     * <p>
-     * This validation is only applied if the {@link PokaYokePackage Poka Yoke profile} is applied.
-     * </p>
-     *
-     * @param controlFlow the control-flow to validate.
-     */
     @Check
-    private void checkValidControlFlow(ControlFlow controlFlow) {
-        if (!isPokaYokaUmlProfileApplied(controlFlow)) {
+    private void checkValidActivityEdge(ActivityEdge edge) {
+        if (!isPokaYokaUmlProfileApplied(edge)) {
             return;
         }
-        checkNamingConventions(controlFlow, true, false);
-        if (!(controlFlow.getSource() instanceof DecisionNode)) {
-            return;
-        }
-        try {
-            AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
-            if (guardExpr == null) {
-                return;
+        if (edge instanceof ControlFlow controlFlow) {
+            checkNamingConventions(edge, true, false);
+
+            if (controlFlow.getSource() instanceof DecisionNode) {
+                try {
+                    AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
+                    if (guardExpr == null) {
+                        return;
+                    }
+                    CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
+                } catch (RuntimeException e) {
+                    error("Invalid guard: " + e.getLocalizedMessage(), controlFlow,
+                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                }
             }
-            CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+        } else {
+            error("Unsupported activity edge type: " + edge.eClass().getName(), edge, null);
         }
     }
 
-    /**
-     * Validates if {@link GuardEffectsAction} stereotype is only applied to {@link CallBehaviorAction} or
-     * {@link OpaqueAction}.
-     *
-     * @param action the action to validate.
-     */
     @Check
-    private void checkValidStereoType(Action action) {
-        if (action instanceof CallBehaviorAction || action instanceof OpaqueAction) {
+    private void checkValidActivityNode(ActivityNode node) {
+        if (!isPokaYokaUmlProfileApplied(node)) {
             return;
         }
-        if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
-            error(String.format("Stereotype %s can only be applied on call-behavior actions or opaque actions.",
-                    PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE), null);
+        if (node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
+            checkNamingConventions(node, true, true);
+        } else {
+            error("Unsupported activity node type: " + node.eClass().getName(), node, null);
         }
     }
 
@@ -263,6 +255,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         null);
             }
         } else {
+            // Added this validation here, as we're already checking the behavior type.
             error("Expected the behavior to be an activity", UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
         }
     }
