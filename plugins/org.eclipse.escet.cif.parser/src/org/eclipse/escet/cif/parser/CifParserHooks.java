@@ -589,14 +589,14 @@ public final class CifParserHooks implements CifParser.Hooks {
         return new AEventDecl(t1, l3, a2, t1.position);
     }
 
-    @Override // Decl : @CONSTKW Type ConstantDefs SEMICOLTK;
-    public ADecl parseDecl07(Token t1, ACifType a2, List<AConstant> l3) {
-        return new AConstDecl(a2, l3, t1.position);
+    @Override // Decl : OptAnnos @CONSTKW Type ConstantDefs SEMICOLTK;
+    public ADecl parseDecl07(List<AAnnotation> l1, Token t2, ACifType a3, List<AConstant> l4) {
+        return new AConstDecl(l1, a3, l4, t2.position);
     }
 
-    @Override // Decl : @ALGKW Type AlgVarsDefs SEMICOLTK;
-    public ADecl parseDecl08(Token t1, ACifType a2, List<AAlgVariable> l3) {
-        return new AAlgVariableDecl(a2, l3, t1.position);
+    @Override // Decl : OptAnnos @ALGKW Type AlgVarsDefs SEMICOLTK;
+    public ADecl parseDecl08(List<AAnnotation> l1, Token t2, ACifType a3, List<AAlgVariable> l4) {
+        return new AAlgVariableDecl(l1, a3, l4, t2.position);
     }
 
     @Override // Decl : OptAnnos @INPUTKW Type Identifiers SEMICOLTK;

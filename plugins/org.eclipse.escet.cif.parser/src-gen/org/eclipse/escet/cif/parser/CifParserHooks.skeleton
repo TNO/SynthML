@@ -492,13 +492,13 @@ implements CifParser.Hooks,
         // return null;
     }
 
-    @Override // Decl : @CONSTKW Type ConstantDefs SEMICOLTK;
-    public ADecl parseDecl07(Token t1, ACifType a2, List<AConstant> l3) {
+    @Override // Decl : OptAnnos @CONSTKW Type ConstantDefs SEMICOLTK;
+    public ADecl parseDecl07(List<AAnnotation> l1, Token t2, ACifType a3, List<AConstant> l4) {
         // return null;
     }
 
-    @Override // Decl : @ALGKW Type AlgVarsDefs SEMICOLTK;
-    public ADecl parseDecl08(Token t1, ACifType a2, List<AAlgVariable> l3) {
+    @Override // Decl : OptAnnos @ALGKW Type AlgVarsDefs SEMICOLTK;
+    public ADecl parseDecl08(List<AAnnotation> l1, Token t2, ACifType a3, List<AAlgVariable> l4) {
         // return null;
     }
 
