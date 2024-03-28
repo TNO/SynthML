@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?eclipse version="3.0"?><!--
+--><plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated PokaYoke -->
+      <package class="PokaYoke.PokaYokePackage" genModel="model/PokaYoke.genmodel" uri="https://github.com/TNO/PokaYoke/0.0.1/"/>
+   </extension>
+
+<extension point="org.eclipse.uml2.uml.generated_package"><profile location="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ" uri="https://github.com/TNO/PokaYoke/0.0.1/"/></extension><extension point="org.eclipse.emf.ecore.uri_mapping"><mapping source="pathmap://MY_PROFILES/" target="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model"/></extension></plugin>

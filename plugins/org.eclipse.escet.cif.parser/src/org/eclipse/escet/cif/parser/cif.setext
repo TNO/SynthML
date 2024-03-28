@@ -15,8 +15,8 @@
 @terminals:
   // CIF keywords also in:
   //  - Syntax highlighting files for LaTeX.
-  //  - Syntax highlighting files for AsciiDoctor.
-  //  - Textual syntax description in  CIF documentation.
+  //  - Syntax highlighting files for highlight.js.
+  //  - Textual syntax description in CIF documentation.
   @keywords Keywords = alg
                        alphabet
                        any
@@ -233,6 +233,7 @@ end
 
 @start Expression: org.eclipse.escet.cif.parser.CifExpressionParser;
 @start Update: org.eclipse.escet.cif.parser.CifUpdateParser;
+@start Updates: org.eclipse.escet.cif.parser.CifUpdatesParser;
 
 @hooks org.eclipse.escet.cif.parser.CifParserHooks;
 
@@ -307,7 +308,7 @@ Decl : @TYPEKW TypeDefs SEMICOLTK
      | @CONSTKW Type ConstantDefs SEMICOLTK
      | @ALGKW Type AlgVarsDefs SEMICOLTK
      | OptAnnos @INPUTKW Type Identifiers SEMICOLTK
-     | @CONTKW ContDecls SEMICOLTK
+     | OptAnnos @CONTKW ContDecls SEMICOLTK
      | @EQUATIONKW Equations SEMICOLTK
      | @INITIALKW Expressions SEMICOLTK
      | InvariantDecls
