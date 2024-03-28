@@ -3,7 +3,10 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -36,5 +39,26 @@ public class OpaqueActionHelper {
         OpaqueExpression guard = FACTORY.createOpaqueExpression();
         guard.getBodies().add(expression);
         incomingEdge.setGuard(guard);
+    }
+
+    /**
+     * Add strings to the bodies of actions translated from events.
+     *
+     * @param activity The activity in which strings are added to the actions.
+     * @param eventToString The map from event to string.
+     */
+    public static void addStringsToActions(Activity activity, Map<Event, String> eventToString) {
+        List<OpaqueAction> actions = activity.getNodes().stream().filter(OpaqueAction.class::isInstance)
+                .map(OpaqueAction.class::cast).toList();
+        for (Entry<Event, String> entry: eventToString.entrySet()) {
+            String eventName = entry.getKey().getName();
+            String string = entry.getValue();
+
+            List<OpaqueAction> eventActions = actions.stream().filter(action -> action.getName().equals(eventName))
+                    .toList();
+            Preconditions.checkArgument(eventActions.size() > 0,
+                    String.format("Expected there is at least one action corresponding to event %s.", eventName));
+            eventActions.stream().forEach(action -> action.getBodies().add(string));
+        }
     }
 }

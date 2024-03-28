@@ -24,13 +24,15 @@ public class ConvertExpressionToText {
     private Map<EnumDecl, EObject> enumDeclToParent = new LinkedHashMap<>();
 
     /**
-     * Convert CIF guard expressions into CIF expression texts.
+     * Convert CIF expressions of guards into CIF expression texts.
      *
      * @param cifSpec The CIF specification.
      * @param actionToExpression The map from opaque actions to expressions.
      * @return A map from opaque actions to CIF expression texts.
      */
-    public Map<OpaqueAction, String> convert(Specification cifSpec, Map<OpaqueAction, Expression> actionToExpression) {
+    public Map<OpaqueAction, String> convert(Specification cifSpec,
+            Map<OpaqueAction, Expression> actionToExpression)
+    {
         // Check that the guard expressions do not contain location expressions and input variable expressions as they
         // are not expected in choice guards.
         CheckGuard checkGuard = new CheckGuard();
@@ -50,7 +52,7 @@ public class ConvertExpressionToText {
         return choiceActionToGuardText;
     }
 
-    private void moveDeclarations(Specification cifSpec) {
+    public void moveDeclarations(Specification cifSpec) {
         List<Declaration> declarations = CifCollectUtils.collectDeclarations(cifSpec, new ArrayList<>());
 
         declarations.stream().filter(DiscVariable.class::isInstance).map(DiscVariable.class::cast)
@@ -63,7 +65,7 @@ public class ConvertExpressionToText {
         cifSpec.getDeclarations().addAll(enumDeclToParent.keySet());
     }
 
-    private void revertDeclarationsMove() {
+    public void revertDeclarationsMove() {
         discVariableToParent.entrySet()
                 .forEach(e -> ((ComplexComponent)e.getValue()).getDeclarations().add(e.getKey()));
     }

@@ -75,15 +75,21 @@ public class FullSynthesisApp {
         // Load CIF specification.
         Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
-        // Perform Synthesis.
+        // Get CIF BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
         CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
-                .collectUncontrolledSystemGuards(cifBddSpec);
+        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
+        // Get the string representations of specification guards and updates.
+        Map<Event, String> specificationGuards = EventGuardUpdateHelper
+                .collectSpecificationControllableEventGuards(cifSpec);
+        Map<Event, String> specificationUpdates = EventGuardUpdateHelper
+                .collectSpecificationControllableEventUpdates(cifSpec);
+
+        // Perform Synthesis.
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
@@ -156,6 +162,10 @@ public class FullSynthesisApp {
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
 
+        // Add the guards and updates to the opaque actions.
+        OpaqueActionHelper.addStringsToActions(activity, specificationGuards);
+        OpaqueActionHelper.addStringsToActions(activity, specificationUpdates);
+
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
@@ -179,14 +189,15 @@ public class FullSynthesisApp {
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
 
-        // Convert guard CIF expression to CIF expression text.
+        // Convert CIF expression of choice guards into CIF expression text.
         ConvertExpressionToText converter = new ConvertExpressionToText();
         Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
+        // Post-process the activity to remove the internal actions that were added in CIF specification and
+        // petrification.
         PostProcessActivity.removeInternalActions(activity);
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
