@@ -97,7 +97,7 @@ public class FullSynthesisApp {
         ExplorerApplication explorerApp = new ExplorerApplication();
         int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Exception during state space generation.");
+            throw new RuntimeException("Non-zero exit code for state space generation: " + exitCode);
         }
 
         // Remove state annotations from intermediate states.
@@ -119,7 +119,7 @@ public class FullSynthesisApp {
         ProjectionApplication projectionApp = new ProjectionApplication();
         exitCode = projectionApp.run(projectionArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Exception during event-based automaton projection.");
+            throw new RuntimeException("Non-zero exit code for event-based automaton projection: " + exitCode);
         }
 
         // Perform DFA minimization.
@@ -130,7 +130,7 @@ public class FullSynthesisApp {
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
         exitCode = dfaMinimizationApp.run(dfaMinimizationArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Exception during DFA minimization.");
+            throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode);
         }
 
         // Translate the CIF state space to Petrify input.
