@@ -2,12 +2,15 @@
 package com.github.tno.pokayoke.transform.tests.common;
 
 import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
+import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertFileExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -70,7 +73,7 @@ public abstract class RegressionTest {
      * Act test.
      *
      * @param inputPath Path to the input file.
-     * @param outputPath Path for the actual output file.
+     * @param outputPath Path for the output file(s).
      * @throws IOException Thrown when one of operations on the files fails.
      */
     protected abstract void actTest(Path inputPath, Path outputPath) throws IOException;
@@ -78,13 +81,26 @@ public abstract class RegressionTest {
     /**
      * Verify test.
      *
-     * @param expectedPath Path to the expected output file.
-     * @param outputPath Path to the actual output file.
+     * @param expectedPath Path to the expected output file(s).
+     * @param outputPath Path to the actual output file(s).
      * @param message Message in case of a failing assertion.
      * @throws IOException Thrown when one of the files can't be read.
      */
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
-        PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
+        if (Files.isDirectory(outputPath)) {
+            File outputFolder = new File(outputPath.toString());
+            File expectedFolder = new File(expectedPath.toString());
+            File[] outputFiles = outputFolder.listFiles();
+            for (int i = 0; i < outputFiles.length; i++) {
+                File outputFile = outputFiles[i];
+                Path expectedFilePath = Paths.get(expectedFolder.toString(), outputFile.getName());
+                String expectedFileName = expectedFilePath.toString();
+                assertFileExists(expectedFilePath, "File" + expectedFileName + " does not exist.");
+                PathAssertions.assertContentsMatch(expectedFilePath, outputFile.toPath(), message);
+            }
+        } else {
+            PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
+        }
     }
 
     /**
