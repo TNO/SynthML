@@ -175,13 +175,13 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
         switch (operator) {
             case NOT:
                 if (!ctx.getBooleanType().equals(child)) {
-                    throw new TypeException(String.format("Expected Boolean but got %s near keyword '%s'",
+                    throw new TypeException(String.format("Expected Boolean but got %s near operator '%s'",
                             getLabel(child), operator.cifValue()), operatorPos);
                 }
                 break;
             case MINUS:
                 if (!ctx.getIntegerType().equals(child)) {
-                    throw new TypeException(String.format("Expected Integer but got %s near keyword '%s'",
+                    throw new TypeException(String.format("Expected Integer but got %s near operator '%s'",
                             getLabel(child), operator.cifValue()), operatorPos);
                 }
                 break;
