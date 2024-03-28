@@ -189,7 +189,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
         QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
-        if (initialNodes.size() > 1) {
+        if (initialNodes.size() != 1) {
             for (InitialNode node : initialNodes) {
                 error("Expected activity to have exactly one initial node.", node, null);
             }
