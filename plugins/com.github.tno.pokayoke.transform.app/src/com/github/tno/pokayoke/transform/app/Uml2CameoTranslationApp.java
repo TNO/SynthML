@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 
 import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
@@ -13,7 +14,7 @@ public class Uml2CameoTranslationApp {
     private Uml2CameoTranslationApp() {
     }
 
-    public static void translateUml2Cameo(Path inputPath, Path outputFolderPath) throws IOException {
+    public static void translateUml2Cameo(Path inputPath, Path outputFolderPath) throws IOException, CoreException {
         Files.createDirectories(outputFolderPath);
 
         // Determine the path of the output file.

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -38,7 +39,6 @@ import org.json.JSONObject;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
-import com.github.tno.pokayoke.transform.common.UMLValidatorSwitch;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -129,10 +129,10 @@ public abstract class Uml2GalTranslator {
      *
      * @param model The model to translate.
      * @return The translated specification.
+     * @throws CoreException Thrown when {@code model} cannot be transformed.
      */
-    public Specification translate(Model model) {
+    public Specification translate(Model model) throws CoreException {
         // Validate and flatten the model.
-        new UMLValidatorSwitch().doSwitch(model);
         new FlattenUMLActivity(model).transform();
 
         // Create GAL specification builders for translating the UML model, and reset from any previous translation.

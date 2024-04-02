@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.json.JSONException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,12 +30,12 @@ public class Uml2GalRegressionTest extends RegressionTest {
     @Override
     @ParameterizedTest
     @MethodSource("provideArguments")
-    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
+    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
         super.regressionTest(inputPath, expectedPath, outputPath, message);
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
         try {
             Uml2GalTranslationHelper.translateCifAnnotatedModel(inputPath.toString(), outputPath.toString(),
                     getTracePathFrom(outputPath).toString());
