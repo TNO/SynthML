@@ -22,7 +22,7 @@ import PokaYoke.GuardEffectsAction;
 public class PokaYokeProfileServices {
     /**
      * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
-     * 
+     *
      * @param action the action to interrogate.
      * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
      */
@@ -33,7 +33,7 @@ public class PokaYokeProfileServices {
     /**
      * Returns the {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
      * <code>null</code> otherwise.
-     * 
+     *
      * @param action the action to interrogate.
      * @return the {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
      *     <code>null</code> otherwise.
@@ -50,7 +50,7 @@ public class PokaYokeProfileServices {
      * {@link String#isEmpty() empty} and {@link #getEffects(Action)} also is <code>null</code> or
      * {@link String#isEmpty() empty}.
      * </p>
-     * 
+     *
      * @param action the action to set the property on.
      * @param newValue the new property value.
      */
@@ -68,7 +68,7 @@ public class PokaYokeProfileServices {
     /**
      * Returns the {@link GuardEffectsAction#getEffects()} property value if <code>action</code> is stereotype,
      * <code>null</code> otherwise.
-     * 
+     *
      * @param action the action to interrogate.
      * @return the {@link GuardEffectsAction#getEffects()} property value if <code>action</code> is stereotype,
      *     <code>null</code> otherwise.
@@ -85,7 +85,7 @@ public class PokaYokeProfileServices {
      * {@link String#isEmpty() empty} and {@link #getEffects(Action)} also is <code>null</code> or
      * {@link String#isEmpty() empty}.
      * </p>
-     * 
+     *
      * @param action the action to set the property on.
      * @param newValue the new property value.
      */
@@ -102,7 +102,7 @@ public class PokaYokeProfileServices {
 
     /**
      * Returns the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
-     * 
+     *
      * @param controlFlow the control-flow to interrogate.
      * @return the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
      */
@@ -121,7 +121,7 @@ public class PokaYokeProfileServices {
      * <li>default: {@link OpaqueExpression} holding the value in its {@link OpaqueExpression#getBodies() first
      * body}</li>
      * </ul>
-     * 
+     *
      * @param controlFlow the control-flow to set the guard value on.
      * @param newValue the new guard value.
      */

@@ -53,7 +53,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     /**
      * Reports an error if cycles are found in activities.
-     * 
+     *
      * @param action the action to check
      */
     @Check
@@ -213,7 +213,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
         if (initialNodes.size() != 1) {
-            for (InitialNode node : initialNodes) {
+            for (InitialNode node: initialNodes) {
                 error("Expected activity to have exactly one initial node.", node, null);
             }
         }

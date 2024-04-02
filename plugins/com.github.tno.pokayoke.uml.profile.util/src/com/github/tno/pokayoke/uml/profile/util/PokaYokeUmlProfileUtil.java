@@ -37,7 +37,7 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
-     * 
+     *
      * @param action the action to interrogate.
      * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
      */

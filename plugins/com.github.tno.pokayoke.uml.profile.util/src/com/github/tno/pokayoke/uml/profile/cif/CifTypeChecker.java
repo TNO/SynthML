@@ -28,7 +28,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
      * boolean.
-     * 
+     *
      * @param elem the context for evaluating the expression.
      * @param expr the expression to evaluate.
      * @return the type of the expression result.
@@ -47,7 +47,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
      * supported.
-     * 
+     *
      * @param elem the context for evaluating the expression.
      * @param expr the expression to evaluate.
      * @return the type of the expression result.
@@ -66,7 +66,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Returns the type of the result when {@code upd} is evaluated against {@code elem} and checks if this type is
      * supported.
-     * 
+     *
      * @param elem the context for evaluating the update.
      * @param upd the update to evaluate.
      * @return the type of the update addressable.
@@ -85,7 +85,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     /**
      * Returns the {@link TypedElement#getType() type} of the {@code elem} and checks if this type is supported.
-     * 
+     *
      * @param elem the context and type provider.
      * @return the type of the update addressable.
      * @throws TypeException if the result type is not supported.
