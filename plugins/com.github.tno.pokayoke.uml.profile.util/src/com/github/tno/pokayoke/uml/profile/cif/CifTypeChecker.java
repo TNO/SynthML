@@ -29,10 +29,10 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
      * boolean.
      *
-     * @param elem the context for evaluating the expression.
-     * @param expr the expression to evaluate.
-     * @return the type of the expression result.
-     * @throws TypeException if {@code expr} cannot be evaluated or if the result type is not a boolean.
+     * @param elem The context for evaluating the expression.
+     * @param expr The expression to evaluate.
+     * @return The type of the expression result.
+     * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not a boolean.
      */
     public static Type checkBooleanExpression(Element elem, AExpression expr) throws TypeException {
         CifTypeChecker typeChecker = new CifTypeChecker();
@@ -48,10 +48,10 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
      * supported.
      *
-     * @param elem the context for evaluating the expression.
-     * @param expr the expression to evaluate.
-     * @return the type of the expression result.
-     * @throws TypeException if {@code expr} cannot be evaluated or if the result type is not supported.
+     * @param elem The context for evaluating the expression.
+     * @param expr The expression to evaluate.
+     * @return The type of the expression result.
+     * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not supported.
      */
     public static Type checkExpression(Element elem, AExpression expr) throws TypeException {
         CifTypeChecker typeChecker = new CifTypeChecker();
@@ -67,10 +67,10 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      * Returns the type of the result when {@code upd} is evaluated against {@code elem} and checks if this type is
      * supported.
      *
-     * @param elem the context for evaluating the update.
-     * @param upd the update to evaluate.
-     * @return the type of the update addressable.
-     * @throws TypeException if {@code expr} cannot be evaluated, if the result type is not supported or if the update
+     * @param elem The context for evaluating the update.
+     * @param upd The update to evaluate.
+     * @return The type of the update addressable.
+     * @throws TypeException If {@code expr} cannot be evaluated, if the result type is not supported or if the update
      *     value type and update addressable type are not equal.
      */
     public static Type checkUpdate(Element elem, AUpdate upd) throws TypeException {
@@ -86,8 +86,8 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Returns the {@link TypedElement#getType() type} of the {@code elem} and checks if this type is supported.
      *
-     * @param elem the context and type provider.
-     * @return the type of the update addressable.
+     * @param elem The context and type provider.
+     * @return The type of the update addressable.
      * @throws TypeException if the result type is not supported.
      */
     public static Type checkSupportedType(TypedElement elem) throws TypeException {

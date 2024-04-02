@@ -18,10 +18,10 @@ import PokaYoke.PokaYokePackage;
 public class PokaYokeUmlProfileUtil {
     private static final String ST_GUARD_EFFECTS_ACTION = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION.getName();
 
-    private static final String PROP_GUARD_EFFECTS_ACTION__GUARD = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__GUARD
+    private static final String PROP_GUARD_EFFECTS_ACTION_GUARD = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__GUARD
             .getName();
 
-    private static final String PROP_GUARD_EFFECTS_ACTION__EFFECTS = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__EFFECTS
+    private static final String PROP_GUARD_EFFECTS_ACTION_EFFECTS = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__EFFECTS
             .getName();
 
     /** Qualified name for the {@link PokaYokePackage Poka Yoke} profile. */
@@ -38,7 +38,7 @@ public class PokaYokeUmlProfileUtil {
     /**
      * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
      *
-     * @param action the action to interrogate.
+     * @param action The action to interrogate.
      * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
      */
     public static boolean isGuardEffectsAction(Action action) {
@@ -47,22 +47,22 @@ public class PokaYokeUmlProfileUtil {
 
     public static String getGuard(Action action) {
         return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
-                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION__GUARD)).orElse(null);
+                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_GUARD)).orElse(null);
     }
 
     public static void setGuard(Action action, String newValue) {
         Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
-        action.setValue(st, PROP_GUARD_EFFECTS_ACTION__GUARD, newValue);
+        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_GUARD, newValue);
     }
 
     public static String getEffects(Action action) {
         return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
-                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION__EFFECTS)).orElse(null);
+                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_EFFECTS)).orElse(null);
     }
 
     public static void setEffects(Action action, String newValue) {
         Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
-        action.setValue(st, PROP_GUARD_EFFECTS_ACTION__EFFECTS, newValue);
+        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_EFFECTS, newValue);
     }
 
     public static Optional<Profile> getAppliedProfile(Element element, String qualifiedName) {

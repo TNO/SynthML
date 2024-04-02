@@ -11,7 +11,7 @@ public class TypeException extends RuntimeException {
     /**
      * Constructs a new runtime exception with the specified detail {@code message}.
      *
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     * @param message The detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
      *     method.
      */
     public TypeException(String message) {
@@ -21,9 +21,9 @@ public class TypeException extends RuntimeException {
     /**
      * Constructs a new runtime exception with the specified detail {@code message} and {@code position}.
      *
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     * @param message The detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
      *     method.
-     * @param position the text position of the problem. The position is saved for later retrieval by the
+     * @param position The text position of the problem. The position is saved for later retrieval by the
      *     {@link #getMessage()} method.
      */
     public TypeException(String message, TextPosition position) {
@@ -34,7 +34,7 @@ public class TypeException extends RuntimeException {
     /**
      * Returns the position.
      *
-     * @return the position
+     * @return The position
      */
     public TextPosition getPosition() {
         return position;

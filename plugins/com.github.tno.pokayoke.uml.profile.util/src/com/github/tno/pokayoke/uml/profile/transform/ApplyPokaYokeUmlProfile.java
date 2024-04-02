@@ -20,6 +20,10 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import PokaYoke.GuardEffectsAction;
 
 public class ApplyPokaYokeUmlProfile {
+    private ApplyPokaYokeUmlProfile() {
+        // Empty for utility classes
+    }
+
     public static void applyUmlProfile(String sourcePath, String targetPath) throws IOException {
         Model model = FileHelper.loadModel(sourcePath);
         applyUmlProfile(model);
@@ -49,7 +53,7 @@ public class ApplyPokaYokeUmlProfile {
      * {@link GuardEffectsAction} stereotype is already applied, copies its <code>guard</code> and <code>effects</code>
      * back to the <code>bodies</code> of the <code>action</code>.
      *
-     * @param action the action to transform
+     * @param action The action to transform
      */
     private static void applyUmlProfile(OpaqueAction action) {
         String guard = PokaYokeUmlProfileUtil.getGuard(action);
