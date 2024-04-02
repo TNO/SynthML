@@ -22,23 +22,23 @@ import PokaYoke.GuardEffectsAction;
 public class PokaYokeProfileServices {
     /**
      * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
-     * 
-     * @param action the action to interrogate.
+     *
+     * @param action The action to interrogate.
      * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
      */
-    public static boolean isGuardEffectsAction(Action action) {
+    public boolean isGuardEffectsAction(Action action) {
         return PokaYokeUmlProfileUtil.isGuardEffectsAction(action);
     }
 
     /**
      * Returns the {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
      * <code>null</code> otherwise.
-     * 
-     * @param action the action to interrogate.
-     * @return the {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
+     *
+     * @param action The action to interrogate.
+     * @return The {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
      *     <code>null</code> otherwise.
      */
-    public static String getGuard(Action action) {
+    public String getGuard(Action action) {
         return PokaYokeUmlProfileUtil.getGuard(action);
     }
 
@@ -50,11 +50,11 @@ public class PokaYokeProfileServices {
      * {@link String#isEmpty() empty} and {@link #getEffects(Action)} also is <code>null</code> or
      * {@link String#isEmpty() empty}.
      * </p>
-     * 
-     * @param action the action to set the property on.
-     * @param newValue the new property value.
+     *
+     * @param action The action to set the property on.
+     * @param newValue The new property value.
      */
-    public static void setGuard(Action action, String newValue) {
+    public void setGuard(Action action, String newValue) {
         if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(action);
             if (Strings.isNullOrEmpty(effects)) {
@@ -68,12 +68,12 @@ public class PokaYokeProfileServices {
     /**
      * Returns the {@link GuardEffectsAction#getEffects()} property value if <code>action</code> is stereotype,
      * <code>null</code> otherwise.
-     * 
-     * @param action the action to interrogate.
-     * @return the {@link GuardEffectsAction#getEffects()} property value if <code>action</code> is stereotype,
+     *
+     * @param action The action to interrogate.
+     * @return The {@link GuardEffectsAction#getEffects()} property value if <code>action</code> is stereotype,
      *     <code>null</code> otherwise.
      */
-    public static String getEffects(Action action) {
+    public String getEffects(Action action) {
         return PokaYokeUmlProfileUtil.getEffects(action);
     }
 
@@ -85,11 +85,11 @@ public class PokaYokeProfileServices {
      * {@link String#isEmpty() empty} and {@link #getEffects(Action)} also is <code>null</code> or
      * {@link String#isEmpty() empty}.
      * </p>
-     * 
-     * @param action the action to set the property on.
-     * @param newValue the new property value.
+     *
+     * @param action The action to set the property on.
+     * @param newValue The new property value.
      */
-    public static void setEffects(Action action, String newValue) {
+    public void setEffects(Action action, String newValue) {
         if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(action);
             if (Strings.isNullOrEmpty(effects)) {
@@ -102,11 +102,11 @@ public class PokaYokeProfileServices {
 
     /**
      * Returns the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
-     * 
-     * @param controlFlow the control-flow to interrogate.
-     * @return the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
+     *
+     * @param controlFlow The control-flow to interrogate.
+     * @return The {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
      */
-    public static String getGuard(ControlFlow controlFlow) {
+    public String getGuard(ControlFlow controlFlow) {
         ValueSpecification guard = controlFlow.getGuard();
         return guard == null ? null : guard.stringValue();
     }
@@ -121,11 +121,11 @@ public class PokaYokeProfileServices {
      * <li>default: {@link OpaqueExpression} holding the value in its {@link OpaqueExpression#getBodies() first
      * body}</li>
      * </ul>
-     * 
-     * @param controlFlow the control-flow to set the guard value on.
-     * @param newValue the new guard value.
+     *
+     * @param controlFlow The control-flow to set the guard value on.
+     * @param newValue The new guard value.
      */
-    public static void setGuard(ControlFlow controlFlow, String newValue) {
+    public void setGuard(ControlFlow controlFlow, String newValue) {
         if (newValue == null || newValue.isEmpty()) {
             if (controlFlow.getGuard() != null) {
                 controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());

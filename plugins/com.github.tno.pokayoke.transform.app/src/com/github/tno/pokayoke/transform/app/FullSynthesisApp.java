@@ -186,7 +186,8 @@ public class FullSynthesisApp {
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
+        // Post-process the activity to remove the internal actions that were added in CIF specification and
+        // petrification.
         PostProcessActivity.removeInternalActions(activity);
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }

@@ -45,8 +45,8 @@ public class CifContext {
     /**
      * Finds all contextual elements in the {@code model}.
      *
-     * @param model search root.
-     * @return all contextual elements in the {@code model}.
+     * @param model The search root.
+     * @return All contextual elements in the {@code model}.
      */
     public static QueryableIterable<NamedElement> queryContextElements(Model model) {
         return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))

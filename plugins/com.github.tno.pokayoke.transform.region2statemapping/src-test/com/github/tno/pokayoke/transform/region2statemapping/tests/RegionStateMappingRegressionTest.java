@@ -34,8 +34,8 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        ExtractRegionStateMapping.extractMappingFromFiles(inputPath.toString(), getSecondInputPathFrom(inputPath).toString(),
-                outputPath.toString());
+        ExtractRegionStateMapping.extractMappingFromFiles(inputPath.toString(),
+                getSecondInputPathFrom(inputPath).toString(), outputPath.toString());
     }
 
     private Path getSecondInputPathFrom(Path inputPath) {

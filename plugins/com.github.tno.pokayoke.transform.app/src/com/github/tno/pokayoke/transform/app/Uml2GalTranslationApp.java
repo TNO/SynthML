@@ -16,7 +16,9 @@ public class Uml2GalTranslationApp {
     private Uml2GalTranslationApp() {
     }
 
-    public static void translateUml2Gal(Path inputPath, Path outputFolderPath) throws IOException, JSONException, CoreException {
+    public static void translateUml2Gal(Path inputPath, Path outputFolderPath)
+            throws IOException, JSONException, CoreException
+    {
         Files.createDirectories(outputFolderPath);
 
         // Determine the paths of the output GAL and JSON files.
