@@ -304,9 +304,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(Action action) {
-        String guard = PokaYokeUmlProfileUtil.getGuard(action);
         try {
-            AExpression guardExpr = CifParserHelper.parseExpression(guard, action);
+            AExpression guardExpr = CifParserHelper.parseGuard(action);
             if (guardExpr == null) {
                 return;
             }
@@ -323,10 +322,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidEffects(Action action) {
-        String effects = PokaYokeUmlProfileUtil.getEffects(action);
         try {
             HashSet<String> updatedVariables = new HashSet<>();
-            for (AUpdate update: CifParserHelper.parseUpdates(effects, action)) {
+            for (AUpdate update: CifParserHelper.parseEffects(action)) {
                 CifTypeChecker.checkUpdate(action, update);
 
                 // Update is checked above, so ClassCastException is not possible on next lines

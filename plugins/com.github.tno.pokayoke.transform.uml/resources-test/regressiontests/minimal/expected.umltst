@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" name="NewModel">
-  <packagedElement xsi:type="uml:Class" name="NewClass" classifierBehavior="//NewClass/NewActivity">
+  <packagedElement xsi:type="uml:Class" name="NewClass" classifierBehavior="//NewClass/NewActivity" isActive="true">
     <ownedAttribute name="active" isStatic="true">
       <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       <defaultValue xsi:type="uml:LiteralString" value=""/>
