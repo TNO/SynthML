@@ -1,6 +1,8 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,6 +55,24 @@ public class CifContext {
                 .asType(NamedElement.class);
     }
 
+    /**
+     * Loads a {@link UMLResource#UML_PRIMITIVE_TYPES_LIBRARY_URI primitive UML type}, e.g., "Boolean" or "String".
+     *
+     * @param name The name of the primitive type to load.
+     * @param model The context to load the primitive types, such that they can be used for comparison
+     * @return The loaded primitive type.
+     */
+    public static PrimitiveType loadPrimitiveType(String name, Model model) {
+        // Use the resource set of the model to load the primitive types, such that they can be used for comparison
+        Resource resource = model.eResource();
+        ResourceSet resourceSet = resource == null ? null : resource.getResourceSet();
+        Preconditions.checkNotNull(resourceSet, "Expected element to be contained by a resource set.");
+        resource = resourceSet.getResource(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI), true);
+        Package primitivesPackage = (Package)EcoreUtil.getObjectByType(resource.getContents(),
+                UMLPackage.Literals.PACKAGE);
+        return (PrimitiveType)primitivesPackage.getOwnedType(name);
+    }
+
     private final Map<String, NamedElement> contextElements;
 
     private final PrimitiveType booleanType;
@@ -60,18 +80,12 @@ public class CifContext {
     private final PrimitiveType integerType;
 
     public CifContext(Element element) {
+        Model model = element.getModel();
         // Do not check duplicates here, as that is the responsibility of model validation
-        contextElements = queryContextElements(element.getModel()).toMap(NamedElement::getName);
+        contextElements = queryContextElements(model).toMap(NamedElement::getName);
 
-        // Use the resource set of the element to load the primitive types, such that they can be used for comparison
-        Resource resource = element.eResource();
-        ResourceSet resourceSet = resource == null ? null : resource.getResourceSet();
-        Preconditions.checkNotNull(resourceSet, "Expected element to be contained by a resource set.");
-        resource = resourceSet.getResource(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI), true);
-        Package primitivesPackage = (Package)EcoreUtil.getObjectByType(resource.getContents(),
-                UMLPackage.Literals.PACKAGE);
-        booleanType = (PrimitiveType)primitivesPackage.getOwnedType("Boolean");
-        integerType = (PrimitiveType)primitivesPackage.getOwnedType("Integer");
+        booleanType = loadPrimitiveType("Boolean", model);
+        integerType = loadPrimitiveType("Integer", model);
     }
 
     public PrimitiveType getBooleanType() {
@@ -88,6 +102,10 @@ public class CifContext {
 
     protected NamedElement getElement(String name) {
         return contextElements.get(name);
+    }
+
+    protected Collection<NamedElement> getAllElements() {
+        return Collections.unmodifiableCollection(contextElements.values());
     }
 
     public boolean isEnumeration(String name) {

@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -9,9 +10,11 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.TypedElement;
@@ -97,6 +100,23 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             throw new TypeException("Unsupported type: " + getLabel(elemType));
         }
         return elemType;
+    }
+
+    /**
+     * Returns all Poka Yoke supported types for {@code elem}.
+     * <p>
+     * The next types are supported: {@link Enumeration enumerations in the model},
+     * {@link CifContext#loadPrimitiveType(String, Model) primitive Boolean} and
+     * {@link CifContext#loadPrimitiveType(String, Model) primitive Integer}.
+     * </p>
+     *
+     * @param elem The context for which the supported types are queried.
+     * @return All Poka Yoke supported types for {@code elem}.
+     */
+    public static List<Type> getSupportedTypes(TypedElement elem) {
+        CifContext ctx = new CifContext(elem);
+        return QueryableIterable.from(ctx.getAllElements()).objectsOfKind(Enumeration.class).asType(Type.class)
+                .union(ctx.getBooleanType(), ctx.getIntegerType()).asList();
     }
 
     private CifTypeChecker() {

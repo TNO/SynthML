@@ -3,14 +3,20 @@ package com.github.tno.pokayoke.uml.profile.design;
 
 import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE;
 
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 
@@ -61,6 +67,8 @@ public class PokaYokeProfileServices {
                 PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
                 return;
             }
+            // Empty values are not allowed, so reset the value
+            newValue = null;
         }
         PokaYokeUmlProfileUtil.setGuard(action, newValue);
     }
@@ -96,6 +104,8 @@ public class PokaYokeProfileServices {
                 PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
                 return;
             }
+            // Empty values are not allowed, so reset the value
+            newValue = null;
         }
         PokaYokeUmlProfileUtil.setEffects(action, newValue);
     }
@@ -126,7 +136,7 @@ public class PokaYokeProfileServices {
      * @param newValue The new guard value.
      */
     public void setGuard(ControlFlow controlFlow, String newValue) {
-        if (newValue == null || newValue.isEmpty()) {
+        if (Strings.isNullOrEmpty(newValue)) {
             if (controlFlow.getGuard() != null) {
                 controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
             }
@@ -148,5 +158,18 @@ public class PokaYokeProfileServices {
         }
         ((OpaqueExpression)guard).getBodies().clear();
         ((OpaqueExpression)guard).getBodies().add(newValue);
+    }
+
+    /**
+     * Returns all Poka Yoke supported types for {@code property}.
+     *
+     * @param property The property (i.e. context) for which the supported types are queried.
+     * @return All Poka Yoke supported types for {@code property}.
+     * @see CifTypeChecker#getSupportedTypes(org.eclipse.uml2.uml.TypedElement)
+     */
+    public List<Type> getSupportedPropertyTypes(Property property) {
+        List<Type> supportedTypes = CifTypeChecker.getSupportedTypes(property);
+        supportedTypes.sort(Comparator.comparing(Type::getName));
+        return supportedTypes;
     }
 }
