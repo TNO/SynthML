@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" name="pokayoke" version="12.0.0.2017041100">
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" name="pokayoke" version="12.0.0.2017041100">
   <ownedViewpoints name="PokaYoke" modelFileExtension="uml">
     <ownedRepresentationExtensions xsi:type="description_1:DiagramExtensionDescription" name="Poka Yoke Activity Diagram" viewpointURI="viewpoint:/org.obeonetwork.dsl.uml2.core.design/Reused" representationName="Activity Diagram">
       <metamodel href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
@@ -14,14 +14,6 @@
           </decorationDescriptions>
         </decorationDescriptionsSet>
       </layers>
-      <validationSet name="Poka Yoke">
-        <ownedRules xsi:type="validation:SemanticValidationRule" name="validGuardError" level="ERROR" message="service:self.getValidGuardErrorMessage()" targetClass="uml.OpaqueAction">
-          <audits auditExpression="service:self.isValidGuard()"/>
-        </ownedRules>
-        <ownedRules xsi:type="validation:SemanticValidationRule" name="validEffectsError" level="ERROR" message="service:self.getValidEffectsErrorMessage()" targetClass="uml.OpaqueAction">
-          <audits auditExpression="service:self.isValidEffects()"/>
-        </ownedRules>
-      </validationSet>
     </ownedRepresentationExtensions>
     <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.design.PokaYokeProfileServices"/>
   </ownedViewpoints>
@@ -31,7 +23,7 @@
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow">
+      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" preconditionExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)">
         <groups href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
         <groups href="#//@extensions.0/@categories.0/@groups.1"/>
       </pages>

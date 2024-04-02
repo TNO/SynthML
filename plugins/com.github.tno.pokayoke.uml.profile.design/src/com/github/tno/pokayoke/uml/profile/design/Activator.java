@@ -1,3 +1,4 @@
+
 package com.github.tno.pokayoke.uml.profile.design;
 
 import java.util.HashSet;
@@ -13,51 +14,51 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
     /** The plug-in ID. */
-	public static final String PLUGIN_ID = "com.github.tno.pokayoke.uml.profile.design";
+    public static final String PLUGIN_ID = "com.github.tno.pokayoke.uml.profile.design";
 
     /** The shared instance. */
-	private static Activator plugin;
+    private static Activator plugin;
 
-	private static Set<Viewpoint> viewpoints;
+    private static Set<Viewpoint> viewpoints;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
-	 * BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-		viewpoints = new HashSet<Viewpoint>();
-		viewpoints.addAll(
-				ViewpointRegistry.getInstance().registerFromPlugin(PLUGIN_ID + "/description/pokayoke.odesign"));
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework. BundleContext)
+     */
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        plugin = this;
+        viewpoints = new HashSet<>();
+        viewpoints.addAll(
+                ViewpointRegistry.getInstance().registerFromPlugin(PLUGIN_ID + "/description/pokayoke.odesign"));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		if (viewpoints != null) {
-			for (final Viewpoint viewpoint : viewpoints) {
-				ViewpointRegistry.getInstance().disposeFromPlugin(viewpoint);
-			}
-			viewpoints.clear();
-			viewpoints = null;
-		}
-		super.stop(context);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        plugin = null;
+        if (viewpoints != null) {
+            for (final Viewpoint viewpoint: viewpoints) {
+                ViewpointRegistry.getInstance().disposeFromPlugin(viewpoint);
+            }
+            viewpoints.clear();
+            viewpoints = null;
+        }
+        super.stop(context);
+    }
 
-	/**
+    /**
      * Returns the shared instance.
-	 * 
+     *
      * @return the shared instance.
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
+     */
+    public static Activator getDefault() {
+        return plugin;
+    }
 }
