@@ -17,8 +17,8 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.uml2.uml.OpaqueAction;
 
-/** Convert CIF expressions into CIF expression texts. */
-public class ConvertExpressionToText {
+/** Convert CIF expressions and updates into CIF expression texts. */
+public class ConvertExpressionUpdateToText {
     private Map<DiscVariable, EObject> discVariableToParent = new LinkedHashMap<>();
 
     private Map<EnumDecl, EObject> enumDeclToParent = new LinkedHashMap<>();

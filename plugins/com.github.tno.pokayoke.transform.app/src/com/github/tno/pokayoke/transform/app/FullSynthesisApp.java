@@ -193,7 +193,7 @@ public class FullSynthesisApp {
                 .put(transitionToAction.get(transition), expression));
 
         // Convert CIF expression of choice guards into CIF expression text.
-        ConvertExpressionToText converter = new ConvertExpressionToText();
+        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
         Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.

@@ -58,7 +58,7 @@ public class EventGuardUpdateHelper {
         for (Edge edge: edges) {
             Event event = getEvent(edge);
 
-            ConvertExpressionToText converter = new ConvertExpressionToText();
+            ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
 
             // Move the declarations to the root of the CIF specification.
             converter.moveDeclarations(cifSpec);
@@ -105,7 +105,7 @@ public class EventGuardUpdateHelper {
         for (Edge edge: edges) {
             Event event = getEvent(edge);
 
-            ConvertExpressionToText converter = new ConvertExpressionToText();
+            ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
 
             // Move the declarations to the root of the CIF specification.
             converter.moveDeclarations(cifSpec);
