@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Activity;
@@ -54,8 +53,10 @@ public class OpaqueActionHelper {
         for (OpaqueAction action: actions) {
             List<String> strings = eventToString.entrySet().stream()
                     .filter(e -> e.getKey().getName().equals(action.getName())).map(e -> e.getValue()).toList();
-            Preconditions.checkArgument(strings.size() == 0, String
-                    .format("Expected that there is exactly one CIF expression string corresponding to action %s.", action.getName()));
+            Preconditions.checkArgument(strings.size() == 1,
+                    String.format(
+                            "Expected that there is exactly one CIF expression string corresponding to action %s.",
+                            action.getName()));
             action.getBodies().add(strings.get(0));
         }
     }
