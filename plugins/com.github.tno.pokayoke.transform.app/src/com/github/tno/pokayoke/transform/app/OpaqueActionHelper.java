@@ -1,12 +1,14 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -41,23 +43,61 @@ public class OpaqueActionHelper {
     }
 
     /**
-     * Add strings to the bodies of opaque actions translated from events.
+     * Add guard strings to the bodies of opaque actions translated from events.
      *
-     * @param activity The activity in which to add strings to the bodies of opaque actions.
-     * @param eventToString The map from events to strings.
+     * @param activity The activity in which to add guard strings to the bodies of opaque actions.
+     * @param eventToString The map from events to guard strings.
      */
-    public static void addStringsToOpaqueActionBodies(Activity activity, Map<Event, String> eventToString) {
-        List<OpaqueAction> actions = activity.getNodes().stream().filter(OpaqueAction.class::isInstance)
-                .map(OpaqueAction.class::cast).toList();
+    public static void addGuardStringsToOpaqueActionBodies(Activity activity, Map<Event, String> eventToString) {
+        List<OpaqueAction> actions = getOpaqueActions(activity);
+        actions.stream().forEach(action -> action.getBodies().add(getString(action, eventToString)));
+    }
+
+    private static List<OpaqueAction> getOpaqueActions(Activity activity) {
+        return activity.getNodes().stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
+                .toList();
+    }
+
+    private static String getString(OpaqueAction action, Map<Event, String> eventToString) {
+        List<String> strings = eventToString.entrySet().stream()
+                .filter(e -> e.getKey().getName().equals(action.getName())).map(e -> e.getValue()).toList();
+        Preconditions.checkArgument(strings.size() == 1,
+                String.format("Expected that there is exactly one CIF expression string corresponding to action %s.",
+                        action.getName()));
+        return strings.get(0);
+    }
+
+    /**
+     * Add update strings to the bodies of opaque actions translated from events.
+     *
+     * @param activity The activity in which to add update strings to the bodies of opaque actions.
+     * @param eventToString The map from events to update strings.
+     */
+    public static void addUpdateStringsToOpaqueActionBodies(Activity activity, Map<Event, String> eventToString) {
+        List<OpaqueAction> actions = getOpaqueActions(activity);
 
         for (OpaqueAction action: actions) {
-            List<String> strings = eventToString.entrySet().stream()
-                    .filter(e -> e.getKey().getName().equals(action.getName())).map(e -> e.getValue()).toList();
-            Preconditions.checkArgument(strings.size() == 1,
-                    String.format(
-                            "Expected that there is exactly one CIF expression string corresponding to action %s.",
-                            action.getName()));
-            action.getBodies().add(strings.get(0));
+            List<DecisionNode> decisonNodes = action.getOutgoings().stream().map(edge -> edge.getTarget())
+                    .filter(DecisionNode.class::isInstance).map(DecisionNode.class::cast).toList();
+
+            List<String> strings = new ArrayList<>();
+
+            // If the action leads to a decision node, we add the updates of the resulting uncontrollable events to the
+            // action. Otherwise, the update of the corresponding controllable event is added to the action.
+            if (!decisonNodes.isEmpty()) {
+                Preconditions.checkArgument(decisonNodes.size() == 1,
+                        "Expected that each action can lead to maximally one decision node.");
+                strings = eventToString.entrySet().stream()
+                        .filter(e -> e.getKey().getName().contains(action.getName() + "_result_"))
+                        .map(e -> e.getValue()).toList();
+                Preconditions.checkArgument(strings.size() > 1, String.format(
+                        "Expected that there are more than one CIF expression string corresonding to the choice results of action %s.",
+                        action.getName()));
+            } else {
+                strings.add(getString(action, eventToString));
+            }
+
+            action.getBodies().addAll(strings);
         }
     }
 }

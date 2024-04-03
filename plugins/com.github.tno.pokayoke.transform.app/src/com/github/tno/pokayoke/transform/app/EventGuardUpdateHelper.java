@@ -46,28 +46,27 @@ public class EventGuardUpdateHelper {
     }
 
     /**
-     * Collect guards of controllable events from a CIF specification.
+     * Collect guards of events from a CIF specification.
      *
      * @param cifSpec The CIF specification.
      * @return The map from events to string representations of guards.
      */
-    public static Map<Event, String> collectSpecificationControllableEventGuards(Specification cifSpec) {
+    public static Map<Event, String> collectSpecificationEventGuards(Specification cifSpec) {
         Map<Event, String> eventGuards = new LinkedHashMap<>();
         List<Edge> edges = getEdges(cifSpec);
 
         for (Edge edge: edges) {
             Event event = getEvent(edge);
-            if (event.getControllable()) {
-                ConvertExpressionToText converter = new ConvertExpressionToText();
 
-                // Move the declarations to the root of the CIF specification.
-                converter.moveDeclarations(cifSpec);
+            ConvertExpressionToText converter = new ConvertExpressionToText();
 
-                eventGuards.put(event, CifTextUtils.exprsToStr(edge.getGuards()));
+            // Move the declarations to the root of the CIF specification.
+            converter.moveDeclarations(cifSpec);
 
-                // Move the declarations back to their original scopes. This may change the order of the declarations.
-                converter.revertDeclarationsMove();
-            }
+            eventGuards.put(event, CifTextUtils.exprsToStr(edge.getGuards()));
+
+            // Move the declarations back to their original scopes. This may change the order of the declarations.
+            converter.revertDeclarationsMove();
         }
         return eventGuards;
     }
@@ -95,27 +94,26 @@ public class EventGuardUpdateHelper {
     }
 
     /**
-     * Collect updates of controllable events from a CIF specification.
+     * Collect updates of events from a CIF specification.
      *
      * @param cifSpec The CIF specification.
      * @return The map from events to string representations of updates.
      */
-    public static Map<Event, String> collectSpecificationControllableEventUpdates(Specification cifSpec) {
+    public static Map<Event, String> collectSpecificationEventUpdates(Specification cifSpec) {
         Map<Event, String> eventUpdates = new LinkedHashMap<>();
         List<Edge> edges = getEdges(cifSpec);
         for (Edge edge: edges) {
             Event event = getEvent(edge);
-            if (event.getControllable()) {
-                ConvertExpressionToText converter = new ConvertExpressionToText();
 
-                // Move the declarations to the root of the CIF specification.
-                converter.moveDeclarations(cifSpec);
+            ConvertExpressionToText converter = new ConvertExpressionToText();
 
-                eventUpdates.put(event, CifTextUtils.updatesToStr(edge.getUpdates()));
+            // Move the declarations to the root of the CIF specification.
+            converter.moveDeclarations(cifSpec);
 
-                // Move the declarations back to their original scopes. This may change the order of the declarations.
-                converter.revertDeclarationsMove();
-            }
+            eventUpdates.put(event, CifTextUtils.updatesToStr(edge.getUpdates()));
+
+            // Move the declarations back to their original scopes. This may change the order of the declarations.
+            converter.revertDeclarationsMove();
         }
         return eventUpdates;
     }

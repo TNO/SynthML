@@ -83,12 +83,6 @@ public class FullSynthesisApp {
         // Get the BDDs of uncontrolled system guards before performing synthesis.
         Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
-        // Get the string representations of specification guards and updates.
-        Map<Event, String> specificationGuards = EventGuardUpdateHelper
-                .collectSpecificationControllableEventGuards(cifSpec);
-        Map<Event, String> specificationUpdates = EventGuardUpdateHelper
-                .collectSpecificationControllableEventUpdates(cifSpec);
-
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
@@ -175,10 +169,6 @@ public class FullSynthesisApp {
         // petrification.
         PostProcessActivity.removeInternalActions(activity);
 
-        // Add the guards and updates to the opaque actions.
-        OpaqueActionHelper.addStringsToOpaqueActionBodies(activity, specificationGuards);
-        OpaqueActionHelper.addStringsToOpaqueActionBodies(activity, specificationUpdates);
-
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
@@ -208,6 +198,14 @@ public class FullSynthesisApp {
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+
+        // Get the string representations of specification guards and updates.
+        Map<Event, String> specificationGuards = EventGuardUpdateHelper.collectSpecificationEventGuards(cifSpec);
+        Map<Event, String> specificationUpdates = EventGuardUpdateHelper.collectSpecificationEventUpdates(cifSpec);
+
+        // Add the guards and updates to the opaque actions.
+        OpaqueActionHelper.addGuardStringsToOpaqueActionBodies(activity, specificationGuards);
+        OpaqueActionHelper.addUpdateStringsToOpaqueActionBodies(activity, specificationUpdates);
 
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
