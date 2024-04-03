@@ -48,19 +48,16 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
             CifContext ctx)
     {
         String pyOperator = switch (operator) {
-            case AND, OR -> operator.cifValue();
             case EQ -> "==";
-            default -> throw new IllegalArgumentException("Integer types are not supported yet!");
+            default -> operator.cifValue();
         };
         return String.format("(%s) %s (%s)", left, pyOperator, right);
     }
 
     @Override
     protected String visit(UnaryOperator operator, TextPosition operatorPos, String child, CifContext ctx) {
-        String pyOperator = switch (operator) {
-            case NOT -> operator.cifValue();
-            default -> throw new IllegalArgumentException("Integer types are not supported yet!");
-        };
+        // No conversion needed from CIF to Python
+        String pyOperator = operator.cifValue();
         return String.format("%s (%s)", pyOperator, child);
     }
 
@@ -81,6 +78,6 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
 
     @Override
     protected String visit(AIntExpression expr, CifContext ctx) {
-        throw new IllegalArgumentException("Integer types are not supported yet!");
+        return expr.value;
     }
 }
