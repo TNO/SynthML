@@ -22,7 +22,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
 
-/** Helper for guard and update of events. */
+/** Helper for working with event guards and updates. */
 public class EventGuardUpdateHelper {
     private EventGuardUpdateHelper() {
     }
@@ -31,7 +31,7 @@ public class EventGuardUpdateHelper {
      * Collect uncontrolled system guards from a CIF/BDD specification.
      *
      * @param cifBddSpec The CIF/BDD specification.
-     * @return A map from CIF events to their guards in BDDs.
+     * @return A map from CIF events to their guards as BDDs.
      */
     public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec) {
         Map<Event, BDD> guards = new LinkedHashMap<>();
@@ -91,7 +91,7 @@ public class EventGuardUpdateHelper {
     private static Event getEvent(Edge edge) {
         Set<Event> events = CifEventUtils.getEvents(edge);
         Preconditions.checkArgument(events.size() == 1, "Expected the edge to contain exactly one event.");
-        return new ArrayList<>(events).get(0);
+        return events.iterator().next();
     }
 
     /**

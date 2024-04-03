@@ -75,7 +75,7 @@ public class FullSynthesisApp {
         // Load CIF specification.
         Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
-        // Get CIF BDD specification.
+        // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
         CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
@@ -89,7 +89,7 @@ public class FullSynthesisApp {
         Map<Event, String> specificationUpdates = EventGuardUpdateHelper
                 .collectSpecificationControllableEventUpdates(cifSpec);
 
-        // Perform Synthesis.
+        // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
@@ -163,8 +163,8 @@ public class FullSynthesisApp {
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
 
         // Add the guards and updates to the opaque actions.
-        OpaqueActionHelper.addStringsToActions(activity, specificationGuards);
-        OpaqueActionHelper.addStringsToActions(activity, specificationUpdates);
+        OpaqueActionHelper.addStringsToOpaqueActionBodies(activity, specificationGuards);
+        OpaqueActionHelper.addStringsToOpaqueActionBodies(activity, specificationUpdates);
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);

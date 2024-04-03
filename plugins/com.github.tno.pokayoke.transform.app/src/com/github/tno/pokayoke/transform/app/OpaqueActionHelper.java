@@ -42,23 +42,21 @@ public class OpaqueActionHelper {
     }
 
     /**
-     * Add strings to the bodies of actions translated from events.
+     * Add strings to the bodies of opaque actions translated from events.
      *
-     * @param activity The activity in which strings are added to the actions.
-     * @param eventToString The map from event to string.
+     * @param activity The activity in which to add strings to the bodies of opaque actions.
+     * @param eventToString The map from events to strings.
      */
-    public static void addStringsToActions(Activity activity, Map<Event, String> eventToString) {
+    public static void addStringsToOpaqueActionBodies(Activity activity, Map<Event, String> eventToString) {
         List<OpaqueAction> actions = activity.getNodes().stream().filter(OpaqueAction.class::isInstance)
                 .map(OpaqueAction.class::cast).toList();
-        for (Entry<Event, String> entry: eventToString.entrySet()) {
-            String eventName = entry.getKey().getName();
-            String string = entry.getValue();
 
-            List<OpaqueAction> eventActions = actions.stream().filter(action -> action.getName().equals(eventName))
-                    .toList();
-            Preconditions.checkArgument(eventActions.size() > 0,
-                    String.format("Expected there is at least one action corresponding to event %s.", eventName));
-            eventActions.stream().forEach(action -> action.getBodies().add(string));
+        for (OpaqueAction action: actions) {
+            List<String> strings = eventToString.entrySet().stream()
+                    .filter(e -> e.getKey().getName().equals(action.getName())).map(e -> e.getValue()).toList();
+            Preconditions.checkArgument(strings.size() == 0, String
+                    .format("Expected that there is exactly one CIF expression string corresponding to action %s.", action.getName()));
+            action.getBodies().add(strings.get(0));
         }
     }
 }
