@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -238,15 +239,25 @@ public class UMLTransformer {
         for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
                 transformOpaqueAction(activity, opaqueActionNode, acquireSignal);
-            }
-
-            if (node instanceof DecisionNode decisionNode) {
+            } else if (node instanceof CallBehaviorAction callBehaviorAction) {
+                transformCallBehaviorAction(activity, callBehaviorAction, acquireSignal);
+            } else if (node instanceof DecisionNode decisionNode) {
                 transformDecisionNode(decisionNode);
             }
         }
     }
 
+    private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
+        if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            transformAction(activity, action, acquireSignal);
+        }
+    }
+
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
+        transformAction(activity, action, acquireSignal);
+    }
+
+    private void transformAction(Activity activity, Action action, Signal acquireSignal) {
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         String guard = translator.translateExpression(CifParserHelper.parseGuard(action));

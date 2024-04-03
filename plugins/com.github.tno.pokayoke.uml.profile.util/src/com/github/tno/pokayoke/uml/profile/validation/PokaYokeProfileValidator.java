@@ -249,11 +249,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(node)) {
             return;
         }
-        if (node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
-            checkNamingConventions(node, true, true);
-        } else {
+        if (!(node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction)) {
             error("Unsupported activity node type: " + node.eClass().getName(), node, null);
+            return;
         }
+        boolean nameNotSet = Strings.isNullOrEmpty(node.getName());
+        if (nameNotSet && node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            error("Expected a non-null name.", UMLPackage.Literals.NAMED_ELEMENT__NAME);
+        }
+        checkNamingConventions(node, true, true);
     }
 
     /**
