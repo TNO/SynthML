@@ -12,7 +12,6 @@ import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
-import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
@@ -55,19 +54,9 @@ public class EventGuardUpdateHelper {
         Map<Event, String> eventGuards = new LinkedHashMap<>();
         List<Edge> edges = getEdges(cifSpec);
 
-        for (Edge edge: edges) {
-            Event event = getEvent(edge);
-
-            ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-
-            // Move the declarations to the root of the CIF specification.
-            converter.moveDeclarations(cifSpec);
-
-            eventGuards.put(event, CifTextUtils.exprsToStr(edge.getGuards()));
-
-            // Move the declarations back to their original scopes. This may change the order of the declarations.
-            converter.revertDeclarationsMove();
-        }
+        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
+        edges.stream().forEach(
+                edge -> eventGuards.put(getEvent(edge), converter.convertExpressions(cifSpec, edge.getGuards())));
         return eventGuards;
     }
 
@@ -102,19 +91,9 @@ public class EventGuardUpdateHelper {
     public static Map<Event, String> collectSpecificationEventUpdates(Specification cifSpec) {
         Map<Event, String> eventUpdates = new LinkedHashMap<>();
         List<Edge> edges = getEdges(cifSpec);
-        for (Edge edge: edges) {
-            Event event = getEvent(edge);
-
-            ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-
-            // Move the declarations to the root of the CIF specification.
-            converter.moveDeclarations(cifSpec);
-
-            eventUpdates.put(event, CifTextUtils.updatesToStr(edge.getUpdates()));
-
-            // Move the declarations back to their original scopes. This may change the order of the declarations.
-            converter.revertDeclarationsMove();
-        }
+        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
+        edges.stream().forEach(
+                edge -> eventUpdates.put(getEvent(edge), converter.convertUpdates(cifSpec, edge.getUpdates())));
         return eventUpdates;
     }
 }

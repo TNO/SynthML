@@ -11,6 +11,7 @@ import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.metamodel.cif.ComplexComponent;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.automata.Update;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
@@ -30,7 +31,7 @@ public class ConvertExpressionUpdateToText {
      * @param actionToExpression The map from opaque actions to expressions.
      * @return A map from opaque actions to CIF expression texts.
      */
-    public Map<OpaqueAction, String> convert(Specification cifSpec,
+    public Map<OpaqueAction, String> convertExpressions(Specification cifSpec,
             Map<OpaqueAction, Expression> actionToExpression)
     {
         // Check that the guard expressions do not contain location expressions and input variable expressions as they
@@ -52,7 +53,26 @@ public class ConvertExpressionUpdateToText {
         return choiceActionToGuardText;
     }
 
-    public void moveDeclarations(Specification cifSpec) {
+    /**
+     * Convert CIF expressions into a string.
+     *
+     * @param cifSpec The CIF specification.
+     * @param expressions A list of CIF expressions.
+     * @return A string converted from the CIF expressions.
+     */
+    public String convertExpressions(Specification cifSpec, List<Expression> expressions) {
+        // Move the declarations to the root of the CIF specification.
+        moveDeclarations(cifSpec);
+
+        String string = CifTextUtils.exprsToStr(expressions);
+
+        // Move the declarations back to their original scopes. This may change the order of the declarations.
+        revertDeclarationsMove();
+
+        return string;
+    }
+
+    private void moveDeclarations(Specification cifSpec) {
         List<Declaration> declarations = CifCollectUtils.collectDeclarations(cifSpec, new ArrayList<>());
 
         declarations.stream().filter(DiscVariable.class::isInstance).map(DiscVariable.class::cast)
@@ -65,8 +85,27 @@ public class ConvertExpressionUpdateToText {
         cifSpec.getDeclarations().addAll(enumDeclToParent.keySet());
     }
 
-    public void revertDeclarationsMove() {
+    private void revertDeclarationsMove() {
         discVariableToParent.entrySet()
                 .forEach(e -> ((ComplexComponent)e.getValue()).getDeclarations().add(e.getKey()));
+    }
+
+    /**
+     * Convert CIF updates into a string.
+     *
+     * @param cifSpec The CIF specification.
+     * @param updates A list of CIF updates.
+     * @return A string converted from the CIF updates.
+     */
+    public String convertUpdates(Specification cifSpec, List<Update> updates) {
+        // Move the declarations to the root of the CIF specification.
+        moveDeclarations(cifSpec);
+
+        String string = CifTextUtils.updatesToStr(updates);
+
+        // Move the declarations back to their original scopes. This may change the order of the declarations.
+        revertDeclarationsMove();
+
+        return string;
     }
 }
