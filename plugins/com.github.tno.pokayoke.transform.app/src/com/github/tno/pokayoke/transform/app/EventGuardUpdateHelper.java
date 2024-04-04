@@ -13,6 +13,7 @@ import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.SupKind;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
@@ -62,14 +63,15 @@ public class EventGuardUpdateHelper {
 
     private static List<Edge> getEdges(Specification cifSpec) {
         List<Automaton> automata = CifCollectUtils.collectAutomata(cifSpec, new ArrayList<>()).stream()
-                .filter(aut -> aut.getName().equals("Spec")).toList();
+                .filter(aut -> aut.getKind() == SupKind.PLANT).toList();
+
         Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to contain exactly one automaton called 'Spec'.");
+                "Expected the CIF specification to contain exactly one plant.");
         Automaton automaton = automata.get(0);
 
         List<Location> locations = automaton.getLocations();
         Preconditions.checkArgument(locations.size() == 1,
-                "Expected the automaton in CIF specification to contain exactly one location.");
+                "Expected the plant in CIF specification to contain exactly one location.");
         Location location = locations.get(0);
         List<Edge> edges = location.getEdges();
 
