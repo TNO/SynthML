@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.github.tno.pokayoke.transform.app
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.escet.cif.metamodel;bundle-version="0.0.0",
+ org.eclipse.escet.cif.parser;bundle-version="0.0.0",
  org.eclipse.escet.setext.runtime;bundle-version="0.10.0",
  org.eclipse.escet.cif.typechecker;bundle-version="0.10.0",
  org.eclipse.escet.common.typechecker;bundle-version="0.10.0",
@@ -37,13 +38,13 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.com-github-javabdd.com.github.javabdd;bundle-version="6.0.0",
  com.github.tno.pokayoke.transform.region2statemapping;bundle-version="0.0.1",
  org.eclipse.escet.common.emf;bundle-version="3.0.0",
- org.apache.commons.commons-text;bundle-version="1.10.0"
+ org.apache.commons.commons-text;bundle-version="1.10.0",
+ org.eclipse.escet.cif.checkers;bundle-version="3.0.0"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.app
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
- org.eclipse.escet.cif.parser;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",
  org.junit.jupiter.params;version="5.9.3",
  org.junit.jupiter.params.provider;version="5.9.3"
