@@ -2,17 +2,15 @@
 package com.github.tno.pokayoke.transform.tests.common;
 
 import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
-import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertFileExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.provider.Arguments;
@@ -88,16 +86,11 @@ public abstract class RegressionTest {
      */
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
         if (Files.isDirectory(outputPath)) {
-            File outputFolder = new File(outputPath.toString());
-            File expectedFolder = new File(expectedPath.toString());
-            File[] outputFiles = outputFolder.listFiles();
-            for (int i = 0; i < outputFiles.length; i++) {
-                File outputFile = outputFiles[i];
-                Path expectedFilePath = Paths.get(expectedFolder.toString(), outputFile.getName());
-                String expectedFileName = expectedFilePath.toString();
-                assertFileExists(expectedFilePath, "File" + expectedFileName + " does not exist.");
-                PathAssertions.assertContentsMatch(expectedFilePath, outputFile.toPath(), message);
-            }
+            Predicate<Path> filter = path -> {
+                String pathString = path.toString().toLowerCase();
+                return pathString.endsWith(".uml") || pathString.endsWith(".cif") || pathString.endsWith(".pnml");
+            };
+            FileCompare.checkDirectoriesEqual(expectedPath, outputPath, filter);
         } else {
             PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
         }
