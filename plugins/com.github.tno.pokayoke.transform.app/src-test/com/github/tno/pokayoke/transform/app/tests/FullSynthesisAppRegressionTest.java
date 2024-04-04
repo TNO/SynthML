@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.app.test;
+package com.github.tno.pokayoke.transform.app.tests;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +15,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 /**
  * Regression tests.
  */
-class FullSynthesisAppTest extends RegressionTest {
+class FullSynthesisAppRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "cif";
 
     public static final String OUTPUT_FILE_EXTENSION = "";
@@ -27,7 +27,7 @@ class FullSynthesisAppTest extends RegressionTest {
     @Override
     @ParameterizedTest
     @MethodSource("provideArguments")
-    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
+    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
         super.regressionTest(inputPath, expectedPath, outputPath, message);
     }
 
