@@ -25,35 +25,6 @@ public class ConvertExpressionUpdateToText {
     private Map<EnumDecl, EObject> enumDeclToParent = new LinkedHashMap<>();
 
     /**
-     * Convert CIF expressions of guards into CIF expression texts.
-     *
-     * @param cifSpec The CIF specification.
-     * @param actionToExpression The map from opaque actions to expressions.
-     * @return A map from opaque actions to CIF expression texts.
-     */
-    public Map<OpaqueAction, String> convertExpressions(Specification cifSpec,
-            Map<OpaqueAction, Expression> actionToExpression)
-    {
-        // Check that the guard expressions do not contain location expressions and input variable expressions as they
-        // are not expected in choice guards.
-        CheckGuard checkGuard = new CheckGuard();
-        actionToExpression.values().stream().forEach(checkGuard::check);
-
-        // Move the declarations to the root of the CIF specification.
-        moveDeclarations(cifSpec);
-
-        // Convert the expressions to texts.
-        Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
-        actionToExpression.forEach(
-                (action, expression) -> choiceActionToGuardText.put(action, CifTextUtils.exprToStr(expression)));
-
-        // Move the declarations back to their original scopes. This may change the order of the declarations.
-        revertDeclarationsMove();
-
-        return choiceActionToGuardText;
-    }
-
-    /**
      * Convert CIF expressions into a string.
      *
      * @param cifSpec The CIF specification.
@@ -61,6 +32,11 @@ public class ConvertExpressionUpdateToText {
      * @return A string converted from the CIF expressions.
      */
     public String convertExpressions(Specification cifSpec, List<Expression> expressions) {
+        // Check that the guard expressions do not contain location expressions and input variable expressions as they
+        // are not expected in choice guards.
+        CheckGuard checkGuard = new CheckGuard();
+        expressions.stream().forEach(checkGuard::check);
+
         // Move the declarations to the root of the CIF specification.
         moveDeclarations(cifSpec);
 

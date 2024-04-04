@@ -88,10 +88,10 @@ public class OpaqueActionHelper {
                 Preconditions.checkArgument(decisonNodes.size() == 1,
                         "Expected that each action can lead to maximally one decision node.");
                 strings = eventToString.entrySet().stream()
-                        .filter(e -> e.getKey().getName().contains(action.getName() + "_result_"))
+                        .filter(e -> e.getKey().getName().startsWith(action.getName() + "_result_"))
                         .map(e -> e.getValue()).toList();
                 Preconditions.checkArgument(strings.size() > 1, String.format(
-                        "Expected that there are more than one CIF expression string corresonding to the choice results of action %s.",
+                        "Expected that there are more than one CIF update string corresponding to the choice results of action %s.",
                         action.getName()));
             } else {
                 strings.add(getString(action, eventToString));
