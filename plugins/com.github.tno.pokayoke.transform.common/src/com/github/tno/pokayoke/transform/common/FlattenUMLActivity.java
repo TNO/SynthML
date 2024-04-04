@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -28,16 +29,16 @@ public class FlattenUMLActivity {
         this.structureInfoHelper = new StructureInfoHelper();
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
+    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
         new FlattenUMLActivity(model).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
-    public void transform() {
+    public void transform() throws CoreException {
         // Check whether the model has the expected structure, particularly that no double underscores exist in the
         // names of relevant model elements.
-        new UMLValidatorSwitch().doSwitch(model);
+        ValidationHelper.validateModel(model);
 
         // Give each element a name.
         NameHelper.giveNameToModelElements(model);

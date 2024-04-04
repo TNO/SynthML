@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.uml2.uml.Model;
 import org.json.JSONException;
 
@@ -54,9 +55,10 @@ public class Uml2GalTranslationHelper {
      * @param tracingPath The path to store the JSON tracing information.
      * @throws IOException Thrown in case the model could not be loaded or the specification be stored.
      * @throws JSONException In case generating the tracing JSON failed.
+     * @throws CoreException Thrown when model cannot be transformed.
      */
     public static void translateCifAnnotatedModel(String sourcePath, String targetPath, String tracingPath)
-            throws IOException, JSONException
+            throws IOException, JSONException, CoreException
     {
         // Translate the UML model and store the result.
         Model model = FileHelper.loadModel(sourcePath);

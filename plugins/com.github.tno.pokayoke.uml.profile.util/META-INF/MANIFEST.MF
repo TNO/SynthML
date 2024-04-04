@@ -1,18 +1,24 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Poka Yoke UML Profile Utilities
-Bundle-SymbolicName: com.github.tno.pokayoke.uml.profile.util
+Bundle-SymbolicName: com.github.tno.pokayoke.uml.profile.util;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Export-Package: com.github.tno.pokayoke.uml.profile.transform,
- com.github.tno.pokayoke.uml.profile.util
+Export-Package: com.github.tno.pokayoke.uml.profile.cif,
+ com.github.tno.pokayoke.uml.profile.transform;x-friends:="com.github.tno.pokayoke.transform.app.ui",
+ com.github.tno.pokayoke.uml.profile.util,
+ com.github.tno.pokayoke.uml.profile.validation;x-internal:=true
 Require-Bundle: com.github.tno.pokayoke.uml.profile.plugin;bundle-version="0.0.1";visibility:=reexport,
  org.eclipse.escet.cif.parser;bundle-version="3.0.0";visibility:=reexport,
  org.eclipse.escet.setext.runtime;bundle-version="3.0.0";visibility:=reexport,
  org.eclipse.escet.common.java;bundle-version="3.0.0";visibility:=reexport,
  com.github.tno.pokayoke.transform.uml;bundle-version="0.0.1",
  org.obeonetwork.dsl.uml2.core.design;bundle-version="9.0.0",
- com.github.tno.pokayoke.transform.common,
- org.eclipse.uml2.uml.resources
+ com.github.tno.pokayoke.transform.common;bundle-version="0.0.0",
+ org.eclipse.uml2.uml.resources;bundle-version="0.0.0",
+ org.espilce.periksa.validation.registry;bundle-version="1.0.0",
+ org.espilce.periksa.validation;bundle-version="2.0.0",
+ com.google.guava;bundle-version="0.0.0",
+ org.eclipse.lsat.common.queries;bundle-version="0.3.0"
 Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.pokayoke.uml.profile.util
 Bundle-RequiredExecutionEnvironment: JavaSE-17
