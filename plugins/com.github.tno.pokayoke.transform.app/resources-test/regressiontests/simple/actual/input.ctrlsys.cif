@@ -1,0 +1,100 @@
+enum Position = AtLocation2, AtLocation1;
+enum UnknownBool = True, False, Unknown;
+plant automaton Spec:
+  controllable Prepare_robot;
+  controllable Robot_move_to_location1;
+  controllable Robot_move_to_location2;
+  controllable Robot_adjust_product;
+  controllable Robot_release_product;
+  controllable Prepare_location1;
+  controllable Measure_product_position;
+  uncontrollable Measure_product_position_result_1;
+  uncontrollable Measure_product_position_result_2;
+  disc bool Robot_prepared = false;
+  disc bool Robot_has_product = true;
+  disc Position Robot_position = AtLocation2;
+  disc bool Location1_prepared = false;
+  disc bool Location1_has_product = false;
+  disc UnknownBool Location1_is_correctly_placed = Unknown;
+  location Home:
+    initial;
+    marked;
+    edge Prepare_robot when not Robot_prepared do Robot_prepared := true;
+    edge Robot_move_to_location1 when Robot_prepared do Robot_position := AtLocation1;
+    edge Robot_move_to_location2 when not Robot_has_product do Robot_position := AtLocation2;
+    edge Robot_adjust_product when Robot_prepared and Location1_is_correctly_placed = False do Location1_is_correctly_placed := Unknown;
+    edge Robot_release_product when Robot_prepared and Robot_position = AtLocation1 do Robot_has_product := false, Location1_has_product := true;
+    edge Prepare_location1 when not Location1_prepared do Location1_prepared := true;
+    edge Measure_product_position when Location1_prepared and Location1_has_product and Location1_is_correctly_placed = Unknown;
+    edge Measure_product_position_result_1 do Location1_is_correctly_placed := True;
+    edge Measure_product_position_result_2 do Location1_is_correctly_placed := False;
+end
+plant automaton constraint:
+  location idle:
+    initial;
+    marked;
+    edge Spec.Measure_product_position goto busy;
+    edge Spec.Prepare_robot;
+    edge Spec.Robot_move_to_location1;
+    edge Spec.Robot_adjust_product;
+    edge Spec.Robot_release_product;
+    edge Spec.Prepare_location1;
+  location busy:
+    edge Spec.Measure_product_position_result_1 goto idle;
+    edge Spec.Measure_product_position_result_2 goto idle;
+end
+supervisor automaton Prepare_robot_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge Spec.Prepare_robot goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Robot_move_to_location1_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge Spec.Robot_move_to_location1 goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Robot_release_product_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge Spec.Robot_release_product goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Prepare_location1_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge Spec.Prepare_location1 goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Post:
+  controllable c_satisfied;
+  alg bool condition = not Spec.Robot_has_product and Spec.Robot_position = AtLocation2 and Spec.Location1_has_product and Spec.Location1_is_correctly_placed = True;
+  location NotSatisfied:
+    initial;
+    edge c_satisfied when condition goto Satisfied;
+  location Satisfied:
+    marked;
+end
+supervisor automaton sup:
+  alphabet Spec.Prepare_robot, Spec.Robot_move_to_location1, Spec.Robot_move_to_location2, Spec.Robot_adjust_product, Spec.Robot_release_product, Spec.Prepare_location1, Spec.Measure_product_position, Post.c_satisfied;
+  location:
+    initial;
+    marked;
+    edge Post.c_satisfied when Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred)));
+    edge Spec.Measure_product_position when Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred)));
+    edge Spec.Prepare_location1 when Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (not Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.NotYetOccurred))) or (Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred))) or Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred)))) or (Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred))) or Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed != False and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred))) or (Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = False and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred))) or Post.Satisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (not Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.NotYetOccurred)))));
+    edge Spec.Prepare_robot when Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (not Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.NotYetOccurred))) or (Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred))) or Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred)))) or (Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred))) or Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed != False and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred))) or (Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = False and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred))) or Post.Satisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (Spec.Location1_prepared and (not Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.NotYetOccurred and Prepare_location1_happens_once.Occurred)))));
+    edge Spec.Robot_adjust_product when Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = False and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred))) or Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = False and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred)));
+    edge Spec.Robot_move_to_location1 when Post.NotSatisfied and (not Spec.Location1_has_product and Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = Unknown and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred))) or (Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed != False and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred))) or Post.NotSatisfied and (Spec.Location1_has_product and not Spec.Robot_has_product) and (Spec.Robot_position = AtLocation2 and (Spec.Location1_is_correctly_placed = False and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.NotYetOccurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred))));
+    edge Spec.Robot_move_to_location2 when Spec.Location1_has_product and not Spec.Robot_has_product and (Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = True and constraint.idle)) and (Spec.Location1_prepared and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred) and (Robot_release_product_happens_once.Occurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred)));
+    edge Spec.Robot_release_product when Post.NotSatisfied and Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed != False and (constraint.idle and Spec.Location1_prepared)) and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred))) or Post.NotSatisfied and Spec.Robot_position = AtLocation1 and (Spec.Location1_is_correctly_placed = False and (constraint.idle and Spec.Location1_prepared)) and (Spec.Robot_prepared and Robot_move_to_location1_happens_once.Occurred and (Robot_release_product_happens_once.NotYetOccurred and (Prepare_robot_happens_once.Occurred and Prepare_location1_happens_once.Occurred)));
+end

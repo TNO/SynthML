@@ -1,0 +1,47 @@
+group Spec:
+  controllable Prepare_robot;
+  controllable Robot_move_to_location1;
+  controllable Robot_move_to_location2;
+  controllable Robot_adjust_product;
+  controllable Robot_release_product;
+  controllable Prepare_location1;
+  controllable Measure_product_position;
+end
+group Post:
+  controllable c_satisfied;
+end
+automaton projected:
+  alphabet Spec.Prepare_robot, Spec.Robot_move_to_location1, Spec.Robot_move_to_location2, Spec.Robot_adjust_product, Spec.Robot_release_product, Spec.Prepare_location1, Spec.Measure_product_position, Post.c_satisfied;
+  @state(statespace = "loc1")
+  location s1:
+    initial;
+    edge Spec.Prepare_location1 goto s2;
+    edge Spec.Prepare_robot goto s3;
+  @state(statespace = "loc3")
+  location s2:
+    edge Spec.Prepare_robot goto s4;
+  @state(statespace = "loc2")
+  location s3:
+    edge Spec.Prepare_location1 goto s4;
+  @state(statespace = "loc4")
+  location s4:
+    edge Spec.Robot_move_to_location1 goto s5;
+  @state(statespace = "loc5")
+  location s5:
+    edge Spec.Robot_release_product goto s6;
+  @state(statespace = "loc6")
+  location s6:
+    edge Spec.Measure_product_position goto s7;
+  @state(statespace = "loc7")
+  @state(statespace = "loc9")
+  @state(statespace = "loc8")
+  location s7:
+    edge Spec.Robot_adjust_product goto s6;
+    edge Spec.Robot_move_to_location2 goto s8;
+  @state(statespace = "loc10")
+  location s8:
+    edge Post.c_satisfied goto s9;
+  @state(statespace = "loc11")
+  location s9:
+    marked;
+end

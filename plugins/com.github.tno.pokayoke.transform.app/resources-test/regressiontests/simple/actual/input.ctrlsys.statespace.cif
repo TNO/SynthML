@@ -1,0 +1,53 @@
+group Spec:
+  controllable Prepare_robot;
+  controllable Robot_move_to_location1;
+  controllable Robot_move_to_location2;
+  controllable Robot_adjust_product;
+  controllable Robot_release_product;
+  controllable Prepare_location1;
+  controllable Measure_product_position;
+  uncontrollable Measure_product_position_result_1;
+  uncontrollable Measure_product_position_result_2;
+end
+group Post:
+  controllable c_satisfied;
+end
+automaton statespace:
+  alphabet Spec.Prepare_robot, Spec.Robot_move_to_location1, Spec.Robot_move_to_location2, Spec.Robot_adjust_product, Spec.Robot_release_product, Spec.Prepare_location1, Spec.Measure_product_position, Spec.Measure_product_position_result_1, Spec.Measure_product_position_result_2, Post.c_satisfied;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "NotYetOccurred", Prepare_robot_happens_once = "NotYetOccurred", Robot_move_to_location1_happens_once = "NotYetOccurred", Robot_release_product_happens_once = "NotYetOccurred", Spec = "Home", Spec.Location1_has_product = false, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = false, Spec.Robot_has_product = true, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = false, sup = "*")
+  location loc1:
+    initial;
+    edge Spec.Prepare_robot goto loc2;
+    edge Spec.Prepare_location1 goto loc3;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "NotYetOccurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "NotYetOccurred", Robot_release_product_happens_once = "NotYetOccurred", Spec = "Home", Spec.Location1_has_product = false, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = false, Spec.Robot_has_product = true, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = true, sup = "*")
+  location loc2:
+    edge Spec.Prepare_location1 goto loc4;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "NotYetOccurred", Robot_move_to_location1_happens_once = "NotYetOccurred", Robot_release_product_happens_once = "NotYetOccurred", Spec = "Home", Spec.Location1_has_product = false, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = true, Spec.Robot_has_product = true, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = false, sup = "*")
+  location loc3:
+    edge Spec.Prepare_robot goto loc4;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "NotYetOccurred", Robot_release_product_happens_once = "NotYetOccurred", Spec = "Home", Spec.Location1_has_product = false, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = true, Spec.Robot_has_product = true, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = true, sup = "*")
+  location loc4:
+    edge Spec.Robot_move_to_location1 goto loc5;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "NotYetOccurred", Spec = "Home", Spec.Location1_has_product = false, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = true, Spec.Robot_has_product = true, Spec.Robot_position = "AtLocation1", Spec.Robot_prepared = true, sup = "*")
+  location loc5:
+    edge Spec.Robot_release_product goto loc6;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation1", Spec.Robot_prepared = true, sup = "*")
+  location loc6:
+    edge Spec.Measure_product_position goto loc7;
+  @state(constraint = "busy", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "Unknown", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation1", Spec.Robot_prepared = true, sup = "*")
+  location loc7:
+    edge Spec.Measure_product_position_result_1 goto loc8;
+    edge Spec.Measure_product_position_result_2 goto loc9;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "True", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation1", Spec.Robot_prepared = true, sup = "*")
+  location loc8:
+    edge Spec.Robot_move_to_location2 goto loc10;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "False", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation1", Spec.Robot_prepared = true, sup = "*")
+  location loc9:
+    edge Spec.Robot_adjust_product goto loc6;
+  @state(constraint = "idle", Post = "NotSatisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "True", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = true, sup = "*")
+  location loc10:
+    edge Post.c_satisfied goto loc11;
+  @state(constraint = "idle", Post = "Satisfied", Prepare_location1_happens_once = "Occurred", Prepare_robot_happens_once = "Occurred", Robot_move_to_location1_happens_once = "Occurred", Robot_release_product_happens_once = "Occurred", Spec = "Home", Spec.Location1_has_product = true, Spec.Location1_is_correctly_placed = "True", Spec.Location1_prepared = true, Spec.Robot_has_product = false, Spec.Robot_position = "AtLocation2", Spec.Robot_prepared = true, sup = "*")
+  location loc11:
+    marked;
+end
