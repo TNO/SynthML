@@ -379,11 +379,11 @@ public class FullSynthesisApp {
     {
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
-
+        Path parentPath = petrifyInputPath.getParent();
         command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toString()));
+        command.add(parentPath.relativize(petrifyInputPath).toString());
         command.add("-o");
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyOutputPath.toString()));
+        command.add(parentPath.relativize(petrifyOutputPath).toString());
 
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
@@ -398,10 +398,12 @@ public class FullSynthesisApp {
 
         // Generate a log file.
         command.add("-log");
-        command.add(petrifyLogPath.toString());
+        command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
+        petrifyProcessBuilder.inheritIO();
 
+        petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.
         Process petrifyProcess;
 
