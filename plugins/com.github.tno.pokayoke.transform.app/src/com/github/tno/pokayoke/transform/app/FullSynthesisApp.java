@@ -50,6 +50,7 @@ import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
@@ -145,6 +146,10 @@ public class FullSynthesisApp {
         // Load Petrify input and output.
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+
+        // Normalize Petrify output by relabeling the places.
+        NormalizePetrifyOutput.normalize(petrifyOutput);
+        Files.write(petrifyOutputPath, petrifyOutput);
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
