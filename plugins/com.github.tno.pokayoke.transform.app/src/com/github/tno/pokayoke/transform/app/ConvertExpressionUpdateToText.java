@@ -16,7 +16,6 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
-import org.eclipse.uml2.uml.OpaqueAction;
 
 /** Convert CIF expressions and updates into CIF expression texts. */
 public class ConvertExpressionUpdateToText {
@@ -25,17 +24,17 @@ public class ConvertExpressionUpdateToText {
     private Map<EnumDecl, EObject> enumDeclToParent = new LinkedHashMap<>();
 
     /**
-     * Convert CIF expressions into a string.
+     * Convert user-visible CIF expressions into a string.
      *
      * @param cifSpec The CIF specification.
      * @param expressions A list of CIF expressions.
      * @return A string converted from the CIF expressions.
      */
     public String convertExpressions(Specification cifSpec, List<Expression> expressions) {
-        // Check that the guard expressions do not contain location expressions and input variable expressions as they
-        // are not expected in choice guards.
-        CheckGuard checkGuard = new CheckGuard();
-        expressions.stream().forEach(checkGuard::check);
+        // Check that the expressions do not contain location expressions and input variable expressions as they
+        // are not expected in the user-visible expressions.
+        CheckEXpressionAndUpdate checkExpression = new CheckEXpressionAndUpdate();
+        expressions.stream().forEach(checkExpression::check);
 
         // Move the declarations to the root of the CIF specification.
         moveDeclarations(cifSpec);
@@ -67,13 +66,18 @@ public class ConvertExpressionUpdateToText {
     }
 
     /**
-     * Convert CIF updates into a string.
+     * Convert user-visible CIF updates into a string.
      *
      * @param cifSpec The CIF specification.
      * @param updates A list of CIF updates.
      * @return A string converted from the CIF updates.
      */
     public String convertUpdates(Specification cifSpec, List<Update> updates) {
+        // Check that the updates do not contain location expressions and input variable expressions as they
+        // are not expected in the user-visible updates.
+        CheckEXpressionAndUpdate checkUpdate = new CheckEXpressionAndUpdate();
+        updates.stream().forEach(checkUpdate::check);
+
         // Move the declarations to the root of the CIF specification.
         moveDeclarations(cifSpec);
 
