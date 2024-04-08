@@ -59,7 +59,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkNoCyclesInActivities(CallBehaviorAction action) {
         if (hasCycle(action, Sets.newHashSet(action.getActivity()))) {
-            error("Detected cycle in activities", action, null);
+            error("Detected cycle in activities", null);
         }
     }
 
@@ -235,12 +235,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     }
                     CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
                 } catch (RuntimeException e) {
-                    error("Invalid guard: " + e.getLocalizedMessage(), controlFlow,
-                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                    error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
                 }
             }
         } else {
-            error("Unsupported activity edge type: " + edge.eClass().getName(), edge, null);
+            error("Unsupported activity edge type: " + edge.eClass().getName(), null);
         }
     }
 
@@ -250,7 +249,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         if (!(node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction)) {
-            error("Unsupported activity node type: " + node.eClass().getName(), node, null);
+            error("Unsupported activity node type: " + node.eClass().getName(), null);
             return;
         }
         boolean nameNotSet = Strings.isNullOrEmpty(node.getName());
