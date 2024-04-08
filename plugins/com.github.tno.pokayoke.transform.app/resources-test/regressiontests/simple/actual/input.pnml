@@ -50,19 +50,12 @@
   <text>c_satisfied</text>
 </name>
 </transition>
-<place id="p2">
+<place id="p0">
 <name>
-  <text>p2</text>
+  <text>p0</text>
 </name>
 </place>
-<place id="p5">
-<name>
-  <text>p5</text>
-</name>
-</place>
-<arc id="start__to__p2" source="start" target="p2">
-</arc>
-<arc id="start__to__p5" source="start" target="p5">
+<arc id="Measure_product_position__to__p0" source="Measure_product_position" target="p0">
 </arc>
 <place id="p1">
 <name>
@@ -71,81 +64,88 @@
 </place>
 <arc id="Prepare_location1__to__p1" source="Prepare_location1" target="p1">
 </arc>
-<place id="p7">
+<place id="p2">
 <name>
-  <text>p7</text>
+  <text>p2</text>
 </name>
 </place>
-<arc id="Prepare_robot__to__p7" source="Prepare_robot" target="p7">
-</arc>
-<place id="p9">
-<name>
-  <text>p9</text>
-</name>
-<initialMarking>
-  <text>1</text>
-</initialMarking>
-</place>
-<arc id="end__to__p9" source="end" target="p9">
-</arc>
-<place id="p0">
-<name>
-  <text>p0</text>
-</name>
-</place>
-<arc id="Robot_move_to_location1__to__p0" source="Robot_move_to_location1" target="p0">
-</arc>
-<place id="p6">
-<name>
-  <text>p6</text>
-</name>
-</place>
-<arc id="Robot_release_product__to__p6" source="Robot_release_product" target="p6">
-</arc>
-<arc id="Robot_adjust_product__to__p6" source="Robot_adjust_product" target="p6">
+<arc id="Prepare_robot__to__p2" source="Prepare_robot" target="p2">
 </arc>
 <place id="p3">
 <name>
   <text>p3</text>
 </name>
 </place>
-<arc id="Robot_move_to_location2__to__p3" source="Robot_move_to_location2" target="p3">
+<arc id="Robot_adjust_product__to__p3" source="Robot_adjust_product" target="p3">
 </arc>
 <place id="p4">
 <name>
   <text>p4</text>
 </name>
 </place>
-<arc id="Measure_product_position__to__p4" source="Measure_product_position" target="p4">
+<arc id="Robot_move_to_location1__to__p4" source="Robot_move_to_location1" target="p4">
+</arc>
+<place id="p5">
+<name>
+  <text>p5</text>
+</name>
+</place>
+<arc id="Robot_move_to_location2__to__p5" source="Robot_move_to_location2" target="p5">
+</arc>
+<arc id="Robot_release_product__to__p3" source="Robot_release_product" target="p3">
+</arc>
+<place id="p6">
+<name>
+  <text>p6</text>
+</name>
+</place>
+<arc id="c_satisfied__to__p6" source="c_satisfied" target="p6">
+</arc>
+<place id="p7">
+<name>
+  <text>p7</text>
+</name>
+<initialMarking>
+  <text>1</text>
+</initialMarking>
+</place>
+<arc id="end__to__p7" source="end" target="p7">
+</arc>
+<arc id="p5__to__c_satisfied" source="p5" target="c_satisfied">
+</arc>
+<arc id="p2__to__Robot_move_to_location1" source="p2" target="Robot_move_to_location1">
+</arc>
+<arc id="p3__to__Measure_product_position" source="p3" target="Measure_product_position">
+</arc>
+<arc id="p4__to__Robot_release_product" source="p4" target="Robot_release_product">
+</arc>
+<arc id="p1__to__Robot_move_to_location1" source="p1" target="Robot_move_to_location1">
+</arc>
+<arc id="p6__to__end" source="p6" target="end">
 </arc>
 <place id="p8">
 <name>
   <text>p8</text>
 </name>
 </place>
-<arc id="c_satisfied__to__p8" source="c_satisfied" target="p8">
+<arc id="p8__to__Prepare_robot" source="p8" target="Prepare_robot">
 </arc>
-<arc id="p0__to__Robot_release_product" source="p0" target="Robot_release_product">
+<place id="p9">
+<name>
+  <text>p9</text>
+</name>
+</place>
+<arc id="p9__to__Prepare_location1" source="p9" target="Prepare_location1">
 </arc>
-<arc id="p1__to__Robot_move_to_location1" source="p1" target="Robot_move_to_location1">
+<arc id="p7__to__start" source="p7" target="start">
 </arc>
-<arc id="p2__to__Prepare_location1" source="p2" target="Prepare_location1">
+<arc id="p0__to__Robot_adjust_product" source="p0" target="Robot_adjust_product">
 </arc>
-<arc id="p3__to__c_satisfied" source="p3" target="c_satisfied">
+<arc id="p0__to__Robot_move_to_location2" source="p0" target="Robot_move_to_location2">
 </arc>
-<arc id="p4__to__Robot_adjust_product" source="p4" target="Robot_adjust_product">
+<arc id="start__to__p8" source="start" target="p8">
 </arc>
-<arc id="p4__to__Robot_move_to_location2" source="p4" target="Robot_move_to_location2">
-</arc>
-<arc id="p5__to__Prepare_robot" source="p5" target="Prepare_robot">
-</arc>
-<arc id="p6__to__Measure_product_position" source="p6" target="Measure_product_position">
-</arc>
-<arc id="p7__to__Robot_move_to_location1" source="p7" target="Robot_move_to_location1">
-</arc>
-<arc id="p8__to__end" source="p8" target="end">
-</arc>
-<arc id="p9__to__start" source="p9" target="start">
+<arc id="start__to__p9" source="start" target="p9">
 </arc>
 </page>
 </net>

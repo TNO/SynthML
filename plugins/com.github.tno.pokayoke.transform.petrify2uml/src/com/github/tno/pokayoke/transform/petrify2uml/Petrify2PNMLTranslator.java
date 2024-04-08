@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Preconditions;
 
@@ -105,7 +106,7 @@ public class Petrify2PNMLTranslator {
             // corresponding objects in the map.
             for (String element: elements) {
                 if (!transitionsPlacesMap.containsKey(element)) {
-                    if (isDuplicateTransition(element, transitionsPlacesMap)) {
+                    if (isDuplicateTransition(element, transitionsPlacesMap.keySet())) {
                         transitionsPlacesMap.put(element, createDuplicateTransition(element, petriNetPage));
                     } else {
                         transitionsPlacesMap.put(element, createPlace(element, petriNetPage));
@@ -171,10 +172,10 @@ public class Petrify2PNMLTranslator {
         return nameObject;
     }
 
-    private static boolean isDuplicateTransition(String elementName, Map<String, Node> nameObjectMapping) {
+    public static boolean isDuplicateTransition(String elementName, Set<String> declaredNames) {
         // Since CIF does not accept '/' in identifiers, the generated state space cannot contain '/'. It is safe to use
         // '/' to identify duplicate transitions.
-        for (String declaredName: nameObjectMapping.keySet()) {
+        for (String declaredName: declaredNames) {
             if (elementName.startsWith(declaredName) && elementName.contains("/")) {
                 return true;
             }
