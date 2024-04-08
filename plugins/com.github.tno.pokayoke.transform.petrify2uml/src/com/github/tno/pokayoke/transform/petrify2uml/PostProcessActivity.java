@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.google.common.base.Preconditions;
@@ -68,5 +69,17 @@ public class PostProcessActivity {
             action.destroy();
         }
         return numerOfActions;
+    }
+
+    /**
+     * Remove the names of edges, and nodes that are not call behavior actions or opaque actions.
+     *
+     * @param activity The activity from which to remove names of nodes and edges.
+     */
+    public static void removeNodesEdgesNames(Activity activity) {
+        activity.getEdges().stream().forEach(edge -> edge.setName(null));
+        List<ActivityNode> nodes = activity.getNodes().stream()
+                .filter(node -> !(node instanceof OpaqueAction) && !(node instanceof CallBehaviorAction)).toList();
+        nodes.stream().forEach(node -> node.setName(null));
     }
 }

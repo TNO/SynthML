@@ -95,7 +95,10 @@ public class FullSynthesisApp {
         String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
         ExplorerApplication explorerApp = new ExplorerApplication();
-        explorerApp.run(stateSpaceGenerationArgs, false);
+        int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for state space generation: " + exitCode);
+        }
 
         // Remove state annotations from intermediate states.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotreduced.cif");
@@ -114,7 +117,10 @@ public class FullSynthesisApp {
         String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         ProjectionApplication projectionApp = new ProjectionApplication();
-        projectionApp.run(projectionArgs, false);
+        exitCode = projectionApp.run(projectionArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for event-based automaton projection: " + exitCode);
+        }
 
         // Perform DFA minimization.
         Path cifMinimizedStateSpacePath = outputFolderPath
@@ -122,7 +128,10 @@ public class FullSynthesisApp {
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
-        dfaMinimizationApp.run(dfaMinimizationArgs, false);
+        exitCode = dfaMinimizationApp.run(dfaMinimizationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode);
+        }
 
         // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
@@ -187,8 +196,9 @@ public class FullSynthesisApp {
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
         // Post-process the activity to remove the internal actions that were added in CIF specification and
-        // petrification.
+        // petrification and to remove the names of edges and nodes.
         PostProcessActivity.removeInternalActions(activity);
+        PostProcessActivity.removeNodesEdgesNames(activity);
         PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
     }
 
