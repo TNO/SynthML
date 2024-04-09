@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 /** Helper class for creating various kinds of activities. */
 
@@ -38,24 +39,18 @@ public class ActivityHelper {
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes the specified
      * effect. The evaluation of the guard and possible execution of the effect happen together atomically.
      *
-     * @param guards A list of single-line Python boolean expressions.
+     * @param guard A single-line Python boolean expression.
      * @param effects A list of single-line Python programs.
      * @param acquire The signal for acquiring the lock.
      * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(List<String> guards, List<String> effects, Signal acquire,
-            String callerId)
-    {
+    public static Activity createAtomicActivity(String guard, List<String> effects, Signal acquire, String callerId) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
+                "Argument guard cannot be null nor an empty string.");
         Preconditions.checkArgument(!callerId.contains("'"),
                 "Argument callerId contains quote character ('): " + callerId);
-
-        // Combine all given guards into a single Python expression.
-        String guard = "True";
-        if (!guards.isEmpty()) {
-            guard = guards.stream().map(e -> "(" + e + ")").collect(Collectors.joining(" and "));
-        }
 
         // Combine all given effects into a single Python program.
         String effect = "pass";

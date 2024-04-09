@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_8G__8PGfEe6w6rfsvEI-Kw" name="MyModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_Ac8FcPGgEe6w6rfsvEI-Kw" name="Context" visibility="public" classifierBehavior="_HzZ8sPGgEe6w6rfsvEI-Kw" isActive="true">
+      <ownedAttribute xmi:id="_BfuYIPGgEe6w6rfsvEI-Kw" name="myBool" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Bfu_MPGgEe6w6rfsvEI-Kw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BfvmQPGgEe6w6rfsvEI-Kw" value="1"/>
+        <defaultValue xmi:type="uml:LiteralString" xmi:id="_x1OYsPGgEe6w6rfsvEI-Kw" value="false"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_HzZ8sPGgEe6w6rfsvEI-Kw" name="main" node="_caq7oPGgEe6w6rfsvEI-Kw _deYbYPGgEe6w6rfsvEI-Kw _ercrcPGgEe6w6rfsvEI-Kw _gPScwPGgEe6w6rfsvEI-Kw">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_kWrI4PGgEe6w6rfsvEI-Kw" target="_ercrcPGgEe6w6rfsvEI-Kw" source="_caq7oPGgEe6w6rfsvEI-Kw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_kWrv8PGgEe6w6rfsvEI-Kw" name="_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_kWtlIPGgEe6w6rfsvEI-Kw" name="_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_lNmw4PGgEe6w6rfsvEI-Kw" target="_gPScwPGgEe6w6rfsvEI-Kw" source="_ercrcPGgEe6w6rfsvEI-Kw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_lNmw4fGgEe6w6rfsvEI-Kw" name="OpaqueAction1_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_lNnX8PGgEe6w6rfsvEI-Kw" name="OpaqueAction1_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_ltDF8PGgEe6w6rfsvEI-Kw" target="_deYbYPGgEe6w6rfsvEI-Kw" source="_gPScwPGgEe6w6rfsvEI-Kw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_ltDtAPGgEe6w6rfsvEI-Kw" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_ltDtAfGgEe6w6rfsvEI-Kw" name="_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_caq7oPGgEe6w6rfsvEI-Kw" name="" outgoing="_kWrI4PGgEe6w6rfsvEI-Kw"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_deYbYPGgEe6w6rfsvEI-Kw" name="" incoming="_ltDF8PGgEe6w6rfsvEI-Kw"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_ercrcPGgEe6w6rfsvEI-Kw" name="Action1" incoming="_kWrI4PGgEe6w6rfsvEI-Kw" outgoing="_lNmw4PGgEe6w6rfsvEI-Kw">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_gPScwPGgEe6w6rfsvEI-Kw" name="Action2" incoming="_lNmw4PGgEe6w6rfsvEI-Kw" outgoing="_ltDF8PGgEe6w6rfsvEI-Kw" behavior="_OUH3sPGgEe6w6rfsvEI-Kw"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_OUH3sPGgEe6w6rfsvEI-Kw" name="too_detailed" node="_US0DsPGgEe6w6rfsvEI-Kw _Vdo4EPGgEe6w6rfsvEI-Kw _WOyBIPGgEe6w6rfsvEI-Kw">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_aeDd8PGgEe6w6rfsvEI-Kw" target="_WOyBIPGgEe6w6rfsvEI-Kw" source="_US0DsPGgEe6w6rfsvEI-Kw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_aeDd8fGgEe6w6rfsvEI-Kw" name="_To_TooDetailed_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_aeEFAPGgEe6w6rfsvEI-Kw" name="_To_TooDetailed_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_a1UucPGgEe6w6rfsvEI-Kw" target="_Vdo4EPGgEe6w6rfsvEI-Kw" source="_WOyBIPGgEe6w6rfsvEI-Kw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_a1VVgPGgEe6w6rfsvEI-Kw" name="TooDetailed_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_a1VVgfGgEe6w6rfsvEI-Kw" name="TooDetailed_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_US0DsPGgEe6w6rfsvEI-Kw" name="" outgoing="_aeDd8PGgEe6w6rfsvEI-Kw"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_Vdo4EPGgEe6w6rfsvEI-Kw" name="" incoming="_a1UucPGgEe6w6rfsvEI-Kw"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_WOyBIPGgEe6w6rfsvEI-Kw" name="TooDetailed" incoming="_aeDd8PGgEe6w6rfsvEI-Kw" outgoing="_a1UucPGgEe6w6rfsvEI-Kw">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="_t7MMEPGgEe6w6rfsvEI-Kw">
+      <eAnnotations xmi:id="_t7P2cPGgEe6w6rfsvEI-Kw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:GuardEffectsAction xmi:id="_t7QdgPGgEe6w6rfsvEI-Kw" guard="not myBool" effects="myBool := true" base_Action="_ercrcPGgEe6w6rfsvEI-Kw"/>
+  <PokaYoke:GuardEffectsAction xmi:id="_4px1sPGgEe6w6rfsvEI-Kw" guard="myBool" effects="myBool := false" base_Action="_gPScwPGgEe6w6rfsvEI-Kw"/>
+</xmi:XMI>

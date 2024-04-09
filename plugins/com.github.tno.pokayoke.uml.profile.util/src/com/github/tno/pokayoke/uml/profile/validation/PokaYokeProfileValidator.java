@@ -59,7 +59,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkNoCyclesInActivities(CallBehaviorAction action) {
         if (hasCycle(action, Sets.newHashSet(action.getActivity()))) {
-            error("Detected cycle in activities", action, null);
+            error("Detected cycle in activities", null);
         }
     }
 
@@ -235,12 +235,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     }
                     CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
                 } catch (RuntimeException e) {
-                    error("Invalid guard: " + e.getLocalizedMessage(), controlFlow,
-                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                    error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
                 }
             }
         } else {
-            error("Unsupported activity edge type: " + edge.eClass().getName(), edge, null);
+            error("Unsupported activity edge type: " + edge.eClass().getName(), null);
         }
     }
 
@@ -249,11 +248,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(node)) {
             return;
         }
-        if (node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
-            checkNamingConventions(node, true, true);
-        } else {
-            error("Unsupported activity node type: " + node.eClass().getName(), node, null);
+        if (!(node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction)) {
+            error("Unsupported activity node type: " + node.eClass().getName(), null);
+            return;
         }
+        boolean nameNotSet = Strings.isNullOrEmpty(node.getName());
+        if (nameNotSet && node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            error("Expected a non-null name.", UMLPackage.Literals.NAMED_ELEMENT__NAME);
+        }
+        checkNamingConventions(node, true, true);
     }
 
     /**
@@ -304,9 +307,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(Action action) {
-        String guard = PokaYokeUmlProfileUtil.getGuard(action);
         try {
-            AExpression guardExpr = CifParserHelper.parseExpression(guard, action);
+            AExpression guardExpr = CifParserHelper.parseGuard(action);
             if (guardExpr == null) {
                 return;
             }
@@ -323,10 +325,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidEffects(Action action) {
-        String effects = PokaYokeUmlProfileUtil.getEffects(action);
         try {
             HashSet<String> updatedVariables = new HashSet<>();
-            for (AUpdate update: CifParserHelper.parseUpdates(effects, action)) {
+            for (AUpdate update: CifParserHelper.parseEffects(action)) {
                 CifTypeChecker.checkUpdate(action, update);
 
                 // Update is checked above, so ClassCastException is not possible on next lines

@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.escet.cif.parser.CifExpressionParser;
-import org.eclipse.escet.cif.parser.CifUpdateParser;
-import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
-import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
-import org.eclipse.escet.setext.runtime.exceptions.ParseException;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -21,7 +17,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
-import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -29,6 +24,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.PackageableElement;
+import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
@@ -39,6 +35,9 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 /**
@@ -51,21 +50,11 @@ public class UMLTransformer {
 
     private final Model model;
 
-    private final String modelPath;
-
-    private final CifUpdateParser updateParser = new CifUpdateParser();
-
-    private final CifExpressionParser expressionParser = new CifExpressionParser();
-
-    private final ModelTyping typing;
-
     private final CifToPythonTranslator translator;
 
-    public UMLTransformer(Model model, String modelPath) {
+    public UMLTransformer(Model model) {
         this.model = model;
-        this.modelPath = modelPath;
-        this.typing = new ModelTyping(this.model);
-        this.translator = new CifToPythonTranslator(this.typing);
+        this.translator = new CifToPythonTranslator(new CifContext(this.model));
     }
 
     public static void main(String[] args) throws IOException, CoreException {
@@ -78,7 +67,7 @@ public class UMLTransformer {
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
-        new UMLTransformer(model, sourcePath).transformModel();
+        new UMLTransformer(model).transformModel();
         FileHelper.storeModel(model, targetPath);
     }
 
@@ -177,6 +166,12 @@ public class UMLTransformer {
         forkToLockHandlerFlow.setActivity(mainActivity);
         forkToLockHandlerFlow.setSource(forkNode);
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
+
+        // Remove the Poka Yoke UML profile as all its contents has been transformed
+        Profile pokaYokeUmlProfile = model.getAppliedProfile(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE);
+        if (pokaYokeUmlProfile != null) {
+            model.unapplyProfile(pokaYokeUmlProfile);
+        }
     }
 
     /**
@@ -244,27 +239,35 @@ public class UMLTransformer {
         for (ActivityNode node: new ArrayList<>(activity.getNodes())) {
             if (node instanceof OpaqueAction opaqueActionNode) {
                 transformOpaqueAction(activity, opaqueActionNode, acquireSignal);
-            }
-
-            if (node instanceof DecisionNode decisionNode) {
+            } else if (node instanceof CallBehaviorAction callBehaviorAction) {
+                transformCallBehaviorAction(activity, callBehaviorAction, acquireSignal);
+            } else if (node instanceof DecisionNode decisionNode) {
                 transformDecisionNode(decisionNode);
             }
         }
     }
 
+    private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
+        if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            transformAction(activity, action, acquireSignal);
+        }
+    }
+
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
+        transformAction(activity, action, acquireSignal);
+    }
+
+    private void transformAction(Activity activity, Action action, Signal acquireSignal) {
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
-        List<String> guards = action.getBodies().stream().limit(1).map(b -> parseExpression(b))
-                .map(b -> translator.translateExpression(b)).toList();
+        String guard = translator.translateExpression(CifParserHelper.parseGuard(action));
 
         // Extract the effects of the action, if any, to be encoded later.
         // Parse all bodies except the first one, all of which should be updates.
-        List<String> effects = action.getBodies().stream().skip(1).map(b -> parseUpdate(b))
-                .map(b -> translator.translateUpdate(b)).toList();
+        List<String> effects = translator.translateUpdates(CifParserHelper.parseEffects(action));
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createAtomicActivity(guards, effects, acquireSignal,
+        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, acquireSignal,
                 action.getQualifiedName());
         String actionName = action.getName();
         newActivity.setName(actionName);
@@ -290,22 +293,6 @@ public class UMLTransformer {
         activity.getOwnedBehaviors().add(newActivity);
     }
 
-    private AExpression parseExpression(String expression) {
-        try {
-            return expressionParser.parseString(expression, modelPath);
-        } catch (ParseException pe) {
-            throw new RuntimeException("Parsing of \"" + expression + "\" failed.", pe);
-        }
-    }
-
-    private AUpdate parseUpdate(String update) {
-        try {
-            return updateParser.parseString(update, modelPath);
-        } catch (ParseException pe) {
-            throw new RuntimeException("Parsing of \"" + update + "\" failed.", pe);
-        }
-    }
-
     private void transformDecisionNode(DecisionNode decisionNode) {
         // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
         // whose guard holds.
@@ -321,7 +308,7 @@ public class UMLTransformer {
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
             ActivityEdge edge = decisionNode.getOutgoings().get(i);
             ValueSpecification edgeGuard = edge.getGuard();
-            String translatedGuard = edgeGuard != null ? translateValueSpecificationToPython(edgeGuard) : "True";
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseExpression(edgeGuard));
             decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
@@ -355,24 +342,5 @@ public class UMLTransformer {
             newGuard.getBodies().add("branch == " + i);
             edge.setGuard(newGuard);
         }
-    }
-
-    private String translateValueSpecificationToPython(ValueSpecification specification) {
-        if (specification instanceof LiteralBoolean literal) {
-            return translateLiteralBooleanToPython(literal);
-        } else if (specification instanceof OpaqueExpression expr) {
-            return translateOpaqueExpressionToPython(expr);
-        } else {
-            throw new RuntimeException("Unsupported value specification: " + specification);
-        }
-    }
-
-    private String translateLiteralBooleanToPython(LiteralBoolean literal) {
-        return literal.isValue() ? "True" : "False";
-    }
-
-    private String translateOpaqueExpressionToPython(OpaqueExpression expr) {
-        Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected opaque expressions to have one body.");
-        return translator.translateExpression(parseExpression(expr.getBodies().get(0)));
     }
 }

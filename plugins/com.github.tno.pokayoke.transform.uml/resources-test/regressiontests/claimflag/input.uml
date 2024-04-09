@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_VfeX0EZ9Ee6sBZ7qA2kCLg" name="MyModel">
-  <packagedElement xmi:type="uml:Class" xmi:id="_UU4OsGRSEe6PU57shoVyvw" name="MyClass" classifierBehavior="_zxqCwFGHEe6vfoQ8SCm9OQ">
+  <packagedElement xmi:type="uml:Class" xmi:id="_UU4OsGRSEe6PU57shoVyvw" name="MyClass" classifierBehavior="_zxqCwFGHEe6vfoQ8SCm9OQ" isActive="true">
     <ownedBehavior xmi:type="uml:Activity" xmi:id="_zxqCwFGHEe6vfoQ8SCm9OQ" name="ClaimFlag" node="_5qLVUFGHEe6vfoQ8SCm9OQ _78O3gFGHEe6vfoQ8SCm9OQ _95zXcFGHEe6vfoQ8SCm9OQ _A4vNwFGIEe6vfoQ8SCm9OQ _C4s6YFGIEe6vfoQ8SCm9OQ _KpbrwFGIEe6vfoQ8SCm9OQ _MaVosFGIEe6vfoQ8SCm9OQ _O76NkFGIEe6vfoQ8SCm9OQ _YdG3AFGIEe6vfoQ8SCm9OQ _bNHggFGIEe6vfoQ8SCm9OQ _dz0dAFGIEe6vfoQ8SCm9OQ _l2kOsGRQEe6PU57shoVyvw _nhHE8GRQEe6PU57shoVyvw _p2b9kGRQEe6PU57shoVyvw _uhae8GRQEe6PU57shoVyvw _2TvLwGRQEe6PU57shoVyvw _9jmEsGRQEe6PU57shoVyvw _B3xPoGRREe6PU57shoVyvw _JmDJ8GRREe6PU57shoVyvw">
       <edge xmi:type="uml:ControlFlow" xmi:id="_RumXoFGIEe6vfoQ8SCm9OQ" target="_95zXcFGHEe6vfoQ8SCm9OQ" source="_5qLVUFGHEe6vfoQ8SCm9OQ">
         <guard xmi:type="uml:LiteralBoolean" xmi:id="_Rum-sFGIEe6vfoQ8SCm9OQ" name="Initial_To_ClaimFlag_guard" value="true"/>

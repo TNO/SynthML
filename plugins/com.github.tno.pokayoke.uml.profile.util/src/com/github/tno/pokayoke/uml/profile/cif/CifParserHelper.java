@@ -13,8 +13,11 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ValueSpecification;
+
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /** Helps parsing CIF expressions. */
 public class CifParserHelper {
@@ -39,6 +42,13 @@ public class CifParserHelper {
         return parseExpression(valueSpecification.stringValue(), valueSpecification);
     }
 
+    public static AExpression parseGuard(Action action) throws SyntaxException {
+        if (action == null) {
+            return null;
+        }
+        return parseExpression(PokaYokeUmlProfileUtil.getGuard(action), action);
+    }
+
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
         if (updates == null) {
             return Collections.emptyList();
@@ -47,6 +57,13 @@ public class CifParserHelper {
         }
         CifUpdatesParser updatesParser = new CifUpdatesParser();
         return updatesParser.parseString(updates, getLocation(context));
+    }
+
+    public static List<AUpdate> parseEffects(Action action) throws SyntaxException {
+        if (action == null) {
+            return null;
+        }
+        return parseUpdates(PokaYokeUmlProfileUtil.getEffects(action), action);
     }
 
     private static String getLocation(Element context) {
