@@ -14,11 +14,25 @@
     <description>Poka Yoke</description>
 
     <properties>
+        <!-- The end-user readable version number. -->
+        <!-- The default is 'dev'. CI overrides this for releases only, to e.g. v0.1, v0.1-M1, v0.1-RC1. -->
+        <pokayoke.version.enduser>dev</pokayoke.version.enduser>
+
+        <!-- The version qualifier to use for all plugins/features/etc. -->
+        <!-- Remains 'dev' for non-CI builds. CI overrides the qualifier to e.g., -->
+        <!-- 'v20210609-141908-dev' for development builds, 'v20210609-141908-M1' for milestone releases, -->
+        <!-- 'v20210609-141908-RC1' for release candidates, and 'v20210609-141908' for final releases. -->
+        <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
+
+        <!-- The prefix to use for released binaries -->
+        <pokayoke.binary.prefix>pokayoke</pokayoke.binary.prefix>
+
+        <pokayoke.binary.version.enduser>${pokayoke.binary.prefix}-${pokayoke.version.enduser}</pokayoke.binary.version.enduser>
+
         <pokayoke.java.version>17</pokayoke.java.version>
         <maven.compiler.source>${pokayoke.java.version}</maven.compiler.source>
         <maven.compiler.target>${pokayoke.java.version}</maven.compiler.target>
         <maven.compiler.release>${pokayoke.java.version}</maven.compiler.release>
-        <pokayoke.version.qualifier>dev</pokayoke.version.qualifier>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>4.0.7</tycho.version>
         <!-- Maven formatter version. -->
@@ -32,11 +46,28 @@
     </organization>
 
     <modules>
-        <module>plugins</module>
         <module>releng</module>
+        <module>plugins</module>
+        <module>features</module>
+        <module>products</module>
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-p2-repository-plugin</artifactId>
+                    <version>${tycho.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-p2-director-plugin</artifactId>
+                    <version>${tycho.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

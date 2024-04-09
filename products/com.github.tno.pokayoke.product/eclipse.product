@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<!--
+
+    Copyright (c) 2018-2023 TNO and Contributors to the GitHub community
+
+    This program and the accompanying materials are made available
+    under the terms of the MIT License which is available at
+    https://opensource.org/licenses/MIT
+
+    SPDX-License-Identifier: MIT
+
+-->
+<product name="Poka Yoke" uid="com.github.tno.pokayoke.ide" id="com.github.tno.pokayoke.product.branding.product" application="org.eclipse.ui.ide.workbench" version="0.0.1.qualifier" useFeatures="true" includeLaunchers="true" autoIncludeRequirements="true">
+
+   <aboutInfo>
+      <image path="/com.github.tno.pokayoke.product.branding/images/about.png"/>
+      <text>
+         Poka Yoke
+      </text>
+   </aboutInfo>
+
+   <configIni use="">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>--launcher.defaultAction openFile --launcher.appendVmargs
+      </programArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=17
+-Declipse.p2.unsignedPolicy=allow 
+-Djava.net.preferIPv4Stack=true
+-Dfile.encoding=UTF-8
+-Xmx8g
+-XX:+UseG1GC
+-XX:+UseStringDeduplication	
+--add-modules=ALL-SYSTEM
+      </vmArgs>
+   </launcherArgs>
+
+   <windowImages i16="/com.github.tno.pokayoke.product.branding/images/pokayoke16.png" i32="/com.github.tno.pokayoke.product.branding/images/pokayoke32.png" i48="/com.github.tno.pokayoke.product.branding/images/pokayoke48.png" i64="/com.github.tno.pokayoke.product.branding/images/pokayoke64.png" i128="/com.github.tno.pokayoke.product.branding/images/pokayoke128.png" i256="/com.github.tno.pokayoke.product.branding/images/pokayoke256.png"/>
+
+   <splash
+      location="com.github.tno.pokayoke.product.branding"
+      startupProgressRect="4,180,413,10"
+      startupMessageRect="4,162,413,18"
+      startupForegroundColor="9C9696" />
+   <launcher name="pokayoke">
+      <win useIco="true">
+         <ico path="/com.github.tno.pokayoke.product.branding/images/pokayoke.ico"/>
+         <bmp/>
+      </win>
+   </launcher>
+
+
+   <vm>
+   </vm>
+
+   <license>
+        <text>
+   TNO-ESI
+All Rights Reserved.
+This work is protected by copyright laws and international treaties.
+         </text>
+   </license>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="com.github.tno.pokayoke.product.feature" installMode="root"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+   </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
+
+</product>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.github.tno.pokayoke.feature"
+      label="Poka Yoke Feature"
+      version="0.0.1.qualifier"
+      provider-name="TNO-ESI">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import feature="org.obeonetwork.dsl.uml2.runtime.feature" version="9.0.0" match="greaterOrEqual"/>
+      <import feature="fr.lip6.move.gal.feature.itstools" version="1.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.escet.cif.feature" version="3.0.0" match="greaterOrEqual"/>
+      <import feature="fr.lip6.move.gal.feature.sdk" version="1.0.0.202404081527"/>
+      <import feature="org.espilce.periksa.feature" version="2.0.0.20201029-1330"/>
+   </requires>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.app"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.app.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.cif2petrify"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.distribution"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.petrify2uml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.region2statemapping"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.uml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.uml2gal"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.uml.profile.design"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.uml.profile.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.uml.profile.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

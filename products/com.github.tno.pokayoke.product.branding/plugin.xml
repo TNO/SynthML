@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Poka Yoke">
+         <property
+               name="windowImages"
+               value="images/pokayoke16.png,images/pokayoke32.png,images/pokayoke48.png,images/pokayoke64.png,images/pokayoke128.png,images/pokayoke256.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="9C9696">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="4,162,413,18">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="4,180,413,10">
+         </property>
+         <property
+               name="aboutImage"
+               value="images/about.png">
+         </property>
+         <property
+               name="aboutText"
+               value="Poka Yoke">
+         </property>
+         <property
+              name="introBrandingImage"
+              value="product:images/eclipse_intro.png">
+         </property>
+         <property
+               name="introTitle"
+               value="Welcome to Poka Yoke">
+         </property>
+         <property
+               name="appName"
+               value="Poka Yoke">
+         </property>
+         <property
+               name="introDescription-root"
+               value="Get Started...">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro">
+      <introProductBinding
+            introId="org.eclipse.ui.intro.universal"
+            productId="com.github.tno.pokayoke.product.branding.product">
+      </introProductBinding>
+   </extension>
+</plugin>
