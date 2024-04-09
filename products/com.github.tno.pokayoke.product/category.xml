@@ -16,7 +16,7 @@
    </feature>
    <category-def name="com.github.tno.pokayoke" label="Poka Yoke">
       <description>
-         Poka Yoke, by ESI (TNO)
+         Poka Yoke, by TNO-ESI.
       </description>
    </category-def>
 </site>
