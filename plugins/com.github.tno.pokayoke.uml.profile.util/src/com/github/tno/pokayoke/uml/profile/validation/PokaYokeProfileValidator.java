@@ -125,7 +125,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates if the {@code propery} is a single-valued, mandatory property, that the {@link Property#getType()
+     * Validates if the {@code property} is a single-valued, mandatory property, that the {@link Property#getType()
      * property type} is supported, and if the {@link Property#getDefaultValue() property default} is an instance of its
      * type.
      * <p>
