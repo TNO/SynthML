@@ -166,13 +166,13 @@ public class FullSynthesisApp {
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and
         // petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
+        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -216,7 +216,7 @@ public class FullSynthesisApp {
 
         Path umlWithGuardsUpdatesOutputPath = outputFolderPath
                 .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.uml");
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
+        FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {
