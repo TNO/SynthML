@@ -1,0 +1,82 @@
+= UML model requirements
+
+== Definitions
+[cols="1,1"]
+|===
+|Contextual element
+| ...
+
+| members
+| ...
+
+| UML model
+| ...
+|===
+
+== Requirements
+
+=== Names
+* A name of a contextual element must be unique within the UML model.
+* A name cannot contain a sequence of two (or more) underscores.
+* A name must adhere to the regular expression `[a-zA-Z_][0-9a-zA-Z_]*`, i.e., start with either a letter or an underscore, and possibly followed by digits, letters and underscores.
+
+=== Types
+Only, the following types are supported
+
+* Boolean
+* Enumeration
+** declared in model at outer-most level
+** with at least one literal
+Integer 
+** with bounded range 
+
+=== Class
+* The class may not contain nested classifiers.
+* The class must have a classifier behaviour.
+* The class must own its classifier behaviour.
+
+=== Property
+* The multiplicity interval of a property must be [1,1]. In other words,
+** The property must be single-valued.
+** The property must be mandatory.
+* The type of a property must be supported.
+* The type of the default value of a property must be an instance of the type of that property.
+
+=== Activity
+* An activity must have exactly one initial node.
+* An activity may not have any members.
+* An activity may not have a classifier behaviour.
+
+=== Activity Edge
+* The type of an activity edge must be control flow.
+* The source of an actvity edge must be a decision node.
+* An activity edge may have a guard expression.
+** The type of the guard expression must be Boolean.
+
+=== Activity Node
+Only, instances of the following types are supported
+
+* Call Behaviour Action,
+* Opaque Action, and
+* Control Node, which includes
+** Decision Node
+** Final Node
+** Fork Node
+** Initial Node
+** Join Node
+** Merge Node
+
+=== Call Behaviour Action
+* The behaviour of a call behaviour action may not contain a cycle in its activities.
+* The behaviour of a call behaviour action must be an activity.
+* A call behaviour action may have a guard expression.
+** The type of the guard expression must be Boolean.
+* A call behaviour action may have any number of effects, i.e., zero or more effects.
+** A variable may be updated in the effects at most once.
+** The type of an update of an effect must be supported.
+
+Note that the guard and effects on a call behaviour action hide all guards and effects of all contained sub-activities.  
+
+=== Opaque Expression
+* An opaque expression must have exactly one expression body.
+
