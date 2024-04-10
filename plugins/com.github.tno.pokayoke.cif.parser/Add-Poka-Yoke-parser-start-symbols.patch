@@ -1,0 +1,16 @@
+diff --git a/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext b/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext
+index ce8a9e6..49b93bb 100644
+--- a/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext
++++ b/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext
+@@ -231,6 +231,11 @@
+ 
+ @main Specification: org.eclipse.escet.cif.parser.CifParser;
+ 
++@start Expression: com.github.tno.pokayoke.cif.parser.CifExpressionParser;
++@start Invariant: com.github.tno.pokayoke.cif.parser.CifInvariantParser;
++@start Updates: com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
++@start Update: com.github.tno.pokayoke.cif.parser.CifUpdateParser;
++
+ @hooks org.eclipse.escet.cif.parser.CifParserHooks;
+ 
+ @import org.eclipse.escet.common.java as common_java;
