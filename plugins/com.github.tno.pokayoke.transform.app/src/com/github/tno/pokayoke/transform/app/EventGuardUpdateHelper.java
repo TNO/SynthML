@@ -63,10 +63,10 @@ public class EventGuardUpdateHelper {
 
     private static List<Edge> getEdges(Specification cifSpec) {
         List<Automaton> automata = CifCollectUtils.collectAutomata(cifSpec, new ArrayList<>()).stream()
-                .filter(aut -> aut.getKind() == SupKind.PLANT).toList();
+                .filter(aut -> aut.getKind() == SupKind.PLANT && aut.getLocations().size() == 1).toList();
 
         Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to contain exactly one plant.");
+                "Expected the CIF specification to contain exactly one plant that has exactly one state.");
         Automaton automaton = automata.get(0);
 
         List<Location> locations = automaton.getLocations();
