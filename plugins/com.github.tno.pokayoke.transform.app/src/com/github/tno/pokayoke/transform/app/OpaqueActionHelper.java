@@ -34,7 +34,7 @@ public class OpaqueActionHelper {
     private static void addGuardToSingleIncomingEdge(OpaqueAction action, String expression) {
         List<ActivityEdge> incomingEdges = action.getIncomings();
         Preconditions.checkArgument(incomingEdges.size() == 1,
-                "Expected that each opaque action has exactly one incoming edge.");
+                String.format("Expected that opaque action %s has exactly one incoming edge.", action.getName()));
         ActivityEdge incomingEdge = incomingEdges.get(0);
 
         OpaqueExpression guard = FACTORY.createOpaqueExpression();
@@ -77,27 +77,22 @@ public class OpaqueActionHelper {
         List<OpaqueAction> actions = getOpaqueActions(activity);
 
         for (OpaqueAction action: actions) {
-            List<DecisionNode> decisonNodes = action.getOutgoings().stream().map(edge -> edge.getTarget())
-                    .filter(DecisionNode.class::isInstance).map(DecisionNode.class::cast).toList();
-
             List<String> strings = new ArrayList<>();
 
-            // If the action leads to a decision node, we add the updates of the resulting uncontrollable events to the
-            // action. Otherwise, the update of the corresponding controllable event is added to the action.
-            if (!decisonNodes.isEmpty()) {
-                Preconditions.checkArgument(decisonNodes.size() == 1,
-                        "Expected that each action can lead to maximally one decision node.");
-                strings = eventToString.entrySet().stream()
-                        .filter(e -> e.getKey().getName().startsWith(action.getName() + "_result_"))
-                        .map(e -> e.getValue()).toList();
-                Preconditions.checkArgument(strings.size() > 1, String.format(
+            // If the corresponding controllable event of the action has uncontrollable events, the update of these
+            // uncontrollable events are added to the action. Otherwise, the update of the controllable event is added
+            // to the action.
+            strings = eventToString.entrySet().stream()
+                    .filter(e -> e.getKey().getName().startsWith(action.getName() + "_result_")).map(e -> e.getValue())
+                    .toList();
+            if (!strings.isEmpty()) {
+                Preconditions.checkArgument(strings.size() != 1, String.format(
                         "Expected that there are more than one CIF update string corresponding to the choice results of action %s.",
                         action.getName()));
+                action.getBodies().addAll(strings);
             } else {
-                strings.add(getString(action, eventToString));
+                action.getBodies().add(getString(action, eventToString));
             }
-
-            action.getBodies().addAll(strings);
         }
     }
 }
