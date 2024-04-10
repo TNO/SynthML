@@ -8,7 +8,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
 import org.eclipse.escet.cif.metamodel.java.CifWalker;
 
 /** Check that an expression or update does not contain location expressions and input variable expressions. */
-public class CheckEXpressionAndUpdate extends CifWalker {
+public class CheckExpressionAndUpdate extends CifWalker {
     public void check(Expression expression) {
         walkExpression(expression);
     }

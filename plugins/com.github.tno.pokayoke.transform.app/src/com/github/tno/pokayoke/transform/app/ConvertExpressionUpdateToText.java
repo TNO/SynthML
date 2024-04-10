@@ -33,7 +33,7 @@ public class ConvertExpressionUpdateToText {
     public String convertExpressions(Specification cifSpec, List<Expression> expressions) {
         // Check that the expressions do not contain location expressions and input variable expressions as they
         // are not expected in the user-visible expressions.
-        CheckEXpressionAndUpdate checkExpression = new CheckEXpressionAndUpdate();
+        CheckExpressionAndUpdate checkExpression = new CheckExpressionAndUpdate();
         expressions.stream().forEach(checkExpression::check);
 
         // Move the declarations to the root of the CIF specification.
@@ -75,7 +75,7 @@ public class ConvertExpressionUpdateToText {
     public String convertUpdates(Specification cifSpec, List<Update> updates) {
         // Check that the updates do not contain location expressions and input variable expressions as they
         // are not expected in the user-visible updates.
-        CheckEXpressionAndUpdate checkUpdate = new CheckEXpressionAndUpdate();
+        CheckExpressionAndUpdate checkUpdate = new CheckExpressionAndUpdate();
         updates.stream().forEach(checkUpdate::check);
 
         // Move the declarations to the root of the CIF specification.
