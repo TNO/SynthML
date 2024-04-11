@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" name="MyModel">
-  <packagedElement xsi:type="uml:Class" name="MyClass" classifierBehavior="//MyClass/Loop">
+  <packagedElement xsi:type="uml:Class" name="MyClass" classifierBehavior="//MyClass/Loop" isActive="true">
     <ownedAttribute name="Value">
       <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
     </ownedAttribute>
@@ -60,7 +60,7 @@
         <ownedNode xsi:type="uml:InitialNode" outgoing="//MyClass/Loop/Initialize/@edge.0"/>
         <ownedNode xsi:type="uml:MergeNode" incoming="//MyClass/Loop/Initialize/@edge.0 //MyClass/Loop/Initialize/@edge.4 //MyClass/Loop/Initialize/@edge.16" outgoing="//MyClass/Loop/Initialize/@edge.1"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//MyClass/Loop/Initialize/@edge.1" outgoing="//MyClass/Loop/Initialize/@edge.2">
-          <body>(True)</body>
+          <body>True</body>
           <language>Python</language>
           <outputValue name="doesGuardHold" outgoing="//MyClass/Loop/Initialize/@edge.3">
             <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
@@ -88,7 +88,7 @@
         </ownedNode>
         <ownedNode xsi:type="uml:DecisionNode" incoming="//MyClass/Loop/Initialize/@edge.9 //MyClass/Loop/Initialize/@edge.10" outgoing="//MyClass/Loop/Initialize/@edge.11 //MyClass/Loop/Initialize/@edge.12"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//MyClass/Loop/Initialize/@edge.11" outgoing="//MyClass/Loop/Initialize/@edge.13">
-          <body>guard = (True)
+          <body>guard = True
 if guard:
 	Value = False
 active = ''
@@ -152,7 +152,7 @@ isSuccessful = guard</body>
         <ownedNode xsi:type="uml:InitialNode" outgoing="//MyClass/Loop/Increment/@edge.0"/>
         <ownedNode xsi:type="uml:MergeNode" incoming="//MyClass/Loop/Increment/@edge.0 //MyClass/Loop/Increment/@edge.4 //MyClass/Loop/Increment/@edge.16" outgoing="//MyClass/Loop/Increment/@edge.1"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//MyClass/Loop/Increment/@edge.1" outgoing="//MyClass/Loop/Increment/@edge.2">
-          <body>(True)</body>
+          <body>True</body>
           <language>Python</language>
           <outputValue name="doesGuardHold" outgoing="//MyClass/Loop/Increment/@edge.3">
             <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
@@ -180,7 +180,7 @@ isSuccessful = guard</body>
         </ownedNode>
         <ownedNode xsi:type="uml:DecisionNode" incoming="//MyClass/Loop/Increment/@edge.9 //MyClass/Loop/Increment/@edge.10" outgoing="//MyClass/Loop/Increment/@edge.11 //MyClass/Loop/Increment/@edge.12"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//MyClass/Loop/Increment/@edge.11" outgoing="//MyClass/Loop/Increment/@edge.13">
-          <body>guard = (True)
+          <body>guard = True
 if guard:
 	Value = True
 active = ''

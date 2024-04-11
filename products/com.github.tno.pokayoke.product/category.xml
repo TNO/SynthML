@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="com.github.tno.pokayoke.feature">
+      <category name="com.github.tno.pokayoke"/>
+   </feature>
+   <category-def name="com.github.tno.pokayoke" label="Poka Yoke">
+      <description>
+         Poka Yoke, by TNO-ESI.
+      </description>
+   </category-def>
+</site>

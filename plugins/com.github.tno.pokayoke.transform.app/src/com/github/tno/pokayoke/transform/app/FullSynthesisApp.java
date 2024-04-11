@@ -217,6 +217,12 @@ public class FullSynthesisApp {
         Path umlWithGuardsUpdatesOutputPath = outputFolderPath
                 .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.uml");
         FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
+
+        // Post-process to remove the names of edges and nodes.
+        Path umlLabelsRemovedOutputPath = outputFolderPath
+                .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.labelsremoved.uml");
+        PostProcessActivity.removeNodesEdgesNames(activity);
+        FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {
