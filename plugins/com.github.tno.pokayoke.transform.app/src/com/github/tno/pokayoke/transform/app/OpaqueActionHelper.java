@@ -86,8 +86,7 @@ public class OpaqueActionHelper {
                     .toList();
             if (!strings.isEmpty()) {
                 Preconditions.checkArgument(strings.size() != 1, String.format(
-                        "Expected that there is more than one possible effect for action %s.",
-                        action.getName()));
+                        "Expected that there is more than one possible effect for action %s.", action.getName()));
                 action.getBodies().addAll(strings);
             } else {
                 action.getBodies().add(getString(action, eventToString));
