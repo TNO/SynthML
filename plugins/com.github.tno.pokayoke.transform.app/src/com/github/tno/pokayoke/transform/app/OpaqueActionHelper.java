@@ -78,15 +78,15 @@ public class OpaqueActionHelper {
         for (OpaqueAction action: actions) {
             List<String> strings = new ArrayList<>();
 
-            // If the corresponding controllable event of the action has uncontrollable events, the update of these
-            // uncontrollable events are added to the action. Otherwise, the update of the controllable event is added
+            // If the corresponding controllable event of the action has uncontrollable events, the updates of these
+            // uncontrollable events are added to the action. Otherwise, the updates of the controllable event is added
             // to the action.
             strings = eventToString.entrySet().stream()
                     .filter(e -> e.getKey().getName().startsWith(action.getName() + "_result_")).map(e -> e.getValue())
                     .toList();
             if (!strings.isEmpty()) {
                 Preconditions.checkArgument(strings.size() != 1, String.format(
-                        "Expected that there are more than one CIF update string corresponding to the choice results of action %s.",
+                        "Expected that there is more than one possible effect for action %s.",
                         action.getName()));
                 action.getBodies().addAll(strings);
             } else {
