@@ -148,7 +148,7 @@ public class FullSynthesisApp {
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
-        NormalizePetrifyOutput.normalize(petrifyOutput);
+        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
         Files.write(petrifyOutputPath, petrifyOutput);
 
         // Translate Petrify output into PNML.

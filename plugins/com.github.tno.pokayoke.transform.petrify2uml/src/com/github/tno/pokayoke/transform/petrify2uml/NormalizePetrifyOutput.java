@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -25,8 +26,9 @@ public class NormalizePetrifyOutput {
      * Normalize the generated Petrify output by relabeling the places.
      *
      * @param petrifyOutput The Petrify ouput.
+     * @return The normalized Petrify output.
      */
-    public static void normalize(List<String> petrifyOutput) {
+    public static List<String> normalize(List<String> petrifyOutput) {
         // Collect transition names.
         String dummyIdentifier = ".dummy";
         List<String> transitionDeclarations = petrifyOutput.stream().filter(line -> line.startsWith(dummyIdentifier))
@@ -153,5 +155,10 @@ public class NormalizePetrifyOutput {
         String newMarkingPlaceName = oldToNewPlaceNames.get(markingPlaceName);
         String newMarkingLine = markingLine.replace(markingPlaceName, newMarkingPlaceName);
         petrifyOutput.set(petrifyOutput.indexOf(markingLine), newMarkingLine);
+
+        // Remove the specification unrelated lines.
+        List<String> normalizedPetrifyOutput = petrifyOutput.stream().filter(line -> !line.startsWith("#")).collect(Collectors.toList());
+
+        return normalizedPetrifyOutput;
     }
 }
