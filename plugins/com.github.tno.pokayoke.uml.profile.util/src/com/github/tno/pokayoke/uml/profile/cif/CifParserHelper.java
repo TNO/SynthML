@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.escet.cif.parser.CifExpressionParser;
-import org.eclipse.escet.cif.parser.CifUpdatesParser;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
@@ -17,6 +15,8 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
+import com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /** Helps parsing CIF expressions. */

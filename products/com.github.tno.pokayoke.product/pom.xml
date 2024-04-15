@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.tno.pokayoke</groupId>
+        <artifactId>com.github.tno.pokayoke.root</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <artifactId>com.github.tno.pokayoke.product</artifactId>
+    <packaging>eclipse-repository</packaging>
+    <name>Poka Yoke Product</name>
+
+    <build>
+        <plugins>
+            <!-- Customize update site. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-repository-plugin</artifactId>
+                <configuration>
+                    <!-- Custom update site name. -->
+                    <repositoryName>Poka Yoke Update Site</repositoryName>
+
+                    <!-- Custom archive file name (excluding file extension). -->
+                    <finalName>${pokayoke.binary.version.enduser}-updatesite</finalName>
+                </configuration>
+            </plugin>
+
+            <!-- Customize products. -->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-director-plugin</artifactId>
+
+                <configuration>
+                    <!-- Set archive format to use, per platform. -->
+                    <formats>
+                        <win32>zip</win32>
+                    </formats>
+
+                    <!-- Set archive file name to use. -->
+                    <products>
+                        <product>
+                            <!-- Product UID to which this configuration applies. -->
+                            <id>com.github.tno.pokayoke.ide</id>
+
+                            <!-- Custom archive file name prefix. -->
+                            <!-- Undocumented, see https://dev.eclipse.org/mhonarc/lists/tycho-user/msg05560.html -->
+                            <!-- But available, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=357503 -->
+                            <!-- The 'os', 'ws' and 'arch' values are automatically added, as is the file extension. -->
+                            <archiveFileName>${pokayoke.binary.version.enduser}</archiveFileName>
+
+                            <!-- Add root folder, to prevent issues when extracting to current folder. -->
+                            <rootFolders>
+                                <win32>${pokayoke.binary.version.enduser}</win32>
+                            </rootFolders>
+                        </product>
+                    </products>
+                </configuration>
+
+                <!-- Enable additional building of products. -->
+                <!-- The update site and product are combined in a single bundle. -->
+                <!-- The update site has the binary parts of the product. -->
+                <!-- Combining them ensures that the product can be updated. -->
+                <!-- However, the Maven packaging type is 'eclipse-repository'. -->
+                <!-- So, by default the build only creates an update site. -->
+                <!-- The configuration below ensures the build also creates products. -->
+                <executions>
+                    <execution>
+                        <id>materialize-products</id>
+                        <goals>
+                            <goal>materialize-products</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>archive-products</id>
+                        <goals>
+                            <goal>archive-products</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

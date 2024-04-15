@@ -84,6 +84,17 @@ public class UMLTransformer {
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
 
+        // Translate all default values of class properties that are literal strings, to become opaque actions.
+        for (Property property: contextClass.getOwnedAttributes()) {
+            if (property.getDefaultValue() instanceof LiteralString literal) {
+                OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
+                newDefaultValue.getLanguages().add("Python");
+                String translatedLiteral = translator.translateExpression(CifParserHelper.parseExpression(literal));
+                newDefaultValue.getBodies().add(translatedLiteral);
+                property.setDefaultValue(newDefaultValue);
+            }
+        }
+
         // Make sure the class does not contain an attribute named 'active'.
         Preconditions.checkArgument(
                 contextClass.getOwnedAttributes().stream().noneMatch(a -> a.getName().equals("active")),
