@@ -7,15 +7,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 
 import com.google.common.base.Preconditions;
 
@@ -47,9 +50,9 @@ public class Cif2Petrify {
         Automaton automaton = automata.get(0);
 
         // Declare the header of the Petrify model.
-        stringBuilder.append(".model " + automaton.getName());
-        stringBuilder.append("\n");
-        stringBuilder.append(".dummy start end ");
+        stringBuilder.append(".model ");
+        stringBuilder.append(CifTextUtils.getAbsName(automaton));
+        stringBuilder.append("\n.dummy start end ");
 
         // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
@@ -64,55 +67,55 @@ public class Cif2Petrify {
         stringBuilder.append(String.join(" ", eventNames));
         stringBuilder.append("\n");
 
-        stringBuilder.append(".state graph");
-        stringBuilder.append("\n");
+        stringBuilder.append(".state graph\n");
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
-            String locationName = location.getName();
+            final String locationName = CifTextUtils.getAbsName(location);
 
             Preconditions.checkNotNull(locationName, "Expected locations to have a name.");
             Preconditions.checkArgument(!locationName.equals("loc0"),
                     "Expected no locations in the state space automaton to be named 'loc0'.");
 
-            boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
-                    : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
-            boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
-                    : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
+            final EList<Expression> initials = location.getInitials();
+            final boolean initialsIsEmpty = initials.isEmpty();
+            boolean isTriviallyInitial = !initialsIsEmpty && CifValueUtils.isTriviallyTrue(initials, true, true);
+            boolean isTriviallyNotInitial = initialsIsEmpty || CifValueUtils.isTriviallyFalse(initials, true, true);
             Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
                     "Expected that locations are either trivially initial or trivially not initial.");
 
-            boolean isTriviallyMarked = location.getMarkeds().isEmpty() ? false
-                    : CifValueUtils.isTriviallyTrue(location.getMarkeds(), false, true);
-            boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
-                    : CifValueUtils.isTriviallyFalse(location.getMarkeds(), false, true);
+            final EList<Expression> markeds = location.getMarkeds();
+            final boolean markedsIsEmpty = markeds.isEmpty();
+            final boolean isTriviallyMarked = !markedsIsEmpty && CifValueUtils.isTriviallyTrue(markeds, false, true);
+            final boolean isTriviallyNotMarked = markedsIsEmpty || CifValueUtils.isTriviallyFalse(markeds, false, true);
             Preconditions.checkArgument(isTriviallyMarked || isTriviallyNotMarked,
                     "Expected that locations are either trivially marked or trivially not marked.");
-            Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
+            final boolean edgesIsEmpty = location.getEdges().isEmpty();
+            Preconditions.checkArgument(!edgesIsEmpty || isTriviallyMarked,
                     "Expected non-marked locations to have outgoing edges.");
 
             // Translate initial locations.
             if (isTriviallyInitial) {
-                stringBuilder.append(String.format("loc0 start %s", locationName));
+                stringBuilder.append("loc0 start ");
+                stringBuilder.append(locationName);
                 stringBuilder.append("\n");
             }
 
             // Translate marked locations.
             if (isTriviallyMarked) {
-                Preconditions.checkArgument(location.getEdges().isEmpty(),
-                        "Expected marked locations to not have outgoing edges.");
+                Preconditions.checkArgument(edgesIsEmpty, "Expected marked locations to not have outgoing edges.");
 
-                stringBuilder.append(String.format("%s end loc0", locationName));
-                stringBuilder.append("\n");
+                stringBuilder.append(locationName);
+                stringBuilder.append(" end loc0\n");
             }
 
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
-                    Location targetLocation = CifEdgeUtils.getTarget(edge);
-                    String targetLocationName = targetLocation.getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
-                            targetLocationName);
+                    final Location targetLocation = CifEdgeUtils.getTarget(edge);
+                    final String targetLocationName = CifTextUtils.getAbsName(targetLocation);
+                    final String edgeEventName = CifTextUtils.getAbsName(edgeEvent);
+                    String edgeString = String.format("%s %s %s", locationName, edgeEventName, targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
@@ -120,12 +123,10 @@ public class Cif2Petrify {
         }
 
         // Indicate that the first location has a token initially.
-        stringBuilder.append(".marking {loc0}");
-        stringBuilder.append("\n");
+        stringBuilder.append(".marking {loc0}\n");
 
         // Indicate the end of the Petrify input graph.
-        stringBuilder.append(".end");
-        stringBuilder.append("\n");
+        stringBuilder.append(".end\n");
 
         return stringBuilder.toString();
     }
