@@ -1,0 +1,218 @@
+
+package com.github.tno.pokayoke.transform.uml2gal;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
+import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.Property;
+
+import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+
+import fr.lip6.move.gal.AssignType;
+import fr.lip6.move.gal.Assignment;
+import fr.lip6.move.gal.BinaryIntExpression;
+import fr.lip6.move.gal.BooleanExpression;
+import fr.lip6.move.gal.Comparison;
+import fr.lip6.move.gal.ComparisonOperators;
+import fr.lip6.move.gal.ConstParameter;
+import fr.lip6.move.gal.Equiv;
+import fr.lip6.move.gal.IntExpression;
+import fr.lip6.move.gal.Not;
+import fr.lip6.move.gal.ParamRef;
+import fr.lip6.move.gal.UnaryMinus;
+import fr.lip6.move.gal.Variable;
+import fr.lip6.move.gal.VariableReference;
+
+public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
+    private final CifContext cifContext;
+
+    private final GalSpecificationBuilder specificationBuilder;
+
+    private final GalTypeDeclarationBuilder typeBuilder;
+
+    public CifToGalExpressionTranslator(CifContext cifContext, GalSpecificationBuilder specificationBuilder,
+            GalTypeDeclarationBuilder typeBuilder)
+    {
+        this.cifContext = cifContext;
+        this.specificationBuilder = specificationBuilder;
+        this.typeBuilder = typeBuilder;
+    }
+
+    public BooleanExpression translateBoolExpr(AExpression expr) {
+        if (expr == null) {
+            return Uml2GalTranslationHelper.toBooleanExpression(true);
+        }
+        return toBool(visit(expr, cifContext));
+    }
+
+    public IntExpression translateIntExpr(AExpression expr) {
+        if (expr == null) {
+            return Uml2GalTranslationHelper.toIntExpression(0);
+        }
+        return toInt(visit(expr, cifContext));
+    }
+
+    public List<Assignment> translateAssignments(List<AUpdate> updates) {
+        return updates.stream().map(this::translateAssignment).collect(Collectors.toList());
+    }
+
+    private Assignment translateAssignment(AUpdate update) {
+        Object result = visit(update, cifContext);
+        if (result instanceof Assignment assignment) {
+            return assignment;
+        } else {
+            throw new RuntimeException("Unexpected result type:" + result);
+        }
+    }
+
+    @Override
+    protected Object visit(Object addressable, TextPosition assignmentPos, Object value, CifContext ctx) {
+        if (addressable instanceof VariableReference reference) {
+            Assignment assignment = Uml2GalTranslationHelper.FACTORY.createAssignment();
+            assignment.setLeft(reference);
+            assignment.setRight(toInt(value));
+            assignment.setType(AssignType.ASSIGN);
+            return assignment;
+        } else {
+            throw new IllegalArgumentException("Unexpected adressable type:" + addressable);
+        }
+    }
+
+    @Override
+    protected Object visit(BinaryOperator operator, TextPosition operatorPos, Object left, Object right,
+            CifContext ctx)
+    {
+        return switch (operator) {
+            case AND -> {
+                yield Uml2GalTranslationHelper.combineAsAnd(toBool(left), toBool(right));
+            }
+            case OR -> {
+                yield Uml2GalTranslationHelper.combineAsOr(toBool(left), toBool(right));
+            }
+            case EQ -> {
+                if (left instanceof BooleanExpression leftBool && right instanceof BooleanExpression rightBool) {
+                    // Try to stick to booleans as long as possible
+                    Equiv equiv = Uml2GalTranslationHelper.FACTORY.createEquiv();
+                    equiv.setLeft(leftBool);
+                    equiv.setRight(rightBool);
+                    yield equiv;
+                } else {
+                    yield createComparison(operator, left, right);
+                }
+            }
+            case NE -> {
+                if (left instanceof BooleanExpression leftBool && right instanceof BooleanExpression rightBool) {
+                    // Try to stick to booleans as long as possible
+                    Equiv equiv = Uml2GalTranslationHelper.FACTORY.createEquiv();
+                    equiv.setLeft(leftBool);
+                    equiv.setRight(rightBool);
+
+                    Not not = Uml2GalTranslationHelper.FACTORY.createNot();
+                    not.setValue(equiv);
+                    yield not;
+                } else {
+                    yield createComparison(operator, left, right);
+                }
+            }
+            case LT, LE, GE, GT -> {
+                yield createComparison(operator, left, right);
+            }
+            case PLUS, MINUS -> {
+                BinaryIntExpression binExpr = Uml2GalTranslationHelper.FACTORY.createBinaryIntExpression();
+                binExpr.setLeft(toInt(left));
+                binExpr.setOp(operator.cifValue());
+                binExpr.setRight(toInt(right));
+                yield binExpr;
+            }
+        };
+    }
+
+    private Comparison createComparison(BinaryOperator operator, Object left, Object right) {
+        ComparisonOperators comparisonOperator = switch (operator) {
+            case EQ -> ComparisonOperators.EQ;
+            case NE -> ComparisonOperators.NE;
+            case GE -> ComparisonOperators.GE;
+            case GT -> ComparisonOperators.GT;
+            case LE -> ComparisonOperators.LE;
+            case LT -> ComparisonOperators.LT;
+            default -> throw new RuntimeException("Unsupported operator: " + operator);
+        };
+
+        Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
+        comparison.setLeft(toInt(left));
+        comparison.setRight(toInt(right));
+        comparison.setOperator(comparisonOperator);
+        return comparison;
+    }
+
+    @Override
+    protected Object visit(UnaryOperator operator, TextPosition operatorPos, Object child, CifContext ctx) {
+        return switch (operator) {
+            case NOT -> {
+                Not not = Uml2GalTranslationHelper.FACTORY.createNot();
+                not.setValue(toBool(child));
+                yield not;
+            }
+            case MINUS -> {
+                UnaryMinus minus = Uml2GalTranslationHelper.FACTORY.createUnaryMinus();
+                minus.setValue(toInt(child));
+                yield minus;
+            }
+        };
+    }
+
+    @Override
+    protected Object visit(EnumerationLiteral literal, TextPosition literalPos, CifContext ctx) {
+        ConstParameter param = specificationBuilder.getParam(literal.getName());
+
+        ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();
+        reference.setRefParam(param);
+        return reference;
+    }
+
+    @Override
+    protected Object visit(Property property, TextPosition propertyPos, CifContext ctx) {
+        Variable variable = typeBuilder.getVariable(property.getName());
+
+        VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
+        reference.setRef(variable);
+        return reference;
+    }
+
+    @Override
+    protected Object visit(ABoolExpression expr, CifContext ctx) {
+        return Uml2GalTranslationHelper.toBooleanExpression(expr.value);
+    }
+
+    @Override
+    protected Object visit(AIntExpression expr, CifContext ctx) {
+        return Uml2GalTranslationHelper.toIntExpression(Integer.parseInt(expr.value));
+    }
+
+    private IntExpression toInt(Object expression) {
+        if (expression instanceof IntExpression intExpression) {
+            return intExpression;
+        } else if (expression instanceof BooleanExpression booleanExpression) {
+            return Uml2GalTranslationHelper.toIntExpression(booleanExpression);
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + expression);
+        }
+    }
+
+    private BooleanExpression toBool(Object expression) {
+        if (expression instanceof BooleanExpression booleanExpression) {
+            return booleanExpression;
+        } else if (expression instanceof IntExpression intExpression) {
+            return Uml2GalTranslationHelper.toBooleanExpression(intExpression);
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + expression);
+        }
+    }
+}
