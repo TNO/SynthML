@@ -15,19 +15,20 @@
 
 == Requirements
 
-=== Names
+=== Name
 * A name of a contextual element must be unique within the UML model.
 * A name cannot contain a sequence of two (or more) underscores.
-* A name must adhere to the regular expression `[a-zA-Z_][0-9a-zA-Z_]*`, i.e., start with either a letter or an underscore, and possibly followed by digits, letters and underscores.
+* A name must start with either a letter or an underscore, and possibly followed by digits, letters and underscores, i.e., adhere to the regular expression `[a-zA-Z_][0-9a-zA-Z_]*`.
 
-=== Types
-Only, the following types are supported
+=== Type
+Poka Yoke supports only a subset of the UML types.
+In particular, Poka Yoke supports
 
 * Boolean
 * Enumeration
 ** declared in model at outer-most level
 ** with at least one literal
-Integer 
+* Integer 
 ** with bounded range 
 
 === Class
@@ -67,16 +68,16 @@ Only, instances of the following types are supported
 ** Merge Node
 
 === Call Behaviour Action
-* The behaviour of a call behaviour action may not contain a cycle in its activities.
+* The call graph of call behaviour actions may not contain any cycle.
 * The behaviour of a call behaviour action must be an activity.
 * A call behaviour action may have a guard expression.
 ** The type of the guard expression must be Boolean.
-* A call behaviour action may have any number of effects, i.e., zero or more effects.
-** A variable may be updated in the effects at most once.
-** The type of an update of an effect must be supported.
+* A call behaviour action may have any number of non-determinitics effects.
+** An effect can update any number of variables, i.e., zero or more.
+** An effect may update a particular variable at most once.
+** The <<type>> of a particular variable and its update must be identical.
 
-Note that the guard and effects on a call behaviour action hide all guards and effects of all contained sub-activities.  
+Note that the guard and effects on a call behaviour action hide all contained sub-activities, including their guards and effects.  
 
 === Opaque Expression
 * An opaque expression must have exactly one expression body.
-
