@@ -115,7 +115,7 @@ public class Cif2Petrify {
                     final Location targetLocation = CifEdgeUtils.getTarget(edge);
                     final String targetLocationName = CifTextUtils.getAbsName(targetLocation);
                     final String edgeEventName = CifTextUtils.getAbsName(edgeEvent);
-                    String edgeString = String.format("%s %s %s", locationName, edgeEventName, targetLocationName);
+                    final String edgeString = String.format("%s %s %s", locationName, edgeEventName, targetLocationName);
                     stringBuilder.append(edgeString);
                     stringBuilder.append("\n");
                 }
