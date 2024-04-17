@@ -1,0 +1,30 @@
+= UML Semantics
+
+This documents describes the subset of UML used by Poka Yoke, with the semantics in the Poka Yoke workflows.
+In addition, it describes the stereotypes introduced by Poka Yoke, including their properties.
+
+todo
+
+* meaning of properties, checkboxes, and constructs of supported UML elements
+
+== Types
+Poka Yoke supports only a subset of the UML types.
+In particular, Poka Yoke supports
+
+* Boolean
+* Enumeration
+** declared in model at outer-most level
+** with at least one literal
+* Integer 
+** with bounded range 
+
+== GuardEffectsAction stereotype
+
+== Opaque Action
+
+== Call Behaviour Action
+What does it mean for a Call Behavior Action to have a guard? In what way is this guard a part of the Call Behavior Action (which connects to the PY UML profile)? Same with effects.
+
+A Call Behavior Action that has guards and effects also has the <<GuardEffectsAction sterotype>>.
+
+ When running a simulation, when encountering a Call Behavior Action that has guards and effects, its activity, including any sub-activities, is ignored, but instead the action is treated as an Opaque Action with a guard and effect.
