@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -23,7 +24,7 @@ public class NormalizePetrifyOutput {
     }
 
     /**
-     * Normalize the generated Petrify output by relabeling the places.
+     * Normalize the given Petrify output by relabeling the places.
      *
      * @param petrifyOutput The Petrify ouput.
      * @return The normalized Petrify output.
@@ -34,8 +35,10 @@ public class NormalizePetrifyOutput {
         List<String> transitionDeclarations = petrifyOutput.stream().filter(line -> line.startsWith(dummyIdentifier))
                 .toList();
         Preconditions.checkArgument(transitionDeclarations.size() == 1,
-                "Expected the Petrify output to contain exactly one line of transition declaration.");
-        List<String> transitionNames = new ArrayList<>(Arrays.asList(transitionDeclarations.get(0).split(" ")));
+                "Expected the Petrify output to contain exactly one transition declaration.");
+        String transitionDeclaration = transitionDeclarations.get(0).substring(dummyIdentifier.length()).trim();
+        Set<String> declaredTransitionNames = Sets.newHashSet(transitionDeclaration.split(" "));
+        List<String> allTransitionNames = new ArrayList<>(declaredTransitionNames);
 
         // Collect specification lines.
         List<String> specificationLines = petrifyOutput.stream()
@@ -51,15 +54,15 @@ public class NormalizePetrifyOutput {
 
             // Add the duplicate transitions.
             nodes.stream()
-                    .filter(element -> !transitionNames.contains(element)
-                            && Petrify2PNMLTranslator.isDuplicateTransition(element, Sets.newHashSet(transitionNames)))
-                    .forEach(element -> transitionNames.add(element));
+                    .filter(element -> !declaredTransitionNames.contains(element)
+                            && Petrify2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
+                    .forEach(element -> allTransitionNames.add(element));
 
             parentToChild.put(parentNode, childNodes);
         }
 
         // Sort the transition names.
-        Collections.sort(transitionNames);
+        Collections.sort(allTransitionNames);
 
         // Perform breadth-first search and rename places based on the parent-to-child relation.
         Map<String, String> oldToNewPlaceNames = new LinkedHashMap<>();
@@ -75,7 +78,7 @@ public class NormalizePetrifyOutput {
             List<String> childNodes = parentToChild.get(currentNode);
 
             // If the current node is a transition, rename the target places of its out arcs.
-            if (transitionNames.contains(currentNode)) {
+            if (declaredTransitionNames.contains(currentNode)) {
                 Map<String, Integer> placeToIndex = new LinkedHashMap<>();
 
                 // Get a map from place to the smallest index of the outgoing transitions.
@@ -83,9 +86,10 @@ public class NormalizePetrifyOutput {
                     // Only the places that have not been replaced are considered.
                     if (!oldToNewPlaceNames.containsKey(place)) {
                         List<String> transitions = parentToChild.get(place);
-                        List<Integer> transitionsIndex = transitions.stream()
-                                .map(transition -> transitionNames.indexOf(transition)).toList();
-                        placeToIndex.put(place, Collections.min(transitionsIndex));
+                        Integer minTransitionIndex = transitions.stream()
+                                .map(transition -> allTransitionNames.indexOf(transition))
+                                .collect(Collectors.minBy(Comparator.naturalOrder())).get();
+                        placeToIndex.put(place, minTransitionIndex);
                     }
                 }
 
@@ -117,13 +121,7 @@ public class NormalizePetrifyOutput {
         for (String currentLine: specificationLines) {
             List<String> nodes = Arrays.asList(currentLine.split(" "));
             List<String> newNodes = new ArrayList<>();
-            for (String node: nodes) {
-                if (oldToNewPlaceNames.containsKey(node)) {
-                    newNodes.add(oldToNewPlaceNames.get(node));
-                } else {
-                    newNodes.add(node);
-                }
-            }
+            nodes.stream().map(node -> newNodes.add(oldToNewPlaceNames.getOrDefault(node, node)));
 
             // Sort the child nodes to make sure the order is deterministic.
             Collections.sort(newNodes.subList(1, newNodes.size()));
@@ -157,7 +155,8 @@ public class NormalizePetrifyOutput {
         petrifyOutput.set(petrifyOutput.indexOf(markingLine), newMarkingLine);
 
         // Remove the specification unrelated lines.
-        List<String> normalizedPetrifyOutput = petrifyOutput.stream().filter(line -> !line.startsWith("#")).collect(Collectors.toList());
+        List<String> normalizedPetrifyOutput = petrifyOutput.stream().filter(line -> !line.startsWith("#"))
+                .collect(Collectors.toList());
 
         return normalizedPetrifyOutput;
     }
