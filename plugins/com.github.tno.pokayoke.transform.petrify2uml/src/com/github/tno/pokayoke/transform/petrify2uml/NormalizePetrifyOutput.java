@@ -63,55 +63,60 @@ public class NormalizePetrifyOutput {
 
         // Sort the transition names.
         Collections.sort(allTransitionNames);
+        Map<String, Integer> transitionIndexes = new HashMap<>();
+        allTransitionNames.stream()
+                .forEach(transition -> transitionIndexes.put(transition, allTransitionNames.indexOf(transition)));
+
+        // Get the marking place.
+        String markingIdentifier = ".marking";
+        List<String> markingLines = petrifyOutput.stream().filter(line -> line.startsWith(markingIdentifier)).toList();
+        Preconditions.checkArgument(markingLines.size() == 1,
+                "Expected the Petrify output to contain exactly one marking line.");
+        String markingLine = markingLines.get(0);
+        String markingPlaceName = markingLines.get(0).substring(markingIdentifier.length()).replace("{", "")
+                .replace("}", "").trim();
 
         // Perform breadth-first search and rename places based on the parent-to-child relation.
         Map<String, String> oldToNewPlaceNames = new LinkedHashMap<>();
-        String startNode = "start";
         Queue<String> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
-        queue.add(startNode);
-        int placeCount = 0;
+        queue.add(markingPlaceName);
+        int nextPlaceNr = 1;
 
         while (!queue.isEmpty()) {
-            String currentNode = queue.poll();
-            visited.add(currentNode);
-            List<String> childNodes = parentToChild.get(currentNode);
+            String currentPlace = queue.poll();
+            List<String> childTransitions = parentToChild.get(currentPlace);
 
-            // If the current node is a transition, rename the target places of its out arcs.
-            if (declaredTransitionNames.contains(currentNode)) {
+            // Rename the place that has not been renamed.
+            if (!oldToNewPlaceNames.containsKey(currentPlace)) {
+                String placeID = "p" + String.valueOf(nextPlaceNr);
+                oldToNewPlaceNames.put(currentPlace, placeID);
+                nextPlaceNr = nextPlaceNr + 1;
+            }
+
+            for (String childTransition: childTransitions) {
+                List<String> places = parentToChild.get(childTransition);
                 Map<String, Integer> placeToIndex = new LinkedHashMap<>();
 
-                // Get a map from place to the smallest index of the outgoing transitions.
-                for (String place: childNodes) {
-                    // Only the places that have not been replaced are considered.
-                    if (!oldToNewPlaceNames.containsKey(place)) {
-                        List<String> transitions = parentToChild.get(place);
-                        Integer minTransitionIndex = transitions.stream()
-                                .map(transition -> allTransitionNames.indexOf(transition))
-                                .collect(Collectors.minBy(Comparator.naturalOrder())).get();
-                        placeToIndex.put(place, minTransitionIndex);
-                    }
+                // Get the index for the places.
+                for (String place: places) {
+                    List<String> transitions = parentToChild.get(place);
+                    Integer minTransitionIndex = transitions.stream()
+                            .map(transition -> transitionIndexes.get(transition))
+                            .collect(Collectors.minBy(Comparator.naturalOrder())).get();
+                    placeToIndex.put(place, minTransitionIndex);
                 }
 
                 // Sort the places based on the index.
-                List<Map.Entry<String, Integer>> sortedPlaceToIndex = new ArrayList<>(placeToIndex.entrySet());
-                sortedPlaceToIndex.sort(Map.Entry.comparingByValue());
+                List<Map.Entry<String, Integer>> sortedPlaceToIndex = new ArrayList<>(placeToIndex.entrySet()).stream().sorted().toList();
                 List<String> sortedPlaces = sortedPlaceToIndex.stream().map(entry -> entry.getKey()).toList();
 
-                // Rename the places based on the order.
+                // Enqueue the places.
                 for (String place: sortedPlaces) {
-                    String placeID = "p" + String.valueOf(placeCount);
-                    oldToNewPlaceNames.put(place, placeID);
-                    placeCount = placeCount + 1;
-                }
-
-                childNodes = sortedPlaces;
-            }
-
-            // Enqueue the child nodes.
-            for (String childNode: childNodes) {
-                if (!visited.contains(childNode)) {
-                    queue.add(childNode);
+                    if (!visited.contains(place)) {
+                        queue.add(place);
+                        visited.add(place);
+                    }
                 }
             }
         }
@@ -121,7 +126,7 @@ public class NormalizePetrifyOutput {
         for (String currentLine: specificationLines) {
             List<String> nodes = Arrays.asList(currentLine.split(" "));
             List<String> newNodes = new ArrayList<>();
-            nodes.stream().map(node -> newNodes.add(oldToNewPlaceNames.getOrDefault(node, node)));
+            nodes.stream().forEach(node -> newNodes.add(oldToNewPlaceNames.getOrDefault(node, node)));
 
             // Sort the child nodes to make sure the order is deterministic.
             Collections.sort(newNodes.subList(1, newNodes.size()));
@@ -139,15 +144,6 @@ public class NormalizePetrifyOutput {
         // Replace the old specification with the new specification.
         petrifyOutput.subList(startIndex, endIndex).clear();
         petrifyOutput.addAll(startIndex, newSpecificationLines);
-
-        // Get the marking place.
-        String markingIdentifier = ".marking";
-        List<String> markingLines = petrifyOutput.stream().filter(line -> line.startsWith(markingIdentifier)).toList();
-        Preconditions.checkArgument(markingLines.size() == 1,
-                "Expected the Petrify output to contain exactly one marking line.");
-        String markingLine = markingLines.get(0);
-        String markingPlaceName = markingLines.get(0).substring(markingIdentifier.length()).replace("{", "")
-                .replace("}", "").trim();
 
         // Replace the marking place name in the marking line.
         String newMarkingPlaceName = oldToNewPlaceNames.get(markingPlaceName);
