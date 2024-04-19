@@ -83,6 +83,7 @@ public class NormalizePetrifyOutput {
         Queue<String> queue = new LinkedList<>();
         Set<String> found = new HashSet<>();
         queue.add(markingPlaceName);
+        found.add(markingPlaceName);
         int nextPlaceNr = 1;
 
         while (!queue.isEmpty()) {
