@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -63,9 +64,8 @@ public class NormalizePetrifyOutput {
 
         // Sort the transition names.
         Collections.sort(allTransitionNames);
-        Map<String, Integer> transitionIndexes = new HashMap<>();
-        allTransitionNames.stream()
-                .forEach(transition -> transitionIndexes.put(transition, allTransitionNames.indexOf(transition)));
+        Map<String, Integer> transitionIndices = IntStream.range(0, allTransitionNames.size()).boxed()
+                .collect(Collectors.toMap(allTransitionNames::get, i -> i));
 
         // Get the marking place.
         String markingIdentifier = ".marking";
@@ -88,6 +88,7 @@ public class NormalizePetrifyOutput {
         while (!queue.isEmpty()) {
             String currentPlace = queue.poll();
             List<String> childTransitions = parentToChild.get(currentPlace);
+            Collections.sort(childTransitions);
 
             // Rename the place that has not been renamed.
             if (!oldToNewPlaceNames.containsKey(currentPlace)) {
@@ -104,7 +105,7 @@ public class NormalizePetrifyOutput {
                 for (String place: places) {
                     List<String> transitions = parentToChild.get(place);
                     Integer minTransitionIndex = transitions.stream()
-                            .map(transition -> transitionIndexes.get(transition))
+                            .map(transition -> transitionIndices.get(transition))
                             .collect(Collectors.minBy(Comparator.naturalOrder())).get();
                     placeToIndex.put(place, minTransitionIndex);
                 }
@@ -127,8 +128,7 @@ public class NormalizePetrifyOutput {
         List<String> newSpecificationLines = new ArrayList<>();
         for (String currentLine: specificationLines) {
             List<String> nodes = Arrays.asList(currentLine.split(" "));
-            List<String> newNodes = new ArrayList<>();
-            nodes.stream().forEach(node -> newNodes.add(oldToNewPlaceNames.getOrDefault(node, node)));
+            List<String> newNodes = nodes.stream().map(node -> oldToNewPlaceNames.getOrDefault(node, node)).toList();
 
             // Sort the child nodes to make sure the order is deterministic.
             Collections.sort(newNodes.subList(1, newNodes.size()));
