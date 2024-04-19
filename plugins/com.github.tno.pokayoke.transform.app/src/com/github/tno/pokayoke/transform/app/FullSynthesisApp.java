@@ -148,12 +148,12 @@ public class FullSynthesisApp {
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
-        petrifyOutput = new ArrayList<>(NormalizePetrifyOutput.normalize(petrifyOutput));
+        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
         Files.write(petrifyOutputPath, petrifyOutput);
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
