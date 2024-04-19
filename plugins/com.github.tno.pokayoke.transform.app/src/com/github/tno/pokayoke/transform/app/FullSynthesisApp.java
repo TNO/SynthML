@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,6 +51,7 @@ import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
@@ -76,15 +78,15 @@ public class FullSynthesisApp {
         // Load CIF specification.
         Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
-        // Perform Synthesis.
+        // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
         CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
-                .collectUncontrolledSystemGuards(cifBddSpec);
+        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
+        // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
@@ -169,6 +171,13 @@ public class FullSynthesisApp {
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
+        FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+
+        // Remove the internal actions that were added in CIF specification and
+        // petrification.
+        Path internalActionsRemovedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".internalactionsremoved.uml");
+        PostProcessActivity.removeInternalActions(activity);
+        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -193,17 +202,32 @@ public class FullSynthesisApp {
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
 
-        // Convert guard CIF expression to CIF expression text.
-        ConvertExpressionToText converter = new ConvertExpressionToText();
-        Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
+        // Convert CIF expression of choice guards into CIF expression text.
+        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
+        Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
+        choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
+                converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Post-process the activity to remove the internal actions that were added in CIF specification and
-        // petrification.
-        PostProcessActivity.removeInternalActions(activity);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        // Get the string representations of specification guards and updates.
+        Map<Event, String> specificationGuards = EventGuardUpdateHelper.collectSpecificationEventGuards(cifSpec);
+        Map<Event, String> specificationUpdates = EventGuardUpdateHelper.collectSpecificationEventUpdates(cifSpec);
+
+        // Add the guards and updates to the opaque actions.
+        OpaqueActionHelper.addGuardStringsToOpaqueActionBodies(activity, specificationGuards);
+        OpaqueActionHelper.addUpdateStringsToOpaqueActionBodies(activity, specificationUpdates);
+
+        Path umlWithGuardsUpdatesOutputPath = outputFolderPath
+                .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.uml");
+        FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
+
+        // Post-process to remove the names of edges and nodes.
+        Path umlLabelsRemovedOutputPath = outputFolderPath
+                .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.labelsremoved.uml");
+        PostProcessActivity.removeNodesEdgesNames(activity);
+        FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {
