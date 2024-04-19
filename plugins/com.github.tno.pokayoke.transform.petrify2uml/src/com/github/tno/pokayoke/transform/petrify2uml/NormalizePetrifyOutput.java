@@ -91,11 +91,9 @@ public class NormalizePetrifyOutput {
             Collections.sort(childTransitions);
 
             // Rename the place that has not been renamed.
-            if (!oldToNewPlaceNames.containsKey(currentPlace)) {
-                String placeID = "p" + String.valueOf(nextPlaceNr);
-                oldToNewPlaceNames.put(currentPlace, placeID);
-                nextPlaceNr++;
-            }
+            String placeID = "p" + String.valueOf(nextPlaceNr);
+            oldToNewPlaceNames.put(currentPlace, placeID);
+            nextPlaceNr++;
 
             for (String childTransition: childTransitions) {
                 List<String> places = parentToChild.get(childTransition);
@@ -128,7 +126,7 @@ public class NormalizePetrifyOutput {
         List<String> newSpecificationLines = new ArrayList<>();
         for (String currentLine: specificationLines) {
             List<String> nodes = Arrays.asList(currentLine.split(" "));
-            List<String> newNodes = nodes.stream().map(node -> oldToNewPlaceNames.getOrDefault(node, node)).toList();
+            List<String> newNodes = nodes.stream().map(node -> oldToNewPlaceNames.getOrDefault(node, node)).collect(Collectors.toList());
 
             // Sort the child nodes to make sure the order is deterministic.
             Collections.sort(newNodes.subList(1, newNodes.size()));
