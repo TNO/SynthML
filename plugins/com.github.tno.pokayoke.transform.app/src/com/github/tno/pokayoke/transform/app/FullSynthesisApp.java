@@ -52,6 +52,7 @@ import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
@@ -148,9 +149,13 @@ public class FullSynthesisApp {
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
+        // Normalize Petrify output by relabeling the places.
+        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
+        Files.write(petrifyOutputPath, petrifyOutput);
+
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
