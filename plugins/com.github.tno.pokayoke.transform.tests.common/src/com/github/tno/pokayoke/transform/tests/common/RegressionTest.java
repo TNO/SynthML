@@ -37,7 +37,7 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  *
  * <p>
- * Verification whether the expected output file exists is performed after the actual output file is created. This
+ * Verification whether the expected output file/folder exists is performed after the actual output file/folder is created. This
  * simplifies the creation of regression tests.
  * </p>
  *
@@ -47,8 +47,8 @@ public abstract class RegressionTest {
      * Executes the different steps in the regression test.
      *
      * @param inputPath Path to the input file.
-     * @param expectedPath Path to the expected output file.
-     * @param outputPath Path for the actual output file.
+     * @param expectedPath Path to the expected output file/folder.
+     * @param outputPath Path for the actual output file/folder.
      * @param message Message in case of a failing assertion.
      * @throws Exception Thrown when one of operations fails.
      */
@@ -72,7 +72,7 @@ public abstract class RegressionTest {
      * Act test.
      *
      * @param inputPath Path to the input file.
-     * @param outputPath Path for the actual output file.
+     * @param outputPath Path for the actual output file/folder.
      * @throws Exception Thrown when one of operations fails.
      */
     protected abstract void actTest(Path inputPath, Path outputPath) throws Exception;
@@ -80,8 +80,8 @@ public abstract class RegressionTest {
     /**
      * Verify test.
      *
-     * @param expectedPath Path to the expected output file(s).
-     * @param outputPath Path to the actual output file(s).
+     * @param expectedPath Path to the expected output file/folder.
+     * @param outputPath Path to the actual output file/folder.
      * @param message Message in case of a failing assertion.
      * @throws IOException Thrown when one of the files can't be read.
      */
@@ -96,8 +96,8 @@ public abstract class RegressionTest {
     /**
      * Tear down test.
      *
-     * @param outputPath Path to the actual output file.
-     * @throws IOException Thrown when actual output file can't be deleted.
+     * @param outputPath Path to the actual output file/folder.
+     * @throws IOException Thrown when actual output file/folder can't be deleted.
      */
     protected void tearDownTest(Path outputPath) throws IOException {
         if (Files.isDirectory(outputPath)) {
