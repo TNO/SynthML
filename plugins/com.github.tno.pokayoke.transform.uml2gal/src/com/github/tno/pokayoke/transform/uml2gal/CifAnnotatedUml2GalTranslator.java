@@ -1,8 +1,6 @@
 
 package com.github.tno.pokayoke.transform.uml2gal;
 
-import org.eclipse.escet.cif.parser.CifExpressionParser;
-import org.eclipse.escet.cif.parser.CifUpdateParser;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
@@ -12,6 +10,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
+import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
+import com.github.tno.pokayoke.cif.parser.CifUpdateParser;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.gal.And;
