@@ -7,7 +7,9 @@ Export-Package: com.github.tno.pokayoke.transform.tests.common
 Require-Bundle: com.github.tno.pokayoke.transform.common;bundle-version="0.0.0",
  junit-jupiter-api;bundle-version="5.9.3",
  junit-jupiter-params;bundle-version="5.9.3",
- org.eclipse.escet.common.java
+ org.eclipse.escet.common.java,
+ org.apache.commons.io
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.tests.common
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+

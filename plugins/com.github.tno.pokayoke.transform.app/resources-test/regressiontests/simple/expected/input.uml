@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_P-ZBcPUfEe6ZOvwkVlR00Q" name="minimal">
-  <packagedElement xmi:type="uml:Class" xmi:id="_P-ZBcfUfEe6ZOvwkVlR00Q" name="Class">
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_P-ZBcvUfEe6ZOvwkVlR00Q" name="minimal" node="_P-ZBg_UfEe6ZOvwkVlR00Q _P-ZBhPUfEe6ZOvwkVlR00Q _P-ZBhfUfEe6ZOvwkVlR00Q _P-ZBhvUfEe6ZOvwkVlR00Q _P-ZBh_UfEe6ZOvwkVlR00Q _P-ZBiPUfEe6ZOvwkVlR00Q _P-ZBifUfEe6ZOvwkVlR00Q _P-ZBivUfEe6ZOvwkVlR00Q _P-ZBi_UfEe6ZOvwkVlR00Q _P-ZBjPUfEe6ZOvwkVlR00Q _P-ZBjfUfEe6ZOvwkVlR00Q _P-ZBjvUfEe6ZOvwkVlR00Q _P-ZBj_UfEe6ZOvwkVlR00Q">
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBc_UfEe6ZOvwkVlR00Q" name="Decision__p0__to__Robot_adjust_product" target="_P-ZBhvUfEe6ZOvwkVlR00Q" source="_P-ZBjPUfEe6ZOvwkVlR00Q">
-        <guard xmi:type="uml:OpaqueExpression" xmi:id="_P-ZBdPUfEe6ZOvwkVlR00Q">
-          <body>true</body>
-        </guard>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="minimal">
+  <packagedElement xmi:type="uml:Class" xmi:id="2" name="Class">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="3" name="minimal" node="23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38">
+      <edge xmi:type="uml:ControlFlow" xmi:id="4" name="InitialNode__to__start" target="23" source="33"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="5" name="end__to__FinalNode" target="34" source="24"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="6" name="c_satisfied__to__end" target="24" source="32"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="7" name="Decision__p8__to__robot_adjust_product" target="28" source="35">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="8" value="true"/>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBdfUfEe6ZOvwkVlR00Q" name="Decision__p0__to__Robot_move_to_location2" target="_P-ZBhfUfEe6ZOvwkVlR00Q" source="_P-ZBjPUfEe6ZOvwkVlR00Q">
-        <guard xmi:type="uml:OpaqueExpression" xmi:id="_P-ZBdvUfEe6ZOvwkVlR00Q">
-          <body>Location1_is_correctly_placed != False</body>
-        </guard>
+      <edge xmi:type="uml:ControlFlow" xmi:id="9" name="Decision__p8__to__robot_move_to_location1" target="26" source="35">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="10" value="true"/>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBd_UfEe6ZOvwkVlR00Q" name="Measure_product_position__to__Decision__p0" target="_P-ZBjPUfEe6ZOvwkVlR00Q" source="_P-ZBifUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBePUfEe6ZOvwkVlR00Q" name="Prepare_location1__to__Join" target="_P-ZBj_UfEe6ZOvwkVlR00Q" source="_P-ZBiPUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBefUfEe6ZOvwkVlR00Q" name="Prepare_robot__to__Join" target="_P-ZBj_UfEe6ZOvwkVlR00Q" source="_P-ZBg_UfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBevUfEe6ZOvwkVlR00Q" name="Robot_adjust_product__to__Merge__p3" target="_P-ZBjfUfEe6ZOvwkVlR00Q" source="_P-ZBhvUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBe_UfEe6ZOvwkVlR00Q" name="Robot_release_product__to__Merge__p3" target="_P-ZBjfUfEe6ZOvwkVlR00Q" source="_P-ZBh_UfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBfPUfEe6ZOvwkVlR00Q" name="Merge__p3__to__Measure_product_position" target="_P-ZBifUfEe6ZOvwkVlR00Q" source="_P-ZBjfUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBffUfEe6ZOvwkVlR00Q" name="Robot_move_to_location1__to__Robot_release_product" target="_P-ZBh_UfEe6ZOvwkVlR00Q" source="_P-ZBhPUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBfvUfEe6ZOvwkVlR00Q" name="Fork__to__Prepare_robot" target="_P-ZBg_UfEe6ZOvwkVlR00Q" source="_P-ZBjvUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBf_UfEe6ZOvwkVlR00Q" name="Fork__to__Prepare_location1" target="_P-ZBiPUfEe6ZOvwkVlR00Q" source="_P-ZBjvUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBgPUfEe6ZOvwkVlR00Q" name="Join__to__Robot_move_to_location1" target="_P-ZBhPUfEe6ZOvwkVlR00Q" source="_P-ZBj_UfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBgfUfEe6ZOvwkVlR00Q" name="InitialNode__to__Fork" target="_P-ZBjvUfEe6ZOvwkVlR00Q" source="_P-ZBivUfEe6ZOvwkVlR00Q"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="_P-ZBgvUfEe6ZOvwkVlR00Q" name="Robot_move_to_location2__to__FinalNode" target="_P-ZBi_UfEe6ZOvwkVlR00Q" source="_P-ZBhfUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBg_UfEe6ZOvwkVlR00Q" name="Prepare_robot" incoming="_P-ZBfvUfEe6ZOvwkVlR00Q" outgoing="_P-ZBefUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBhPUfEe6ZOvwkVlR00Q" name="Robot_move_to_location1" incoming="_P-ZBgPUfEe6ZOvwkVlR00Q" outgoing="_P-ZBffUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBhfUfEe6ZOvwkVlR00Q" name="Robot_move_to_location2" incoming="_P-ZBdfUfEe6ZOvwkVlR00Q" outgoing="_P-ZBgvUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBhvUfEe6ZOvwkVlR00Q" name="Robot_adjust_product" incoming="_P-ZBc_UfEe6ZOvwkVlR00Q" outgoing="_P-ZBevUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBh_UfEe6ZOvwkVlR00Q" name="Robot_release_product" incoming="_P-ZBffUfEe6ZOvwkVlR00Q" outgoing="_P-ZBe_UfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBiPUfEe6ZOvwkVlR00Q" name="Prepare_location1" incoming="_P-ZBf_UfEe6ZOvwkVlR00Q" outgoing="_P-ZBePUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="_P-ZBifUfEe6ZOvwkVlR00Q" name="Measure_product_position" incoming="_P-ZBfPUfEe6ZOvwkVlR00Q" outgoing="_P-ZBd_UfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:InitialNode" xmi:id="_P-ZBivUfEe6ZOvwkVlR00Q" name="InitialNode" outgoing="_P-ZBgfUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="_P-ZBi_UfEe6ZOvwkVlR00Q" name="FinalNode" incoming="_P-ZBgvUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:DecisionNode" xmi:id="_P-ZBjPUfEe6ZOvwkVlR00Q" name="Decision__p0" incoming="_P-ZBd_UfEe6ZOvwkVlR00Q" outgoing="_P-ZBc_UfEe6ZOvwkVlR00Q _P-ZBdfUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:MergeNode" xmi:id="_P-ZBjfUfEe6ZOvwkVlR00Q" name="Merge__p3" incoming="_P-ZBevUfEe6ZOvwkVlR00Q _P-ZBe_UfEe6ZOvwkVlR00Q" outgoing="_P-ZBfPUfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:ForkNode" xmi:id="_P-ZBjvUfEe6ZOvwkVlR00Q" name="Fork" incoming="_P-ZBgfUfEe6ZOvwkVlR00Q" outgoing="_P-ZBfvUfEe6ZOvwkVlR00Q _P-ZBf_UfEe6ZOvwkVlR00Q"/>
-      <node xmi:type="uml:JoinNode" xmi:id="_P-ZBj_UfEe6ZOvwkVlR00Q" name="Join" incoming="_P-ZBePUfEe6ZOvwkVlR00Q _P-ZBefUfEe6ZOvwkVlR00Q" outgoing="_P-ZBgPUfEe6ZOvwkVlR00Q"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="11" name="measure_product_position__to__Decision__p8" target="35" source="31"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="Fork__to__prepare_location2" target="30" source="37"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="Fork__to__prepare_robot" target="25" source="37"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="14" name="prepare_location2__to__Join" target="38" source="30"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="prepare_robot__to__Join" target="38" source="25"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="16" name="robot_move_to_location2__to__robot_release_product_at_location2" target="29" source="27"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="17" name="robot_adjust_product__to__Merge__p7" target="36" source="28"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="18" name="robot_release_product_at_location2__to__Merge__p7" target="36" source="29"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="19" name="Merge__p7__to__measure_product_position" target="31" source="36"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="20" name="robot_move_to_location1__to__c_satisfied" target="32" source="26"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="21" name="start__to__Fork" target="37" source="23"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Join__to__robot_move_to_location2" target="27" source="38"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="23" name="start" incoming="4" outgoing="21"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="24" name="end" incoming="6" outgoing="5"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="25" name="prepare_robot" incoming="13" outgoing="15"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="26" name="robot_move_to_location1" incoming="9" outgoing="20"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="27" name="robot_move_to_location2" incoming="22" outgoing="16"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="28" name="robot_adjust_product" incoming="7" outgoing="17"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="29" name="robot_release_product_at_location2" incoming="16" outgoing="18"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="30" name="prepare_location2" incoming="12" outgoing="14"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="31" name="measure_product_position" incoming="19" outgoing="11"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="32" name="c_satisfied" incoming="20" outgoing="6"/>
+      <node xmi:type="uml:InitialNode" xmi:id="33" name="InitialNode" outgoing="4"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="34" name="FinalNode" incoming="5"/>
+      <node xmi:type="uml:DecisionNode" xmi:id="35" name="Decision__p8" incoming="11" outgoing="7 9"/>
+      <node xmi:type="uml:MergeNode" xmi:id="36" name="Merge__p7" incoming="17 18" outgoing="19"/>
+      <node xmi:type="uml:ForkNode" xmi:id="37" name="Fork" incoming="21" outgoing="12 13"/>
+      <node xmi:type="uml:JoinNode" xmi:id="38" name="Join" incoming="14 15" outgoing="22"/>
     </ownedBehavior>
   </packagedElement>
 </uml:Model>

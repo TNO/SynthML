@@ -4,15 +4,16 @@ package com.github.tno.pokayoke.transform.tests.common;
 import static com.github.tno.pokayoke.transform.tests.common.PathAssertions.assertDirectoryExists;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.params.provider.Arguments;
 
 /**
@@ -86,13 +87,9 @@ public abstract class RegressionTest {
      */
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
         if (Files.isDirectory(outputPath)) {
-            Predicate<Path> filter = path -> {
-                String pathString = path.toString().toLowerCase();
-                return pathString.endsWith(".uml") || pathString.endsWith(".cif") || pathString.endsWith(".pnml");
-            };
-            FileCompare.checkDirectoriesEqual(expectedPath, outputPath, filter);
+            FileCompare.checkDirectoriesEqual(expectedPath, outputPath, path -> true);
         } else {
-            PathAssertions.assertContentsMatch(expectedPath, outputPath, message);
+            FileCompare.checkFilesEqual(expectedPath, outputPath);
         }
     }
 
@@ -103,7 +100,11 @@ public abstract class RegressionTest {
      * @throws IOException Thrown when actual output file can't be deleted.
      */
     protected void tearDownTest(Path outputPath) throws IOException {
-        Files.delete(outputPath);
+        if (Files.isDirectory(outputPath)) {
+            FileUtils.deleteDirectory(new File(outputPath.toString()));
+        } else {
+            Files.delete(outputPath);
+        }
     }
 
     /**
