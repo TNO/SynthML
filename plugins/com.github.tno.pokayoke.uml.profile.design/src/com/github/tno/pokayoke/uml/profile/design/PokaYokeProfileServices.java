@@ -172,4 +172,15 @@ public class PokaYokeProfileServices {
         supportedTypes.sort(Comparator.comparing(Type::getName));
         return supportedTypes;
     }
+
+    /**
+     * Applies the Poka Yoke UML Profile and set the {@link Property#setDefault(String) default value} property for
+     * {@code property}.
+     *
+     * @param property The property to set the default value on.
+     * @param newValue The new default value of the property.
+     */
+    public void setPropertyDefaultValue(Property property, String newValue) {
+        PokaYokeUmlProfileUtil.setPropertyDefaultValue(property, newValue);
+    }
 }
