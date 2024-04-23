@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_qitPAPyxEe6PXdoEuB4CNA" name="Expressions">
+    <packagedElement xmi:type="uml:Class" xmi:id="_vw5LIPyxEe6PXdoEuB4CNA" name="Context" visibility="public" classifierBehavior="_aLnRgPzBEe6_EqZz5uEyNA" isActive="true">
+      <ownedAttribute xmi:id="_3LJWMPyxEe6PXdoEuB4CNA" name="myBool" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3LJWMfyxEe6PXdoEuB4CNA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3LJ9QPyxEe6PXdoEuB4CNA" value="1"/>
+        <defaultValue xmi:type="uml:LiteralString" xmi:id="_8Fbe4PyxEe6PXdoEuB4CNA" value="true != not true"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_4VtE0PyxEe6PXdoEuB4CNA" name="myEnum" visibility="public" type="_ymv98PyxEe6PXdoEuB4CNA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4VtE0fyxEe6PXdoEuB4CNA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4VtE0vyxEe6PXdoEuB4CNA" value="1"/>
+        <defaultValue xmi:type="uml:LiteralString" xmi:id="_-svfYPyxEe6PXdoEuB4CNA" value="A"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_aLnRgPzBEe6_EqZz5uEyNA" name="Expressions" node="_g1JKQPzBEe6_EqZz5uEyNA _i_p6APzBEe6_EqZz5uEyNA _jx_V4PzBEe6_EqZz5uEyNA">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_P37lwPzCEe6_EqZz5uEyNA" target="_jx_V4PzBEe6_EqZz5uEyNA" source="_g1JKQPzBEe6_EqZz5uEyNA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_P37lwfzCEe6_EqZz5uEyNA" name="_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_P38M0PzCEe6_EqZz5uEyNA" name="_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_QNWcIPzCEe6_EqZz5uEyNA" target="_i_p6APzBEe6_EqZz5uEyNA" source="_jx_V4PzBEe6_EqZz5uEyNA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_QNXDMPzCEe6_EqZz5uEyNA" name="OpaqueAction1_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_QNXDMfzCEe6_EqZz5uEyNA" name="OpaqueAction1_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_g1JKQPzBEe6_EqZz5uEyNA" name="" outgoing="_P37lwPzCEe6_EqZz5uEyNA"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_i_p6APzBEe6_EqZz5uEyNA" name="" incoming="_QNWcIPzCEe6_EqZz5uEyNA"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_jx_V4PzBEe6_EqZz5uEyNA" name="OpaqueAction1" incoming="_P37lwPzCEe6_EqZz5uEyNA" outgoing="_QNWcIPzCEe6_EqZz5uEyNA">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_ymv98PyxEe6PXdoEuB4CNA" name="Location" visibility="public">
+      <ownedLiteral xmi:id="_zaCcEPyxEe6PXdoEuB4CNA" name="A"/>
+      <ownedLiteral xmi:id="_zouYUPyxEe6PXdoEuB4CNA" name="B"/>
+    </packagedElement>
+    <profileApplication xmi:id="_JgrIwPzCEe6_EqZz5uEyNA">
+      <eAnnotations xmi:id="_JgtlAPzCEe6_EqZz5uEyNA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:GuardEffectsAction xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myEnum = B" effects="myEnum := B,&#xD;&#xA;myBool := myEnum = A or myBool = (true and true)&#xD;&#xA;" base_Action="_jx_V4PzBEe6_EqZz5uEyNA"/>
+</xmi:XMI>

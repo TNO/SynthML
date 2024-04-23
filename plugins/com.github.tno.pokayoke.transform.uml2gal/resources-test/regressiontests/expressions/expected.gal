@@ -1,0 +1,25 @@
+
+$A=0 ;
+$B=1 ;
+typedef Boolean= (false)..(true) ;
+typedef Location= 0..1 ;
+gal Expressions__Context{
+  int myBool = (!( true && !( true)  || !( true)  && true) );
+  int myEnum = $A;
+  int __init = (false);
+  int __edge__0 = (true);
+  int __edge__1 = (false);
+  transition __initialize [ __init == (false) ] {
+    __init = (true)    ;
+  }
+  transition __ActivityFinalNode_Expressions__ActivityFinalNode__1 [ __init == (true) && __edge__1 == (true) ] {
+    __edge__1 = (false)    ;
+  }
+  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == (true) && !myBool == (true) && myEnum == $B && __edge__0 == (true) && __edge__1 == (false) ] {
+    myEnum = $B    ;
+    myBool = (myEnum == $A || myBool == (true && true))    ;
+    __edge__0 = (false)    ;
+    __edge__1 = (true)    ;
+  }
+}
+main Expressions__Context ;
