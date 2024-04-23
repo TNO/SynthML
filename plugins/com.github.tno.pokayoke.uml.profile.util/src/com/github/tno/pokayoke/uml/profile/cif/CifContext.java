@@ -1,0 +1,143 @@
+
+package com.github.tno.pokayoke.uml.profile.cif;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.lsat.common.queries.QueryableIterable;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.resource.UMLResource;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
+
+/** Collects basic typing information from a model that can be queried. */
+public class CifContext {
+    /**
+     * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
+     * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
+     */
+    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.PACKAGE,
+            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.CLASS,
+            UMLPackage.Literals.PROPERTY, UMLPackage.Literals.ACTIVITY);
+
+    static {
+        for (EClass contextType: CONTEXT_TYPES) {
+            if (!UMLPackage.Literals.NAMED_ELEMENT.isSuperTypeOf(contextType)) {
+                throw new IllegalArgumentException("Invalid context type: " + contextType.getName());
+            }
+        }
+    }
+
+    /**
+     * Finds all contextual elements in the {@code model}.
+     *
+     * @param model The search root.
+     * @return All contextual elements in the {@code model}.
+     */
+    public static QueryableIterable<NamedElement> queryContextElements(Model model) {
+        return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
+                .asType(NamedElement.class);
+    }
+
+    /**
+     * Loads a {@link UMLResource#UML_PRIMITIVE_TYPES_LIBRARY_URI primitive UML type}, e.g., "Boolean" or "String".
+     *
+     * @param name The name of the primitive type to load.
+     * @param model The context to load the primitive types, such that they can be used for comparison
+     * @return The loaded primitive type.
+     */
+    public static PrimitiveType loadPrimitiveType(String name, Model model) {
+        // Use the resource set of the model to load the primitive types, such that they can be used for comparison
+        Resource resource = model.eResource();
+        ResourceSet resourceSet = resource == null ? null : resource.getResourceSet();
+        Preconditions.checkNotNull(resourceSet, "Expected element to be contained by a resource set.");
+        resource = resourceSet.getResource(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI), true);
+        Package primitivesPackage = (Package)EcoreUtil.getObjectByType(resource.getContents(),
+                UMLPackage.Literals.PACKAGE);
+        return (PrimitiveType)primitivesPackage.getOwnedType(name);
+    }
+
+    private final Map<String, NamedElement> contextElements;
+
+    private final PrimitiveType booleanType;
+
+    private final PrimitiveType integerType;
+
+    public CifContext(Element element) {
+        Model model = element.getModel();
+        // Do not check duplicates here, as that is the responsibility of model validation
+        contextElements = queryContextElements(model).toMap(NamedElement::getName);
+
+        booleanType = loadPrimitiveType("Boolean", model);
+        integerType = loadPrimitiveType("Integer", model);
+    }
+
+    public PrimitiveType getBooleanType() {
+        return booleanType;
+    }
+
+    public PrimitiveType getIntegerType() {
+        return integerType;
+    }
+
+    public boolean isDeclared(String name) {
+        return contextElements.containsKey(name);
+    }
+
+    protected NamedElement getElement(String name) {
+        return contextElements.get(name);
+    }
+
+    protected Collection<NamedElement> getAllElements() {
+        return Collections.unmodifiableCollection(contextElements.values());
+    }
+
+    public boolean isEnumeration(String name) {
+        return contextElements.get(name) instanceof Enumeration;
+    }
+
+    public Enumeration getEnumeration(String name) {
+        if (contextElements.get(name) instanceof Enumeration enumeration) {
+            return enumeration;
+        }
+        return null;
+    }
+
+    public boolean isEnumerationLiteral(String name) {
+        return contextElements.get(name) instanceof EnumerationLiteral;
+    }
+
+    public EnumerationLiteral getEnumerationLiteral(String name) {
+        if (contextElements.get(name) instanceof EnumerationLiteral literal) {
+            return literal;
+        }
+        return null;
+    }
+
+    public boolean isVariable(String name) {
+        return contextElements.get(name) instanceof Property;
+    }
+
+    public Property getVariable(String name) {
+        if (contextElements.get(name) instanceof Property property) {
+            return property;
+        }
+        return null;
+    }
+}

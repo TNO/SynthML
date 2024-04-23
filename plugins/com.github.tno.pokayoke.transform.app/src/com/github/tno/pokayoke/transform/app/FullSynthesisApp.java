@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,6 +51,8 @@ import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
+import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
@@ -75,15 +78,15 @@ public class FullSynthesisApp {
         // Load CIF specification.
         Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
 
-        // Perform Synthesis.
+        // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".ctrlsys.cif");
         CifDataSynthesisSettings settings = getSynthesisSettings();
         CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = ChoiceActionGuardComputationHelper
-                .collectUncontrolledSystemGuards(cifBddSpec);
+        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
+        // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
@@ -95,7 +98,10 @@ public class FullSynthesisApp {
         String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
         ExplorerApplication explorerApp = new ExplorerApplication();
-        explorerApp.run(stateSpaceGenerationArgs, false);
+        int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for state space generation: " + exitCode);
+        }
 
         // Remove state annotations from intermediate states.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".statespace.annotreduced.cif");
@@ -114,7 +120,10 @@ public class FullSynthesisApp {
         String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         ProjectionApplication projectionApp = new ProjectionApplication();
-        projectionApp.run(projectionArgs, false);
+        exitCode = projectionApp.run(projectionArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for event-based automaton projection: " + exitCode);
+        }
 
         // Perform DFA minimization.
         Path cifMinimizedStateSpacePath = outputFolderPath
@@ -122,7 +131,10 @@ public class FullSynthesisApp {
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
-        dfaMinimizationApp.run(dfaMinimizationArgs, false);
+        exitCode = dfaMinimizationApp.run(dfaMinimizationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode);
+        }
 
         // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
@@ -137,9 +149,13 @@ public class FullSynthesisApp {
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
+        // Normalize Petrify output by relabeling the places.
+        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
+        Files.write(petrifyOutputPath, petrifyOutput);
+
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNet petriNet = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
@@ -155,6 +171,13 @@ public class FullSynthesisApp {
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
+        FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+
+        // Remove the internal actions that were added in CIF specification and
+        // petrification.
+        Path internalActionsRemovedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".internalactionsremoved.uml");
+        PostProcessActivity.removeInternalActions(activity);
+        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
@@ -179,16 +202,32 @@ public class FullSynthesisApp {
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
 
-        // Convert guard CIF expression to CIF expression text.
-        ConvertExpressionToText converter = new ConvertExpressionToText();
-        Map<OpaqueAction, String> choiceActionToGuardText = converter.convert(cifSpec, choiceActionToGuardExpression);
+        // Convert CIF expression of choice guards into CIF expression text.
+        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
+        Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
+        choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
+                converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Post-process the activity to remove the internal actions that were added in CIF specification and petrification.
-        PostProcessActivity.removeInternalActions(activity);
-        PetriNetUMLFileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
+        // Get the string representations of specification guards and updates.
+        Map<Event, String> specificationGuards = EventGuardUpdateHelper.collectSpecificationEventGuards(cifSpec);
+        Map<Event, String> specificationUpdates = EventGuardUpdateHelper.collectSpecificationEventUpdates(cifSpec);
+
+        // Add the guards and updates to the opaque actions.
+        OpaqueActionHelper.addGuardStringsToOpaqueActionBodies(activity, specificationGuards);
+        OpaqueActionHelper.addUpdateStringsToOpaqueActionBodies(activity, specificationUpdates);
+
+        Path umlWithGuardsUpdatesOutputPath = outputFolderPath
+                .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.uml");
+        FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
+
+        // Post-process to remove the names of edges and nodes.
+        Path umlLabelsRemovedOutputPath = outputFolderPath
+                .resolve(filePrefix + ".internalactionsremoved.guardsandupdatesadded.labelsremoved.uml");
+        PostProcessActivity.removeNodesEdgesNames(activity);
+        FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
 
     private static CifDataSynthesisSettings getSynthesisSettings() {

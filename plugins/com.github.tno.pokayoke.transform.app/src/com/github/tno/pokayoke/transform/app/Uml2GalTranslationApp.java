@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.json.JSONException;
 
 import com.github.tno.pokayoke.transform.uml2gal.Uml2GalTranslationHelper;
@@ -15,7 +16,9 @@ public class Uml2GalTranslationApp {
     private Uml2GalTranslationApp() {
     }
 
-    public static void translateUml2Gal(Path inputPath, Path outputFolderPath) throws IOException, JSONException {
+    public static void translateUml2Gal(Path inputPath, Path outputFolderPath)
+            throws IOException, JSONException, CoreException
+    {
         Files.createDirectories(outputFolderPath);
 
         // Determine the paths of the output GAL and JSON files.

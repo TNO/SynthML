@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:validation="http://www.eclipse.org/sirius/description/validation/1.1.0" name="pokayoke" version="12.0.0.2017041100">
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:properties="http://www.eclipse.org/sirius/properties/1.0.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" name="pokayoke" version="12.0.0.2017041100">
   <ownedViewpoints name="PokaYoke" modelFileExtension="uml">
     <ownedRepresentationExtensions xsi:type="description_1:DiagramExtensionDescription" name="Poka Yoke Activity Diagram" viewpointURI="viewpoint:/org.obeonetwork.dsl.uml2.core.design/Reused" representationName="Activity Diagram">
       <metamodel href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
@@ -14,14 +14,6 @@
           </decorationDescriptions>
         </decorationDescriptionsSet>
       </layers>
-      <validationSet name="Poka Yoke">
-        <ownedRules xsi:type="validation:SemanticValidationRule" name="validGuardError" level="ERROR" message="service:self.getValidGuardErrorMessage()" targetClass="uml.OpaqueAction">
-          <audits auditExpression="service:self.isValidGuard()"/>
-        </ownedRules>
-        <ownedRules xsi:type="validation:SemanticValidationRule" name="validEffectsError" level="ERROR" message="service:self.getValidEffectsErrorMessage()" targetClass="uml.OpaqueAction">
-          <audits auditExpression="service:self.isValidEffects()"/>
-        </ownedRules>
-      </validationSet>
     </ownedRepresentationExtensions>
     <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.design.PokaYokeProfileServices"/>
   </ownedViewpoints>
@@ -31,26 +23,60 @@
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <pages name="PR_ControlFlow" labelExpression="Poka Yoke" domainClass="uml::ControlFlow">
-        <groups href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@extensions.0/@categories.0/@groups.0"/>
-        <groups href="#//@extensions.0/@categories.0/@groups.1"/>
-      </pages>
-      <groups name="PR_GuardEffectsActionGroup" labelExpression="Guard and Effects">
-        <controls xsi:type="properties:TextDescription" name="PR_GE_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+      <pages name="PR_ControlFlowPage" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" preconditionExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)" groups="//@extensions.0/@categories.0/@groups.1"/>
+      <pages name="PR_PropertyPage" labelExpression="Poka Yoke" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
+      <groups name="PR_GuardEffectsActionGroup" labelExpression="General">
+        <controls xsi:type="properties:TextDescription" name="PR_GE_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:SetValue" featureName="name" valueExpression="var:newValue"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextDescription" name="PR_GE_Guard" labelExpression="Guard:" helpExpression="The Guard of the Action" valueExpression="service:self.getGuard()">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_GE_Effects" labelExpression="Effects" lineCount="10" valueExpression="service:self.getEffects()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_GE_Effects" labelExpression="Effects:" helpExpression="The Effects of the Action" lineCount="10" valueExpression="service:self.getEffects()">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
-      <groups name="PR_ControlFlowGuardGroup" labelExpression="Guard" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard" valueExpression="service:self.getGuard()">
+      <groups name="PR_ControlFlowGuardGroup" labelExpression="General" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_CF_Name" labelExpression="Name:" helpExpression="The Name of the Control Flow" valueExpression="feature:name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:SetValue" featureName="name" valueExpression="var:newValue"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" valueExpression="service:self.getGuard()">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
+          </initialOperation>
+        </controls>
+      </groups>
+      <groups name="PR_PropertyPokaYokeGroup" labelExpression="General" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextDescription" name="PR_PR_Name" labelExpression="Name:" helpExpression="The Name of the Property" valueExpression="feature:name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:SetValue" featureName="name" valueExpression="var:newValue">
+              <subModelOperations xsi:type="tool:SetValue" featureName="lower" valueExpression="1"/>
+              <subModelOperations xsi:type="tool:SetValue" featureName="upper" valueExpression="1"/>
+            </firstModelOperations>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:SelectDescription" name="PR_PR_Type" labelExpression="Type:" helpExpression="The Type of the Property" valueExpression="feature:type" candidatesExpression="service:self.getSupportedPropertyTypes()" candidateDisplayExpression="aql:candidate.name">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:SetValue" featureName="type" valueExpression="var:newValue">
+              <subModelOperations xsi:type="tool:SetValue" featureName="lower" valueExpression="1"/>
+              <subModelOperations xsi:type="tool:SetValue" featureName="upper" valueExpression="1"/>
+            </firstModelOperations>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextDescription" name="PR_PR_DefaultValue" labelExpression="Default value:" helpExpression="The Default Value of the Property" valueExpression="aql:self.getDefault()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="aql:self.setDefault(newValue)">
+              <subModelOperations xsi:type="tool:SetValue" featureName="lower" valueExpression="1"/>
+              <subModelOperations xsi:type="tool:SetValue" featureName="upper" valueExpression="1"/>
+            </firstModelOperations>
           </initialOperation>
         </controls>
       </groups>

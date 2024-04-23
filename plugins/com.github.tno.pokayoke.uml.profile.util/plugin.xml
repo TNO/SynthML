@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.espilce.periksa.validation.registry.registrar">
+      <ReflectiveValidator
+            class="com.github.tno.pokayoke.uml.profile.validation.PokaYokeProfileValidator">
+         <EPackage
+               uri="http://www.eclipse.org/uml2/5.0.0/UML">
+         </EPackage>
+      </ReflectiveValidator>
+   </extension>
+
+</plugin>

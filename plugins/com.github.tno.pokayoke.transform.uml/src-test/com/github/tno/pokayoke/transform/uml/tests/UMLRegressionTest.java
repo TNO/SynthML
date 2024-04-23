@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.uml2.uml.Model;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,15 +37,15 @@ class UMLRegressionTest extends RegressionTest {
     @Override
     @ParameterizedTest
     @MethodSource("provideArguments")
-    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
+    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
         super.regressionTest(inputPath, expectedPath, outputPath, message);
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
         final String inputPathString = inputPath.toString();
         final Model model = FileHelper.loadModel(inputPathString);
-        new UMLTransformer(model, inputPathString).transformModel();
+        new UMLTransformer(model).transformModel();
         FileHelper.storeModel(model, outputPath.toString());
     }
 }

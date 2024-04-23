@@ -48,9 +48,9 @@ public abstract class RegressionTest {
      * @param expectedPath Path to the expected output file.
      * @param outputPath Path for the actual output file.
      * @param message Message in case of a failing assertion.
-     * @throws IOException Thrown when one of operations on the files fails.
+     * @throws Exception Thrown when one of operations fails.
      */
-    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws IOException {
+    public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
         setUpTest(inputPath);
         actTest(inputPath, outputPath);
         verifyTest(expectedPath, outputPath, message);
@@ -71,9 +71,9 @@ public abstract class RegressionTest {
      *
      * @param inputPath Path to the input file.
      * @param outputPath Path for the actual output file.
-     * @throws IOException Thrown when one of operations on the files fails.
+     * @throws Exception Thrown when one of operations fails.
      */
-    protected abstract void actTest(Path inputPath, Path outputPath) throws IOException;
+    protected abstract void actTest(Path inputPath, Path outputPath) throws Exception;
 
     /**
      * Verify test.
