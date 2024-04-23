@@ -28,11 +28,8 @@ import fr.lip6.move.serialization.SerializationUtil;
 public class Uml2GalTranslationHelper {
     static final GalFactory FACTORY = GalFactory.eINSTANCE;
 
-    static final int BOOL_FALSE = 0;
-
-    static final int BOOL_TRUE = 1;
-
     private Uml2GalTranslationHelper() {
+        // Empty for utility classes
     }
 
     /**

@@ -113,8 +113,8 @@ public class Uml2GalTranslator {
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(cifContext.getBooleanType().getName(), Uml2GalTranslationHelper.BOOL_FALSE,
-                Uml2GalTranslationHelper.BOOL_TRUE);
+        specificationBuilder.addTypedef(cifContext.getBooleanType().getName(),
+                Uml2GalTranslationHelper.toIntExpression(false), Uml2GalTranslationHelper.toIntExpression(true));
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);

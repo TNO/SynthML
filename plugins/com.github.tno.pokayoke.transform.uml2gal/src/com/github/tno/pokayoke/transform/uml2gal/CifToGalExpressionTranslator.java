@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.uml2gal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -22,7 +23,7 @@ import fr.lip6.move.gal.BooleanExpression;
 import fr.lip6.move.gal.Comparison;
 import fr.lip6.move.gal.ComparisonOperators;
 import fr.lip6.move.gal.ConstParameter;
-import fr.lip6.move.gal.Equiv;
+import fr.lip6.move.gal.GalFactory;
 import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Not;
 import fr.lip6.move.gal.ParamRef;
@@ -99,10 +100,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
             case EQ -> {
                 if (left instanceof BooleanExpression leftBool && right instanceof BooleanExpression rightBool) {
                     // Try to stick to booleans as long as possible
-                    Equiv equiv = Uml2GalTranslationHelper.FACTORY.createEquiv();
-                    equiv.setLeft(leftBool);
-                    equiv.setRight(rightBool);
-                    yield equiv;
+                    yield equiv(leftBool, rightBool);
                 } else {
                     yield createComparison(operator, left, right);
                 }
@@ -110,13 +108,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
             case NE -> {
                 if (left instanceof BooleanExpression leftBool && right instanceof BooleanExpression rightBool) {
                     // Try to stick to booleans as long as possible
-                    Equiv equiv = Uml2GalTranslationHelper.FACTORY.createEquiv();
-                    equiv.setLeft(leftBool);
-                    equiv.setRight(rightBool);
-
-                    Not not = Uml2GalTranslationHelper.FACTORY.createNot();
-                    not.setValue(equiv);
-                    yield not;
+                    yield not(equiv(leftBool, rightBool));
                 } else {
                     yield createComparison(operator, left, right);
                 }
@@ -156,9 +148,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     protected Object visit(UnaryOperator operator, TextPosition operatorPos, Object child, CifContext ctx) {
         return switch (operator) {
             case NOT -> {
-                Not not = Uml2GalTranslationHelper.FACTORY.createNot();
-                not.setValue(toBool(child));
-                yield not;
+                yield not(toBool(child));
             }
             case MINUS -> {
                 UnaryMinus minus = Uml2GalTranslationHelper.FACTORY.createUnaryMinus();
@@ -214,5 +204,31 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
         } else {
             throw new IllegalArgumentException("Unsupported type: " + expression);
         }
+    }
+
+    /**
+     * Alternative for using {@link GalFactory#createEquiv() boolean equivalence (i.e. <->)} in transition guards.
+     * <p>
+     * Boolean equivalence is translated into a <a href="https://en.wikipedia.org/wiki/XNOR_gate">logical XNOR</a>.
+     * </p>
+     *
+     * @param left The left equivalence parameter.
+     * @param right The right equivalence parameter.
+     * @return The equivalence expression.
+     * @see <a href="https://lip6.github.io/ITSTools-web/galbasics.html#boolean-expressions">Guarded Action Language
+     *     Basics</a>
+     */
+    private BooleanExpression equiv(BooleanExpression left, BooleanExpression right) {
+        BooleanExpression leftCopy = EcoreUtil.copy(left);
+        BooleanExpression rightCopy = EcoreUtil.copy(right);
+
+        return Uml2GalTranslationHelper.combineAsOr(Uml2GalTranslationHelper.combineAsAnd(left, right),
+                Uml2GalTranslationHelper.combineAsAnd(not(leftCopy), not(rightCopy)));
+    }
+
+    private BooleanExpression not(BooleanExpression expression) {
+        Not not = Uml2GalTranslationHelper.FACTORY.createNot();
+        not.setValue(expression);
+        return not;
     }
 }

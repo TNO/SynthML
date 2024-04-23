@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import fr.lip6.move.gal.ConstParameter;
 import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.GALTypeDeclaration;
+import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.TypeDeclaration;
 import fr.lip6.move.gal.TypedefDeclaration;
@@ -56,10 +57,14 @@ public class GalSpecificationBuilder {
         typedefMinValue.setValue(minValue);
         Constant typedefMaxValue = Uml2GalTranslationHelper.FACTORY.createConstant();
         typedefMaxValue.setValue(maxValue);
+        return addTypedef(name, typedefMinValue, typedefMaxValue);
+    }
+
+    public TypedefDeclaration addTypedef(String name, IntExpression minValue, IntExpression maxValue) {
         TypedefDeclaration typedef = Uml2GalTranslationHelper.FACTORY.createTypedefDeclaration();
         typedef.setName(name);
-        typedef.setMin(typedefMinValue);
-        typedef.setMax(typedefMaxValue);
+        typedef.setMin(minValue);
+        typedef.setMax(maxValue);
         return addTypedef(typedef);
     }
 

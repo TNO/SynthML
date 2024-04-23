@@ -3,10 +3,18 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -17,6 +25,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -32,7 +41,16 @@ public class FlattenUMLActivity {
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
         new FlattenUMLActivity(model).transform();
-        FileHelper.storeModel(model, targetPath);
+
+        // Initialize a UML resource set to store the model.
+        ResourceSet resourceSet = new ResourceSetImpl();
+        UMLResourcesUtil.init(resourceSet);
+
+        // Store the model.
+        URI uri = URI.createFileURI(targetPath);
+        Resource resource = resourceSet.createResource(uri);
+        resource.getContents().addAll(model.eResource().getContents());
+        resource.save(Collections.EMPTY_MAP);
     }
 
     public void transform() throws CoreException {
@@ -81,8 +99,10 @@ public class FlattenUMLActivity {
     private void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
-            if (node instanceof CallBehaviorAction actionNode) {
-                transformActivity((Activity)actionNode.getBehavior(), actionNode);
+            if (node instanceof CallBehaviorAction actionNode
+                    && actionNode.getBehavior() instanceof Activity behavior)
+            {
+                transformActivity(behavior, actionNode);
             }
         }
 
@@ -98,7 +118,7 @@ public class FlattenUMLActivity {
             // Increment the counter for structure info comments, for call behavior actions.
             structureInfoHelper.incrementCounter();
 
-            Activity childBehaviorCopy = EcoreUtil.copy(childBehavior);
+            Activity childBehaviorCopy = copyWithProfiles(childBehavior);
 
             // Construct the prefix name.
             String prefixName = callBehaviorActionToReplace.getName() + "__" + childBehaviorCopy.getName();
@@ -227,5 +247,17 @@ public class FlattenUMLActivity {
             // Destroy the call behavior action being replaced.
             callBehaviorActionToReplace.destroy();
         }
+    }
+
+    private static <T extends Element> T copyWithProfiles(T source) {
+        Copier copier = new Copier();
+        @SuppressWarnings("unchecked")
+        T result = (T)copier.copy(source);
+        // Also copy the stereotype applications to preserve the profile properties
+        List<EObject> stereotypeApplications = source.allOwnedElements().stream()
+                .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
+        source.eResource().getContents().addAll(copier.copyAll(stereotypeApplications));
+        copier.copyReferences();
+        return result;
     }
 }
