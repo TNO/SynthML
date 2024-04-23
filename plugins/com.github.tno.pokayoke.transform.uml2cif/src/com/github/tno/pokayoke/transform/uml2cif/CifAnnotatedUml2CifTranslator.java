@@ -22,9 +22,6 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.IfExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
-import org.eclipse.escet.cif.parser.CifExpressionParser;
-import org.eclipse.escet.cif.parser.CifInvariantParser;
-import org.eclipse.escet.cif.parser.CifUpdatesParser;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -38,6 +35,9 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
+import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
+import com.github.tno.pokayoke.cif.parser.CifInvariantParser;
+import com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
 import com.google.common.base.Preconditions;
 
 /** Translates annotated UML models to CIF specifications where CIF is also the annotation language. */
