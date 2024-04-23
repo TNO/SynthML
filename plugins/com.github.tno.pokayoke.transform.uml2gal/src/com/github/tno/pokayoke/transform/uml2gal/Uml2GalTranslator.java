@@ -128,7 +128,8 @@ public class Uml2GalTranslator {
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Enumeration enumeration) {
                 // Translate UML enumerations to typedef declarations in GAL with an appropriate range.
-                specificationBuilder.addTypedef(enumeration.getName(), 0, enumeration.getOwnedLiterals().size() - 1);
+                specificationBuilder.addTypedef(enumeration.getName(), Uml2GalTranslationHelper.toIntExpression(0),
+                        Uml2GalTranslationHelper.toIntExpression(enumeration.getOwnedLiterals().size() - 1));
 
                 // Visit and translate all enumeration literals.
                 for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
