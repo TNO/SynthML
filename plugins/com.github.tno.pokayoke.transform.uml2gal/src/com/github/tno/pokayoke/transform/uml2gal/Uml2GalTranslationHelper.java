@@ -97,7 +97,7 @@ public class Uml2GalTranslationHelper {
     }
 
     static IntExpression toIntExpression(BooleanExpression expression) {
-        // Wrapped booleans are not supported in variable declarations.
+        // Wrapped boolean literals are not supported in variable declarations.
         // They do parse, but verification fails. Therefore they are translated into constants.
         if (expression instanceof True) {
             return toIntExpression(BOOL_TRUE);
@@ -134,10 +134,10 @@ public class Uml2GalTranslationHelper {
     }
 
     static Or combineAsOr(BooleanExpression left, BooleanExpression right) {
-        Or conjunction = FACTORY.createOr();
-        conjunction.setLeft(left);
-        conjunction.setRight(right);
-        return conjunction;
+        Or disjunction = FACTORY.createOr();
+        disjunction.setLeft(left);
+        disjunction.setRight(right);
+        return disjunction;
     }
 
     static BooleanExpression combineAsOr(Collection<BooleanExpression> exprs) {
