@@ -17,16 +17,22 @@ import fr.lip6.move.gal.BooleanExpression;
 import fr.lip6.move.gal.Comparison;
 import fr.lip6.move.gal.ComparisonOperators;
 import fr.lip6.move.gal.Constant;
+import fr.lip6.move.gal.False;
 import fr.lip6.move.gal.GalFactory;
 import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Or;
 import fr.lip6.move.gal.Specification;
+import fr.lip6.move.gal.True;
 import fr.lip6.move.gal.WrapBoolExpr;
 import fr.lip6.move.serialization.SerializationUtil;
 
 /** Helper for translating UML models to GAL specifications. */
 public class Uml2GalTranslationHelper {
     static final GalFactory FACTORY = GalFactory.eINSTANCE;
+
+    private static final int BOOL_FALSE = 0;
+
+    private static final int BOOL_TRUE = 1;
 
     private Uml2GalTranslationHelper() {
         // Empty for utility classes
@@ -86,10 +92,19 @@ public class Uml2GalTranslationHelper {
     }
 
     static IntExpression toIntExpression(boolean value) {
-        return toIntExpression(toBooleanExpression(value));
+        // Below is the reduction of toIntExpression(toBooleanExpression(value));
+        return value ? toIntExpression(BOOL_TRUE) : toIntExpression(BOOL_FALSE);
     }
 
     static IntExpression toIntExpression(BooleanExpression expression) {
+        // Wrapped booleans are not supported in variable declarations.
+        // They do parse, but verification fails. Therefore they are translated into constants.
+        if (expression instanceof True) {
+            return toIntExpression(BOOL_TRUE);
+        } else if (expression instanceof False) {
+            return toIntExpression(BOOL_FALSE);
+        }
+
         WrapBoolExpr wrapBoolExpr = FACTORY.createWrapBoolExpr();
         wrapBoolExpr.setValue(expression);
         return wrapBoolExpr;

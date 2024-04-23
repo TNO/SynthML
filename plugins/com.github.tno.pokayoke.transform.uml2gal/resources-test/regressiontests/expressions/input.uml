@@ -6,7 +6,6 @@
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3LJWMfyxEe6PXdoEuB4CNA" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3LJ9QPyxEe6PXdoEuB4CNA" value="1"/>
-        <defaultValue xmi:type="uml:LiteralString" xmi:id="_8Fbe4PyxEe6PXdoEuB4CNA" value="true != not true"/>
       </ownedAttribute>
       <ownedAttribute xmi:id="_4VtE0PyxEe6PXdoEuB4CNA" name="myEnum" visibility="public" type="_ymv98PyxEe6PXdoEuB4CNA">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4VtE0fyxEe6PXdoEuB4CNA" value="1"/>
@@ -40,5 +39,5 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:GuardEffectsAction xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myEnum = B" effects="myEnum := B,&#xD;&#xA;myBool := myEnum = A or myBool = (true and true)&#xD;&#xA;" base_Action="_jx_V4PzBEe6_EqZz5uEyNA"/>
+  <PokaYoke:GuardEffectsAction xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = A" effects="myEnum := B,&#xD;&#xA;myBool := (true != not true) and (myEnum = B or myBool = (false and false))&#xD;&#xA;" base_Action="_jx_V4PzBEe6_EqZz5uEyNA"/>
 </xmi:XMI>

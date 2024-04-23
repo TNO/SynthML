@@ -55,7 +55,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
 
     public IntExpression translateIntExpr(AExpression expr) {
         if (expr == null) {
-            return Uml2GalTranslationHelper.toIntExpression(0);
+            throw new IllegalArgumentException("Expression cannot be null!");
         }
         return toInt(visit(expr, cifContext));
     }
