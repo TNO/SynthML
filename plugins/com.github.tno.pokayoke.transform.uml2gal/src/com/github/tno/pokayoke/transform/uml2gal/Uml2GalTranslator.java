@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -25,7 +26,6 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
 import org.json.JSONArray;
@@ -249,8 +249,8 @@ public class Uml2GalTranslator {
                 translateFinalForkOrJoinNode(node);
             } else if (node instanceof JoinNode) {
                 translateFinalForkOrJoinNode(node);
-            } else if (node instanceof OpaqueAction actionNode) {
-                translateOpaqueActionNode(actionNode);
+            } else if (node instanceof Action actionNode) {
+                translateActionNode(actionNode);
             } else if (node instanceof DecisionNode decisionNode) {
                 translateDecisionNode(decisionNode);
             } else if (node instanceof MergeNode mergeNode) {
@@ -266,7 +266,7 @@ public class Uml2GalTranslator {
                 ImmutableList.of(), ImmutableList.of()));
     }
 
-    private void translateOpaqueActionNode(OpaqueAction node) {
+    private void translateActionNode(Action node) {
         // Translate the guards and effects of the given action, and include them in the GAL transition.
         BooleanExpression guard = expressionTranslator.translateBoolExpr(CifParserHelper.parseGuard(node));
         List<Assignment> effects = expressionTranslator.translateAssignments(CifParserHelper.parseEffects(node));

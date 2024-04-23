@@ -84,8 +84,9 @@ public class FlattenUMLActivity {
     private void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
-            if (node instanceof CallBehaviorAction actionNode
-                    && actionNode.getBehavior() instanceof Activity behavior)
+            if (node instanceof CallBehaviorAction actionNode && actionNode.getBehavior() instanceof Activity behavior
+            // Do not flatten stereotyped CallBehaviorActions as they should be considered leafs
+                    && actionNode.getAppliedStereotypes().isEmpty())
             {
                 transformActivity(behavior, actionNode);
             }
