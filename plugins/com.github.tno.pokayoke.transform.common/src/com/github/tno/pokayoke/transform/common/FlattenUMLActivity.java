@@ -3,16 +3,11 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.uml2.uml.Activity;
@@ -25,7 +20,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -41,16 +35,7 @@ public class FlattenUMLActivity {
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
         new FlattenUMLActivity(model).transform();
-
-        // Initialize a UML resource set to store the model.
-        ResourceSet resourceSet = new ResourceSetImpl();
-        UMLResourcesUtil.init(resourceSet);
-
-        // Store the model.
-        URI uri = URI.createFileURI(targetPath);
-        Resource resource = resourceSet.createResource(uri);
-        resource.getContents().addAll(model.eResource().getContents());
-        resource.save(Collections.EMPTY_MAP);
+        FileHelper.storeModel(model, targetPath);
     }
 
     public void transform() throws CoreException {
