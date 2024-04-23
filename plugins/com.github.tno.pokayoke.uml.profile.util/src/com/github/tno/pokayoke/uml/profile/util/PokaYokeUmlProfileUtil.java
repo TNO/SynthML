@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.Profile;
+import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPlugin;
 
@@ -78,17 +79,31 @@ public class PokaYokeUmlProfileUtil {
         getAppliedStereotype(element, qualifiedName).ifPresent(st -> element.unapplyStereotype(st));
     }
 
+    public static void setPropertyDefaultValue(Property property, String newValue) {
+        applyPokaYokeProfile(property);
+        property.setDefault(newValue);
+    }
+
     private static Profile getPokaYokeProfile(Element context) {
         URI uri = UMLPlugin.getEPackageNsURIToProfileLocationMap().get(PokaYokePackage.eNS_URI);
         return Profile.class.cast(context.eResource().getResourceSet().getEObject(uri, true));
     }
 
+    private static Profile applyProfile(Element element, Profile profile) {
+        Package pkg = element.getNearestPackage();
+        if (!pkg.isProfileApplied(profile)) {
+            pkg.applyProfile(profile);
+        }
+        return profile;
+    }
+
+    private static Profile applyPokaYokeProfile(Element element) {
+        return applyProfile(element, getPokaYokeProfile(element));
+    }
+
     private static Stereotype applyStereotype(Element element, Stereotype stereotype) {
         if (!element.isStereotypeApplied(stereotype)) {
-            Package pkg = element.getNearestPackage();
-            if (!pkg.isProfileApplied(stereotype.getProfile())) {
-                pkg.applyProfile(stereotype.getProfile());
-            }
+            applyProfile(element, stereotype.getProfile());
             element.applyStereotype(stereotype);
         }
         return stereotype;
