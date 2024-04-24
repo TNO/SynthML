@@ -2,13 +2,9 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;

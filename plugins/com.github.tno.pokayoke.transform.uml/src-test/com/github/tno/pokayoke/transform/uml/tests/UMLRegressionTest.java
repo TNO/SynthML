@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.uml.tests;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
