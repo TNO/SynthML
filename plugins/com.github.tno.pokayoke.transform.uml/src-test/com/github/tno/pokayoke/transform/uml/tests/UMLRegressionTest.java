@@ -3,8 +3,10 @@ package com.github.tno.pokayoke.transform.uml.tests;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.uml2.uml.Model;
@@ -31,7 +33,7 @@ class UMLRegressionTest extends RegressionTest {
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -46,6 +48,8 @@ class UMLRegressionTest extends RegressionTest {
         final String inputPathString = inputPath.toString();
         final Model model = FileHelper.loadModel(inputPathString);
         new UMLTransformer(model).transformModel();
-        FileHelper.storeModel(model, outputPath.toString());
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 }

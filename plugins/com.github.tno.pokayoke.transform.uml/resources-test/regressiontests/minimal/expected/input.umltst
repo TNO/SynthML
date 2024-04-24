@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ASCII"?>
+<uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="NewModel">
+  <packagedElement xsi:type="uml:Class" xmi:id="2" name="NewClass" classifierBehavior="5" isActive="true">
+    <ownedAttribute xmi:id="3" name="active" isStatic="true">
+      <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <defaultValue xsi:type="uml:LiteralString" xmi:id="4" value=""/>
+    </ownedAttribute>
+    <ownedBehavior xsi:type="uml:Activity" xmi:id="5" name="NewActivity" node="9 10 11 12">
+      <edge xsi:type="uml:ControlFlow" xmi:id="6" target="10" source="11"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="7" target="11" source="9"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="8" target="12" source="11"/>
+      <ownedNode xsi:type="uml:InitialNode" xmi:id="9" name="NewInitial" outgoing="7"/>
+      <ownedNode xsi:type="uml:ActivityFinalNode" xmi:id="10" name="NewActivityFinal" incoming="6"/>
+      <ownedNode xsi:type="uml:ForkNode" xmi:id="11" incoming="7" outgoing="6 8"/>
+      <ownedNode xsi:type="uml:CallBehaviorAction" xmi:id="12" incoming="8" behavior="14"/>
+    </ownedBehavior>
+  </packagedElement>
+  <packagedElement xsi:type="uml:Class" xmi:id="13" name="Lock">
+    <ownedBehavior xsi:type="uml:Activity" xmi:id="14" name="lockhandler" node="27 28 29 32 35 37 38 40">
+      <edge xsi:type="uml:ControlFlow" xmi:id="15" target="28" source="27"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="16" target="29" source="28"/>
+      <edge xsi:type="uml:ObjectFlow" xmi:id="17" target="33" source="30"/>
+      <edge xsi:type="uml:ObjectFlow" xmi:id="18" target="36" source="34"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="19" target="37" source="35"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="20" target="38" source="37"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="21" target="40" source="38"/>
+      <edge xsi:type="uml:ObjectFlow" xmi:id="22" target="40" source="39"/>
+      <edge xsi:type="uml:ControlFlow" xmi:id="23" target="28" source="40">
+        <guard xsi:type="uml:OpaqueExpression" xmi:id="24">
+          <body>isReleased</body>
+          <language>Python</language>
+        </guard>
+      </edge>
+      <edge xsi:type="uml:ControlFlow" xmi:id="25" target="37" source="40">
+        <guard xsi:type="uml:OpaqueExpression" xmi:id="26">
+          <body>else</body>
+          <language>Python</language>
+        </guard>
+      </edge>
+      <ownedNode xsi:type="uml:InitialNode" xmi:id="27" outgoing="15"/>
+      <ownedNode xsi:type="uml:MergeNode" xmi:id="28" incoming="15 23" outgoing="16"/>
+      <ownedNode xsi:type="uml:AcceptEventAction" xmi:id="29" incoming="16">
+        <result xmi:id="30" name="msg" outgoing="17" type="41" isOrdered="true" isUnique="false"/>
+        <trigger xmi:id="31" event="43"/>
+      </ownedNode>
+      <ownedNode xsi:type="uml:ReadStructuralFeatureAction" xmi:id="32" structuralFeature="42">
+        <object xmi:id="33" name="msg" incoming="17" type="41"/>
+        <result xmi:id="34" name="requester" outgoing="18">
+          <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </result>
+      </ownedNode>
+      <ownedNode xsi:type="uml:OpaqueAction" xmi:id="35" outgoing="19">
+        <body>active = requester</body>
+        <inputValue xmi:id="36" name="requester" incoming="18">
+          <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </inputValue>
+        <language>Python</language>
+      </ownedNode>
+      <ownedNode xsi:type="uml:MergeNode" xmi:id="37" incoming="19 25" outgoing="20"/>
+      <ownedNode xsi:type="uml:OpaqueAction" xmi:id="38" incoming="20" outgoing="21">
+        <body>active == ''</body>
+        <language>Python</language>
+        <outputValue xmi:id="39" name="isReleased" outgoing="22">
+          <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        </outputValue>
+      </ownedNode>
+      <ownedNode xsi:type="uml:DecisionNode" xmi:id="40" incoming="21 22" outgoing="23 25"/>
+    </ownedBehavior>
+    <nestedClassifier xsi:type="uml:Signal" xmi:id="41" name="acquire">
+      <ownedAttribute xmi:id="42" name="requester">
+        <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+    </nestedClassifier>
+  </packagedElement>
+  <packagedElement xsi:type="uml:SignalEvent" xmi:id="43" visibility="public" signal="41"/>
+</uml:Model>
