@@ -138,15 +138,16 @@ public class FullSynthesisApp {
 
         // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
+        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
+        List<String> petrifyInput = Cif2Petrify.transform(cifMinimizedStateSpace);
+        Files.write(petrifyInputPath, petrifyInput);
 
         // Petrify the state space.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
-        // Load Petrify input and output.
-        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        // Load Petrify output.
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
@@ -183,9 +184,7 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
-        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
-
         Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
                 annotationFromProjectedSP);
         Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,

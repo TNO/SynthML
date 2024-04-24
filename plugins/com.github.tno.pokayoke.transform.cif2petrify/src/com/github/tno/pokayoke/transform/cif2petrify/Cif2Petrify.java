@@ -32,14 +32,14 @@ public class Cif2Petrify {
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Specification specification = CifFileHelper.loadCifSpec(Paths.get(sourcePath));
-        String body = Cif2Petrify.transform(specification);
-        Files.writeString(Paths.get(targetPath), body);
+    public static void transformFile(String inputFilePath, String outputFolderPath) throws IOException {
+        Specification specification = CifFileHelper.loadCifSpec(Paths.get(inputFilePath));
+        List<String> body = Cif2Petrify.transform(specification);
+        Files.write(Paths.get(outputFolderPath), body);
     }
 
-    public static String transform(Specification specification) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static List<String> transform(Specification specification) {
+        List<String> petrifyInput = new ArrayList<>();
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(specification, new ArrayList<>());
@@ -47,9 +47,7 @@ public class Cif2Petrify {
         Automaton automaton = automata.get(0);
 
         // Declare the header of the Petrify model.
-        stringBuilder.append(".model " + automaton.getName());
-        stringBuilder.append("\n");
-        stringBuilder.append(".dummy start end ");
+        petrifyInput.add(".model " + automaton.getName());
 
         // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
@@ -61,11 +59,12 @@ public class Cif2Petrify {
                 "Expected that 'start' and 'end' are not used as event names.");
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
-        stringBuilder.append(String.join(" ", eventNames));
-        stringBuilder.append("\n");
+        String eventDeclaration = ".dummy start end " + String.join(" ", eventNames);
 
-        stringBuilder.append(".state graph");
-        stringBuilder.append("\n");
+        petrifyInput.add(eventDeclaration);
+
+        petrifyInput.add(".state graph");
+        // petrifyInput.append("\n");
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
@@ -93,8 +92,8 @@ public class Cif2Petrify {
 
             // Translate initial locations.
             if (isTriviallyInitial) {
-                stringBuilder.append(String.format("loc0 start %s", locationName));
-                stringBuilder.append("\n");
+                petrifyInput.add(String.format("loc0 start %s", locationName));
+                // petrifyInput.add("\n");
             }
 
             // Translate marked locations.
@@ -102,8 +101,8 @@ public class Cif2Petrify {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
                         "Expected marked locations to not have outgoing edges.");
 
-                stringBuilder.append(String.format("%s end loc0", locationName));
-                stringBuilder.append("\n");
+                petrifyInput.add(String.format("%s end loc0", locationName));
+                // petrifyInput.append("\n");
             }
 
             // Translate all edges that go out of the current location.
@@ -113,20 +112,20 @@ public class Cif2Petrify {
                     String targetLocationName = targetLocation.getName();
                     String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
                             targetLocationName);
-                    stringBuilder.append(edgeString);
-                    stringBuilder.append("\n");
+                    petrifyInput.add(edgeString);
+                    // petrifyInput.append("\n");
                 }
             }
         }
 
         // Indicate that the first location has a token initially.
-        stringBuilder.append(".marking {loc0}");
-        stringBuilder.append("\n");
+        petrifyInput.add(".marking {loc0}");
+        // petrifyInput.add("\n");
 
         // Indicate the end of the Petrify input graph.
-        stringBuilder.append(".end");
-        stringBuilder.append("\n");
+        petrifyInput.add(".end");
+        // petrifyInput.add("\n");
 
-        return stringBuilder.toString();
+        return petrifyInput;
     }
 }

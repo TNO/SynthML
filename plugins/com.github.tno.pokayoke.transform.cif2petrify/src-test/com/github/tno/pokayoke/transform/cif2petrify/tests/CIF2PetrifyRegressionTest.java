@@ -2,9 +2,11 @@
 package com.github.tno.pokayoke.transform.cif2petrify.tests;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,7 +23,7 @@ class CIF2PetrifyRegressionTest extends RegressionTest {
     public static final String OUTPUT_FILE_EXTENSION = "g";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -33,6 +35,9 @@ class CIF2PetrifyRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        Cif2Petrify.transformFile(inputPath.toString(), outputPath.toString());
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path petrifyInputPath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
+        Files.createDirectories(outputPath);
+        Cif2Petrify.transformFile(inputPath.toString(), petrifyInputPath.toString());
     }
 }
