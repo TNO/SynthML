@@ -430,7 +430,6 @@ public class FullSynthesisApp {
         command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
-        petrifyProcessBuilder.inheritIO();
 
         petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.

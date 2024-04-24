@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.tests.common;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,13 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import org.eclipse.escet.common.java.Pair;
 
 /**
  * Utility for comparing directories based on file contents.
@@ -40,15 +36,14 @@ public class FileCompare {
         assertTrue(Files.isDirectory(actualPath),
                 "Path actualPath " + actualPath.toString() + " does not refer to a folder.");
 
-        List<Path> actualItemPaths = Files.walk(actualPath).filter(p -> filter.test(p)).collect(Collectors.toList());
-        List<Path> expectedItemPaths = Files.walk(expectedPath).filter(p -> filter.test(p))
-                .collect(Collectors.toList());
+        List<Path> actualItemPaths = Files.walk(actualPath).filter(filter::test).toList();
+        List<Path> expectedItemPaths = Files.walk(expectedPath).filter(filter::test).toList();
 
         checkFileListsEqual(expectedPath, expectedItemPaths, actualPath, actualItemPaths);
     }
 
     /**
-     * Check equality of two lists of files. Files are matched based on paths.
+     * Check whether two given lists of files are equal content-wise. Files are matched based on paths.
      *
      * @param expectedPath Path to root directory containing expected files.
      * @param expectedItemPaths List of paths of expected files.
@@ -69,17 +64,14 @@ public class FileCompare {
 
         assertLinesMatch(expectedItemStrings, actualItemStrings);
 
-        List<Pair<Path, Path>> itemPairList = new ArrayList<>();
         for (String actualItemString: actualItemStrings) {
-            itemPairList.add(Pair.pair(actualPath.resolve(actualItemString), expectedPath.resolve(actualItemString)));
+            checkFilesEqual(actualPath.resolve(actualItemString), expectedPath.resolve(actualItemString));
         }
-
-        assertAll(itemPairList.stream().map(p -> (() -> checkFilesEqual(p.left, p.right))));
     }
 
     /**
-     * Check equality of two paths, where directories are always considered equal and files are considered equal iff
-     * their textual contents is equal.
+     * Check equality of two paths, where directories are always considered equal and files are considered equal if
+     * their textual contents are equal.
      *
      * @param actualPath Path to first file to compare.
      * @param expectedPath Path to second file to compare.
