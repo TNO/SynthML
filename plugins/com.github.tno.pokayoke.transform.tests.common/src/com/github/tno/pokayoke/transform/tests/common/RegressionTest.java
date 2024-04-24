@@ -37,7 +37,7 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  *
  * <p>
- * Verification whether the expected output file/folder exists is performed after the actual output file/folder is
+ * Verification whether the expected output folder exists is performed after the actual output folder is
  * created. This simplifies the creation of regression tests.
  * </p>
  *
@@ -47,8 +47,8 @@ public abstract class RegressionTest {
      * Executes the different steps in the regression test.
      *
      * @param inputPath Path to the input file.
-     * @param expectedPath Path to the expected output file/folder.
-     * @param outputPath Path for the actual output file/folder.
+     * @param expectedPath Path to the expected output folder.
+     * @param outputPath Path for the actual output folder.
      * @param message Message in case of a failing assertion.
      * @throws Exception Thrown when one of operations fails.
      */
@@ -72,7 +72,7 @@ public abstract class RegressionTest {
      * Act test.
      *
      * @param inputPath Path to the input file.
-     * @param outputPath Path for the actual output file/folder.
+     * @param outputPath Path for the actual output folder.
      * @throws Exception Thrown when one of operations fails.
      */
     protected abstract void actTest(Path inputPath, Path outputPath) throws Exception;
@@ -80,8 +80,8 @@ public abstract class RegressionTest {
     /**
      * Verify test.
      *
-     * @param expectedPath Path to the expected output file/folder.
-     * @param outputPath Path to the actual output file/folder.
+     * @param expectedPath Path to the expected output folder.
+     * @param outputPath Path to the actual output folder.
      * @param message Message in case of a failing assertion.
      * @throws IOException Thrown when one of the files can't be read.
      */
@@ -92,35 +92,34 @@ public abstract class RegressionTest {
     /**
      * Tear down test.
      *
-     * @param outputPath Path to the actual output file/folder.
-     * @throws IOException Thrown when actual output file/folder can't be deleted.
+     * @param outputPath Path to the actual output folder.
+     * @throws IOException Thrown when actual output folder can't be deleted.
      */
     protected void tearDownTest(Path outputPath) throws IOException {
         FileUtils.deleteDirectory(new File(outputPath.toString()));
     }
 
     /**
-     * Provide arguments for regression tests based on input and output extension.
+     * Provide arguments for regression tests based on input extension.
      *
      * @param inputExtension Extension of the input file.
-     * @param outputExtension Extension of the actual and expected output file.
      * @return Stream of arguments for regression tests.
      */
-    public static Stream<? extends Arguments> provideArguments(String inputExtension, String outputExtension) {
-        return provideArguments("input." + inputExtension, "expected." + outputExtension, "actual." + outputExtension);
+    public static Stream<? extends Arguments> provideArguments(String inputExtension) {
+        return provideArguments("input." + inputExtension, "expected", "actual");
     }
 
     /**
-     * Provide arguments for regression tests with the given input file name and the expected and actual output file
+     * Provide arguments for regression tests with the given input file name and the expected and actual output folder
      * names.
      *
      * @param inputFile Name of input file.
-     * @param expectedFile Name of expected output file.
-     * @param actualFile Name of actual output file.
+     * @param expectedFolder Name of expected output folder.
+     * @param actualFolder Name of actual output folder.
      * @return Stream of arguments for regression tests.
      */
-    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFile,
-            final String actualFile)
+    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFolder,
+            final String actualFolder)
     {
         final String testResourcesName = "resources-test";
         final Path testResourcesPath = Path.of(testResourcesName);
@@ -131,21 +130,21 @@ public abstract class RegressionTest {
         assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
                 + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
 
-        return provideArguments(regressiontestsPath, inputFile, expectedFile, actualFile);
+        return provideArguments(regressiontestsPath, inputFile, expectedFolder, actualFolder);
     }
 
     /**
      * Provide arguments for regression tests in the indicated regression test directory with the given input file name
-     * and the expected and actual output file names.
+     * and the expected and actual output folder names.
      *
      * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.
-     * @param expectedFile Name of expected output file.
-     * @param actualFile Name of actual output file.
+     * @param expectedFolder Name of expected output file.
+     * @param actualFolder Name of actual output file.
      * @return Stream of arguments for regression tests.
      */
     private static Stream<? extends Arguments> provideArguments(final Path regressiontestsPath, final String inputFile,
-            final String expectedFile, final String actualFile)
+            final String expectedFolder, final String actualFolder)
     {
         final String regressiontestsPathString = regressiontestsPath.toString();
 
@@ -154,8 +153,8 @@ public abstract class RegressionTest {
                 Files::isDirectory))
         {
             for (Path subDirectory: directoryStream) {
-                returnValue.add(Arguments.of(subDirectory.resolve(inputFile), subDirectory.resolve(expectedFile),
-                        subDirectory.resolve(actualFile), subDirectory.toString()));
+                returnValue.add(Arguments.of(subDirectory.resolve(inputFile), subDirectory.resolve(expectedFolder),
+                        subDirectory.resolve(actualFolder), subDirectory.toString()));
             }
         } catch (IOException e) {
             throw new RuntimeException("I/O error while adding subdirectories of the regressiontests directory '"
