@@ -26,9 +26,10 @@ public class FileCompare {
      * @param expectedPath Path to directory containing expected files.
      * @param actualPath Path to directory containing actual output files.
      * @param filter Predicate used to filter files.
+     * @param message The message to be used when the assertion fails.
      * @throws IOException when loading one of the files to compare fails.
      */
-    public static void checkDirectoriesEqual(Path expectedPath, Path actualPath, Predicate<Path> filter)
+    public static void checkDirectoriesEqual(Path expectedPath, Path actualPath, Predicate<Path> filter, String message)
             throws IOException
     {
         assertTrue(Files.isDirectory(expectedPath),
@@ -39,25 +40,26 @@ public class FileCompare {
         List<Path> actualItemPaths = Files.walk(actualPath).filter(filter::test).toList();
         List<Path> expectedItemPaths = Files.walk(expectedPath).filter(filter::test).toList();
 
-        checkFileListsEqual(expectedPath, expectedItemPaths, actualPath, actualItemPaths);
+        checkFileListsEqual(expectedPath, expectedItemPaths, actualPath, actualItemPaths, message);
     }
 
     /**
      * Check whether two given lists of files are equal content-wise. Files are matched based on paths.
      *
-     * @param expectedPath Path to root directory containing expected files.
+     * @param expectedFolderPath Path to root directory containing expected files.
      * @param expectedItemPaths List of paths of expected files.
-     * @param actualPath Path to root directory containing actual output files.
+     * @param actualFolderPath Path to root directory containing actual output files.
      * @param actualItemPaths List of paths of output files.
+     * @param message The message to be used when the assertion fails.
      * @throws IOException when loading one of the files to compare fails.
      */
-    public static void checkFileListsEqual(Path expectedPath, List<Path> expectedItemPaths, Path actualPath,
-            List<Path> actualItemPaths) throws IOException
+    public static void checkFileListsEqual(Path expectedFolderPath, List<Path> expectedItemPaths, Path actualFolderPath,
+            List<Path> actualItemPaths, String message) throws IOException
     {
-        List<String> actualItemStrings = actualItemPaths.stream().map(p -> actualPath.relativize(p).toString())
+        List<String> actualItemStrings = actualItemPaths.stream().map(p -> actualFolderPath.relativize(p).toString())
                 .collect(Collectors.toList());
-        List<String> expectedItemStrings = expectedItemPaths.stream().map(p -> expectedPath.relativize(p).toString())
-                .collect(Collectors.toList());
+        List<String> expectedItemStrings = expectedItemPaths.stream()
+                .map(p -> expectedFolderPath.relativize(p).toString()).collect(Collectors.toList());
 
         Collections.sort(actualItemStrings);
         Collections.sort(expectedItemStrings);
@@ -65,29 +67,14 @@ public class FileCompare {
         assertLinesMatch(expectedItemStrings, actualItemStrings);
 
         for (String actualItemString: actualItemStrings) {
-            checkFilesEqual(actualPath.resolve(actualItemString), expectedPath.resolve(actualItemString));
-        }
-    }
+            Path expectedFilePath = expectedFolderPath.resolve(actualItemString);
+            Path actualFilePath = actualFolderPath.resolve(actualItemString);
+            assertEquals(Files.isDirectory(expectedFilePath), Files.isDirectory(actualFilePath),
+                    expectedFilePath.toString() + " and " + actualFilePath.toString() + " cannot be compared.");
 
-    /**
-     * Check equality of two paths, where directories are always considered equal and files are considered equal if
-     * their textual contents are equal.
-     *
-     * @param actualPath Path to first file to compare.
-     * @param expectedPath Path to second file to compare.
-     * @throws IOException when loading one of the files to compare fails.
-     */
-    public static void checkFilesEqual(Path actualPath, Path expectedPath) throws IOException {
-        assertEquals(Files.isDirectory(actualPath), Files.isDirectory(expectedPath),
-                actualPath.toString() + " and " + expectedPath.toString() + " cannot be compared.");
-        if (!Files.isDirectory(actualPath)) {
-            assertEquals(expectedPath.getFileName(), actualPath.getFileName(),
-                    expectedPath.toString() + " and " + actualPath.toString() + " do not have the same file name");
-            List<String> actualContents = Files.readAllLines(actualPath);
-            List<String> expectedContents = Files.readAllLines(expectedPath);
-
-            assertLinesMatch(expectedContents, actualContents,
-                    actualPath.toString() + " does not match " + expectedPath.toString());
+            if (!Files.isDirectory(actualFolderPath)) {
+                PathAssertions.assertContentsMatch(expectedFilePath, actualFilePath, message);
+            }
         }
     }
 }

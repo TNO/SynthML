@@ -37,8 +37,8 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  *
  * <p>
- * Verification whether the expected output file/folder exists is performed after the actual output file/folder is created. This
- * simplifies the creation of regression tests.
+ * Verification whether the expected output file/folder exists is performed after the actual output file/folder is
+ * created. This simplifies the creation of regression tests.
  * </p>
  *
  */
@@ -86,11 +86,7 @@ public abstract class RegressionTest {
      * @throws IOException Thrown when one of the files can't be read.
      */
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
-        if (Files.isDirectory(outputPath)) {
-            FileCompare.checkDirectoriesEqual(expectedPath, outputPath, path -> true);
-        } else {
-            FileCompare.checkFilesEqual(expectedPath, outputPath);
-        }
+        FileCompare.checkDirectoriesEqual(expectedPath, outputPath, path -> true, message);
     }
 
     /**
@@ -100,11 +96,7 @@ public abstract class RegressionTest {
      * @throws IOException Thrown when actual output file/folder can't be deleted.
      */
     protected void tearDownTest(Path outputPath) throws IOException {
-        if (Files.isDirectory(outputPath)) {
-            FileUtils.deleteDirectory(new File(outputPath.toString()));
-        } else {
-            Files.delete(outputPath);
-        }
+        FileUtils.deleteDirectory(new File(outputPath.toString()));
     }
 
     /**
