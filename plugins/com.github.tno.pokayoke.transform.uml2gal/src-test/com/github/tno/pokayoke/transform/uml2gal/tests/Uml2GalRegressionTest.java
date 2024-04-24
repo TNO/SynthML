@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2gal.tests;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -24,7 +25,7 @@ public class Uml2GalRegressionTest extends RegressionTest {
     public static final String TRACE_FILE_EXTENSION = "json";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -37,8 +38,11 @@ public class Uml2GalRegressionTest extends RegressionTest {
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
         try {
-            Uml2GalTranslationHelper.translateCifAnnotatedModel(inputPath.toString(), outputPath.toString(),
-                    getTracePathFrom(outputPath).toString());
+            String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+            Path galOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
+            Files.createDirectories(outputPath);
+            Uml2GalTranslationHelper.translateCifAnnotatedModel(inputPath.toString(), galOutputFilePath.toString(),
+                    getTracePathFrom(galOutputFilePath).toString());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +51,6 @@ public class Uml2GalRegressionTest extends RegressionTest {
     @Override
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
         super.verifyTest(expectedPath, outputPath, message);
-        super.verifyTest(getTracePathFrom(expectedPath), getTracePathFrom(outputPath), message);
     }
 
     @Override
