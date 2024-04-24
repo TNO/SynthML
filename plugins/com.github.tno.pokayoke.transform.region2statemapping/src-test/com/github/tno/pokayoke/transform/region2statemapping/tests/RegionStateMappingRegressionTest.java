@@ -22,7 +22,7 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
     public static final String OUTPUT_FILE_EXTENSION = "json";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_1_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_1_EXTENSION);
     }
 
     @Override
@@ -34,8 +34,11 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path jsonOutputPath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
+
         ExtractRegionStateMapping.extractMappingFromFiles(inputPath.toString(),
-                getSecondInputPathFrom(inputPath).toString(), outputPath.toString());
+                getSecondInputPathFrom(inputPath).toString(), jsonOutputPath.toString());
     }
 
     private Path getSecondInputPathFrom(Path inputPath) {
