@@ -2,9 +2,12 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
@@ -23,9 +26,14 @@ public class PetriNet2Activity {
         List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
         PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
         PostProcessPNML.removeLoop(petriNet);
+
+        String filePrefix = FilenameUtils.removeExtension(Paths.get(outputPath).getFileName().toString());
+        Path pnmlOutputPath = Paths.get(outputPath).getParent().resolve(filePrefix + ".pnml");
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
+
         Activity activity = transform(petriNet);
         PostProcessActivity.removeInternalActions(activity);
-        FileHelper.storeModel(activity.getModel(), outputPath);
+        FileHelper.storeModel(activity.getModel(), outputPath.toString());
     }
 
     public Activity transform(PetriNet petriNet) {

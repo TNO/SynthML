@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -28,7 +30,9 @@ public class PetriNetUMLFileHelper {
     }
 
     public static void writePetriNet(PetriNet petriNet, String outputPath) throws IOException {
-        try (FileOutputStream output = new FileOutputStream(outputPath); FileChannel channel = output.getChannel()) {
+        try (FileOutputStream output = FileUtils.openOutputStream(new File(outputPath));
+             FileChannel channel = output.getChannel())
+        {
             petriNet.toPNML(channel);
         }
     }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +19,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 class PetriNet2ActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
-    public static final String OUTPUT_FILE_EXTENSION = "umltst";
+    public static final String OUTPUT_FILE_EXTENSION = "uml";
 
     @BeforeAll
     public static void setup() {
@@ -26,7 +27,7 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, OUTPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
     }
 
     @Override
@@ -38,7 +39,10 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
+
         PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
-        petriNet2Activity.transformFile(inputPath.toString(), outputPath.toString());
+        petriNet2Activity.transformFile(inputPath.toString(), umlOutputFilePath.toString());
     }
 }
