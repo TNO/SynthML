@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.app;
 import static org.eclipse.escet.common.java.Lists.list;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -43,6 +44,9 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.app.framework.io.AppStream;
+import org.eclipse.escet.common.app.framework.io.AppStreams;
+import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -97,10 +101,14 @@ public class FullSynthesisApp {
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".ctrlsys.statespace.cif");
         String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
-        ExplorerApplication explorerApp = new ExplorerApplication();
+        AppStream explorerAppStream = new MemAppStream();
+        AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
+                explorerAppStream, explorerAppStream);
+        ExplorerApplication explorerApp = new ExplorerApplication(explorerAppStreams);
         int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Non-zero exit code for state space generation: " + exitCode);
+            throw new RuntimeException(
+                    "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
         // Remove state annotations from intermediate states.
@@ -119,10 +127,14 @@ public class FullSynthesisApp {
                 .resolve(filePrefix + ".statespace.annotremoved.projected.cif");
         String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
-        ProjectionApplication projectionApp = new ProjectionApplication();
+        AppStream projectionAppStream = new MemAppStream();
+        AppStreams projectionAppStreams = new AppStreams(InputStream.nullInputStream(), projectionAppStream,
+                projectionAppStream, projectionAppStream);
+        ProjectionApplication projectionApp = new ProjectionApplication(projectionAppStreams);
         exitCode = projectionApp.run(projectionArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Non-zero exit code for event-based automaton projection: " + exitCode);
+            throw new RuntimeException("Non-zero exit code for event-based automaton projection: " + exitCode + "\n"
+                    + projectionAppStream.toString());
         }
 
         // Perform DFA minimization.
@@ -130,10 +142,14 @@ public class FullSynthesisApp {
                 .resolve(filePrefix + ".statespace.annotremoved.projected.minimized.cif");
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
-        DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication();
+        AppStream dfaMinimizationAppStream = new MemAppStream();
+        AppStreams dfaMinimizationAppStreams = new AppStreams(InputStream.nullInputStream(), dfaMinimizationAppStream,
+                dfaMinimizationAppStream, dfaMinimizationAppStream);
+        DfaMinimizationApplication dfaMinimizationApp = new DfaMinimizationApplication(dfaMinimizationAppStreams);
         exitCode = dfaMinimizationApp.run(dfaMinimizationArgs, false);
         if (exitCode != 0) {
-            throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode);
+            throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode + "\n"
+                    + dfaMinimizationAppStream.toString());
         }
 
         // Translate the CIF state space to Petrify input.
