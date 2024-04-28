@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.tests.common;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,8 +36,9 @@ public class FileCompare {
         assertTrue(Files.isDirectory(actualPath),
                 "Path actualPath " + actualPath.toString() + " does not refer to a folder.");
 
-        List<Path> actualItemPaths = Files.walk(actualPath).filter(filter::test).toList();
-        List<Path> expectedItemPaths = Files.walk(expectedPath).filter(filter::test).toList();
+        List<Path> expectedItemPaths = Files.walk(expectedPath).filter(Files::isRegularFile).filter(filter::test)
+                .toList();
+        List<Path> actualItemPaths = Files.walk(actualPath).filter(Files::isRegularFile).filter(filter::test).toList();
 
         checkFileListsEqual(expectedPath, expectedItemPaths, actualPath, actualItemPaths, message);
     }
@@ -56,25 +56,20 @@ public class FileCompare {
     public static void checkFileListsEqual(Path expectedFolderPath, List<Path> expectedItemPaths, Path actualFolderPath,
             List<Path> actualItemPaths, String message) throws IOException
     {
-        List<String> actualItemStrings = actualItemPaths.stream().map(p -> actualFolderPath.relativize(p).toString())
-                .collect(Collectors.toList());
         List<String> expectedItemStrings = expectedItemPaths.stream()
                 .map(p -> expectedFolderPath.relativize(p).toString()).collect(Collectors.toList());
+        List<String> actualItemStrings = actualItemPaths.stream().map(p -> actualFolderPath.relativize(p).toString())
+                .collect(Collectors.toList());
 
-        Collections.sort(actualItemStrings);
         Collections.sort(expectedItemStrings);
+        Collections.sort(actualItemStrings);
 
         assertLinesMatch(expectedItemStrings, actualItemStrings);
 
         for (String actualItemString: actualItemStrings) {
             Path expectedFilePath = expectedFolderPath.resolve(actualItemString);
             Path actualFilePath = actualFolderPath.resolve(actualItemString);
-            assertEquals(Files.isDirectory(expectedFilePath), Files.isDirectory(actualFilePath),
-                    expectedFilePath.toString() + " and " + actualFilePath.toString() + " cannot be compared.");
-
-            if (!Files.isDirectory(actualFolderPath)) {
-                PathAssertions.assertContentsMatch(expectedFilePath, actualFilePath, message);
-            }
+            PathAssertions.assertContentsMatch(expectedFilePath, actualFilePath, message);
         }
     }
 }
