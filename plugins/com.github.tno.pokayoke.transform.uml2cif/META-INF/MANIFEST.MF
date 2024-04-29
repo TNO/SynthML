@@ -24,4 +24,4 @@ Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.5.0",
  org.eclipse.escet.common.app.framework;bundle-version="3.0.0",
  org.eclipse.escet.cif.prettyprinter;bundle-version="3.0.0",
  com.github.tno.pokayoke.cif.parser;bundle-version="0.0.0",
- com.github.tno.pokayoke.uml.profile.util
+ com.github.tno.pokayoke.uml.profile.util;bundle-version="0.0.0"
