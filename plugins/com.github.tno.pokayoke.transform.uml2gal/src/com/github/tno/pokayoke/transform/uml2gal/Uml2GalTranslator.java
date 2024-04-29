@@ -234,8 +234,7 @@ public class Uml2GalTranslator {
 
             // Translate the edge as a GAL variable.
             Variable variable = typeBuilder.addVariable(String.format("__edge__%s", edgeMapping.size()),
-                    edge.getSource() instanceof InitialNode ? Uml2GalTranslationHelper.toIntExpression(true)
-                            : Uml2GalTranslationHelper.toIntExpression(false));
+                    Uml2GalTranslationHelper.toIntExpression(edge.getSource() instanceof InitialNode));
             edgeMapping.put(edge, variable);
 
             // Make sure the created variable can be traced back to the edge.
@@ -270,10 +269,11 @@ public class Uml2GalTranslator {
     private void translateActionNode(Action node) {
         // Translate the guards and effects of the given action, and include them in the GAL transition.
         BooleanExpression guard = expressionTranslator.translateBoolExpr(CifParserHelper.parseGuard(node));
-        List<Assignment> effects = expressionTranslator.translateAssignments(CifParserHelper.parseEffects(node));
+        List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
+        List<Assignment> effects = expressionTranslator.translateUpdates(CifParserHelper.parseEffects(node));
 
-        typeBuilder.addTransition(translateActivityNode(node, node.getIncomings(), node.getOutgoings(),
-                ImmutableList.of(guard), effects));
+        typeBuilder
+                .addTransition(translateActivityNode(node, node.getIncomings(), node.getOutgoings(), guards, effects));
     }
 
     private void translateDecisionNode(DecisionNode node) {
@@ -282,9 +282,10 @@ public class Uml2GalTranslator {
             // Translate the edge guard and include it in the GAL transition.
             AExpression guardExpr = CifParserHelper.parseExpression(outgoingEdge.getGuard());
             BooleanExpression guard = expressionTranslator.translateBoolExpr(guardExpr);
+            List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
 
             typeBuilder.addTransition(translateActivityNode(node, node.getIncomings(), ImmutableList.of(outgoingEdge),
-                    ImmutableList.of(guard), ImmutableList.of()));
+                    guards, ImmutableList.of()));
         }
     }
 

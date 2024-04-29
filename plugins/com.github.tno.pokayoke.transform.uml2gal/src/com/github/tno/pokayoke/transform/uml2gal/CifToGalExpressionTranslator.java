@@ -47,20 +47,14 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     }
 
     public BooleanExpression translateBoolExpr(AExpression expr) {
-        if (expr == null) {
-            return Uml2GalTranslationHelper.toBooleanExpression(true);
-        }
-        return toBool(visit(expr, cifContext));
+        return expr == null ? null : toBool(visit(expr, cifContext));
     }
 
     public IntExpression translateIntExpr(AExpression expr) {
-        if (expr == null) {
-            throw new IllegalArgumentException("Expression cannot be null!");
-        }
-        return toInt(visit(expr, cifContext));
+        return expr == null ? null : toInt(visit(expr, cifContext));
     }
 
-    public List<Assignment> translateAssignments(List<AUpdate> updates) {
+    public List<Assignment> translateUpdates(List<AUpdate> updates) {
         return updates.stream().map(this::translateAssignment).collect(Collectors.toList());
     }
 
