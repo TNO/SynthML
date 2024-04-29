@@ -7,8 +7,8 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.gal.ConstParameter;
-import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.GALTypeDeclaration;
+import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.TypeDeclaration;
 import fr.lip6.move.gal.TypedefDeclaration;
@@ -50,16 +50,11 @@ public class GalSpecificationBuilder {
         return typeDecl;
     }
 
-    public TypedefDeclaration addTypedef(String name, int minValue, int maxValue) {
-        Preconditions.checkArgument(minValue <= maxValue, "Expected the given min value to not exceed the max value.");
-        Constant typedefMinValue = Uml2GalTranslationHelper.FACTORY.createConstant();
-        typedefMinValue.setValue(minValue);
-        Constant typedefMaxValue = Uml2GalTranslationHelper.FACTORY.createConstant();
-        typedefMaxValue.setValue(maxValue);
+    public TypedefDeclaration addTypedef(String name, IntExpression minValue, IntExpression maxValue) {
         TypedefDeclaration typedef = Uml2GalTranslationHelper.FACTORY.createTypedefDeclaration();
         typedef.setName(name);
-        typedef.setMin(typedefMinValue);
-        typedef.setMax(typedefMaxValue);
+        typedef.setMin(minValue);
+        typedef.setMax(maxValue);
         return addTypedef(typedef);
     }
 

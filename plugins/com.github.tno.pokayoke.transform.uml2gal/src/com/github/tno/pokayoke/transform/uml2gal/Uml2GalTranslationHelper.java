@@ -14,15 +14,28 @@ import com.google.common.base.Preconditions;
 
 import fr.lip6.move.gal.And;
 import fr.lip6.move.gal.BooleanExpression;
+import fr.lip6.move.gal.Comparison;
+import fr.lip6.move.gal.ComparisonOperators;
+import fr.lip6.move.gal.Constant;
+import fr.lip6.move.gal.False;
 import fr.lip6.move.gal.GalFactory;
+import fr.lip6.move.gal.IntExpression;
+import fr.lip6.move.gal.Or;
 import fr.lip6.move.gal.Specification;
+import fr.lip6.move.gal.True;
+import fr.lip6.move.gal.WrapBoolExpr;
 import fr.lip6.move.serialization.SerializationUtil;
 
 /** Helper for translating UML models to GAL specifications. */
 public class Uml2GalTranslationHelper {
     static final GalFactory FACTORY = GalFactory.eINSTANCE;
 
+    private static final int BOOL_FALSE = 0;
+
+    private static final int BOOL_TRUE = 1;
+
     private Uml2GalTranslationHelper() {
+        // Empty for utility classes
     }
 
     /**
@@ -62,7 +75,7 @@ public class Uml2GalTranslationHelper {
     {
         // Translate the UML model and store the result.
         Model model = FileHelper.loadModel(sourcePath);
-        Uml2GalTranslator translator = new CifAnnotatedUml2GalTranslator(sourcePath);
+        Uml2GalTranslator translator = new Uml2GalTranslator();
         Specification specification = translator.translate(model);
         store(specification, targetPath);
 
@@ -72,16 +85,63 @@ public class Uml2GalTranslationHelper {
         }
     }
 
+    static IntExpression toIntExpression(int value) {
+        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
+        constant.setValue(value);
+        return constant;
+    }
+
+    static IntExpression toIntExpression(boolean value) {
+        // Below is the reduction of toIntExpression(toBooleanExpression(value));
+        return value ? toIntExpression(BOOL_TRUE) : toIntExpression(BOOL_FALSE);
+    }
+
+    static IntExpression toIntExpression(BooleanExpression expression) {
+        // Wrapped boolean literals are not supported in variable declarations.
+        // They do parse, but verification fails. Therefore they are translated into constants.
+        if (expression instanceof True) {
+            return toIntExpression(BOOL_TRUE);
+        } else if (expression instanceof False) {
+            return toIntExpression(BOOL_FALSE);
+        }
+
+        WrapBoolExpr wrapBoolExpr = FACTORY.createWrapBoolExpr();
+        wrapBoolExpr.setValue(expression);
+        return wrapBoolExpr;
+    }
+
+    static BooleanExpression toBooleanExpression(boolean value) {
+        return value ? FACTORY.createTrue() : FACTORY.createFalse();
+    }
+
+    static BooleanExpression toBooleanExpression(IntExpression expression) {
+        Comparison comparison = FACTORY.createComparison();
+        comparison.setOperator(ComparisonOperators.EQ);
+        comparison.setLeft(expression);
+        comparison.setRight(toIntExpression(true));
+        return comparison;
+    }
+
     static And combineAsAnd(BooleanExpression left, BooleanExpression right) {
-        And conjunction = Uml2GalTranslationHelper.FACTORY.createAnd();
+        And conjunction = FACTORY.createAnd();
         conjunction.setLeft(left);
         conjunction.setRight(right);
         return conjunction;
     }
 
     static BooleanExpression combineAsAnd(Collection<BooleanExpression> exprs) {
-        return exprs.stream().reduce(Uml2GalTranslationHelper::combineAsAnd)
-                .orElse(Uml2GalTranslationHelper.FACTORY.createTrue());
+        return exprs.stream().reduce(Uml2GalTranslationHelper::combineAsAnd).orElse(FACTORY.createTrue());
+    }
+
+    static Or combineAsOr(BooleanExpression left, BooleanExpression right) {
+        Or disjunction = FACTORY.createOr();
+        disjunction.setLeft(left);
+        disjunction.setRight(right);
+        return disjunction;
+    }
+
+    static BooleanExpression combineAsOr(Collection<BooleanExpression> exprs) {
+        return exprs.stream().reduce(Uml2GalTranslationHelper::combineAsOr).orElse(FACTORY.createTrue());
     }
 
     static void ensureNameDoesNotContainDollarSign(String name) {

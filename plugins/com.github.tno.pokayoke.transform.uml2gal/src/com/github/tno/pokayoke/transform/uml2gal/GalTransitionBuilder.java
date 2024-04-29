@@ -14,7 +14,6 @@ import fr.lip6.move.gal.Assignment;
 import fr.lip6.move.gal.BooleanExpression;
 import fr.lip6.move.gal.Comparison;
 import fr.lip6.move.gal.ComparisonOperators;
-import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.ParamRef;
 import fr.lip6.move.gal.Parameter;
@@ -43,12 +42,6 @@ public class GalTransitionBuilder {
         statements.forEach(this::addAction);
     }
 
-    public Statement addAssignment(Variable variable, int value) {
-        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(value);
-        return addAssignment(variable, constant);
-    }
-
     public Statement addAssignment(Variable variable, Parameter value) {
         ParamRef reference = Uml2GalTranslationHelper.FACTORY.createParamRef();
         reference.setRefParam(value);
@@ -65,19 +58,13 @@ public class GalTransitionBuilder {
         return addAction(assignment);
     }
 
-    public BooleanExpression addEqualityGuard(Variable left, int right) {
-        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(right);
-        return addEqualityGuard(left, constant);
-    }
-
     public BooleanExpression addEqualityGuard(Variable left, IntExpression right) {
         VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(left);
         return addEqualityGuard(reference, right);
     }
 
-    public BooleanExpression addEqualityGuard(IntExpression left, IntExpression right) {
+    private BooleanExpression addEqualityGuard(IntExpression left, IntExpression right) {
         Comparison comparison = Uml2GalTranslationHelper.FACTORY.createComparison();
         comparison.setOperator(ComparisonOperators.EQ);
         comparison.setLeft(left);

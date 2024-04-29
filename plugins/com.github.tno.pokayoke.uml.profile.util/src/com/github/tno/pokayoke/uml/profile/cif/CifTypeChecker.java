@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -10,129 +9,94 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
-import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
-import org.eclipse.uml2.uml.TypedElement;
+
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 
 import com.google.common.base.Optional;
 
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
+
 /**
- * Type checker for CIF annotated UML models, currently supporting:
- * <ul>
- * <li>Boolean</li>
- * <li>Integer</li>
- * <li>Enumeration</li>
- * </ul>
+ * Type checker for CIF annotated UML models.
  */
 public class CifTypeChecker extends ACifObjectWalker<Type> {
+    private final CifContext ctx;
+
+    private final PrimitiveType booleanType;
+
+    private final PrimitiveType integerType;
+
     /**
-     * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
-     * boolean.
+     * Constructs a new type CIF checker.
      *
      * @param elem The context for evaluating the expression.
+     */
+    public CifTypeChecker(Element elem) {
+        this.ctx = new CifContext(elem);
+        this.booleanType = PokaYokeTypeUtil.loadPrimitiveType(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN, elem);
+        this.integerType = PokaYokeTypeUtil.loadPrimitiveType(PokaYokeTypeUtil.PRIMITIVE_TYPE_INTEGER, elem);
+    }
+
+    /**
+     * Returns the type of the result when {@code expr} is evaluated and checks if this type is boolean.
+     *
      * @param expr The expression to evaluate.
      * @return The type of the expression result.
      * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not a boolean.
      */
-    public static Type checkBooleanExpression(Element elem, AExpression expr) throws TypeException {
-        CifTypeChecker typeChecker = new CifTypeChecker();
-        CifContext ctx = new CifContext(elem);
-        Type exprType = typeChecker.visit(expr, ctx);
-        if (!ctx.getBooleanType().equals(exprType)) {
-            throw new TypeException("expected Boolean return type but got " + getLabel(exprType), expr.position);
+    public Type checkBooleanExpression(AExpression expr) throws TypeException {
+        Type exprType = visit(expr, ctx);
+        if (!booleanType.equals(exprType)) {
+            throw new TypeException("expected Boolean return type but got " + PokaYokeTypeUtil.getLabel(exprType),
+                    expr.position);
         }
         return exprType;
     }
 
     /**
-     * Returns the type of the result when {@code expr} is evaluated against {@code elem} and checks if this type is
-     * supported.
+     * Returns the type of the result when {@code expr} is evaluated and checks if this type is supported.
      *
-     * @param elem The context for evaluating the expression.
      * @param expr The expression to evaluate.
      * @return The type of the expression result.
      * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not supported.
      */
-    public static Type checkExpression(Element elem, AExpression expr) throws TypeException {
-        CifTypeChecker typeChecker = new CifTypeChecker();
-        CifContext ctx = new CifContext(elem);
-        Type exprType = typeChecker.visit(expr, ctx);
-        if (!isSupported(exprType, ctx)) {
-            throw new TypeException("unsupported return type: " + getLabel(exprType), expr.position);
+    public Type checkExpression(AExpression expr) throws TypeException {
+        Type exprType = visit(expr, ctx);
+        if (!PokaYokeTypeUtil.isSupportedType(exprType)) {
+            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(exprType), expr.position);
         }
         return exprType;
     }
 
     /**
-     * Returns the type of the result when {@code upd} is evaluated against {@code elem} and checks if this type is
-     * supported.
+     * Returns the type of the result when {@code upd} is evaluated and checks if this type is supported.
      *
-     * @param elem The context for evaluating the update.
      * @param upd The update to evaluate.
      * @return The type of the update addressable.
      * @throws TypeException If {@code expr} cannot be evaluated, if the result type is not supported or if the update
      *     value type and update addressable type are not equal.
      */
-    public static Type checkUpdate(Element elem, AUpdate upd) throws TypeException {
-        CifTypeChecker typeChecker = new CifTypeChecker();
-        CifContext ctx = new CifContext(elem);
-        Type updateType = typeChecker.visit(upd, ctx);
-        if (!isSupported(updateType, ctx)) {
-            throw new TypeException("unsupported return type: " + getLabel(updateType), upd.position);
+    public Type checkUpdate(AUpdate upd) throws TypeException {
+        Type updateType = visit(upd, ctx);
+        if (!PokaYokeTypeUtil.isSupportedType(updateType)) {
+            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(updateType), upd.position);
         }
         return updateType;
     }
 
-    /**
-     * Returns the {@link TypedElement#getType() type} of the {@code elem} and checks if this type is supported.
-     *
-     * @param elem The context and type provider.
-     * @return The type of the update addressable.
-     * @throws TypeException if the result type is not supported.
-     */
-    public static Type checkSupportedType(TypedElement elem) throws TypeException {
-        CifContext ctx = new CifContext(elem);
-        Type elemType = elem.getType();
-        if (!isSupported(elemType, ctx)) {
-            throw new TypeException("Unsupported type: " + getLabel(elemType));
-        }
-        return elemType;
-    }
-
-    /**
-     * Returns all Poka Yoke supported types for {@code elem}.
-     * <p>
-     * The next types are supported: {@link Enumeration enumerations in the model},
-     * {@link CifContext#loadPrimitiveType(String, Model) primitive Boolean} and
-     * {@link CifContext#loadPrimitiveType(String, Model) primitive Integer}.
-     * </p>
-     *
-     * @param elem The context for which the supported types are queried.
-     * @return All Poka Yoke supported types for {@code elem}.
-     */
-    public static List<Type> getSupportedTypes(TypedElement elem) {
-        CifContext ctx = new CifContext(elem);
-        return QueryableIterable.from(ctx.getAllElements()).objectsOfKind(Enumeration.class).asType(Type.class)
-                .union(ctx.getBooleanType(), ctx.getIntegerType()).asList();
-    }
-
-    private CifTypeChecker() {
-        // Empty for utility classes
-    }
-
     @Override
     protected Type visit(ABoolExpression expr, CifContext ctx) {
-        return ctx.getBooleanType();
+        return booleanType;
     }
 
     @Override
     protected Type visit(AIntExpression expr, CifContext ctx) {
-        return ctx.getIntegerType();
+        return integerType;
     }
 
     @Override
@@ -153,8 +117,8 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     @Override
     protected Type visit(Type addressable, TextPosition assignmentPos, Type value, CifContext ctx) {
         if (!Objects.equals(addressable, value)) {
-            throw new TypeException(String.format("expected %s but got %s", getLabel(addressable), getLabel(value)),
-                    assignmentPos);
+            throw new TypeException(String.format("expected %s but got %s", PokaYokeTypeUtil.getLabel(addressable),
+                    PokaYokeTypeUtil.getLabel(value)), assignmentPos);
         }
         return addressable;
     }
@@ -162,7 +126,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     @Override
     protected Type visit(BinaryOperator operator, TextPosition operatorPos, Type left, Type right, CifContext ctx) {
         String errorMsg = String.format("the operator '%s' is undefined for the argument type(s) %s, %s",
-                operator.cifValue(), getLabel(left), getLabel(right));
+                operator.cifValue(), PokaYokeTypeUtil.getLabel(left), PokaYokeTypeUtil.getLabel(right));
         if (!Objects.equals(left, right)) {
             throw new TypeException(errorMsg, operatorPos);
         }
@@ -170,25 +134,25 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
         final Type compareType = left;
         return switch (operator) {
             case AND, OR -> {
-                if (!ctx.getBooleanType().equals(compareType)) {
+                if (!booleanType.equals(compareType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
-                yield ctx.getBooleanType();
+                yield booleanType;
             }
             case PLUS, MINUS -> {
-                if (!ctx.getIntegerType().equals(compareType)) {
+                if (!integerType.equals(compareType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
-                yield compareType;
+                yield integerType;
             }
             case GE, GT, LE, LT -> {
-                if (!ctx.getIntegerType().equals(compareType)) {
+                if (!integerType.equals(compareType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
-                yield ctx.getBooleanType();
+                yield booleanType;
             }
             // Equality supports all types
-            case EQ, NE -> ctx.getBooleanType();
+            case EQ, NE -> booleanType;
         };
     }
 
@@ -196,15 +160,15 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     protected Type visit(UnaryOperator operator, TextPosition operatorPos, Type child, CifContext ctx) {
         switch (operator) {
             case NOT:
-                if (!ctx.getBooleanType().equals(child)) {
+                if (!booleanType.equals(child)) {
                     throw new TypeException(String.format("Expected Boolean but got %s near operator '%s'",
-                            getLabel(child), operator.cifValue()), operatorPos);
+                            PokaYokeTypeUtil.getLabel(child), operator.cifValue()), operatorPos);
                 }
                 break;
             case MINUS:
-                if (!ctx.getIntegerType().equals(child)) {
+                if (!integerType.equals(child)) {
                     throw new TypeException(String.format("Expected Integer but got %s near operator '%s'",
-                            getLabel(child), operator.cifValue()), operatorPos);
+                            PokaYokeTypeUtil.getLabel(child), operator.cifValue()), operatorPos);
                 }
                 break;
         }

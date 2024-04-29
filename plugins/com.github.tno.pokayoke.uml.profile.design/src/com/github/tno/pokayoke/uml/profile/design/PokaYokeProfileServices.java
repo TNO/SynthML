@@ -13,10 +13,9 @@ import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
-import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 
@@ -136,28 +135,7 @@ public class PokaYokeProfileServices {
      * @param newValue The new guard value.
      */
     public void setGuard(ControlFlow controlFlow, String newValue) {
-        if (Strings.isNullOrEmpty(newValue)) {
-            if (controlFlow.getGuard() != null) {
-                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
-            }
-            return;
-        } else if ("true".equals(newValue) || "false".equals(newValue)) {
-            // Supports resetting the value to the default 'true'.
-            ValueSpecification guard = controlFlow.getGuard();
-            if (!(guard instanceof LiteralBoolean)) {
-                guard = UMLFactory.eINSTANCE.createLiteralBoolean();
-                controlFlow.setGuard(guard);
-            }
-            ((LiteralBoolean)guard).setValue(Boolean.valueOf(newValue));
-            return;
-        }
-        ValueSpecification guard = controlFlow.getGuard();
-        if (!(guard instanceof OpaqueExpression)) {
-            guard = UMLFactory.eINSTANCE.createOpaqueExpression();
-            controlFlow.setGuard(guard);
-        }
-        ((OpaqueExpression)guard).getBodies().clear();
-        ((OpaqueExpression)guard).getBodies().add(newValue);
+        PokaYokeUmlProfileUtil.setGuard(controlFlow, newValue);
     }
 
     /**
@@ -165,10 +143,10 @@ public class PokaYokeProfileServices {
      *
      * @param property The property (i.e. context) for which the supported types are queried.
      * @return All Poka Yoke supported types for {@code property}.
-     * @see CifTypeChecker#getSupportedTypes(org.eclipse.uml2.uml.TypedElement)
+     * @see PokaYokeTypeUtil#getSupportedTypes(org.eclipse.uml2.uml.Element)
      */
     public List<Type> getSupportedPropertyTypes(Property property) {
-        List<Type> supportedTypes = CifTypeChecker.getSupportedTypes(property);
+        List<Type> supportedTypes = PokaYokeTypeUtil.getSupportedTypes(property);
         supportedTypes.sort(Comparator.comparing(Type::getName));
         return supportedTypes;
     }
@@ -181,6 +159,6 @@ public class PokaYokeProfileServices {
      * @param newValue The new default value of the property.
      */
     public void setPropertyDefaultValue(Property property, String newValue) {
-        PokaYokeUmlProfileUtil.setPropertyDefaultValue(property, newValue);
+        PokaYokeUmlProfileUtil.setDefaultValue(property, newValue);
     }
 }
