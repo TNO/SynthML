@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.google.common.base.Optional;
 
 import fr.lip6.move.gal.AssignType;
 import fr.lip6.move.gal.Assignment;
@@ -178,6 +179,27 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     @Override
     protected Object visit(AIntExpression expr, CifContext ctx) {
         return Uml2GalTranslationHelper.toIntExpression(Integer.parseInt(expr.value));
+    }
+
+    @Override
+    protected Object visit(TextPosition operatorPos, List<Object> guards, Object then, List<Object> elifs, Object elze,
+            CifContext ctx)
+    {
+        // Add to UML-to-GAL preconditions.
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Object visit(TextPosition operatorPos, List<Object> guards, Object then, CifContext ctx) {
+        // Add to UML-to-GAL preconditions.
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Object visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Object predicate,
+            CifContext ctx)
+    {
+        throw new UnsupportedOperationException();
     }
 
     private IntExpression toInt(Object expression) {

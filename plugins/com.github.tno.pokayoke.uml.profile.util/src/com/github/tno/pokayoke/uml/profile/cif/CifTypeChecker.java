@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -18,8 +19,6 @@ import org.eclipse.uml2.uml.Type;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 
 import com.google.common.base.Optional;
-
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 
 /**
  * Type checker for CIF annotated UML models.
@@ -180,21 +179,21 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             CifContext ctx)
     {
         for (Type guard: guards) {
-            if (!ctx.getBooleanType().equals(guard)) {
-                throw new TypeException("Expected Boolean but got " + getLabel(guard), operatorPos);
+            if (!PokaYokeTypeUtil.isBooleanType(guard)) {
+                throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(guard), operatorPos);
             }
         }
 
         for (Type elif: elifs) {
             if (!Objects.equals(then, elif)) {
-                throw new TypeException(String.format("Expected %s but got %s", getLabel(then), getLabel(elif)),
-                        operatorPos);
+                throw new TypeException(String.format("Expected %s but got %s", PokaYokeTypeUtil.getLabel(then),
+                        PokaYokeTypeUtil.getLabel(elif)), operatorPos);
             }
         }
 
         if (!Objects.equals(then, elze)) {
-            throw new TypeException(String.format("Expected %s but got %s", getLabel(then), getLabel(elze)),
-                    operatorPos);
+            throw new TypeException(String.format("Expected %s but got %s", PokaYokeTypeUtil.getLabel(then),
+                    PokaYokeTypeUtil.getLabel(elze)), operatorPos);
         }
 
         return then;
@@ -203,23 +202,12 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     @Override
     protected Type visit(TextPosition operatorPos, List<Type> guards, Type then, CifContext ctx) {
         for (Type guard: guards) {
-            if (!ctx.getBooleanType().equals(guard)) {
-                throw new TypeException("Expected Boolean but got " + getLabel(guard), operatorPos);
+            if (!PokaYokeTypeUtil.isBooleanType(guard)) {
+                throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(guard), operatorPos);
             }
         }
 
         return then;
-    }
-
-    private static String getLabel(Type type) {
-        return type == null ? "null" : type.getLabel(true);
-    }
-
-    private static boolean isSupported(Type type, CifContext ctx) {
-        if (type == null) {
-            return false;
-        }
-        return ctx.getBooleanType().equals(type) || ctx.getIntegerType().equals(type) || type instanceof Enumeration;
     }
 
     @Override

@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
@@ -99,7 +100,7 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     public CifType translateType(Type type) {
         if (type instanceof Enumeration umlEnum) {
             return CifConstructors.newEnumType(enumMap.get(umlEnum), null);
-        } else if (type.equals(context.getBooleanType())) {
+        } else if (PokaYokeTypeUtil.isBooleanType(type)) {
             return CifConstructors.newBoolType();
         }
 
