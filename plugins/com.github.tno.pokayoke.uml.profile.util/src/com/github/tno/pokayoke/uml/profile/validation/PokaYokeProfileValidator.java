@@ -161,7 +161,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            Type propDefaultType = new CifTypeChecker(property).checkExpression(propDefaultExpr);
+            Type propDefaultType = new PropertyDefaultTypeChecker(property).checkExpression(propDefaultExpr);
             if (!propDefaultType.equals(propType)) {
                 error(String.format("Invalid property default: Expected %s but got %s",
                         PokaYokeTypeUtil.getLabel(propType), PokaYokeTypeUtil.getLabel(propDefaultType)),
