@@ -3,8 +3,13 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.List;
+
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.common.java.TextPosition;
@@ -12,6 +17,9 @@ import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Property;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContext> {
     protected enum BinaryOperator {
@@ -109,4 +117,32 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     }
 
     protected abstract T visit(UnaryOperator operator, TextPosition operatorPos, T child, CifContext ctx);
+
+    @Override
+    protected T visit(AIfExpression expr, CifContext ctx) {
+        List<T> guards = expr.guards.stream().map(g -> visit(g, ctx)).toList();
+        List<T> elifs = expr.elifs.stream().map(g -> visit(g, ctx)).toList();
+        return visit(expr.position, guards, visit(expr.then, ctx), elifs, visit(expr.elseExpr, ctx), ctx);
+    }
+
+    protected abstract T visit(TextPosition operatorPos, List<T> guards, T then, List<T> elifs, T elze, CifContext ctx);
+
+    @Override
+    protected T visit(AElifExpression elif, CifContext ctx) {
+        List<T> guards = elif.guards.stream().map(g -> visit(g, ctx)).toList();
+        return visit(elif.position, guards, visit(elif.then, ctx), ctx);
+    }
+
+    protected abstract T visit(TextPosition operatorPos, List<T> guards, T then, CifContext ctx);
+
+    @Override
+    protected T visit(AInvariant invariant, CifContext ctx) {
+        Optional<String> invKind = Optional.fromNullable(invariant.invKind).transform(i -> i.text);
+        List<String> events = Optional.fromNullable(invariant.events).or(ImmutableList.of()).stream().map(e -> e.name)
+                .toList();
+        return visit(invKind, events, invariant.position, visit(invariant.predicate, ctx), ctx);
+    }
+
+    protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, T predicate,
+            CifContext ctx);
 }

@@ -19,6 +19,8 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.TypedElement;
 
+import com.google.common.base.Optional;
+
 /**
  * Type checker for CIF annotated UML models, currently supporting:
  * <ul>
@@ -209,6 +211,42 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
         return child;
     }
 
+    @Override
+    protected Type visit(TextPosition operatorPos, List<Type> guards, Type then, List<Type> elifs, Type elze,
+            CifContext ctx)
+    {
+        for (Type guard: guards) {
+            if (!ctx.getBooleanType().equals(guard)) {
+                throw new TypeException("Expected Boolean but got " + getLabel(guard), operatorPos);
+            }
+        }
+
+        for (Type elif: elifs) {
+            if (!Objects.equals(then, elif)) {
+                throw new TypeException(String.format("Expected %s but got %s", getLabel(then), getLabel(elif)),
+                        operatorPos);
+            }
+        }
+
+        if (!Objects.equals(then, elze)) {
+            throw new TypeException(String.format("Expected %s but got %s", getLabel(then), getLabel(elze)),
+                    operatorPos);
+        }
+
+        return then;
+    }
+
+    @Override
+    protected Type visit(TextPosition operatorPos, List<Type> guards, Type then, CifContext ctx) {
+        for (Type guard: guards) {
+            if (!ctx.getBooleanType().equals(guard)) {
+                throw new TypeException("Expected Boolean but got " + getLabel(guard), operatorPos);
+            }
+        }
+
+        return then;
+    }
+
     private static String getLabel(Type type) {
         return type == null ? "null" : type.getLabel(true);
     }
@@ -218,5 +256,21 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             return false;
         }
         return ctx.getBooleanType().equals(type) || ctx.getIntegerType().equals(type) || type instanceof Enumeration;
+    }
+
+    @Override
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
+            CifContext ctx)
+    {
+        if (invKind.isPresent()) {
+            String kind = invKind.get();
+            if (!kind.equals("needs") && !kind.equals("disables")) {
+                throw new TypeException("Expected 'needs' or 'disables', but got " + kind, operatorPos);
+            }
+        }
+
+        // TODO check events
+
+        return predicate;
     }
 }

@@ -1,9 +1,11 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -14,6 +16,7 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.google.common.base.Optional;
 
 /** Translates basic CIF expressions and updates to Python. */
 public class CifToPythonTranslator extends ACifObjectWalker<String> {
@@ -79,5 +82,30 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     @Override
     protected String visit(AIntExpression expr, CifContext ctx) {
         return expr.value;
+    }
+
+    @Override
+    protected String visit(TextPosition operatorPos, List<String> guards, String then, List<String> elifs, String elze,
+            CifContext ctx)
+    {
+        String elif = elifs.stream().map(e -> "else " + e).reduce("", (left, right) -> left + " " + right);
+        return String.format("(%s) if (%s) %s else (%s)", then, combineAnd(guards), elif, elze);
+    }
+
+    @Override
+    protected String visit(TextPosition operatorPos, List<String> guards, String then, CifContext ctx) {
+        return String.format("(%s) if (%s)", then, combineAnd(guards));
+    }
+
+    // TODO JavaDoc
+    private String combineAnd(Collection<String> operands) {
+        return operands.stream().reduce((left, right) -> String.format("(%s) and (%s)", left, right)).orElse("True");
+    }
+
+    @Override
+    protected String visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, String predicate,
+            CifContext ctx)
+    {
+        throw new NotImplementedException();
     }
 }

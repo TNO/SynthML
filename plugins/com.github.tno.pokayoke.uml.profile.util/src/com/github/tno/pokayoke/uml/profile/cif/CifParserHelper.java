@@ -6,16 +6,20 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
+import com.github.tno.pokayoke.cif.parser.CifInvariantParser;
 import com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
@@ -42,6 +46,13 @@ public class CifParserHelper {
         return parseExpression(valueSpecification.stringValue(), valueSpecification);
     }
 
+    public static AExpression parseExpression(Constraint constraint) throws SyntaxException {
+        if (constraint == null) {
+            return null;
+        }
+        return parseExpression(constraint.getSpecification());
+    }
+
     public static AExpression parseGuard(Action action) throws SyntaxException {
         if (action == null) {
             return null;
@@ -64,6 +75,42 @@ public class CifParserHelper {
             return null;
         }
         return parseUpdates(PokaYokeUmlProfileUtil.getEffects(action), action);
+    }
+
+    public static AInvariant parseInvariant(String invariant, Element context) throws SyntaxException {
+        if (invariant == null) {
+            return null;
+        } else if (invariant.isBlank()) {
+            throw new CustomSyntaxException("cannot be blank.", TextPosition.createDummy(getLocation(context)));
+        }
+        CifInvariantParser invariantParser = new CifInvariantParser();
+        return invariantParser.parseString(invariant, getLocation(context));
+    }
+
+    public static AInvariant parseInvariant(OpaqueExpression constraint) throws SyntaxException {
+        if (constraint == null) {
+            return null;
+        }
+        return parseInvariant(
+                constraint.getBodies().stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r)).orElse("true"),
+                constraint);
+    }
+
+    public static AInvariant parseInvariant(ValueSpecification valueSpec) throws SyntaxException {
+        if (valueSpec == null) {
+            return null;
+        } else if (valueSpec instanceof OpaqueExpression expr) {
+            return parseInvariant(expr);
+        } else {
+            throw new RuntimeException("Unsupported value specification: " + valueSpec);
+        }
+    }
+
+    public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {
+        if (constraint == null) {
+            return null;
+        }
+        return parseInvariant(constraint.getSpecification());
     }
 
     private static String getLocation(Element context) {
