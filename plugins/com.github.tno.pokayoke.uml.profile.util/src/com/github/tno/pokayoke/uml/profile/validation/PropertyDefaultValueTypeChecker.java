@@ -11,15 +11,15 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
 import com.github.tno.pokayoke.uml.profile.cif.TypeException;
 
-public class PropertyDefaultTypeChecker extends CifTypeChecker {
+public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
     private static final String MESSAGE = "only literals are supported for property default values.";
 
     /**
-     * Constructs a new property default type checker.
+     * Constructs a new property default value type checker.
      *
      * @param elem The context for evaluating the expression.
      */
-    public PropertyDefaultTypeChecker(Element elem) {
+    public PropertyDefaultValueTypeChecker(Element elem) {
         super(elem);
     }
 

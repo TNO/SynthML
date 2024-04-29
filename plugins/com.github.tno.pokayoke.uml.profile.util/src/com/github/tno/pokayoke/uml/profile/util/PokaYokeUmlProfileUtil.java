@@ -81,7 +81,11 @@ public class PokaYokeUmlProfileUtil {
     public static void setGuard(ControlFlow controlFlow, String newValue) {
         applyPokaYokeProfile(controlFlow);
         if (Strings.isNullOrEmpty(newValue)) {
-            controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            if (controlFlow.getGuard() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            }
             return;
         }
         OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();
@@ -100,7 +104,11 @@ public class PokaYokeUmlProfileUtil {
     public static void setDefaultValue(Property property, String newValue) {
         applyPokaYokeProfile(property);
         if (Strings.isNullOrEmpty(newValue)) {
-            property.setDefaultValue(UMLFactory.eINSTANCE.createLiteralNull());
+            if (property.getDefaultValue() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                property.setDefaultValue(UMLFactory.eINSTANCE.createLiteralNull());
+            }
             return;
         }
         OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();

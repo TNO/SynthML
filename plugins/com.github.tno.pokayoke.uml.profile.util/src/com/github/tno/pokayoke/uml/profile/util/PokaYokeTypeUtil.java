@@ -45,8 +45,8 @@ public class PokaYokeTypeUtil {
      * Returns all Poka Yoke supported types for {@code context}.
      * <p>
      * The next types are supported: {@link Enumeration enumerations in the model},
-     * {@link PokaYokeTypeUtil#loadPrimitiveType(String, Element) primitive Boolean} and
-     * {@link PokaYokeTypeUtil#loadPrimitiveType(String, Element) primitive Integer}.
+     * {@link #loadPrimitiveType(String, Element) primitive Boolean} and {@link #loadPrimitiveType(String, Element)
+     * primitive Integer}.
      * </p>
      *
      * @param context The context for which the supported types are queried.
