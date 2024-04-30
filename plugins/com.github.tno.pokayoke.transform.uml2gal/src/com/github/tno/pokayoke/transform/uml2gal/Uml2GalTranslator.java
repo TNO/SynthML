@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -113,7 +114,7 @@ public class Uml2GalTranslator {
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(cifContext.getBooleanType().getName(),
+        specificationBuilder.addTypedef(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN,
                 Uml2GalTranslationHelper.toIntExpression(false), Uml2GalTranslationHelper.toIntExpression(true));
 
         // Translate the given model by visiting and translating all its elements.
