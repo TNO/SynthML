@@ -64,7 +64,6 @@ public class Cif2Petrify {
         petrifyInput.add(eventDeclaration);
 
         petrifyInput.add(".state graph");
-        // petrifyInput.append("\n");
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
@@ -93,7 +92,6 @@ public class Cif2Petrify {
             // Translate initial locations.
             if (isTriviallyInitial) {
                 petrifyInput.add(String.format("loc0 start %s", locationName));
-                // petrifyInput.add("\n");
             }
 
             // Translate marked locations.
@@ -102,7 +100,6 @@ public class Cif2Petrify {
                         "Expected marked locations to not have outgoing edges.");
 
                 petrifyInput.add(String.format("%s end loc0", locationName));
-                // petrifyInput.append("\n");
             }
 
             // Translate all edges that go out of the current location.
@@ -113,18 +110,15 @@ public class Cif2Petrify {
                     String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
                             targetLocationName);
                     petrifyInput.add(edgeString);
-                    // petrifyInput.append("\n");
                 }
             }
         }
 
         // Indicate that the first location has a token initially.
         petrifyInput.add(".marking {loc0}");
-        // petrifyInput.add("\n");
 
         // Indicate the end of the Petrify input graph.
         petrifyInput.add(".end");
-        // petrifyInput.add("\n");
 
         return petrifyInput;
     }
