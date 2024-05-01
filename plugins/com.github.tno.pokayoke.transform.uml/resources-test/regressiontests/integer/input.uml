@@ -7,8 +7,7 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_u8NFgfGSEe6asLMew-pIxQ" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_u8NFgvGSEe6asLMew-pIxQ" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="_xn4ooPGSEe6asLMew-pIxQ" name="myInt" visibility="public">
-        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      <ownedAttribute xmi:id="_xn4ooPGSEe6asLMew-pIxQ" name="myInt" visibility="public" type="_VD050AetEe-uToQqJyLVrg">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xn4oofGSEe6asLMew-pIxQ" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xn4oovGSEe6asLMew-pIxQ" value="1"/>
       </ownedAttribute>
@@ -27,6 +26,17 @@
           <body>// TODO body of OpaqueAction1</body>
         </node>
       </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_VD050AetEe-uToQqJyLVrg" name="MyInt" visibility="public">
+      <ownedRule xmi:id="_cEtioAetEe-uToQqJyLVrg" name="min" constrainedElement="_VD050AetEe-uToQqJyLVrg">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_cEtioQetEe-uToQqJyLVrg" name="literal integer" value="-1"/>
+      </ownedRule>
+      <ownedRule xmi:id="_g129cAetEe-uToQqJyLVrg" name="max" constrainedElement="_VD050AetEe-uToQqJyLVrg">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_g129cQetEe-uToQqJyLVrg" name="literal integer" value="1"/>
+      </ownedRule>
+      <generalization xmi:id="_ZiF04AetEe-uToQqJyLVrg">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
     </packagedElement>
     <profileApplication xmi:id="_KNaz8PGTEe6asLMew-pIxQ">
       <eAnnotations xmi:id="_KNdQMPGTEe6asLMew-pIxQ" source="http://www.eclipse.org/uml2/2.0.0/UML">

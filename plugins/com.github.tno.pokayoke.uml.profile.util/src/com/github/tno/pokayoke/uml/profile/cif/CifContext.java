@@ -25,8 +25,9 @@ public class CifContext {
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
      */
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.PACKAGE,
-            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.CLASS,
-            UMLPackage.Literals.PROPERTY, UMLPackage.Literals.ACTIVITY);
+            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL,
+            UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.CLASS, UMLPackage.Literals.PROPERTY,
+            UMLPackage.Literals.ACTIVITY);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {

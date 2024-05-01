@@ -22,25 +22,30 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
+import com.github.tno.pokayoke.uml.profile.cif.TypeException;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
@@ -161,11 +166,20 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            Type propDefaultType = new PropertyDefaultValueTypeChecker(property).checkExpression(propDefaultExpr);
-            if (!propDefaultType.equals(propType)) {
-                error(String.format("Invalid property default: Expected %s but got %s",
-                        PokaYokeTypeUtil.getLabel(propType), PokaYokeTypeUtil.getLabel(propDefaultType)),
-                        UMLPackage.Literals.PROPERTY__DEFAULT);
+            new PropertyDefaultValueTypeChecker(property).checkAssignment(propType, propDefaultExpr);
+
+            if (PokaYokeTypeUtil.isIntegerType(propType)) {
+                // Default value is set and valid, thus can be parsed into an integer
+                int propDefaultValue = Integer.parseInt(property.getDefault());
+                Integer propMinValue = PokaYokeTypeUtil.getMinValue(propType);
+                Integer propMaxValue = PokaYokeTypeUtil.getMaxValue(propType);
+                // Only check if type range is valid, also see #checkValidPrimitiveType(PrimitiveType)
+                if (propMinValue != null && propMaxValue != null && propMaxValue >= propMinValue
+                        && (propDefaultValue < propMinValue || propDefaultValue > propMaxValue))
+                {
+                    throw new TypeException(String.format("value %d is not within range [%d .. %d]",
+                            propDefaultValue, propMinValue, propMaxValue));
+                }
             }
         } catch (RuntimeException e) {
             error("Invalid property default: " + e.getLocalizedMessage(), UMLPackage.Literals.PROPERTY__DEFAULT);
@@ -186,6 +200,57 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         if (enumeration.getOwnedLiterals().isEmpty()) {
             error("Expected enumeration to have at least one literal.", null);
+        }
+    }
+
+    @Check
+    private void checkValidPrimitiveType(PrimitiveType primitiveType) {
+        if (!isPokaYokaUmlProfileApplied(primitiveType)) {
+            return;
+        }
+        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        if (!(primitiveType.eContainer() instanceof Model)) {
+            error("Expected primitive type to be declared in model.", null);
+        } else if (primitiveType.eContainer().eContainer() != null) {
+            error("Expected primitive type to be declared on the outer-most level.", null);
+        }
+
+        if (!PokaYokeTypeUtil.isIntegerType(primitiveType)) {
+            error(PokaYokeTypeUtil.getLabel(primitiveType) + " should inherrit from primitive Integer type.", null);
+            return;
+        }
+
+        Constraint minConstraint = PokaYokeTypeUtil.getMinConstraint(primitiveType);
+        if (minConstraint == null) {
+            error("Minimum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
+            return;
+        }
+        Constraint maxConstraint = PokaYokeTypeUtil.getMaxConstraint(primitiveType);
+        if (maxConstraint == null) {
+            error("Maximum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
+            return;
+        }
+
+        int minValue = -1;
+        ValueSpecification minValueSpecification = minConstraint.getSpecification();
+        if (minValueSpecification instanceof LiteralInteger literalInteger) {
+            minValue = literalInteger.getValue();
+        } else if (minValueSpecification != null) {
+            error("Only literal integer is supported for minimum value constraint.", minConstraint, null);
+            return;
+        }
+        int maxValue = -1;
+        ValueSpecification maxValueSpecification = maxConstraint.getSpecification();
+        if (maxValueSpecification instanceof LiteralInteger literalInteger) {
+            maxValue = literalInteger.getValue();
+        } else if (maxValueSpecification != null) {
+            error("Only literal integer is supported for maximum value constraint.", maxConstraint, null);
+            return;
+        }
+
+        if (minValue > maxValue) {
+            error("Minimum value cannot be greater than maximum value.", minConstraint, null);
         }
     }
 
@@ -237,7 +302,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     if (guardExpr == null) {
                         return;
                     }
-                    new CifTypeChecker(controlFlow).checkBooleanExpression(guardExpr);
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(guardExpr);
                 } catch (RuntimeException e) {
                     error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
                 }
@@ -316,7 +381,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (guardExpr == null) {
                 return;
             }
-            new CifTypeChecker(action).checkBooleanExpression(guardExpr);
+            new CifTypeChecker(action).checkBooleanAssignment(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
@@ -332,7 +397,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             HashSet<String> updatedVariables = new HashSet<>();
             for (AUpdate update: CifParserHelper.parseEffects(action)) {
-                new CifTypeChecker(action).checkUpdate(update);
+                new CifTypeChecker(action).checkAssignment(update);
 
                 // Update is checked above, so ClassCastException is not possible on next lines
                 AExpression variableExpr = ((AAssignmentUpdate)update).addressable;

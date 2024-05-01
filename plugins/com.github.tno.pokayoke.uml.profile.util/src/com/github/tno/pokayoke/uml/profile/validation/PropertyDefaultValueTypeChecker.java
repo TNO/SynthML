@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.uml.profile.validation;
 
-import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Property;
@@ -26,16 +25,6 @@ public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
     @Override
     protected Type visit(Property property, TextPosition propertyPos, CifContext ctx) {
         throw new TypeException(MESSAGE, propertyPos);
-    }
-
-    @Override
-    protected Type visit(AAssignmentUpdate update, CifContext ctx) {
-        throw new TypeException(MESSAGE, update.position);
-    }
-
-    @Override
-    protected Type visit(Type addressable, TextPosition assignmentPos, Type value, CifContext ctx) {
-        throw new TypeException(MESSAGE, assignmentPos);
     }
 
     @Override

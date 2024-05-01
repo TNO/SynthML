@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.uml.profile.design;
 
 import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.uml2.uml.Action;
@@ -146,9 +145,7 @@ public class PokaYokeProfileServices {
      * @see PokaYokeTypeUtil#getSupportedTypes(org.eclipse.uml2.uml.Element)
      */
     public List<Type> getSupportedPropertyTypes(Property property) {
-        List<Type> supportedTypes = PokaYokeTypeUtil.getSupportedTypes(property);
-        supportedTypes.sort(Comparator.comparing(Type::getName));
-        return supportedTypes;
+        return PokaYokeTypeUtil.getSupportedTypes(property);
     }
 
     /**

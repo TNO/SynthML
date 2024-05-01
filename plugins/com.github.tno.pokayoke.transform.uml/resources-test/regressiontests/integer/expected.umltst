@@ -6,8 +6,7 @@
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
     </ownedAttribute>
-    <ownedAttribute name="myInt" visibility="public">
-      <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    <ownedAttribute name="myInt" visibility="public" type="//MyInt">
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
     </ownedAttribute>
@@ -120,6 +119,17 @@ isSuccessful = guard</body>
       <ownedNode xsi:type="uml:CallBehaviorAction" incoming="//Context/main/@edge.3" behavior="//Lock/lockhandler"/>
     </ownedBehavior>
   </packagedElement>
+  <packagedElement xsi:type="uml:PrimitiveType" name="MyInt" visibility="public">
+    <ownedRule name="min" constrainedElement="//MyInt">
+      <specification xsi:type="uml:LiteralInteger" name="literal integer" value="-1"/>
+    </ownedRule>
+    <ownedRule name="max" constrainedElement="//MyInt">
+      <specification xsi:type="uml:LiteralInteger" name="literal integer" value="1"/>
+    </ownedRule>
+    <generalization>
+      <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
   <packagedElement xsi:type="uml:Class" name="Lock">
     <ownedBehavior xsi:type="uml:Activity" name="lockhandler" node="//Lock/lockhandler/@ownedNode.0 //Lock/lockhandler/@ownedNode.1 //Lock/lockhandler/@ownedNode.2 //Lock/lockhandler/@ownedNode.3 //Lock/lockhandler/@ownedNode.4 //Lock/lockhandler/@ownedNode.5 //Lock/lockhandler/@ownedNode.6 //Lock/lockhandler/@ownedNode.7">
       <edge xsi:type="uml:ControlFlow" target="//Lock/lockhandler/@ownedNode.1" source="//Lock/lockhandler/@ownedNode.0"/>
@@ -146,7 +156,7 @@ isSuccessful = guard</body>
       <ownedNode xsi:type="uml:MergeNode" incoming="//Lock/lockhandler/@edge.0 //Lock/lockhandler/@edge.8" outgoing="//Lock/lockhandler/@edge.1"/>
       <ownedNode xsi:type="uml:AcceptEventAction" incoming="//Lock/lockhandler/@edge.1">
         <result name="msg" outgoing="//Lock/lockhandler/@edge.2" type="//Lock/acquire" isOrdered="true" isUnique="false"/>
-        <trigger event="//@packagedElement.2"/>
+        <trigger event="//@packagedElement.3"/>
       </ownedNode>
       <ownedNode xsi:type="uml:ReadStructuralFeatureAction" structuralFeature="//Lock/acquire/requester">
         <object name="msg" incoming="//Lock/lockhandler/@edge.2" type="//Lock/acquire"/>
