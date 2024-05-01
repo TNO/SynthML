@@ -26,13 +26,13 @@ import org.junit.jupiter.params.provider.Arguments;
  *
  * <p>
  * When verification within this test fails, this test will stop and, by design, tear down will NOT be executed. Since
- * tear down is not executed, the actual output file will remain available on disk. This is beneficial since
+ * tear down is not executed, the actual output folder will remain available on disk. This is beneficial since
  * <ul>
- * <li>The actual output file is useful for diagnosis, such as examining the difference with the expected output
- * file.</li>
- * <li>The actual output file is useful for (automatically) changing the expected output file in case of intended
+ * <li>The actual output folder is useful for diagnosis, such as examining the difference with the expected output
+ * folder.</li>
+ * <li>The actual output folder is useful for (automatically) changing the expected output folder in case of intended
  * changes.</li>
- * <li>The next test run is not affected since it will just overwrite the actual output file.</li>
+ * <li>The next test run is not affected since it will just overwrite the actual output folder.</li>
  * </ul>
  * </p>
  *
@@ -40,7 +40,6 @@ import org.junit.jupiter.params.provider.Arguments;
  * Verification whether the expected output folder exists is performed after the actual output folder is
  * created. This simplifies the creation of regression tests.
  * </p>
- *
  */
 public abstract class RegressionTest {
     /**
@@ -139,8 +138,8 @@ public abstract class RegressionTest {
      *
      * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.
-     * @param expectedFolder Name of expected output file.
-     * @param actualFolder Name of actual output file.
+     * @param expectedFolder Name of expected output folder.
+     * @param actualFolder Name of actual output folder.
      * @return Stream of arguments for regression tests.
      */
     private static Stream<? extends Arguments> provideArguments(final Path regressiontestsPath, final String inputFile,

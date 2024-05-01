@@ -47,13 +47,13 @@ public class FileCompare {
      * Check whether two given lists of files are equal content-wise. Files are matched based on paths.
      *
      * @param expectedFolderPath Path to root directory containing expected files.
-     * @param expectedItemPaths List of paths of expected files.
+     * @param expectedItemPaths List of paths of expected output files.
      * @param actualFolderPath Path to root directory containing actual output files.
-     * @param actualItemPaths List of paths of output files.
+     * @param actualItemPaths List of paths of actual output files.
      * @param message The message to be used when the assertion fails.
      * @throws IOException when loading one of the files to compare fails.
      */
-    public static void checkFileListsEqual(Path expectedFolderPath, List<Path> expectedItemPaths, Path actualFolderPath,
+    private static void checkFileListsEqual(Path expectedFolderPath, List<Path> expectedItemPaths, Path actualFolderPath,
             List<Path> actualItemPaths, String message) throws IOException
     {
         List<String> expectedItemStrings = expectedItemPaths.stream()

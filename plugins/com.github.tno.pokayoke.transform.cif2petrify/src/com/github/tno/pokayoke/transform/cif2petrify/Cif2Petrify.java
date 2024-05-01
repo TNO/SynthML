@@ -60,7 +60,6 @@ public class Cif2Petrify {
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
         String eventDeclaration = ".dummy start end " + String.join(" ", eventNames);
-
         petrifyInput.add(eventDeclaration);
 
         petrifyInput.add(".state graph");
