@@ -11,13 +11,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 /**
  * Regression tests.
  */
-class Petrify2PNMLRegressionTest extends RegressionTest {
+class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
     public static final String OUTPUT_FILE_EXTENSION = "pnml";
@@ -41,6 +41,6 @@ class Petrify2PNMLRegressionTest extends RegressionTest {
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Path pnmlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
         Files.createDirectories(outputPath);
-        Petrify2PNMLTranslator.transformFile(inputPath.toString(), pnmlOutputFilePath.toString());
+        PetrifyOutput2PNMLTranslator.transformFile(inputPath.toString(), pnmlOutputFilePath.toString());
     }
 }

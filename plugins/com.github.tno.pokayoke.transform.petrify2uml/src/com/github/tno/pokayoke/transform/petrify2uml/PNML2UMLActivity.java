@@ -17,7 +17,7 @@ import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Transforms Petri Net to Activity. */
-public class PetriNet2Activity {
+public class PNML2UMLActivity {
     private Map<Transition, OpaqueAction> transitionToAction;
 
     public void transformFile(String inputPath, String outputPath)

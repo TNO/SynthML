@@ -12,14 +12,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 
 /** Regression test for the translation from Petrify output to Activity. */
-class PetriNet2ActivityRegressionTest extends RegressionTest {
+class PNML2UMLActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "pnml";
 
     public static final String OUTPUT_FILE_EXTENSION = "umltst";
@@ -48,7 +48,7 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
-        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
         petriNet2Activity.transformFile(inputPath.toString(), umlOutputFilePath.toString());
     }
 }

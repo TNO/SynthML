@@ -56,7 +56,7 @@ public class NormalizePetrifyOutput {
             // Add the duplicate transitions.
             nodes.stream()
                     .filter(element -> !declaredTransitionNames.contains(element)
-                            && Petrify2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
+                            && PetrifyOutput2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
                     .forEach(element -> allTransitionNames.add(element));
 
             parentToChild.put(parentNode, childNodes);

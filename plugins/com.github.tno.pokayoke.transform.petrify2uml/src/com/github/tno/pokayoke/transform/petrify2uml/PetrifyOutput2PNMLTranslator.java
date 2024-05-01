@@ -24,8 +24,8 @@ import fr.lip6.move.pnml.ptnet.PtnetFactory;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Translates Petrify output to PNML. */
-public class Petrify2PNMLTranslator {
-    private Petrify2PNMLTranslator() {
+public class PetrifyOutput2PNMLTranslator {
+    private PetrifyOutput2PNMLTranslator() {
     }
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;

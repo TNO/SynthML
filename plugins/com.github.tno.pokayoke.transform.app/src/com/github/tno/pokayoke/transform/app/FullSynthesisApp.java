@@ -53,9 +53,9 @@ import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
+import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
-import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
@@ -156,7 +156,7 @@ public class FullSynthesisApp {
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
+        PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
@@ -169,7 +169,7 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());

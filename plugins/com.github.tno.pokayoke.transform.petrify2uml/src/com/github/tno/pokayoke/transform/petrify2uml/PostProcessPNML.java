@@ -49,6 +49,6 @@ public class PostProcessPNML {
 
         // Add a new arc between the transition and a newly created final place.
         String finalPlace = "FinalPlace";
-        Petrify2PNMLTranslator.createArc(sourceTransition, Petrify2PNMLTranslator.createPlace(finalPlace, page), page);
+        PetrifyOutput2PNMLTranslator.createArc(sourceTransition, PetrifyOutput2PNMLTranslator.createPlace(finalPlace, page), page);
     }
 }

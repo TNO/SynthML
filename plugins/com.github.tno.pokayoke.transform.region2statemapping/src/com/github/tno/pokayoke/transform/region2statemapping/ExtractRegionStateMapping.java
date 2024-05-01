@@ -20,7 +20,7 @@ import org.eclipse.escet.common.java.Triple;
 import org.json.JSONObject;
 
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
-import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
@@ -46,7 +46,7 @@ public class ExtractRegionStateMapping {
     {
         List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
         List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
+        PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(petrifyOutput);
         Map<Place, Set<String>> regionMapping1 = extract(petrifyInput, petriNet);
         Map<String, Set<String>> regionMapping2 = new LinkedHashMap<>();
         regionMapping1.entrySet()
