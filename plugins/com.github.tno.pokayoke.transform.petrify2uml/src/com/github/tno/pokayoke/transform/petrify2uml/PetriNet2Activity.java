@@ -2,18 +2,16 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Preconditions;
 
+import fr.lip6.move.pnml.framework.utils.exception.ImportException;
+import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -22,15 +20,10 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PetriNet2Activity {
     private Map<Transition, OpaqueAction> transitionToAction;
 
-    public void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(input);
-        PostProcessPNML.removeLoop(petriNet);
-
-        String filePrefix = FilenameUtils.removeExtension(Paths.get(outputPath).getFileName().toString());
-        Path pnmlOutputPath = Paths.get(outputPath).getParent().resolve(filePrefix + ".pnml");
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputPath.toString());
-
+    public void transformFile(String inputPath, String outputPath)
+            throws ImportException, InvalidIDException, IOException
+    {
+        PetriNet petriNet = PetriNetUMLFileHelper.readPetriNet(inputPath);
         Activity activity = transform(petriNet);
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), outputPath.toString());
