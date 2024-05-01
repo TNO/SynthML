@@ -37,11 +37,13 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  *
  * <p>
- * Verification whether the expected output folder exists is performed after the actual output folder is
- * created. This simplifies the creation of regression tests.
+ * Verification whether the expected output folder exists is performed after the actual output folder is created. This
+ * simplifies the creation of regression tests.
  * </p>
  */
 public abstract class RegressionTest {
+    private static String regressiontestsName = "regressiontests";
+
     /**
      * Executes the different steps in the regression test.
      *
@@ -124,12 +126,20 @@ public abstract class RegressionTest {
         final Path testResourcesPath = Path.of(testResourcesName);
         assertDirectoryExists(testResourcesPath, "The '" + testResourcesName + "' directory doesn't exist.");
 
-        final String regressiontestsName = "regressiontests";
+        String regressiontestsName = getRegressionTestsName();
         final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
         assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
                 + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
 
         return provideArguments(regressiontestsPath, inputFile, expectedFolder, actualFolder);
+    }
+
+    public static void setRegressionTestsName(String name) {
+        regressiontestsName = name;
+    }
+
+    private static String getRegressionTestsName() {
+        return regressiontestsName;
     }
 
     /**

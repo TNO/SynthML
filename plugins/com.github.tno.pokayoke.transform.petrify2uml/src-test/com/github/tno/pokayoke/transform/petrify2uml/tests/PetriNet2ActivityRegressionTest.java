@@ -15,11 +15,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
+import fr.lip6.move.pnml.framework.utils.exception.ImportException;
+import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
+
 /** Regression test for the translation from Petrify output to Activity. */
 class PetriNet2ActivityRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "out";
+    public static final String INPUT_FILE_EXTENSION = "pnml";
 
-    public static final String OUTPUT_FILE_EXTENSION = "uml";
+    public static final String OUTPUT_FILE_EXTENSION = "umltst";
+
+    public static final String REGRESSIONTESTS_NAME = "regressiontests-pnml2uml";
 
     @BeforeAll
     public static void setup() {
@@ -27,6 +32,7 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
     }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
+        RegressionTest.setRegressionTestsName(REGRESSIONTESTS_NAME);
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
     }
 
@@ -38,7 +44,7 @@ class PetriNet2ActivityRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, ImportException, InvalidIDException {
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
