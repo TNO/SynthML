@@ -31,7 +31,7 @@ import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Helper methods to translate Petri Net to Activity. */
-public class PetriNet2ActivityHelper {
+public class PNML2UMLActivityHelper {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
     private final Map<String, OpaqueAction> nameActionMap = new LinkedHashMap<>();
@@ -278,9 +278,9 @@ public class PetriNet2ActivityHelper {
         // Obtain the transitions.
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).toList();
-        transitions.stream().filter(PetriNet2ActivityHelper::hasMultiOutArcs)
+        transitions.stream().filter(PNML2UMLActivityHelper::hasMultiOutArcs)
                 .forEach(transition -> transformFork(transition, activity));
-        transitions.stream().filter(PetriNet2ActivityHelper::hasMultiInArcs)
+        transitions.stream().filter(PNML2UMLActivityHelper::hasMultiInArcs)
                 .forEach(transition -> transformJoin(transition, activity));
     }
 
