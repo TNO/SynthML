@@ -2,6 +2,8 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -9,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -30,11 +34,15 @@ public class PetrifyOutput2PNMLTranslator {
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
-    public static void transformFile(String inputPath, String outputPath) throws IOException {
-        List<String> input = PetriNetUMLFileHelper.readFile(inputPath);
+    public static void transformFile(Path inputPath, Path outputPath) throws IOException {
+        List<String> input = PetriNetUMLFileHelper.readFile(inputPath.toString());
         PetriNet petriNet = transform(input);
         PostProcessPNML.removeLoop(petriNet);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, outputPath);
+
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path pnmlOutputFilePath = outputPath.resolve(filePrefix + ".pnml");
+        Files.createDirectories(outputPath);
+        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputFilePath.toString());
     }
 
     /**

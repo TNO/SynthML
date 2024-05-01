@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -22,14 +19,7 @@ import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 class PNML2UMLActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "pnml";
 
-    public static final String OUTPUT_FILE_EXTENSION = "umltst";
-
     public static final String REGRESSIONTESTS_NAME = "regressiontests-pnml2uml";
-
-    @BeforeAll
-    public static void setup() {
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUT_FILE_EXTENSION, new UMLTestFactory());
-    }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         RegressionTest.setRegressionTestsName(REGRESSIONTESTS_NAME);
@@ -45,10 +35,7 @@ class PNML2UMLActivityRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, ImportException, InvalidIDException {
-        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
-        Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
-
         PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
-        petriNet2Activity.transformFile(inputPath.toString(), umlOutputFilePath.toString());
+        petriNet2Activity.transformFile(inputPath, outputPath);
     }
 }

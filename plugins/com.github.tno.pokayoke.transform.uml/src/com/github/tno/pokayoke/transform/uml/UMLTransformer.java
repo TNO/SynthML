@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -68,9 +69,11 @@ public class UMLTransformer {
     }
 
     public static void transformFile(Path sourcePath, Path targetPath) throws IOException, CoreException {
+        String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
+        Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
         Model model = FileHelper.loadModel(sourcePath.toString());
         new UMLTransformer(model).transformModel();
-        FileHelper.storeModel(model, targetPath.toString());
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
     public void transformModel() throws CoreException {

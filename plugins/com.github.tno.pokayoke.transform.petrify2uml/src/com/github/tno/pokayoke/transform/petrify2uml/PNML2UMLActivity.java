@@ -2,8 +2,10 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
@@ -20,13 +22,14 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PNML2UMLActivity {
     private Map<Transition, OpaqueAction> transitionToAction;
 
-    public void transformFile(String inputPath, String outputPath)
-            throws ImportException, InvalidIDException, IOException
-    {
-        PetriNet petriNet = PetriNetUMLFileHelper.readPetriNet(inputPath);
+    public void transformFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
+        PetriNet petriNet = PetriNetUMLFileHelper.readPetriNet(inputPath.toString());
         Activity activity = transform(petriNet);
         PostProcessActivity.removeInternalActions(activity);
-        FileHelper.storeModel(activity.getModel(), outputPath.toString());
+
+        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
+        Path umlOutputFilePath = outputPath.resolve(filePrefix + ".uml");
+        FileHelper.storeModel(activity.getModel(), umlOutputFilePath.toString());
     }
 
     public Activity transform(PetriNet petriNet) {

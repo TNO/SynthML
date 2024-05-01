@@ -20,8 +20,6 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 
-    public static final String OUTPUT_FILE_EXTENSION = "pnml";
-
     public static final String REGRESSIONTESTS_NAME = "regressiontests-petrify2pnml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
@@ -38,9 +36,6 @@ class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
-        Path pnmlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
-        Files.createDirectories(outputPath);
-        PetrifyOutput2PNMLTranslator.transformFile(inputPath.toString(), pnmlOutputFilePath.toString());
+        PetrifyOutput2PNMLTranslator.transformFile(inputPath, outputPath);
     }
 }

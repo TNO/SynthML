@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,13 +18,6 @@ import com.github.tno.pokayoke.transform.uml.UMLTransformer;
  */
 class UMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
-
-    public static final String OUTPUT_FILE_EXTENSION = "umltst";
-
-    @BeforeAll
-    public static void setup() {
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(OUTPUT_FILE_EXTENSION, new UMLTestFactory());
-    }
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
@@ -42,8 +32,6 @@ class UMLRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
-        Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
-        UMLTransformer.transformFile(inputPath, umlOutputFilePath);
+        UMLTransformer.transformFile(inputPath, outputPath);
     }
 }
