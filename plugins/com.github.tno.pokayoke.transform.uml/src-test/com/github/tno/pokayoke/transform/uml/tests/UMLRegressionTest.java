@@ -8,13 +8,11 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.uml2.uml.Model;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
@@ -44,11 +42,8 @@ class UMLRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        final String inputPathString = inputPath.toString();
-        final Model model = FileHelper.loadModel(inputPathString);
-        new UMLTransformer(model).transformModel();
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Path umlOutputFilePath = outputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
-        FileHelper.storeModel(model, umlOutputFilePath.toString());
+        UMLTransformer.transformFile(inputPath, umlOutputFilePath);
     }
 }

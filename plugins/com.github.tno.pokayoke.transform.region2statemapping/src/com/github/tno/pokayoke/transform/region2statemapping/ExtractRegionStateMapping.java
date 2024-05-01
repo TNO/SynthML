@@ -3,7 +3,7 @@ package com.github.tno.pokayoke.transform.region2statemapping;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -14,6 +14,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.common.java.Triple;
 import org.json.JSONObject;
@@ -37,20 +38,24 @@ public class ExtractRegionStateMapping {
      *
      * @param petrifyInputPath Petrify input file path.
      * @param petrifyOutputPath Petrify output file path.
-     * @param outputPath Output JSON file to which to write the map.
+     * @param outputFolderPath Output folder path JSON file under which to write the map.
      * @throws IOException In case generating the output JSON failed.
      */
-    public static void extractMappingFromFiles(String petrifyInputPath, String petrifyOutputPath, String outputPath)
+    public static void extractMappingFromFiles(Path petrifyInputPath, Path petrifyOutputPath, Path outputFolderPath)
             throws IOException
     {
-        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath);
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath);
+        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
+        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
         PetriNet petriNet = Petrify2PNMLTranslator.transform(petrifyOutput);
         Map<Place, Set<String>> regionMapping1 = extract(petrifyInput, petriNet);
         Map<String, Set<String>> regionMapping2 = new LinkedHashMap<>();
         regionMapping1.entrySet()
                 .forEach(entry -> regionMapping2.put(entry.getKey().getName().getText(), entry.getValue()));
-        Files.writeString(Paths.get(outputPath), new JSONObject(regionMapping2).toString());
+
+        String filePrefix = FilenameUtils.removeExtension(petrifyInputPath.getFileName().toString());
+        Path jsonOutputPath = outputFolderPath.resolve(filePrefix + ".json");
+        Files.createDirectories(outputFolderPath);
+        Files.writeString(jsonOutputPath, new JSONObject(regionMapping2).toString());
     }
 
     /**

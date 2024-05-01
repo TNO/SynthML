@@ -2,6 +2,8 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,16 +61,16 @@ public class UMLTransformer {
 
     public static void main(String[] args) throws IOException, CoreException {
         if (args.length == 2) {
-            transformFile(args[0], args[1]);
+            transformFile(Paths.get(args[0]), Paths.get(args[1]));
         } else {
             throw new IOException("Exactly two arguments expected: a source path and a target path.");
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
-        Model model = FileHelper.loadModel(sourcePath);
+    public static void transformFile(Path sourcePath, Path targetPath) throws IOException, CoreException {
+        Model model = FileHelper.loadModel(sourcePath.toString());
         new UMLTransformer(model).transformModel();
-        FileHelper.storeModel(model, targetPath);
+        FileHelper.storeModel(model, targetPath.toString());
     }
 
     public void transformModel() throws CoreException {

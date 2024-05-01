@@ -3,10 +3,12 @@ package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -26,16 +28,19 @@ public class Cif2Petrify {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 2) {
-            transformFile(args[0], args[1]);
+            transformFile(Paths.get(args[0]), Paths.get(args[1]));
         } else {
             throw new IOException("Exactly two arguments expected: a source path and a target path.");
         }
     }
 
-    public static void transformFile(String inputFilePath, String outputFolderPath) throws IOException {
-        Specification specification = CifFileHelper.loadCifSpec(Paths.get(inputFilePath));
+    public static void transformFile(Path inputFilePath, Path outputFolderPath) throws IOException {
+        String filePrefix = FilenameUtils.removeExtension(inputFilePath.getFileName().toString());
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
+        Files.createDirectories(outputFolderPath);
+        Specification specification = CifFileHelper.loadCifSpec(inputFilePath);
         List<String> body = Cif2Petrify.transform(specification);
-        Files.write(Paths.get(outputFolderPath), body);
+        Files.write(petrifyInputPath, body);
     }
 
     public static List<String> transform(Specification specification) {
