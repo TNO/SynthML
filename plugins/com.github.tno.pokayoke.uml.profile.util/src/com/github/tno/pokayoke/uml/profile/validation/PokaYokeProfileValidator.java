@@ -94,7 +94,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
                 .groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
-            if (entry.getKey() == null) {
+            if (Strings.isNullOrEmpty(entry.getKey())) {
                 for (NamedElement element: entry.getValue()) {
                     error("Required name not set.", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
                 }
@@ -221,12 +221,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        Constraint minConstraint = PokaYokeTypeUtil.getMinConstraint(primitiveType);
+        Constraint minConstraint = PokaYokeTypeUtil.getMinConstraint(primitiveType, false);
         if (minConstraint == null) {
             error("Minimum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
             return;
         }
-        Constraint maxConstraint = PokaYokeTypeUtil.getMaxConstraint(primitiveType);
+        Constraint maxConstraint = PokaYokeTypeUtil.getMaxConstraint(primitiveType, false);
         if (maxConstraint == null) {
             error("Maximum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
             return;

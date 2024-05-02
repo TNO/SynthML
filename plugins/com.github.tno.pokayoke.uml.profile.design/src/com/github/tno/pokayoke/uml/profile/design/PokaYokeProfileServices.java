@@ -3,19 +3,29 @@ package com.github.tno.pokayoke.uml.profile.design;
 
 import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.GUARD_EFFECTS_ACTION_STEREOTYPE;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Strings;
 
 import PokaYoke.GuardEffectsAction;
@@ -157,5 +167,69 @@ public class PokaYokeProfileServices {
      */
     public void setPropertyDefaultValue(Property property, String newValue) {
         PokaYokeUmlProfileUtil.setDefaultValue(property, newValue);
+    }
+
+    public List<PrimitiveType> getSupportedPrimitiveTypes(PrimitiveType type) {
+        return Arrays.asList(UmlPrimitiveType.INTEGER.load(type));
+    }
+
+    public PrimitiveType getSuperType(PrimitiveType type) {
+        return type.getGeneralizations().stream().map(Generalization::getGeneral)
+                .filter(PrimitiveType.class::isInstance).map(PrimitiveType.class::cast).findAny().orElse(null);
+    }
+
+    public void setSuperType(PrimitiveType type, PrimitiveType superType) {
+        if (superType == null) {
+            type.getGeneralizations().clear();
+        } else if (type.getGeneralization(superType) == null) {
+            type.getGeneralizations().clear();
+            type.createGeneralization(superType);
+        }
+    }
+
+    public String getMinValue(PrimitiveType type) {
+        Integer minValue = PokaYokeTypeUtil.getMinValue(type);
+        return minValue == null ? null : minValue.toString();
+    }
+
+    public void setMinValue(PrimitiveType type, String newValue) {
+        if (Strings.isNullOrEmpty(newValue)) {
+            Constraint constraint = PokaYokeTypeUtil.getMinConstraint(type, false);
+            if (constraint != null) {
+                EcoreUtil.delete(constraint, true);
+            }
+            return;
+        }
+        try {
+            LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
+            specification.setValue(Integer.parseInt(newValue));
+            PokaYokeTypeUtil.getMinConstraint(type, true).setSpecification(specification);
+        } catch (NumberFormatException e) {
+            Activator.getDefault().getLog().log(new Status(IStatus.ERROR, getClass(),
+                    "Failed to parse integer value: " + e.getLocalizedMessage(), e));
+        }
+    }
+
+    public String getMaxValue(PrimitiveType type) {
+        Integer maxValue = PokaYokeTypeUtil.getMaxValue(type);
+        return maxValue == null ? null : maxValue.toString();
+    }
+
+    public void setMaxValue(PrimitiveType type, String newValue) {
+        if (Strings.isNullOrEmpty(newValue)) {
+            Constraint constraint = PokaYokeTypeUtil.getMaxConstraint(type, false);
+            if (constraint != null) {
+                EcoreUtil.delete(constraint, true);
+            }
+            return;
+        }
+        try {
+            LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
+            specification.setValue(Integer.parseInt(newValue));
+            PokaYokeTypeUtil.getMaxConstraint(type, true).setSpecification(specification);
+        } catch (NumberFormatException e) {
+            Activator.getDefault().getLog().log(new Status(IStatus.ERROR, getClass(),
+                    "Failed to parse integer value: " + e.getLocalizedMessage(), e));
+        }
     }
 }

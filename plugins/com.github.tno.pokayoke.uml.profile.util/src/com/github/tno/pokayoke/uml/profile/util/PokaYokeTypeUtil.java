@@ -11,6 +11,7 @@ import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLPackage;
 
 /**
  * Type supported types for CIF annotated UML models, currently supporting:
@@ -62,7 +63,7 @@ public class PokaYokeTypeUtil {
 
     public static Integer getMinValue(Type type) {
         if (type instanceof PrimitiveType primitiveType) {
-            Constraint constraint = getMinConstraint(primitiveType);
+            Constraint constraint = getMinConstraint(primitiveType, false);
             if (constraint != null && constraint.getSpecification() instanceof LiteralInteger literalInteger) {
                 return literalInteger.getValue();
             }
@@ -70,13 +71,13 @@ public class PokaYokeTypeUtil {
         return null;
     }
 
-    public static Constraint getMinConstraint(PrimitiveType primitiveType) {
-        return primitiveType.getOwnedRule("min");
+    public static Constraint getMinConstraint(PrimitiveType primitiveType, boolean createOnDemand) {
+        return primitiveType.getOwnedRule("min", false, UMLPackage.Literals.CONSTRAINT, createOnDemand);
     }
 
     public static Integer getMaxValue(Type type) {
         if (type instanceof PrimitiveType primitiveType) {
-            Constraint constraint = getMaxConstraint(primitiveType);
+            Constraint constraint = getMaxConstraint(primitiveType, false);
             if (constraint != null && constraint.getSpecification() instanceof LiteralInteger literalInteger) {
                 return literalInteger.getValue();
             }
@@ -84,8 +85,8 @@ public class PokaYokeTypeUtil {
         return null;
     }
 
-    public static Constraint getMaxConstraint(PrimitiveType primitiveType) {
-        return primitiveType.getOwnedRule("max");
+    public static Constraint getMaxConstraint(PrimitiveType primitiveType, boolean createOnDemand) {
+        return primitiveType.getOwnedRule("max", false, UMLPackage.Literals.CONSTRAINT, createOnDemand);
     }
 
     /**
