@@ -35,14 +35,14 @@ public class PetrifyOutput2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(Path inputPath, Path outputPath) throws IOException {
-        List<String> input = PetriNetUMLFileHelper.readFile(inputPath.toString());
+        List<String> input = PNMLUMLFileHelper.readFile(inputPath.toString());
         PetriNet petriNet = transform(input);
         PostProcessPNML.removeLoop(petriNet);
 
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
         Path pnmlOutputFilePath = outputPath.resolve(filePrefix + ".pnml");
         Files.createDirectories(outputPath);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlOutputFilePath.toString());
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlOutputFilePath.toString());
     }
 
     /**

@@ -54,7 +54,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
@@ -148,7 +148,7 @@ public class FullSynthesisApp {
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
         // Load Petrify output.
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+        List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
         petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
@@ -157,7 +157,7 @@ public class FullSynthesisApp {
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
         Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
@@ -165,7 +165,7 @@ public class FullSynthesisApp {
         // Remove the loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");

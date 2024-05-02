@@ -23,7 +23,7 @@ public class PNML2UMLActivity {
     private Map<Transition, OpaqueAction> transitionToAction;
 
     public void transformFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
-        PetriNet petriNet = PetriNetUMLFileHelper.readPetriNet(inputPath.toString());
+        PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
         Activity activity = transform(petriNet);
         PostProcessActivity.removeInternalActions(activity);
 

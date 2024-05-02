@@ -30,8 +30,8 @@ import fr.lip6.move.pnml.framework.utils.exception.ValidationFailedException;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.hlapi.PetriNetDocHLAPI;
 
-public class PetriNetUMLFileHelper {
-    private PetriNetUMLFileHelper() {
+public class PNMLUMLFileHelper {
+    private PNMLUMLFileHelper() {
     }
 
     public static List<String> readFile(String sourcePath) throws IOException {
