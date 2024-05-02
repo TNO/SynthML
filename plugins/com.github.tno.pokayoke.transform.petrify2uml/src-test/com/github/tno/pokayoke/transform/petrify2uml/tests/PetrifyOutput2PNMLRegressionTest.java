@@ -12,9 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/**
- * Regression tests.
- */
+/** Regression test for the translation from Petrify output to PNML. */
 class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "out";
 

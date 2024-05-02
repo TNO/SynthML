@@ -15,7 +15,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 
-/** Regression test for the translation from Petrify output to Activity. */
+/** Regression test for the translation from PNML to UML Activity. */
 class PNML2UMLActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "pnml";
 

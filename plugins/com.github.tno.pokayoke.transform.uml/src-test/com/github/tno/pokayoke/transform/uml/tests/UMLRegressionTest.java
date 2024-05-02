@@ -13,9 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
-/**
- * Regression tests.
- */
+/** Regression test for translating UML to executable UML. */
 class UMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
 

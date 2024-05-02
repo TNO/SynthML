@@ -12,9 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/**
- * Regression tests.
- */
+/** Regression test for translating CIF state space to Petrify input. */
 class CIF2PetrifyRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "cif";
 

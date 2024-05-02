@@ -30,7 +30,7 @@ import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.Transition;
 
-/** Helper methods to translate Petri Net to Activity. */
+/** Helper methods to translate PNML to UML Activity. */
 public class PNML2UMLActivityHelper {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
