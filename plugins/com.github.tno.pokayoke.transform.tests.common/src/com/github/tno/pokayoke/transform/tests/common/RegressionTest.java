@@ -42,6 +42,8 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  */
 public abstract class RegressionTest {
+    private static String regressiontestsName = "regressiontests";
+
     /**
      * Executes the different steps in the regression test.
      *
@@ -104,7 +106,7 @@ public abstract class RegressionTest {
      * @param inputExtension Extension of the input file.
      * @return Stream of arguments for regression tests.
      */
-    public Stream<? extends Arguments> provideArguments(String inputExtension) {
+    public static Stream<? extends Arguments> provideArguments(String inputExtension) {
         return provideArguments("input." + inputExtension, "expected", "actual");
     }
 
@@ -117,7 +119,7 @@ public abstract class RegressionTest {
      * @param actualFolder Name of actual output folder.
      * @return Stream of arguments for regression tests.
      */
-    private Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFolder,
+    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFolder,
             final String actualFolder)
     {
         final String testResourcesName = "resources-test";
@@ -132,8 +134,12 @@ public abstract class RegressionTest {
         return provideArguments(regressiontestsPath, inputFile, expectedFolder, actualFolder);
     }
 
-    protected String getRegressionTestsName() {
-        return "regressiontests";
+    public static void setRegressionTestsName(String name) {
+        regressiontestsName = name;
+    }
+
+    private static String getRegressionTestsName() {
+        return regressiontestsName;
     }
 
     /**
