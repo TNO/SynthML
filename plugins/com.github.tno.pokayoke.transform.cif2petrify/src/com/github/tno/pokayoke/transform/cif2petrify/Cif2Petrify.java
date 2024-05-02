@@ -64,8 +64,7 @@ public class Cif2Petrify {
                 "Expected that 'start' and 'end' are not used as event names.");
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
-        String eventDeclaration = ".dummy start end " + String.join(" ", eventNames);
-        petrifyInput.add(eventDeclaration);
+        petrifyInput.add(".dummy start end " + String.join(" ", eventNames));
 
         petrifyInput.add(".state graph");
 

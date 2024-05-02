@@ -38,7 +38,7 @@ public class ExtractRegionStateMapping {
      *
      * @param petrifyInputPath Petrify input file path.
      * @param petrifyOutputPath Petrify output file path.
-     * @param outputFolderPath Output folder path JSON file under which to write the map.
+     * @param outputFolderPath Path of the output folder to which to write the JSON file.
      * @throws IOException In case generating the output JSON failed.
      */
     public static void extractMappingFromFiles(Path petrifyInputPath, Path petrifyOutputPath, Path outputFolderPath)
