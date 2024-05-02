@@ -87,7 +87,7 @@ public abstract class RegressionTest {
      * @throws IOException Thrown when one of the files can't be read.
      */
     protected void verifyTest(Path expectedPath, Path outputPath, String message) throws IOException {
-        FileCompare.checkDirectoriesEqual(expectedPath, outputPath, path -> true, message);
+        FileCompare.checkDirectoriesEqual(expectedPath, outputPath, message);
     }
 
     /**
