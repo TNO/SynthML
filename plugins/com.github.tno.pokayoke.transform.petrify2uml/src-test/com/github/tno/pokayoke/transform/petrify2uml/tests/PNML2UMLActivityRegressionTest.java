@@ -19,11 +19,13 @@ import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 class PNML2UMLActivityRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "pnml";
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests-pnml2uml";
+    public Stream<? extends Arguments> provideArguments() throws Exception {
+        return super.provideArguments(INPUT_FILE_EXTENSION);
+    }
 
-    public static Stream<? extends Arguments> provideArguments() throws Exception {
-        RegressionTest.setRegressionTestsName(REGRESSIONTESTS_NAME);
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+    @Override
+    protected String getRegressionTestsName() {
+        return "regressiontests-pnml2uml";
     }
 
     @Override

@@ -19,8 +19,8 @@ import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 class UMLRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
 
-    public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+    public Stream<? extends Arguments> provideArguments() throws Exception {
+        return super.provideArguments(INPUT_FILE_EXTENSION);
     }
 
     @Override
