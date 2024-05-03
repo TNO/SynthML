@@ -222,6 +222,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
         }
 
         // TODO check events
+        // this requires extending the CifContext with opaque actions
 
         return predicate;
     }

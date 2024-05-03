@@ -102,9 +102,9 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
             return CifConstructors.newEnumType(enumMap.get(umlEnum), null);
         } else if (PokaYokeTypeUtil.isBooleanType(type)) {
             return CifConstructors.newBoolType();
+        } else {
+            throw new RuntimeException("Unsupported type: " + type);
         }
-
-        throw new RuntimeException("Unsupported type: " + type);
     }
 
     @Override

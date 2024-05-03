@@ -239,6 +239,8 @@ public class UmlToCifTranslator {
             Preconditions.checkArgument(min <= max, "Expected the max value to be at least the min value.");
         }
 
+        // TODO use variable names that are consistent with rest of file
+
         // Create the requirement automaton.
         Automaton automaton = CifConstructors.newAutomaton();
         automaton.setKind(SupKind.REQUIREMENT);
