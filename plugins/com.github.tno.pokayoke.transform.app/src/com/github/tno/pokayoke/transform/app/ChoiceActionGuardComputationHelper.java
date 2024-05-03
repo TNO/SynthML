@@ -37,6 +37,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.BoolType;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
+import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 
 import com.google.common.base.Preconditions;
 
@@ -176,6 +177,8 @@ public class ChoiceActionGuardComputationHelper {
 
                         binaryExpression.setRight(newEnumLiteralExpression(enumliteral, null, deepclone(variableType)));
                     } else if (variableType instanceof BoolType) {
+                        binaryExpression.setRight(deepclone(expression));
+                    } else if (variableType instanceof IntType) {
                         binaryExpression.setRight(deepclone(expression));
                     } else {
                         throw new RuntimeException(
