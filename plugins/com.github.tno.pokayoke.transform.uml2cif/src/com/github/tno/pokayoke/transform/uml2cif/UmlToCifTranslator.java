@@ -209,7 +209,7 @@ public class UmlToCifTranslator {
                         // Declare the CIF uncontrollable event.
                         Event cifEndEvent = CifConstructors.newEvent();
                         cifEndEvent.setControllable(false);
-                        cifEndEvent.setName(umlOpaqueBehavior.getName() + "__result_" + i);
+                        cifEndEvent.setName(umlOpaqueBehavior.getName() + "_result_" + i);
                         cifPlant.getDeclarations().add(cifEndEvent);
                         cifEndEvents.add(cifEndEvent);
 
@@ -239,7 +239,13 @@ public class UmlToCifTranslator {
         return cifPlant;
     }
 
-    // TODO relocate
+    /**
+     * Creates a CIF plant for a given class that encodes the atomicity constraints of its nondeterministic actions.
+     *
+     * @param umlClassName The name of the class for which to make the atomicity constraint plant.
+     * @param events The list of events for that class.
+     * @return The CIF plant that encodes the atomicity constraints.
+     */
     private Automaton createAtomicityPlant(String umlClassName, List<Event> events) {
         // Create the CIF plant.
         Automaton plant = CifConstructors.newAutomaton();
