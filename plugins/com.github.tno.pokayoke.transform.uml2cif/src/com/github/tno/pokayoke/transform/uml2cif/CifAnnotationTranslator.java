@@ -42,9 +42,9 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
-// TODO translate positions
+/** Translates CIF annotations like guards and effects in UML models to CIF. */
 public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
-    // TODO JavaDoc
+    /** The context that allows querying the input model. */
     private final CifContext context;
 
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
@@ -59,7 +59,16 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    // TODO find nicer way for passing all the mappings..
+    /**
+     * Instantiates a new CIF annotation translator.
+     *
+     * @param context The context that allows querying the input model.
+     * @param enumMap The mapping from UML enumerations to corresponding translated CIF enumeration declarations.
+     * @param enumLiteralMap The mapping from UML enumeration literals to corresponding translated CIF enumeration
+     *     literals.
+     * @param eventMap The mapping from UML opaque behaviors to corresponding translated CIF events.
+     * @param variableMap The mapping from UML properties to corresponding translated CIF discrete variables.
+     */
     public CifAnnotationTranslator(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<OpaqueBehavior, Event> eventMap,
             Map<Property, DiscVariable> variableMap)
@@ -71,22 +80,42 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
         this.variableMap = variableMap;
     }
 
-    // TODO JavaDoc
+    /**
+     * Translates an expression.
+     *
+     * @param expr The parsed expression to translate.
+     * @return The translated CIF expression.
+     */
     public Expression translate(AExpression expr) {
         return (Expression)visit(expr, context);
     }
 
-    // TODO JavaDoc
+    /**
+     * Translates an update.
+     *
+     * @param update The parsed update to translate.
+     * @return The translated CIF update.
+     */
     public Update translate(AUpdate update) {
         return (Update)visit(update, context);
     }
 
-    // TODO JavaDoc
+    /**
+     * Translates a collection of updates.
+     *
+     * @param updates The parsed updates to translate.
+     * @return The translated CIF updates.
+     */
     public List<Update> translate(Collection<AUpdate> updates) {
         return updates.stream().map(this::translate).toList();
     }
 
-    // TODO JavaDoc
+    /**
+     * Translates an invariant.
+     *
+     * @param invariant The parsed invariant to translate.
+     * @return The translated CIF invariant.
+     */
     public List<Invariant> translate(AInvariant invariant) {
         return ImmutableList.of((Invariant)visit(invariant, context));
     }

@@ -17,7 +17,6 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-
 import com.google.common.base.Optional;
 
 /**
@@ -214,15 +213,9 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
             CifContext ctx)
     {
-        if (invKind.isPresent()) {
-            String kind = invKind.get();
-            if (!kind.equals("needs") && !kind.equals("disables")) {
-                throw new TypeException("Expected 'needs' or 'disables', but got " + kind, operatorPos);
-            }
+        if (!PokaYokeTypeUtil.isBooleanType(predicate)) {
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
         }
-
-        // TODO check events
-        // this requires extending the CifContext with opaque actions
 
         return predicate;
     }

@@ -10,7 +10,6 @@ import org.eclipse.uml2.uml.EnumerationLiteral;
 
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 
-// TODO merge with CifContext
 public class ExtendedCifContext extends CifContext {
     public ExtendedCifContext(Element element) {
         super(element);
