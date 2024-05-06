@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -33,6 +34,7 @@ import com.google.common.base.Strings;
 
 public class ActivityHelper {
     private ActivityHelper() {
+        // Empty for utility classes
     }
 
     /**
@@ -82,7 +84,7 @@ public class ActivityHelper {
         checkGuardNode.getBodies().add(guard);
         checkGuardNode.getLanguages().add("Python");
         OutputPin checkGuardOutput = checkGuardNode.createOutputValue("doesGuardHold",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow between the outer merge node and the node that checks the guard.
         ControlFlow outerMergeToCheckGuardFlow = FileHelper.FACTORY.createControlFlow();
@@ -122,7 +124,7 @@ public class ActivityHelper {
         sendAcquireNode.setSignal(acquire);
         InputPin sendAcquireInput = FileHelper.FACTORY.createInputPin();
         sendAcquireInput.setName("requester");
-        sendAcquireInput.setType(FileHelper.loadPrimitiveType("String"));
+        sendAcquireInput.setType(UmlPrimitiveType.STRING.load(acquire));
         sendAcquireNode.getArguments().add(sendAcquireInput);
 
         // Define the requester value specification node.
@@ -130,7 +132,7 @@ public class ActivityHelper {
         requesterValueNode.setActivity(activity);
         OutputPin requesterValueOutput = FileHelper.FACTORY.createOutputPin();
         requesterValueOutput.setName("requester");
-        requesterValueOutput.setType(FileHelper.loadPrimitiveType("String"));
+        requesterValueOutput.setType(UmlPrimitiveType.STRING.load(acquire));
         requesterValueNode.setResult(requesterValueOutput);
         LiteralString requesterValueLiteral = FileHelper.FACTORY.createLiteralString();
         requesterValueLiteral.setValue(callerId);
@@ -168,7 +170,7 @@ public class ActivityHelper {
         checkActiveNode.getBodies().add("active == '" + callerId + "'");
         checkActiveNode.getLanguages().add("Python");
         OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow from the inner merge node to the node that checks the active variable.
         ControlFlow innerMergeToCheckActiveFlow = FileHelper.FACTORY.createControlFlow();
@@ -199,7 +201,7 @@ public class ActivityHelper {
         String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard, effect);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow from the inner decision node to the node that executes the guard and effect.
         ControlFlow innerDecisionToGuardAndEffectFlow = FileHelper.FACTORY.createControlFlow();
@@ -314,7 +316,7 @@ public class ActivityHelper {
         readRequesterNode.setStructuralFeature(acquireParameter);
         InputPin readRequesterInput = readRequesterNode.createObject(acceptAcquireOutput.getName(), acquireSignal);
         OutputPin readRequesterOutput = readRequesterNode.createResult(acquireParameter.getName(),
-                FileHelper.loadPrimitiveType("String"));
+                UmlPrimitiveType.STRING.load(acquireEvent));
 
         // Define the object flow between the node that accepts acquire signals and the node that reads the requester
         // variable.
@@ -327,7 +329,7 @@ public class ActivityHelper {
         OpaqueAction setActiveNode = FileHelper.FACTORY.createOpaqueAction();
         setActiveNode.setActivity(activity);
         InputPin setActiveInput = setActiveNode.createInputValue(acquireParameter.getName(),
-                FileHelper.loadPrimitiveType("String"));
+                UmlPrimitiveType.STRING.load(acquireEvent));
         setActiveNode.getBodies().add("active = " + acquireParameter.getName());
         setActiveNode.getLanguages().add("Python");
 
@@ -353,7 +355,7 @@ public class ActivityHelper {
         checkReleasedNode.getBodies().add("active == ''");
         checkReleasedNode.getLanguages().add("Python");
         OutputPin checkReleasedOutput = checkReleasedNode.createOutputValue("isReleased",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquireEvent));
 
         // Define the control flow from the inner merge node to the node that checks whether the lock has been released.
         ControlFlow innerMergeToCheckReleaseFlow = FileHelper.FACTORY.createControlFlow();

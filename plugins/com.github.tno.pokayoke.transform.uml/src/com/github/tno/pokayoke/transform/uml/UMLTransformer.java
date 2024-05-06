@@ -39,6 +39,7 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 /**
@@ -115,7 +116,7 @@ public class UMLTransformer {
         acquireSignal.setName("acquire");
         Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
-        acquireParameter.setType(FileHelper.loadPrimitiveType("String"));
+        acquireParameter.setType(UmlPrimitiveType.STRING.load(lockClass));
         acquireSignal.getOwnedAttributes().add(acquireParameter);
         lockClass.getNestedClassifiers().add(acquireSignal);
 
@@ -136,7 +137,7 @@ public class UMLTransformer {
         Property activeProperty = FileHelper.FACTORY.createProperty();
         activeProperty.setIsStatic(true);
         activeProperty.setName("active");
-        activeProperty.setType(FileHelper.loadPrimitiveType("String"));
+        activeProperty.setType(UmlPrimitiveType.STRING.load(lockClass));
         LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
         activePropertyDefaultValue.setValue("");
         activeProperty.setDefaultValue(activePropertyDefaultValue);
@@ -341,7 +342,7 @@ public class UMLTransformer {
 
         // Define the object flow from the new evaluator node to the decision node.
         OutputPin evaluationOutput = decisionEvaluationNode.createOutputValue("branch",
-                FileHelper.loadPrimitiveType("Integer"));
+                UmlPrimitiveType.INTEGER.load(decisionNode));
         ObjectFlow evaluationToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         evaluationToDecisionObjFlow.setActivity(decisionNode.getActivity());
         evaluationToDecisionObjFlow.setSource(evaluationOutput);
