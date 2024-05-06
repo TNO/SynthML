@@ -177,8 +177,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (propMinValue != null && propMaxValue != null && propMaxValue >= propMinValue
                         && (propDefaultValue < propMinValue || propDefaultValue > propMaxValue))
                 {
-                    throw new TypeException(String.format("value %d is not within range [%d .. %d]",
-                            propDefaultValue, propMinValue, propMaxValue));
+                    throw new TypeException(String.format("value %d is not within range [%d .. %d]", propDefaultValue,
+                            propMinValue, propMaxValue));
                 }
             }
         } catch (RuntimeException e) {

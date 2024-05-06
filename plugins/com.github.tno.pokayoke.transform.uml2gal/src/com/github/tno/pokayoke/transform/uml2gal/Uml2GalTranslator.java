@@ -51,6 +51,7 @@ import fr.lip6.move.gal.Parameter;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.Statement;
 import fr.lip6.move.gal.Transition;
+import fr.lip6.move.gal.TypedefDeclaration;
 import fr.lip6.move.gal.Variable;
 
 /** Translates annotated UML models to GAL specifications. */
@@ -214,7 +215,8 @@ public class Uml2GalTranslator {
 
         // Make sure the property type has already been translated to GAL.
         String typeName = property.getType().getName();
-        Preconditions.checkNotNull(specificationBuilder.getTypedef(typeName), "Undeclared type: " + typeName);
+        TypedefDeclaration typedef = specificationBuilder.getTypedef(typeName);
+        Preconditions.checkNotNull(typedef, "Undeclared type: " + typeName);
 
         // In GAL all variable declarations need to have a default value. If the current property has a default value
         // defined, we translate it as part of the variable declaration. Otherwise, we give the variable a (temporary)
@@ -227,12 +229,16 @@ public class Uml2GalTranslator {
             variable = typeBuilder.addVariable(name, expressionTranslator.translateIntExpr(defaultValue));
         } else {
             // Just use the minimum value of the type definition as default value
-            IntExpression typeMin = EcoreUtil.copy(specificationBuilder.getTypedef(typeName).getMin());
+            IntExpression typeMin = EcoreUtil.copy(typedef.getMin());
             variable = typeBuilder.addVariable(name, typeMin);
         }
 
         // Make sure the created variable can be traced back to the property.
         variableTracing.put(variable, property);
+
+        if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+            specificationBuilder.addVariableBoundsInvariant(variable, typedef);
+        }
     }
 
     private void translateActivity(Activity activity) {
@@ -344,6 +350,14 @@ public class Uml2GalTranslator {
         // Add the specified guards and effects to the transition.
         transitionBuilder.addGuards(guards);
         transitionBuilder.addActions(effects);
+
+        for (Map.Entry<Variable, Element> entry: variableTracing.entrySet()) {
+            Variable variable = entry.getKey();
+            if (entry.getValue() instanceof Property property && PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                TypedefDeclaration intType = specificationBuilder.getTypedef(property.getType().getName());
+                transitionBuilder.addGuard(Uml2GalTranslationHelper.createVariableBoundsPredicate(variable, intType));
+            }
+        }
 
         // Define a guard for every incoming edge to consider, to check if it is enabled, as well as an assignment to
         // make it disabled after having taken the transition.
