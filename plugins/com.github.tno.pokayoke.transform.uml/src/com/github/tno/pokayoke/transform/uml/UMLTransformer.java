@@ -3,8 +3,11 @@ package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
@@ -38,6 +41,7 @@ import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
@@ -54,9 +58,12 @@ public class UMLTransformer {
 
     private final CifToPythonTranslator translator;
 
+    private final Map<String, Range<Integer>> propertyBounds;
+
     public UMLTransformer(Model model) {
         this.model = model;
         this.translator = new CifToPythonTranslator(new CifContext(this.model));
+        this.propertyBounds = new LinkedHashMap<>();
     }
 
     public static void main(String[] args) throws IOException, CoreException {
@@ -86,8 +93,9 @@ public class UMLTransformer {
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
 
-        // Translate all default values of class properties that are literal strings, to become opaque actions.
+        propertyBounds.clear();
         for (Property property: contextClass.getOwnedAttributes()) {
+            // Translate all default values of class properties that are literal strings, to become opaque actions.
             AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
             if (cifExpression != null) {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
@@ -95,6 +103,12 @@ public class UMLTransformer {
                 String translatedLiteral = translator.translateExpression(cifExpression);
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
+            }
+
+            // Collect the bounds for integer properties, they will be validated later.
+            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                propertyBounds.put(property.getName(), Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                        PokaYokeTypeUtil.getMaxValue(property.getType())));
             }
         }
 
@@ -281,7 +295,7 @@ public class UMLTransformer {
         List<String> effects = translator.translateUpdates(CifParserHelper.parseEffects(action));
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, acquireSignal,
+        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
                 action.getQualifiedName());
         String actionName = action.getName();
         newActivity.setName(actionName);

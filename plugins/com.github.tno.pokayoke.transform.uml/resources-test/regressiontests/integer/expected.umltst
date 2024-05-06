@@ -109,6 +109,12 @@
 if guard:
 	intA1 = (intA1) + (1)
 	intB1 = 16
+	if not (1 &lt;= intA1 &lt;= 10):
+		print(&quot;Expected 'intA1' to stay between 1 and 10, but got &quot; + str(intA1))
+	if not (1 &lt;= intA2 &lt;= 10):
+		print(&quot;Expected 'intA2' to stay between 1 and 10, but got &quot; + str(intA2))
+	if not (11 &lt;= intB1 &lt;= 21):
+		print(&quot;Expected 'intB1' to stay between 11 and 21, but got &quot; + str(intB1))
 active = ''
 isSuccessful = guard</body>
           <language>Python</language>

@@ -2,8 +2,9 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
+import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ControlFlow;
@@ -43,22 +44,37 @@ public class ActivityHelper {
      *
      * @param guard A single-line Python boolean expression.
      * @param effects A list of single-line Python programs.
+     * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(String guard, List<String> effects, Signal acquire, String callerId) {
+    public static Activity createAtomicActivity(String guard, List<String> effects,
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+    {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
         Preconditions.checkArgument(!callerId.contains("'"),
                 "Argument callerId contains quote character ('): " + callerId);
 
         // Combine all given effects into a single Python program.
-        String effect = "pass";
+        String effectBody = "pass";
         if (!effects.isEmpty()) {
-            effect = "if guard:\n";
-            effect += effects.stream().map(e -> "\t" + e).collect(Collectors.joining("\n"));
+            effectBody = "if guard:";
+            for (String effect: effects) {
+                effectBody += "\n\t" + effect;
+            }
+            // Validate the property bounds at runtime
+            for (Map.Entry<String, Range<Integer>> entry: propertyBounds.entrySet()) {
+                String property = entry.getKey();
+                Range<Integer> bounds = entry.getValue();
+                effectBody += String.format("\n\tif not (%d <= %s <= %d):", bounds.getMinimum(), property,
+                        bounds.getMaximum());
+                effectBody += String.format(
+                        "\n\t\tprint(\"Expected '%s' to stay between %d and %d, but got \" + str(%s))", property,
+                        bounds.getMinimum(), bounds.getMaximum(), property);
+            }
         }
 
         // Define a new activity that encodes the guard and effect.
@@ -198,7 +214,8 @@ public class ActivityHelper {
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
-        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard, effect);
+        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard,
+                effectBody);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
                 UmlPrimitiveType.BOOLEAN.load(acquire));
