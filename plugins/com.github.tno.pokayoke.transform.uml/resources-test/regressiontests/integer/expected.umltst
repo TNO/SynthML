@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="ASCII"?>
 <uml:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" name="MyModel">
   <packagedElement xsi:type="uml:Class" name="Context" visibility="public" classifierBehavior="//Context/main" isActive="true">
-    <ownedAttribute name="myBool" visibility="public">
-      <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+    <ownedAttribute name="intA1" visibility="public" type="//IntegerA">
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
     </ownedAttribute>
-    <ownedAttribute name="myInt" visibility="public" type="//MyInt">
+    <ownedAttribute name="intA2" visibility="public" type="//IntegerA">
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:OpaqueExpression">
+        <body>5</body>
+        <language>Python</language>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedAttribute name="intB1" visibility="public" type="//IntegerB">
+      <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
+      <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:OpaqueExpression">
+        <body>15</body>
+        <language>Python</language>
+      </defaultValue>
     </ownedAttribute>
     <ownedAttribute name="active" isStatic="true">
       <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
@@ -66,7 +77,7 @@
         <ownedNode xsi:type="uml:InitialNode" outgoing="//Context/main/MyAction/@edge.0"/>
         <ownedNode xsi:type="uml:MergeNode" incoming="//Context/main/MyAction/@edge.0 //Context/main/MyAction/@edge.4 //Context/main/MyAction/@edge.16" outgoing="//Context/main/MyAction/@edge.1"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//Context/main/MyAction/@edge.1" outgoing="//Context/main/MyAction/@edge.2">
-          <body>not (myBool)</body>
+          <body>(intA2) &lt; (8)</body>
           <language>Python</language>
           <outputValue name="doesGuardHold" outgoing="//Context/main/MyAction/@edge.3">
             <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
@@ -94,10 +105,10 @@
         </ownedNode>
         <ownedNode xsi:type="uml:DecisionNode" incoming="//Context/main/MyAction/@edge.9 //Context/main/MyAction/@edge.10" outgoing="//Context/main/MyAction/@edge.11 //Context/main/MyAction/@edge.12"/>
         <ownedNode xsi:type="uml:OpaqueAction" incoming="//Context/main/MyAction/@edge.11" outgoing="//Context/main/MyAction/@edge.13">
-          <body>guard = not (myBool)
+          <body>guard = (intA2) &lt; (8)
 if guard:
-	myBool = ((2) >= (1)) and ((1) &lt;= (2))
-	myInt = ((- (1)) + (2)) - (1)
+	intA1 = (intA1) + (1)
+	intB1 = 16
 active = ''
 isSuccessful = guard</body>
           <language>Python</language>
@@ -119,12 +130,23 @@ isSuccessful = guard</body>
       <ownedNode xsi:type="uml:CallBehaviorAction" incoming="//Context/main/@edge.3" behavior="//Lock/lockhandler"/>
     </ownedBehavior>
   </packagedElement>
-  <packagedElement xsi:type="uml:PrimitiveType" name="MyInt" visibility="public">
-    <ownedRule name="min" constrainedElement="//MyInt">
-      <specification xsi:type="uml:LiteralInteger" name="literal integer" value="-1"/>
+  <packagedElement xsi:type="uml:PrimitiveType" name="IntegerA" visibility="public">
+    <ownedRule name="min" constrainedElement="//IntegerA">
+      <specification xsi:type="uml:LiteralInteger" value="1"/>
     </ownedRule>
-    <ownedRule name="max" constrainedElement="//MyInt">
-      <specification xsi:type="uml:LiteralInteger" name="literal integer" value="1"/>
+    <ownedRule name="max" constrainedElement="//IntegerA">
+      <specification xsi:type="uml:LiteralInteger" value="10"/>
+    </ownedRule>
+    <generalization>
+      <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
+  <packagedElement xsi:type="uml:PrimitiveType" name="IntegerB" visibility="public">
+    <ownedRule name="min">
+      <specification xsi:type="uml:LiteralInteger" value="11"/>
+    </ownedRule>
+    <ownedRule name="max">
+      <specification xsi:type="uml:LiteralInteger" value="21"/>
     </ownedRule>
     <generalization>
       <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
@@ -156,7 +178,7 @@ isSuccessful = guard</body>
       <ownedNode xsi:type="uml:MergeNode" incoming="//Lock/lockhandler/@edge.0 //Lock/lockhandler/@edge.8" outgoing="//Lock/lockhandler/@edge.1"/>
       <ownedNode xsi:type="uml:AcceptEventAction" incoming="//Lock/lockhandler/@edge.1">
         <result name="msg" outgoing="//Lock/lockhandler/@edge.2" type="//Lock/acquire" isOrdered="true" isUnique="false"/>
-        <trigger event="//@packagedElement.3"/>
+        <trigger event="//@packagedElement.4"/>
       </ownedNode>
       <ownedNode xsi:type="uml:ReadStructuralFeatureAction" structuralFeature="//Lock/acquire/requester">
         <object name="msg" incoming="//Lock/lockhandler/@edge.2" type="//Lock/acquire"/>
