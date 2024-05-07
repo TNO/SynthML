@@ -19,8 +19,11 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.InstanceValue;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -95,7 +98,8 @@ public class UMLTransformer {
 
         propertyBounds.clear();
         for (Property property: contextClass.getOwnedAttributes()) {
-            // Translate all default values of class properties that are literal strings, to become opaque actions.
+            // Translate all default values of class properties to become Python expressions,
+            // or set default values for simulation.
             AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
             if (cifExpression != null) {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
@@ -103,10 +107,20 @@ public class UMLTransformer {
                 String translatedLiteral = translator.translateExpression(cifExpression);
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
+            } else if (PokaYokeTypeUtil.isBooleanType(property.getType())) {
+                property.setDefaultValue(FileHelper.FACTORY.createLiteralBoolean());
+            } else if (PokaYokeTypeUtil.isEnumerationType(property.getType())) {
+                InstanceValue value = FileHelper.FACTORY.createInstanceValue();
+                value.setInstance(((Enumeration)property.getType()).getOwnedLiterals().get(0));
+                property.setDefaultValue(value);
+            } else if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
+                value.setValue(PokaYokeTypeUtil.getMinValue(property.getType()));
+                property.setDefaultValue(value);
             }
 
-            // Collect the bounds for integer properties, they will be validated later.
             if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                // Collect the bounds for integer properties, they will be validated later.
                 propertyBounds.put(property.getName(), Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
                         PokaYokeTypeUtil.getMaxValue(property.getType())));
             }

@@ -4,6 +4,7 @@
     <ownedAttribute name="intA1" visibility="public" type="//IntegerA">
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:LiteralInteger" value="1"/>
     </ownedAttribute>
     <ownedAttribute name="intA2" visibility="public" type="//IntegerA">
       <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
