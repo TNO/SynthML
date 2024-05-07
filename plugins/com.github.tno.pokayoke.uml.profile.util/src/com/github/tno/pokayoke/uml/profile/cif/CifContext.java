@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 
@@ -26,7 +27,7 @@ public class CifContext {
      */
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.PACKAGE,
             UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.CLASS,
-            UMLPackage.Literals.PROPERTY, UMLPackage.Literals.ACTIVITY);
+            UMLPackage.Literals.PROPERTY, UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.OPAQUE_BEHAVIOR);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -98,5 +99,9 @@ public class CifContext {
             return property;
         }
         return null;
+    }
+
+    public boolean hasOpaqueBehaviors() {
+        return getAllElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
     }
 }

@@ -231,7 +231,7 @@ public class UmlToCifTranslator {
             cifPlant.getDeclarations().add(cifAtomicityVar);
 
             // Define a mapping from events that are related to nondeterministic actions, to the index of the
-            // nondetermistic action, starting with index 1. So all CIF events related to the first nondeterministic
+            // nondeterministic action, starting with index 1. So all CIF events related to the first nondeterministic
             // action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;

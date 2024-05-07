@@ -31,6 +31,7 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
@@ -312,11 +313,33 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidGuard(Action action) {
         try {
-            AExpression guardExpr = CifParserHelper.parseGuard(action);
-            if (guardExpr == null) {
-                return;
-            }
-            new CifTypeChecker(action).checkBooleanExpression(guardExpr);
+            checkValidGuard(CifParserHelper.parseGuard(action), action);
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    /**
+     * Validates the guard of the given opaque behavior.
+     *
+     * @param behavior The behavior to validate.
+     */
+    @Check
+    private void checkValidGuard(OpaqueBehavior behavior) {
+        try {
+            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkValidGuard(AExpression guardExpr, Element element) {
+        if (guardExpr == null) {
+            return;
+        }
+
+        try {
+            new CifTypeChecker(element).checkBooleanExpression(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
@@ -330,9 +353,31 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidEffects(Action action) {
         try {
+            checkValidEffects(CifParserHelper.parseEffects(action), action);
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    /**
+     * Validates the effects of the given opaque behavior.
+     *
+     * @param behavior The behavior to validate.
+     */
+    @Check
+    private void checkValidEffects(OpaqueBehavior behavior) {
+        try {
+            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkValidEffects(List<AUpdate> updates, Element element) {
+        try {
             HashSet<String> updatedVariables = new HashSet<>();
-            for (AUpdate update: CifParserHelper.parseEffects(action)) {
-                new CifTypeChecker(action).checkUpdate(update);
+            for (AUpdate update: updates) {
+                new CifTypeChecker(element).checkUpdate(update);
 
                 // Update is checked above, so ClassCastException is not possible on next lines
                 AExpression variableExpr = ((AAssignmentUpdate)update).addressable;

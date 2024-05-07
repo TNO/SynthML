@@ -51,11 +51,14 @@ public class UMLTransformer {
 
     private final Model model;
 
+    private final CifContext cifContext;
+
     private final CifToPythonTranslator translator;
 
     public UMLTransformer(Model model) {
         this.model = model;
-        this.translator = new CifToPythonTranslator(new CifContext(this.model));
+        this.cifContext = new CifContext(this.model);
+        this.translator = new CifToPythonTranslator(this.cifContext);
     }
 
     public static void main(String[] args) throws IOException, CoreException {
@@ -75,6 +78,8 @@ public class UMLTransformer {
     public void transformModel() throws CoreException {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
         ValidationHelper.validateModel(model);
+
+        Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
