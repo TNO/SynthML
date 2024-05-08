@@ -126,9 +126,8 @@ public abstract class RegressionTest {
         final Path testResourcesPath = Path.of(testResourcesName);
         assertDirectoryExists(testResourcesPath, "The '" + testResourcesName + "' directory doesn't exist.");
 
-        String regressiontestsName = regressionTestsName;
-        final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
-        assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
+        final Path regressiontestsPath = testResourcesPath.resolve(regressionTestsName);
+        assertDirectoryExists(regressiontestsPath, "The '" + regressionTestsName
                 + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
 
         final String regressiontestsPathString = regressiontestsPath.toString();
