@@ -73,7 +73,7 @@
         </controls>
         <controls xsi:type="properties:TextDescription" name="PR_PR_DefaultValue" labelExpression="Default value:" helpExpression="The Default Value of the Property" valueExpression="aql:self.getDefault()">
           <initialOperation>
-            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="aql:self.setDefault(newValue)">
+            <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setPropertyDefaultValue(newValue)">
               <subModelOperations xsi:type="tool:SetValue" featureName="lower" valueExpression="1"/>
               <subModelOperations xsi:type="tool:SetValue" featureName="upper" valueExpression="1"/>
             </firstModelOperations>

@@ -41,6 +41,7 @@ import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -145,11 +146,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (property.getLower() != 1) {
             error("Property should be mandatory", UMLPackage.Literals.MULTIPLICITY_ELEMENT__LOWER);
         }
-        Type propType;
-        try {
-            propType = CifTypeChecker.checkSupportedType(property);
-        } catch (RuntimeException e) {
-            error("Invalid property: " + e.getLocalizedMessage(), UMLPackage.Literals.TYPED_ELEMENT__TYPE);
+
+        Type propType = property.getType();
+        if (propType == null) {
+            error("Property type not set", UMLPackage.Literals.TYPED_ELEMENT__TYPE);
+            return;
+        } else if (!PokaYokeTypeUtil.isSupportedType(propType)) {
+            error("Unsupported property type: " + propType.getName(), UMLPackage.Literals.TYPED_ELEMENT__TYPE);
             return;
         }
 
@@ -158,10 +161,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            Type propDefaultType = CifTypeChecker.checkExpression(property, propDefaultExpr);
+            Type propDefaultType = new PropertyDefaultValueTypeChecker(property).checkExpression(propDefaultExpr);
             if (!propDefaultType.equals(propType)) {
-                error(String.format("Invalid property default: Expected %s but got %s", propType.getLabel(true),
-                        propDefaultType.getLabel(true)), UMLPackage.Literals.PROPERTY__DEFAULT);
+                error(String.format("Invalid property default: Expected %s but got %s",
+                        PokaYokeTypeUtil.getLabel(propType), PokaYokeTypeUtil.getLabel(propDefaultType)),
+                        UMLPackage.Literals.PROPERTY__DEFAULT);
             }
         } catch (RuntimeException e) {
             error("Invalid property default: " + e.getLocalizedMessage(), UMLPackage.Literals.PROPERTY__DEFAULT);
@@ -233,7 +237,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     if (guardExpr == null) {
                         return;
                     }
-                    CifTypeChecker.checkBooleanExpression(controlFlow, guardExpr);
+                    new CifTypeChecker(controlFlow).checkBooleanExpression(guardExpr);
                 } catch (RuntimeException e) {
                     error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
                 }
@@ -312,7 +316,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (guardExpr == null) {
                 return;
             }
-            CifTypeChecker.checkBooleanExpression(action, guardExpr);
+            new CifTypeChecker(action).checkBooleanExpression(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
@@ -328,7 +332,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             HashSet<String> updatedVariables = new HashSet<>();
             for (AUpdate update: CifParserHelper.parseEffects(action)) {
-                CifTypeChecker.checkUpdate(action, update);
+                new CifTypeChecker(action).checkUpdate(update);
 
                 // Update is checked above, so ClassCastException is not possible on next lines
                 AExpression variableExpr = ((AAssignmentUpdate)update).addressable;

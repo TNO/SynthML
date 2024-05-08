@@ -3,8 +3,11 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -84,6 +87,11 @@ public class FileHelper {
         Resource resource = resourceSet.createResource(uri);
         resource.getContents().add(model);
         EMFHelper.normalizeXmiIds((XMLResource)resource);
+
+        // Also add the UML profiles information to the resource
+        List<EObject> stereotypeApplications = model.allOwnedElements().stream()
+                .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
+        resource.getContents().addAll(stereotypeApplications);
         resource.save(Collections.EMPTY_MAP);
     }
 }

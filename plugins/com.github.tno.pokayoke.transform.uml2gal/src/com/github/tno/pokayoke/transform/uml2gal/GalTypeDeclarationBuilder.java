@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.google.common.base.Preconditions;
 
-import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.GALTypeDeclaration;
 import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Transition;
@@ -23,12 +22,6 @@ public class GalTypeDeclarationBuilder {
                 "Transition already declared: " + transition);
         typeDecl.getTransitions().add(transition);
         return transition;
-    }
-
-    public Variable addVariable(String name, int initialValue) {
-        Constant constValue = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constValue.setValue(initialValue);
-        return addVariable(name, constValue);
     }
 
     public Variable addVariable(String name, IntExpression initialValue) {

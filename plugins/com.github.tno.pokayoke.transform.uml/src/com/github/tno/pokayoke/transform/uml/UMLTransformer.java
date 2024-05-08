@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -91,10 +92,11 @@ public class UMLTransformer {
 
         // Translate all default values of class properties that are literal strings, to become opaque actions.
         for (Property property: contextClass.getOwnedAttributes()) {
-            if (property.getDefaultValue() instanceof LiteralString literal) {
+            AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
+            if (cifExpression != null) {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
                 newDefaultValue.getLanguages().add("Python");
-                String translatedLiteral = translator.translateExpression(CifParserHelper.parseExpression(literal));
+                String translatedLiteral = translator.translateExpression(cifExpression);
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
             }

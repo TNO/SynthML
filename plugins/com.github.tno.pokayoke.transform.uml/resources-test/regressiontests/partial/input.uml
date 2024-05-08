@@ -6,7 +6,10 @@
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Bfu_MPGgEe6w6rfsvEI-Kw" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BfvmQPGgEe6w6rfsvEI-Kw" value="1"/>
-        <defaultValue xmi:type="uml:LiteralString" xmi:id="_x1OYsPGgEe6w6rfsvEI-Kw" value="false"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_hamAIAYWEe-jgM_qDB3hgQ">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_HzZ8sPGgEe6w6rfsvEI-Kw" name="main" node="_caq7oPGgEe6w6rfsvEI-Kw _deYbYPGgEe6w6rfsvEI-Kw _ercrcPGgEe6w6rfsvEI-Kw _gPScwPGgEe6w6rfsvEI-Kw">
         <edge xmi:type="uml:ControlFlow" xmi:id="_kWrI4PGgEe6w6rfsvEI-Kw" target="_ercrcPGgEe6w6rfsvEI-Kw" source="_caq7oPGgEe6w6rfsvEI-Kw">

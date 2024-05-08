@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -21,24 +23,19 @@ import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
-import org.eclipse.uml2.uml.InstanceSpecification;
-import org.eclipse.uml2.uml.InstanceValue;
 import org.eclipse.uml2.uml.JoinNode;
-import org.eclipse.uml2.uml.LiteralBoolean;
-import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
-import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.ValueSpecification;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -46,11 +43,7 @@ import com.google.common.collect.ImmutableList;
 
 import fr.lip6.move.gal.Assignment;
 import fr.lip6.move.gal.BooleanExpression;
-import fr.lip6.move.gal.ConstParameter;
-import fr.lip6.move.gal.Constant;
 import fr.lip6.move.gal.GALTypeDeclaration;
-import fr.lip6.move.gal.IntExpression;
-import fr.lip6.move.gal.ParamRef;
 import fr.lip6.move.gal.Parameter;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.Statement;
@@ -58,14 +51,12 @@ import fr.lip6.move.gal.Transition;
 import fr.lip6.move.gal.Variable;
 
 /** Translates annotated UML models to GAL specifications. */
-public abstract class Uml2GalTranslator {
-    protected static final int BOOL_FALSE = 0;
-
-    protected static final int BOOL_TRUE = 1;
-
+public class Uml2GalTranslator {
     protected GalSpecificationBuilder specificationBuilder;
 
     protected GalTypeDeclarationBuilder typeBuilder;
+
+    protected CifToGalExpressionTranslator expressionTranslator;
 
     private Variable initVariable;
 
@@ -74,30 +65,6 @@ public abstract class Uml2GalTranslator {
     private final Map<Variable, Element> variableTracing = new LinkedHashMap<>();
 
     private final Map<Transition, Element> transitionTracing = new LinkedHashMap<>();
-
-    /**
-     * Translates the given expression to a GAL Boolean expression.
-     *
-     * @param expr The expression to translate.
-     * @return The translated GAL Boolean expression.
-     */
-    protected abstract BooleanExpression translateBoolExpr(String expr);
-
-    /**
-     * Translates the given expression to a GAL integer expression.
-     *
-     * @param expr The expression to translate.
-     * @return The translated GAL integer expression.
-     */
-    protected abstract IntExpression translateIntExpr(String expr);
-
-    /**
-     * Translates the given update to a GAL assignment.
-     *
-     * @param update The update to translate.
-     * @return The translated GAL assignment.
-     */
-    protected abstract Assignment translateAssignment(String update);
 
     /**
      * Gives tracing information of how the translated GAL specification relates to the input UML model.
@@ -143,8 +110,12 @@ public abstract class Uml2GalTranslator {
         variableTracing.clear();
         transitionTracing.clear();
 
+        CifContext cifContext = new CifContext(model);
+        expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
+
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(FileHelper.loadPrimitiveType("Boolean").getName(), BOOL_FALSE, BOOL_TRUE);
+        specificationBuilder.addTypedef(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN,
+                Uml2GalTranslationHelper.toIntExpression(false), Uml2GalTranslationHelper.toIntExpression(true));
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);
@@ -158,7 +129,8 @@ public abstract class Uml2GalTranslator {
         for (PackageableElement element: model.getPackagedElements()) {
             if (element instanceof Enumeration enumeration) {
                 // Translate UML enumerations to typedef declarations in GAL with an appropriate range.
-                specificationBuilder.addTypedef(enumeration.getName(), 0, enumeration.getOwnedLiterals().size() - 1);
+                specificationBuilder.addTypedef(enumeration.getName(), Uml2GalTranslationHelper.toIntExpression(0),
+                        Uml2GalTranslationHelper.toIntExpression(enumeration.getOwnedLiterals().size() - 1));
 
                 // Visit and translate all enumeration literals.
                 for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
@@ -200,13 +172,13 @@ public abstract class Uml2GalTranslator {
         // Declare the variable that indicates whether the initialization transition for the given class has been taken.
         // The initialization transition itself is constructed later below, and will initialize all variables that do
         // not have a fixed default value, by assigning an arbitrary value to them from the domain indicated by the
-        // variable type. Any other transitions can only be taken when the init variable is set to 'BOOL_TRUE'.
-        initVariable = typeBuilder.addVariable("__init", BOOL_FALSE);
+        // variable type. Any other transitions can only be taken when the init variable is set to 'true'.
+        initVariable = typeBuilder.addVariable("__init", Uml2GalTranslationHelper.toIntExpression(false));
 
         // The initialization transition can only be taken when initialization has not already happened, and updates the
         // initialization variable to indicate to all transitions that initialization has happened.
-        initTransitionBuilder.addEqualityGuard(initVariable, BOOL_FALSE);
-        initTransitionBuilder.addAssignment(initVariable, BOOL_TRUE);
+        initTransitionBuilder.addEqualityGuard(initVariable, Uml2GalTranslationHelper.toIntExpression(false));
+        initTransitionBuilder.addAssignment(initVariable, Uml2GalTranslationHelper.toIntExpression(true));
 
         // For every class property without default value, define a parameter that ranges over the type domain, as well
         // as an assignment to assign this parameter to the corresponding variable, making its value arbitrary.
@@ -242,13 +214,13 @@ public abstract class Uml2GalTranslator {
         // defined, we translate it as part of the variable declaration. Otherwise, we give the variable a (temporary)
         // default value of 'BOOL_FALSE'. The initialization transition will then fix the latter case, by allowing any
         // variable that should not have a default value to have an arbitrary value instead of 'BOOL_FALSE'.
-        ValueSpecification defaultValue = property.getDefaultValue();
+        AExpression defaultValue = CifParserHelper.parseExpression(property.getDefaultValue());
 
         Variable variable;
         if (defaultValue != null) {
-            variable = typeBuilder.addVariable(name, translateValueSpecificationToInt(defaultValue));
+            variable = typeBuilder.addVariable(name, expressionTranslator.translateIntExpr(defaultValue));
         } else {
-            variable = typeBuilder.addVariable(name, BOOL_FALSE);
+            variable = typeBuilder.addVariable(name, Uml2GalTranslationHelper.toIntExpression(false));
         }
 
         // Make sure the created variable can be traced back to the property.
@@ -263,7 +235,7 @@ public abstract class Uml2GalTranslator {
 
             // Translate the edge as a GAL variable.
             Variable variable = typeBuilder.addVariable(String.format("__edge__%s", edgeMapping.size()),
-                    edge.getSource() instanceof InitialNode ? BOOL_TRUE : BOOL_FALSE);
+                    Uml2GalTranslationHelper.toIntExpression(edge.getSource() instanceof InitialNode));
             edgeMapping.put(edge, variable);
 
             // Make sure the created variable can be traced back to the edge.
@@ -278,8 +250,8 @@ public abstract class Uml2GalTranslator {
                 translateFinalForkOrJoinNode(node);
             } else if (node instanceof JoinNode) {
                 translateFinalForkOrJoinNode(node);
-            } else if (node instanceof OpaqueAction actionNode) {
-                translateOpaqueActionNode(actionNode);
+            } else if (node instanceof Action actionNode) {
+                translateActionNode(actionNode);
             } else if (node instanceof DecisionNode decisionNode) {
                 translateDecisionNode(decisionNode);
             } else if (node instanceof MergeNode mergeNode) {
@@ -295,10 +267,11 @@ public abstract class Uml2GalTranslator {
                 ImmutableList.of(), ImmutableList.of()));
     }
 
-    private void translateOpaqueActionNode(OpaqueAction node) {
+    private void translateActionNode(Action node) {
         // Translate the guards and effects of the given action, and include them in the GAL transition.
-        List<BooleanExpression> guards = node.getBodies().stream().limit(1).map(this::translateBoolExpr).toList();
-        List<Assignment> effects = node.getBodies().stream().skip(1).map(this::translateAssignment).toList();
+        BooleanExpression guard = expressionTranslator.translateBoolExpr(CifParserHelper.parseGuard(node));
+        List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
+        List<Assignment> effects = expressionTranslator.translateUpdates(CifParserHelper.parseEffects(node));
 
         typeBuilder
                 .addTransition(translateActivityNode(node, node.getIncomings(), node.getOutgoings(), guards, effects));
@@ -308,10 +281,12 @@ public abstract class Uml2GalTranslator {
         // Define a GAL transition for every outgoing edge, so that only one of these edges can be taken.
         for (ActivityEdge outgoingEdge: node.getOutgoings()) {
             // Translate the edge guard and include it in the GAL transition.
-            BooleanExpression guard = translateValueSpecificationToBoolean(outgoingEdge.getGuard());
+            AExpression guardExpr = CifParserHelper.parseExpression(outgoingEdge.getGuard());
+            BooleanExpression guard = expressionTranslator.translateBoolExpr(guardExpr);
+            List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
 
             typeBuilder.addTransition(translateActivityNode(node, node.getIncomings(), ImmutableList.of(outgoingEdge),
-                    ImmutableList.of(guard), ImmutableList.of()));
+                    guards, ImmutableList.of()));
         }
     }
 
@@ -356,7 +331,7 @@ public abstract class Uml2GalTranslator {
         transitionBuilder.setName(String.format("__%s__%s", nodeName, typeBuilder.getTransitionCount()));
 
         // Define a guard that ensures that the initialization transition has already been taken.
-        transitionBuilder.addEqualityGuard(initVariable, BOOL_TRUE);
+        transitionBuilder.addEqualityGuard(initVariable, Uml2GalTranslationHelper.toIntExpression(true));
 
         // Add the specified guards and effects to the transition.
         transitionBuilder.addGuards(guards);
@@ -366,91 +341,21 @@ public abstract class Uml2GalTranslator {
         // make it disabled after having taken the transition.
         for (ActivityEdge incomingEdge: incomingEdgesToConsider) {
             Variable variable = edgeMapping.get(incomingEdge);
-            transitionBuilder.addEqualityGuard(variable, BOOL_TRUE);
-            transitionBuilder.addAssignment(variable, BOOL_FALSE);
+            transitionBuilder.addEqualityGuard(variable, Uml2GalTranslationHelper.toIntExpression(true));
+            transitionBuilder.addAssignment(variable, Uml2GalTranslationHelper.toIntExpression(false));
         }
 
         // Define a guard for every outgoing edge to consider, to check if it is disabled, as well as an assignment to
         // make it enabled after having taken the transition.
         for (ActivityEdge outgoingEdge: outgoingEdgesToConsider) {
             Variable variable = edgeMapping.get(outgoingEdge);
-            transitionBuilder.addEqualityGuard(variable, BOOL_FALSE);
-            transitionBuilder.addAssignment(variable, BOOL_TRUE);
+            transitionBuilder.addEqualityGuard(variable, Uml2GalTranslationHelper.toIntExpression(false));
+            transitionBuilder.addAssignment(variable, Uml2GalTranslationHelper.toIntExpression(true));
         }
 
         // Build and return the transition.
         Transition transition = transitionBuilder.build();
         transitionTracing.put(transition, node);
         return transition;
-    }
-
-    private BooleanExpression translateValueSpecificationToBoolean(ValueSpecification specification) {
-        if (specification instanceof LiteralBoolean literal) {
-            return translateLiteralBooleanToBoolean(literal);
-        } else if (specification instanceof OpaqueExpression expr) {
-            return translateOpaqueExpressionToBoolean(expr);
-        } else {
-            throw new RuntimeException("Unsupported value specification: " + specification);
-        }
-    }
-
-    private BooleanExpression translateLiteralBooleanToBoolean(LiteralBoolean literal) {
-        return literal.isValue() ? Uml2GalTranslationHelper.FACTORY.createTrue()
-                : Uml2GalTranslationHelper.FACTORY.createFalse();
-    }
-
-    private BooleanExpression translateOpaqueExpressionToBoolean(OpaqueExpression expr) {
-        return Uml2GalTranslationHelper.combineAsAnd(expr.getBodies().stream().map(this::translateBoolExpr).toList());
-    }
-
-    private IntExpression translateValueSpecificationToInt(ValueSpecification specification) {
-        if (specification instanceof LiteralBoolean literal) {
-            return translateLiteralBooleanToInt(literal);
-        } else if (specification instanceof LiteralInteger literal) {
-            return translateLiteralIntegerToInt(literal);
-        } else if (specification instanceof InstanceValue value) {
-            return translateInstanceValueToInt(value);
-        } else if (specification instanceof OpaqueExpression expr) {
-            return translateOpaqueExpressionToInt(expr);
-        } else {
-            throw new RuntimeException("Unsupported value specification: " + specification);
-        }
-    }
-
-    private Constant translateLiteralBooleanToInt(LiteralBoolean literal) {
-        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(literal.isValue() ? BOOL_TRUE : BOOL_FALSE);
-        return constant;
-    }
-
-    private Constant translateLiteralIntegerToInt(LiteralInteger literal) {
-        Constant constant = Uml2GalTranslationHelper.FACTORY.createConstant();
-        constant.setValue(literal.getValue());
-        return constant;
-    }
-
-    private IntExpression translateOpaqueExpressionToInt(OpaqueExpression expr) {
-        Preconditions.checkArgument(expr.getBodies().size() == 1, "Expected a single opaque expression body.");
-        return translateIntExpr(expr.getBodies().get(0));
-    }
-
-    private IntExpression translateInstanceValueToInt(InstanceValue value) {
-        return translateInstanceSpecificationToInt(value.getInstance());
-    }
-
-    private IntExpression translateInstanceSpecificationToInt(InstanceSpecification specification) {
-        if (specification instanceof EnumerationLiteral literal) {
-            return translateEnumerationLiteralToInt(literal);
-        } else {
-            throw new RuntimeException("Unsupported instance specification: " + specification);
-        }
-    }
-
-    private ParamRef translateEnumerationLiteralToInt(EnumerationLiteral literal) {
-        ConstParameter param = specificationBuilder.getParam(literal.getName());
-        Preconditions.checkNotNull(param, "Expected the enumeration literal to have a corresponding parameter.");
-        ParamRef paramRef = Uml2GalTranslationHelper.FACTORY.createParamRef();
-        paramRef.setRefParam(param);
-        return paramRef;
     }
 }
