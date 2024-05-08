@@ -16,7 +16,7 @@
 == Requirements for Synthesis
 
 === Name
-* A name of a contextual element must be unique within the UML model.
+* A name of a contextual element, e.g., class, property, and activity, must be unique within the UML model.
 * A name cannot contain two (or more) consecutive underscores.
 * A name must start with either a letter or an underscore, and possibly followed by digits, letters and underscores, i.e., adhere to the regular expression `[a-zA-Z_][0-9a-zA-Z_]*`.
 
@@ -41,14 +41,16 @@ In particular, Poka Yoke supports
 * The multiplicity interval of a property must be [1,1]. In other words,
 ** The property must be single-valued.
 ** The property must be mandatory.
-* The type of a property must be supported.
-* The type of the default value of a property must be an instance of the type of that property.
-* The default value of a property should not refer to other properties.
+* The <<type>> of a property must be supported.
+* A property may have a default value.
+** The multiplicity interval of a default value of a property is [0,1].
+** The type of the default value of a property must be an instance of the type of that property.
+** The default value of a property is not allowed to refer to other properties.
 
 === Activity
 * An activity must have exactly one initial node.
-* An activity may not have any members.
-* An activity may not have a classifier behavior.
+* An activity may not have any owned attributes.
+* An activity may not have any owned behaviors.
 
 === Activity Edge
 * The type of an activity edge must be control flow.
