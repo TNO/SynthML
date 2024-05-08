@@ -107,8 +107,8 @@ public class PokaYokeProfileServices {
      */
     public void setEffects(Action action, String newValue) {
         if (Strings.isNullOrEmpty(newValue)) {
-            String effects = getEffects(action);
-            if (Strings.isNullOrEmpty(effects)) {
+            String guard = getGuard(action);
+            if (Strings.isNullOrEmpty(guard)) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
                 return;
             }
