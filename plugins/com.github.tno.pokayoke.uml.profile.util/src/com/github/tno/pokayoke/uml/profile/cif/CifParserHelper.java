@@ -13,6 +13,7 @@ import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
@@ -49,6 +50,14 @@ public class CifParserHelper {
         return parseExpression(PokaYokeUmlProfileUtil.getGuard(action), action);
     }
 
+    public static AExpression parseGuard(OpaqueBehavior behavior) throws SyntaxException {
+        if (behavior == null) {
+            return null;
+        }
+        List<String> bodies = behavior.getBodies();
+        return parseExpression(bodies.isEmpty() ? "true" : bodies.get(0), behavior);
+    }
+
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
         if (updates == null) {
             return Collections.emptyList();
@@ -64,6 +73,13 @@ public class CifParserHelper {
             return null;
         }
         return parseUpdates(PokaYokeUmlProfileUtil.getEffects(action), action);
+    }
+
+    public static List<List<AUpdate>> parseEffects(OpaqueBehavior behavior) throws SyntaxException {
+        if (behavior == null) {
+            return null;
+        }
+        return behavior.getBodies().stream().skip(1).map(effect -> parseUpdates(effect, behavior)).toList();
     }
 
     private static String getLocation(Element context) {

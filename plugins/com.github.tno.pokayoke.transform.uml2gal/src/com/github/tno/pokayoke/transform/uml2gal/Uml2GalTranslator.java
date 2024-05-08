@@ -113,6 +113,9 @@ public class Uml2GalTranslator {
         CifContext cifContext = new CifContext(model);
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
+        // Check transformation preconditions.
+        Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
+
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
         specificationBuilder.addTypedef(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN,
                 Uml2GalTranslationHelper.toIntExpression(false), Uml2GalTranslationHelper.toIntExpression(true));
