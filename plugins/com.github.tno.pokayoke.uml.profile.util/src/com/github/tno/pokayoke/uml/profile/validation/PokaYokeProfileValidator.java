@@ -322,7 +322,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     /**
      * Validates the guard of the given opaque behavior.
      *
-     * @param behavior The behavior to validate.
+     * @param behavior The opaque behavior to validate.
      */
     @Check
     private void checkValidGuard(OpaqueBehavior behavior) {
@@ -362,7 +362,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     /**
      * Validates the effects of the given opaque behavior.
      *
-     * @param behavior The behavior to validate.
+     * @param behavior The opaque behavior to validate.
      */
     @Check
     private void checkValidEffects(OpaqueBehavior behavior) {
