@@ -169,7 +169,16 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.setDefaultValue(property, newValue);
     }
 
-    public List<PrimitiveType> getSupportedPrimitiveTypes(PrimitiveType type) {
+    /**
+     * Returns the supported super types for the primitive {@code type}.
+     * <p>
+     * Currently only {@link UmlPrimitiveType#INTEGER primitive integer} is a supported super type.
+     * </p>
+     *
+     * @param type The type context for resolving the available super types.
+     * @return The supported super types for {@code type}.
+     */
+    public List<PrimitiveType> getSupportedSuperTypes(PrimitiveType type) {
         return Arrays.asList(UmlPrimitiveType.INTEGER.load(type));
     }
 

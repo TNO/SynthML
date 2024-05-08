@@ -97,6 +97,7 @@ public class UMLTransformer {
         Class contextClass = modelNestedClasses.get(0);
 
         propertyBounds.clear();
+
         for (Property property: contextClass.getOwnedAttributes()) {
             // Translate all default values of class properties to become Python expressions,
             // or set default values for simulation.
@@ -119,8 +120,8 @@ public class UMLTransformer {
                 property.setDefaultValue(value);
             }
 
+            // Collect the bounds for integer properties, they will be validated later.
             if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                // Collect the bounds for integer properties, they will be validated later.
                 propertyBounds.put(property.getName(), Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
                         PokaYokeTypeUtil.getMaxValue(property.getType())));
             }

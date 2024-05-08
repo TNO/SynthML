@@ -217,7 +217,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (!PokaYokeTypeUtil.isIntegerType(primitiveType)) {
-            error(PokaYokeTypeUtil.getLabel(primitiveType) + " should inherrit from primitive Integer type.", null);
+            error(PokaYokeTypeUtil.getLabel(primitiveType) + " should inherit from primitive Integer type.", null);
             return;
         }
 

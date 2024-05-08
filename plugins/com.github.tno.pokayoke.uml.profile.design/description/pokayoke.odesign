@@ -88,7 +88,7 @@
         </controls>
       </groups>
       <groups name="PR_PrimitiveTypeGroup" labelExpression="General" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:SelectDescription" name="PR_PT_Type" labelExpression="Super type:" helpExpression="The super type of the primitive type" valueExpression="service:self.getSuperType()" candidatesExpression="service:self.getSupportedPrimitiveTypes()" candidateDisplayExpression="aql:candidate.getLabel(true)">
+        <controls xsi:type="properties:SelectDescription" name="PR_PT_Type" labelExpression="Super type:" helpExpression="The super type of the primitive type" valueExpression="service:self.getSuperType()" candidatesExpression="service:self.getSupportedSuperTypes()" candidateDisplayExpression="aql:candidate.getLabel(true)">
           <initialOperation>
             <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:self.setSuperType(newValue)"/>
           </initialOperation>
