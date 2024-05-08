@@ -30,7 +30,6 @@ In particular, Poka Yoke supports
 ** with at least one literal
 * Integer 
 ** with bounded range
-** Note that simulation also supports unbounded integers.
 
 === Class
 * The class may not contain nested classifiers.
@@ -51,6 +50,7 @@ In particular, Poka Yoke supports
 * An activity must have exactly one initial node.
 * An activity may not have any owned attributes.
 * An activity may not have any owned behaviors.
+* An activity may not have a classifier behavior.
 
 === Activity Edge
 * The type of an activity edge must be control flow.

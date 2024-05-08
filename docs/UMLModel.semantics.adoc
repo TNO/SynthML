@@ -22,7 +22,7 @@ In particular, Poka Yoke supports
 
 == Opaque Action
 
-== Call Behaviour Action
+== Call Behavior Action
 What does it mean for a Call Behavior Action to have a guard? In what way is this guard a part of the Call Behavior Action (which connects to the PY UML profile)? Same with effects.
 
 A Call Behavior Action that has guards and effects also has the <<GuardEffectsAction sterotype>>.
