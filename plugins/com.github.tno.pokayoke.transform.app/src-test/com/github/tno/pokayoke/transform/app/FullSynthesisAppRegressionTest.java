@@ -1,21 +1,22 @@
 
-package com.github.tno.pokayoke.transform.uml.tests;
+package com.github.tno.pokayoke.transform.app;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.eclipse.core.runtime.CoreException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.github.tno.pokayoke.transform.app.FullSynthesisApp;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
-import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
-/** Regression test for translating UML to executable UML. */
-class UMLRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "uml";
+/**
+ * Regression tests.
+ */
+class FullSynthesisAppRegressionTest extends RegressionTest {
+    public static final String INPUT_FILE_EXTENSION = "cif";
 
     public static final String REGRESSIONTESTS_NAME = "regressiontests";
 
@@ -31,7 +32,7 @@ class UMLRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        UMLTransformer.transformFile(inputPath, outputPath);
+    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+        FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
     }
 }

@@ -1,22 +1,23 @@
 
-package com.github.tno.pokayoke.transform.petrify2uml.tests;
+package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.CoreException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
+import com.github.tno.pokayoke.transform.uml.UMLTransformer;
 
-/** Regression test for the translation from Petrify output to PNML. */
-class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "out";
+/** Regression test for translating UML to executable UML. */
+class UMLRegressionTest extends RegressionTest {
+    public static final String INPUT_FILE_EXTENSION = "uml";
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests-petrify2pnml";
+    public static final String REGRESSIONTESTS_NAME = "regressiontests";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
@@ -30,7 +31,7 @@ class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        PetrifyOutput2PNMLTranslator.transformFile(inputPath, outputPath);
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
+        UMLTransformer.transformFile(inputPath, outputPath);
     }
 }

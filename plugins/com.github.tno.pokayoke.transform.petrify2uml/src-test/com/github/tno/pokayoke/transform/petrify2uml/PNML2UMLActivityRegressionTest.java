@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.cif2petrify.tests;
+package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,14 +9,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
+import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/** Regression test for translating CIF state space to Petrify input. */
-class CIF2PetrifyRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "cif";
+import fr.lip6.move.pnml.framework.utils.exception.ImportException;
+import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+/** Regression test for the translation from PNML to UML Activity. */
+class PNML2UMLActivityRegressionTest extends RegressionTest {
+    public static final String INPUT_FILE_EXTENSION = "pnml";
+
+    public static final String REGRESSIONTESTS_NAME = "regressiontests-pnml2uml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
@@ -30,7 +33,8 @@ class CIF2PetrifyRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        Cif2Petrify.transformFile(inputPath, outputPath);
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, ImportException, InvalidIDException {
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
+        petriNet2Activity.transformFile(inputPath, outputPath);
     }
 }

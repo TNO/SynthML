@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.app.tests;
+package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,16 +9,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.app.FullSynthesisApp;
+import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/**
- * Regression tests.
- */
-class FullSynthesisAppRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "cif";
+/** Regression test for the translation from Petrify output to PNML. */
+class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
+    public static final String INPUT_FILE_EXTENSION = "out";
 
-    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+    public static final String REGRESSIONTESTS_NAME = "regressiontests-petrify2pnml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
         return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
@@ -33,6 +31,6 @@ class FullSynthesisAppRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
+        PetrifyOutput2PNMLTranslator.transformFile(inputPath, outputPath);
     }
 }

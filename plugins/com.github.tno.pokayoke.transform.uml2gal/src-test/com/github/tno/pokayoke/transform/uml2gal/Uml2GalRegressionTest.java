@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.uml2gal.tests;
+package com.github.tno.pokayoke.transform.uml2gal;
 
 import java.io.IOException;
 import java.nio.file.Files;

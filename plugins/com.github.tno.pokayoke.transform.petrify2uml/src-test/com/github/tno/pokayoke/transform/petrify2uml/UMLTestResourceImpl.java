@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.petrify2uml.tests;
+package com.github.tno.pokayoke.transform.petrify2uml;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceImpl;

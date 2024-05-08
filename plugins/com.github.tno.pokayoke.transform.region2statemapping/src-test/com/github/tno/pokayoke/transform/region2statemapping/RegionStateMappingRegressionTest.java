@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.region2statemapping.tests;
+package com.github.tno.pokayoke.transform.region2statemapping;
 
 import java.io.IOException;
 import java.nio.file.Path;
