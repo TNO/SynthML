@@ -18,8 +18,10 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 class FullSynthesisAppRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "cif";
 
+    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
     }
 
     @Override

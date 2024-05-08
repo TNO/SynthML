@@ -19,8 +19,7 @@ class PetrifyOutput2PNMLRegressionTest extends RegressionTest {
     public static final String REGRESSIONTESTS_NAME = "regressiontests-petrify2pnml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        RegressionTest.setRegressionTestsName(REGRESSIONTESTS_NAME);
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
     }
 
     @Override

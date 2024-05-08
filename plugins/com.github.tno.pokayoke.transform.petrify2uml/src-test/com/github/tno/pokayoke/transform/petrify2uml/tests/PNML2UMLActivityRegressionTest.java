@@ -22,8 +22,7 @@ class PNML2UMLActivityRegressionTest extends RegressionTest {
     public static final String REGRESSIONTESTS_NAME = "regressiontests-pnml2uml";
 
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        RegressionTest.setRegressionTestsName(REGRESSIONTESTS_NAME);
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
     }
 
     @Override

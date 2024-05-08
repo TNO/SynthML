@@ -42,8 +42,6 @@ import org.junit.jupiter.params.provider.Arguments;
  * </p>
  */
 public abstract class RegressionTest {
-    private static String regressiontestsName = "regressiontests";
-
     /**
      * Executes the different steps in the regression test.
      *
@@ -104,57 +102,35 @@ public abstract class RegressionTest {
      * Provide arguments for regression tests based on input extension.
      *
      * @param inputExtension Extension of the input file.
+     * @param regressionTestsName Name of regression test folder.
      * @return Stream of arguments for regression tests.
      */
-    public static Stream<? extends Arguments> provideArguments(String inputExtension) {
-        return provideArguments("input." + inputExtension, "expected", "actual");
-    }
-
-    /**
-     * Provide arguments for regression tests with the given input file name and the expected and actual output folder
-     * names.
-     *
-     * @param inputFile Name of input file.
-     * @param expectedFolder Name of expected output folder.
-     * @param actualFolder Name of actual output folder.
-     * @return Stream of arguments for regression tests.
-     */
-    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFolder,
-            final String actualFolder)
-    {
-        final String testResourcesName = "resources-test";
-        final Path testResourcesPath = Path.of(testResourcesName);
-        assertDirectoryExists(testResourcesPath, "The '" + testResourcesName + "' directory doesn't exist.");
-
-        String regressiontestsName = getRegressionTestsName();
-        final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
-        assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
-                + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
-
-        return provideArguments(regressiontestsPath, inputFile, expectedFolder, actualFolder);
-    }
-
-    public static void setRegressionTestsName(String name) {
-        regressiontestsName = name;
-    }
-
-    private static String getRegressionTestsName() {
-        return regressiontestsName;
+    public static Stream<? extends Arguments> provideArguments(String inputExtension, String regressionTestsName) {
+        return provideArguments("input." + inputExtension, "expected", "actual", regressionTestsName);
     }
 
     /**
      * Provide arguments for regression tests in the indicated regression test directory with the given input file name
      * and the expected and actual output folder names.
      *
-     * @param regressiontestsPath Directory containing the regression tests.
      * @param inputFile Name of input file.
      * @param expectedFolder Name of expected output folder.
      * @param actualFolder Name of actual output folder.
+     * @param regressionTestsName Name of regression test folder.
      * @return Stream of arguments for regression tests.
      */
-    private static Stream<? extends Arguments> provideArguments(final Path regressiontestsPath, final String inputFile,
-            final String expectedFolder, final String actualFolder)
+    private static Stream<? extends Arguments> provideArguments(final String inputFile, final String expectedFolder,
+            final String actualFolder, final String regressionTestsName)
     {
+        final String testResourcesName = "resources-test";
+        final Path testResourcesPath = Path.of(testResourcesName);
+        assertDirectoryExists(testResourcesPath, "The '" + testResourcesName + "' directory doesn't exist.");
+
+        String regressiontestsName = regressionTestsName;
+        final Path regressiontestsPath = testResourcesPath.resolve(regressiontestsName);
+        assertDirectoryExists(regressiontestsPath, "The '" + regressiontestsName
+                + "' directory doesn't exist within the '" + testResourcesName + "' directory.");
+
         final String regressiontestsPathString = regressiontestsPath.toString();
 
         final List<Arguments> returnValue = new ArrayList<>();

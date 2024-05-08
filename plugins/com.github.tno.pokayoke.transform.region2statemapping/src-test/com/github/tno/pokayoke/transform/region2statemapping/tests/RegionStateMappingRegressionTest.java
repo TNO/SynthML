@@ -19,8 +19,10 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
 
     public static final String INPUT_FILE_2_EXTENSION = "out";
 
+    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_1_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_1_EXTENSION, REGRESSIONTESTS_NAME);
     }
 
     @Override

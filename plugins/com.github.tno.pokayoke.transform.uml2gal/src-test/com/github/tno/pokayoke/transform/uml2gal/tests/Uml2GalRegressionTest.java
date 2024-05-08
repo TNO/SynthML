@@ -24,8 +24,10 @@ public class Uml2GalRegressionTest extends RegressionTest {
 
     public static final String TRACE_FILE_EXTENSION = "json";
 
+    public static final String REGRESSIONTESTS_NAME = "regressiontests";
+
     public static Stream<? extends Arguments> provideArguments() throws Exception {
-        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION);
+        return RegressionTest.provideArguments(INPUT_FILE_EXTENSION, REGRESSIONTESTS_NAME);
     }
 
     @Override
