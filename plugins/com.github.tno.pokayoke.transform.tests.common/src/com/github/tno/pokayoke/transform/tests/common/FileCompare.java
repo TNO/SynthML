@@ -19,7 +19,7 @@ public class FileCompare {
     }
 
     /**
-     * Check equality of two directories, after applying a filter. Files are matched based on paths.
+     * Check equality of two directories. Files are matched based on paths.
      *
      * @param expectedPath Path to directory containing expected files.
      * @param actualPath Path to directory containing actual output files.
