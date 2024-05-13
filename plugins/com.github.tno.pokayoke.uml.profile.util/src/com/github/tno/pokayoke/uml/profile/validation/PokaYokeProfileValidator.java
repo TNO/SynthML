@@ -337,12 +337,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (guardExpr == null) {
             return;
         }
-
-        try {
-            new CifTypeChecker(element).checkBooleanExpression(guardExpr);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
-        }
+        new CifTypeChecker(element).checkBooleanExpression(guardExpr);
     }
 
     /**
@@ -374,21 +369,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidEffects(List<AUpdate> updates, Element element) {
-        try {
-            HashSet<String> updatedVariables = new HashSet<>();
-            for (AUpdate update: updates) {
-                new CifTypeChecker(element).checkUpdate(update);
+        HashSet<String> updatedVariables = new HashSet<>();
+        for (AUpdate update: updates) {
+            new CifTypeChecker(element).checkUpdate(update);
 
-                // Update is checked above, so ClassCastException is not possible on next lines
-                AExpression variableExpr = ((AAssignmentUpdate)update).addressable;
-                String variable = ((ANameExpression)variableExpr).name.name;
-                if (!updatedVariables.add(variable)) {
-                    throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
-                            variableExpr.position);
-                }
+            // Update is checked above, so ClassCastException is not possible on next lines
+            AExpression variableExpr = ((AAssignmentUpdate)update).addressable;
+            String variable = ((ANameExpression)variableExpr).name.name;
+            if (!updatedVariables.add(variable)) {
+                throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
+                        variableExpr.position);
             }
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
         }
     }
 
