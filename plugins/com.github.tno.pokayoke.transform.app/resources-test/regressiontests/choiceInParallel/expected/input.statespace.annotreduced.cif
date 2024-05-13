@@ -1,0 +1,69 @@
+controllable c_Turn_Computer_On;
+controllable c_Starting_Computer;
+controllable c_Drink_Coffee;
+controllable c_Drink_Tea;
+controllable c_Start_Working;
+controllable c_Flip_A_Coin;
+uncontrollable u_Coin_Facing_Up;
+uncontrollable u_Coin_Facing_Down;
+group Post:
+  controllable c_satisfied;
+end
+automaton statespace:
+  alphabet c_Turn_Computer_On, c_Starting_Computer, c_Flip_A_Coin, u_Coin_Facing_Up, u_Coin_Facing_Down, c_Drink_Coffee, c_Drink_Tea, c_Start_Working, Post.c_satisfied;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = false, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "NotYetOccurred")
+  location loc1:
+    initial;
+    edge c_Turn_Computer_On goto loc2;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc2:
+    edge c_Starting_Computer goto loc3;
+    edge c_Flip_A_Coin goto loc4;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc3:
+    edge c_Flip_A_Coin goto loc5;
+  location loc4:
+    edge u_Coin_Facing_Up goto loc6;
+    edge u_Coin_Facing_Down goto loc7;
+  location loc5:
+    edge u_Coin_Facing_Up goto loc8;
+    edge u_Coin_Facing_Down goto loc9;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Coffee", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc6:
+    edge c_Starting_Computer goto loc8;
+    edge c_Drink_Coffee goto loc10;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Tea", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc7:
+    edge c_Starting_Computer goto loc9;
+    edge c_Drink_Tea goto loc11;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Coffee", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc8:
+    edge c_Drink_Coffee goto loc12;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Tea", Spec.Has_Drank_Coffee_or_Tea = false, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc9:
+    edge c_Drink_Tea goto loc13;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "Occurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc10:
+    edge c_Starting_Computer goto loc12;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "Occurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = false, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "NotYetOccurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc11:
+    edge c_Starting_Computer goto loc13;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "Occurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc12:
+    edge c_Start_Working goto loc14;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "Occurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = false, Start_Working_happens_once = "NotYetOccurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc13:
+    edge c_Start_Working goto loc15;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "Occurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = true, Start_Working_happens_once = "Occurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc14:
+    edge Post.c_satisfied goto loc16;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "Occurred", Post = "NotSatisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = true, Start_Working_happens_once = "Occurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc15:
+    edge Post.c_satisfied goto loc17;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "Occurred", Drink_Tea_happens_once = "NotYetOccurred", Post = "Satisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = true, Start_Working_happens_once = "Occurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc16:
+    marked;
+  @state(constraint = "idle", Drink_Coffee_happens_once = "NotYetOccurred", Drink_Tea_happens_once = "Occurred", Post = "Satisfied", Spec = "Home", Spec.Coffee_or_Tea = "Unknown", Spec.Has_Drank_Coffee_or_Tea = true, Spec.Is_Computer_On = true, Spec.Is_Computer_Ready = true, Spec.Is_Ready_to_Work = true, Start_Working_happens_once = "Occurred", Starting_Computer_happens_once = "Occurred", sup = "*", Turn_Computer_On_happens_once = "Occurred")
+  location loc17:
+    marked;
+end

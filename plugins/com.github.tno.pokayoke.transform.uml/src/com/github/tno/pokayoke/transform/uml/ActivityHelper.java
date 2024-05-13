@@ -30,7 +30,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 /** Helper class for creating various kinds of activities. */
-
 public class ActivityHelper {
     private ActivityHelper() {
     }

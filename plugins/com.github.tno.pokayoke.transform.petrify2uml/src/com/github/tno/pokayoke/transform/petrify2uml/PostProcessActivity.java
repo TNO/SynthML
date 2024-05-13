@@ -61,7 +61,7 @@ public class PostProcessActivity {
             ActivityNode target = outgoingEdge.getTarget();
 
             // Add a new control flow from source to target.
-            PetriNet2ActivityHelper.createControlFlow(activity, source, target);
+            PNML2UMLActivityHelper.createControlFlow(activity, source, target);
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
