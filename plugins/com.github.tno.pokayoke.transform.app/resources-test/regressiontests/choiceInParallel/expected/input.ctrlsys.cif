@@ -1,0 +1,103 @@
+enum UnknownDrink = Coffee, Tea, Unknown;
+controllable c_Turn_Computer_On;
+controllable c_Starting_Computer;
+controllable c_Drink_Coffee;
+controllable c_Drink_Tea;
+controllable c_Start_Working;
+controllable c_Flip_A_Coin;
+uncontrollable u_Coin_Facing_Up;
+uncontrollable u_Coin_Facing_Down;
+plant automaton Spec:
+  disc bool Is_Computer_Ready = false;
+  disc bool Is_Computer_On = false;
+  disc UnknownDrink Coffee_or_Tea = Unknown;
+  disc bool Has_Drank_Coffee_or_Tea = false;
+  disc bool Is_Ready_to_Work = false;
+  location Home:
+    initial;
+    marked;
+    edge c_Turn_Computer_On when not Is_Computer_Ready and not Is_Computer_On do Is_Computer_On := true;
+    edge c_Starting_Computer when not Is_Computer_Ready and Is_Computer_On do Is_Computer_Ready := true;
+    edge c_Flip_A_Coin when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown;
+    edge u_Coin_Facing_Up when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown do Coffee_or_Tea := Coffee;
+    edge u_Coin_Facing_Down when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown do Coffee_or_Tea := Tea;
+    edge c_Drink_Coffee when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown;
+    edge c_Drink_Tea when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown;
+    edge c_Start_Working when Has_Drank_Coffee_or_Tea and Is_Computer_Ready do Is_Ready_to_Work := true;
+end
+plant automaton constraint:
+  location idle:
+    initial;
+    marked;
+    edge c_Flip_A_Coin goto busy;
+    edge c_Turn_Computer_On goto idle;
+    edge c_Starting_Computer goto idle;
+    edge c_Drink_Coffee goto idle;
+    edge c_Drink_Tea goto idle;
+    edge c_Start_Working goto idle;
+  location busy:
+    edge u_Coin_Facing_Up goto idle;
+    edge u_Coin_Facing_Down goto idle;
+end
+supervisor automaton Turn_Computer_On_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge c_Turn_Computer_On goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Drink_Coffee_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge c_Drink_Coffee goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Drink_Tea_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge c_Drink_Tea goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Start_Working_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge c_Start_Working goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Starting_Computer_happens_once:
+  location NotYetOccurred:
+    initial;
+    marked;
+    edge c_Starting_Computer goto Occurred;
+  location Occurred:
+    marked;
+end
+supervisor automaton Post:
+  controllable c_satisfied;
+  alg bool condition = Spec.Is_Computer_On and Spec.Is_Computer_Ready and Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Ready_to_Work;
+  location NotSatisfied:
+    initial;
+    edge c_satisfied when condition goto Satisfied;
+  location Satisfied:
+    marked;
+end
+supervisor automaton sup:
+  alphabet c_Turn_Computer_On, c_Starting_Computer, c_Flip_A_Coin, c_Drink_Coffee, c_Drink_Tea, c_Start_Working, Post.c_satisfied;
+  location:
+    initial;
+    marked;
+    edge c_Drink_Coffee when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Coffee) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or (Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Coffee) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and Starting_Computer_happens_once.Occurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.NotYetOccurred and Drink_Tea_happens_once.NotYetOccurred and (Spec.Coffee_or_Tea = Coffee and (constraint.idle and not Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and (Turn_Computer_On_happens_once.Occurred and Spec.Is_Computer_Ready) and (Starting_Computer_happens_once.Occurred and (Spec.Is_Ready_to_Work and Start_Working_happens_once.Occurred))));
+    edge c_Drink_Tea when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or (Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and Starting_Computer_happens_once.Occurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.NotYetOccurred and Drink_Tea_happens_once.NotYetOccurred and (Spec.Coffee_or_Tea = Tea and (constraint.idle and not Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and (Turn_Computer_On_happens_once.Occurred and Spec.Is_Computer_Ready) and (Starting_Computer_happens_once.Occurred and (Spec.Is_Ready_to_Work and Start_Working_happens_once.Occurred))));
+    edge c_Flip_A_Coin when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and Starting_Computer_happens_once.Occurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied)));
+    edge c_Start_Working when Drink_Coffee_happens_once.NotYetOccurred and Drink_Tea_happens_once.Occurred and (Spec.Coffee_or_Tea = Unknown and (constraint.idle and Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and (Starting_Computer_happens_once.Occurred and Start_Working_happens_once.NotYetOccurred))) or Drink_Coffee_happens_once.Occurred and Drink_Tea_happens_once.NotYetOccurred and (Spec.Coffee_or_Tea = Unknown and (constraint.idle and Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and (Starting_Computer_happens_once.Occurred and Start_Working_happens_once.NotYetOccurred)));
+    edge c_Starting_Computer when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea != Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or (Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.Occurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied)))) or (Drink_Coffee_happens_once.NotYetOccurred and Drink_Tea_happens_once.Occurred and (Spec.Coffee_or_Tea = Unknown and (constraint.idle and Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and (Turn_Computer_On_happens_once.Occurred and not Spec.Is_Computer_Ready) and (Starting_Computer_happens_once.NotYetOccurred and (Spec.Is_Ready_to_Work and Start_Working_happens_once.Occurred))) or (Drink_Coffee_happens_once.Occurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.Occurred and Drink_Tea_happens_once.NotYetOccurred and (Spec.Coffee_or_Tea = Unknown and (constraint.idle and Spec.Has_Drank_Coffee_or_Tea)) and (Spec.Is_Computer_On and (Turn_Computer_On_happens_once.Occurred and not Spec.Is_Computer_Ready) and (Starting_Computer_happens_once.NotYetOccurred and (Spec.Is_Ready_to_Work and Start_Working_happens_once.Occurred)))));
+    edge c_Turn_Computer_On when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea != Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and not Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.NotYetOccurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Tea) and (constraint.idle and (not Spec.Has_Drank_Coffee_or_Tea and not Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.NotYetOccurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or (Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.Occurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and not Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.NotYetOccurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.Occurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and not Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.NotYetOccurred and (not Spec.Is_Computer_Ready and Starting_Computer_happens_once.NotYetOccurred) and (not Spec.Is_Ready_to_Work and (Start_Working_happens_once.NotYetOccurred and Post.NotSatisfied))));
+    edge Post.c_satisfied when Drink_Coffee_happens_once.NotYetOccurred and (Drink_Tea_happens_once.Occurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and Starting_Computer_happens_once.Occurred) and (Spec.Is_Ready_to_Work and (Start_Working_happens_once.Occurred and Post.NotSatisfied))) or Drink_Coffee_happens_once.Occurred and (Drink_Tea_happens_once.NotYetOccurred and Spec.Coffee_or_Tea = Unknown) and (constraint.idle and (Spec.Has_Drank_Coffee_or_Tea and Spec.Is_Computer_On)) and (Turn_Computer_On_happens_once.Occurred and (Spec.Is_Computer_Ready and Starting_Computer_happens_once.Occurred) and (Spec.Is_Ready_to_Work and (Start_Working_happens_once.Occurred and Post.NotSatisfied)));
+end

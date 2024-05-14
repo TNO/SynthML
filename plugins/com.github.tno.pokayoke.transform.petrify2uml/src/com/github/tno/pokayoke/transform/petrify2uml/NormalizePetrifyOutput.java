@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class NormalizePetrifyOutput {
                 "Expected the Petrify output to contain exactly one transition declaration.");
         String transitionDeclaration = transitionDeclarations.get(0).substring(dummyIdentifier.length()).trim();
         Set<String> declaredTransitionNames = Sets.newHashSet(transitionDeclaration.split(" "));
-        List<String> allTransitionNames = new ArrayList<>(declaredTransitionNames);
+        Set<String> allTransitionNames = new LinkedHashSet<>(declaredTransitionNames);
 
         // Collect specification lines.
         List<String> specificationLines = petrifyOutput.stream()
@@ -56,16 +57,16 @@ public class NormalizePetrifyOutput {
             // Add the duplicate transitions.
             nodes.stream()
                     .filter(element -> !declaredTransitionNames.contains(element)
-                            && Petrify2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
+                            && PetrifyOutput2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
                     .forEach(element -> allTransitionNames.add(element));
 
             parentToChild.put(parentNode, childNodes);
         }
 
         // Sort the transition names.
-        Collections.sort(allTransitionNames);
-        Map<String, Integer> transitionIndices = IntStream.range(0, allTransitionNames.size()).boxed()
-                .collect(Collectors.toMap(allTransitionNames::get, i -> i));
+        List<String> sortedTransitionNames = allTransitionNames.stream().sorted().toList();
+        Map<String, Integer> transitionIndices = IntStream.range(0, sortedTransitionNames.size()).boxed()
+                .collect(Collectors.toMap(sortedTransitionNames::get, i -> i));
 
         // Get the marking place.
         String markingIdentifier = ".marking";

@@ -2,11 +2,14 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -57,6 +60,8 @@ public class UMLTransformer {
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
+    private final CifContext cifContext;
+
     private final Model model;
 
     private final CifToPythonTranslator translator;
@@ -65,27 +70,32 @@ public class UMLTransformer {
 
     public UMLTransformer(Model model) {
         this.model = model;
-        this.translator = new CifToPythonTranslator(new CifContext(this.model));
+        this.cifContext = new CifContext(this.model);
+        this.translator = new CifToPythonTranslator(this.cifContext);
         this.propertyBounds = new LinkedHashMap<>();
     }
 
     public static void main(String[] args) throws IOException, CoreException {
         if (args.length == 2) {
-            transformFile(args[0], args[1]);
+            transformFile(Paths.get(args[0]), Paths.get(args[1]));
         } else {
             throw new IOException("Exactly two arguments expected: a source path and a target path.");
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
-        Model model = FileHelper.loadModel(sourcePath);
+    public static void transformFile(Path sourcePath, Path targetPath) throws IOException, CoreException {
+        String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
+        Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
+        Model model = FileHelper.loadModel(sourcePath.toString());
         new UMLTransformer(model).transformModel();
-        FileHelper.storeModel(model, targetPath);
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
     public void transformModel() throws CoreException {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
         ValidationHelper.validateModel(model);
+
+        Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");

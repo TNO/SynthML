@@ -3,10 +3,12 @@ package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -26,20 +28,23 @@ public class Cif2Petrify {
 
     public static void main(String[] args) throws IOException {
         if (args.length == 2) {
-            transformFile(args[0], args[1]);
+            transformFile(Paths.get(args[0]), Paths.get(args[1]));
         } else {
             throw new IOException("Exactly two arguments expected: a source path and a target path.");
         }
     }
 
-    public static void transformFile(String sourcePath, String targetPath) throws IOException {
-        Specification specification = CifFileHelper.loadCifSpec(Paths.get(sourcePath));
-        String body = Cif2Petrify.transform(specification);
-        Files.writeString(Paths.get(targetPath), body);
+    public static void transformFile(Path inputFilePath, Path outputFolderPath) throws IOException {
+        String filePrefix = FilenameUtils.removeExtension(inputFilePath.getFileName().toString());
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
+        Files.createDirectories(outputFolderPath);
+        Specification specification = CifFileHelper.loadCifSpec(inputFilePath);
+        List<String> body = Cif2Petrify.transform(specification);
+        Files.write(petrifyInputPath, body);
     }
 
-    public static String transform(Specification specification) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static List<String> transform(Specification specification) {
+        List<String> petrifyInput = new ArrayList<>();
 
         // Obtain the automaton in the CIF specification.
         List<Automaton> automata = CifCollectUtils.collectAutomata(specification, new ArrayList<>());
@@ -47,9 +52,7 @@ public class Cif2Petrify {
         Automaton automaton = automata.get(0);
 
         // Declare the header of the Petrify model.
-        stringBuilder.append(".model " + automaton.getName());
-        stringBuilder.append("\n");
-        stringBuilder.append(".dummy start end ");
+        petrifyInput.add(".model " + automaton.getName());
 
         // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
@@ -61,11 +64,9 @@ public class Cif2Petrify {
                 "Expected that 'start' and 'end' are not used as event names.");
 
         // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
-        stringBuilder.append(String.join(" ", eventNames));
-        stringBuilder.append("\n");
+        petrifyInput.add(".dummy start end " + String.join(" ", eventNames));
 
-        stringBuilder.append(".state graph");
-        stringBuilder.append("\n");
+        petrifyInput.add(".state graph");
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
@@ -93,8 +94,7 @@ public class Cif2Petrify {
 
             // Translate initial locations.
             if (isTriviallyInitial) {
-                stringBuilder.append(String.format("loc0 start %s", locationName));
-                stringBuilder.append("\n");
+                petrifyInput.add(String.format("loc0 start %s", locationName));
             }
 
             // Translate marked locations.
@@ -102,8 +102,7 @@ public class Cif2Petrify {
                 Preconditions.checkArgument(location.getEdges().isEmpty(),
                         "Expected marked locations to not have outgoing edges.");
 
-                stringBuilder.append(String.format("%s end loc0", locationName));
-                stringBuilder.append("\n");
+                petrifyInput.add(String.format("%s end loc0", locationName));
             }
 
             // Translate all edges that go out of the current location.
@@ -113,20 +112,17 @@ public class Cif2Petrify {
                     String targetLocationName = targetLocation.getName();
                     String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
                             targetLocationName);
-                    stringBuilder.append(edgeString);
-                    stringBuilder.append("\n");
+                    petrifyInput.add(edgeString);
                 }
             }
         }
 
         // Indicate that the first location has a token initially.
-        stringBuilder.append(".marking {loc0}");
-        stringBuilder.append("\n");
+        petrifyInput.add(".marking {loc0}");
 
         // Indicate the end of the Petrify input graph.
-        stringBuilder.append(".end");
-        stringBuilder.append("\n");
+        petrifyInput.add(".end");
 
-        return stringBuilder.toString();
+        return petrifyInput;
     }
 }

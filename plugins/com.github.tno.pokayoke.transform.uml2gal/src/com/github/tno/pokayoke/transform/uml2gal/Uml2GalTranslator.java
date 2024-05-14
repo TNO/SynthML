@@ -117,6 +117,9 @@ public class Uml2GalTranslator {
         CifContext cifContext = new CifContext(model);
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
+        // Check transformation preconditions.
+        Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
+
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);
 
