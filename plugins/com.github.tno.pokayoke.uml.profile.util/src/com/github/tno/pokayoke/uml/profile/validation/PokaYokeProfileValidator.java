@@ -180,7 +180,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(enumeration)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(enumeration, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!(enumeration.eContainer() instanceof Model)) {
             error("Expected enumeration to be declared in model.", null);
