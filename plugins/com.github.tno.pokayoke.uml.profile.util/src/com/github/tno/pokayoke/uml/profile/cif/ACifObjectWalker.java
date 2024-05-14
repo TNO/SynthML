@@ -3,6 +3,12 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
@@ -109,4 +115,19 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     }
 
     protected abstract T visit(UnaryOperator operator, TextPosition operatorPos, T child, CifContext ctx);
+
+    @Override
+    protected T visit(AInvariant invariant, CifContext ctx) {
+        Optional<String> invKind = Optional.ofNullable(invariant.invKind).map(kind -> kind.text);
+
+        List<String> events = new ArrayList<>();
+        if (invariant.events != null) {
+            invariant.events.stream().map(event -> event.name).collect(Collectors.toCollection(() -> events));
+        }
+
+        return visit(invKind, events, invariant.position, visit(invariant.predicate, ctx), ctx);
+    }
+
+    protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, T predicate,
+            CifContext ctx);
 }

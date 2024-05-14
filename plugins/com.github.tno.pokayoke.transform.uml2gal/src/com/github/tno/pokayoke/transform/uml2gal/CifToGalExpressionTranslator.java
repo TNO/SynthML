@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2gal;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -178,6 +179,13 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     @Override
     protected Object visit(AIntExpression expr, CifContext ctx) {
         return Uml2GalTranslationHelper.toIntExpression(Integer.parseInt(expr.value));
+    }
+
+    @Override
+    protected Object visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Object predicate,
+            CifContext ctx)
+    {
+        throw new UnsupportedOperationException();
     }
 
     private IntExpression toInt(Object expression) {

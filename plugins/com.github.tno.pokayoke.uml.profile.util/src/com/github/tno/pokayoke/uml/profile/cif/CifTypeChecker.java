@@ -1,7 +1,9 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -169,5 +171,16 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
                 break;
         }
         return child;
+    }
+
+    @Override
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
+            CifContext ctx)
+    {
+        if (!PokaYokeTypeUtil.isBooleanType(predicate)) {
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
+        }
+
+        return predicate;
     }
 }

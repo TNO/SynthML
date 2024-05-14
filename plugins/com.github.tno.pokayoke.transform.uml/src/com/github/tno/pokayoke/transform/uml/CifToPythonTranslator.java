@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -79,5 +80,12 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     @Override
     protected String visit(AIntExpression expr, CifContext ctx) {
         return expr.value;
+    }
+
+    @Override
+    protected String visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, String predicate,
+            CifContext ctx)
+    {
+        throw new UnsupportedOperationException();
     }
 }
