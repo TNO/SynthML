@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
@@ -193,6 +194,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (enumeration.getOwnedLiterals().isEmpty()) {
             error("Expected enumeration to have at least one literal.", null);
         }
+    }
+
+    @Check
+    private void checkValidEnumerationLiteral(EnumerationLiteral literal) {
+        checkNamingConventions(literal, true, true);
     }
 
     @Check
