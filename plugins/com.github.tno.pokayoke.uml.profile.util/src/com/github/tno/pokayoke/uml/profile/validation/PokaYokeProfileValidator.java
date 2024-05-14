@@ -148,6 +148,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Property should be mandatory", UMLPackage.Literals.MULTIPLICITY_ELEMENT__LOWER);
         }
 
+        checkNamingConventions(property, true, true);
+
         Type propType = property.getType();
         if (propType == null) {
             error("Property type not set", UMLPackage.Literals.TYPED_ELEMENT__TYPE);
