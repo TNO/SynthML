@@ -106,9 +106,8 @@ public class UMLTransformer {
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
 
-        propertyBounds.clear();
-
         // Collect integer bounds and set default values for all class properties
+        propertyBounds.clear();
         for (Property property: contextClass.getOwnedAttributes()) {
             // Collect the bounds for integer properties, they will be validated later.
             Range<Integer> propertyRange = null;
