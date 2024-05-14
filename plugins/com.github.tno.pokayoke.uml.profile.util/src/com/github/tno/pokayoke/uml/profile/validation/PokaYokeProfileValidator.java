@@ -14,6 +14,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
+import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
@@ -340,7 +341,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-
     private void checkValidGuard(AExpression guardExpr, Element element) {
         if (guardExpr == null) {
             return;
@@ -366,11 +366,26 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, true, true);
 
-        AInvariant invariant = CifParserHelper.parseInvariant(constraint);
+        try {
+            // Parse the constraint as an invariant.
+            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
 
-        new CifTypeChecker(constraint).checkInvariant(invariant);
+            // Typecheck the invariant.
+            new CifTypeChecker(constraint).checkInvariant(invariant);
 
-        // error("invalid constraint", null);
+            // Check the events.
+            if (invariant.events != null) {
+                CifContext context = new CifContext(constraint);
+
+                for (AName event: invariant.events) {
+                    if (context.getOpaqueBehavior(event.name) == null) {
+                        error("Invalid invariant: could not find an opaque behavior named " + event.name, null);
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            error("Invalid invariant " + e.getLocalizedMessage(), null);
+        }
     }
 
     private void checkValidEffects(List<AUpdate> updates, Element element) {

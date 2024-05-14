@@ -104,4 +104,11 @@ public class CifContext {
     public boolean hasOpaqueBehaviors() {
         return getAllElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
     }
+
+    public OpaqueBehavior getOpaqueBehavior(String name) {
+        if (contextElements.get(name) instanceof OpaqueBehavior behavior) {
+            return behavior;
+        }
+        return null;
+    }
 }
