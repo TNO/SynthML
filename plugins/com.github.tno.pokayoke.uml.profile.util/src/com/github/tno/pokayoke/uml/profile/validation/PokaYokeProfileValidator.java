@@ -319,20 +319,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the guard of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
-    @Check
-    private void checkValidGuard(OpaqueBehavior behavior) {
-        try {
-            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidGuard(AExpression guardExpr, Element element) {
         if (guardExpr == null) {
             return;
@@ -354,20 +340,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the effects of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
-    @Check
-    private void checkValidEffects(OpaqueBehavior behavior) {
-        try {
-            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidEffects(List<AUpdate> updates, Element element) {
         HashSet<String> updatedVariables = new HashSet<>();
         for (AUpdate update: updates) {
@@ -380,6 +352,30 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
                         variableExpr.position);
             }
+        }
+    }
+
+    /**
+     * Validates the name, guard and effects of the given opaque behavior.
+     *
+     * @param behavior The opaque behavior to validate.
+     */
+    @Check
+    private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
+        checkNamingConventions(behavior, true, true);
+
+        // Validates the guard of the given opaque behavior.
+        try {
+            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), null);
+        }
+
+        // Validates the effects of the given opaque behavior.
+        try {
+            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
         }
     }
 
