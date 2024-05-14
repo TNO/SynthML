@@ -115,6 +115,7 @@ public class Uml2GalTranslator {
 
         // Check transformation preconditions.
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
 
         // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
         specificationBuilder.addTypedef(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN,

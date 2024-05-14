@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
@@ -110,5 +111,9 @@ public class CifContext {
             return behavior;
         }
         return null;
+    }
+
+    public boolean hasConstraints() {
+        return getAllElements().stream().anyMatch(Constraint.class::isInstance);
     }
 }
