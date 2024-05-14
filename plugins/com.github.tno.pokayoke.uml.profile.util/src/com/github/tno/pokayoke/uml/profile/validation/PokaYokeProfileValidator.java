@@ -104,6 +104,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
+    private void checkValidModel(Model model) {
+        checkNamingConventions(model, true, true);
+    }
+
+    @Check
     private void checkValidClass(Class clazz) {
         if (!isPokaYokaUmlProfileApplied(clazz)) {
             return;
