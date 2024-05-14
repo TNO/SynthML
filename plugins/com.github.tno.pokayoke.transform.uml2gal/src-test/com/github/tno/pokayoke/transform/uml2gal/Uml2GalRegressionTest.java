@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
-import com.github.tno.pokayoke.transform.uml2gal.Uml2GalTranslationHelper;
 
 /** Regression tests for translating UML models to GAL specifications. */
 public class Uml2GalRegressionTest extends RegressionTest {

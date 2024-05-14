@@ -10,7 +10,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 /** Regression tests for extracting region-state map. */
@@ -34,8 +33,7 @@ public class RegionStateMappingRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException {
-        ExtractRegionStateMapping.extractMappingFromFiles(inputPath,
-                getSecondInputPathFrom(inputPath), outputPath);
+        ExtractRegionStateMapping.extractMappingFromFiles(inputPath, getSecondInputPathFrom(inputPath), outputPath);
     }
 
     private Path getSecondInputPathFrom(Path inputPath) {
