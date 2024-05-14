@@ -9,10 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
+import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
@@ -22,6 +24,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -380,6 +383,32 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
                         variableExpr.position);
             }
+        }
+    }
+
+    @Check
+    private void checkValidConstraint(Constraint constraint) {
+        checkNamingConventions(constraint, true, true);
+
+        try {
+            // Parse the constraint as an invariant.
+            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
+
+            // Typecheck the invariant.
+            new CifTypeChecker(constraint).checkInvariant(invariant);
+
+            // Check the events.
+            if (invariant.events != null) {
+                CifContext context = new CifContext(constraint);
+
+                for (AName event: invariant.events) {
+                    if (context.getOpaqueBehavior(event.name) == null) {
+                        error("Invalid invariant: could not find an opaque behavior named " + event.name, null);
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            error("Invalid invariant " + e.getLocalizedMessage(), null);
         }
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
@@ -85,6 +86,21 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(updateType), upd.position);
         }
         return updateType;
+    }
+
+    /**
+     * Returns the type of the result when {@code inv} is evaluated and checks if this type is supported.
+     *
+     * @param inv The invariant to evaluate.
+     * @return The type of the invariant predicate.
+     * @throws TypeException If {@code expr} cannot be evaluated or if the predicate type is not supported.
+     */
+    public Type checkInvariant(AInvariant inv) throws TypeException {
+        Type invType = visit(inv, ctx);
+        if (!PokaYokeTypeUtil.isSupportedType(invType)) {
+            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(invType), inv.position);
+        }
+        return invType;
     }
 
     @Override
