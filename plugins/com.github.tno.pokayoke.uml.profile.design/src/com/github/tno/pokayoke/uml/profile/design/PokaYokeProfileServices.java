@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
@@ -16,6 +17,7 @@ import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
@@ -34,13 +36,20 @@ import PokaYoke.GuardEffectsAction;
  * The services class used by VSM.
  */
 public class PokaYokeProfileServices {
+    private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
+
     /**
-     * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
+     * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action} while
+     * 'guard and effects' layer is not enabled.
      *
      * @param action The action to interrogate.
+     * @param diagram The diagram containing the action.
      * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
      */
-    public boolean isGuardEffectsAction(Action action) {
+    public boolean decorateGuardEffectsAction(Action action, DSemanticDiagram diagram) {
+        if (diagram.getActivatedLayers().stream().anyMatch(l -> GUARD_EFFECTS_LAYER.equals(l.getName()))) {
+            return false;
+        }
         return PokaYokeUmlProfileUtil.isGuardEffectsAction(action);
     }
 
@@ -73,12 +82,22 @@ public class PokaYokeProfileServices {
             String effects = getEffects(action);
             if (Strings.isNullOrEmpty(effects)) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
+                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+                // is used in the odesign file. So we trigger a refresh here.
+                refresh(action);
                 return;
             }
-            // Empty values are not allowed, so reset the value
-            newValue = null;
         }
-        PokaYokeUmlProfileUtil.setGuard(action, newValue);
+        // Empty values are not allowed, so reset the value
+        PokaYokeUmlProfileUtil.setGuard(action, Strings.emptyToNull(newValue));
+    }
+
+    public void unsetGuard(Action action) {
+        setGuard(action, null);
+    }
+
+    public boolean isSetGuard(Action action) {
+        return getGuard(action) != null;
     }
 
     /**
@@ -110,12 +129,22 @@ public class PokaYokeProfileServices {
             String guard = getGuard(action);
             if (Strings.isNullOrEmpty(guard)) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE);
+                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+                // is used in the odesign file. So we trigger the refresh here.
+                refresh(action);
                 return;
             }
-            // Empty values are not allowed, so reset the value
-            newValue = null;
         }
-        PokaYokeUmlProfileUtil.setEffects(action, newValue);
+        // Empty values are not allowed, so reset the value
+        PokaYokeUmlProfileUtil.setEffects(action, Strings.emptyToNull(newValue));
+    }
+
+    public void unsetEffects(Action action) {
+        setEffects(action, null);
+    }
+
+    public boolean isSetEffects(Action action) {
+        return getEffects(action) != null;
     }
 
     /**
@@ -239,6 +268,22 @@ public class PokaYokeProfileServices {
         } catch (NumberFormatException e) {
             Activator.getDefault().getLog().log(new Status(IStatus.ERROR, getClass(),
                     "Failed to parse integer value: " + e.getLocalizedMessage(), e));
+        }
+    }
+
+    /**
+     * Workaround for triggering a viewer refresh, for a {@link NamedElement}.
+     *
+     * @param element The element to refresh.
+     */
+    private void refresh(NamedElement element) {
+        if (element.isSetName()) {
+            String name = element.getName();
+            element.unsetName();
+            element.setName(name);
+        } else {
+            element.setName("");
+            element.unsetName();
         }
     }
 }
