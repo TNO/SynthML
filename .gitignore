@@ -2,3 +2,5 @@
 /**/.polyglot.*
 /**/pom.tycho
 /**/*.dbg
+/**/*.orig
+/**/resources-test/**/actual/
