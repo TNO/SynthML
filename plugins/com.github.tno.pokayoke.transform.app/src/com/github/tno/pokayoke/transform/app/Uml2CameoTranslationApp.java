@@ -22,6 +22,6 @@ public class Uml2CameoTranslationApp {
         Path outputFilePath = outputFolderPath.resolve(filePrefix + ".uml");
 
         // Translate the UML model at the input path, and write the resulting fUML specification to the output path.
-        UMLTransformer.transformFile(inputPath.toString(), outputFilePath.toString());
+        UMLTransformer.transformFile(inputPath, outputFilePath);
     }
 }

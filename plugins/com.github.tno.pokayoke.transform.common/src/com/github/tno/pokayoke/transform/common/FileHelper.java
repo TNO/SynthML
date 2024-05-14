@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.escet.common.emf.EMFHelper;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -84,6 +86,8 @@ public class FileHelper {
         URI uri = URI.createFileURI(pathName);
         Resource resource = resourceSet.createResource(uri);
         resource.getContents().add(model);
+        EMFHelper.normalizeXmiIds((XMLResource)resource);
+
         // Also add the UML profiles information to the resource
         List<EObject> stereotypeApplications = model.allOwnedElements().stream()
                 .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());

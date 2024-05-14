@@ -57,9 +57,9 @@ import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNet2Activity;
-import com.github.tno.pokayoke.transform.petrify2uml.PetriNetUMLFileHelper;
-import com.github.tno.pokayoke.transform.petrify2uml.Petrify2PNMLTranslator;
+import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
+import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
+import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
@@ -154,16 +154,17 @@ public class FullSynthesisApp {
 
         // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".g");
-        Cif2Petrify.transformFile(cifMinimizedStateSpacePath.toString(), petrifyInputPath.toString());
+        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
+        List<String> petrifyInput = Cif2Petrify.transform(cifMinimizedStateSpace);
+        Files.write(petrifyInputPath, petrifyInput);
 
         // Petrify the state space.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         convertToPetriNet(petrifyInputPath, petrifyOutputPath, petrifyLogPath, 20);
 
-        // Load Petrify input and output.
-        List<String> petrifyInput = PetriNetUMLFileHelper.readFile(petrifyInputPath.toString());
-        List<String> petrifyOutput = PetriNetUMLFileHelper.readFile(petrifyOutputPath.toString());
+        // Load Petrify output.
+        List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
         petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
@@ -171,8 +172,8 @@ public class FullSynthesisApp {
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".pnml");
-        PetriNet petriNet = Petrify2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
+        PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Extract region-state mapping.
         Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
@@ -180,11 +181,11 @@ public class FullSynthesisApp {
         // Remove the loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
-        PetriNetUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".uml");
-        PetriNet2Activity petriNet2Activity = new PetriNet2Activity();
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
@@ -199,9 +200,7 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
-        Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
-
         Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
                 annotationFromProjectedSP);
         Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
@@ -424,11 +423,11 @@ public class FullSynthesisApp {
     {
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
-
+        Path parentPath = petrifyInputPath.getParent();
         command.add(ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"));
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyInputPath.toString()));
+        command.add(parentPath.relativize(petrifyInputPath).toString());
         command.add("-o");
-        command.add(WindowsLongPathSupport.ensureLongPathPrefix(petrifyOutputPath.toString()));
+        command.add(parentPath.relativize(petrifyOutputPath).toString());
 
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
@@ -443,10 +442,11 @@ public class FullSynthesisApp {
 
         // Generate a log file.
         command.add("-log");
-        command.add(petrifyLogPath.toString());
+        command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
 
+        petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.
         Process petrifyProcess;
 

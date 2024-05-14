@@ -1,0 +1,54 @@
+controllable c_Turn_Computer_On;
+controllable c_Starting_Computer;
+controllable c_Drink_Coffee;
+controllable c_Drink_Tea;
+controllable c_Start_Working;
+controllable c_Flip_A_Coin;
+uncontrollable u_Coin_Facing_Up;
+uncontrollable u_Coin_Facing_Down;
+group Post:
+  controllable c_satisfied;
+end
+automaton statespace:
+  alphabet c_Turn_Computer_On, c_Starting_Computer, c_Flip_A_Coin, u_Coin_Facing_Up, u_Coin_Facing_Down, c_Drink_Coffee, c_Drink_Tea, c_Start_Working, Post.c_satisfied;
+  location loc1:
+    initial;
+    edge c_Turn_Computer_On goto loc2;
+  location loc2:
+    edge c_Starting_Computer goto loc3;
+    edge c_Flip_A_Coin goto loc4;
+  location loc3:
+    edge c_Flip_A_Coin goto loc5;
+  location loc4:
+    edge u_Coin_Facing_Up goto loc6;
+    edge u_Coin_Facing_Down goto loc7;
+  location loc5:
+    edge u_Coin_Facing_Up goto loc8;
+    edge u_Coin_Facing_Down goto loc9;
+  location loc6:
+    edge c_Starting_Computer goto loc8;
+    edge c_Drink_Coffee goto loc10;
+  location loc7:
+    edge c_Starting_Computer goto loc9;
+    edge c_Drink_Tea goto loc11;
+  location loc8:
+    edge c_Drink_Coffee goto loc12;
+  location loc9:
+    edge c_Drink_Tea goto loc13;
+  location loc10:
+    edge c_Starting_Computer goto loc12;
+  location loc11:
+    edge c_Starting_Computer goto loc13;
+  location loc12:
+    edge c_Start_Working goto loc14;
+  location loc13:
+    edge c_Start_Working goto loc15;
+  location loc14:
+    edge Post.c_satisfied goto loc16;
+  location loc15:
+    edge Post.c_satisfied goto loc17;
+  location loc16:
+    marked;
+  location loc17:
+    marked;
+end
