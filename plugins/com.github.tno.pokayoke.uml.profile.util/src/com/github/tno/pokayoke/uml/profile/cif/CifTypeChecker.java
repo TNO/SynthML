@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
@@ -85,6 +86,15 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(updateType), upd.position);
         }
         return updateType;
+    }
+
+    // TODO JavaDoc
+    public Type checkInvariant(AInvariant inv) throws TypeException {
+        Type invType = visit(inv, ctx);
+        if (!PokaYokeTypeUtil.isSupportedType(invType)) {
+            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(invType), inv.position);
+        }
+        return invType;
     }
 
     @Override

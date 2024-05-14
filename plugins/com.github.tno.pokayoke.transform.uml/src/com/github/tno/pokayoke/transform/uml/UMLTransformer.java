@@ -52,8 +52,6 @@ public class UMLTransformer {
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
-    private final CifContext cifContext;
-
     private final Model model;
 
     private final CifContext cifContext;

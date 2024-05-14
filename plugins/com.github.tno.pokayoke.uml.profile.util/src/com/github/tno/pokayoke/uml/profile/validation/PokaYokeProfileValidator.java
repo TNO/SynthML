@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -22,6 +23,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -319,19 +321,25 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the guard of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
     @Check
-    private void checkValidGuard(OpaqueBehavior behavior) {
+    private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
+        checkNamingConventions(behavior, true, true);
+
+        // Validates the guard of the given opaque behavior.
         try {
             checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
+
+        // Validates the effects of the given opaque behavior.
+        try {
+            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
+        }
     }
+
 
     private void checkValidGuard(AExpression guardExpr, Element element) {
         if (guardExpr == null) {
@@ -354,18 +362,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the effects of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
     @Check
-    private void checkValidEffects(OpaqueBehavior behavior) {
-        try {
-            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
-        }
+    private void checkValidConstraint(Constraint constraint) {
+        checkNamingConventions(constraint, true, true);
+
+        AInvariant invariant = CifParserHelper.parseInvariant(constraint);
+
+        new CifTypeChecker(constraint).checkInvariant(invariant);
+
+        // error("invalid constraint", null);
     }
 
     private void checkValidEffects(List<AUpdate> updates, Element element) {

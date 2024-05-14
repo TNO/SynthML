@@ -93,23 +93,11 @@ public class CifParserHelper {
         return behavior.getBodies().stream().skip(1).map(effect -> parseUpdates(effect, behavior)).toList();
     }
 
-    public static AInvariant parseInvariant(String invariant, Element context) throws SyntaxException {
-        if (invariant == null) {
-            return null;
-        } else if (invariant.isBlank()) {
-            throw new CustomSyntaxException("cannot be blank.", TextPosition.createDummy(getLocation(context)));
-        }
-        CifInvariantParser invariantParser = new CifInvariantParser();
-        return invariantParser.parseString(invariant, getLocation(context));
-    }
-
-    public static AInvariant parseInvariant(OpaqueExpression constraint) throws SyntaxException {
+    public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {
         if (constraint == null) {
             return null;
         }
-        return parseInvariant(
-                constraint.getBodies().stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r)).orElse("true"),
-                constraint);
+        return parseInvariant(constraint.getSpecification());
     }
 
     public static AInvariant parseInvariant(ValueSpecification valueSpec) throws SyntaxException {
@@ -122,11 +110,22 @@ public class CifParserHelper {
         }
     }
 
-    public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {
+    public static AInvariant parseInvariant(OpaqueExpression constraint) throws SyntaxException {
         if (constraint == null) {
             return null;
         }
-        return parseInvariant(constraint.getSpecification());
+        return parseInvariant(
+                constraint.getBodies().stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r)).orElse("true"),
+                constraint);
+    }
+
+    public static AInvariant parseInvariant(String invariant, Element context) throws SyntaxException {
+        if (invariant == null) {
+            return null;
+        } else if (invariant.isBlank()) {
+            throw new CustomSyntaxException("cannot be blank.", TextPosition.createDummy(getLocation(context)));
+        }
+        return new CifInvariantParser().parseString(invariant, getLocation(context));
     }
 
     private static String getLocation(Element context) {
