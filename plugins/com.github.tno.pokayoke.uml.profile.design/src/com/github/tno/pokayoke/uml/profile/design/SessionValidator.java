@@ -47,6 +47,9 @@ public class SessionValidator {
 
     private static void validateDiagram(DRepresentationDescriptor representationDesc, Session session) {
         IFile sessionFile = WorkspaceSynchronizer.getFile(session.getSessionResource());
+        String diagramDescriptorURI = EcoreUtil.getURI(representationDesc).toString();
+
+        // Validating root element of diagram
         Diagnostician diagnostician = new Diagnostician() {
             @Override
             public String getObjectLabel(EObject eObject) {
@@ -55,6 +58,7 @@ public class SessionValidator {
         };
         Diagnostic validationResult = diagnostician.validate(representationDesc.getTarget());
 
+        // Reporting validation messages
         for (Diagnostic diagnostic: validationResult.getChildren()) {
             if (diagnostic.getSeverity() >= Diagnostic.INFO && !diagnostic.getData().isEmpty()
                     && diagnostic.getData().get(0) instanceof EObject element)
@@ -67,17 +71,16 @@ public class SessionValidator {
                 if (dSemanticDecorator == null) {
                     continue;
                 }
-
                 View view = SiriusGMFHelper.getGmfView(dSemanticDecorator, session);
-                final String elementId = view.eResource().getURIFragment(view);
-                final String diagramDescriptorURI = EcoreUtil.getURI(representationDesc).toString();
-                final String semanticURI = EcoreUtil.getURI(element).toString();
-                final String location = EMFCoreUtil.getQualifiedName(element, true);
-                final String message = diagnostic.getMessage();
-                final int statusSeverity = diagnostic.getSeverity();
+                if (view == null || view.eResource() == null) {
+                    continue;
+                }
+                String elementId = view.eResource().getURIFragment(view);
+                String semanticURI = EcoreUtil.getURI(element).toString();
+                String location = EMFCoreUtil.getQualifiedName(element, true);
 
                 SiriusMarkerNavigationProviderSpec.addMarker(sessionFile, elementId, diagramDescriptorURI, semanticURI,
-                        location, message, statusSeverity);
+                        location, diagnostic.getMessage(), diagnostic.getSeverity());
             }
         }
     }
