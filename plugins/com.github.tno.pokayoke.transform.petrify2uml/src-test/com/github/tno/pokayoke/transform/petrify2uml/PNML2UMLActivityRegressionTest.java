@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
