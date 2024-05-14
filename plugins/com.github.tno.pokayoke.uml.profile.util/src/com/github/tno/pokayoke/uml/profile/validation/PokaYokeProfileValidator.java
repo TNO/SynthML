@@ -218,7 +218,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(activity)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(activity, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!activity.getMembers().isEmpty()) {
             error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
