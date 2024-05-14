@@ -38,7 +38,6 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
@@ -232,25 +231,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        int minValue = -1;
-        ValueSpecification minValueSpecification = minConstraint.getSpecification();
-        if (minValueSpecification instanceof LiteralInteger literalInteger) {
-            minValue = literalInteger.getValue();
-        } else if (minValueSpecification != null) {
-            error("Only literal integer is supported for minimum value constraint.", minConstraint, null);
-            return;
-        }
-        int maxValue = -1;
-        ValueSpecification maxValueSpecification = maxConstraint.getSpecification();
-        if (maxValueSpecification instanceof LiteralInteger literalInteger) {
-            maxValue = literalInteger.getValue();
-        } else if (maxValueSpecification != null) {
-            error("Only literal integer is supported for maximum value constraint.", maxConstraint, null);
-            return;
-        }
-
-        if (minValue > maxValue) {
-            error("Minimum value cannot be greater than maximum value.", minConstraint, null);
+        if (minConstraint.getSpecification() instanceof LiteralInteger minValue
+                && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
+        {
+            if (minValue.getValue() > maxValue.getValue()) {
+                error("Minimum value cannot be greater than maximum value.", minConstraint, null);
+            }
+        } else {
+            // Null values for getSpecification() are reported by default UML validator.
+            if (minConstraint.getSpecification() != null) {
+                error("Only literal integer is supported for minimum value constraint.", minConstraint, null);
+                return;
+            }
+            if (maxConstraint.getSpecification() != null) {
+                error("Only literal integer is supported for maximum value constraint.", maxConstraint, null);
+                return;
+            }
         }
     }
 

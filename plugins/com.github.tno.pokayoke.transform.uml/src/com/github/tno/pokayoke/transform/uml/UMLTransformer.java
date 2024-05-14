@@ -98,7 +98,16 @@ public class UMLTransformer {
 
         propertyBounds.clear();
 
+        // Collect integer bounds and set default values for all class properties
         for (Property property: contextClass.getOwnedAttributes()) {
+            // Collect the bounds for integer properties, they will be validated later.
+            Range<Integer> propertyRange = null;
+            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                        PokaYokeTypeUtil.getMaxValue(property.getType()));
+                propertyBounds.put(property.getName(), propertyRange);
+            }
+
             // Translate all default values of class properties to become Python expressions,
             // or set default values for simulation.
             AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
@@ -108,22 +117,23 @@ public class UMLTransformer {
                 String translatedLiteral = translator.translateExpression(cifExpression);
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
+            } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
+                // As default value, we choose the value that is closest to zero within its bounds.
+                int propertyDefault = 0;
+                if (propertyRange.getMaximum() < 0) {
+                    propertyDefault = propertyRange.getMaximum();
+                } else if (propertyRange.getMinimum() > 0) {
+                    propertyDefault = propertyRange.getMinimum();
+                }
+                LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
+                value.setValue(propertyDefault);
+                property.setDefaultValue(value);
             } else if (PokaYokeTypeUtil.isBooleanType(property.getType())) {
                 property.setDefaultValue(FileHelper.FACTORY.createLiteralBoolean());
             } else if (PokaYokeTypeUtil.isEnumerationType(property.getType())) {
                 InstanceValue value = FileHelper.FACTORY.createInstanceValue();
                 value.setInstance(((Enumeration)property.getType()).getOwnedLiterals().get(0));
                 property.setDefaultValue(value);
-            } else if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
-                value.setValue(PokaYokeTypeUtil.getMinValue(property.getType()));
-                property.setDefaultValue(value);
-            }
-
-            // Collect the bounds for integer properties, they will be validated later.
-            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                propertyBounds.put(property.getName(), Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
-                        PokaYokeTypeUtil.getMaxValue(property.getType())));
             }
         }
 

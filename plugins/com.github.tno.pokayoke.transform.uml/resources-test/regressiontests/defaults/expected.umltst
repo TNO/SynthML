@@ -17,6 +17,21 @@
       <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
       <defaultValue xsi:type="uml:LiteralInteger"/>
     </ownedAttribute>
+    <ownedAttribute name="myRange" visibility="public" type="//Range">
+      <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
+      <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:LiteralInteger"/>
+    </ownedAttribute>
+    <ownedAttribute name="myNegative" visibility="public" type="//Negative">
+      <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
+      <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:LiteralInteger" value="-10"/>
+    </ownedAttribute>
+    <ownedAttribute name="myPositive" visibility="public" type="//Positive">
+      <lowerValue xsi:type="uml:LiteralInteger" value="1"/>
+      <upperValue xsi:type="uml:LiteralUnlimitedNatural" value="1"/>
+      <defaultValue xsi:type="uml:LiteralInteger" value="10"/>
+    </ownedAttribute>
     <ownedAttribute name="active" isStatic="true">
       <type xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       <defaultValue xsi:type="uml:LiteralString" value=""/>
@@ -108,6 +123,12 @@ if guard:
 	myPercentage = 50
 	if not (0 &lt;= myPercentage &lt;= 100):
 		print(&quot;Expected 'myPercentage' to stay between 0 and 100, but got &quot; + str(myPercentage))
+	if not (-1 &lt;= myRange &lt;= 1):
+		print(&quot;Expected 'myRange' to stay between -1 and 1, but got &quot; + str(myRange))
+	if not (-100 &lt;= myNegative &lt;= -10):
+		print(&quot;Expected 'myNegative' to stay between -100 and -10, but got &quot; + str(myNegative))
+	if not (10 &lt;= myPositive &lt;= 100):
+		print(&quot;Expected 'myPositive' to stay between 10 and 100, but got &quot; + str(myPositive))
 active = ''
 isSuccessful = guard</body>
           <language>Python</language>
@@ -148,6 +169,39 @@ isSuccessful = guard</body>
       <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
     </generalization>
   </packagedElement>
+  <packagedElement xsi:type="uml:PrimitiveType" name="Range" visibility="public">
+    <ownedRule name="min">
+      <specification xsi:type="uml:LiteralInteger" value="-1"/>
+    </ownedRule>
+    <ownedRule name="max">
+      <specification xsi:type="uml:LiteralInteger" value="1"/>
+    </ownedRule>
+    <generalization>
+      <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
+  <packagedElement xsi:type="uml:PrimitiveType" name="Negative" visibility="public">
+    <ownedRule name="min">
+      <specification xsi:type="uml:LiteralInteger" value="-100"/>
+    </ownedRule>
+    <ownedRule name="max">
+      <specification xsi:type="uml:LiteralInteger" value="-10"/>
+    </ownedRule>
+    <generalization>
+      <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
+  <packagedElement xsi:type="uml:PrimitiveType" name="Positive" visibility="public">
+    <ownedRule name="min">
+      <specification xsi:type="uml:LiteralInteger" value="10"/>
+    </ownedRule>
+    <ownedRule name="max">
+      <specification xsi:type="uml:LiteralInteger" value="100"/>
+    </ownedRule>
+    <generalization>
+      <general xsi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
   <packagedElement xsi:type="uml:Class" name="Lock">
     <ownedBehavior xsi:type="uml:Activity" name="lockhandler" node="//Lock/lockhandler/@ownedNode.0 //Lock/lockhandler/@ownedNode.1 //Lock/lockhandler/@ownedNode.2 //Lock/lockhandler/@ownedNode.3 //Lock/lockhandler/@ownedNode.4 //Lock/lockhandler/@ownedNode.5 //Lock/lockhandler/@ownedNode.6 //Lock/lockhandler/@ownedNode.7">
       <edge xsi:type="uml:ControlFlow" target="//Lock/lockhandler/@ownedNode.1" source="//Lock/lockhandler/@ownedNode.0"/>
@@ -174,7 +228,7 @@ isSuccessful = guard</body>
       <ownedNode xsi:type="uml:MergeNode" incoming="//Lock/lockhandler/@edge.0 //Lock/lockhandler/@edge.8" outgoing="//Lock/lockhandler/@edge.1"/>
       <ownedNode xsi:type="uml:AcceptEventAction" incoming="//Lock/lockhandler/@edge.1">
         <result name="msg" outgoing="//Lock/lockhandler/@edge.2" type="//Lock/acquire" isOrdered="true" isUnique="false"/>
-        <trigger event="//@packagedElement.4"/>
+        <trigger event="//@packagedElement.7"/>
       </ownedNode>
       <ownedNode xsi:type="uml:ReadStructuralFeatureAction" structuralFeature="//Lock/acquire/requester">
         <object name="msg" incoming="//Lock/lockhandler/@edge.2" type="//Lock/acquire"/>
