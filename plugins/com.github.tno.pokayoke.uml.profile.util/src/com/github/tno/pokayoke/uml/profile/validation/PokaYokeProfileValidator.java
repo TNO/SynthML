@@ -108,7 +108,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(clazz)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(clazz, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!clazz.getNestedClassifiers().isEmpty()) {
             error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
