@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Model;
 import org.json.JSONException;
 
@@ -23,6 +24,9 @@ import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Or;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.True;
+import fr.lip6.move.gal.TypedefDeclaration;
+import fr.lip6.move.gal.Variable;
+import fr.lip6.move.gal.VariableReference;
 import fr.lip6.move.gal.WrapBoolExpr;
 import fr.lip6.move.serialization.SerializationUtil;
 
@@ -146,5 +150,23 @@ public class Uml2GalTranslationHelper {
 
     static void ensureNameDoesNotContainDollarSign(String name) {
         Preconditions.checkArgument(!name.contains("$"), "Expected a name not containing '$', but got: " + name);
+    }
+
+    static BooleanExpression createVariableBoundsPredicate(Variable variable, TypedefDeclaration typedef) {
+        Comparison minGuard = Uml2GalTranslationHelper.FACTORY.createComparison();
+        minGuard.setLeft(EcoreUtil.copy(typedef.getMin()));
+        VariableReference minRef = Uml2GalTranslationHelper.FACTORY.createVariableReference();
+        minRef.setRef(variable);
+        minGuard.setRight(minRef);
+        minGuard.setOperator(ComparisonOperators.LE);
+
+        Comparison maxGuard = Uml2GalTranslationHelper.FACTORY.createComparison();
+        VariableReference maxRef = Uml2GalTranslationHelper.FACTORY.createVariableReference();
+        maxRef.setRef(variable);
+        maxGuard.setLeft(maxRef);
+        maxGuard.setRight(EcoreUtil.copy(typedef.getMax()));
+        maxGuard.setOperator(ComparisonOperators.LE);
+
+        return combineAsAnd(minGuard, maxGuard);
     }
 }

@@ -11,21 +11,17 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.escet.common.emf.EMFHelper;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.Package;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.UMLFactory;
-import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class FileHelper {
     public static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
     private FileHelper() {
+        // Empty for utility classes
     }
 
     /**
@@ -45,29 +41,6 @@ public class FileHelper {
         Model umlModel = (Model)res.getContents().get(0);
 
         return umlModel;
-    }
-
-    /**
-     * Loads a UML package.
-     *
-     * @param uri The URI of the UML model.
-     * @return The loaded package.
-     */
-    public static Package loadPackage(URI uri) {
-        ResourceSet resourceSet = new ResourceSetImpl();
-        Resource resource = resourceSet.getResource(uri, true);
-        return (Package)EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
-    }
-
-    /**
-     * Loads a primitive UML type, e.g., "Boolean" or "String".
-     *
-     * @param name Then name of the primitive type to load.
-     * @return The loaded primitive type.
-     */
-    public static PrimitiveType loadPrimitiveType(String name) {
-        Package umlLibrary = loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
-        return (PrimitiveType)umlLibrary.getOwnedType(name);
     }
 
     /**

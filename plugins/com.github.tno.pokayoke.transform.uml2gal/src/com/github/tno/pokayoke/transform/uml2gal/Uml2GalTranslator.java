@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -28,6 +29,7 @@ import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Type;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,10 +46,12 @@ import com.google.common.collect.ImmutableList;
 import fr.lip6.move.gal.Assignment;
 import fr.lip6.move.gal.BooleanExpression;
 import fr.lip6.move.gal.GALTypeDeclaration;
+import fr.lip6.move.gal.IntExpression;
 import fr.lip6.move.gal.Parameter;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.Statement;
 import fr.lip6.move.gal.Transition;
+import fr.lip6.move.gal.TypedefDeclaration;
 import fr.lip6.move.gal.Variable;
 
 /** Translates annotated UML models to GAL specifications. */
@@ -116,10 +120,6 @@ public class Uml2GalTranslator {
         // Check transformation preconditions.
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
 
-        // Translate all supported primitive UML types, currently only Booleans (enumerations are translated later).
-        specificationBuilder.addTypedef(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN,
-                Uml2GalTranslationHelper.toIntExpression(false), Uml2GalTranslationHelper.toIntExpression(true));
-
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);
 
@@ -128,19 +128,26 @@ public class Uml2GalTranslator {
     }
 
     private void translateModel(Model model) {
-        // Visit and translate all enumerations.
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof Enumeration enumeration) {
+        // Translate all supported UML types
+        for (Type type: PokaYokeTypeUtil.getSupportedTypes(model)) {
+            if (type instanceof Enumeration enumeration) {
                 // Translate UML enumerations to typedef declarations in GAL with an appropriate range.
                 specificationBuilder.addTypedef(enumeration.getName(), Uml2GalTranslationHelper.toIntExpression(0),
                         Uml2GalTranslationHelper.toIntExpression(enumeration.getOwnedLiterals().size() - 1));
 
-                // Visit and translate all enumeration literals.
+                // Translate all enumeration literals.
                 for (EnumerationLiteral literal: enumeration.getOwnedLiterals()) {
                     // Translate UML enumeration literals to constant specification parameters in GAL.
                     specificationBuilder.addParam(literal.getName(),
                             literal.getEnumeration().getOwnedLiterals().indexOf(literal));
                 }
+            } else if (PokaYokeTypeUtil.isIntegerType(type)) {
+                specificationBuilder.addTypedef(type.getName(),
+                        Uml2GalTranslationHelper.toIntExpression(PokaYokeTypeUtil.getMinValue(type)),
+                        Uml2GalTranslationHelper.toIntExpression(PokaYokeTypeUtil.getMaxValue(type)));
+            } else if (PokaYokeTypeUtil.isBooleanType(type)) {
+                specificationBuilder.addTypedef(type.getName(), Uml2GalTranslationHelper.toIntExpression(false),
+                        Uml2GalTranslationHelper.toIntExpression(true));
             }
         }
 
@@ -211,23 +218,30 @@ public class Uml2GalTranslator {
 
         // Make sure the property type has already been translated to GAL.
         String typeName = property.getType().getName();
-        Preconditions.checkNotNull(specificationBuilder.getTypedef(typeName), "Undeclared type: " + typeName);
+        TypedefDeclaration typedef = specificationBuilder.getTypedef(typeName);
+        Preconditions.checkNotNull(typedef, "Undeclared type: " + typeName);
 
         // In GAL all variable declarations need to have a default value. If the current property has a default value
         // defined, we translate it as part of the variable declaration. Otherwise, we give the variable a (temporary)
-        // default value of 'BOOL_FALSE'. The initialization transition will then fix the latter case, by allowing any
-        // variable that should not have a default value to have an arbitrary value instead of 'BOOL_FALSE'.
+        // default value. The initialization transition will then fix the latter case, by allowing any variable that
+        // should not have a default value to have an arbitrary value instead.
         AExpression defaultValue = CifParserHelper.parseExpression(property.getDefaultValue());
 
         Variable variable;
         if (defaultValue != null) {
             variable = typeBuilder.addVariable(name, expressionTranslator.translateIntExpr(defaultValue));
         } else {
-            variable = typeBuilder.addVariable(name, Uml2GalTranslationHelper.toIntExpression(false));
+            // Just use the minimum value of the type definition as default value
+            IntExpression typeMin = EcoreUtil.copy(typedef.getMin());
+            variable = typeBuilder.addVariable(name, typeMin);
         }
 
         // Make sure the created variable can be traced back to the property.
         variableTracing.put(variable, property);
+
+        if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+            specificationBuilder.addVariableBoundsInvariant(variable, typedef);
+        }
     }
 
     private void translateActivity(Activity activity) {
@@ -339,6 +353,14 @@ public class Uml2GalTranslator {
         // Add the specified guards and effects to the transition.
         transitionBuilder.addGuards(guards);
         transitionBuilder.addActions(effects);
+
+        for (Map.Entry<Variable, Element> entry: variableTracing.entrySet()) {
+            Variable variable = entry.getKey();
+            if (entry.getValue() instanceof Property property && PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                TypedefDeclaration intType = specificationBuilder.getTypedef(property.getType().getName());
+                transitionBuilder.addGuard(Uml2GalTranslationHelper.createVariableBoundsPredicate(variable, intType));
+            }
+        }
 
         // Define a guard for every incoming edge to consider, to check if it is enabled, as well as an assignment to
         // make it disabled after having taken the transition.
