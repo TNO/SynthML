@@ -58,7 +58,20 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^[a-zA-Z_][0-9a-zA-Z_]*$");
 
     private enum NamingConvention {
-        OPTIONAL, MANDATORY, IDENTIFIER
+        /**
+         * Optional, but when set it should not contain double underscores. Transformations will generate these names if
+         * required.
+         */
+        OPTIONAL,
+        /**
+         * Name should be set and not contain double underscores.
+         */
+        MANDATORY,
+        /**
+         * Name should be set, should not contain double underscores and should match
+         * {@link PokaYokeProfileValidator#IDENTIFIER_PATTERN}.
+         */
+        IDENTIFIER
     }
 
     /**
