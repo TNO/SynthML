@@ -23,6 +23,7 @@ import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
 import com.github.tno.pokayoke.cif.parser.CifInvariantParser;
 import com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Preconditions;
 
 /** Helps parsing CIF expressions. */
 public class CifParserHelper {
@@ -59,6 +60,7 @@ public class CifParserHelper {
             return null;
         }
         List<String> bodies = behavior.getBodies();
+        Preconditions.checkArgument(bodies.size() <= 1, "Expected at most one body, but got " + bodies.size());
         return parseExpression(bodies.isEmpty() ? "true" : bodies.get(0), behavior);
     }
 
