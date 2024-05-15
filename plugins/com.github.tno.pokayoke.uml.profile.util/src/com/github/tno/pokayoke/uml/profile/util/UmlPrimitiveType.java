@@ -5,10 +5,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.resource.UMLResource;
-import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
+
+import com.github.tno.pokayoke.transform.common.FileHelper;
 
 public enum UmlPrimitiveType {
     BOOLEAN("Boolean"), INTEGER("Integer"), STRING("String"), REAL("Real"), UNLIMITED_NATURAL("UnlimitedNatural");
@@ -27,9 +27,7 @@ public enum UmlPrimitiveType {
     }
 
     public PrimitiveType load() {
-        ResourceSet resourceSet = new ResourceSetImpl();
-        UMLResourcesUtil.init(resourceSet);
-        return load(resourceSet);
+        return load(FileHelper.createModelResourceSet());
     }
 
     /**
