@@ -53,6 +53,10 @@ public class PokaYokeProfileServices {
         return PokaYokeUmlProfileUtil.isGuardEffectsAction(action);
     }
 
+    public static boolean isPlainAction(Action action) {
+        return !PokaYokeUmlProfileUtil.isGuardEffectsAction(action);
+    }
+
     /**
      * Returns the {@link GuardEffectsAction#getGuard()} property value if <code>action</code> is stereotype,
      * <code>null</code> otherwise.
