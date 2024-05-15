@@ -91,7 +91,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!history.add(activity)) {
                 return true;
             }
-            return from(activity.getNodes()).objectsOfKind(CallBehaviorAction.class).exists(a -> hasCycle(a, history));
+            if (from(activity.getNodes()).objectsOfKind(CallBehaviorAction.class).exists(a -> hasCycle(a, history))) {
+                return true;
+            }
+            history.remove(activity);
         }
         return false;
     }
