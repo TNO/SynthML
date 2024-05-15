@@ -10,6 +10,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -171,6 +172,13 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     {
         if (!predicate.conformsTo(booleanType)) {
             throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
+        }
+
+        // Validate that the events exist, i.e., refer to declared opaque behaviors.
+        for (String event: events) {
+            if (ctx.getOpaqueBehavior(event) == null) {
+                throw new CustomSyntaxException("Invalid invariant: could not find an opaque behavior named " + event, null);
+            }
         }
 
         return predicate;
