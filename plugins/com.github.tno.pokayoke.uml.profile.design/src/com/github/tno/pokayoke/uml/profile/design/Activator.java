@@ -4,7 +4,12 @@ package com.github.tno.pokayoke.uml.profile.design;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sirius.business.api.componentization.ViewpointRegistry;
+import org.eclipse.sirius.business.api.session.Session;
+import org.eclipse.sirius.business.api.session.SessionListener;
+import org.eclipse.sirius.business.api.session.SessionManager;
+import org.eclipse.sirius.business.api.session.SessionManagerListener;
 import org.eclipse.sirius.viewpoint.description.Viewpoint;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -33,6 +38,25 @@ public class Activator extends AbstractUIPlugin {
         viewpoints = new HashSet<>();
         viewpoints.addAll(
                 ViewpointRegistry.getInstance().registerFromPlugin(PLUGIN_ID + "/description/pokayoke.odesign"));
+
+        // Automatically validate all diagrams on load and save
+        SessionManager.INSTANCE.addSessionsListener(new SessionManagerListener.Stub() {
+            @Override
+            public void notify(Session updated, int notification) {
+                if (notification == SessionListener.OPENED || notification == SessionListener.SYNC) {
+                    TransactionalEditingDomain txDomain = updated.getTransactionalEditingDomain();
+                    if (txDomain != null) {
+                        try {
+                            txDomain.runExclusive(() -> SessionValidator.validateAllDiagrams(updated));
+                        } catch (InterruptedException e) {
+                            getLog().error("Failed to validate diagrams.", e);
+                        }
+                    } else {
+                        SessionValidator.validateAllDiagrams(updated);
+                    }
+                }
+            }
+        });
     }
 
     /*
