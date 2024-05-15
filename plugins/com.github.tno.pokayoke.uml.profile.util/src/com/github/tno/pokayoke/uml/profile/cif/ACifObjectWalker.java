@@ -125,7 +125,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
             invariant.events.stream().map(event -> event.name).collect(Collectors.toCollection(() -> events));
         }
 
-        return visit(invKind, events, invariant.position, visit(invariant.predicate, ctx), ctx);
+        return visit(invKind, events, invariant.predicate.position, visit(invariant.predicate, ctx), ctx);
     }
 
     protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, T predicate,

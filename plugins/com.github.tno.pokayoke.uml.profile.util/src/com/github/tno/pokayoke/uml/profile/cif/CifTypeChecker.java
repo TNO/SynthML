@@ -177,7 +177,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
         // Validate that the events exist, i.e., refer to declared opaque behaviors.
         for (String event: events) {
             if (ctx.getOpaqueBehavior(event) == null) {
-                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, null);
+                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, operatorPos);
             }
         }
 
