@@ -9,9 +9,12 @@ import com.google.common.base.Preconditions;
 import fr.lip6.move.gal.ConstParameter;
 import fr.lip6.move.gal.GALTypeDeclaration;
 import fr.lip6.move.gal.IntExpression;
+import fr.lip6.move.gal.InvariantProp;
+import fr.lip6.move.gal.Property;
 import fr.lip6.move.gal.Specification;
 import fr.lip6.move.gal.TypeDeclaration;
 import fr.lip6.move.gal.TypedefDeclaration;
+import fr.lip6.move.gal.Variable;
 
 /** Builder to conveniently construct {@link Specification GAL specifications}. */
 public class GalSpecificationBuilder {
@@ -58,7 +61,7 @@ public class GalSpecificationBuilder {
         return addTypedef(typedef);
     }
 
-    public TypedefDeclaration addTypedef(TypedefDeclaration typedef) {
+    private TypedefDeclaration addTypedef(TypedefDeclaration typedef) {
         Preconditions.checkArgument(!specification.getTypedefs().contains(typedef),
                 "Typedef already declared: " + typedef);
         String name = typedef.getName();
@@ -67,6 +70,16 @@ public class GalSpecificationBuilder {
         specification.getTypedefs().add(typedef);
         typedefMapping.put(name, typedef);
         return typedef;
+    }
+
+    public Property addVariableBoundsInvariant(Variable variable, TypedefDeclaration typedef) {
+        Property property = Uml2GalTranslationHelper.FACTORY.createProperty();
+        property.setName(variable.getName() + "_bounds");
+        InvariantProp invariant = Uml2GalTranslationHelper.FACTORY.createInvariantProp();
+        invariant.setPredicate(Uml2GalTranslationHelper.createVariableBoundsPredicate(variable, typedef));
+        property.setBody(invariant);
+        specification.getProperties().add(property);
+        return property;
     }
 
     public TypeDeclaration getMain() {

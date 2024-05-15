@@ -88,10 +88,7 @@ public class PokaYokeUmlProfileUtil {
             }
             return;
         }
-        OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();
-        expression.getLanguages().add("CIF");
-        expression.getBodies().add(newValue);
-        controlFlow.setGuard(expression);
+        controlFlow.setGuard(createCifExpression(newValue));
     }
 
     /**
@@ -111,10 +108,7 @@ public class PokaYokeUmlProfileUtil {
             }
             return;
         }
-        OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();
-        expression.getLanguages().add("CIF");
-        expression.getBodies().add(newValue);
-        property.setDefaultValue(expression);
+        property.setDefaultValue(createCifExpression(newValue));
     }
 
     public static Optional<Profile> getAppliedProfile(Element element, String qualifiedName) {
@@ -153,5 +147,12 @@ public class PokaYokeUmlProfileUtil {
             element.applyStereotype(stereotype);
         }
         return stereotype;
+    }
+
+    private static OpaqueExpression createCifExpression(String newValue) {
+        OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();
+        expression.getLanguages().add("CIF");
+        expression.getBodies().add(newValue);
+        return expression;
     }
 }

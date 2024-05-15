@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_I3bx4AxBEe-xDvtDM-gL4Q" name="Defaults">
+    <packagedElement xmi:type="uml:Class" xmi:id="_M5tUgAxBEe-xDvtDM-gL4Q" name="Context" visibility="public" classifierBehavior="_GbpPcAxCEe-xDvtDM-gL4Q" isActive="true">
+      <ownedAttribute xmi:id="_6HA1EAxBEe-xDvtDM-gL4Q" name="myBool" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_6HBcIAxBEe-xDvtDM-gL4Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_6HBcIQxBEe-xDvtDM-gL4Q" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8Y5_MAxBEe-xDvtDM-gL4Q" name="myChoice" visibility="public" type="_OH4X0AxBEe-xDvtDM-gL4Q">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_8Y6mQAxBEe-xDvtDM-gL4Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_8Y6mQQxBEe-xDvtDM-gL4Q" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_-BOn4AxBEe-xDvtDM-gL4Q" name="myPercentage" visibility="public" type="_QppxAAxBEe-xDvtDM-gL4Q">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-BPO8AxBEe-xDvtDM-gL4Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-BPO8QxBEe-xDvtDM-gL4Q" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_or7H4BHLEe-mHaHlFJZwLw" name="myRange" visibility="public" type="_R5t7YBHLEe-mHaHlFJZwLw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_or7u8BHLEe-mHaHlFJZwLw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_or7u8RHLEe-mHaHlFJZwLw" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_p900oBHLEe-mHaHlFJZwLw" name="myNegative" visibility="public" type="_UPff8BHLEe-mHaHlFJZwLw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_p91bsBHLEe-mHaHlFJZwLw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_p91bsRHLEe-mHaHlFJZwLw" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_rEFSEBHLEe-mHaHlFJZwLw" name="myPositive" visibility="public" type="_WC4JIBHLEe-mHaHlFJZwLw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rEFSERHLEe-mHaHlFJZwLw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rEFSEhHLEe-mHaHlFJZwLw" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_GbpPcAxCEe-xDvtDM-gL4Q" name="Main" node="_QZUZgAxCEe-xDvtDM-gL4Q _SGGrcAxCEe-xDvtDM-gL4Q _S4OE4AxCEe-xDvtDM-gL4Q">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_UwtQgAxCEe-xDvtDM-gL4Q" target="_S4OE4AxCEe-xDvtDM-gL4Q" source="_QZUZgAxCEe-xDvtDM-gL4Q">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_UwtQgQxCEe-xDvtDM-gL4Q" name="_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Uwt3kAxCEe-xDvtDM-gL4Q" name="_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_VNmn4AxCEe-xDvtDM-gL4Q" target="_SGGrcAxCEe-xDvtDM-gL4Q" source="_S4OE4AxCEe-xDvtDM-gL4Q">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_VNnO8AxCEe-xDvtDM-gL4Q" name="OpaqueAction1_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_VNnO8QxCEe-xDvtDM-gL4Q" name="OpaqueAction1_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_QZUZgAxCEe-xDvtDM-gL4Q" name="" outgoing="_UwtQgAxCEe-xDvtDM-gL4Q"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_SGGrcAxCEe-xDvtDM-gL4Q" name="" incoming="_VNmn4AxCEe-xDvtDM-gL4Q"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_S4OE4AxCEe-xDvtDM-gL4Q" name="OpaqueAction1" incoming="_UwtQgAxCEe-xDvtDM-gL4Q" outgoing="_VNmn4AxCEe-xDvtDM-gL4Q">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_OH4X0AxBEe-xDvtDM-gL4Q" name="Choice" visibility="public">
+      <ownedLiteral xmi:id="_3yhp8AxBEe-xDvtDM-gL4Q" name="A">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_3yhp8QxBEe-xDvtDM-gL4Q"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_4qJ1gAxBEe-xDvtDM-gL4Q" name="B">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_4qKckAxBEe-xDvtDM-gL4Q" value="1"/>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_QppxAAxBEe-xDvtDM-gL4Q" name="Percentage" visibility="public">
+      <ownedRule xmi:id="_VkIuAAxBEe-xDvtDM-gL4Q" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_VkJVEAxBEe-xDvtDM-gL4Q"/>
+      </ownedRule>
+      <ownedRule xmi:id="_V88PkAxBEe-xDvtDM-gL4Q" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_V882oAxBEe-xDvtDM-gL4Q" value="100"/>
+      </ownedRule>
+      <generalization xmi:id="_U0NF4AxBEe-xDvtDM-gL4Q">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_R5t7YBHLEe-mHaHlFJZwLw" name="Range" visibility="public">
+      <ownedRule xmi:id="_aE7pUBHLEe-mHaHlFJZwLw" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_aE7pURHLEe-mHaHlFJZwLw" value="-1"/>
+      </ownedRule>
+      <ownedRule xmi:id="_aR68cBHLEe-mHaHlFJZwLw" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_aR68cRHLEe-mHaHlFJZwLw" value="1"/>
+      </ownedRule>
+      <generalization xmi:id="_ZoFVQBHLEe-mHaHlFJZwLw">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_UPff8BHLEe-mHaHlFJZwLw" name="Negative" visibility="public">
+      <ownedRule xmi:id="_buwt4BHLEe-mHaHlFJZwLw" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_buwt4RHLEe-mHaHlFJZwLw" value="-100"/>
+      </ownedRule>
+      <ownedRule xmi:id="_cLuWsBHLEe-mHaHlFJZwLw" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_61oCwBHMEe-mHaHlFJZwLw" value="-10"/>
+      </ownedRule>
+      <generalization xmi:id="_a1_54BHLEe-mHaHlFJZwLw">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_WC4JIBHLEe-mHaHlFJZwLw" name="Positive" visibility="public">
+      <ownedRule xmi:id="_dDu8wBHLEe-mHaHlFJZwLw" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_dDu8wRHLEe-mHaHlFJZwLw" value="10"/>
+      </ownedRule>
+      <ownedRule xmi:id="_dYIfcBHLEe-mHaHlFJZwLw" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_dYIfcRHLEe-mHaHlFJZwLw" value="100"/>
+      </ownedRule>
+      <generalization xmi:id="_csceIBHLEe-mHaHlFJZwLw">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <profileApplication xmi:id="_X36SAAxCEe-xDvtDM-gL4Q">
+      <eAnnotations xmi:id="_X39VUAxCEe-xDvtDM-gL4Q" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:GuardEffectsAction xmi:id="_X398YAxCEe-xDvtDM-gL4Q" guard="myBool" effects="myBool := false,&#xD;&#xA;myChoice := A,&#xD;&#xA;myPercentage := 50" base_Action="_S4OE4AxCEe-xDvtDM-gL4Q"/>
+</xmi:XMI>
