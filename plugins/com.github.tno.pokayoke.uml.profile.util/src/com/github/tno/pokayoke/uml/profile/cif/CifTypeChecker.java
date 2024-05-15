@@ -75,14 +75,14 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     /**
-     * Returns the type of the result when {@code inv} is evaluated and checks if this type is supported.
+     * Checks if the predicate type of the evaluated {@code invariant} can be assigned to a boolean.
      *
-     * @param inv The invariant to evaluate.
+     * @param invariant The invariant to evaluate.
      * @return The type of the invariant predicate.
-     * @throws TypeException If {@code expr} cannot be evaluated or if the predicate type is not supported.
+     * @throws TypeException If {@code invariant} cannot be evaluated or if the predicate type is not supported.
      */
-    public Type checkInvariant(AInvariant inv) throws TypeException {
-        return visit(inv, ctx);
+    public Type checkInvariant(AInvariant invariant) throws TypeException {
+        return visit(invariant, ctx);
     }
 
     @Override

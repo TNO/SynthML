@@ -486,7 +486,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Typecheck the invariant.
             new CifTypeChecker(constraint).checkInvariant(invariant);
 
-            // Check the events.
+            // Validate that the events exist, i.e., refer to declared opaque behaviors.
             if (invariant.events != null) {
                 CifContext context = new CifContext(constraint);
 
