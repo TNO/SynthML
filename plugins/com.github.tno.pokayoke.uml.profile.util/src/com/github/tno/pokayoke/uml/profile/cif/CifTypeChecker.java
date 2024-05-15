@@ -1,6 +1,10 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -68,6 +72,17 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      */
     public void checkAssignment(Type addressable, AExpression value) throws TypeException {
         visit(addressable, null, visit(value, ctx), ctx);
+    }
+
+    /**
+     * Returns the type of the result when {@code inv} is evaluated and checks if this type is supported.
+     *
+     * @param inv The invariant to evaluate.
+     * @return The type of the invariant predicate.
+     * @throws TypeException If {@code expr} cannot be evaluated or if the predicate type is not supported.
+     */
+    public Type checkInvariant(AInvariant inv) throws TypeException {
+        return visit(inv, ctx);
     }
 
     @Override
@@ -148,6 +163,17 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
                 break;
         }
         return child;
+    }
+
+    @Override
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
+            CifContext ctx)
+    {
+        if (!predicate.conformsTo(booleanType)) {
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
+        }
+
+        return predicate;
     }
 
     /**
