@@ -82,7 +82,6 @@ public class PokaYokeUmlProfileUtil {
      * @param newValue The new value of the guard.
      */
     public static void setGuard(ControlFlow controlFlow, String newValue) {
-        applyPokaYokeProfile(controlFlow);
         if (Strings.isNullOrEmpty(newValue)) {
             if (controlFlow.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
@@ -102,7 +101,6 @@ public class PokaYokeUmlProfileUtil {
      * @param newValue The new default value of the property.
      */
     public static void setDefaultValue(Property property, String newValue) {
-        applyPokaYokeProfile(property);
         if (Strings.isNullOrEmpty(newValue)) {
             if (property.getDefaultValue() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.

@@ -172,7 +172,7 @@
       <groups name="PR_ActionGroup" labelExpression="General">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:newValue"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
         <controls xsi:type="properties:TextDescription" name="PR_AC_Guard" labelExpression="Guard:" helpExpression="The Guard of the Action" valueExpression="service:self.getGuard()">
@@ -189,7 +189,7 @@
       <groups name="PR_ControlFlowGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_CF_Name" labelExpression="Name:" helpExpression="The Name of the Control Flow" valueExpression="feature:name">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:newValue"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
         <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" valueExpression="service:self.getGuard()">
@@ -201,10 +201,7 @@
       <groups name="PR_PropertyGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_PR_Name" labelExpression="Name:" helpExpression="The Name of the Property" valueExpression="feature:name">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:newValue">
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="lower" valueExpression="1"/>
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="upper" valueExpression="1"/>
-            </firstModelOperations>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setPropertyName(newValue)"/>
           </initialOperation>
           <style>
             <labelFontFormat>bold</labelFontFormat>
@@ -212,10 +209,7 @@
         </controls>
         <controls xsi:type="properties:SelectDescription" name="PR_PR_Type" labelExpression="Type:" helpExpression="The Type of the Property" valueExpression="feature:type" candidatesExpression="service:self.getSupportedPropertyTypes()" candidateDisplayExpression="aql:candidate.getLabel(true)">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:SetValue" featureName="type" valueExpression="var:newValue">
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="lower" valueExpression="1"/>
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="upper" valueExpression="1"/>
-            </firstModelOperations>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setPropertyType(newValue)"/>
           </initialOperation>
           <style>
             <labelFontFormat>bold</labelFontFormat>
@@ -223,10 +217,7 @@
         </controls>
         <controls xsi:type="properties:TextDescription" name="PR_PR_DefaultValue" labelExpression="Default value:" helpExpression="The Default Value of the Property" valueExpression="aql:self.getDefault()">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setPropertyDefaultValue(newValue)">
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="lower" valueExpression="1"/>
-              <subModelOperations xsi:type="tool_1:SetValue" featureName="upper" valueExpression="1"/>
-            </firstModelOperations>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setPropertyDefaultValue(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
@@ -241,7 +232,7 @@
         </controls>
         <controls xsi:type="properties:TextDescription" name="PR_PT_Name" labelExpression="Name:" helpExpression="The Name of the Primitive Type" valueExpression="feature:name">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:SetValue" featureName="name" valueExpression="var:newValue"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
           <style>
             <labelFontFormat>bold</labelFontFormat>

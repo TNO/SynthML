@@ -8,21 +8,17 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.LiteralBoolean;
-import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
-import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -34,6 +30,10 @@ import PokaYoke.GuardEffectsAction;
 
 /**
  * The services class used by VSM.
+ * <p>
+ * All setters in this class should {@link PokaYokeUmlProfileUtil#applyPokaYokeProfile(org.eclipse.uml2.uml.Element)
+ * apply the Poka Yoka profile}.
+ * </p>
  */
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
@@ -82,6 +82,7 @@ public class PokaYokeProfileServices {
      * @param newValue The new property value.
      */
     public void setGuard(Action action, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(action);
         if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(action);
             if (Strings.isNullOrEmpty(effects)) {
@@ -129,6 +130,7 @@ public class PokaYokeProfileServices {
      * @param newValue The new property value.
      */
     public void setEffects(Action action, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(action);
         if (Strings.isNullOrEmpty(newValue)) {
             String guard = getGuard(action);
             if (Strings.isNullOrEmpty(guard)) {
@@ -177,7 +179,13 @@ public class PokaYokeProfileServices {
      * @param newValue The new guard value.
      */
     public void setGuard(ControlFlow controlFlow, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setGuard(controlFlow, newValue);
+    }
+
+    public void setPropertyName(Property property, String newValue) {
+        setName(property, newValue);
+        setPropertyBounds(property);
     }
 
     /**
@@ -191,6 +199,12 @@ public class PokaYokeProfileServices {
         return PokaYokeTypeUtil.getSupportedTypes(property);
     }
 
+    public void setPropertyType(Property property, Type newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(property);
+        property.setType(newValue);
+        setPropertyBounds(property);
+    }
+
     /**
      * Applies the Poka Yoke UML Profile and set the {@link Property#setDefault(String) default value} property for
      * {@code property}.
@@ -199,7 +213,14 @@ public class PokaYokeProfileServices {
      * @param newValue The new default value of the property.
      */
     public void setPropertyDefaultValue(Property property, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(property);
         PokaYokeUmlProfileUtil.setDefaultValue(property, newValue);
+        setPropertyBounds(property);
+    }
+
+    private void setPropertyBounds(Property property) {
+        property.setLower(1);
+        property.setUpper(1);
     }
 
     /**
@@ -221,6 +242,7 @@ public class PokaYokeProfileServices {
     }
 
     public void setSuperType(PrimitiveType type, PrimitiveType superType) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(type);
         if (superType == null) {
             type.getGeneralizations().clear();
         } else if (type.getGeneralization(superType) == null) {
@@ -235,17 +257,10 @@ public class PokaYokeProfileServices {
     }
 
     public void setMinValue(PrimitiveType type, String newValue) {
-        if (Strings.isNullOrEmpty(newValue)) {
-            Constraint constraint = PokaYokeTypeUtil.getMinConstraint(type, false);
-            if (constraint != null) {
-                EcoreUtil.delete(constraint, true);
-            }
-            return;
-        }
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(type);
         try {
-            LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
-            specification.setValue(Integer.parseInt(newValue));
-            PokaYokeTypeUtil.getMinConstraint(type, true).setSpecification(specification);
+            Integer intValue = Strings.isNullOrEmpty(newValue) ? null : Integer.parseInt(newValue);
+            PokaYokeTypeUtil.setMinValue(type, intValue);
         } catch (NumberFormatException e) {
             Activator.getDefault().getLog().log(new Status(IStatus.ERROR, getClass(),
                     "Failed to parse integer value: " + e.getLocalizedMessage(), e));
@@ -258,21 +273,19 @@ public class PokaYokeProfileServices {
     }
 
     public void setMaxValue(PrimitiveType type, String newValue) {
-        if (Strings.isNullOrEmpty(newValue)) {
-            Constraint constraint = PokaYokeTypeUtil.getMaxConstraint(type, false);
-            if (constraint != null) {
-                EcoreUtil.delete(constraint, true);
-            }
-            return;
-        }
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(type);
         try {
-            LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
-            specification.setValue(Integer.parseInt(newValue));
-            PokaYokeTypeUtil.getMaxConstraint(type, true).setSpecification(specification);
+            Integer intValue = Strings.isNullOrEmpty(newValue) ? null : Integer.parseInt(newValue);
+            PokaYokeTypeUtil.setMaxValue(type, intValue);
         } catch (NumberFormatException e) {
             Activator.getDefault().getLog().log(new Status(IStatus.ERROR, getClass(),
                     "Failed to parse integer value: " + e.getLocalizedMessage(), e));
         }
+    }
+
+    public void setName(NamedElement element, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
+        element.setName(newValue);
     }
 
     /**
