@@ -60,7 +60,6 @@ public class CifParserHelper {
             return null;
         }
         List<String> bodies = behavior.getBodies();
-        Preconditions.checkArgument(bodies.size() <= 1, "Expected at most one body, but got " + bodies.size());
         return parseExpression(bodies.isEmpty() ? "true" : bodies.get(0), behavior);
     }
 
@@ -110,6 +109,7 @@ public class CifParserHelper {
             return null;
         }
         List<String> bodies = expression.getBodies();
+        Preconditions.checkArgument(bodies.size() <= 1, "Expected at most one body, but got " + bodies.size());
         return parseInvariant(bodies.isEmpty() ? "true" : bodies.get(0), expression);
     }
 
