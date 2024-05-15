@@ -120,7 +120,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(clazz)) {
             return;
         }
-        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
         if (!clazz.getNestedClassifiers().isEmpty()) {
@@ -287,8 +286,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(activity)) {
             return;
         }
-        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
-        checkNamingConventions(activity, NamingConvention.IDENTIFIER);
+        checkNamingConventions(activity, NamingConvention.MANDATORY);
 
         if (!activity.getMembers().isEmpty()) {
             error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
