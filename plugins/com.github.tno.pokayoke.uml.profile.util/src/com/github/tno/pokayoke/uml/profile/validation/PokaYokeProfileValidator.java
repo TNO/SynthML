@@ -480,7 +480,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
-            error("Invalid invariant " + e.getLocalizedMessage(), null);
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
         }
     }
 
