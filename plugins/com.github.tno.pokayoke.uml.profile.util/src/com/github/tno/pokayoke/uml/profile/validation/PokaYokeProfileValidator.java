@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -479,11 +478,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
         try {
-            // Parse the constraint as an invariant.
-            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-
-            // Typecheck the invariant.
-            new CifTypeChecker(constraint).checkInvariant(invariant);
+            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant " + e.getLocalizedMessage(), null);
         }
