@@ -19,7 +19,10 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.203.100",
  com.github.tno.pokayoke.transform.uml;bundle-version="0.0.1",
  com.github.tno.pokayoke.uml.profile.util;bundle-version="0.0.1",
  com.google.guava;bundle-version="0.0.0",
- org.eclipse.sirius.diagram.model;bundle-version="7.2.0"
+ org.eclipse.emf.transaction;bundle-version="1.9.2",
+ org.eclipse.sirius.diagram.ui;bundle-version="7.2.0",
+ org.eclipse.gmf.runtime.diagram.ui;bundle-version="1.10.0",
+ org.eclipse.lsat.common.queries;bundle-version="0.3.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: %providerName

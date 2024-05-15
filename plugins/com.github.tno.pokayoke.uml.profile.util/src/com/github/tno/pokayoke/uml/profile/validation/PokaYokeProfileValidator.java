@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.Model;
@@ -107,11 +108,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
+    private void checkValidModel(Model model) {
+        checkNamingConventions(model, true, true);
+    }
+
+    @Check
     private void checkValidClass(Class clazz) {
         if (!isPokaYokaUmlProfileApplied(clazz)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(clazz, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!clazz.getNestedClassifiers().isEmpty()) {
             error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
@@ -152,6 +161,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Property should be mandatory", UMLPackage.Literals.MULTIPLICITY_ELEMENT__LOWER);
         }
 
+        checkNamingConventions(property, true, true);
+
         Type propType = property.getType();
         if (propType == null) {
             error("Property type not set", UMLPackage.Literals.TYPED_ELEMENT__TYPE);
@@ -191,7 +202,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(enumeration)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(enumeration, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!(enumeration.eContainer() instanceof Model)) {
             error("Expected enumeration to be declared in model.", null);
@@ -204,11 +218,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
+    private void checkValidEnumerationLiteral(EnumerationLiteral literal) {
+        checkNamingConventions(literal, true, true);
+    }
+
+    @Check
     private void checkValidPrimitiveType(PrimitiveType primitiveType) {
         if (!isPokaYokaUmlProfileApplied(primitiveType)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(primitiveType, true, true);
 
         if (!(primitiveType.eContainer() instanceof Model)) {
             error("Expected primitive type to be declared in model.", null);
@@ -268,7 +288,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(activity)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+
+        checkNamingConventions(activity, true, true);
+
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
 
         if (!activity.getMembers().isEmpty()) {
             error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
@@ -380,20 +403,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the guard of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
-    @Check
-    private void checkValidGuard(OpaqueBehavior behavior) {
-        try {
-            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidGuard(AExpression guardExpr, Element element) {
         if (guardExpr == null) {
             return;
@@ -415,20 +424,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    /**
-     * Validates the effects of the given opaque behavior.
-     *
-     * @param behavior The opaque behavior to validate.
-     */
-    @Check
-    private void checkValidEffects(OpaqueBehavior behavior) {
-        try {
-            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidEffects(List<AUpdate> updates, Element element) {
         HashSet<String> updatedVariables = new HashSet<>();
         for (AUpdate update: updates) {
@@ -441,6 +436,30 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
                         variableExpr.position);
             }
+        }
+    }
+
+    /**
+     * Validates the name, guard and effects of the given opaque behavior.
+     *
+     * @param behavior The opaque behavior to validate.
+     */
+    @Check
+    private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
+        checkNamingConventions(behavior, true, true);
+
+        // Validates the guard of the given opaque behavior.
+        try {
+            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), null);
+        }
+
+        // Validates the effects of the given opaque behavior.
+        try {
+            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
         }
     }
 
