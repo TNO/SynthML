@@ -28,7 +28,7 @@ public class CifContext {
      */
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
             UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
-            UMLPackage.Literals.OPAQUE_BEHAVIOR);
+            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
