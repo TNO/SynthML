@@ -167,17 +167,17 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     @Override
-    protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, Type predicate,
             CifContext ctx)
     {
         if (!predicate.conformsTo(booleanType)) {
-            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), invariantPos);
         }
 
         // Validate that the events exist, i.e., refer to declared opaque behaviors.
         for (String event: events) {
             if (ctx.getOpaqueBehavior(event) == null) {
-                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, operatorPos);
+                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, invariantPos);
             }
         }
 
