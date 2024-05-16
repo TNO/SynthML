@@ -473,6 +473,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
+    @Check
+    private void checkValidConstraint(Constraint constraint) {
+        checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
+
+        try {
+            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
+
     private void checkNamingConventions(NamedElement element, NamingConvention convention) {
         String name = element.getName();
         if (Strings.isNullOrEmpty(name)) {

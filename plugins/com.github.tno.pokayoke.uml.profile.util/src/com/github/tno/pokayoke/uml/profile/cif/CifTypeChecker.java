@@ -1,11 +1,16 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -68,6 +73,17 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      */
     public void checkAssignment(Type addressable, AExpression value) throws TypeException {
         visit(addressable, null, visit(value, ctx), ctx);
+    }
+
+    /**
+     * Checks if the predicate type of the evaluated {@code invariant} can be assigned to a boolean.
+     *
+     * @param invariant The invariant to evaluate.
+     * @return The type of the invariant predicate.
+     * @throws TypeException If {@code invariant} cannot be evaluated or if the predicate type is not supported.
+     */
+    public Type checkInvariant(AInvariant invariant) throws TypeException {
+        return visit(invariant, ctx);
     }
 
     @Override
@@ -148,6 +164,24 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
                 break;
         }
         return child;
+    }
+
+    @Override
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, Type predicate,
+            CifContext ctx)
+    {
+        if (!predicate.conformsTo(booleanType)) {
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), invariantPos);
+        }
+
+        // Validate that the events exist, i.e., refer to declared opaque behaviors.
+        for (String event: events) {
+            if (ctx.getOpaqueBehavior(event) == null) {
+                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, invariantPos);
+            }
+        }
+
+        return predicate;
     }
 
     /**
