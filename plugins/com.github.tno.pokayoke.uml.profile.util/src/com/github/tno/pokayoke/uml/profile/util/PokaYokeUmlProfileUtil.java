@@ -4,6 +4,8 @@ package com.github.tno.pokayoke.uml.profile.util;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -16,6 +18,7 @@ import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPlugin;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
 import PokaYoke.GuardEffectsAction;
@@ -79,7 +82,6 @@ public class PokaYokeUmlProfileUtil {
      * @param newValue The new value of the guard.
      */
     public static void setGuard(ControlFlow controlFlow, String newValue) {
-        applyPokaYokeProfile(controlFlow);
         if (Strings.isNullOrEmpty(newValue)) {
             if (controlFlow.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
@@ -99,7 +101,6 @@ public class PokaYokeUmlProfileUtil {
      * @param newValue The new default value of the property.
      */
     public static void setDefaultValue(Property property, String newValue) {
-        applyPokaYokeProfile(property);
         if (Strings.isNullOrEmpty(newValue)) {
             if (property.getDefaultValue() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
@@ -126,7 +127,12 @@ public class PokaYokeUmlProfileUtil {
 
     private static Profile getPokaYokeProfile(Element context) {
         URI uri = UMLPlugin.getEPackageNsURIToProfileLocationMap().get(PokaYokePackage.eNS_URI);
-        return Profile.class.cast(context.eResource().getResourceSet().getEObject(uri, true));
+        Resource resource = context.eResource();
+        ResourceSet resourceSet = resource == null ? null : resource.getResourceSet();
+        if (resourceSet == null) {
+            resourceSet = FileHelper.createModelResourceSet();
+        }
+        return Profile.class.cast(resourceSet.getEObject(uri, true));
     }
 
     private static Profile applyProfile(Element element, Profile profile) {
@@ -137,7 +143,7 @@ public class PokaYokeUmlProfileUtil {
         return profile;
     }
 
-    private static Profile applyPokaYokeProfile(Element element) {
+    public static Profile applyPokaYokeProfile(Element element) {
         return applyProfile(element, getPokaYokeProfile(element));
     }
 

@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.uml.profile.util;
 
 import java.util.List;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.lsat.common.util.IterableUtil;
 import org.eclipse.uml2.uml.Constraint;
@@ -11,6 +12,7 @@ import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
 
 /**
@@ -71,6 +73,19 @@ public class PokaYokeTypeUtil {
         return null;
     }
 
+    public static void setMinValue(PrimitiveType type, Integer newValue) {
+        if (newValue == null) {
+            Constraint constraint = getMinConstraint(type, false);
+            if (constraint != null) {
+                EcoreUtil.delete(constraint, true);
+            }
+            return;
+        }
+        LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
+        specification.setValue(newValue);
+        getMinConstraint(type, true).setSpecification(specification);
+    }
+
     public static Constraint getMinConstraint(PrimitiveType primitiveType, boolean createOnDemand) {
         return primitiveType.getOwnedRule("min", false, UMLPackage.Literals.CONSTRAINT, createOnDemand);
     }
@@ -83,6 +98,19 @@ public class PokaYokeTypeUtil {
             }
         }
         return null;
+    }
+
+    public static void setMaxValue(PrimitiveType type, Integer newValue) {
+        if (newValue == null) {
+            Constraint constraint = getMaxConstraint(type, false);
+            if (constraint != null) {
+                EcoreUtil.delete(constraint, true);
+            }
+            return;
+        }
+        LiteralInteger specification = UMLFactory.eINSTANCE.createLiteralInteger();
+        specification.setValue(newValue);
+        getMaxConstraint(type, true).setSpecification(specification);
     }
 
     public static Constraint getMaxConstraint(PrimitiveType primitiveType, boolean createOnDemand) {
