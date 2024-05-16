@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -28,7 +29,7 @@ public class CifContext {
      */
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
             UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
-            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT);
+            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -115,5 +116,9 @@ public class CifContext {
 
     public boolean hasConstraints() {
         return getAllElements().stream().anyMatch(Constraint.class::isInstance);
+    }
+
+    public boolean hasAbstractActivities() {
+        return getAllElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
     }
 }
