@@ -117,7 +117,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
-                .groupBy(NamedElement::getName);
+                .select(e -> !(e instanceof Activity)).groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
             if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {
