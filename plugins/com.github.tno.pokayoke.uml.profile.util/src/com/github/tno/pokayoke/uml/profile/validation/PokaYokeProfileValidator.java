@@ -310,9 +310,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
         if (initialNodes.size() != 1) {
-            for (InitialNode node: initialNodes) {
-                error("Expected activity to have exactly one initial node.", node, null);
-            }
+            error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
         }
     }
 
