@@ -1,0 +1,144 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="start">
+        <name>
+          <text>start</text>
+        </name>
+      </transition>
+      <transition id="end">
+        <name>
+          <text>end</text>
+        </name>
+      </transition>
+      <transition id="c_Turn_Computer_On">
+        <name>
+          <text>c_Turn_Computer_On</text>
+        </name>
+      </transition>
+      <transition id="c_Starting_Computer">
+        <name>
+          <text>c_Starting_Computer</text>
+        </name>
+      </transition>
+      <transition id="c_Drink_Coffee">
+        <name>
+          <text>c_Drink_Coffee</text>
+        </name>
+      </transition>
+      <transition id="c_Drink_Tea">
+        <name>
+          <text>c_Drink_Tea</text>
+        </name>
+      </transition>
+      <transition id="c_Start_Working">
+        <name>
+          <text>c_Start_Working</text>
+        </name>
+      </transition>
+      <transition id="c_Flip_A_Coin">
+        <name>
+          <text>c_Flip_A_Coin</text>
+        </name>
+      </transition>
+      <transition id="c_satisfied">
+        <name>
+          <text>c_satisfied</text>
+        </name>
+      </transition>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="c_Drink_Coffee__to__p7" source="c_Drink_Coffee" target="p7">
+      </arc>
+      <arc id="c_Drink_Tea__to__p7" source="c_Drink_Tea" target="p7">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="c_Flip_A_Coin__to__p5" source="c_Flip_A_Coin" target="p5">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="c_Start_Working__to__p8" source="c_Start_Working" target="p8">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="c_Starting_Computer__to__p6" source="c_Starting_Computer" target="p6">
+      </arc>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="c_Turn_Computer_On__to__p3" source="c_Turn_Computer_On" target="p3">
+      </arc>
+      <arc id="c_Turn_Computer_On__to__p4" source="c_Turn_Computer_On" target="p4">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="c_satisfied__to__p9" source="c_satisfied" target="p9">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to__start" source="p1" target="start">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="p2__to__c_Turn_Computer_On" source="p2" target="c_Turn_Computer_On">
+      </arc>
+      <arc id="p3__to__c_Flip_A_Coin" source="p3" target="c_Flip_A_Coin">
+      </arc>
+      <arc id="p4__to__c_Starting_Computer" source="p4" target="c_Starting_Computer">
+      </arc>
+      <arc id="p5__to__c_Drink_Coffee" source="p5" target="c_Drink_Coffee">
+      </arc>
+      <arc id="p5__to__c_Drink_Tea" source="p5" target="c_Drink_Tea">
+      </arc>
+      <arc id="p6__to__c_Start_Working" source="p6" target="c_Start_Working">
+      </arc>
+      <arc id="p7__to__c_Start_Working" source="p7" target="c_Start_Working">
+      </arc>
+      <arc id="p8__to__c_satisfied" source="p8" target="c_satisfied">
+      </arc>
+      <arc id="p9__to__end" source="p9" target="end">
+      </arc>
+      <arc id="start__to__p2" source="start" target="p2">
+      </arc>
+      <place id="FinalPlace">
+        <name>
+          <text>FinalPlace</text>
+        </name>
+      </place>
+      <arc id="end__to__FinalPlace" source="end" target="FinalPlace">
+      </arc>
+    </page>
+  </net>
+</pnml>
