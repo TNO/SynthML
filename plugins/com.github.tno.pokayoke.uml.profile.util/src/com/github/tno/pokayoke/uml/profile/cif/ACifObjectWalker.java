@@ -128,6 +128,6 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         return visit(invKind, events, invariant.predicate.position, visit(invariant.predicate, ctx), ctx);
     }
 
-    protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, T predicate,
+    protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, T predicate,
             CifContext ctx);
 }

@@ -83,7 +83,7 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     }
 
     @Override
-    protected String visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, String predicate,
+    protected String visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, String predicate,
             CifContext ctx)
     {
         throw new UnsupportedOperationException();
