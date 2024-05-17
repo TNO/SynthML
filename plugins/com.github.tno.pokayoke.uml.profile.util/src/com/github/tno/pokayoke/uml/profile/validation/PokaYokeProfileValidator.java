@@ -521,7 +521,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
-        if (constraint instanceof IntervalConstraint) {
+        if (constraint instanceof IntervalConstraint intervalConstraint) {
             if (constraint.getSpecification() instanceof Interval interval) {
                 int min = 0;
                 int max = 0;
@@ -543,6 +543,26 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (min > max) {
                     error("Expected the interval min value to not exceed the max value.",
                             UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                }
+
+                if (intervalConstraint.getConstrainedElements().isEmpty()) {
+                    error("Expected interval constraints to constrain at least one element.",
+                            UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    return;
+                }
+
+                CifContext context = new CifContext(constraint);
+
+                for (Element element: intervalConstraint.getConstrainedElements()) {
+                    if (element instanceof OpaqueBehavior behavior) {
+                        if (!context.hasOpaqueBehavior(behavior)) {
+                            error("Expected the constrained opaque behavior to be in scope.",
+                                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                        }
+                    } else {
+                        error("Expected interval constraints to constrain only opaque behaviors.",
+                                UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    }
                 }
             } else {
                 error("Expected interval constraint specifications to be intervals.",

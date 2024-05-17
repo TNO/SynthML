@@ -113,6 +113,10 @@ public class CifContext {
         return null;
     }
 
+    public boolean hasOpaqueBehavior(OpaqueBehavior behavior) {
+        return getAllElements().contains(behavior);
+    }
+
     public boolean hasOpaqueBehaviors() {
         return getAllElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
     }
