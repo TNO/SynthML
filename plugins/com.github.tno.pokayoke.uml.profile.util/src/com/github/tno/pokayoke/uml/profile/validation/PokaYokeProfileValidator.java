@@ -105,8 +105,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates if the names of all {@link CifContext#queryContextElements(Model) context elements} are unique within
-     * the {@code model}.
+     * Validates if the names of all {@link CifContext#queryUniqueNameElements(Model) unique name elements} are unique
+     * within the {@code model}.
      *
      * @param model The model to validate
      * @see CifContext
@@ -116,8 +116,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(model)) {
             return;
         }
-        Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
-                .select(e -> !(e instanceof Activity)).groupBy(NamedElement::getName);
+        Map<String, List<NamedElement>> contextElements = CifContext.queryUniqueNameElements(model)
+                .groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
             if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {

@@ -50,6 +50,16 @@ public class CifContext {
                 .asType(NamedElement.class);
     }
 
+    /**
+     * Finds all contextual elements in the {@code model} whose names should be globally unique.
+     *
+     * @param model The search root.
+     * @return All found contextual elements.
+     */
+    public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
+        return queryContextElements(model).select(e -> !e.eClass().equals(UMLPackage.Literals.ACTIVITY));
+    }
+
     private final Map<String, NamedElement> contextElements;
 
     public CifContext(Element element) {
