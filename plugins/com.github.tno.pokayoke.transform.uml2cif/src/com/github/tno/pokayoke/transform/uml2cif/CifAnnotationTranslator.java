@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
@@ -15,10 +16,8 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.ElifExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.IfExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.SetExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
@@ -39,7 +38,6 @@ import org.eclipse.uml2.uml.Type;
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 /** Translates CIF annotations like guards and effects in UML models to CIF. */
@@ -174,19 +172,6 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     }
 
     @Override
-    protected PositionObject visit(TextPosition operatorPos, List<PositionObject> guards, PositionObject then,
-            List<PositionObject> elifs, PositionObject elze, CifContext ctx)
-    {
-        IfExpression translatedIf = CifConstructors.newIfExpression();
-        translatedIf.getElifs().addAll(elifs.stream().map(ElifExpression.class::cast).toList());
-        translatedIf.getGuards().addAll(guards.stream().map(Expression.class::cast).toList());
-        translatedIf.setElse((Expression)elze);
-        translatedIf.setThen((Expression)then);
-        translatedIf.setType(EcoreUtil.copy(translatedIf.getThen().getType()));
-        return translatedIf;
-    }
-
-    @Override
     protected Expression visit(AIntExpression expr, CifContext ctx) {
         int value = Integer.parseInt(expr.value);
         IntType type = CifConstructors.newIntType(value, null, value);
@@ -194,21 +179,11 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     }
 
     @Override
-    protected PositionObject visit(TextPosition operatorPos, List<PositionObject> guards, PositionObject then,
-            CifContext ctx)
-    {
-        ElifExpression translatedElif = CifConstructors.newElifExpression();
-        translatedElif.getGuards().addAll(guards.stream().map(Expression.class::cast).toList());
-        translatedElif.setThen((Expression)then);
-        return translatedElif;
-    }
-
-    @Override
     protected PositionObject visit(Optional<String> invKind, List<String> events, TextPosition operatorPos,
             PositionObject predicate, CifContext ctx)
     {
         Invariant cifInvariant = CifConstructors.newInvariant();
-        cifInvariant.setInvKind(invKind.transform(this::translateInvKind).or(InvKind.STATE));
+        cifInvariant.setInvKind(invKind.map(this::translateInvKind).orElse(InvKind.STATE));
         cifInvariant.setPredicate((Expression)predicate);
         cifInvariant.setSupKind(SupKind.REQUIREMENT);
 

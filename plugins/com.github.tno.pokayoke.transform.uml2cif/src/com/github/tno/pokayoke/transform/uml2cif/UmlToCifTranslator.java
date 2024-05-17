@@ -27,6 +27,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -103,7 +104,10 @@ public class UmlToCifTranslator {
 
             // Translate all postconditions of the classifier behavior of the current class.
             for (Constraint umlPostcondition: umlClass.getClassifierBehavior().getPostconditions()) {
-                Expression cifPredicate = translator.translate(CifParserHelper.parseExpression(umlPostcondition));
+                AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
+                Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
+                        "Expected a state invariant.");
+                Expression cifPredicate = translator.translate(cifInvariant.predicate);
                 cifSpec.getComponents().add(createPostconditionRequirement(umlPostcondition.getName(), cifPredicate));
             }
 
