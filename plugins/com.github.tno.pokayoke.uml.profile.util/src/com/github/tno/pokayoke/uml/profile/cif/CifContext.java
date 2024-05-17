@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -28,7 +29,7 @@ public class CifContext {
      */
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
             UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
-            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT);
+            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -47,6 +48,16 @@ public class CifContext {
     public static QueryableIterable<NamedElement> queryContextElements(Model model) {
         return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
                 .asType(NamedElement.class);
+    }
+
+    /**
+     * Finds all contextual elements in the {@code model} whose names should be globally unique.
+     *
+     * @param model The search root.
+     * @return All found contextual elements.
+     */
+    public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
+        return queryContextElements(model).select(e -> !e.eClass().equals(UMLPackage.Literals.ACTIVITY));
     }
 
     private final Map<String, NamedElement> contextElements;
@@ -102,6 +113,10 @@ public class CifContext {
         return null;
     }
 
+    public boolean hasOpaqueBehavior(OpaqueBehavior behavior) {
+        return getAllElements().contains(behavior);
+    }
+
     public boolean hasOpaqueBehaviors() {
         return getAllElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
     }
@@ -115,5 +130,9 @@ public class CifContext {
 
     public boolean hasConstraints() {
         return getAllElements().stream().anyMatch(Constraint.class::isInstance);
+    }
+
+    public boolean hasAbstractActivities() {
+        return getAllElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
     }
 }

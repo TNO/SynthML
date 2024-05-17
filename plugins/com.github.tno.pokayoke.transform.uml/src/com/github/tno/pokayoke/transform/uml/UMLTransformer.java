@@ -97,6 +97,7 @@ public class UMLTransformer {
 
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
         Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
