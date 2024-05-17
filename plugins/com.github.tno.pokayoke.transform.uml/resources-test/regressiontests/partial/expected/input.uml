@@ -82,7 +82,7 @@
           <result xmi:id="42" name="requester" outgoing="19">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="43" value="Action1"/>
+          <value xmi:type="uml:LiteralString" xmi:id="43" value="Action1___ercrcPGgEe6w6rfsvEI-Kw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="44" incoming="20 26" outgoing="21"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="45" incoming="21" outgoing="22">
@@ -90,7 +90,7 @@
           <outputValue xmi:id="46" name="isActive" outgoing="23">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Action1'</body>
+          <body>active == 'Action1___ercrcPGgEe6w6rfsvEI-Kw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="47" incoming="22 23" outgoing="24 26"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="48" incoming="24" outgoing="28">
@@ -174,7 +174,7 @@ isSuccessful = guard</body>
           <result xmi:id="84" name="requester" outgoing="61">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="85" value="Action2"/>
+          <value xmi:type="uml:LiteralString" xmi:id="85" value="Action2___gPScwPGgEe6w6rfsvEI-Kw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="86" incoming="62 68" outgoing="63"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="87" incoming="63" outgoing="64">
@@ -182,7 +182,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="88" name="isActive" outgoing="65">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Action2'</body>
+          <body>active == 'Action2___gPScwPGgEe6w6rfsvEI-Kw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="89" incoming="64 65" outgoing="66 68"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="90" incoming="66" outgoing="70">
@@ -279,7 +279,7 @@ isSuccessful = guard</body>
           <result xmi:id="138" name="requester" outgoing="115">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="139" value="TooDetailed"/>
+          <value xmi:type="uml:LiteralString" xmi:id="139" value="TooDetailed___WOyBIPGgEe6w6rfsvEI-Kw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="140" incoming="116 122" outgoing="117"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="141" incoming="117" outgoing="118">
@@ -287,7 +287,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="142" name="isActive" outgoing="119">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'TooDetailed'</body>
+          <body>active == 'TooDetailed___WOyBIPGgEe6w6rfsvEI-Kw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="143" incoming="118 119" outgoing="120 122"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="144" incoming="120" outgoing="124">

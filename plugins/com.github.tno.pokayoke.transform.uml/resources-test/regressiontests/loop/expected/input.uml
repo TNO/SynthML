@@ -77,7 +77,7 @@
           <result xmi:id="40" name="requester" outgoing="17">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="41" value="Initialize"/>
+          <value xmi:type="uml:LiteralString" xmi:id="41" value="Initialize___XamZYGaKEe6brK4DOE-dfg"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="42" incoming="18 24" outgoing="19"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="43" incoming="19" outgoing="20">
@@ -85,7 +85,7 @@
           <outputValue xmi:id="44" name="isActive" outgoing="21">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Initialize'</body>
+          <body>active == 'Initialize___XamZYGaKEe6brK4DOE-dfg'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="45" incoming="20 21" outgoing="22 24"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="46" incoming="22" outgoing="26">
@@ -169,7 +169,7 @@ isSuccessful = guard</body>
           <result xmi:id="82" name="requester" outgoing="59">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="83" value="Increment"/>
+          <value xmi:type="uml:LiteralString" xmi:id="83" value="Increment___ROQuwGaREe6brK4DOE-dfg"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="84" incoming="60 66" outgoing="61"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="85" incoming="61" outgoing="62">
@@ -177,7 +177,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="86" name="isActive" outgoing="63">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Increment'</body>
+          <body>active == 'Increment___ROQuwGaREe6brK4DOE-dfg'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="87" incoming="62 63" outgoing="64 66"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="88" incoming="64" outgoing="68">
