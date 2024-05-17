@@ -326,12 +326,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             if (!members.equals(Sets.union(postconditions, intervalConstraints))) {
-                error("Expected abstract activity to contain only postcondition or interval constraint members.",
+                error("Expected abstract activity to contain only postcondition and interval constraint members.",
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
 
             // All postconditions are constraints and therefore parsed as invariants.
-            // Make sure that they are all then state invariants.
+            // Make sure that they are all state invariants.
             for (Constraint postcondition: postconditions) {
                 AInvariant invariant = CifParserHelper.parseInvariant(postcondition);
 
