@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2gal;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -15,7 +16,6 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.google.common.base.Optional;
 
 import fr.lip6.move.gal.AssignType;
 import fr.lip6.move.gal.Assignment;
@@ -182,21 +182,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     }
 
     @Override
-    protected Object visit(TextPosition operatorPos, List<Object> guards, Object then, List<Object> elifs, Object elze,
-            CifContext ctx)
-    {
-        // Add to UML-to-GAL preconditions.
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Object visit(TextPosition operatorPos, List<Object> guards, Object then, CifContext ctx) {
-        // Add to UML-to-GAL preconditions.
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Object visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Object predicate,
+    protected Object visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, Object predicate,
             CifContext ctx)
     {
         throw new UnsupportedOperationException();

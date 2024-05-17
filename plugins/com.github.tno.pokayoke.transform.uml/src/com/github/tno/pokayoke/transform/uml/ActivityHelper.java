@@ -2,8 +2,9 @@
 package com.github.tno.pokayoke.transform.uml;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
+import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ControlFlow;
@@ -26,12 +27,14 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 /** Helper class for creating various kinds of activities. */
 public class ActivityHelper {
     private ActivityHelper() {
+        // Empty for utility classes
     }
 
     /**
@@ -40,22 +43,37 @@ public class ActivityHelper {
      *
      * @param guard A single-line Python boolean expression.
      * @param effects A list of single-line Python programs.
+     * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(String guard, List<String> effects, Signal acquire, String callerId) {
+    public static Activity createAtomicActivity(String guard, List<String> effects,
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+    {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
         Preconditions.checkArgument(!callerId.contains("'"),
                 "Argument callerId contains quote character ('): " + callerId);
 
         // Combine all given effects into a single Python program.
-        String effect = "pass";
+        String effectBody = "pass";
         if (!effects.isEmpty()) {
-            effect = "if guard:\n";
-            effect += effects.stream().map(e -> "\t" + e).collect(Collectors.joining("\n"));
+            effectBody = "if guard:";
+            for (String effect: effects) {
+                effectBody += "\n\t" + effect;
+            }
+            // Validate the property bounds at runtime
+            for (Map.Entry<String, Range<Integer>> entry: propertyBounds.entrySet()) {
+                String property = entry.getKey();
+                Range<Integer> bounds = entry.getValue();
+                effectBody += String.format("\n\tif not (%d <= %s <= %d):", bounds.getMinimum(), property,
+                        bounds.getMaximum());
+                effectBody += String.format(
+                        "\n\t\tprint(\"Expected '%s' to stay between %d and %d, but got \" + str(%s))", property,
+                        bounds.getMinimum(), bounds.getMaximum(), property);
+            }
         }
 
         // Define a new activity that encodes the guard and effect.
@@ -81,7 +99,7 @@ public class ActivityHelper {
         checkGuardNode.getBodies().add(guard);
         checkGuardNode.getLanguages().add("Python");
         OutputPin checkGuardOutput = checkGuardNode.createOutputValue("doesGuardHold",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow between the outer merge node and the node that checks the guard.
         ControlFlow outerMergeToCheckGuardFlow = FileHelper.FACTORY.createControlFlow();
@@ -121,7 +139,7 @@ public class ActivityHelper {
         sendAcquireNode.setSignal(acquire);
         InputPin sendAcquireInput = FileHelper.FACTORY.createInputPin();
         sendAcquireInput.setName("requester");
-        sendAcquireInput.setType(FileHelper.loadPrimitiveType("String"));
+        sendAcquireInput.setType(UmlPrimitiveType.STRING.load(acquire));
         sendAcquireNode.getArguments().add(sendAcquireInput);
 
         // Define the requester value specification node.
@@ -129,7 +147,7 @@ public class ActivityHelper {
         requesterValueNode.setActivity(activity);
         OutputPin requesterValueOutput = FileHelper.FACTORY.createOutputPin();
         requesterValueOutput.setName("requester");
-        requesterValueOutput.setType(FileHelper.loadPrimitiveType("String"));
+        requesterValueOutput.setType(UmlPrimitiveType.STRING.load(acquire));
         requesterValueNode.setResult(requesterValueOutput);
         LiteralString requesterValueLiteral = FileHelper.FACTORY.createLiteralString();
         requesterValueLiteral.setValue(callerId);
@@ -167,7 +185,7 @@ public class ActivityHelper {
         checkActiveNode.getBodies().add("active == '" + callerId + "'");
         checkActiveNode.getLanguages().add("Python");
         OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow from the inner merge node to the node that checks the active variable.
         ControlFlow innerMergeToCheckActiveFlow = FileHelper.FACTORY.createControlFlow();
@@ -195,10 +213,11 @@ public class ActivityHelper {
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
-        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard, effect);
+        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard,
+                effectBody);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquire));
 
         // Define the control flow from the inner decision node to the node that executes the guard and effect.
         ControlFlow innerDecisionToGuardAndEffectFlow = FileHelper.FACTORY.createControlFlow();
@@ -313,7 +332,7 @@ public class ActivityHelper {
         readRequesterNode.setStructuralFeature(acquireParameter);
         InputPin readRequesterInput = readRequesterNode.createObject(acceptAcquireOutput.getName(), acquireSignal);
         OutputPin readRequesterOutput = readRequesterNode.createResult(acquireParameter.getName(),
-                FileHelper.loadPrimitiveType("String"));
+                UmlPrimitiveType.STRING.load(acquireEvent));
 
         // Define the object flow between the node that accepts acquire signals and the node that reads the requester
         // variable.
@@ -326,7 +345,7 @@ public class ActivityHelper {
         OpaqueAction setActiveNode = FileHelper.FACTORY.createOpaqueAction();
         setActiveNode.setActivity(activity);
         InputPin setActiveInput = setActiveNode.createInputValue(acquireParameter.getName(),
-                FileHelper.loadPrimitiveType("String"));
+                UmlPrimitiveType.STRING.load(acquireEvent));
         setActiveNode.getBodies().add("active = " + acquireParameter.getName());
         setActiveNode.getLanguages().add("Python");
 
@@ -352,7 +371,7 @@ public class ActivityHelper {
         checkReleasedNode.getBodies().add("active == ''");
         checkReleasedNode.getLanguages().add("Python");
         OutputPin checkReleasedOutput = checkReleasedNode.createOutputValue("isReleased",
-                FileHelper.loadPrimitiveType("Boolean"));
+                UmlPrimitiveType.BOOLEAN.load(acquireEvent));
 
         // Define the control flow from the inner merge node to the node that checks whether the lock has been released.
         ControlFlow innerMergeToCheckReleaseFlow = FileHelper.FACTORY.createControlFlow();

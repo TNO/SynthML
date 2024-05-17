@@ -9,12 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
-import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
@@ -31,11 +29,13 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -45,6 +45,7 @@ import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
+import com.github.tno.pokayoke.uml.profile.cif.TypeException;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
@@ -55,6 +56,23 @@ import PokaYoke.PokaYokePackage;
 
 public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^[a-zA-Z_][0-9a-zA-Z_]*$");
+
+    private enum NamingConvention {
+        /**
+         * Optional, but when set it should not contain double underscores. Transformations will generate these names if
+         * required.
+         */
+        OPTIONAL,
+        /**
+         * Name should be set and not contain double underscores.
+         */
+        MANDATORY,
+        /**
+         * Name should be set, should not contain double underscores and should match
+         * {@link PokaYokeProfileValidator#IDENTIFIER_PATTERN}.
+         */
+        IDENTIFIER
+    }
 
     /**
      * Reports an error if cycles are found in activities.
@@ -73,7 +91,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!history.add(activity)) {
                 return true;
             }
-            return from(activity.getNodes()).objectsOfKind(CallBehaviorAction.class).exists(a -> hasCycle(a, history));
+            if (from(activity.getNodes()).objectsOfKind(CallBehaviorAction.class).exists(a -> hasCycle(a, history))) {
+                return true;
+            }
+            history.remove(activity);
         }
         return false;
     }
@@ -93,11 +114,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
                 .groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
-            if (entry.getKey() == null) {
-                for (NamedElement element: entry.getValue()) {
-                    error("Required name not set.", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
-                }
-            } else if (entry.getValue().size() > 1) {
+            // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
+            if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {
                 for (NamedElement duplicate: entry.getValue()) {
                     error("Name should be unique within model.", duplicate, UMLPackage.Literals.NAMED_ELEMENT__NAME);
                 }
@@ -106,11 +124,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
+    private void checkValidModel(Model model) {
+        if (!isPokaYokaUmlProfileApplied(model)) {
+            return;
+        }
+        checkNamingConventions(model, NamingConvention.MANDATORY);
+    }
+
+    @Check
     private void checkValidClass(Class clazz) {
         if (!isPokaYokaUmlProfileApplied(clazz)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
         if (!clazz.getNestedClassifiers().isEmpty()) {
             error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
@@ -144,6 +170,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(property)) {
             return;
         }
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(property, NamingConvention.IDENTIFIER);
+
         if (property.getUpper() != 1) {
             error("Property should be single-valued", UMLPackage.Literals.MULTIPLICITY_ELEMENT__UPPER);
         }
@@ -165,11 +194,20 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            Type propDefaultType = new PropertyDefaultValueTypeChecker(property).checkExpression(propDefaultExpr);
-            if (!propDefaultType.equals(propType)) {
-                error(String.format("Invalid property default: Expected %s but got %s",
-                        PokaYokeTypeUtil.getLabel(propType), PokaYokeTypeUtil.getLabel(propDefaultType)),
-                        UMLPackage.Literals.PROPERTY__DEFAULT);
+            new PropertyDefaultValueTypeChecker(property).checkAssignment(propType, propDefaultExpr);
+
+            if (PokaYokeTypeUtil.isIntegerType(propType)) {
+                // Default value is set and valid, thus can be parsed into an integer
+                int propDefaultValue = Integer.parseInt(property.getDefault());
+                Integer propMinValue = PokaYokeTypeUtil.getMinValue(propType);
+                Integer propMaxValue = PokaYokeTypeUtil.getMaxValue(propType);
+                // Only check if type range is valid, also see #checkValidPrimitiveType(PrimitiveType)
+                if (propMinValue != null && propMaxValue != null && propMaxValue >= propMinValue
+                        && (propDefaultValue < propMinValue || propDefaultValue > propMaxValue))
+                {
+                    throw new TypeException(String.format("value %d is not within range [%d .. %d]", propDefaultValue,
+                            propMinValue, propMaxValue));
+                }
             }
         } catch (RuntimeException e) {
             error("Invalid property default: " + e.getLocalizedMessage(), UMLPackage.Literals.PROPERTY__DEFAULT);
@@ -181,7 +219,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(enumeration)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(enumeration, NamingConvention.IDENTIFIER);
 
         if (!(enumeration.eContainer() instanceof Model)) {
             error("Expected enumeration to be declared in model.", null);
@@ -190,6 +229,58 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         if (enumeration.getOwnedLiterals().isEmpty()) {
             error("Expected enumeration to have at least one literal.", null);
+        } else {
+            // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
+            enumeration.getOwnedLiterals().forEach(l -> checkNamingConventions(l, NamingConvention.IDENTIFIER));
+        }
+    }
+
+    @Check
+    private void checkValidPrimitiveType(PrimitiveType primitiveType) {
+        if (!isPokaYokaUmlProfileApplied(primitiveType)) {
+            return;
+        }
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(primitiveType, NamingConvention.IDENTIFIER);
+
+        if (!(primitiveType.eContainer() instanceof Model)) {
+            error("Expected primitive type to be declared in model.", null);
+        } else if (primitiveType.eContainer().eContainer() != null) {
+            error("Expected primitive type to be declared on the outer-most level.", null);
+        }
+
+        if (!PokaYokeTypeUtil.isIntegerType(primitiveType)) {
+            error(PokaYokeTypeUtil.getLabel(primitiveType) + " should inherit from primitive Integer type.", null);
+            return;
+        }
+
+        Constraint minConstraint = PokaYokeTypeUtil.getMinConstraint(primitiveType, false);
+        if (minConstraint == null) {
+            error("Minimum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
+            return;
+        }
+        Constraint maxConstraint = PokaYokeTypeUtil.getMaxConstraint(primitiveType, false);
+        if (maxConstraint == null) {
+            error("Maximum value constraint not set.", UMLPackage.Literals.NAMESPACE__OWNED_RULE);
+            return;
+        }
+
+        if (minConstraint.getSpecification() instanceof LiteralInteger minValue
+                && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
+        {
+            if (minValue.getValue() > maxValue.getValue()) {
+                error("Minimum value cannot be greater than maximum value.", minConstraint, null);
+            }
+        } else {
+            // Null values for getSpecification() are reported by default UML validator.
+            if (minConstraint.getSpecification() != null) {
+                error("Only literal integer is supported for minimum value constraint.", minConstraint, null);
+                return;
+            }
+            if (maxConstraint.getSpecification() != null) {
+                error("Only literal integer is supported for maximum value constraint.", maxConstraint, null);
+                return;
+            }
         }
     }
 
@@ -198,7 +289,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(expression)) {
             return;
         }
-        checkNamingConventions(expression, true, false);
+        checkNamingConventions(expression, NamingConvention.OPTIONAL);
+
         if (expression.getBodies().size() != 1) {
             error("Expected opaque expression to have exactly one expression body.",
                     UMLPackage.Literals.OPAQUE_EXPRESSION__BODY);
@@ -210,7 +302,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(activity)) {
             return;
         }
-        // Name is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(activity, NamingConvention.MANDATORY);
 
         if (!activity.getMembers().isEmpty()) {
             error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
@@ -221,9 +313,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
         if (initialNodes.size() != 1) {
-            for (InitialNode node: initialNodes) {
-                error("Expected activity to have exactly one initial node.", node, null);
-            }
+            error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
         }
     }
 
@@ -233,7 +323,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         if (edge instanceof ControlFlow controlFlow) {
-            checkNamingConventions(edge, true, false);
+            checkNamingConventions(edge, NamingConvention.OPTIONAL);
 
             if (controlFlow.getSource() instanceof DecisionNode) {
                 try {
@@ -241,7 +331,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     if (guardExpr == null) {
                         return;
                     }
-                    new CifTypeChecker(controlFlow).checkBooleanExpression(guardExpr);
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(guardExpr);
                 } catch (RuntimeException e) {
                     error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
                 }
@@ -260,11 +350,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Unsupported activity node type: " + node.eClass().getName(), null);
             return;
         }
-        boolean nameNotSet = Strings.isNullOrEmpty(node.getName());
-        if (nameNotSet && node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
-            error("Expected a non-null name.", UMLPackage.Literals.NAMED_ELEMENT__NAME);
+
+        if (node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            checkNamingConventions(node, NamingConvention.MANDATORY);
+        } else {
+            checkNamingConventions(node, NamingConvention.OPTIONAL);
         }
-        checkNamingConventions(node, true, true);
     }
 
     /**
@@ -322,30 +413,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    @Check
-    private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
-        checkNamingConventions(behavior, true, true);
-
-        // Validates the guard of the given opaque behavior.
-        try {
-            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
-        }
-
-        // Validates the effects of the given opaque behavior.
-        try {
-            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidGuard(AExpression guardExpr, Element element) {
         if (guardExpr == null) {
             return;
         }
-        new CifTypeChecker(element).checkBooleanExpression(guardExpr);
+        new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
     }
 
     /**
@@ -362,36 +434,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    @Check
-    private void checkValidConstraint(Constraint constraint) {
-        checkNamingConventions(constraint, true, true);
-
-        try {
-            // Parse the constraint as an invariant.
-            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-
-            // Typecheck the invariant.
-            new CifTypeChecker(constraint).checkInvariant(invariant);
-
-            // Check the events.
-            if (invariant.events != null) {
-                CifContext context = new CifContext(constraint);
-
-                for (AName event: invariant.events) {
-                    if (context.getOpaqueBehavior(event.name) == null) {
-                        error("Invalid invariant: could not find an opaque behavior named " + event.name, null);
-                    }
-                }
-            }
-        } catch (RuntimeException e) {
-            error("Invalid invariant " + e.getLocalizedMessage(), null);
-        }
-    }
-
     private void checkValidEffects(List<AUpdate> updates, Element element) {
         HashSet<String> updatedVariables = new HashSet<>();
         for (AUpdate update: updates) {
-            new CifTypeChecker(element).checkUpdate(update);
+            new CifTypeChecker(element).checkAssignment(update);
 
             // Update is checked above, so ClassCastException is not possible on next lines
             AExpression variableExpr = ((AAssignmentUpdate)update).addressable;
@@ -403,17 +449,56 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkNamingConventions(NamedElement element, boolean checkDoubleUnderscore,
-            boolean checkProperIdentifierName)
-    {
+    /**
+     * Validates the name, guard and effects of the given opaque behavior.
+     *
+     * @param behavior The opaque behavior to validate.
+     */
+    @Check
+    private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
+        checkNamingConventions(behavior, NamingConvention.IDENTIFIER);
+
+        // Validates the guard of the given opaque behavior.
+        try {
+            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), null);
+        }
+
+        // Validates the effects of the given opaque behavior.
+        try {
+            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
+        } catch (RuntimeException e) {
+            error("Invalid effects: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    @Check
+    private void checkValidConstraint(Constraint constraint) {
+        checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
+
+        try {
+            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkNamingConventions(NamedElement element, NamingConvention convention) {
         String name = element.getName();
         if (Strings.isNullOrEmpty(name)) {
+            if (convention != NamingConvention.OPTIONAL) {
+                error("Required name not set.", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+            }
             return;
         }
-        if (checkDoubleUnderscore && name.contains("__")) {
+
+        if (name.contains("__")) {
             error("Name cannot not contain '__'", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
         }
-        if (checkProperIdentifierName && !IDENTIFIER_PATTERN.matcher(name).matches()) {
+
+        if (convention == NamingConvention.IDENTIFIER && !IDENTIFIER_PATTERN.matcher(name).matches()) {
             error("Expected name to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*", element,
                     UMLPackage.Literals.NAMED_ELEMENT__NAME);
         }

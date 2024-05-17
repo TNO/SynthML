@@ -15,17 +15,15 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.escet.common.emf.EMFHelper;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.Package;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 public class FileHelper {
     public static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
     private FileHelper() {
+        // Empty for utility classes
     }
 
     /**
@@ -35,39 +33,10 @@ public class FileHelper {
      * @return The loaded model.
      */
     public static Model loadModel(String pathName) {
-        // Initialize a UML resource set to load the UML model.
-        ResourceSet resourceSet = new ResourceSetImpl();
-        UMLResourcesUtil.init(resourceSet);
-
         // Load the UML model.
         URI fileURI = URI.createFileURI(pathName);
-        Resource res = resourceSet.getResource(fileURI, true);
-        Model umlModel = (Model)res.getContents().get(0);
-
-        return umlModel;
-    }
-
-    /**
-     * Loads a UML package.
-     *
-     * @param uri The URI of the UML model.
-     * @return The loaded package.
-     */
-    public static Package loadPackage(URI uri) {
-        ResourceSet resourceSet = new ResourceSetImpl();
-        Resource resource = resourceSet.getResource(uri, true);
-        return (Package)EcoreUtil.getObjectByType(resource.getContents(), UMLPackage.Literals.PACKAGE);
-    }
-
-    /**
-     * Loads a primitive UML type, e.g., "Boolean" or "String".
-     *
-     * @param name Then name of the primitive type to load.
-     * @return The loaded primitive type.
-     */
-    public static PrimitiveType loadPrimitiveType(String name) {
-        Package umlLibrary = loadPackage(URI.createURI(UMLResource.UML_PRIMITIVE_TYPES_LIBRARY_URI));
-        return (PrimitiveType)umlLibrary.getOwnedType(name);
+        Resource res = createModelResourceSet().getResource(fileURI, true);
+        return (Model)EcoreUtil.getObjectByType(res.getContents(), UMLPackage.Literals.MODEL);
     }
 
     /**
@@ -78,13 +47,12 @@ public class FileHelper {
      * @throws IOException Thrown in case the model could not be saved.
      */
     public static void storeModel(Model model, String pathName) throws IOException {
-        // Initialize a UML resource set to store the model.
-        ResourceSet resourceSet = new ResourceSetImpl();
-        UMLResourcesUtil.init(resourceSet);
+        storeModel(model, URI.createFileURI(pathName));
+    }
 
+    public static void storeModel(Model model, URI uri) throws IOException {
         // Store the model.
-        URI uri = URI.createFileURI(pathName);
-        Resource resource = resourceSet.createResource(uri);
+        Resource resource = createModelResourceSet().createResource(uri);
         resource.getContents().add(model);
         EMFHelper.normalizeXmiIds((XMLResource)resource);
 
@@ -93,5 +61,11 @@ public class FileHelper {
                 .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
         resource.getContents().addAll(stereotypeApplications);
         resource.save(Collections.EMPTY_MAP);
+    }
+
+    public static ResourceSet createModelResourceSet() {
+        ResourceSet resourceSet = new ResourceSetImpl();
+        UMLResourcesUtil.init(resourceSet);
+        return resourceSet;
     }
 }

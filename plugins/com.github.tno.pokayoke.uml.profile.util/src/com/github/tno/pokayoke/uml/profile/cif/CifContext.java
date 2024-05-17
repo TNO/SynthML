@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
+import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
@@ -25,9 +26,9 @@ public class CifContext {
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
      */
-    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.PACKAGE,
-            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.CLASS,
-            UMLPackage.Literals.PROPERTY, UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.OPAQUE_BEHAVIOR);
+    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
+            UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
+            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -110,5 +111,9 @@ public class CifContext {
             return behavior;
         }
         return null;
+    }
+
+    public boolean hasConstraints() {
+        return getAllElements().stream().anyMatch(Constraint.class::isInstance);
     }
 }

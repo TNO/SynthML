@@ -2,15 +2,15 @@
 package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
-import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.PrimitiveType;
@@ -18,7 +18,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.google.common.base.Optional;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 
 /**
  * Type checker for CIF annotated UML models.
@@ -37,64 +37,53 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      */
     public CifTypeChecker(Element elem) {
         this.ctx = new CifContext(elem);
-        this.booleanType = PokaYokeTypeUtil.loadPrimitiveType(PokaYokeTypeUtil.PRIMITIVE_TYPE_BOOLEAN, elem);
-        this.integerType = PokaYokeTypeUtil.loadPrimitiveType(PokaYokeTypeUtil.PRIMITIVE_TYPE_INTEGER, elem);
+        this.booleanType = UmlPrimitiveType.BOOLEAN.load(elem);
+        this.integerType = UmlPrimitiveType.INTEGER.load(elem);
     }
 
     /**
-     * Returns the type of the result when {@code expr} is evaluated and checks if this type is boolean.
+     * Checks if the evaluated {@code expression} type can be assigned to a boolean.
      *
-     * @param expr The expression to evaluate.
-     * @return The type of the expression result.
-     * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not a boolean.
+     * @param expression The expression to evaluate.
+     * @throws TypeException If {@code expression} cannot be evaluated or if the result type cannot be assigned to a
+     *     boolean.
      */
-    public Type checkBooleanExpression(AExpression expr) throws TypeException {
-        Type exprType = visit(expr, ctx);
-        if (!booleanType.equals(exprType)) {
-            throw new TypeException("expected Boolean return type but got " + PokaYokeTypeUtil.getLabel(exprType),
-                    expr.position);
-        }
-        return exprType;
+    public void checkBooleanAssignment(AExpression expression) throws TypeException {
+        checkAssignment(booleanType, expression);
     }
 
     /**
-     * Returns the type of the result when {@code expr} is evaluated and checks if this type is supported.
+     * Checks if the evaluated value type of an {@code update} can be assigned to its addressable type.
      *
-     * @param expr The expression to evaluate.
-     * @return The type of the expression result.
-     * @throws TypeException If {@code expr} cannot be evaluated or if the result type is not supported.
+     * @param update The update to evaluate.
+     * @throws TypeException If {@code update} cannot be evaluated or if the value type cannot be assigned to its
+     *     addressable type.
      */
-    public Type checkExpression(AExpression expr) throws TypeException {
-        Type exprType = visit(expr, ctx);
-        if (!PokaYokeTypeUtil.isSupportedType(exprType)) {
-            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(exprType), expr.position);
-        }
-        return exprType;
+    public void checkAssignment(AUpdate update) throws TypeException {
+        visit(update, ctx);
     }
 
     /**
-     * Returns the type of the result when {@code upd} is evaluated and checks if this type is supported.
+     * Checks if the evaluated {@code value} type can be assigned to the {@code addressable} type.
      *
-     * @param upd The update to evaluate.
-     * @return The type of the update addressable.
-     * @throws TypeException If {@code expr} cannot be evaluated, if the result type is not supported or if the update
-     *     value type and update addressable type are not equal.
+     * @param addressable The expected addressable type.
+     * @param value The value expression to evaluate.
+     * @throws TypeException If the {@code value} expression cannot be evaluated or if the value type cannot be assigned
+     *     to the {@code addressable} type.
      */
-    public Type checkUpdate(AUpdate upd) throws TypeException {
-        Type updateType = visit(upd, ctx);
-        if (!PokaYokeTypeUtil.isSupportedType(updateType)) {
-            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(updateType), upd.position);
-        }
-        return updateType;
+    public void checkAssignment(Type addressable, AExpression value) throws TypeException {
+        visit(addressable, null, visit(value, ctx), ctx);
     }
 
-    // TODO JavaDoc
-    public Type checkInvariant(AInvariant inv) throws TypeException {
-        Type invType = visit(inv, ctx);
-        if (!PokaYokeTypeUtil.isSupportedType(invType)) {
-            throw new TypeException("unsupported return type: " + PokaYokeTypeUtil.getLabel(invType), inv.position);
-        }
-        return invType;
+    /**
+     * Checks if the predicate type of the evaluated {@code invariant} can be assigned to a boolean.
+     *
+     * @param invariant The invariant to evaluate.
+     * @return The type of the invariant predicate.
+     * @throws TypeException If {@code invariant} cannot be evaluated or if the predicate type is not supported.
+     */
+    public Type checkInvariant(AInvariant invariant) throws TypeException {
+        return visit(invariant, ctx);
     }
 
     @Override
@@ -118,13 +107,8 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     @Override
-    protected Type visit(AAssignmentUpdate update, CifContext ctx) {
-        return super.visit(update, ctx);
-    }
-
-    @Override
     protected Type visit(Type addressable, TextPosition assignmentPos, Type value, CifContext ctx) {
-        if (!Objects.equals(addressable, value)) {
+        if (combineTypes(addressable, value) == null) {
             throw new TypeException(String.format("expected %s but got %s", PokaYokeTypeUtil.getLabel(addressable),
                     PokaYokeTypeUtil.getLabel(value)), assignmentPos);
         }
@@ -133,28 +117,27 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     @Override
     protected Type visit(BinaryOperator operator, TextPosition operatorPos, Type left, Type right, CifContext ctx) {
-        String errorMsg = String.format("the operator '%s' is undefined for the argument type(s) %s, %s",
+        final String errorMsg = String.format("the operator '%s' is undefined for the argument type(s) %s, %s",
                 operator.cifValue(), PokaYokeTypeUtil.getLabel(left), PokaYokeTypeUtil.getLabel(right));
-        if (!Objects.equals(left, right)) {
+        final Type compareType = combineTypes(left, right);
+        if (compareType == null) {
             throw new TypeException(errorMsg, operatorPos);
         }
-
-        final Type compareType = left;
         return switch (operator) {
             case AND, OR -> {
-                if (!booleanType.equals(compareType)) {
+                if (!compareType.conformsTo(booleanType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
-                yield booleanType;
+                yield compareType;
             }
             case PLUS, MINUS -> {
-                if (!integerType.equals(compareType)) {
+                if (!compareType.conformsTo(integerType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
-                yield integerType;
+                yield compareType;
             }
             case GE, GT, LE, LT -> {
-                if (!integerType.equals(compareType)) {
+                if (!compareType.conformsTo(integerType)) {
                     throw new TypeException(errorMsg, operatorPos);
                 }
                 yield booleanType;
@@ -168,13 +151,13 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     protected Type visit(UnaryOperator operator, TextPosition operatorPos, Type child, CifContext ctx) {
         switch (operator) {
             case NOT:
-                if (!booleanType.equals(child)) {
+                if (!child.conformsTo(booleanType)) {
                     throw new TypeException(String.format("Expected Boolean but got %s near operator '%s'",
                             PokaYokeTypeUtil.getLabel(child), operator.cifValue()), operatorPos);
                 }
                 break;
             case MINUS:
-                if (!integerType.equals(child)) {
+                if (!child.conformsTo(integerType)) {
                     throw new TypeException(String.format("Expected Integer but got %s near operator '%s'",
                             PokaYokeTypeUtil.getLabel(child), operator.cifValue()), operatorPos);
                 }
@@ -184,49 +167,40 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     @Override
-    protected Type visit(TextPosition operatorPos, List<Type> guards, Type then, List<Type> elifs, Type elze,
+    protected Type visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, Type predicate,
             CifContext ctx)
     {
-        for (Type guard: guards) {
-            if (!PokaYokeTypeUtil.isBooleanType(guard)) {
-                throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(guard), operatorPos);
+        if (!predicate.conformsTo(booleanType)) {
+            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), invariantPos);
+        }
+
+        // Validate that the events exist, i.e., refer to declared opaque behaviors.
+        for (String event: events) {
+            if (ctx.getOpaqueBehavior(event) == null) {
+                throw new CustomSyntaxException("Unresolved opaque behavior name " + event, invariantPos);
             }
-        }
-
-        for (Type elif: elifs) {
-            if (!Objects.equals(then, elif)) {
-                throw new TypeException(String.format("Expected %s but got %s", PokaYokeTypeUtil.getLabel(then),
-                        PokaYokeTypeUtil.getLabel(elif)), operatorPos);
-            }
-        }
-
-        if (!Objects.equals(then, elze)) {
-            throw new TypeException(String.format("Expected %s but got %s", PokaYokeTypeUtil.getLabel(then),
-                    PokaYokeTypeUtil.getLabel(elze)), operatorPos);
-        }
-
-        return then;
-    }
-
-    @Override
-    protected Type visit(TextPosition operatorPos, List<Type> guards, Type then, CifContext ctx) {
-        for (Type guard: guards) {
-            if (!PokaYokeTypeUtil.isBooleanType(guard)) {
-                throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(guard), operatorPos);
-            }
-        }
-
-        return then;
-    }
-
-    @Override
-    protected Type visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Type predicate,
-            CifContext ctx)
-    {
-        if (!PokaYokeTypeUtil.isBooleanType(predicate)) {
-            throw new TypeException("Expected Boolean but got " + PokaYokeTypeUtil.getLabel(predicate), operatorPos);
         }
 
         return predicate;
+    }
+
+    /**
+     * Combines the {@code left} and {@code right} types into a compatible return type.
+     *
+     * @param left One of the types to combine.
+     * @param right One of the types to combine.
+     * @return The compatible return type, or {@code null} if the types cannot be combined.
+     */
+    protected Type combineTypes(Type left, Type right) {
+        if (left == null || right == null) {
+            return null;
+        } else if (left.equals(right)) {
+            return left;
+        }
+        if (left.conformsTo(integerType) && right.conformsTo(integerType)) {
+            // Both left and right are integers
+            return integerType;
+        }
+        return null;
     }
 }

@@ -23,6 +23,7 @@ import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
 import com.github.tno.pokayoke.cif.parser.CifInvariantParser;
 import com.github.tno.pokayoke.cif.parser.CifUpdatesParser;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Preconditions;
 
 /** Helps parsing CIF expressions. */
 public class CifParserHelper {
@@ -45,13 +46,6 @@ public class CifParserHelper {
             return null;
         }
         return parseExpression(valueSpecification.stringValue(), valueSpecification);
-    }
-
-    public static AExpression parseExpression(Constraint constraint) throws SyntaxException {
-        if (constraint == null) {
-            return null;
-        }
-        return parseExpression(constraint.getSpecification());
     }
 
     public static AExpression parseGuard(Action action) throws SyntaxException {
@@ -110,13 +104,13 @@ public class CifParserHelper {
         }
     }
 
-    public static AInvariant parseInvariant(OpaqueExpression constraint) throws SyntaxException {
-        if (constraint == null) {
+    public static AInvariant parseInvariant(OpaqueExpression expression) throws SyntaxException {
+        if (expression == null) {
             return null;
         }
-        return parseInvariant(
-                constraint.getBodies().stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r)).orElse("true"),
-                constraint);
+        List<String> bodies = expression.getBodies();
+        Preconditions.checkArgument(bodies.size() <= 1, "Expected at most one body, but got " + bodies.size());
+        return parseInvariant(bodies.isEmpty() ? "true" : bodies.get(0), expression);
     }
 
     public static AInvariant parseInvariant(String invariant, Element context) throws SyntaxException {

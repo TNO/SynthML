@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
@@ -19,8 +22,11 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.InstanceValue;
+import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectFlow;
@@ -41,7 +47,9 @@ import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 /**
@@ -58,10 +66,13 @@ public class UMLTransformer {
 
     private final CifToPythonTranslator translator;
 
+    private final Map<String, Range<Integer>> propertyBounds;
+
     public UMLTransformer(Model model) {
         this.model = model;
         this.cifContext = new CifContext(this.model);
         this.translator = new CifToPythonTranslator(this.cifContext);
+        this.propertyBounds = new LinkedHashMap<>();
     }
 
     public static void main(String[] args) throws IOException, CoreException {
@@ -85,6 +96,7 @@ public class UMLTransformer {
         ValidationHelper.validateModel(model);
 
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
@@ -95,8 +107,19 @@ public class UMLTransformer {
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
 
-        // Translate all default values of class properties that are literal strings, to become opaque actions.
+        // Collect integer bounds and set default values for all class properties
+        propertyBounds.clear();
         for (Property property: contextClass.getOwnedAttributes()) {
+            // Collect the bounds for integer properties, they will be validated later.
+            Range<Integer> propertyRange = null;
+            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                        PokaYokeTypeUtil.getMaxValue(property.getType()));
+                propertyBounds.put(property.getName(), propertyRange);
+            }
+
+            // Translate all default values of class properties to become Python expressions,
+            // or set default values for simulation.
             AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
             if (cifExpression != null) {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
@@ -104,6 +127,23 @@ public class UMLTransformer {
                 String translatedLiteral = translator.translateExpression(cifExpression);
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
+            } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
+                // As default value, we choose the value that is closest to zero within its bounds.
+                int propertyDefault = 0;
+                if (propertyRange.getMaximum() < 0) {
+                    propertyDefault = propertyRange.getMaximum();
+                } else if (propertyRange.getMinimum() > 0) {
+                    propertyDefault = propertyRange.getMinimum();
+                }
+                LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
+                value.setValue(propertyDefault);
+                property.setDefaultValue(value);
+            } else if (PokaYokeTypeUtil.isBooleanType(property.getType())) {
+                property.setDefaultValue(FileHelper.FACTORY.createLiteralBoolean());
+            } else if (PokaYokeTypeUtil.isEnumerationType(property.getType())) {
+                InstanceValue value = FileHelper.FACTORY.createInstanceValue();
+                value.setInstance(((Enumeration)property.getType()).getOwnedLiterals().get(0));
+                property.setDefaultValue(value);
             }
         }
 
@@ -125,7 +165,7 @@ public class UMLTransformer {
         acquireSignal.setName("acquire");
         Property acquireParameter = FileHelper.FACTORY.createProperty();
         acquireParameter.setName("requester");
-        acquireParameter.setType(FileHelper.loadPrimitiveType("String"));
+        acquireParameter.setType(UmlPrimitiveType.STRING.load(lockClass));
         acquireSignal.getOwnedAttributes().add(acquireParameter);
         lockClass.getNestedClassifiers().add(acquireSignal);
 
@@ -146,7 +186,7 @@ public class UMLTransformer {
         Property activeProperty = FileHelper.FACTORY.createProperty();
         activeProperty.setIsStatic(true);
         activeProperty.setName("active");
-        activeProperty.setType(FileHelper.loadPrimitiveType("String"));
+        activeProperty.setType(UmlPrimitiveType.STRING.load(lockClass));
         LiteralString activePropertyDefaultValue = FileHelper.FACTORY.createLiteralString();
         activePropertyDefaultValue.setValue("");
         activeProperty.setDefaultValue(activePropertyDefaultValue);
@@ -290,7 +330,7 @@ public class UMLTransformer {
         List<String> effects = translator.translateUpdates(CifParserHelper.parseEffects(action));
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, acquireSignal,
+        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
                 action.getQualifiedName());
         String actionName = action.getName();
         newActivity.setName(actionName);
@@ -351,7 +391,7 @@ public class UMLTransformer {
 
         // Define the object flow from the new evaluator node to the decision node.
         OutputPin evaluationOutput = decisionEvaluationNode.createOutputValue("branch",
-                FileHelper.loadPrimitiveType("Integer"));
+                UmlPrimitiveType.INTEGER.load(decisionNode));
         ObjectFlow evaluationToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         evaluationToDecisionObjFlow.setActivity(decisionNode.getActivity());
         evaluationToDecisionObjFlow.setSource(evaluationOutput);
