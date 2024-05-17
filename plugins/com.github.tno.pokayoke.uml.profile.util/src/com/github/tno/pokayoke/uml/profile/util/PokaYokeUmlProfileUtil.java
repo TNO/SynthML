@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Package;
@@ -17,6 +18,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPlugin;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
@@ -91,6 +93,11 @@ public class PokaYokeUmlProfileUtil {
             return;
         }
         controlFlow.setGuard(createCifExpression(newValue));
+    }
+
+    public static boolean hasDefaultValue(Property property) {
+        ValueSpecification valueSpec = property.getDefaultValue();
+        return !(valueSpec == null || valueSpec instanceof LiteralNull);
     }
 
     /**

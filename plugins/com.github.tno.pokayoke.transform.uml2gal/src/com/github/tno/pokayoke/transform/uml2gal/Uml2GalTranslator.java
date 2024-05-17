@@ -38,6 +38,7 @@ import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -195,7 +196,7 @@ public class Uml2GalTranslator {
         // For every class property without default value, define a parameter that ranges over the type domain, as well
         // as an assignment to assign this parameter to the corresponding variable, making its value arbitrary.
         for (Property property: classElement.getOwnedAttributes()) {
-            if (property.getDefaultValue() == null) {
+            if (!PokaYokeUmlProfileUtil.hasDefaultValue(property)) {
                 String name = property.getName();
                 Parameter parameter = initTransitionBuilder.addParam(name,
                         specificationBuilder.getTypedef(property.getType().getName()));
