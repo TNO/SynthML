@@ -526,16 +526,18 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 int min = 0;
                 int max = 0;
 
-                if (interval.getMin() instanceof LiteralInteger literal) {
-                    min = literal.getValue();
+                if (interval.getMin() instanceof LiteralInteger minLiteral) {
+                    min = minLiteral.getValue();
                 } else {
                     error("Invalid interval min value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    return;
                 }
 
-                if (interval.getMax() instanceof LiteralInteger literal) {
-                    max = literal.getValue();
+                if (interval.getMax() instanceof LiteralInteger maxLiteral) {
+                    max = maxLiteral.getValue();
                 } else {
                     error("Invalid interval max value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    return;
                 }
 
                 if (min > max) {
