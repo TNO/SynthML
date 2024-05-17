@@ -523,8 +523,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (constraint instanceof IntervalConstraint intervalConstraint) {
             if (constraint.getSpecification() instanceof Interval interval) {
-                int min = 0;
-                int max = 0;
+                int min;
+                int max;
 
                 if (interval.getMin() instanceof LiteralInteger minLiteral) {
                     min = minLiteral.getValue();
