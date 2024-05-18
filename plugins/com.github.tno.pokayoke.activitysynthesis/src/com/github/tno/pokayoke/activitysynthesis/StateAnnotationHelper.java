@@ -1,15 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2024 Contributors to the Eclipse Foundation
-//
-// See the NOTICE file(s) distributed with this work for additional
-// information regarding copyright ownership.
-//
-// This program and the accompanying materials are made available
-// under the terms of the MIT License which is available at
-// https://opensource.org/licenses/MIT
-//
-// SPDX-License-Identifier: MIT
-//////////////////////////////////////////////////////////////////////////////
 
 package com.github.tno.pokayoke.activitysynthesis;
 
@@ -38,6 +26,7 @@ import org.eclipse.escet.common.java.Sets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
+/** Helper for manipulating state annotations. */
 public class StateAnnotationHelper {
     private StateAnnotationHelper() {
     }
@@ -103,6 +92,12 @@ public class StateAnnotationHelper {
         }
     }
 
+    /**
+     * Get state annotations from a CIF specification.
+     *
+     * @param spec The CIF specification.
+     * @return A map from locations to annotations.
+     */
     public static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
         Map<Location, List<Annotation>> locationAnnotationMap = new LinkedHashMap<>();
 
@@ -121,6 +116,13 @@ public class StateAnnotationHelper {
         return locationAnnotationMap;
     }
 
+    /**
+     * Get composite state annotations from two given maps between locations and annotations.
+     *
+     * @param map1 A map from locations to annotations.
+     * @param map2 A map from locations to annotations.
+     * @return A map from locations of map 1 to annotations of map2.
+     */
     public static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
             Map<Location, List<Annotation>> map2)
     {
