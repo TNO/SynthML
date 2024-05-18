@@ -35,9 +35,9 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
+import com.github.tno.pokayoke.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.activitysynthesis.ConvertExpressionUpdateToText;
-import com.github.tno.pokayoke.activitysynthesis.DataSynthesisHelper;
 import com.github.tno.pokayoke.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.activitysynthesis.OpaqueActionHelper;
 import com.github.tno.pokayoke.activitysynthesis.StateAnnotationHelper;
@@ -71,17 +71,17 @@ public class FullSynthesisApp {
 
         // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".01.ctrlsys.cif");
-        CifDataSynthesisSettings settings = DataSynthesisHelper.getSynthesisSettings();
-        CifBddSpec cifBddSpec = DataSynthesisHelper.getCifBddSpec(cifSpec, settings);
+        CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
+        CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
         Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
         // Perform synthesis.
-        CifDataSynthesisResult cifSynthesisResult = DataSynthesisHelper.synthesize(cifBddSpec, settings);
+        CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
-        DataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
+        CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
 
         // Perform state space generation.

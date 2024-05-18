@@ -32,8 +32,8 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 
 import com.github.javabdd.BDDFactory;
 
-public class DataSynthesisHelper {
-    private DataSynthesisHelper() {
+public class CIFDataSynthesisHelper {
+    private CIFDataSynthesisHelper() {
     }
 
     public static CifDataSynthesisSettings getSynthesisSettings() {
