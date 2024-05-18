@@ -1,17 +1,13 @@
 
 package com.github.tno.pokayoke.transform.app;
 
-import static org.eclipse.escet.common.java.Lists.list;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,44 +15,32 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
-import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
-import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
-import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
-import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
-import org.eclipse.escet.cif.datasynth.conversion.SynthesisToCifConverter;
-import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.eventbased.apps.DfaMinimizationApplication;
 import org.eclipse.escet.cif.eventbased.apps.ProjectionApplication;
 import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
-import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
-import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
-import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
-import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
-import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
-import com.github.javabdd.BDDFactory;
 import com.github.tno.pokayoke.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.activitysynthesis.ConvertExpressionUpdateToText;
+import com.github.tno.pokayoke.activitysynthesis.DataSynthesisHelper;
 import com.github.tno.pokayoke.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.activitysynthesis.OpaqueActionHelper;
+import com.github.tno.pokayoke.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -67,7 +51,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslato
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -88,17 +71,17 @@ public class FullSynthesisApp {
 
         // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".01.ctrlsys.cif");
-        CifDataSynthesisSettings settings = getSynthesisSettings();
-        CifBddSpec cifBddSpec = getCifBddSpec(cifSpec, settings);
+        CifDataSynthesisSettings settings = DataSynthesisHelper.getSynthesisSettings();
+        CifBddSpec cifBddSpec = DataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
         Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
 
         // Perform synthesis.
-        CifDataSynthesisResult cifSynthesisResult = synthesize(cifBddSpec, settings);
+        CifDataSynthesisResult cifSynthesisResult = DataSynthesisHelper.synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
-        convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
+        DataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
 
         // Perform state space generation.
@@ -119,11 +102,12 @@ public class FullSynthesisApp {
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".03.statespace.annotreduced.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
-        reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath, outputFolderPath);
+        StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
+                outputFolderPath);
 
         // Remove state annotations from all states.
         Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.statespace.annotremoved.cif");
-        removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
+        StateAnnotationHelper.removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
@@ -196,19 +180,23 @@ public class FullSynthesisApp {
 
         // Remove the internal actions that were added in CIF specification and
         // petrification.
-        Path internalActionsRemovedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".12.internalactionsremoved.uml");
+        Path internalActionsRemovedUMLOutputPath = outputFolderPath
+                .resolve(filePrefix + ".12.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Obtain the composite state mapping.
-        Map<Location, List<Annotation>> annotationFromReducedSP = getStateAnnotations(cifReducedStateSpace);
+        Map<Location, List<Annotation>> annotationFromReducedSP = StateAnnotationHelper
+                .getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
-        Map<Location, List<Annotation>> annotationFromProjectedSP = getStateAnnotations(cifProjectedStateSpace);
-        Map<Location, List<Annotation>> annotationFromMinimizedSP = getStateAnnotations(cifMinimizedStateSpace);
-        Map<Location, List<Annotation>> minimizedToProjected = getCompositeStateAnnotations(annotationFromMinimizedSP,
-                annotationFromProjectedSP);
-        Map<Location, List<Annotation>> minimizedToReduced = getCompositeStateAnnotations(minimizedToProjected,
-                annotationFromReducedSP);
+        Map<Location, List<Annotation>> annotationFromProjectedSP = StateAnnotationHelper
+                .getStateAnnotations(cifProjectedStateSpace);
+        Map<Location, List<Annotation>> annotationFromMinimizedSP = StateAnnotationHelper
+                .getStateAnnotations(cifMinimizedStateSpace);
+        Map<Location, List<Annotation>> minimizedToProjected = StateAnnotationHelper
+                .getCompositeStateAnnotations(annotationFromMinimizedSP, annotationFromProjectedSP);
+        Map<Location, List<Annotation>> minimizedToReduced = StateAnnotationHelper
+                .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
@@ -249,169 +237,12 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
 
-    private static CifDataSynthesisSettings getSynthesisSettings() {
-        CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
-        return settings;
-    }
-
-    private static CifBddSpec getCifBddSpec(Specification spec, CifDataSynthesisSettings settings) {
-        // Perform preprocessing.
-        CifToBddConverter.preprocess(spec, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
-
-        // Create BDD factory.
-        List<Long> continuousOpMisses = list();
-        List<Integer> continuousUsedBddNodes = list();
-        BDDFactory factory = CifToBddConverter.createFactory(settings, continuousOpMisses, continuousUsedBddNodes);
-
-        // Convert CIF specification to a CIF/BDD representation, checking for precondition violations along the
-        // way.
-        CifToBddConverter converter = new CifToBddConverter("Data-based supervisory controller synthesis");
-        CifBddSpec cifBddSpec = converter.convert(spec, settings, factory);
-
-        return cifBddSpec;
-    }
-
-    private static CifDataSynthesisResult synthesize(CifBddSpec cifBddSpec, CifDataSynthesisSettings settings) {
-        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
-                new CifDataSynthesisTiming());
-        return synthResult;
-    }
-
-    private static Specification convertSynthesisResultToCif(Specification spec, CifDataSynthesisResult synthResult,
-            String outPutFilePath, String outFolderPath)
-    {
-        Specification result;
-
-        // Construct output CIF specification.
-        SynthesisToCifConverter converter = new SynthesisToCifConverter();
-        result = converter.convert(synthResult, spec);
-
-        // Write output CIF specification.
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(result, outPutFilePath, outFolderPath);
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-        return result;
-    }
-
-    /**
-     * Remove state annotations from intermediate states, states that have uncontrollable events on their outgoing
-     * edges.
-     *
-     * @param spec CIF specification from which to remove state annotations.
-     * @param outputFilePath The output path of the specification.
-     * @param outputFolderPath The path of the output folder.
-     */
-    private static void reduceStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
-        Set<Event> events = CifCollectUtils.collectEvents(spec, new LinkedHashSet<>());
-        Set<Event> uncontrollableEvents = events.stream().filter(event -> !event.getControllable())
-                .collect(Sets.toSet());
-        Set<Event> controllableEvents = events.stream().filter(event -> event.getControllable()).collect(Sets.toSet());
-
-        // Obtain the automaton in the CIF specification.
-        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
-        Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to include exactly one automaton.");
-        Automaton automaton = automata.get(0);
-
-        for (Location loc: automaton.getLocations()) {
-            Set<Event> edgeEvents = loc.getEdges().stream().flatMap(edge -> CifEventUtils.getEvents(edge).stream())
-                    .collect(Sets.toSet());
-
-            if (!edgeEvents.isEmpty()) {
-                if (uncontrollableEvents.containsAll(edgeEvents)) {
-                    List<Annotation> annotationToRemove = loc.getAnnotations().stream()
-                            .filter(annotation -> annotation.getName().equals("state")).toList();
-                    loc.getAnnotations().removeAll(annotationToRemove);
-                } else {
-                    Verify.verify(controllableEvents.containsAll(edgeEvents),
-                            "Expected that the events of an edge are either controllable events or uncontrollable events.");
-                }
-            }
-        }
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-    }
-
-    /**
-     * Remove state annotations.
-     *
-     * @param spec CIF specification from which to remove state annotations.
-     * @param outputFilePath The output path of the specification.
-     * @param outputFolderPath The path of the output folder.
-     */
-    private static void removeStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
-        RemoveAnnotations annotationRemover = new RemoveAnnotations();
-        annotationRemover.transform(spec);
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-    }
-
     private static String getPreservedEvents(Specification spec) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
         List<String> eventNames = events.stream().filter(event -> event.getControllable())
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
-    }
-
-    private static Map<Location, List<Annotation>> getStateAnnotations(Specification spec) {
-        Map<Location, List<Annotation>> locationAnnotationMap = new LinkedHashMap<>();
-
-        // Obtain the automaton in the CIF specification.
-        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
-        Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to include exactly one automaton.");
-        Automaton automaton = automata.get(0);
-
-        for (Location location: automaton.getLocations()) {
-            List<Annotation> annotations = location.getAnnotations().stream()
-                    .filter(annotation -> annotation.getName().equals("state")).toList();
-            locationAnnotationMap.put(location, annotations);
-        }
-
-        return locationAnnotationMap;
-    }
-
-    private static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
-            Map<Location, List<Annotation>> map2)
-    {
-        Map<Location, List<Annotation>> compositeMap = new LinkedHashMap<>();
-
-        for (var entry: map1.entrySet()) {
-            Location location = entry.getKey();
-            List<Annotation> mappedAnnotations = new ArrayList<>();
-
-            for (Annotation annotation: entry.getValue()) {
-                Preconditions.checkArgument(annotation.getArguments().size() == 1,
-                        "Expected the annotation to have exactly one argument.");
-                AnnotationArgument argument = annotation.getArguments().get(0);
-                String mappedLocationName = ((StringExpression)argument.getValue()).getValue();
-                List<Location> mappedLocations = map2.keySet().stream()
-                        .filter(loc -> loc.getName().equals(mappedLocationName)).toList();
-                Preconditions.checkArgument(mappedLocations.size() == 1,
-                        String.format("Expected that there is exactly one location named %s.", mappedLocationName));
-                Location mappedLocation = mappedLocations.get(0);
-                mappedAnnotations.addAll(map2.get(mappedLocation));
-            }
-
-            mappedAnnotations = mappedAnnotations.stream().distinct().toList();
-            compositeMap.put(location, mappedAnnotations);
-        }
-
-        return compositeMap;
     }
 
     /**
