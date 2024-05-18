@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: TNO Poka Yoke Applications
-Bundle-SymbolicName: com.github.tno.pokayoke.transform.app
+Bundle-Name: TNO Poka Yoke Activity Synthesis
+Bundle-SymbolicName: com.github.tno.pokayoke.activitysynthesis
 Bundle-Version: 0.0.1.qualifier
 Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.escet.cif.metamodel;bundle-version="0.0.0",
@@ -19,7 +19,6 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.emf.ecore;bundle-version="2.34.0",
  com.github.tno.pokayoke.transform.common;bundle-version="0.0.1",
  com.github.tno.pokayoke.transform.cif2petrify;bundle-version="0.0.1",
- org.eclipse.escet.common.app.framework;bundle-version="0.10.0",
  org.eclipse.escet.cif.explorer;bundle-version="0.10.0",
  org.apache.commons.io;bundle-version="2.8.0",
  org.eclipse.core.runtime;bundle-version="3.27.0",
@@ -35,13 +34,12 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.escet.cif.datasynth;bundle-version="3.0.0",
  org.eclipse.escet.cif.bdd;bundle-version="3.0.0",
  com.github.com-github-javabdd.com.github.javabdd;bundle-version="6.0.0",
- org.eclipse.escet.common.emf;bundle-version="3.0.0",
- com.github.tno.pokayoke.activitysynthesis;bundle-version="0.0.1",
- com.github.tno.pokayoke.transform.region2statemapping;bundle-version="0.0.1"
+ com.github.tno.pokayoke.transform.region2statemapping;bundle-version="0.0.1",
+ org.eclipse.escet.common.emf;bundle-version="3.0.0"
 Bundle-Vendor: TNO
-Automatic-Module-Name: com.github.tno.pokayoke.transform.app
+Automatic-Module-Name: com.github.tno.pokayoke.activitysynthesis
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Export-Package: com.github.tno.pokayoke.transform.app
+Export-Package: com.github.tno.pokayoke.activitysynthesis
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",
  org.junit.jupiter.params;version="5.9.3",
