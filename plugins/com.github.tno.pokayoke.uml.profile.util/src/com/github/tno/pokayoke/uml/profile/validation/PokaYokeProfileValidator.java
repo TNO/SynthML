@@ -44,7 +44,6 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
@@ -279,17 +278,18 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
         {
             if (minValue.getValue() > maxValue.getValue()) {
-                error("Minimum value cannot be greater than maximum value.", minConstraint, null);
+                error("Minimum value cannot be greater than maximum value.", minConstraint,
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
         } else {
             // Null values for getSpecification() are reported by default UML validator.
             if (minConstraint.getSpecification() != null) {
-                error("Only literal integer is supported for minimum value constraint.", minConstraint, null);
-                return;
+                error("Only literal integer is supported for minimum value constraint.", minConstraint,
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
             if (maxConstraint.getSpecification() != null) {
-                error("Only literal integer is supported for maximum value constraint.", maxConstraint, null);
-                return;
+                error("Only literal integer is supported for maximum value constraint.", maxConstraint,
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
         }
     }
@@ -518,7 +518,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } else if (CifContext.isOptimalityConstraint(constraint)) {
             checkValidOptimalityConstraint((IntervalConstraint)constraint);
         } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
-            checkValidPrimitiveTypeConstraint(constraint);
+            // The constraints for primitive types are validated in #checkValidPrimitiveType(PrimitiveType)
         } else {
             error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
@@ -593,15 +593,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
         } else {
             error("Expected interval constraint specifications to be intervals.",
-                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-        }
-    }
-
-    private void checkValidPrimitiveTypeConstraint(Constraint constraint) {
-        ValueSpecification valueSpec = constraint.getSpecification();
-
-        if (!(valueSpec instanceof LiteralInteger)) {
-            error("Expected a literal integer but got " + valueSpec.eClass().getName(),
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
