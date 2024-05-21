@@ -62,15 +62,15 @@ public class UmlToCifTranslator {
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
     private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
-
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
 
+    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
+    private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
+
     public UmlToCifTranslator(Model model) {
         this.context = new CifContext(model);
-        this.translator = new CifAnnotationTranslator(context, enumMap, enumLiteralMap, eventMap, variableMap);
+        this.translator = new CifAnnotationTranslator(context, enumMap, enumLiteralMap, variableMap, eventMap);
     }
 
     /**

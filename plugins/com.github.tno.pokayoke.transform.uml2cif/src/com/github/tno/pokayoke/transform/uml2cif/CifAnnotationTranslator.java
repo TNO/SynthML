@@ -50,21 +50,21 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
     private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap;
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap;
-
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
+    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
+    private final Map<OpaqueBehavior, Event> eventMap;
+
     public CifAnnotationTranslator(CifContext context, Map<Enumeration, EnumDecl> enumMap,
-            Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<OpaqueBehavior, Event> eventMap,
-            Map<Property, DiscVariable> variableMap)
+            Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
+            Map<OpaqueBehavior, Event> eventMap)
     {
         this.context = context;
         this.enumMap = enumMap;
         this.enumLiteralMap = enumLiteralMap;
-        this.eventMap = eventMap;
         this.variableMap = variableMap;
+        this.eventMap = eventMap;
     }
 
     /**
@@ -196,16 +196,6 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
         return cifInvariant;
     }
 
-    private InvKind translateInvKind(String invKind) {
-        if (invKind.equals("needs")) {
-            return InvKind.EVENT_NEEDS;
-        } else if (invKind.equals("disables")) {
-            return InvKind.EVENT_DISABLES;
-        } else {
-            throw new RuntimeException("Unsupported invariant kind: " + invKind);
-        }
-    }
-
     private org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator translateOperator(BinaryOperator operator) {
         return switch (operator) {
             case AND -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.CONJUNCTION;
@@ -226,5 +216,15 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
             case MINUS -> org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator.NEGATE;
             case NOT -> org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator.INVERSE;
         };
+    }
+
+    private InvKind translateInvKind(String invKind) {
+        if (invKind.equals("disables")) {
+            return InvKind.EVENT_DISABLES;
+        } else if (invKind.equals("needs")) {
+            return InvKind.EVENT_NEEDS;
+        } else {
+            throw new RuntimeException("Unsupported invariant kind: " + invKind);
+        }
     }
 }
