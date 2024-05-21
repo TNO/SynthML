@@ -42,6 +42,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -49,7 +50,7 @@ import com.google.common.collect.ImmutableList;
 /** Translates UML models with requirements and constraints to CIF specifications. */
 public class UmlToCifTranslator {
     /** The context that allows querying the input model. */
-    private final ExtendedCifContext context;
+    private final CifContext context;
 
     /** The translator for CIF annotations. */
     private final CifAnnotationTranslator translator;
@@ -67,7 +68,7 @@ public class UmlToCifTranslator {
     private final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
 
     public UmlToCifTranslator(Model model) {
-        this.context = new ExtendedCifContext(model);
+        this.context = new CifContext(model);
         this.translator = new CifAnnotationTranslator(context, enumMap, enumLiteralMap, eventMap, variableMap);
     }
 

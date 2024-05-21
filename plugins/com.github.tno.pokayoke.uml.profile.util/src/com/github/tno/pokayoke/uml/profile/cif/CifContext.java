@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -86,6 +87,10 @@ public class CifContext {
         return Collections.unmodifiableCollection(contextElements.values());
     }
 
+    public List<Class> getAllClasses() {
+        return getAllElements().stream().filter(Class.class::isInstance).map(Class.class::cast).toList();
+    }
+
     public boolean isEnumeration(String name) {
         return contextElements.get(name) instanceof Enumeration;
     }
@@ -97,6 +102,10 @@ public class CifContext {
         return null;
     }
 
+    public List<Enumeration> getAllEnumerations() {
+        return getAllElements().stream().filter(Enumeration.class::isInstance).map(Enumeration.class::cast).toList();
+    }
+
     public boolean isEnumerationLiteral(String name) {
         return contextElements.get(name) instanceof EnumerationLiteral;
     }
@@ -106,6 +115,11 @@ public class CifContext {
             return literal;
         }
         return null;
+    }
+
+    public List<EnumerationLiteral> getAllEnumerationLiterals() {
+        return getAllElements().stream().filter(EnumerationLiteral.class::isInstance)
+                .map(EnumerationLiteral.class::cast).toList();
     }
 
     public boolean isVariable(String name) {
