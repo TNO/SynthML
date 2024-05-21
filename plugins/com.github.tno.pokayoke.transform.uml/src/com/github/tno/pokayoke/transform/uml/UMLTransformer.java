@@ -97,7 +97,8 @@ public class UMLTransformer {
         ValidationHelper.validateModel(model);
 
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
-        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+                "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,

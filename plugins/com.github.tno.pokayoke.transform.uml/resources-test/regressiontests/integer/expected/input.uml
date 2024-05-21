@@ -94,7 +94,7 @@
           <result xmi:id="50" name="requester" outgoing="27">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="51" value="MyAction"/>
+          <value xmi:type="uml:LiteralString" xmi:id="51" value="MyAction___CVWrgPGTEe6asLMew-pIxQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="52" incoming="28 34" outgoing="29"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="53" incoming="29" outgoing="30">
@@ -102,7 +102,7 @@
           <outputValue xmi:id="54" name="isActive" outgoing="31">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'MyAction'</body>
+          <body>active == 'MyAction___CVWrgPGTEe6asLMew-pIxQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="55" incoming="30 31" outgoing="32 34"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="56" incoming="32" outgoing="36">
