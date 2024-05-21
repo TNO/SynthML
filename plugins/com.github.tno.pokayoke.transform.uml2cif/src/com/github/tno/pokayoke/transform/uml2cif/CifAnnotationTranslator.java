@@ -38,9 +38,8 @@ import org.eclipse.uml2.uml.Type;
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.google.common.collect.ImmutableList;
 
-/** Translates CIF annotations like guards and effects in UML models to CIF. */
+/** Translates CIF annotations, e.g., guard and effects, in UML synthesis specifications to CIF. */
 public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     /** The context that allows querying the input model. */
     private final CifContext context;
@@ -51,22 +50,12 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
     private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap;
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF events. */
+    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final Map<OpaqueBehavior, Event> eventMap;
 
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /**
-     * Instantiates a new CIF annotation translator.
-     *
-     * @param context The context that allows querying the input model.
-     * @param enumMap The mapping from UML enumerations to corresponding translated CIF enumeration declarations.
-     * @param enumLiteralMap The mapping from UML enumeration literals to corresponding translated CIF enumeration
-     *     literals.
-     * @param eventMap The mapping from UML opaque behaviors to corresponding translated CIF events.
-     * @param variableMap The mapping from UML properties to corresponding translated CIF discrete variables.
-     */
     public CifAnnotationTranslator(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<OpaqueBehavior, Event> eventMap,
             Map<Property, DiscVariable> variableMap)
@@ -114,23 +103,23 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
      * @param invariant The parsed invariant to translate.
      * @return The translated CIF invariant.
      */
-    public List<Invariant> translate(AInvariant invariant) {
-        return ImmutableList.of((Invariant)visit(invariant, context));
+    public Invariant translate(AInvariant invariant) {
+        return (Invariant)visit(invariant, context);
     }
 
     /**
      * Translates an UML type to a CIF type.
      *
-     * @param type The UML type to translate.
+     * @param umlType The UML type to translate.
      * @return The translated CIF type.
      */
-    public CifType translateType(Type type) {
-        if (type instanceof Enumeration umlEnum) {
+    public CifType translateType(Type umlType) {
+        if (umlType instanceof Enumeration umlEnum) {
             return CifConstructors.newEnumType(enumMap.get(umlEnum), null);
-        } else if (PokaYokeTypeUtil.isBooleanType(type)) {
+        } else if (PokaYokeTypeUtil.isBooleanType(umlType)) {
             return CifConstructors.newBoolType();
         } else {
-            throw new RuntimeException("Unsupported type: " + type);
+            throw new RuntimeException("Unsupported type: " + umlType);
         }
     }
 

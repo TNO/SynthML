@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
 import org.eclipse.escet.cif.metamodel.cif.automata.Assignment;
@@ -47,12 +48,12 @@ import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-/** Translates UML models with requirements and constraints to CIF specifications. */
+/** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator {
-    /** The context that allows querying the input model. */
+    /** The context that allows querying the input UML model. */
     private final CifContext context;
 
-    /** The translator for CIF annotations. */
+    /** The translator for CIF annotations (guards, updates, invariants, etc.). */
     private final CifAnnotationTranslator translator;
 
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
@@ -61,7 +62,7 @@ public class UmlToCifTranslator {
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
     private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF start events. */
+    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
 
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
@@ -73,50 +74,53 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates the UML model to a CIF specification.
+     * Translates the UML synthesis specifications to a CIF specification.
      *
      * @return The translated CIF specification.
      */
     public Specification translate() {
         Specification cifSpec = CifConstructors.newSpecification();
 
-        // Translate all enumerations.
+        // Translate all UML enumerations.
         for (Enumeration umlEnum: context.getAllEnumerations()) {
             EnumDecl cifEnum = CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null);
             cifSpec.getDeclarations().add(cifEnum);
             enumMap.put(umlEnum, cifEnum);
         }
 
-        // Translate all enumeration literals.
+        // Translate all UML enumeration literals.
         for (EnumerationLiteral umlLiteral: context.getAllEnumerationLiterals()) {
             EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
             enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
             enumLiteralMap.put(umlLiteral, cifLiteral);
         }
 
-        // Translate all classes and their classifier behavior.
-        for (Class umlClass: context.getAllClasses()) {
-            if (umlClass instanceof Behavior) {
-                continue;
-            }
+        // Find the single UML class to translate.
+        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
+        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
+        Class umlClass = umlClasses.get(0);
 
-            // Translate the current class.
-            cifSpec.getComponents().add(translate(umlClass));
+        // Translate the UML class.
+        Automaton cifPlant = translateClass(umlClass);
+        cifSpec.getComponents().add(cifPlant);
 
-            // Translate all postconditions of the classifier behavior of the current class.
-            for (Constraint umlPostcondition: umlClass.getClassifierBehavior().getPostconditions()) {
-                AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
-                Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
-                        "Expected a state invariant.");
-                Expression cifPredicate = translator.translate(cifInvariant.predicate);
-                cifSpec.getComponents().add(createPostconditionRequirement(umlPostcondition.getName(), cifPredicate));
-            }
+        // Translate all postconditions of the classifier behavior of the UML class.
+        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
 
-            // Translate all interval constraints of the classifier behavior of the current class.
-            for (Constraint umlConstraint: umlClass.getClassifierBehavior().getOwnedRules()) {
-                if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
-                    cifSpec.getComponents().addAll(translate(umlIntervalConstraint));
-                }
+        for (Constraint umlPostcondition: umlClassifierBehavior.getPostconditions()) {
+            AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
+            Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
+                    "Expected the postcondition to be a state predicate.");
+            Expression cifPredicate = translator.translate(cifInvariant.predicate);
+            Automaton cifRequirement = createPostconditionRequirement(umlPostcondition.getName(), cifPredicate);
+            cifSpec.getComponents().add(cifRequirement);
+        }
+
+        // Translate all interval constraints of the classifier behavior of the UML class.
+        for (Constraint umlConstraint: umlClassifierBehavior.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
+                List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
+                cifSpec.getComponents().addAll(cifRequirements);
             }
         }
 
@@ -129,7 +133,7 @@ public class UmlToCifTranslator {
      * @param umlClass The UML class to translate.
      * @return The translated CIF plant automaton.
      */
-    private Automaton translate(Class umlClass) {
+    private Automaton translateClass(Class umlClass) {
         // Create a CIF plant for the UML class.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
@@ -158,9 +162,9 @@ public class UmlToCifTranslator {
         cifPlant.getLocations().add(cifLocation);
 
         // Translate all opaque behaviors as CIF event declarations and CIF edges.
-        // While doing so, maintain the one-to-one relation between events and edges in a mapping.
+        // While doing so, maintain the one-to-one relation between events and flower automaton edges in a mapping.
         // Opaque behaviors that represent nondeterministic actions are translated as multiple CIF start and end events.
-        // A second mapping is maintained to keep track of which such start and end events belong together.
+        // Therefore a second mapping is maintained to keep track of which such start and end events belong together.
         Map<Event, Edge> eventEdgeMap = new LinkedHashMap<>();
         Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
 
@@ -188,6 +192,7 @@ public class UmlToCifTranslator {
                 cifEdge.getGuards().addAll(guards);
 
                 if (effects.size() == 1) {
+                    // If the action is deterministic, add its effect as an edge update.
                     cifEdge.getUpdates().addAll(effects.get(0));
                 }
 
@@ -226,7 +231,7 @@ public class UmlToCifTranslator {
             }
         }
 
-        // In case nondeterministic actions were encountered, encode necessary atomicity constraints.
+        // In case nondeterministic actions were encountered, encode the necessary atomicity constraints.
         if (!startEndEventMap.isEmpty()) {
             // Declare a variable that indicates which nondeterministic action is currently active / being executed.
             // The value 0 then indicates that no nondeterministic action is currently active.
@@ -235,9 +240,9 @@ public class UmlToCifTranslator {
             cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
 
-            // Define a mapping from events that are related to nondeterministic actions, to the index of the
-            // nondeterministic action, starting with index 1. So all CIF events related to the first nondeterministic
-            // action get index 1, all events related to the second such action get index 2, etc.
+            // Define a mapping from (start and end) events that are related to nondeterministic actions, to the index
+            // of the nondeterministic action, starting with index 1. So all CIF events related to the first
+            // nondeterministic action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;
 
@@ -264,7 +269,7 @@ public class UmlToCifTranslator {
 
                 // Do a case distinction, and add appropriate CIF edge guards and updates for the case that applies.
                 if (cifEvent.getControllable()) {
-                    // Case 1 or 2 applies. Either way, add a guard expressing that no other action must be active.
+                    // Case 1 or 2 applies. Either way, add the guard '__activeAction = 0' to the edge.
                     BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -276,7 +281,7 @@ public class UmlToCifTranslator {
 
                     // If case 1 applies, no further work is needed. Otherwise, the atomicity variable must be updated.
                     if (startEndEventMap.containsKey(cifEvent)) {
-                        // Case 2 applies. Add an update to indicate that the corresponding action is now active.
+                        // Case 2 applies. Add the update '__activeAction := i' to the edge, with 'i' the action index.
                         Assignment cifUpdate = CifConstructors.newAssignment();
                         cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                                 EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -285,7 +290,7 @@ public class UmlToCifTranslator {
                         cifEdge.getUpdates().add(cifUpdate);
                     }
                 } else {
-                    // Case 3 applies. Add a guard expressing that the corresponding action must have started.
+                    // Case 3 applies. Add the guard '__activeAction = i' to the edge, with 'i' the action index.
                     BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -295,7 +300,7 @@ public class UmlToCifTranslator {
                     cifGuard.setType(CifConstructors.newBoolType());
                     cifEdge.getGuards().add(cifGuard);
 
-                    // Add an update to indicate that the corresponding action has completed.
+                    // Add the update '__activeAction := 0' to indicate that the nondeterministic action has completed.
                     Assignment cifUpdate = CifConstructors.newAssignment();
                     cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -308,7 +313,8 @@ public class UmlToCifTranslator {
 
         // Translate all UML class constraints as CIF invariants.
         for (Constraint umlConstraint: umlClass.getOwnedRules()) {
-            cifPlant.getInvariants().addAll(translator.translate(CifParserHelper.parseInvariant(umlConstraint)));
+            Invariant cifInvariant = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
+            cifPlant.getInvariants().add(cifInvariant);
         }
 
         return cifPlant;
@@ -344,26 +350,21 @@ public class UmlToCifTranslator {
      * @param umlConstraint The UML interval constraint to translate.
      * @return The translated list of CIF automata.
      */
-    private List<Automaton> translate(IntervalConstraint umlConstraint) {
+    private List<Automaton> translateIntervalConstraint(IntervalConstraint umlConstraint) {
         ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
 
         if (umlConstraintValue instanceof Interval umlInterval) {
-            int min = 0;
-            Integer max = null;
+            Preconditions.checkArgument(umlInterval.getMin() instanceof LiteralInteger, "Invalid min specification.");
+            Preconditions.checkArgument(umlInterval.getMax() instanceof LiteralInteger, "Invalid max specification.");
 
-            if (umlInterval.getMin() instanceof LiteralInteger umlLiteral) {
-                min = umlLiteral.getValue();
-            }
-
-            if (umlInterval.getMax() instanceof LiteralInteger umlLiteral) {
-                max = umlLiteral.getValue();
-            }
+            int min = ((LiteralInteger)umlInterval.getMin()).getValue();
+            int max = ((LiteralInteger)umlInterval.getMax()).getValue();
 
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    String name = umlOpaqueBehavior.getName() + "__" + umlConstraint.getName();
+                    String name = umlConstraint.getName() + "__" + umlOpaqueBehavior.getName();
                     cifAutomata.add(createIntervalAutomaton(name, eventMap.get(umlOpaqueBehavior), min, max));
                 } else {
                     throw new RuntimeException("Unsupported element: " + umlElement);
@@ -377,21 +378,18 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Creates a CIF requirement automaton expressing that the amount of occurrences of the given event must stay within
+     * Creates a CIF requirement automaton expressing that the number of occurrences of the given event must stay within
      * a specified interval.
      *
      * @param name The name of the CIF requirement automaton.
      * @param event The event to express the requirement over.
      * @param min The minimum number of event occurrences.
-     * @param max The maximum number of event occurrences. Can be {@code null} to indicate that there is no maximum.
+     * @param max The maximum number of event occurrences.
      * @return The CIF requirement automaton.
      */
-    private Automaton createIntervalAutomaton(String name, Event event, int min, Integer max) {
+    private Automaton createIntervalAutomaton(String name, Event event, int min, int max) {
         Preconditions.checkArgument(0 <= min, "Expected the min value to be at least 0.");
-
-        if (max != null) {
-            Preconditions.checkArgument(min <= max, "Expected the max value to be at least the min value.");
-        }
+        Preconditions.checkArgument(min <= max, "Expected the max value to be at least the min value.");
 
         // Create the requirement automaton.
         Automaton automaton = CifConstructors.newAutomaton();

@@ -33,9 +33,10 @@ public class CifContext {
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
      */
-    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
-            UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
-            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
+    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.CLASS,
+            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL,
+            UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY, UMLPackage.Literals.OPAQUE_BEHAVIOR,
+            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -63,7 +64,8 @@ public class CifContext {
      * @return All found contextual elements.
      */
     public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
-        Set<EClass> exclude = Set.of(UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.CONSTRAINT);
+        Set<EClass> exclude = Set.of(UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.CLASS,
+                UMLPackage.Literals.CONSTRAINT);
         return queryContextElements(model).select(e -> !exclude.contains(e.eClass()));
     }
 
@@ -87,8 +89,9 @@ public class CifContext {
         return Collections.unmodifiableCollection(contextElements.values());
     }
 
-    public List<Class> getAllClasses() {
-        return getAllElements().stream().filter(Class.class::isInstance).map(Class.class::cast).toList();
+    public List<Class> getAllClasses(Predicate<Class> predicate) {
+        return getAllElements().stream().filter(e -> e instanceof Class c && predicate.test(c)).map(Class.class::cast)
+                .toList();
     }
 
     public boolean isEnumeration(String name) {
