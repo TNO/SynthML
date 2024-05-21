@@ -44,6 +44,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
@@ -330,17 +331,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
 
-            // All postconditions are constraints and therefore parsed as invariants.
-            // Make sure that they are all state invariants.
-            for (Constraint postcondition: postconditions) {
-                AInvariant invariant = CifParserHelper.parseInvariant(postcondition);
-
-                if (invariant.invKind != null || invariant.events != null) {
-                    error("Expected all activity postconditions to be state predicates.",
-                            UMLPackage.Literals.NAMESPACE__MEMBER);
-                }
-            }
-
             if (!activity.getNodes().isEmpty()) {
                 error("Expected abstract activity to not have any nodes.", UMLPackage.Literals.ACTIVITY__NODE);
             }
@@ -521,59 +511,98 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
-        if (constraint instanceof IntervalConstraint intervalConstraint) {
-            if (constraint.getSpecification() instanceof Interval interval) {
-                int min;
-                int max;
+        if (CifContext.isActivityPostconditionConstraint(constraint)) {
+            checkValidActivityPostconditionConstraint(constraint);
+        } else if (CifContext.isClassConstraint(constraint)) {
+            checkValidClassConstraint(constraint);
+        } else if (CifContext.isOptimalityConstraint(constraint)) {
+            checkValidOptimalityConstraint((IntervalConstraint)constraint);
+        } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
+            checkValidPrimitiveTypeConstraint(constraint);
+        } else {
+            error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+    }
 
-                if (interval.getMin() instanceof LiteralInteger minLiteral) {
-                    min = minLiteral.getValue();
-                } else {
-                    error("Invalid interval min value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                    return;
-                }
+    private void checkValidActivityPostconditionConstraint(Constraint constraint) {
+        try {
+            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
+            new CifTypeChecker(constraint).checkInvariant(invariant);
 
-                if (interval.getMax() instanceof LiteralInteger maxLiteral) {
-                    max = maxLiteral.getValue();
-                } else {
-                    error("Invalid interval max value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                    return;
-                }
+            // Activity postconditions are constraints and therefore parsed as invariants.
+            // Make sure that they are state invariants.
+            if (invariant.invKind != null || invariant.events != null) {
+                error("Expected all activity postconditions to be state predicates.",
+                        UMLPackage.Literals.NAMESPACE__MEMBER);
+            }
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
 
-                if (min > max) {
-                    error("Expected the interval min value to not exceed the max value.",
-                            UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                }
+    private void checkValidClassConstraint(Constraint constraint) {
+        try {
+            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
 
-                if (intervalConstraint.getConstrainedElements().isEmpty()) {
-                    error("Expected interval constraints to constrain at least one element.",
-                            UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                    return;
-                }
+    private void checkValidOptimalityConstraint(IntervalConstraint constraint) {
+        if (constraint.getSpecification() instanceof Interval interval) {
+            int min;
+            int max;
 
-                CifContext context = new CifContext(constraint);
-
-                for (Element element: intervalConstraint.getConstrainedElements()) {
-                    if (element instanceof OpaqueBehavior behavior) {
-                        if (!context.hasOpaqueBehavior(behavior)) {
-                            error("Expected the constrained opaque behavior to be in scope.",
-                                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                        }
-                    } else {
-                        error("Expected interval constraints to constrain only opaque behaviors.",
-                                UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
-                    }
-                }
+            if (interval.getMin() instanceof LiteralInteger minLiteral) {
+                min = minLiteral.getValue();
             } else {
-                error("Expected interval constraint specifications to be intervals.",
+                error("Invalid interval min value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
+            }
+
+            if (interval.getMax() instanceof LiteralInteger maxLiteral) {
+                max = maxLiteral.getValue();
+            } else {
+                error("Invalid interval max value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
+            }
+
+            if (min > max) {
+                error("Expected the interval min value to not exceed the max value.",
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
-        } else {
-            try {
-                new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
-            } catch (RuntimeException e) {
-                error("Invalid invariant: " + e.getLocalizedMessage(), null);
+
+            if (constraint.getConstrainedElements().isEmpty()) {
+                error("Expected interval constraints to constrain at least one element.",
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
             }
+
+            CifContext context = new CifContext(constraint);
+
+            for (Element element: constraint.getConstrainedElements()) {
+                if (element instanceof OpaqueBehavior behavior) {
+                    if (!context.hasOpaqueBehavior(behavior)) {
+                        error("Expected the constrained opaque behavior to be in scope.",
+                                UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    }
+                } else {
+                    error("Expected interval constraints to constrain only opaque behaviors.",
+                            UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                }
+            }
+        } else {
+            error("Expected interval constraint specifications to be intervals.",
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+        }
+    }
+
+    private void checkValidPrimitiveTypeConstraint(Constraint constraint) {
+        ValueSpecification valueSpec = constraint.getSpecification();
+
+        if (!(valueSpec instanceof LiteralInteger)) {
+            error("Expected a literal integer but got " + valueSpec.eClass().getName(),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 

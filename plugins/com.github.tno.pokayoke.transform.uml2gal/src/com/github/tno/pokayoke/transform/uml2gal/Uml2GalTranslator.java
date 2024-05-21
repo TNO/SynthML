@@ -120,7 +120,8 @@ public class Uml2GalTranslator {
 
         // Check transformation preconditions.
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
-        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+                "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 
         // Translate the given model by visiting and translating all its elements.
