@@ -118,6 +118,9 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
             return CifConstructors.newEnumType(enumMap.get(umlEnum), null);
         } else if (PokaYokeTypeUtil.isBooleanType(umlType)) {
             return CifConstructors.newBoolType();
+        } else if (PokaYokeTypeUtil.isIntegerType(umlType)) {
+            return CifConstructors.newIntType(PokaYokeTypeUtil.getMinValue(umlType), null,
+                    PokaYokeTypeUtil.getMaxValue(umlType));
         } else {
             throw new RuntimeException("Unsupported type: " + umlType);
         }
@@ -206,16 +209,22 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     private org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator translateOperator(BinaryOperator operator) {
         return switch (operator) {
             case AND -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.CONJUNCTION;
-            case OR -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.DISJUNCTION;
             case EQ -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.EQUAL;
-            default -> throw new RuntimeException("Unsupported binary operator: " + operator);
+            case GE -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.GREATER_EQUAL;
+            case GT -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.GREATER_THAN;
+            case LE -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.LESS_EQUAL;
+            case LT -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.LESS_THAN;
+            case MINUS -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.SUBTRACTION;
+            case NE -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.UNEQUAL;
+            case OR -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.DISJUNCTION;
+            case PLUS -> org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator.ADDITION;
         };
     }
 
     private org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator translateOperator(UnaryOperator operator) {
         return switch (operator) {
-            case NOT -> org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator.INVERSE;
             case MINUS -> org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator.NEGATE;
+            case NOT -> org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator.INVERSE;
         };
     }
 }
