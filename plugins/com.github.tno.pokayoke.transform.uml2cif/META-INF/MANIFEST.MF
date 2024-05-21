@@ -17,4 +17,8 @@ Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.5.0",
  com.github.tno.pokayoke.uml.profile.util;bundle-version="0.0.0",
  org.eclipse.escet.common.box;bundle-version="3.0.0",
  org.eclipse.escet.cif.common;bundle-version="3.0.0",
- org.eclipse.escet.cif.prettyprinter;bundle-version="3.0.0"
+ org.eclipse.escet.cif.prettyprinter;bundle-version="3.0.0",
+ com.github.tno.pokayoke.transform.tests.common,
+ junit-jupiter-api;bundle-version="5.9.3",
+ junit-jupiter-params;bundle-version="5.9.3",
+ org.apache.commons.io
