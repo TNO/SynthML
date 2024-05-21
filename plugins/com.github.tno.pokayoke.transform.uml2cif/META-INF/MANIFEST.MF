@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Functionality for Transforming UML to CIF
+Bundle-Name: Functionality for Transforming UML Synthesis Specifications to CIF
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml2cif
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: TNO
@@ -13,15 +13,5 @@ Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.5.0",
  org.eclipse.escet.cif.metamodel.java;bundle-version="3.0.0",
  com.google.guava;bundle-version="0.0.0",
  org.eclipse.escet.cif.io;bundle-version="3.0.0",
- org.eclipse.escet.cif.typechecker;bundle-version="3.0.0",
- org.eclipse.escet.setext.runtime;bundle-version="3.0.0",
- org.eclipse.escet.common.typechecker;bundle-version="3.0.0",
- org.eclipse.escet.cif.parser;bundle-version="3.0.0",
- org.apache.commons.lang3;bundle-version="3.12.0",
- org.eclipse.escet.common.box;bundle-version="3.0.0",
- org.eclipse.escet.cif.common;bundle-version="3.0.0",
- org.eclipse.escet.cif.cif2cif;bundle-version="3.0.0",
  org.eclipse.escet.common.app.framework;bundle-version="3.0.0",
- org.eclipse.escet.cif.prettyprinter;bundle-version="3.0.0",
- com.github.tno.pokayoke.cif.parser;bundle-version="0.0.0",
  com.github.tno.pokayoke.uml.profile.util;bundle-version="0.0.0"
