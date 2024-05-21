@@ -38,6 +38,7 @@ import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -119,7 +120,9 @@ public class Uml2GalTranslator {
 
         // Check transformation preconditions.
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
-        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+                "Only type constraints are supported.");
+        Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);
@@ -194,7 +197,7 @@ public class Uml2GalTranslator {
         // For every class property without default value, define a parameter that ranges over the type domain, as well
         // as an assignment to assign this parameter to the corresponding variable, making its value arbitrary.
         for (Property property: classElement.getOwnedAttributes()) {
-            if (property.getDefaultValue() == null) {
+            if (!PokaYokeUmlProfileUtil.hasDefaultValue(property)) {
                 String name = property.getName();
                 Parameter parameter = initTransitionBuilder.addParam(name,
                         specificationBuilder.getTypedef(property.getType().getName()));

@@ -73,7 +73,7 @@
           <result xmi:id="38" name="requester" outgoing="15">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="39" value="ClaimFlag"/>
+          <value xmi:type="uml:LiteralString" xmi:id="39" value="ClaimFlag___95zXcFGHEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="40" incoming="16 22" outgoing="17"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="41" incoming="17" outgoing="18">
@@ -81,7 +81,7 @@
           <outputValue xmi:id="42" name="isActive" outgoing="19">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'ClaimFlag'</body>
+          <body>active == 'ClaimFlag___95zXcFGHEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="43" incoming="18 19" outgoing="20 22"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="44" incoming="20" outgoing="24">
@@ -164,7 +164,7 @@ isSuccessful = guard</body>
           <result xmi:id="80" name="requester" outgoing="57">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="81" value="ClaimResource1"/>
+          <value xmi:type="uml:LiteralString" xmi:id="81" value="ClaimResource1___A4vNwFGIEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="82" incoming="58 64" outgoing="59"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="83" incoming="59" outgoing="60">
@@ -172,7 +172,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="84" name="isActive" outgoing="61">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'ClaimResource1'</body>
+          <body>active == 'ClaimResource1___A4vNwFGIEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="85" incoming="60 61" outgoing="62 64"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="86" incoming="62" outgoing="66">
@@ -255,7 +255,7 @@ isSuccessful = guard</body>
           <result xmi:id="122" name="requester" outgoing="99">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="123" value="ClaimResource2"/>
+          <value xmi:type="uml:LiteralString" xmi:id="123" value="ClaimResource2___C4s6YFGIEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="124" incoming="100 106" outgoing="101"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="125" incoming="101" outgoing="102">
@@ -263,7 +263,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="126" name="isActive" outgoing="103">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'ClaimResource2'</body>
+          <body>active == 'ClaimResource2___C4s6YFGIEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="127" incoming="102 103" outgoing="104 106"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="128" incoming="104" outgoing="108">
@@ -346,7 +346,7 @@ isSuccessful = guard</body>
           <result xmi:id="164" name="requester" outgoing="141">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="165" value="ReleaseFlag"/>
+          <value xmi:type="uml:LiteralString" xmi:id="165" value="ReleaseFlag___YdG3AFGIEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="166" incoming="142 148" outgoing="143"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="167" incoming="143" outgoing="144">
@@ -354,7 +354,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="168" name="isActive" outgoing="145">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'ReleaseFlag'</body>
+          <body>active == 'ReleaseFlag___YdG3AFGIEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="169" incoming="144 145" outgoing="146 148"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="170" incoming="146" outgoing="150">
@@ -437,7 +437,7 @@ isSuccessful = guard</body>
           <result xmi:id="206" name="requester" outgoing="183">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="207" value="Setup2"/>
+          <value xmi:type="uml:LiteralString" xmi:id="207" value="Setup2___bNHggFGIEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="208" incoming="184 190" outgoing="185"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="209" incoming="185" outgoing="186">
@@ -445,7 +445,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="210" name="isActive" outgoing="187">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Setup2'</body>
+          <body>active == 'Setup2___bNHggFGIEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="211" incoming="186 187" outgoing="188 190"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="212" incoming="188" outgoing="192">
@@ -528,7 +528,7 @@ isSuccessful = guard</body>
           <result xmi:id="248" name="requester" outgoing="225">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="249" value="Setup1"/>
+          <value xmi:type="uml:LiteralString" xmi:id="249" value="Setup1___dz0dAFGIEe6vfoQ8SCm9OQ"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="250" incoming="226 232" outgoing="227"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="251" incoming="227" outgoing="228">
@@ -536,7 +536,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="252" name="isActive" outgoing="229">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Setup1'</body>
+          <body>active == 'Setup1___dz0dAFGIEe6vfoQ8SCm9OQ'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="253" incoming="228 229" outgoing="230 232"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="254" incoming="230" outgoing="234">
@@ -619,7 +619,7 @@ isSuccessful = guard</body>
           <result xmi:id="290" name="requester" outgoing="267">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="291" value="Together"/>
+          <value xmi:type="uml:LiteralString" xmi:id="291" value="Together___l2kOsGRQEe6PU57shoVyvw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="292" incoming="268 274" outgoing="269"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="293" incoming="269" outgoing="270">
@@ -627,7 +627,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="294" name="isActive" outgoing="271">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Together'</body>
+          <body>active == 'Together___l2kOsGRQEe6PU57shoVyvw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="295" incoming="270 271" outgoing="272 274"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="296" incoming="272" outgoing="276">
@@ -710,7 +710,7 @@ isSuccessful = guard</body>
           <result xmi:id="332" name="requester" outgoing="309">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="333" value="Teardown1"/>
+          <value xmi:type="uml:LiteralString" xmi:id="333" value="Teardown1___nhHE8GRQEe6PU57shoVyvw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="334" incoming="310 316" outgoing="311"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="335" incoming="311" outgoing="312">
@@ -718,7 +718,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="336" name="isActive" outgoing="313">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Teardown1'</body>
+          <body>active == 'Teardown1___nhHE8GRQEe6PU57shoVyvw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="337" incoming="312 313" outgoing="314 316"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="338" incoming="314" outgoing="318">
@@ -801,7 +801,7 @@ isSuccessful = guard</body>
           <result xmi:id="374" name="requester" outgoing="351">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </result>
-          <value xmi:type="uml:LiteralString" xmi:id="375" value="Teardown2"/>
+          <value xmi:type="uml:LiteralString" xmi:id="375" value="Teardown2___p2b9kGRQEe6PU57shoVyvw"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="376" incoming="352 358" outgoing="353"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="377" incoming="353" outgoing="354">
@@ -809,7 +809,7 @@ isSuccessful = guard</body>
           <outputValue xmi:id="378" name="isActive" outgoing="355">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>active == 'Teardown2'</body>
+          <body>active == 'Teardown2___p2b9kGRQEe6PU57shoVyvw'</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="379" incoming="354 355" outgoing="356 358"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="380" incoming="356" outgoing="360">

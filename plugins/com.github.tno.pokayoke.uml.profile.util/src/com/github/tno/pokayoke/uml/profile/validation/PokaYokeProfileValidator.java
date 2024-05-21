@@ -4,11 +4,14 @@ package com.github.tno.pokayoke.uml.profile.validation;
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
@@ -29,6 +32,8 @@ import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.Interval;
+import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
@@ -39,6 +44,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.ValueSpecification;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
@@ -100,8 +106,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates if the names of all {@link CifContext#queryContextElements(Model) context elements} are unique within
-     * the {@code model}.
+     * Validates if the names of all {@link CifContext#queryUniqueNameElements(Model) unique name elements} are unique
+     * within the {@code model}.
      *
      * @param model The model to validate
      * @see CifContext
@@ -111,7 +117,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokaUmlProfileApplied(model)) {
             return;
         }
-        Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
+        Map<String, List<NamedElement>> contextElements = CifContext.queryUniqueNameElements(model)
                 .groupBy(NamedElement::getName);
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
@@ -152,6 +158,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
             error("Expected class to own its classifier behavior.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
+        }
+
+        if (clazz.getOwnedRules().stream().anyMatch(IntervalConstraint.class::isInstance)) {
+            error("Expected no interval constraints to be defined in classes.", UMLPackage.Literals.NAMESPACE__MEMBER);
         }
     }
 
@@ -304,16 +314,39 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         checkNamingConventions(activity, NamingConvention.MANDATORY);
 
-        if (!activity.getMembers().isEmpty()) {
-            error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
-        }
         if (activity.getClassifierBehavior() != null) {
             error("Expected activity to not have a classifier behavior.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
-        QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
-        if (initialNodes.size() != 1) {
-            error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
+
+        if (activity.isAbstract()) {
+            Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
+            Set<Constraint> postconditions = new LinkedHashSet<>(activity.getPostconditions());
+            Set<IntervalConstraint> intervalConstraints = activity.getOwnedRules().stream()
+                    .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            if (!members.equals(Sets.union(postconditions, intervalConstraints))) {
+                error("Expected abstract activity to contain only postcondition and interval constraint members.",
+                        UMLPackage.Literals.NAMESPACE__MEMBER);
+            }
+
+            if (!activity.getNodes().isEmpty()) {
+                error("Expected abstract activity to not have any nodes.", UMLPackage.Literals.ACTIVITY__NODE);
+            }
+
+            if (!activity.getEdges().isEmpty()) {
+                error("Expected abstract activity to not have any edges.", UMLPackage.Literals.ACTIVITY__EDGE);
+            }
+        } else {
+            if (!activity.getMembers().isEmpty()) {
+                error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
+            }
+
+            QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
+            if (initialNodes.size() != 1) {
+                error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
+            }
         }
     }
 
@@ -478,10 +511,98 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
+        if (CifContext.isActivityPostconditionConstraint(constraint)) {
+            checkValidActivityPostconditionConstraint(constraint);
+        } else if (CifContext.isClassConstraint(constraint)) {
+            checkValidClassConstraint(constraint);
+        } else if (CifContext.isOptimalityConstraint(constraint)) {
+            checkValidOptimalityConstraint((IntervalConstraint)constraint);
+        } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
+            checkValidPrimitiveTypeConstraint(constraint);
+        } else {
+            error("Unsupported constraint", UMLPackage.Literals.CONSTRAINT__CONTEXT);
+        }
+    }
+
+    private void checkValidActivityPostconditionConstraint(Constraint constraint) {
+        try {
+            AInvariant invariant = CifParserHelper.parseInvariant(constraint);
+            new CifTypeChecker(constraint).checkInvariant(invariant);
+
+            // Activity postconditions are constraints and therefore parsed as invariants.
+            // Make sure that they are state invariants.
+            if (invariant.invKind != null || invariant.events != null) {
+                error("Expected all activity postconditions to be state predicates.",
+                        UMLPackage.Literals.NAMESPACE__MEMBER);
+            }
+        } catch (RuntimeException e) {
+            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkValidClassConstraint(Constraint constraint) {
         try {
             new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkValidOptimalityConstraint(IntervalConstraint constraint) {
+        if (constraint.getSpecification() instanceof Interval interval) {
+            int min;
+            int max;
+
+            if (interval.getMin() instanceof LiteralInteger minLiteral) {
+                min = minLiteral.getValue();
+            } else {
+                error("Invalid interval min value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
+            }
+
+            if (interval.getMax() instanceof LiteralInteger maxLiteral) {
+                max = maxLiteral.getValue();
+            } else {
+                error("Invalid interval max value.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
+            }
+
+            if (min > max) {
+                error("Expected the interval min value to not exceed the max value.",
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            }
+
+            if (constraint.getConstrainedElements().isEmpty()) {
+                error("Expected interval constraints to constrain at least one element.",
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                return;
+            }
+
+            CifContext context = new CifContext(constraint);
+
+            for (Element element: constraint.getConstrainedElements()) {
+                if (element instanceof OpaqueBehavior behavior) {
+                    if (!context.hasOpaqueBehavior(behavior)) {
+                        error("Expected the constrained opaque behavior to be in scope.",
+                                UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                    }
+                } else {
+                    error("Expected interval constraints to constrain only opaque behaviors.",
+                            UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                }
+            }
+        } else {
+            error("Expected interval constraint specifications to be intervals.",
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+        }
+    }
+
+    private void checkValidPrimitiveTypeConstraint(Constraint constraint) {
+        ValueSpecification valueSpec = constraint.getSpecification();
+
+        if (!(valueSpec instanceof LiteralInteger)) {
+            error("Expected a literal integer but got " + valueSpec.eClass().getName(),
+                    UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 

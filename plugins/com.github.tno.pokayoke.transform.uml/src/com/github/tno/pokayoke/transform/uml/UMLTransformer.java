@@ -43,6 +43,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
@@ -96,7 +97,9 @@ public class UMLTransformer {
         ValidationHelper.validateModel(model);
 
         Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
-        Preconditions.checkArgument(!cifContext.hasConstraints(), "Constraints are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
+                "Only type constraints are supported.");
+        Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
 
         Preconditions.checkArgument(model.getPackagedElement(LOCK_CLASS_NAME) == null,
                 "Expected no packaged element named 'Lock' to already exist.");
@@ -331,7 +334,7 @@ public class UMLTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
-                action.getQualifiedName());
+                action.getQualifiedName() + "__" + IDHelper.getID(action));
         String actionName = action.getName();
         newActivity.setName(actionName);
 
