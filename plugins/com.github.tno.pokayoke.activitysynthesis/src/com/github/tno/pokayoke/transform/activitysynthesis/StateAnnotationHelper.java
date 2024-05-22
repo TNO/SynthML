@@ -121,7 +121,7 @@ public class StateAnnotationHelper {
      *
      * @param map1 A map from locations to annotations.
      * @param map2 A map from locations to annotations.
-     * @return A map from locations of map 1 to annotations of map2.
+     * @return A map from locations of {@code map1} to annotations of {@code map2}.
      */
     public static Map<Location, List<Annotation>> getCompositeStateAnnotations(Map<Location, List<Annotation>> map1,
             Map<Location, List<Annotation>> map2)
