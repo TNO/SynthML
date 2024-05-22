@@ -31,6 +31,4 @@ Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.activitysynthesis
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.activitysynthesis
-Import-Package: org.junit.jupiter.api;version="5.9.3",
- org.junit.jupiter.params;version="5.9.3",
- org.junit.jupiter.params.provider;version="5.9.3"
+
