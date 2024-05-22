@@ -2,11 +2,10 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -66,8 +65,7 @@ public class PNML2UMLActivityHelper {
     public Map<Transition, OpaqueAction> transformTransitions(Page page, Activity activity) {
         Map<Transition, OpaqueAction> transitionToAction = new LinkedHashMap<>();
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
-                .map(Transition.class::cast).collect(Collectors.toList());
-        Collections.sort(transitions, (t1, t2) -> t1.getId().compareTo(t2.getId()));
+                .map(Transition.class::cast).sorted(Comparator.comparing(Transition::getId)).toList();
 
         transitions.stream().map(Transition.class::cast).forEach(
                 transition -> transitionToAction.put(transition, transformTransition(transition.getId(), activity)));
@@ -94,8 +92,7 @@ public class PNML2UMLActivityHelper {
     public void transformMarkedAndFinalPlaces(Page page, Activity activity) {
         // Obtain the places.
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
-                .collect(Collectors.toList());
-        Collections.sort(places, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+                .sorted(Comparator.comparing(Place::getId)).toList();
 
         places.stream().filter(place -> isMarkedPlace(place)).forEach(place -> transformMarkedPlace(place, activity));
         places.stream().filter(place -> isFinalPlace(place)).forEach(place -> transformFinalPlace(place, activity));
@@ -209,8 +206,7 @@ public class PNML2UMLActivityHelper {
         // and final nodes).
         List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
                 .filter(place -> !place.getInArcs().isEmpty() && !place.getOutArcs().isEmpty())
-                .collect(Collectors.toList());
-        Collections.sort(places, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+                .sorted(Comparator.comparing(Place::getId)).toList();
 
         for (Place place: places) {
             ActivityNode source = transformMerge(place, activity);
@@ -222,8 +218,7 @@ public class PNML2UMLActivityHelper {
     private ActivityNode transformMerge(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
         List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
-                .collect(Collectors.toList());
-        Collections.sort(sourceActions, (a1, a2) -> a1.getName().compareTo(a2.getName()));
+                .sorted(Comparator.comparing(OpaqueAction::getName)).toList();
 
         if (sourceActions.size() == 1) {
             return sourceActions.get(0);
@@ -242,8 +237,8 @@ public class PNML2UMLActivityHelper {
     private ActivityNode transformDecision(Place place, Activity activity) {
         // Obtain the actions translated from the target of the outgoing arcs.
         List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMap.get(o.getTarget().getId())).collect(Collectors.toList());
-        Collections.sort(targetActions, (a1, a2) -> a1.getName().compareTo(a2.getName()));
+                .map(o -> nameActionMap.get(o.getTarget().getId())).sorted(Comparator.comparing(OpaqueAction::getName))
+                .toList();
 
         if (targetActions.size() == 1) {
             return targetActions.get(0);
@@ -290,8 +285,7 @@ public class PNML2UMLActivityHelper {
     public void transformTransitionBasedPatterns(Page page, Activity activity) {
         // Obtain the transitions.
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
-                .map(Transition.class::cast).collect(Collectors.toList());
-        Collections.sort(transitions, (t1, t2) -> t1.getId().compareTo(t2.getId()));
+                .map(Transition.class::cast).sorted(Comparator.comparing(Transition::getId)).toList();
 
         transitions.stream().filter(PNML2UMLActivityHelper::hasMultiOutArcs)
                 .forEach(transition -> transformFork(transition, activity));
