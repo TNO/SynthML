@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.activitysynthesis;
+package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import static org.eclipse.escet.common.java.Lists.list;
 

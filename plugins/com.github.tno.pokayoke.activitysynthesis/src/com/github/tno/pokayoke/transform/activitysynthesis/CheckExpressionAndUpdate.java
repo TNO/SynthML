@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.activitysynthesis;
+package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import org.eclipse.escet.cif.metamodel.cif.automata.Update;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;

@@ -35,12 +35,12 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.activitysynthesis.CIFDataSynthesisHelper;
-import com.github.tno.pokayoke.activitysynthesis.ChoiceActionGuardComputation;
-import com.github.tno.pokayoke.activitysynthesis.ConvertExpressionUpdateToText;
-import com.github.tno.pokayoke.activitysynthesis.EventGuardUpdateHelper;
-import com.github.tno.pokayoke.activitysynthesis.OpaqueActionHelper;
-import com.github.tno.pokayoke.activitysynthesis.StateAnnotationHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
+import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
+import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.OpaqueActionHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;

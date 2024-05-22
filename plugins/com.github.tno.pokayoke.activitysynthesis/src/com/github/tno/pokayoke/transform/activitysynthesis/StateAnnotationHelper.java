@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.activitysynthesis;
+package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
