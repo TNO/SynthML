@@ -67,7 +67,7 @@ public class PNML2UMLActivityHelper {
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).sorted(Comparator.comparing(Transition::getId)).toList();
 
-        transitions.stream().map(Transition.class::cast).forEach(
+        transitions.stream().forEach(
                 transition -> transitionToAction.put(transition, transformTransition(transition.getId(), activity)));
 
         return transitionToAction;
