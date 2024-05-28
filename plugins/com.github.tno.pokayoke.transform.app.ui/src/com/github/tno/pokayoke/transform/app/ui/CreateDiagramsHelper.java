@@ -1,6 +1,8 @@
 
 package com.github.tno.pokayoke.transform.app.ui;
 
+import static org.eclipse.lsat.common.queries.QueryableIterable.from;
+
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -15,7 +17,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
-import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.sirius.business.api.dialect.DialectManager;
 import org.eclipse.sirius.business.api.dialect.command.CreateRepresentationCommand;
 import org.eclipse.sirius.business.api.modelingproject.ModelingProject;
@@ -50,9 +51,8 @@ public class CreateDiagramsHelper {
                 return Status.OK_STATUS;
             }
 
-            LinkedList<Activity> activities = QueryableIterable.from(model).collect(Model::getOwnedElements)
-                    .objectsOfKind(Class.class).collect(Class::getOwnedBehaviors).objectsOfKind(Activity.class)
-                    .asList();
+            LinkedList<Activity> activities = from(model).collect(Model::getOwnedElements).objectsOfKind(Class.class)
+                    .collect(Class::getOwnedBehaviors).objectsOfKind(Activity.class).asList();
 
             SubMonitor subMonitor = SubMonitor.convert(monitor, 6 + activities.size());
 
@@ -91,18 +91,19 @@ public class CreateDiagramsHelper {
     {
         // Otherwise Sirius is not able to find the session from the model
         eObject.eAdapters().add(new SessionTransientAttachment(session));
-        java.util.Optional<RepresentationDescription> representationDescription = DialectManager.INSTANCE
-                .getAvailableRepresentationDescriptions(session.getSelectedViewpoints(false), eObject).stream()
-                .filter(rd -> Objects.equals(diagramName, rd.getName())).findFirst();
 
-        if (representationDescription.isEmpty()) {
+        RepresentationDescription representationDescription = from(DialectManager.INSTANCE
+                .getAvailableRepresentationDescriptions(session.getSelectedViewpoints(false), eObject))
+                        .any(rd -> Objects.equals(diagramName, rd.getName()));
+
+        if (representationDescription == null) {
             throw new RuntimeException(
                     String.format("Diagram %s not found for type %s", diagramName, eObject.eClass().getName()));
         }
 
         IInterpreter interpreter = session.getInterpreter();
-        String diagramTitle = interpreter.evaluateString(eObject, representationDescription.get().getTitleExpression());
-        CreateRepresentationCommand command = new CreateRepresentationCommand(session, representationDescription.get(),
+        String diagramTitle = interpreter.evaluateString(eObject, representationDescription.getTitleExpression());
+        CreateRepresentationCommand command = new CreateRepresentationCommand(session, representationDescription,
                 eObject, diagramTitle, monitor);
 
         return command;
