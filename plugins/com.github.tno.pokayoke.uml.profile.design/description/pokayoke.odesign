@@ -207,12 +207,12 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextDescription" name="PR_AC_Guard" labelExpression="Guard:" helpExpression="The Guard of the Action" valueExpression="service:self.getGuard()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_AC_Guard" labelExpression="Guard:" helpExpression="The Guard of the Action" lineCount="3" valueExpression="service:self.getGuard()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_AC_Effects" labelExpression="Effects:" helpExpression="The Effects of the Action" lineCount="10" valueExpression="service:self.getEffects()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_AC_Effects" labelExpression="Effects:" helpExpression="The Effects of the Action" lineCount="9" valueExpression="service:self.getEffects()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
           </initialOperation>
@@ -224,7 +224,7 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" valueExpression="service:self.getGuard()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" lineCount="3" valueExpression="service:self.getGuard()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
           </initialOperation>
