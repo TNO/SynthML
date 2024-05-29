@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.app.ui;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -10,6 +11,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -45,6 +47,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -74,14 +77,24 @@ public class CreateScopedModelHandler {
         if (saveAsDialog.open() != Window.OK) {
             return;
         }
-        IFile saveFile = ResourcesPlugin.getWorkspace().getRoot().getFile(saveAsDialog.getResult());
+        IPath savePath = saveAsDialog.getResult();
+        if (savePath.getFileExtension() == null) {
+            savePath = savePath.addFileExtension("uml");
+        }
+        IFile saveFile = ResourcesPlugin.getWorkspace().getRoot().getFile(savePath);
 
         if (saveAsDialog.includeCalledActivities) {
             // Finding all called activities and sorting them by name
             activities = activities.union(
                     activities.closure(CreateScopedModelHandler::getCalledActivities).sortedBy(Activity::getName));
         }
-        Model scope = createScope(firstActivity.getName(), activities.asOrderedSet());
+        Model scope = createScope(activities.asOrderedSet());
+        Package commonPackage = getCommonPackage(activities);
+        if (commonPackage != null) {
+            scope.setName(commonPackage.getName());
+        } else {
+            scope.setName(saveFile.getFullPath().removeFileExtension().lastSegment());
+        }
 
         Job job = Job.create("Create scoped model", (IJobFunction)m -> storeScope(scope, saveFile, m));
         job.setUser(true);
@@ -110,9 +123,8 @@ public class CreateScopedModelHandler {
                 .xcollectOne(CallBehaviorAction::getBehavior).objectsOfKind(Activity.class);
     }
 
-    private static Model createScope(String name, LinkedHashSet<Activity> activities) {
+    private static Model createScope(LinkedHashSet<Activity> activities) {
         Model model = UMLFactory.eINSTANCE.createModel();
-        model.setName(name);
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(model);
 
         Class context = UMLFactory.eINSTANCE.createClass();
@@ -140,6 +152,18 @@ public class CreateScopedModelHandler {
         context.setClassifierBehavior(IterableUtil.first(activitiesCopy));
 
         return model;
+    }
+
+    private static Package getCommonPackage(Iterable<Activity> activities) {
+        Iterator<Activity> iterator = activities.iterator();
+        if (!iterator.hasNext()) {
+            return null;
+        }
+        LinkedHashSet<Package> packages = new LinkedHashSet<>(iterator.next().allOwningPackages());
+        while (iterator.hasNext()) {
+            packages.retainAll(iterator.next().allOwningPackages());
+        }
+        return IterableUtil.first(packages);
     }
 
     private static class MySaveAsDialog extends SaveAsDialog {
