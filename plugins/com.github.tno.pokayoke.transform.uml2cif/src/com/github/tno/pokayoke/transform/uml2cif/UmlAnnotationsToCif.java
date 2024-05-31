@@ -29,7 +29,6 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
-import org.eclipse.escet.common.position.metamodel.position.PositionObject;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -128,12 +127,12 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     }
 
     @Override
-    protected PositionObject visit(Object addressable, TextPosition assignmentPos, Object value, CifContext ctx) {
+    protected Object visit(Object addressable, TextPosition assignmentPos, Object value, CifContext ctx) {
         return CifConstructors.newAssignment((Expression)addressable, null, (Expression)value);
     }
 
     @Override
-    protected PositionObject visit(BinaryOperator operator, TextPosition operatorPos, Object left, Object right,
+    protected Object visit(BinaryOperator operator, TextPosition operatorPos, Object left, Object right,
             CifContext ctx)
     {
         Expression leftExpr = (Expression)left;
@@ -148,7 +147,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     }
 
     @Override
-    protected PositionObject visit(EnumerationLiteral literal, TextPosition literalPos, CifContext ctx) {
+    protected Object visit(EnumerationLiteral literal, TextPosition literalPos, CifContext ctx) {
         return CifConstructors.newEnumLiteralExpression(enumLiteralMap.get(literal), null,
                 translateType(literal.getEnumeration()));
     }
@@ -178,8 +177,8 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     }
 
     @Override
-    protected PositionObject visit(Optional<String> invKind, List<String> events, TextPosition operatorPos,
-            Object predicate, CifContext ctx)
+    protected Object visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Object predicate,
+            CifContext ctx)
     {
         Invariant cifInvariant = CifConstructors.newInvariant();
         cifInvariant.setInvKind(invKind.map(this::translateInvKind).orElse(InvKind.STATE));
