@@ -1,5 +1,14 @@
 enum RobotLocation = Location1, Location2;
 enum UnknownBool = True, False, Unknown;
+controllable prepare_robot;
+controllable robot_move_to_location1;
+controllable robot_move_to_location2;
+controllable robot_adjust_product;
+controllable robot_release_product_at_location2;
+controllable prepare_location2;
+controllable measure_product_position;
+uncontrollable measure_product_position__result_1;
+uncontrollable measure_product_position__result_2;
 plant automaton Context:
   disc bool robotPrepared = false;
   disc bool location2Prepared = false;
@@ -7,15 +16,6 @@ plant automaton Context:
   disc bool robotHasProduct = true;
   disc bool location2HasProduct = false;
   disc UnknownBool productCorrectlyPlaced = Unknown;
-  controllable prepare_robot;
-  controllable robot_move_to_location1;
-  controllable robot_move_to_location2;
-  controllable robot_adjust_product;
-  controllable robot_release_product_at_location2;
-  controllable prepare_location2;
-  controllable measure_product_position;
-  uncontrollable measure_product_position__result_1;
-  uncontrollable measure_product_position__result_2;
   disc int[0..1] __activeAction;
   requirement invariant Req1: robot_move_to_location2 needs robotLocation = Location1 and location2Prepared;
   requirement invariant Req2: robot_move_to_location1 needs robotLocation = Location2;
@@ -46,26 +46,26 @@ requirement automaton happen_at_most_once__prepare_robot:
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.prepare_robot when occurrences < 1 do occurrences := occurrences + 1;
+    edge prepare_robot when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happen_at_most_once__robot_move_to_location2:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.robot_move_to_location2 when occurrences < 1 do occurrences := occurrences + 1;
+    edge robot_move_to_location2 when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happen_at_most_once__robot_release_product_at_location2:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.robot_release_product_at_location2 when occurrences < 1 do occurrences := occurrences + 1;
+    edge robot_release_product_at_location2 when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happen_at_most_once__prepare_location2:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.prepare_location2 when occurrences < 1 do occurrences := occurrences + 1;
+    edge prepare_location2 when occurrences < 1 do occurrences := occurrences + 1;
 end

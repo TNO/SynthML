@@ -1,18 +1,18 @@
 enum UnknownDrink = Coffee, Tea, Unknown;
+controllable Turn_Computer_On;
+controllable Starting_Computer;
+controllable Drink_Coffee;
+controllable Drink_Tea;
+controllable Start_Working;
+controllable Flip_A_Coin;
+uncontrollable Flip_A_Coin__result_1;
+uncontrollable Flip_A_Coin__result_2;
 plant automaton Context:
   disc bool Is_Computer_Ready = false;
   disc bool Is_Computer_On = false;
   disc UnknownDrink Coffee_or_Tea = Unknown;
   disc bool Has_Drank_Coffee_or_Tea = false;
   disc bool Is_Ready_to_Work = false;
-  controllable Turn_Computer_On;
-  controllable Starting_Computer;
-  controllable Drink_Coffee;
-  controllable Drink_Tea;
-  controllable Start_Working;
-  controllable Flip_A_Coin;
-  uncontrollable Flip_A_Coin__result_1;
-  uncontrollable Flip_A_Coin__result_2;
   disc int[0..1] __activeAction;
   location:
     initial;
@@ -39,33 +39,33 @@ requirement automaton happens_at_most_once__Turn_Computer_On:
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.Turn_Computer_On when occurrences < 1 do occurrences := occurrences + 1;
+    edge Turn_Computer_On when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happens_at_most_once__Drink_Coffee:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.Drink_Coffee when occurrences < 1 do occurrences := occurrences + 1;
+    edge Drink_Coffee when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happens_at_most_once__Drink_Tea:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.Drink_Tea when occurrences < 1 do occurrences := occurrences + 1;
+    edge Drink_Tea when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happens_at_most_once__Start_Working:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.Start_Working when occurrences < 1 do occurrences := occurrences + 1;
+    edge Start_Working when occurrences < 1 do occurrences := occurrences + 1;
 end
 requirement automaton happens_at_most_once__Starting_Computer:
   disc int[0..1] occurrences;
   location:
     initial;
     marked occurrences >= 0;
-    edge Context.Starting_Computer when occurrences < 1 do occurrences := occurrences + 1;
+    edge Starting_Computer when occurrences < 1 do occurrences := occurrences + 1;
 end

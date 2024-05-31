@@ -105,7 +105,7 @@ public class UmlToCifTranslator {
         Class umlClass = umlClasses.get(0);
 
         // Translate the UML class.
-        Automaton cifPlant = translateClass(umlClass);
+        Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
         // Translate all postconditions of the classifier behavior of the UML class.
@@ -135,9 +135,10 @@ public class UmlToCifTranslator {
      * Translates a UML class to a CIF plant automaton.
      *
      * @param umlClass The UML class to translate.
+     * @param cifSpec The CIF specification of which the translated CIF plant will be part.
      * @return The translated CIF plant automaton.
      */
-    private Automaton translateClass(Class umlClass) {
+    private Automaton translateClass(Class umlClass, Specification cifSpec) {
         // Create a CIF plant for the UML class.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
@@ -182,7 +183,7 @@ public class UmlToCifTranslator {
                 Event cifEvent = CifConstructors.newEvent();
                 cifEvent.setControllable(true);
                 cifEvent.setName(umlOpaqueBehavior.getName());
-                cifPlant.getDeclarations().add(cifEvent);
+                cifSpec.getDeclarations().add(cifEvent);
                 eventMap.put(umlOpaqueBehavior, cifEvent);
 
                 // Create a CIF edge for this start event.
@@ -213,7 +214,7 @@ public class UmlToCifTranslator {
                         Event cifEndEvent = CifConstructors.newEvent();
                         cifEndEvent.setControllable(false);
                         cifEndEvent.setName(umlOpaqueBehavior.getName() + "__result_" + (i + 1));
-                        cifPlant.getDeclarations().add(cifEndEvent);
+                        cifSpec.getDeclarations().add(cifEndEvent);
                         cifEndEvents.add(cifEndEvent);
 
                         // Make the CIF edge for the uncontrollable event.
