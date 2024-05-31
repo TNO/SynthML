@@ -344,7 +344,7 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates an UML interval constraint to a list of CIF requirement automata. This translation could result in
+     * Translates a UML interval constraint to a list of CIF requirement automata. This translation could result in
      * multiple automata in case the interval constraint constraints more than one UML element.
      *
      * @param umlConstraint The UML interval constraint to translate.

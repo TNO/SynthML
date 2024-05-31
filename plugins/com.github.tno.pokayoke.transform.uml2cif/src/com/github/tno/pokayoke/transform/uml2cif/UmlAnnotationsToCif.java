@@ -108,7 +108,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
     }
 
     /**
-     * Translates an UML type to a CIF type.
+     * Translates a UML type to a CIF type.
      *
      * @param umlType The UML type to translate.
      * @return The translated CIF type.
