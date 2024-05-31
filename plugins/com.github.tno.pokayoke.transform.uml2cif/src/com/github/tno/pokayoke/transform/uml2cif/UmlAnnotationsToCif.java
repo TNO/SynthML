@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.common.CifTypeUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
@@ -137,8 +138,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
     protected PositionObject visit(BinaryOperator operator, TextPosition operatorPos, PositionObject left,
             PositionObject right, CifContext ctx)
     {
-        return CifConstructors.newBinaryExpression((Expression)left, translateOperator(operator), null,
-                (Expression)right, CifConstructors.newBoolType());
+        Expression leftExpr = (Expression)left;
+        Expression rightExpr = (Expression)right;
+
+        return CifConstructors.newBinaryExpression(leftExpr, translateOperator(operator), null, rightExpr,
+                CifTypeUtils.mergeTypes(leftExpr.getType(), rightExpr.getType(), null));
     }
 
     @Override
