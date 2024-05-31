@@ -47,6 +47,8 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
@@ -310,7 +312,23 @@ public class UmlToCifTranslator {
 
         // Translate all UML class constraints as CIF invariants.
         for (Constraint umlConstraint: umlClass.getOwnedRules()) {
+            String constraintName = umlConstraint.getName();
+
             List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
+            Verify.verify(!cifInvariants.isEmpty(),
+                    "Expected at least one translated invariant but got " + cifInvariants.size());
+
+            // Determine the names of the translated CIF invariants, if any name is set.
+            if (!Strings.isNullOrEmpty(constraintName)) {
+                if (cifInvariants.size() == 1) {
+                    cifInvariants.get(0).setName(constraintName);
+                } else {
+                    for (int i = 0; i < cifInvariants.size(); i++) {
+                        cifInvariants.get(i).setName(constraintName + "__" + i);
+                    }
+                }
+            }
+
             cifPlant.getInvariants().addAll(cifInvariants);
         }
 

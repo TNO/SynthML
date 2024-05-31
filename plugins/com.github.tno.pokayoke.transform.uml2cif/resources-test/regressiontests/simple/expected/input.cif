@@ -17,9 +17,9 @@ plant automaton Context:
   uncontrollable measure_product_position_result_0;
   uncontrollable measure_product_position_result_1;
   disc int[0..1] __activeAction;
-  requirement invariant {robot_move_to_location2} needs robotLocation = Location1 and location2Prepared;
-  requirement invariant {robot_move_to_location1} needs robotLocation = Location2;
-  requirement invariant {robot_adjust_product} needs robotLocation = Location2;
+  requirement invariant Req1: robot_move_to_location2 needs robotLocation = Location1 and location2Prepared;
+  requirement invariant Req2: robot_move_to_location1 needs robotLocation = Location2;
+  requirement invariant Req3: robot_adjust_product needs robotLocation = Location2;
   location:
     initial;
     marked;
