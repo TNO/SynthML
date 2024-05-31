@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.uml2cif;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,6 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.SetExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
@@ -103,8 +103,9 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
      * @param invariant The parsed invariant to translate.
      * @return The translated CIF invariant.
      */
-    public Invariant translate(AInvariant invariant) {
-        return (Invariant)visit(invariant, context);
+    @SuppressWarnings("unchecked")
+    public List<Invariant> translate(AInvariant invariant) {
+        return (List<Invariant>)visit(invariant, context);
     }
 
     /**
@@ -180,26 +181,35 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     protected Object visit(Optional<String> invKind, List<String> events, TextPosition operatorPos, Object predicate,
             CifContext ctx)
     {
-        Invariant cifInvariant = CifConstructors.newInvariant();
-        cifInvariant.setInvKind(invKind.map(this::translateInvKind).orElse(InvKind.STATE));
-        cifInvariant.setPredicate((Expression)predicate);
-        cifInvariant.setSupKind(SupKind.REQUIREMENT);
+        Expression cifPredicate = (Expression)predicate;
 
-        if (!events.isEmpty()) {
-            SetExpression cifSetExpr = CifConstructors.newSetExpression();
-            cifSetExpr.setType(CifConstructors.newBoolType());
-            cifInvariant.setEvent(cifSetExpr);
+        List<Invariant> cifInvariants = new ArrayList<>(Math.max(events.size(), 1));
+
+        if (invKind.isEmpty()) {
+            Invariant cifInvariant = CifConstructors.newInvariant();
+            cifInvariant.setInvKind(InvKind.STATE);
+            cifInvariant.setPredicate(cifPredicate);
+            cifInvariant.setSupKind(SupKind.REQUIREMENT);
+            cifInvariants.add(cifInvariant);
+        } else {
+            InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
+                Invariant cifInvariant = CifConstructors.newInvariant();
+                cifInvariant.setInvKind(cifInvKind);
+                cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
+                cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                cifInvariants.add(cifInvariant);
+
                 Event cifEvent = eventMap.entrySet().stream().filter(e -> e.getKey().getName().equals(event))
                         .map(Entry::getValue).findFirst().get();
                 EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
                         CifConstructors.newBoolType());
-                cifSetExpr.getElements().add(cifEventExpr);
+                cifInvariant.setEvent(cifEventExpr);
             }
         }
 
-        return cifInvariant;
+        return cifInvariants;
     }
 
     private org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator translateOperator(BinaryOperator operator) {

@@ -310,8 +310,8 @@ public class UmlToCifTranslator {
 
         // Translate all UML class constraints as CIF invariants.
         for (Constraint umlConstraint: umlClass.getOwnedRules()) {
-            Invariant cifInvariant = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
-            cifPlant.getInvariants().add(cifInvariant);
+            List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
+            cifPlant.getInvariants().addAll(cifInvariants);
         }
 
         return cifPlant;
