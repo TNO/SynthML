@@ -446,6 +446,7 @@ public class UmlToCifTranslator {
         edgeGuard.setLeft(EcoreUtil.copy(varExpr));
         edgeGuard.setOperator(BinaryOperator.LESS_THAN);
         edgeGuard.setRight(CifValueUtils.makeInt(max));
+        edgeGuard.setType(CifConstructors.newBoolType());
         edge.getGuards().add(edgeGuard);
 
         // Define the edge update.
@@ -454,7 +455,9 @@ public class UmlToCifTranslator {
         BinaryExpression updateExpr = CifConstructors.newBinaryExpression();
         updateExpr.setLeft(EcoreUtil.copy(varExpr));
         updateExpr.setOperator(BinaryOperator.ADDITION);
-        updateExpr.setRight(CifValueUtils.makeInt(1));
+        Expression updateValue = CifValueUtils.makeInt(1);
+        updateExpr.setRight(updateValue);
+        updateExpr.setType(EcoreUtil.copy(updateValue.getType()));
         update.setValue(updateExpr);
         edge.getUpdates().add(update);
 
