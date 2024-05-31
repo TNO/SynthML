@@ -83,6 +83,7 @@ public class UmlToCifTranslator {
      */
     public Specification translate() {
         Specification cifSpec = CifConstructors.newSpecification();
+        cifSpec.setName("specification");
 
         // Translate all UML enumerations.
         for (Enumeration umlEnum: context.getAllEnumerations()) {
