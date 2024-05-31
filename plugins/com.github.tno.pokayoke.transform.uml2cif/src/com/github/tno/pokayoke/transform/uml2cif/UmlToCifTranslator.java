@@ -53,8 +53,8 @@ public class UmlToCifTranslator {
     /** The context that allows querying the input UML model. */
     private final CifContext context;
 
-    /** The translator for CIF annotations (guards, updates, invariants, etc.). */
-    private final CifAnnotationTranslator translator;
+    /** The translator for UML annotations (guards, updates, invariants, etc.). */
+    private final UmlAnnotationsToCif translator;
 
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
     private final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
@@ -70,7 +70,7 @@ public class UmlToCifTranslator {
 
     public UmlToCifTranslator(Model model) {
         this.context = new CifContext(model);
-        this.translator = new CifAnnotationTranslator(context, enumMap, enumLiteralMap, variableMap, eventMap);
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
     }
 
     /**

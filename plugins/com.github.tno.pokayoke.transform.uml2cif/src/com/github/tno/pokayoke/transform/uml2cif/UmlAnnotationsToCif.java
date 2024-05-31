@@ -39,8 +39,8 @@ import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 
-/** Translates CIF annotations, e.g., guard and effects, in UML synthesis specifications to CIF. */
-public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
+/** Translates UML annotations like guards and effects in UML synthesis specifications to CIF. */
+public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
     /** The context that allows querying the input model. */
     private final CifContext context;
 
@@ -56,7 +56,7 @@ public class CifAnnotationTranslator extends ACifObjectWalker<PositionObject> {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final Map<OpaqueBehavior, Event> eventMap;
 
-    public CifAnnotationTranslator(CifContext context, Map<Enumeration, EnumDecl> enumMap,
+    public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
             Map<OpaqueBehavior, Event> eventMap)
     {
