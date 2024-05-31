@@ -212,7 +212,7 @@ public class UmlToCifTranslator {
                         // Declare the CIF uncontrollable event.
                         Event cifEndEvent = CifConstructors.newEvent();
                         cifEndEvent.setControllable(false);
-                        cifEndEvent.setName(umlOpaqueBehavior.getName() + "_result_" + (i + 1));
+                        cifEndEvent.setName(umlOpaqueBehavior.getName() + "__result_" + (i + 1));
                         cifPlant.getDeclarations().add(cifEndEvent);
                         cifEndEvents.add(cifEndEvent);
 

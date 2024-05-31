@@ -14,8 +14,8 @@ plant automaton Context:
   controllable robot_release_product_at_location2;
   controllable prepare_location2;
   controllable measure_product_position;
-  uncontrollable measure_product_position_result_1;
-  uncontrollable measure_product_position_result_2;
+  uncontrollable measure_product_position__result_1;
+  uncontrollable measure_product_position__result_2;
   disc int[0..1] __activeAction;
   requirement invariant Req1: robot_move_to_location2 needs robotLocation = Location1 and location2Prepared;
   requirement invariant Req2: robot_move_to_location1 needs robotLocation = Location2;
@@ -30,8 +30,8 @@ plant automaton Context:
     edge robot_release_product_at_location2 when robotPrepared and robotLocation = Location2, __activeAction = 0 do robotHasProduct := false, location2HasProduct := true;
     edge prepare_location2 when not location2Prepared, __activeAction = 0 do location2Prepared := true;
     edge measure_product_position when location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown, __activeAction = 0 do __activeAction := 1;
-    edge measure_product_position_result_1 when __activeAction = 1 do productCorrectlyPlaced := True, __activeAction := 0;
-    edge measure_product_position_result_2 when __activeAction = 1 do productCorrectlyPlaced := False, __activeAction := 0;
+    edge measure_product_position__result_1 when __activeAction = 1 do productCorrectlyPlaced := True, __activeAction := 0;
+    edge measure_product_position__result_2 when __activeAction = 1 do productCorrectlyPlaced := False, __activeAction := 0;
 end
 requirement automaton postcondition:
   controllable c_satisfied;
