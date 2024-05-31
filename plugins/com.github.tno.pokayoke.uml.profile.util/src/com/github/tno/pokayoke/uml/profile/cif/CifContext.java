@@ -64,9 +64,8 @@ public class CifContext {
      * @return All found contextual elements.
      */
     public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
-        Set<EClass> exclude = Set.of(UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.CLASS,
-                UMLPackage.Literals.CONSTRAINT);
-        return queryContextElements(model).select(e -> !exclude.contains(e.eClass()));
+        return queryContextElements(model).select(element -> !(element instanceof Activity)
+                && !(element instanceof Constraint constraint && isPrimitiveTypeConstraint(constraint)));
     }
 
     private final Map<String, NamedElement> contextElements;
