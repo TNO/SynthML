@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
@@ -274,8 +275,7 @@ public class UmlToCifTranslator {
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
                     cifGuard.setOperator(BinaryOperator.EQUAL);
-                    cifGuard.setRight(
-                            CifConstructors.newIntExpression(null, EcoreUtil.copy(cifAtomicityVar.getType()), 0));
+                    cifGuard.setRight(CifValueUtils.makeInt(0));
                     cifGuard.setType(CifConstructors.newBoolType());
                     cifEdge.getGuards().add(cifGuard);
 
@@ -285,8 +285,7 @@ public class UmlToCifTranslator {
                         Assignment cifUpdate = CifConstructors.newAssignment();
                         cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                                 EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                        cifUpdate.setValue(CifConstructors.newIntExpression(null,
-                                EcoreUtil.copy(cifAtomicityVar.getType()), eventIndex.get(cifEvent)));
+                        cifUpdate.setValue(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
                         cifEdge.getUpdates().add(cifUpdate);
                     }
                 } else {
@@ -295,8 +294,7 @@ public class UmlToCifTranslator {
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
                     cifGuard.setOperator(BinaryOperator.EQUAL);
-                    cifGuard.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(cifAtomicityVar.getType()),
-                            eventIndex.get(cifEvent)));
+                    cifGuard.setRight(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
                     cifGuard.setType(CifConstructors.newBoolType());
                     cifEdge.getGuards().add(cifGuard);
 
@@ -304,8 +302,7 @@ public class UmlToCifTranslator {
                     Assignment cifUpdate = CifConstructors.newAssignment();
                     cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                    cifUpdate.setValue(
-                            CifConstructors.newIntExpression(null, EcoreUtil.copy(cifAtomicityVar.getType()), 0));
+                    cifUpdate.setValue(CifValueUtils.makeInt(0));
                     cifEdge.getUpdates().add(cifUpdate);
                 }
             }
@@ -413,7 +410,7 @@ public class UmlToCifTranslator {
         BinaryExpression markedExpr = CifConstructors.newBinaryExpression();
         markedExpr.setLeft(varExpr);
         markedExpr.setOperator(BinaryOperator.GREATER_EQUAL);
-        markedExpr.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), min));
+        markedExpr.setRight(CifValueUtils.makeInt(min));
         markedExpr.setType(CifConstructors.newBoolType());
         location.getMarkeds().add(markedExpr);
 
@@ -428,7 +425,7 @@ public class UmlToCifTranslator {
         BinaryExpression edgeGuard = CifConstructors.newBinaryExpression();
         edgeGuard.setLeft(EcoreUtil.copy(varExpr));
         edgeGuard.setOperator(BinaryOperator.LESS_THAN);
-        edgeGuard.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), max));
+        edgeGuard.setRight(CifValueUtils.makeInt(max));
         edge.getGuards().add(edgeGuard);
 
         // Define the edge update.
@@ -437,7 +434,7 @@ public class UmlToCifTranslator {
         BinaryExpression updateExpr = CifConstructors.newBinaryExpression();
         updateExpr.setLeft(EcoreUtil.copy(varExpr));
         updateExpr.setOperator(BinaryOperator.ADDITION);
-        updateExpr.setRight(CifConstructors.newIntExpression(null, EcoreUtil.copy(variableType), 1));
+        updateExpr.setRight(CifValueUtils.makeInt(1));
         update.setValue(updateExpr);
         edge.getUpdates().add(update);
 

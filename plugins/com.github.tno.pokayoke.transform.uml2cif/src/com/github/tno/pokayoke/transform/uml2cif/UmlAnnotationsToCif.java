@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifTypeUtils;
+import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
@@ -21,7 +22,6 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.SetExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
-import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
@@ -176,9 +176,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
 
     @Override
     protected Expression visit(AIntExpression expr, CifContext ctx) {
-        int value = Integer.parseInt(expr.value);
-        IntType type = CifConstructors.newIntType(value, null, value);
-        return CifConstructors.newIntExpression(null, type, value);
+        return CifValueUtils.makeInt(Integer.parseInt(expr.value));
     }
 
     @Override
