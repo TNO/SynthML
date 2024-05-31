@@ -41,7 +41,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 
 /** Translates UML annotations like guards and effects in UML synthesis specifications to CIF. */
-public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
+public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The context that allows querying the input model. */
     private final CifContext context;
 
@@ -128,15 +128,13 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
     }
 
     @Override
-    protected PositionObject visit(PositionObject addressable, TextPosition assignmentPos, PositionObject value,
-            CifContext ctx)
-    {
+    protected PositionObject visit(Object addressable, TextPosition assignmentPos, Object value, CifContext ctx) {
         return CifConstructors.newAssignment((Expression)addressable, null, (Expression)value);
     }
 
     @Override
-    protected PositionObject visit(BinaryOperator operator, TextPosition operatorPos, PositionObject left,
-            PositionObject right, CifContext ctx)
+    protected PositionObject visit(BinaryOperator operator, TextPosition operatorPos, Object left, Object right,
+            CifContext ctx)
     {
         Expression leftExpr = (Expression)left;
         Expression rightExpr = (Expression)right;
@@ -162,7 +160,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
     }
 
     @Override
-    protected Expression visit(UnaryOperator operator, TextPosition operatorPos, PositionObject child, CifContext ctx) {
+    protected Expression visit(UnaryOperator operator, TextPosition operatorPos, Object child, CifContext ctx) {
         Expression childExpr = (Expression)child;
 
         return CifConstructors.newUnaryExpression(childExpr, translateOperator(operator), null,
@@ -181,7 +179,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
 
     @Override
     protected PositionObject visit(Optional<String> invKind, List<String> events, TextPosition operatorPos,
-            PositionObject predicate, CifContext ctx)
+            Object predicate, CifContext ctx)
     {
         Invariant cifInvariant = CifConstructors.newInvariant();
         cifInvariant.setInvKind(invKind.map(this::translateInvKind).orElse(InvKind.STATE));
