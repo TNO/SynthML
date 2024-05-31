@@ -11,8 +11,8 @@ plant automaton Context:
   controllable Drink_Tea;
   controllable Start_Working;
   controllable Flip_A_Coin;
-  uncontrollable Flip_A_Coin_result_0;
   uncontrollable Flip_A_Coin_result_1;
+  uncontrollable Flip_A_Coin_result_2;
   disc int[0..1] __activeAction;
   location:
     initial;
@@ -23,8 +23,8 @@ plant automaton Context:
     edge Drink_Tea when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown;
     edge Start_Working when Has_Drank_Coffee_or_Tea and Is_Computer_Ready, __activeAction = 0 do Is_Ready_to_Work := true;
     edge Flip_A_Coin when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown, __activeAction = 0 do __activeAction := 1;
-    edge Flip_A_Coin_result_0 when __activeAction = 1 do Coffee_or_Tea := Coffee, __activeAction := 0;
-    edge Flip_A_Coin_result_1 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
+    edge Flip_A_Coin_result_1 when __activeAction = 1 do Coffee_or_Tea := Coffee, __activeAction := 0;
+    edge Flip_A_Coin_result_2 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
 end
 requirement automaton postcondition:
   controllable c_satisfied;
