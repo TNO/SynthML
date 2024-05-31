@@ -159,7 +159,10 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<PositionObject> {
 
     @Override
     protected Expression visit(UnaryOperator operator, TextPosition operatorPos, PositionObject child, CifContext ctx) {
-        return CifConstructors.newUnaryExpression((Expression)child, translateOperator(operator), null, null);
+        Expression childExpr = (Expression)child;
+
+        return CifConstructors.newUnaryExpression(childExpr, translateOperator(operator), null,
+                EcoreUtil.copy(childExpr.getType()));
     }
 
     @Override
