@@ -143,50 +143,8 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
 
         CifType type = switch (operator) {
             case AND, EQ, GE, GT, LE, LT, NE, OR -> CifConstructors.newBoolType();
-
-            case MINUS -> {
-                IntType leftType = (IntType)leftExpr.getType();
-                IntType rightType = (IntType)rightExpr.getType();
-
-                Verify.verify(!CifTypeUtils.isRangeless(leftType), "Expected integer types to have a range.");
-                Verify.verify(!CifTypeUtils.isRangeless(rightType), "Expected integer types to have a range.");
-
-                long leftLower = leftType.getLower();
-                long leftUpper = leftType.getUpper();
-                long rightLower = rightType.getLower();
-                long rightUpper = rightType.getUpper();
-
-                long lower = leftLower - rightUpper;
-                long upper = leftUpper - rightLower;
-
-                if (lower < Integer.MIN_VALUE || upper > Integer.MAX_VALUE) {
-                    throw new RuntimeException("Unexpected error: integer type range went out of bounds.");
-                }
-
-                yield CifConstructors.newIntType((int)lower, null, (int)upper);
-            }
-
-            case PLUS -> {
-                IntType leftType = (IntType)leftExpr.getType();
-                IntType rightType = (IntType)rightExpr.getType();
-
-                Verify.verify(!CifTypeUtils.isRangeless(leftType), "Expected integer types to have a range.");
-                Verify.verify(!CifTypeUtils.isRangeless(rightType), "Expected integer types to have a range.");
-
-                long leftLower = leftType.getLower();
-                long leftUpper = leftType.getUpper();
-                long rightLower = rightType.getLower();
-                long rightUpper = rightType.getUpper();
-
-                long lower = leftLower + rightLower;
-                long upper = leftUpper + rightUpper;
-
-                if (lower < Integer.MIN_VALUE || upper > Integer.MAX_VALUE) {
-                    throw new RuntimeException("Unexpected error: integer type range went out of bounds.");
-                }
-
-                yield CifConstructors.newIntType((int)lower, null, (int)upper);
-            }
+            case MINUS -> typeForBinaryMinus((IntType)leftExpr.getType(), (IntType)rightExpr.getType());
+            case PLUS -> typeForBinaryPlus((IntType)leftExpr.getType(), (IntType)rightExpr.getType());
         };
 
         return CifConstructors.newBinaryExpression(leftExpr, translateOperator(operator), null, rightExpr, type);
@@ -209,21 +167,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
         Expression childExpr = (Expression)child;
 
         CifType type = switch (operator) {
-            case MINUS -> {
-                IntType childType = (IntType)childExpr.getType();
-
-                Verify.verify(!CifTypeUtils.isRangeless(childType), "Expected integer types to have a range.");
-
-                long lower = childType.getLower();
-                long upper = childType.getUpper();
-
-                if (lower == Integer.MIN_VALUE) {
-                    throw new RuntimeException("Unexpected error: possible integer type range overflow.");
-                }
-
-                yield CifConstructors.newIntType((int)-upper, null, (int)-lower);
-            }
-
+            case MINUS -> typeForUnaryMinus((IntType)childExpr.getType());
             case NOT -> CifConstructors.newBoolType();
         };
 
@@ -273,6 +217,57 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
         }
 
         return cifInvariants;
+    }
+
+    static IntType typeForBinaryMinus(IntType leftType, IntType rightType) {
+        Verify.verify(!CifTypeUtils.isRangeless(leftType), "Expected integer types to have a range.");
+        Verify.verify(!CifTypeUtils.isRangeless(rightType), "Expected integer types to have a range.");
+
+        long leftLower = leftType.getLower();
+        long leftUpper = leftType.getUpper();
+        long rightLower = rightType.getLower();
+        long rightUpper = rightType.getUpper();
+
+        long lower = leftLower - rightUpper;
+        long upper = leftUpper - rightLower;
+
+        if (lower < Integer.MIN_VALUE || upper > Integer.MAX_VALUE) {
+            throw new RuntimeException("Unexpected error: integer type range went out of bounds.");
+        }
+
+        return CifConstructors.newIntType((int)lower, null, (int)upper);
+    }
+
+    static IntType typeForBinaryPlus(IntType leftType, IntType rightType) {
+        Verify.verify(!CifTypeUtils.isRangeless(leftType), "Expected integer types to have a range.");
+        Verify.verify(!CifTypeUtils.isRangeless(rightType), "Expected integer types to have a range.");
+
+        long leftLower = leftType.getLower();
+        long leftUpper = leftType.getUpper();
+        long rightLower = rightType.getLower();
+        long rightUpper = rightType.getUpper();
+
+        long lower = leftLower + rightLower;
+        long upper = leftUpper + rightUpper;
+
+        if (lower < Integer.MIN_VALUE || upper > Integer.MAX_VALUE) {
+            throw new RuntimeException("Unexpected error: integer type range went out of bounds.");
+        }
+
+        return CifConstructors.newIntType((int)lower, null, (int)upper);
+    }
+
+    static IntType typeForUnaryMinus(IntType childType) {
+        Verify.verify(!CifTypeUtils.isRangeless(childType), "Expected integer types to have a range.");
+
+        long lower = childType.getLower();
+        long upper = childType.getUpper();
+
+        if (lower == Integer.MIN_VALUE) {
+            throw new RuntimeException("Unexpected error: possible integer type range overflow.");
+        }
+
+        return CifConstructors.newIntType((int)-upper, null, (int)-lower);
     }
 
     private org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator translateOperator(BinaryOperator operator) {
