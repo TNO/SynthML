@@ -208,8 +208,26 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     protected Expression visit(UnaryOperator operator, TextPosition operatorPos, Object child, CifContext ctx) {
         Expression childExpr = (Expression)child;
 
-        return CifConstructors.newUnaryExpression(childExpr, translateOperator(operator), null,
-                EcoreUtil.copy(childExpr.getType()));
+        CifType type = switch (operator) {
+            case MINUS -> {
+                IntType childType = (IntType)childExpr.getType();
+
+                Verify.verify(!CifTypeUtils.isRangeless(childType), "Expected integer types to have a range.");
+
+                long lower = childType.getLower();
+                long upper = childType.getUpper();
+
+                if (lower == Integer.MIN_VALUE) {
+                    throw new RuntimeException("Unexpected error: possible integer type range overflow.");
+                }
+
+                yield CifConstructors.newIntType((int)-upper, null, (int)-lower);
+            }
+
+            case NOT -> CifConstructors.newBoolType();
+        };
+
+        return CifConstructors.newUnaryExpression(childExpr, translateOperator(operator), null, type);
     }
 
     @Override
