@@ -28,6 +28,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
+import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.uml2.uml.Behavior;
@@ -457,7 +458,8 @@ public class UmlToCifTranslator {
         updateExpr.setOperator(BinaryOperator.ADDITION);
         Expression updateValue = CifValueUtils.makeInt(1);
         updateExpr.setRight(updateValue);
-        updateExpr.setType(EcoreUtil.copy(updateValue.getType()));
+        updateExpr.setType(UmlAnnotationsToCif.typeForBinaryPlus((IntType)updateExpr.getLeft().getType(),
+                (IntType)updateExpr.getRight().getType()));
         update.setValue(updateExpr);
         edge.getUpdates().add(update);
 
