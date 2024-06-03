@@ -140,8 +140,8 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
         Expression rightExpr = (Expression)right;
 
         CifType type = switch (operator) {
-            case EQ, GE, GT, LE, LT, NE -> CifConstructors.newBoolType();
-            case AND, MINUS, OR, PLUS -> CifTypeUtils.mergeTypes(leftExpr.getType(), rightExpr.getType(), null);
+            case AND, EQ, GE, GT, LE, LT, NE, OR -> CifConstructors.newBoolType();
+            case MINUS, PLUS -> CifTypeUtils.mergeTypes(leftExpr.getType(), rightExpr.getType(), null);
         };
 
         return CifConstructors.newBinaryExpression(leftExpr, translateOperator(operator), null, rightExpr, type);
