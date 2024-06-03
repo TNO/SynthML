@@ -103,7 +103,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
      * Translates an invariant.
      *
      * @param invariant The parsed invariant to translate.
-     * @return The translated CIF invariant.
+     * @return The translated CIF invariants.
      */
     @SuppressWarnings("unchecked")
     public List<Invariant> translate(AInvariant invariant) {
