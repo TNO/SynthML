@@ -9,6 +9,7 @@ controllable prepare_location2;
 controllable measure_product_position;
 uncontrollable measure_product_position__result_1;
 uncontrollable measure_product_position__result_2;
+controllable c_satisfied;
 plant automaton Context:
   disc bool robotPrepared = false;
   disc bool location2Prepared = false;
@@ -33,8 +34,7 @@ plant automaton Context:
     edge measure_product_position__result_1 when __activeAction = 1 do productCorrectlyPlaced := True, __activeAction := 0;
     edge measure_product_position__result_2 when __activeAction = 1 do productCorrectlyPlaced := False, __activeAction := 0;
 end
-requirement automaton postcondition:
-  controllable c_satisfied;
+requirement automaton __postcondition:
   location NotSatisfied:
     initial;
     edge c_satisfied when not Context.robotHasProduct and Context.robotLocation = Location1 and Context.location2HasProduct and Context.productCorrectlyPlaced = True goto Satisfied;

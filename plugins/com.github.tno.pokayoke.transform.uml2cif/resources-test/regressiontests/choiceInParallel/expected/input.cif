@@ -7,6 +7,7 @@ controllable Start_Working;
 controllable Flip_A_Coin;
 uncontrollable Flip_A_Coin__result_1;
 uncontrollable Flip_A_Coin__result_2;
+controllable c_satisfied;
 plant automaton Context:
   disc bool Is_Computer_Ready = false;
   disc bool Is_Computer_On = false;
@@ -26,8 +27,7 @@ plant automaton Context:
     edge Flip_A_Coin__result_1 when __activeAction = 1 do Coffee_or_Tea := Coffee, __activeAction := 0;
     edge Flip_A_Coin__result_2 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
 end
-requirement automaton postcondition:
-  controllable c_satisfied;
+requirement automaton __postcondition:
   location NotSatisfied:
     initial;
     edge c_satisfied when Context.Is_Computer_On and Context.Is_Computer_Ready and Context.Has_Drank_Coffee_or_Tea and Context.Is_Ready_to_Work goto Satisfied;
