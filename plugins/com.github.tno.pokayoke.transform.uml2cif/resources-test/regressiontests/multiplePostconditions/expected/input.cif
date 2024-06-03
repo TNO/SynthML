@@ -1,0 +1,13 @@
+controllable c_satisfied;
+plant automaton Context:
+  location:
+    initial;
+    marked;
+end
+requirement automaton __postcondition:
+  location NotSatisfied:
+    initial;
+    edge c_satisfied when false and true goto Satisfied;
+  location Satisfied:
+    marked;
+end
