@@ -112,13 +112,33 @@ public class UmlToCifTranslator {
         // Translate all postconditions of the classifier behavior of the UML class.
         Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
 
-        for (Constraint umlPostcondition: umlClassifierBehavior.getPostconditions()) {
-            AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
-            Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
-                    "Expected the postcondition to be a state predicate.");
-            Expression cifPredicate = translator.translate(cifInvariant.predicate);
-            Automaton cifRequirement = createPostconditionRequirement(umlPostcondition.getName(), cifPredicate);
-            cifSpec.getComponents().add(cifRequirement);
+        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
+            // Define the event that indicates that all postconditions are satisfied.
+            Event cifSatisfiedEvent = CifConstructors.newEvent();
+            cifSatisfiedEvent.setControllable(true);
+            cifSatisfiedEvent.setName("c_satisfied");
+            cifSpec.getDeclarations().add(cifSatisfiedEvent);
+
+            // Combine all postconditions into a single postcondition expression.
+            Expression cifPostcondition = null;
+
+            for (Constraint umlPostcondition: umlClassifierBehavior.getPostconditions()) {
+                AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
+                Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
+                        "Expected the postcondition to be a state predicate.");
+                Expression cifPredicate = translator.translate(cifInvariant.predicate);
+
+                if (cifPostcondition == null) {
+                    cifPostcondition = cifPredicate;
+                } else {
+                    cifPostcondition = CifConstructors.newBinaryExpression(cifPredicate, BinaryOperator.CONJUNCTION,
+                            null, cifPostcondition, CifConstructors.newBoolType());
+                }
+            }
+
+            // Create the postcondition requirement automaton.
+            cifSpec.getComponents()
+                    .add(createPostconditionRequirement("__postcondition", cifPostcondition, cifSatisfiedEvent));
         }
 
         // Translate all interval constraints of the classifier behavior of the UML class.
@@ -471,19 +491,14 @@ public class UmlToCifTranslator {
      *
      * @param name The name of the CIF requirement automaton.
      * @param predicate The predicate describing the activity postcondition.
+     * @param satisfiedEvent The event that indicates that the postcondition is satisfied.
      * @return The CIF requirement automaton.
      */
-    private Automaton createPostconditionRequirement(String name, Expression predicate) {
+    private Automaton createPostconditionRequirement(String name, Expression predicate, Event satisfiedEvent) {
         // Create the requirement automaton.
         Automaton automaton = CifConstructors.newAutomaton();
         automaton.setKind(SupKind.REQUIREMENT);
         automaton.setName(name);
-
-        // Define the event that indicates that the postcondition is satisfied.
-        Event event = CifConstructors.newEvent();
-        event.setControllable(true);
-        event.setName("c_satisfied");
-        automaton.getDeclarations().add(event);
 
         // Define the two locations of the automaton.
         Location notSatisfied = CifConstructors.newLocation();
@@ -496,7 +511,8 @@ public class UmlToCifTranslator {
         automaton.getLocations().add(satisfied);
 
         // Define the edge between the two locations.
-        EventExpression eventExpr = CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType());
+        EventExpression eventExpr = CifConstructors.newEventExpression(satisfiedEvent, null,
+                CifConstructors.newBoolType());
         Edge edge = CifConstructors.newEdge();
         edge.getEvents().add(CifConstructors.newEdgeEvent(eventExpr, null));
         edge.getGuards().add(predicate);
