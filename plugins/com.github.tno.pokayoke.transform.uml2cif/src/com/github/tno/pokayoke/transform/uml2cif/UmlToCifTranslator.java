@@ -128,12 +128,9 @@ public class UmlToCifTranslator {
                         "Expected the postcondition to be a state predicate.");
                 Expression cifPredicate = translator.translate(cifInvariant.predicate);
 
-                if (cifPostcondition == null) {
-                    cifPostcondition = cifPredicate;
-                } else {
-                    cifPostcondition = CifConstructors.newBinaryExpression(cifPredicate, BinaryOperator.CONJUNCTION,
-                            null, cifPostcondition, CifConstructors.newBoolType());
-                }
+                cifPostcondition = cifPostcondition == null ? cifPredicate
+                        : CifConstructors.newBinaryExpression(cifPredicate, BinaryOperator.CONJUNCTION, null,
+                                cifPostcondition, CifConstructors.newBoolType());
             }
 
             // Create the postcondition requirement automaton.
