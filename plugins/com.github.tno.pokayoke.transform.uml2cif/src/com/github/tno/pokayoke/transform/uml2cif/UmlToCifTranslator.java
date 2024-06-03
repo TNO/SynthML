@@ -326,7 +326,7 @@ public class UmlToCifTranslator {
                     cifInvariants.get(0).setName(constraintName);
                 } else {
                     for (int i = 0; i < cifInvariants.size(); i++) {
-                        cifInvariants.get(i).setName(constraintName + "__" + i);
+                        cifInvariants.get(i).setName(constraintName + "__" + (i + 1));
                     }
                 }
             }
