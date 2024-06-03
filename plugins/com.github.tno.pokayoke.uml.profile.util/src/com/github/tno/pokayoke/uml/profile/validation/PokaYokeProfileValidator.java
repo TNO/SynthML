@@ -567,6 +567,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 return;
             }
 
+            if (min < 0) {
+                error("Expected the interval min value to be at least 0.",
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            }
+
             if (min > max) {
                 error("Expected the interval min value to not exceed the max value.",
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);

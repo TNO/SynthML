@@ -82,6 +82,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.github.tno.pokayoke.transform.uml2cif"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+   <plugin
          id="com.github.tno.pokayoke.transform.uml2gal"
          download-size="0"
          install-size="0"

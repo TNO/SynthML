@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -32,9 +33,10 @@ public class CifContext {
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
      */
-    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.ENUMERATION,
-            UMLPackage.Literals.ENUMERATION_LITERAL, UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY,
-            UMLPackage.Literals.OPAQUE_BEHAVIOR, UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
+    private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.CLASS,
+            UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL,
+            UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY, UMLPackage.Literals.OPAQUE_BEHAVIOR,
+            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -62,8 +64,8 @@ public class CifContext {
      * @return All found contextual elements.
      */
     public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
-        Set<EClass> exclude = Set.of(UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.CONSTRAINT);
-        return queryContextElements(model).select(e -> !exclude.contains(e.eClass()));
+        return queryContextElements(model).select(element -> !(element instanceof Activity)
+                && !(element instanceof Constraint constraint && isPrimitiveTypeConstraint(constraint)));
     }
 
     private final Map<String, NamedElement> contextElements;
@@ -86,6 +88,11 @@ public class CifContext {
         return Collections.unmodifiableCollection(contextElements.values());
     }
 
+    public List<Class> getAllClasses(Predicate<Class> predicate) {
+        return getAllElements().stream().filter(e -> e instanceof Class c && predicate.test(c)).map(Class.class::cast)
+                .toList();
+    }
+
     public boolean isEnumeration(String name) {
         return contextElements.get(name) instanceof Enumeration;
     }
@@ -97,6 +104,10 @@ public class CifContext {
         return null;
     }
 
+    public List<Enumeration> getAllEnumerations() {
+        return getAllElements().stream().filter(Enumeration.class::isInstance).map(Enumeration.class::cast).toList();
+    }
+
     public boolean isEnumerationLiteral(String name) {
         return contextElements.get(name) instanceof EnumerationLiteral;
     }
@@ -106,6 +117,11 @@ public class CifContext {
             return literal;
         }
         return null;
+    }
+
+    public List<EnumerationLiteral> getAllEnumerationLiterals() {
+        return getAllElements().stream().filter(EnumerationLiteral.class::isInstance)
+                .map(EnumerationLiteral.class::cast).toList();
     }
 
     public boolean isVariable(String name) {
