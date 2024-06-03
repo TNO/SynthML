@@ -36,7 +36,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  org.eclipse.escet.cif.bdd;bundle-version="3.0.0",
  com.github.com-github-javabdd.com.github.javabdd;bundle-version="6.0.0",
  com.github.tno.pokayoke.transform.region2statemapping;bundle-version="0.0.1",
- org.eclipse.escet.common.emf;bundle-version="3.0.0"
+ org.eclipse.escet.common.emf;bundle-version="3.0.0",
+ com.github.tno.pokayoke.transform.uml2cif;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-17

@@ -3,7 +3,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Pm2IsN4FEeqZ0qkYlTZN4w" featurename="menuContributions" parentElementId="org.eclipse.e4.legacy.ide.application">
     <elements xsi:type="menu:MenuContribution" xmi:id="_XRNMUN4FEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisMenuContribution" positionInParent="before=additions" parentId="popup">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_b6g5wN4FEeqZ0qkYlTZN4w" elementId="com.github.tno.pokayoke.transform.app.ui.FullSynthesisHandledMenuItem" label="Perform full synthesis" tooltip="Perform full synthesis" command="_v1beIN4HEeqZ0qkYlTZN4w">
-        <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_KUdLgOO3EeqRGIZRdH8HYA" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneCifFile"/>
+        <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_KUdLgOO3EeqRGIZRdH8HYA" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneUmlFile"/>
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_b6g5wN4FEeqZ0qkYlTZO4x" elementId="com.github.tno.pokayoke.transform.app.ui.Uml2GalTranslationMenuItem" label="Translate UML to Cameo" tooltip="Translate UML to Cameo" command="_v1beIN4HEeqZ0qkYlTZO4x">
         <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_KUdLgOO3EeqRGIZRdH8IYB" coreExpressionId="com.github.tno.pokayoke.transform.app.ui.oneUmlFile"/>

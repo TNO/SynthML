@@ -49,6 +49,7 @@ import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.escet.common.java.Sets;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
@@ -63,6 +64,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslato
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -79,8 +81,18 @@ public class FullSynthesisApp {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
-        // Load CIF specification.
-        Specification cifSpec = CifFileHelper.loadCifSpec(inputPath);
+        // Load UML specification.
+        Model umlSpec = FileHelper.loadModel(inputPath.toString());
+
+        // Translate the UML specification to a CIF specification.
+        Specification cifSpec = new UmlToCifTranslator(umlSpec).translate();
+        Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
 
         // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".01.ctrlsys.cif");
