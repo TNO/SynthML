@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.design;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.sirius.business.api.componentization.ViewpointRegistry;
 import org.eclipse.sirius.business.api.session.Session;
@@ -11,6 +12,8 @@ import org.eclipse.sirius.business.api.session.SessionListener;
 import org.eclipse.sirius.business.api.session.SessionManager;
 import org.eclipse.sirius.business.api.session.SessionManagerListener;
 import org.eclipse.sirius.viewpoint.description.Viewpoint;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -44,19 +47,33 @@ public class Activator extends AbstractUIPlugin {
             @Override
             public void notify(Session updated, int notification) {
                 if (notification == SessionListener.OPENED || notification == SessionListener.SYNC) {
-                    TransactionalEditingDomain txDomain = updated.getTransactionalEditingDomain();
-                    if (txDomain != null) {
-                        try {
-                            txDomain.runExclusive(() -> SessionValidator.validateAllDiagrams(updated));
-                        } catch (InterruptedException e) {
-                            getLog().error("Failed to validate diagrams.", e);
-                        }
-                    } else {
-                        SessionValidator.validateAllDiagrams(updated);
-                    }
+                    Display.getDefault().asyncExec(() -> validateDiagramsInUIThread(updated));
                 }
             }
         });
+    }
+
+    private void validateDiagramsInUIThread(Session session) {
+        try {
+            WorkspaceModifyDelegatingOperation operation = new WorkspaceModifyDelegatingOperation(
+                    m -> validateDiagramsInWSOperation(session));
+            operation.run(new NullProgressMonitor());
+        } catch (Exception e) {
+            getLog().error("Failed to validate diagrams: " + e.getLocalizedMessage(), e);
+        }
+    }
+
+    private void validateDiagramsInWSOperation(Session session) {
+        TransactionalEditingDomain txDomain = session.getTransactionalEditingDomain();
+        if (txDomain == null) {
+            SessionValidator.validateAllDiagrams(session);
+        } else {
+            try {
+                txDomain.runExclusive(() -> SessionValidator.validateAllDiagrams(session));
+            } catch (Exception e) {
+                getLog().error("Failed to validate diagrams: " + e.getLocalizedMessage(), e);
+            }
+        }
     }
 
     /*
