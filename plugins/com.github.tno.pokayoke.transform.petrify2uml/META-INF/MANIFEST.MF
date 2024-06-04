@@ -26,6 +26,7 @@ Automatic-Module-Name: com.github.tno.pokayoke.transform.petrify2uml
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.github.tno.pokayoke.transform.petrify2uml
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
+ com.github.tno.pokayoke.uml.profile.cif;version="0.0.0",
  org.eclipse.escet.cif.parser;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",
  org.junit.jupiter.params;version="5.9.3",

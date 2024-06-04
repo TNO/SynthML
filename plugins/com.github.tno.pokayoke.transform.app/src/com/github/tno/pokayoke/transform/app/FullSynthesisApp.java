@@ -189,7 +189,7 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
-        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity(umlSpec);
         Activity activity = petriNet2Activity.transform(petriNet);
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());

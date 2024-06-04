@@ -11,6 +11,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -23,6 +24,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -35,24 +37,45 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PNML2UMLActivityHelper {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
+    private final CifContext context;
+
     private final Map<String, OpaqueAction> nameActionMap = new LinkedHashMap<>();
 
-    public Activity initializeUMLActivity(Page page) {
+    public PNML2UMLActivityHelper(CifContext context) {
+        this.context = context;
+    }
+
+    public static Model createEmptyModel() {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
-        model.setName(page.getId());
+        model.setName("Model");
 
         // Create a UML class and add it to the model.
-        Class contextClass = model.createOwnedClass("Class", false);
+        Class clazz = model.createOwnedClass("Class", false);
 
         // Create an activity for the class.
         Activity activity = UML_FACTORY.createActivity();
-        activity.setName(page.getId());
+        activity.setName("Activity");
 
         // Add the activity as the owned member of the class.
-        contextClass.getOwnedBehaviors().add(activity);
+        clazz.getOwnedBehaviors().add(activity);
+        clazz.setClassifierBehavior(activity);
 
-        return activity;
+        return model;
+    }
+
+    public Activity initializeUMLActivity() {
+     // Find the single UML class in the input model.
+        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
+        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
+        Class umlClass = umlClasses.get(0);
+
+        // Find the abstract classifier behavior activity of this class.
+        Activity umlActivity = (Activity)umlClass.getClassifierBehavior();
+        Preconditions.checkArgument(umlActivity.getNodes().isEmpty(), "Expected an activity without nodes.");
+        Preconditions.checkArgument(umlActivity.getEdges().isEmpty(), "Expected an activity without edges.");
+
+        return umlActivity;
     }
 
     /**
