@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.CoreException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,7 +16,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
  * Regression tests.
  */
 class FullSynthesisAppRegressionTest extends RegressionTest {
-    public static final String INPUT_FILE_EXTENSION = "cif";
+    public static final String INPUT_FILE_EXTENSION = "uml";
 
     public static final String REGRESSIONTESTS_NAME = "regressiontests";
 
@@ -31,7 +32,7 @@ class FullSynthesisAppRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
         FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
     }
 }

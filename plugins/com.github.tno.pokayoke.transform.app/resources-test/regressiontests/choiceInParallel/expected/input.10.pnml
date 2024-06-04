@@ -11,34 +11,34 @@
           <text>end</text>
         </name>
       </transition>
-      <transition id="c_Turn_Computer_On">
+      <transition id="Turn_Computer_On">
         <name>
-          <text>c_Turn_Computer_On</text>
+          <text>Turn_Computer_On</text>
         </name>
       </transition>
-      <transition id="c_Starting_Computer">
+      <transition id="Starting_Computer">
         <name>
-          <text>c_Starting_Computer</text>
+          <text>Starting_Computer</text>
         </name>
       </transition>
-      <transition id="c_Drink_Coffee">
+      <transition id="Drink_Coffee">
         <name>
-          <text>c_Drink_Coffee</text>
+          <text>Drink_Coffee</text>
         </name>
       </transition>
-      <transition id="c_Drink_Tea">
+      <transition id="Drink_Tea">
         <name>
-          <text>c_Drink_Tea</text>
+          <text>Drink_Tea</text>
         </name>
       </transition>
-      <transition id="c_Start_Working">
+      <transition id="Start_Working">
         <name>
-          <text>c_Start_Working</text>
+          <text>Start_Working</text>
         </name>
       </transition>
-      <transition id="c_Flip_A_Coin">
+      <transition id="Flip_A_Coin">
         <name>
-          <text>c_Flip_A_Coin</text>
+          <text>Flip_A_Coin</text>
         </name>
       </transition>
       <transition id="c_satisfied">
@@ -51,30 +51,30 @@
           <text>p7</text>
         </name>
       </place>
-      <arc id="c_Drink_Coffee__to__p7" source="c_Drink_Coffee" target="p7">
+      <arc id="Drink_Coffee__to__p7" source="Drink_Coffee" target="p7">
       </arc>
-      <arc id="c_Drink_Tea__to__p7" source="c_Drink_Tea" target="p7">
+      <arc id="Drink_Tea__to__p7" source="Drink_Tea" target="p7">
       </arc>
       <place id="p5">
         <name>
           <text>p5</text>
         </name>
       </place>
-      <arc id="c_Flip_A_Coin__to__p5" source="c_Flip_A_Coin" target="p5">
+      <arc id="Flip_A_Coin__to__p5" source="Flip_A_Coin" target="p5">
       </arc>
       <place id="p8">
         <name>
           <text>p8</text>
         </name>
       </place>
-      <arc id="c_Start_Working__to__p8" source="c_Start_Working" target="p8">
+      <arc id="Start_Working__to__p8" source="Start_Working" target="p8">
       </arc>
       <place id="p6">
         <name>
           <text>p6</text>
         </name>
       </place>
-      <arc id="c_Starting_Computer__to__p6" source="c_Starting_Computer" target="p6">
+      <arc id="Starting_Computer__to__p6" source="Starting_Computer" target="p6">
       </arc>
       <place id="p3">
         <name>
@@ -86,9 +86,9 @@
           <text>p4</text>
         </name>
       </place>
-      <arc id="c_Turn_Computer_On__to__p3" source="c_Turn_Computer_On" target="p3">
+      <arc id="Turn_Computer_On__to__p3" source="Turn_Computer_On" target="p3">
       </arc>
-      <arc id="c_Turn_Computer_On__to__p4" source="c_Turn_Computer_On" target="p4">
+      <arc id="Turn_Computer_On__to__p4" source="Turn_Computer_On" target="p4">
       </arc>
       <place id="p9">
         <name>
@@ -114,19 +114,19 @@
           <text>p2</text>
         </name>
       </place>
-      <arc id="p2__to__c_Turn_Computer_On" source="p2" target="c_Turn_Computer_On">
+      <arc id="p2__to__Turn_Computer_On" source="p2" target="Turn_Computer_On">
       </arc>
-      <arc id="p3__to__c_Flip_A_Coin" source="p3" target="c_Flip_A_Coin">
+      <arc id="p3__to__Flip_A_Coin" source="p3" target="Flip_A_Coin">
       </arc>
-      <arc id="p4__to__c_Starting_Computer" source="p4" target="c_Starting_Computer">
+      <arc id="p4__to__Starting_Computer" source="p4" target="Starting_Computer">
       </arc>
-      <arc id="p5__to__c_Drink_Coffee" source="p5" target="c_Drink_Coffee">
+      <arc id="p5__to__Drink_Coffee" source="p5" target="Drink_Coffee">
       </arc>
-      <arc id="p5__to__c_Drink_Tea" source="p5" target="c_Drink_Tea">
+      <arc id="p5__to__Drink_Tea" source="p5" target="Drink_Tea">
       </arc>
-      <arc id="p6__to__c_Start_Working" source="p6" target="c_Start_Working">
+      <arc id="p6__to__Start_Working" source="p6" target="Start_Working">
       </arc>
-      <arc id="p7__to__c_Start_Working" source="p7" target="c_Start_Working">
+      <arc id="p7__to__Start_Working" source="p7" target="Start_Working">
       </arc>
       <arc id="p8__to__c_satisfied" source="p8" target="c_satisfied">
       </arc>
