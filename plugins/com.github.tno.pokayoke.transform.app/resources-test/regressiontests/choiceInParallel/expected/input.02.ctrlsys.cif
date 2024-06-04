@@ -1,0 +1,84 @@
+enum UnknownDrink = Coffee, Tea, Unknown;
+controllable Turn_Computer_On;
+controllable Starting_Computer;
+controllable Drink_Coffee;
+controllable Drink_Tea;
+controllable Start_Working;
+controllable Flip_A_Coin;
+uncontrollable Flip_A_Coin__result_1;
+uncontrollable Flip_A_Coin__result_2;
+controllable c_satisfied;
+plant automaton Context:
+  disc bool Is_Computer_Ready = false;
+  disc bool Is_Computer_On = false;
+  disc UnknownDrink Coffee_or_Tea = Unknown;
+  disc bool Has_Drank_Coffee_or_Tea = false;
+  disc bool Is_Ready_to_Work = false;
+  disc int[0..1] __activeAction;
+  location:
+    initial;
+    marked;
+    edge Turn_Computer_On when not Is_Computer_Ready and not Is_Computer_On, __activeAction = 0 do Is_Computer_On := true;
+    edge Starting_Computer when not Is_Computer_Ready and Is_Computer_On, __activeAction = 0 do Is_Computer_Ready := true;
+    edge Drink_Coffee when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown;
+    edge Drink_Tea when not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea, __activeAction = 0 do Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea := Unknown;
+    edge Start_Working when Has_Drank_Coffee_or_Tea and Is_Computer_Ready, __activeAction = 0 do Is_Ready_to_Work := true;
+    edge Flip_A_Coin when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown, __activeAction = 0 do __activeAction := 1;
+    edge Flip_A_Coin__result_1 when __activeAction = 1 do Coffee_or_Tea := Coffee, __activeAction := 0;
+    edge Flip_A_Coin__result_2 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
+end
+supervisor automaton __postcondition:
+  location NotSatisfied:
+    initial;
+    edge c_satisfied when Context.Is_Computer_On and Context.Is_Computer_Ready and Context.Has_Drank_Coffee_or_Tea and Context.Is_Ready_to_Work goto Satisfied;
+  location Satisfied:
+    marked;
+end
+supervisor automaton happens_at_most_once__Turn_Computer_On:
+  disc int[0..1] occurrences;
+  location:
+    initial;
+    marked occurrences >= 0;
+    edge Turn_Computer_On when occurrences < 1 do occurrences := occurrences + 1;
+end
+supervisor automaton happens_at_most_once__Drink_Coffee:
+  disc int[0..1] occurrences;
+  location:
+    initial;
+    marked occurrences >= 0;
+    edge Drink_Coffee when occurrences < 1 do occurrences := occurrences + 1;
+end
+supervisor automaton happens_at_most_once__Drink_Tea:
+  disc int[0..1] occurrences;
+  location:
+    initial;
+    marked occurrences >= 0;
+    edge Drink_Tea when occurrences < 1 do occurrences := occurrences + 1;
+end
+supervisor automaton happens_at_most_once__Start_Working:
+  disc int[0..1] occurrences;
+  location:
+    initial;
+    marked occurrences >= 0;
+    edge Start_Working when occurrences < 1 do occurrences := occurrences + 1;
+end
+supervisor automaton happens_at_most_once__Starting_Computer:
+  disc int[0..1] occurrences;
+  location:
+    initial;
+    marked occurrences >= 0;
+    edge Starting_Computer when occurrences < 1 do occurrences := occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, c_satisfied;
+  location:
+    initial;
+    marked;
+    edge c_satisfied when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 1 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 1)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 1 and (Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 1 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 1)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 1 and (Context.Is_Ready_to_Work and __postcondition.NotSatisfied)));
+    edge Drink_Coffee when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Coffee) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or (happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Coffee) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 1)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 0 and happens_at_most_once__Drink_Coffee.occurrences = 0 and (Context.Coffee_or_Tea = Coffee and (Context.__activeAction = 0 and not Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 1 and (Context.Is_Computer_On and happens_at_most_once__Turn_Computer_On.occurrences = 1) and (Context.Is_Computer_Ready and (happens_at_most_once__Start_Working.occurrences = 1 and Context.Is_Ready_to_Work))));
+    edge Drink_Tea when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or (happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 1)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 0 and happens_at_most_once__Drink_Coffee.occurrences = 0 and (Context.Coffee_or_Tea = Tea and (Context.__activeAction = 0 and not Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 1 and (Context.Is_Computer_On and happens_at_most_once__Turn_Computer_On.occurrences = 1) and (Context.Is_Computer_Ready and (happens_at_most_once__Start_Working.occurrences = 1 and Context.Is_Ready_to_Work))));
+    edge Flip_A_Coin when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 1)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied)));
+    edge Start_Working when happens_at_most_once__Drink_Tea.occurrences = 0 and happens_at_most_once__Drink_Coffee.occurrences = 1 and (Context.Coffee_or_Tea = Unknown and (Context.__activeAction = 0 and Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 1 and Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and (Context.Is_Computer_Ready and happens_at_most_once__Start_Working.occurrences = 0))) or happens_at_most_once__Drink_Tea.occurrences = 1 and happens_at_most_once__Drink_Coffee.occurrences = 0 and (Context.Coffee_or_Tea = Unknown and (Context.__activeAction = 0 and Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 1 and Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and (Context.Is_Computer_Ready and happens_at_most_once__Start_Working.occurrences = 0)));
+    edge Starting_Computer when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea != Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or (happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 1 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied)))) or (happens_at_most_once__Drink_Tea.occurrences = 0 and happens_at_most_once__Drink_Coffee.occurrences = 1 and (Context.Coffee_or_Tea = Unknown and (Context.__activeAction = 0 and Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 0 and (Context.Is_Computer_On and happens_at_most_once__Turn_Computer_On.occurrences = 1) and (not Context.Is_Computer_Ready and (happens_at_most_once__Start_Working.occurrences = 1 and Context.Is_Ready_to_Work))) or (happens_at_most_once__Drink_Tea.occurrences = 1 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 1 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 1 and happens_at_most_once__Drink_Coffee.occurrences = 0 and (Context.Coffee_or_Tea = Unknown and (Context.__activeAction = 0 and Context.Has_Drank_Coffee_or_Tea)) and (happens_at_most_once__Starting_Computer.occurrences = 0 and (Context.Is_Computer_On and happens_at_most_once__Turn_Computer_On.occurrences = 1) and (not Context.Is_Computer_Ready and (happens_at_most_once__Start_Working.occurrences = 1 and Context.Is_Ready_to_Work)))));
+    edge Turn_Computer_On when happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea != Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (not Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 0 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Tea) and (Context.__activeAction = 0 and (not Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (not Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 0 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or (happens_at_most_once__Drink_Tea.occurrences = 0 and (happens_at_most_once__Drink_Coffee.occurrences = 1 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (not Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 0 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))) or happens_at_most_once__Drink_Tea.occurrences = 1 and (happens_at_most_once__Drink_Coffee.occurrences = 0 and Context.Coffee_or_Tea = Unknown) and (Context.__activeAction = 0 and (Context.Has_Drank_Coffee_or_Tea and happens_at_most_once__Starting_Computer.occurrences = 0)) and (not Context.Is_Computer_On and (happens_at_most_once__Turn_Computer_On.occurrences = 0 and not Context.Is_Computer_Ready) and (happens_at_most_once__Start_Working.occurrences = 0 and (not Context.Is_Ready_to_Work and __postcondition.NotSatisfied))));
+end
