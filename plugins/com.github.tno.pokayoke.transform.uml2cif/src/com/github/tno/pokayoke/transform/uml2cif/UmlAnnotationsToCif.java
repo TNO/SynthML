@@ -260,14 +260,14 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     static IntType typeForUnaryMinus(IntType childType) {
         Verify.verify(!CifTypeUtils.isRangeless(childType), "Expected integer types to have a range.");
 
-        long lower = childType.getLower();
-        long upper = childType.getUpper();
+        int lower = childType.getLower();
+        int upper = childType.getUpper();
 
         if (lower == Integer.MIN_VALUE) {
             throw new RuntimeException("Unexpected error: possible integer type range overflow.");
         }
 
-        return CifConstructors.newIntType((int)-upper, null, (int)-lower);
+        return CifConstructors.newIntType(-upper, null, -lower);
     }
 
     private org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator translateOperator(BinaryOperator operator) {

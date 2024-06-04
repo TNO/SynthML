@@ -1,22 +1,30 @@
 
 package com.github.tno.pokayoke.transform.app.ui;
 
-import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobFunction;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -66,17 +74,34 @@ public class CreateScopedModelHandler {
         if (saveAsDialog.open() != Window.OK) {
             return;
         }
+        IFile saveFile = ResourcesPlugin.getWorkspace().getRoot().getFile(saveAsDialog.getResult());
 
         if (saveAsDialog.includeCalledActivities) {
-            activities = activities.closure(true, CreateScopedModelHandler::getCalledActivities);
+            // Finding all called activities and sorting them by name
+            activities = activities.union(
+                    activities.closure(CreateScopedModelHandler::getCalledActivities).sortedBy(Activity::getName));
         }
+        Model scope = createScope(firstActivity.getName(), activities.asOrderedSet());
 
-        Model experiment = createScope(firstActivity.getName(), activities.asOrderedSet());
+        Job job = Job.create("Create scoped model", (IJobFunction)m -> storeScope(scope, saveFile, m));
+        job.setUser(true);
+        job.schedule();
+    }
+
+    private static IStatus storeScope(Model scope, IFile saveFile, IProgressMonitor monitor) {
+        SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
         try {
-            FileHelper.storeModel(experiment, saveAsDialog.getResult().toOSString());
-        } catch (IOException e) {
-            MessageDialog.openError(shell, "Create scoped model",
-                    "Failed to create scoped model: " + e.getLocalizedMessage());
+            URI saveUri = FileHelper.asURI(saveFile);
+            FileHelper.storeModel(scope, saveUri);
+            subMonitor.worked(9);
+
+            IProject umlProject = saveFile.getProject();
+            umlProject.refreshLocal(IResource.DEPTH_INFINITE, subMonitor.split(1));
+
+            return CreateDiagramsHelper.createUmlDiagrams(scope, subMonitor.split(90));
+        } catch (Exception e) {
+            return new Status(IStatus.ERROR, CreateScopedModelHandler.class,
+                    "Failed to create scoped model: " + e.getLocalizedMessage(), e);
         }
     }
 

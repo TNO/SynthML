@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -67,5 +68,9 @@ public class FileHelper {
         ResourceSet resourceSet = new ResourceSetImpl();
         UMLResourcesUtil.init(resourceSet);
         return resourceSet;
+    }
+
+    public static final URI asURI(IFile file) {
+        return URI.createPlatformResourceURI(file.getFullPath().toString(), true);
     }
 }
