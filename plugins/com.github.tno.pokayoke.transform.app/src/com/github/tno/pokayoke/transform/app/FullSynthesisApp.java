@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -77,7 +78,7 @@ public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException, CoreException {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.CoreException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,7 +32,7 @@ class FullSynthesisAppRegressionTest extends RegressionTest {
     }
 
     @Override
-    protected void actTest(Path inputPath, Path outputPath) throws IOException {
+    protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
         FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
     }
 }

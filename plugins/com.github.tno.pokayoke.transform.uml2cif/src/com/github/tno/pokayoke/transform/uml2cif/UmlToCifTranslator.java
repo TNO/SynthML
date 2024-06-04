@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
@@ -45,6 +46,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.google.common.base.Preconditions;
@@ -54,6 +56,9 @@ import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator {
+    /** The UML model to translate. */
+    private final Model model;
+
     /** The context that allows querying the input UML model. */
     private final CifContext context;
 
@@ -73,6 +78,7 @@ public class UmlToCifTranslator {
     private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
 
     public UmlToCifTranslator(Model model) {
+        this.model = model;
         this.context = new CifContext(model);
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
     }
@@ -81,8 +87,13 @@ public class UmlToCifTranslator {
      * Translates the UML synthesis specifications to a CIF specification.
      *
      * @return The translated CIF specification.
+     * @throws CoreException In case the input UML model is invalid.
      */
-    public Specification translate() {
+    public Specification translate() throws CoreException {
+        // Validate the UML input model.
+        ValidationHelper.validateModel(model);
+
+        // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
         cifSpec.setName("specification");
 
