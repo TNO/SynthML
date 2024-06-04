@@ -234,21 +234,9 @@ public class FullSynthesisApp {
         // Add the guards for the edges that go from decision nodes to the opaque actions.
         OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
-        // Get the string representations of specification guards and updates.
-        Map<Event, String> specificationGuards = EventGuardUpdateHelper.collectSpecificationEventGuards(cifSpec);
-        Map<Event, String> specificationUpdates = EventGuardUpdateHelper.collectSpecificationEventUpdates(cifSpec);
-
-        // Add the guards and updates to the opaque actions.
-        OpaqueActionHelper.addGuardStringsToOpaqueActionBodies(activity, specificationGuards);
-        OpaqueActionHelper.addUpdateStringsToOpaqueActionBodies(activity, specificationUpdates);
-
-        Path umlWithGuardsUpdatesOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.internalactionsremoved.guardsandupdatesadded.uml");
-        FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
-
         // Post-process to remove the names of edges and nodes.
         Path umlLabelsRemovedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.internalactionsremoved.guardsandupdatesadded.labelsremoved.uml");
+                .resolve(filePrefix + ".14.internalactionsremoved.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
