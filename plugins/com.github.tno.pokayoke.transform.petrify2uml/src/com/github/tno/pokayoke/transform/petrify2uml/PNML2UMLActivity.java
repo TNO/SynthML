@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
@@ -24,7 +24,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PNML2UMLActivity {
     private final CifContext context;
 
-    private Map<Transition, OpaqueAction> transitionToAction;
+    private Map<Transition, Action> transitionToAction;
 
     public PNML2UMLActivity() {
         this(PNML2UMLActivityHelper.createEmptyModel());
@@ -65,7 +65,7 @@ public class PNML2UMLActivity {
         return activity;
     }
 
-    public Map<Transition, OpaqueAction> getTransitionActionMap() {
+    public Map<Transition, Action> getTransitionActionMap() {
         return transitionToAction;
     }
 }

@@ -4,8 +4,8 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityEdge;
-import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 
@@ -23,11 +23,11 @@ public class OpaqueActionHelper {
      *
      * @param actionToGuard The map from the opaque actions to the CIF expressions of the guards.
      */
-    public static void addGuardToIncomingEdges(Map<OpaqueAction, String> actionToGuard) {
+    public static void addGuardToIncomingEdges(Map<Action, String> actionToGuard) {
         actionToGuard.forEach((action, expression) -> addGuardToSingleIncomingEdge(action, expression));
     }
 
-    private static void addGuardToSingleIncomingEdge(OpaqueAction action, String expression) {
+    private static void addGuardToSingleIncomingEdge(Action action, String expression) {
         List<ActivityEdge> incomingEdges = action.getIncomings();
         Preconditions.checkArgument(incomingEdges.size() == 1,
                 String.format("Expected that opaque action %s has exactly one incoming edge.", action.getName()));

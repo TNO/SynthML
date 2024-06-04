@@ -33,9 +33,9 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
@@ -191,7 +191,7 @@ public class FullSynthesisApp {
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
         PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity(umlSpec);
         Activity activity = petriNet2Activity.transform(petriNet);
-        Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
+        Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
@@ -220,13 +220,13 @@ public class FullSynthesisApp {
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
         // Get a map from actions to the guards of the incoming edges of the actions.
-        Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
+        Map<Action, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
 
         // Convert CIF expression of choice guards into CIF expression text.
         ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-        Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
+        Map<Action, String> choiceActionToGuardText = new LinkedHashMap<>();
         choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
                 converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
