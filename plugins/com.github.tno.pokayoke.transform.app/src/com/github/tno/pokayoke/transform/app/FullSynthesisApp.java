@@ -194,8 +194,7 @@ public class FullSynthesisApp {
         Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and
-        // petrification.
+        // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".13.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
