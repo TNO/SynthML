@@ -49,7 +49,7 @@
         <body>false</body>
       </defaultValue>
     </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="26" name="main" isAbstract="true" postcondition="27" node="46 47 48 49 50 51 52 53 54 55 56 57">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="26" name="main" postcondition="27" node="46 47 48 49 50 51 52 53 54 55 56 57">
       <ownedRule xmi:id="27" name="postcondition">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
           <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>

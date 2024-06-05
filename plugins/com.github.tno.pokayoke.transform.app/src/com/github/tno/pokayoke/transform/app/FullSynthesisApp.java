@@ -230,7 +230,7 @@ public class FullSynthesisApp {
         choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
                 converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
-        // Add the guards for the edges that go from decision nodes to the opaque actions.
+        // Add the guards for the edges that go from decision nodes to the actions.
         ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
         // Post-process to remove the names of edges and nodes.

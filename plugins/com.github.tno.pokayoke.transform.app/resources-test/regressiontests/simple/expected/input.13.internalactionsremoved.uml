@@ -72,7 +72,7 @@
         <body>Unknown</body>
       </defaultValue>
     </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="main" isAbstract="true" postcondition="37" node="57 58 59 60 61 62 63 64 65 66 67 68 69">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="main" postcondition="37" node="57 58 59 60 61 62 63 64 65 66 67 68 69">
       <ownedRule xmi:id="37" name="postcondition">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="38" name="">
           <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
