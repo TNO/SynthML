@@ -109,9 +109,9 @@ public class PNML2UMLActivityHelper {
             callAction.setName(name);
             action = callAction;
         } else {
-            // Here we are transforming an internal action, e.g., 'start' or 'end', which will be filtered out later.
-            // For those internal actions, no corresponding opaque behavior exists.
-            // So translate them as opaque actions instead.
+            // Here we are transforming an action for which no opaque behavior is defined. This could be due to the
+            // action being internal (e.g., 'start' or 'end') or due to translating to an empty UML model (e.g., for
+            // regression testing). Therefore these actions are translated to opaque actions instead.
             action = UML_FACTORY.createOpaqueAction();
             action.setActivity(activity);
             action.setName(name);
