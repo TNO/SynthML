@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.google.common.base.Preconditions;
 
-/** Helper for adding guards to the incoming edges of opaque actions. */
+/** Helper for adding guards to the incoming edges of actions. */
 public class ActionHelper {
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
@@ -19,9 +19,9 @@ public class ActionHelper {
     }
 
     /**
-     * Add guards to the incoming edges of opaque actions.
+     * Add guards to the incoming edges of actions.
      *
-     * @param actionToGuard The map from the opaque actions to the CIF expressions of the guards.
+     * @param actionToGuard The map from the actions to the CIF expressions of the guards.
      */
     public static void addGuardToIncomingEdges(Map<Action, String> actionToGuard) {
         actionToGuard.forEach((action, expression) -> addGuardToSingleIncomingEdge(action, expression));
@@ -30,7 +30,7 @@ public class ActionHelper {
     private static void addGuardToSingleIncomingEdge(Action action, String expression) {
         List<ActivityEdge> incomingEdges = action.getIncomings();
         Preconditions.checkArgument(incomingEdges.size() == 1,
-                String.format("Expected that opaque action %s has exactly one incoming edge.", action.getName()));
+                String.format("Expected that action %s has exactly one incoming edge.", action.getName()));
         ActivityEdge incomingEdge = incomingEdges.get(0);
 
         OpaqueExpression guard = FACTORY.createOpaqueExpression();
