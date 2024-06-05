@@ -12,10 +12,10 @@ import org.eclipse.uml2.uml.UMLFactory;
 import com.google.common.base.Preconditions;
 
 /** Helper for adding guards to the incoming edges of opaque actions. */
-public class OpaqueActionHelper {
+public class ActionHelper {
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
-    private OpaqueActionHelper() {
+    private ActionHelper() {
     }
 
     /**

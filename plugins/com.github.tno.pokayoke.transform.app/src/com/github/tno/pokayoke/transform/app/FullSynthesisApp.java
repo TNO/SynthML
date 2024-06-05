@@ -42,7 +42,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
-import com.github.tno.pokayoke.transform.activitysynthesis.OpaqueActionHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.ActionHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -231,7 +231,7 @@ public class FullSynthesisApp {
                 converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
         // Add the guards for the edges that go from decision nodes to the opaque actions.
-        OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+        ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
         // Post-process to remove the names of edges and nodes.
         Path umlLabelsRemovedOutputPath = outputFolderPath
