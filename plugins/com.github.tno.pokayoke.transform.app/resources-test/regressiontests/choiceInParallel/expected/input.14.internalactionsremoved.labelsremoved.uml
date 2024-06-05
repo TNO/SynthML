@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
   <nameExpression xmi:id="2" name="literals">
     <operand xmi:type="uml:LiteralInteger" xmi:id="3" name=""/>
     <operand xmi:type="uml:LiteralInteger" xmi:id="4" name="" value="1"/>
@@ -58,35 +58,75 @@
       <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="29" name="happens_at_most_once" constrainedElement="58 60 61 62 59">
         <specification xmi:type="uml:Interval" xmi:id="30" name="" max="4" min="3"/>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Fork__to__Flip_A_Coin" target="48" source="56"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Fork__to__Starting_Computer" target="50" source="56"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Decision__p5__to__Drink_Coffee" target="46" source="54">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="34" value="true"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="31" target="48" source="56">
+        <name xsi:nil="true"/>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p5__to__Drink_Tea" target="47" source="54">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="36" value="true"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="32" target="50" source="56">
+        <name xsi:nil="true"/>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Flip_A_Coin__to__Decision__p5" target="54" source="48"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Starting_Computer__to__Join" target="57" source="50"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="39" name="Drink_Coffee__to__Merge__p7" target="55" source="46"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Drink_Tea__to__Merge__p7" target="55" source="47"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Merge__p7__to__Join" target="57" source="55"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Turn_Computer_On__to__Fork" target="56" source="51"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Join__to__Start_Working" target="49" source="57"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="44" name="InitialNode__to__Turn_Computer_On" target="51" source="52"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="45" name="Start_Working__to__FinalNode" target="53" source="49"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="33" target="46" source="54">
+        <name xsi:nil="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
+          <body>true</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="35" target="47" source="54">
+        <name xsi:nil="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
+          <body>true</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="37" target="54" source="48">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="38" target="57" source="50">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="39" target="55" source="46">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="40" target="55" source="47">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="41" target="57" source="55">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="42" target="56" source="51">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="43" target="49" source="57">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="44" target="51" source="52">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="45" target="53" source="49">
+        <name xsi:nil="true"/>
+      </edge>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="Drink_Coffee" incoming="33" outgoing="39" behavior="60"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="Drink_Tea" incoming="35" outgoing="40" behavior="61"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Flip_A_Coin" incoming="31" outgoing="37" behavior="63"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Start_Working" incoming="43" outgoing="45" behavior="62"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="Starting_Computer" incoming="32" outgoing="38" behavior="59"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Turn_Computer_On" incoming="44" outgoing="42" behavior="58"/>
-      <node xmi:type="uml:InitialNode" xmi:id="52" name="InitialNode" outgoing="44"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="53" name="FinalNode" incoming="45"/>
-      <node xmi:type="uml:DecisionNode" xmi:id="54" name="Decision__p5" incoming="37" outgoing="33 35"/>
-      <node xmi:type="uml:MergeNode" xmi:id="55" name="Merge__p7" incoming="39 40" outgoing="41"/>
-      <node xmi:type="uml:ForkNode" xmi:id="56" name="Fork" incoming="42" outgoing="31 32"/>
-      <node xmi:type="uml:JoinNode" xmi:id="57" name="Join" incoming="38 41" outgoing="43"/>
+      <node xmi:type="uml:InitialNode" xmi:id="52" outgoing="44">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="53" incoming="45">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:DecisionNode" xmi:id="54" incoming="37" outgoing="33 35">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:MergeNode" xmi:id="55" incoming="39 40" outgoing="41">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:ForkNode" xmi:id="56" incoming="42" outgoing="31 32">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:JoinNode" xmi:id="57" incoming="38 41" outgoing="43">
+        <name xsi:nil="true"/>
+      </node>
     </ownedBehavior>
     <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="58" name="Turn_Computer_On">
       <body>not Is_Computer_Ready and not Is_Computer_On</body>

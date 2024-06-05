@@ -33,16 +33,16 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 
 import com.github.javabdd.BDD;
+import com.github.tno.pokayoke.transform.activitysynthesis.ActionHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
-import com.github.tno.pokayoke.transform.activitysynthesis.OpaqueActionHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -189,13 +189,12 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
-        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
+        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity(umlSpec);
         Activity activity = petriNet2Activity.transform(petriNet);
-        Map<Transition, OpaqueAction> transitionToAction = petriNet2Activity.getTransitionActionMap();
+        Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and
-        // petrification.
+        // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".13.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
@@ -221,34 +220,22 @@ public class FullSynthesisApp {
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
         // Get a map from actions to the guards of the incoming edges of the actions.
-        Map<OpaqueAction, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
+        Map<Action, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
         choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
                 .put(transitionToAction.get(transition), expression));
 
         // Convert CIF expression of choice guards into CIF expression text.
         ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-        Map<OpaqueAction, String> choiceActionToGuardText = new LinkedHashMap<>();
+        Map<Action, String> choiceActionToGuardText = new LinkedHashMap<>();
         choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
                 converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
-        // Add the guards for the edges that go from decision nodes to the opaque actions.
-        OpaqueActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
-
-        // Get the string representations of specification guards and updates.
-        Map<Event, String> specificationGuards = EventGuardUpdateHelper.collectSpecificationEventGuards(cifSpec);
-        Map<Event, String> specificationUpdates = EventGuardUpdateHelper.collectSpecificationEventUpdates(cifSpec);
-
-        // Add the guards and updates to the opaque actions.
-        OpaqueActionHelper.addGuardStringsToOpaqueActionBodies(activity, specificationGuards);
-        OpaqueActionHelper.addUpdateStringsToOpaqueActionBodies(activity, specificationUpdates);
-
-        Path umlWithGuardsUpdatesOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.internalactionsremoved.guardsandupdatesadded.uml");
-        FileHelper.storeModel(activity.getModel(), umlWithGuardsUpdatesOutputPath.toString());
+        // Add the guards for the edges that go from decision nodes to the actions.
+        ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
 
         // Post-process to remove the names of edges and nodes.
         Path umlLabelsRemovedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.internalactionsremoved.guardsandupdatesadded.labelsremoved.uml");
+                .resolve(filePrefix + ".14.internalactionsremoved.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }

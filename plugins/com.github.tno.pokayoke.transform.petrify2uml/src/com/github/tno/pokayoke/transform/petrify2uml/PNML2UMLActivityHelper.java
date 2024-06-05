@@ -7,10 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -20,9 +23,9 @@ import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -35,24 +38,45 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PNML2UMLActivityHelper {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
-    private final Map<String, OpaqueAction> nameActionMap = new LinkedHashMap<>();
+    private final CifContext context;
 
-    public Activity initializeUMLActivity(Page page) {
+    private final Map<String, Action> nameActionMap = new LinkedHashMap<>();
+
+    public PNML2UMLActivityHelper(CifContext context) {
+        this.context = context;
+    }
+
+    public static Model createEmptyUMLModel() {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
-        model.setName(page.getId());
+        model.setName("Model");
 
         // Create a UML class and add it to the model.
-        Class contextClass = model.createOwnedClass("Class", false);
+        Class clazz = model.createOwnedClass("Class", false);
 
         // Create an activity for the class.
         Activity activity = UML_FACTORY.createActivity();
-        activity.setName(page.getId());
+        activity.setName("Activity");
 
         // Add the activity as the owned member of the class.
-        contextClass.getOwnedBehaviors().add(activity);
+        clazz.getOwnedBehaviors().add(activity);
+        clazz.setClassifierBehavior(activity);
 
-        return activity;
+        return model;
+    }
+
+    public Activity findUMLActivity() {
+        // Find the single UML class in the input model.
+        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
+        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
+        Class umlClass = umlClasses.get(0);
+
+        // Find the abstract classifier behavior activity of this class.
+        Activity umlActivity = (Activity)umlClass.getClassifierBehavior();
+        Preconditions.checkArgument(umlActivity.getNodes().isEmpty(), "Expected an activity without nodes.");
+        Preconditions.checkArgument(umlActivity.getEdges().isEmpty(), "Expected an activity without edges.");
+
+        return umlActivity;
     }
 
     /**
@@ -62,8 +86,8 @@ public class PNML2UMLActivityHelper {
      * @param activity The activity that contains the transformed actions.
      * @return The map from Petri net transitions to activity actions.
      */
-    public Map<Transition, OpaqueAction> transformTransitions(Page page, Activity activity) {
-        Map<Transition, OpaqueAction> transitionToAction = new LinkedHashMap<>();
+    public Map<Transition, Action> transformTransitions(Page page, Activity activity) {
+        Map<Transition, Action> transitionToAction = new LinkedHashMap<>();
         List<Transition> transitions = page.getObjects().stream().filter(Transition.class::isInstance)
                 .map(Transition.class::cast).sorted(Comparator.comparing(Transition::getId)).toList();
 
@@ -73,10 +97,26 @@ public class PNML2UMLActivityHelper {
         return transitionToAction;
     }
 
-    private OpaqueAction transformTransition(String name, Activity activity) {
-        OpaqueAction action = UML_FACTORY.createOpaqueAction();
-        action.setName(name);
-        action.setActivity(activity);
+    private Action transformTransition(String name, Activity activity) {
+        Behavior behavior = context.getOpaqueBehavior(getNameWithoutDuplicationPostfix(name));
+
+        Action action;
+
+        if (behavior != null) {
+            CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
+            callAction.setActivity(activity);
+            callAction.setBehavior(behavior);
+            callAction.setName(name);
+            action = callAction;
+        } else {
+            // Here we are transforming an action for which no opaque behavior is defined. This could be due to the
+            // action being internal (e.g., 'start' or 'end') or due to translating to an empty UML model (e.g., for
+            // regression testing). Therefore these actions are translated to opaque actions instead.
+            action = UML_FACTORY.createOpaqueAction();
+            action.setActivity(activity);
+            action.setName(name);
+        }
+
         Verify.verify(nameActionMap.put(name, action) == null,
                 "An existing action with the same name %s has already been added to the map.", name);
 
@@ -133,7 +173,7 @@ public class PNML2UMLActivityHelper {
         initialNode.setName("InitialNode");
 
         Node targetNode = place.getOutArcs().get(0).getTarget();
-        OpaqueAction targetAction = nameActionMap.get(targetNode.getId());
+        Action targetAction = nameActionMap.get(targetNode.getId());
 
         createControlFlow(activity, initialNode, targetAction);
     }
@@ -189,7 +229,7 @@ public class PNML2UMLActivityHelper {
         finalNode.setName("FinalNode");
 
         Node sourceNode = place.getInArcs().get(0).getSource();
-        OpaqueAction sourceAction = nameActionMap.get(sourceNode.getId());
+        Action sourceAction = nameActionMap.get(sourceNode.getId());
 
         createControlFlow(activity, sourceAction, finalNode);
     }
@@ -217,8 +257,8 @@ public class PNML2UMLActivityHelper {
 
     private ActivityNode transformMerge(Place place, Activity activity) {
         // Obtain the actions translated from the sources of the incoming arcs.
-        List<OpaqueAction> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
-                .sorted(Comparator.comparing(OpaqueAction::getName)).toList();
+        List<Action> sourceActions = place.getInArcs().stream().map(o -> nameActionMap.get(o.getSource().getId()))
+                .sorted(Comparator.comparing(Action::getName)).toList();
 
         if (sourceActions.size() == 1) {
             return sourceActions.get(0);
@@ -236,9 +276,8 @@ public class PNML2UMLActivityHelper {
 
     private ActivityNode transformDecision(Place place, Activity activity) {
         // Obtain the actions translated from the target of the outgoing arcs.
-        List<OpaqueAction> targetActions = place.getOutArcs().stream()
-                .map(o -> nameActionMap.get(o.getTarget().getId())).sorted(Comparator.comparing(OpaqueAction::getName))
-                .toList();
+        List<Action> targetActions = place.getOutArcs().stream().map(o -> nameActionMap.get(o.getTarget().getId()))
+                .sorted(Comparator.comparing(Action::getName)).toList();
 
         if (targetActions.size() == 1) {
             return targetActions.get(0);
@@ -263,7 +302,7 @@ public class PNML2UMLActivityHelper {
      * @param targetAction The target action to connect.
      */
     private static void connectDecisionNode2TargetAction(DecisionNode decision, Activity activity,
-            OpaqueAction targetAction)
+            Action targetAction)
     {
         ControlFlow controlFlow = createControlFlow(activity, decision, targetAction);
         LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
@@ -308,7 +347,7 @@ public class PNML2UMLActivityHelper {
         fork.setName("Fork");
 
         // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMap.get(transition.getId());
+        Action action = nameActionMap.get(transition.getId());
 
         // Obtain the outgoing edges.
         List<ActivityEdge> outgoingEdges = action.getOutgoings();
@@ -330,7 +369,7 @@ public class PNML2UMLActivityHelper {
         join.setName("Join");
 
         // Obtain the action translated from the transition.
-        OpaqueAction action = nameActionMap.get(transition.getId());
+        Action action = nameActionMap.get(transition.getId());
 
         // Obtain the incoming edges of the action.
         List<ActivityEdge> incomingEdges = action.getIncomings();
@@ -345,8 +384,11 @@ public class PNML2UMLActivityHelper {
         createControlFlow(activity, join, action);
     }
 
+    public String getNameWithoutDuplicationPostfix(String name) {
+        return name.contains("/") ? name.split("/")[0] : name;
+    }
+
     public void renameDuplicateActions() {
-        nameActionMap.values().stream().filter(action -> action.getName().contains("/"))
-                .forEach(action -> action.setName(action.getName().split("/")[0]));
+        nameActionMap.forEach((name, action) -> action.setName(getNameWithoutDuplicationPostfix(action.getName())));
     }
 }

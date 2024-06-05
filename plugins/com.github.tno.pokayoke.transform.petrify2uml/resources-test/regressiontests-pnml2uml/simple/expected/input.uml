@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="statespace">
-  <packagedElement xmi:type="uml:Class" xmi:id="2" name="Class">
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="3" name="statespace" node="32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55">
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
+  <packagedElement xmi:type="uml:Class" xmi:id="2" name="Class" classifierBehavior="3">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="3" name="Activity" node="32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55">
       <edge xmi:type="uml:ControlFlow" xmi:id="4" name="Fork__to__c_act5" target="40" source="52"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="5" name="c_act1__to__c_act6" target="41" source="32"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="6" name="c_act2__to__c_act7" target="43" source="37"/>

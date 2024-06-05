@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.Model;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
@@ -20,7 +22,17 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Transforms PNML to UML Activity. */
 public class PNML2UMLActivity {
-    private Map<Transition, OpaqueAction> transitionToAction;
+    private final CifContext context;
+
+    private Map<Transition, Action> transitionToAction;
+
+    public PNML2UMLActivity() {
+        this(PNML2UMLActivityHelper.createEmptyUMLModel());
+    }
+
+    public PNML2UMLActivity(Model umlModel) {
+        this.context = new CifContext(umlModel);
+    }
 
     public void transformFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
@@ -40,8 +52,8 @@ public class PNML2UMLActivity {
                 "Expected that the Petri Net has exactly one page");
         Page page = petriNet.getPages().get(0);
 
-        PNML2UMLActivityHelper petriNet2ActivityHelper = new PNML2UMLActivityHelper();
-        Activity activity = petriNet2ActivityHelper.initializeUMLActivity(page);
+        PNML2UMLActivityHelper petriNet2ActivityHelper = new PNML2UMLActivityHelper(context);
+        Activity activity = petriNet2ActivityHelper.findUMLActivity();
 
         transitionToAction = petriNet2ActivityHelper.transformTransitions(page, activity);
         petriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
@@ -50,10 +62,12 @@ public class PNML2UMLActivity {
 
         petriNet2ActivityHelper.renameDuplicateActions();
 
+        activity.setIsAbstract(false);
+
         return activity;
     }
 
-    public Map<Transition, OpaqueAction> getTransitionActionMap() {
+    public Map<Transition, Action> getTransitionActionMap() {
         return transitionToAction;
     }
 }
