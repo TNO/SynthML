@@ -17,9 +17,13 @@ import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 
 import com.github.javabdd.BDD;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -104,6 +108,12 @@ public class ChoiceActionGuardComputation {
                 Expression choiceGuardExpr = BddToCif.bddToCifPred(choiceGuardBdd, cifBddSpec);
                 choiceGuardBdd.free();
 
+                // Make sure the choice guard does not contain the atomicity variable.
+                if (containsVariable(choiceGuardExpr, UmlToCifTranslator.ATOMICITY_VARIABLE_NAME)) {
+                    throw new RuntimeException(
+                            "Expected choice guards to not be expressed over the atomicity variable.");
+                }
+
                 choiceTransitionToGuard.put(
                         ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
                         choiceGuardExpr);
@@ -112,5 +122,17 @@ public class ChoiceActionGuardComputation {
         }
 
         return choiceTransitionToGuard;
+    }
+
+    private boolean containsVariable(Expression expr, String varName) {
+        if (expr instanceof DiscVariableExpression varExpr) {
+            return varExpr.getVariable().getName().equals(varName);
+        } else if (expr instanceof UnaryExpression unExpr) {
+            return containsVariable(unExpr.getChild(), varName);
+        } else if (expr instanceof BinaryExpression binExpr) {
+            return containsVariable(binExpr.getLeft(), varName) || containsVariable(binExpr.getRight(), varName);
+        }
+
+        return false;
     }
 }
