@@ -98,7 +98,7 @@ public class PNML2UMLActivityHelper {
     }
 
     private Action transformTransition(String name, Activity activity) {
-        Behavior behavior = context.getOpaqueBehavior(getNameModuloDuplicationMarker(name));
+        Behavior behavior = context.getOpaqueBehavior(getNameWithoutDuplicationPostfix(name));
 
         Action action;
 
@@ -389,6 +389,6 @@ public class PNML2UMLActivityHelper {
     }
 
     public void renameDuplicateActions() {
-        nameActionMap.forEach((name, action) -> action.setName(getNameModuloDuplicationMarker(action.getName())));
+        nameActionMap.forEach((name, action) -> action.setName(getNameWithoutDuplicationPostfix(action.getName())));
     }
 }
