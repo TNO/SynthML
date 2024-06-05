@@ -46,7 +46,7 @@ public class PNML2UMLActivityHelper {
         this.context = context;
     }
 
-    public static Model createEmptyModel() {
+    public static Model createEmptyUMLModel() {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
         model.setName("Model");
@@ -65,7 +65,7 @@ public class PNML2UMLActivityHelper {
         return model;
     }
 
-    public Activity initializeUMLActivity() {
+    public Activity findUMLActivity() {
         // Find the single UML class in the input model.
         List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
         Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());

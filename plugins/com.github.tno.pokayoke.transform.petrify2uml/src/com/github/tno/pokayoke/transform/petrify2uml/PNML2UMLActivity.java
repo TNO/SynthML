@@ -27,7 +27,7 @@ public class PNML2UMLActivity {
     private Map<Transition, Action> transitionToAction;
 
     public PNML2UMLActivity() {
-        this(PNML2UMLActivityHelper.createEmptyModel());
+        this(PNML2UMLActivityHelper.createEmptyUMLModel());
     }
 
     public PNML2UMLActivity(Model umlModel) {
@@ -53,7 +53,7 @@ public class PNML2UMLActivity {
         Page page = petriNet.getPages().get(0);
 
         PNML2UMLActivityHelper petriNet2ActivityHelper = new PNML2UMLActivityHelper(context);
-        Activity activity = petriNet2ActivityHelper.initializeUMLActivity();
+        Activity activity = petriNet2ActivityHelper.findUMLActivity();
 
         transitionToAction = petriNet2ActivityHelper.transformTransitions(page, activity);
         petriNet2ActivityHelper.transformMarkedAndFinalPlaces(page, activity);
@@ -61,6 +61,8 @@ public class PNML2UMLActivity {
         petriNet2ActivityHelper.transformTransitionBasedPatterns(page, activity);
 
         petriNet2ActivityHelper.renameDuplicateActions();
+
+        activity.setIsAbstract(false);
 
         return activity;
     }
