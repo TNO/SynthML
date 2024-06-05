@@ -384,7 +384,7 @@ public class PNML2UMLActivityHelper {
         createControlFlow(activity, join, action);
     }
 
-    public String getNameModuloDuplicationMarker(String name) {
+    public String getNameWithoutDuplicationPostfix(String name) {
         return name.contains("/") ? name.split("/")[0] : name;
     }
 
