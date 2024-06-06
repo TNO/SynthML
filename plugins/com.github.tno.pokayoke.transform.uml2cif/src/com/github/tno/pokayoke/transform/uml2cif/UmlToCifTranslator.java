@@ -243,10 +243,12 @@ public class UmlToCifTranslator {
         }
 
         // In case nondeterministic actions were encountered, encode the necessary atomicity constraints.
+        DiscVariable cifAtomicityVar = null;
+
         if (!startEndEventMap.isEmpty()) {
             // Declare a variable that indicates which nondeterministic action is currently active / being executed.
             // The value 0 then indicates that no nondeterministic action is currently active.
-            DiscVariable cifAtomicityVar = CifConstructors.newDiscVariable();
+            cifAtomicityVar = CifConstructors.newDiscVariable();
             cifAtomicityVar.setName("__activeAction");
             cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
@@ -329,6 +331,18 @@ public class UmlToCifTranslator {
         if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
             Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
             cifPlant.getMarkeds().add(cifPostcondition);
+
+            // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+            // nondeterministic action must be active in order to be in a marked state.
+            if (cifAtomicityVar != null) {
+                BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
+                cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
+                cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
+                cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
+                cifPlant.getMarkeds().add(cifAtomicityPostcondition);
+            }
         }
 
         // Translate all UML class constraints as CIF invariants.
