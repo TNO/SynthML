@@ -122,9 +122,14 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all postconditions of the classifier behavior of the UML class.
+        // Translate all preconditions of the classifier behavior of the UML class.
         Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
+        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
+            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
+            cifPlant.getInitials().add(cifPrecondition);
+        }
 
+        // Translate all postconditions of the classifier behavior of the UML class.
         if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
             // Define the event that indicates that all postconditions are satisfied.
             Event cifSatisfiedEvent = CifConstructors.newEvent();
