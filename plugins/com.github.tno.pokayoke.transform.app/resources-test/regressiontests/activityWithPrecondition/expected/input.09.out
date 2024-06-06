@@ -1,0 +1,13 @@
+.model minimal
+.dummy  start end change c_satisfied
+.graph
+c_satisfied p4
+change p3
+end p1
+p1 start
+p2 change
+p3 c_satisfied
+p4 end
+start p2
+.marking { p1 }
+.end

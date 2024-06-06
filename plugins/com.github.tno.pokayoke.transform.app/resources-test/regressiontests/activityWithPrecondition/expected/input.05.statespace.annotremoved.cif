@@ -1,0 +1,12 @@
+controllable change;
+controllable c_satisfied;
+automaton statespace:
+  alphabet change, c_satisfied;
+  location loc1:
+    initial;
+    edge change goto loc2;
+  location loc2:
+    edge c_satisfied goto loc3;
+  location loc3:
+    marked;
+end
