@@ -41,11 +41,6 @@
           <text>Flip_A_Coin</text>
         </name>
       </transition>
-      <transition id="c_satisfied">
-        <name>
-          <text>c_satisfied</text>
-        </name>
-      </transition>
       <place id="p7">
         <name>
           <text>p7</text>
@@ -90,13 +85,6 @@
       </arc>
       <arc id="Turn_Computer_On__to__p4" source="Turn_Computer_On" target="p4">
       </arc>
-      <place id="p9">
-        <name>
-          <text>p9</text>
-        </name>
-      </place>
-      <arc id="c_satisfied__to__p9" source="c_satisfied" target="p9">
-      </arc>
       <place id="p1">
         <name>
           <text>p1</text>
@@ -126,9 +114,7 @@
       </arc>
       <arc id="p7__to__Start_Working" source="p7" target="Start_Working">
       </arc>
-      <arc id="p8__to__c_satisfied" source="p8" target="c_satisfied">
-      </arc>
-      <arc id="p9__to__end" source="p9" target="end">
+      <arc id="p8__to__end" source="p8" target="end">
       </arc>
       <arc id="start__to__p2" source="start" target="p2">
       </arc>

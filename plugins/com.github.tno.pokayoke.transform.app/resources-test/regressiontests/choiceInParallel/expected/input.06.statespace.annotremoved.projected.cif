@@ -4,9 +4,8 @@ controllable Drink_Coffee;
 controllable Drink_Tea;
 controllable Start_Working;
 controllable Flip_A_Coin;
-controllable c_satisfied;
 automaton projected:
-  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, c_satisfied;
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin;
   @state(statespace = "loc1")
   location s1:
     initial;
@@ -50,14 +49,8 @@ automaton projected:
     edge Start_Working goto s11;
   @state(statespace = "loc14")
   location s11:
-    edge c_satisfied goto s13;
+    marked;
   @state(statespace = "loc15")
   location s12:
-    edge c_satisfied goto s14;
-  @state(statespace = "loc16")
-  location s13:
-    marked;
-  @state(statespace = "loc17")
-  location s14:
     marked;
 end

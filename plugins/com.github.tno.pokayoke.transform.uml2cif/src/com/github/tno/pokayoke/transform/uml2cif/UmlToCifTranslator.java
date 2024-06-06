@@ -125,31 +125,8 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all preconditions of the classifier behavior of the UML class.
-        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
-        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
-            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
-            cifPlant.getInitials().add(cifPrecondition);
-        }
-
-        // Translate all postconditions of the classifier behavior of the UML class.
-        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
-            // Define the event that indicates that all postconditions are satisfied.
-            Event cifSatisfiedEvent = CifConstructors.newEvent();
-            cifSatisfiedEvent.setControllable(true);
-            cifSatisfiedEvent.setName("c_satisfied");
-            cifSpec.getDeclarations().add(cifSatisfiedEvent);
-
-            // Combine all postconditions into a single postcondition expression.
-            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
-
-            // Create the postcondition requirement automaton.
-            cifSpec.getComponents()
-                    .add(createPostconditionRequirement("__postcondition", cifPostcondition, cifSatisfiedEvent));
-        }
-
         // Translate all interval constraints of the classifier behavior of the UML class.
-        for (Constraint umlConstraint: umlClassifierBehavior.getOwnedRules()) {
+        for (Constraint umlConstraint: umlClass.getClassifierBehavior().getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
                 List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
                 cifSpec.getComponents().addAll(cifRequirements);
@@ -269,10 +246,12 @@ public class UmlToCifTranslator {
         }
 
         // In case nondeterministic actions were encountered, encode the necessary atomicity constraints.
+        DiscVariable cifAtomicityVar = null;
+
         if (!startEndEventMap.isEmpty()) {
             // Declare a variable that indicates which nondeterministic action is currently active / being executed.
             // The value 0 then indicates that no nondeterministic action is currently active.
-            DiscVariable cifAtomicityVar = CifConstructors.newDiscVariable();
+            cifAtomicityVar = CifConstructors.newDiscVariable();
             cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
             cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
@@ -342,6 +321,31 @@ public class UmlToCifTranslator {
                     cifEdge.getUpdates().add(cifUpdate);
                 }
             }
+        }
+
+        // Translate all preconditions of the classifier behavior of the UML class.
+        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
+        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
+            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
+            cifPlant.getInitials().add(cifPrecondition);
+        }
+
+        // Translate all postconditions of the classifier behavior of the UML class.
+        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
+            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
+            cifPlant.getMarkeds().add(cifPostcondition);
+        }
+
+        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+        // nondeterministic action must be active in order to be in a marked state.
+        if (cifAtomicityVar != null) {
+            BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
+            cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+            cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
+            cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
+            cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
+            cifPlant.getMarkeds().add(cifAtomicityPostcondition);
         }
 
         // Translate all UML class constraints as CIF invariants.
@@ -517,43 +521,6 @@ public class UmlToCifTranslator {
                 (IntType)updateExpr.getRight().getType()));
         update.setValue(updateExpr);
         edge.getUpdates().add(update);
-
-        return automaton;
-    }
-
-    /**
-     * Creates a CIF requirement automaton that expresses the activity postcondition.
-     *
-     * @param name The name of the CIF requirement automaton.
-     * @param predicate The predicate describing the activity postcondition.
-     * @param satisfiedEvent The event that indicates that the postcondition is satisfied.
-     * @return The CIF requirement automaton.
-     */
-    private Automaton createPostconditionRequirement(String name, Expression predicate, Event satisfiedEvent) {
-        // Create the requirement automaton.
-        Automaton automaton = CifConstructors.newAutomaton();
-        automaton.setKind(SupKind.REQUIREMENT);
-        automaton.setName(name);
-
-        // Define the two locations of the automaton.
-        Location notSatisfied = CifConstructors.newLocation();
-        notSatisfied.getInitials().add(createBoolExpression(true));
-        notSatisfied.setName("NotSatisfied");
-        automaton.getLocations().add(notSatisfied);
-        Location satisfied = CifConstructors.newLocation();
-        satisfied.setName("Satisfied");
-        satisfied.getMarkeds().add(createBoolExpression(true));
-        automaton.getLocations().add(satisfied);
-
-        // Define the edge between the two locations.
-        EventExpression eventExpr = CifConstructors.newEventExpression(satisfiedEvent, null,
-                CifConstructors.newBoolType());
-        Edge edge = CifConstructors.newEdge();
-        edge.getEvents().add(CifConstructors.newEdgeEvent(eventExpr, null));
-        edge.getGuards().add(predicate);
-        edge.setTarget(satisfied);
-        edge.setUrgent(false);
-        notSatisfied.getEdges().add(edge);
 
         return automaton;
     }

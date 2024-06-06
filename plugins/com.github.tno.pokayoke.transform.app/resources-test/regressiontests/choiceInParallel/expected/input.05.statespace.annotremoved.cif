@@ -6,9 +6,8 @@ controllable Start_Working;
 controllable Flip_A_Coin;
 uncontrollable Flip_A_Coin__result_1;
 uncontrollable Flip_A_Coin__result_2;
-controllable c_satisfied;
 automaton statespace:
-  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2, c_satisfied;
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2;
   location loc1:
     initial;
     edge Turn_Computer_On goto loc2;
@@ -42,11 +41,7 @@ automaton statespace:
   location loc13:
     edge Start_Working goto loc15;
   location loc14:
-    edge c_satisfied goto loc16;
-  location loc15:
-    edge c_satisfied goto loc17;
-  location loc16:
     marked;
-  location loc17:
+  location loc15:
     marked;
 end

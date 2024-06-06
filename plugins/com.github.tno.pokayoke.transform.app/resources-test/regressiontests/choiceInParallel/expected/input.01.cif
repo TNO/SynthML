@@ -7,7 +7,6 @@ controllable Start_Working;
 controllable Flip_A_Coin;
 uncontrollable Flip_A_Coin__result_1;
 uncontrollable Flip_A_Coin__result_2;
-controllable c_satisfied;
 plant automaton Context:
   disc bool Is_Computer_Ready = false;
   disc bool Is_Computer_On = false;
@@ -15,6 +14,8 @@ plant automaton Context:
   disc bool Has_Drank_Coffee_or_Tea = false;
   disc bool Is_Ready_to_Work = false;
   disc int[0..1] __activeAction;
+  marked Is_Computer_On and Is_Computer_Ready and (Has_Drank_Coffee_or_Tea and Is_Ready_to_Work),
+         __activeAction = 0;
   location:
     initial;
     marked;
@@ -26,13 +27,6 @@ plant automaton Context:
     edge Flip_A_Coin when Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown, __activeAction = 0 do __activeAction := 1;
     edge Flip_A_Coin__result_1 when __activeAction = 1 do Coffee_or_Tea := Coffee, __activeAction := 0;
     edge Flip_A_Coin__result_2 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
-end
-requirement automaton __postcondition:
-  location NotSatisfied:
-    initial;
-    edge c_satisfied when Context.Is_Computer_On and Context.Is_Computer_Ready and (Context.Has_Drank_Coffee_or_Tea and Context.Is_Ready_to_Work) goto Satisfied;
-  location Satisfied:
-    marked;
 end
 requirement automaton happens_at_most_once__Turn_Computer_On:
   disc int[0..1] occurrences;

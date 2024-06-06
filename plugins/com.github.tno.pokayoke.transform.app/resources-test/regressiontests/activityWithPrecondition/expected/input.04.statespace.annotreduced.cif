@@ -1,15 +1,11 @@
 controllable change;
-controllable c_satisfied;
 automaton statespace:
-  alphabet change, c_satisfied;
-  @state(__postcondition = "NotSatisfied", Class = "*", Class.element = "First", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 0, sup = "*")
+  alphabet change;
+  @state(Class = "*", Class.element = "First", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 0, sup = "*")
   location loc1:
     initial;
     edge change goto loc2;
-  @state(__postcondition = "NotSatisfied", Class = "*", Class.element = "Second", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 1, sup = "*")
+  @state(Class = "*", Class.element = "Second", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 1, sup = "*")
   location loc2:
-    edge c_satisfied goto loc3;
-  @state(__postcondition = "Satisfied", Class = "*", Class.element = "Second", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 1, sup = "*")
-  location loc3:
     marked;
 end

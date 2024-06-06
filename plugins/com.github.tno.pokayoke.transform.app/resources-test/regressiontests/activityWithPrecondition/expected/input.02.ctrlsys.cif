@@ -1,20 +1,13 @@
 enum Number = First, Second, Third;
 controllable change;
-controllable c_satisfied;
 plant automaton Class:
   disc Number element in any;
   initial element = First;
+  marked element = Second;
   location:
     initial;
     marked;
     edge change when element != Third do element := Second;
-end
-supervisor automaton __postcondition:
-  location NotSatisfied:
-    initial;
-    edge c_satisfied when Class.element = Second goto Satisfied;
-  location Satisfied:
-    marked;
 end
 supervisor automaton happens_at_most_once__change:
   disc int[0..1] occurrences;
@@ -24,10 +17,9 @@ supervisor automaton happens_at_most_once__change:
     edge change when occurrences < 1 do occurrences := occurrences + 1;
 end
 supervisor automaton sup:
-  alphabet change, c_satisfied;
+  alphabet change;
   location:
     initial;
     marked;
-    edge c_satisfied when happens_at_most_once__change.occurrences = 1 and (Class.element = Second and __postcondition.NotSatisfied);
-    edge change when (happens_at_most_once__change.occurrences = 1 or Class.element != Third) and happens_at_most_once__change.occurrences = 0;
+    edge change when Class.element = First and happens_at_most_once__change.occurrences = 0 or Class.element = Second and happens_at_most_once__change.occurrences = 0;
 end

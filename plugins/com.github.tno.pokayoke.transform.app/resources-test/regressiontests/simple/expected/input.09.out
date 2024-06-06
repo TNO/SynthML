@@ -1,11 +1,9 @@
 .model minimal
-.dummy  start end prepare_robot robot_move_to_location1 robot_move_to_location2 robot_adjust_product robot_release_product_at_location2 prepare_location2 measure_product_position c_satisfied
+.dummy  start end prepare_robot robot_move_to_location1 robot_move_to_location2 robot_adjust_product robot_release_product_at_location2 prepare_location2 measure_product_position
 .graph
-c_satisfied p10
 end p1
 measure_product_position p8
 p1 start
-p10 end
 p2 prepare_location2
 p3 prepare_robot
 p4 robot_move_to_location2
@@ -13,7 +11,7 @@ p5 robot_move_to_location2
 p6 robot_release_product_at_location2
 p7 measure_product_position
 p8 robot_adjust_product robot_move_to_location1
-p9 c_satisfied
+p9 end
 prepare_location2 p4
 prepare_robot p5
 robot_adjust_product p7

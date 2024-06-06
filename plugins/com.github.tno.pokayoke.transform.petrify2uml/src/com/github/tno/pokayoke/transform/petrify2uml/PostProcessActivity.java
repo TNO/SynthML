@@ -27,9 +27,6 @@ public class PostProcessActivity {
         numberOfRemovedActions = removeOpaqueActions("end", activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
                 "Expected that there is exactly one 'end' action removed.");
-        numberOfRemovedActions = removeOpaqueActions("c_satisfied", activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'c_satisfied' action removed.");
     }
 
     /**
