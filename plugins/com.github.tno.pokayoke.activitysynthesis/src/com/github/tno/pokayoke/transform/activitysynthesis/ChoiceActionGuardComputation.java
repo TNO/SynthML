@@ -18,8 +18,13 @@ import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.InputVariableExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.IntExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 
 import com.github.javabdd.BDD;
@@ -131,8 +136,18 @@ public class ChoiceActionGuardComputation {
             return containsVariable(unExpr.getChild(), varName);
         } else if (expr instanceof BinaryExpression binExpr) {
             return containsVariable(binExpr.getLeft(), varName) || containsVariable(binExpr.getRight(), varName);
+        } else if (expr instanceof BoolExpression) {
+            return false;
+        } else if (expr instanceof LocationExpression) {
+            return false;
+        } else if (expr instanceof EnumLiteralExpression) {
+            return false;
+        } else if (expr instanceof InputVariableExpression) {
+            return false;
+        } else if (expr instanceof IntExpression) {
+            return false;
         }
 
-        return false;
+        throw new RuntimeException("Unsupported expression.");
     }
 }
