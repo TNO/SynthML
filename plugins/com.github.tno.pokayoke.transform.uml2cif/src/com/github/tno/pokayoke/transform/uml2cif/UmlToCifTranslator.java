@@ -251,13 +251,8 @@ public class UmlToCifTranslator {
         if (!startEndEventMap.isEmpty()) {
             // Declare a variable that indicates which nondeterministic action is currently active / being executed.
             // The value 0 then indicates that no nondeterministic action is currently active.
-<<<<<<< HEAD
             cifAtomicityVar = CifConstructors.newDiscVariable();
-            cifAtomicityVar.setName("__activeAction");
-=======
-            DiscVariable cifAtomicityVar = CifConstructors.newDiscVariable();
             cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
->>>>>>> refs/remotes/origin/main
             cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
 
