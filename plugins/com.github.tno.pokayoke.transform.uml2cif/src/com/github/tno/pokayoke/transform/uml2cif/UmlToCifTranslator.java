@@ -454,20 +454,20 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Combines a set of Boolean-typed CIF algebraic variables into a single Boolean-typed CIF algebraic variable, whose
-     * value is the conjunction of all input variables.
+     * Combines a set of Boolean-typed CIF algebraic pre/postcondition variables into a single Boolean-typed CIF
+     * algebraic variable, whose value is the conjunction of all input variables.
      *
-     * @param cifAlgVariables The collection of Boolean-typed CIF algebraic variables to combine.
-     * @param variableName The name of the CIF algebraic variable that is the result of the combination.
+     * @param cifAlgVars The collection of Boolean-typed CIF algebraic variables to combine.
+     * @param varName The name of the CIF algebraic variable that is the result of the combination.
      * @return The combined CIF algebraic variable.
      */
-    private AlgVariable combinePrePostconditionVariables(Collection<AlgVariable> cifAlgVariables, String variableName) {
-        Expression cifCombinedExpr = CifValueUtils.createConjunction(cifAlgVariables.stream().map(
+    private AlgVariable combinePrePostconditionVariables(Collection<AlgVariable> cifAlgVars, String varName) {
+        Expression cifCombinedExpr = CifValueUtils.createConjunction(cifAlgVars.stream().map(
                 var -> (Expression)CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), var))
                 .toList());
 
         AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
-        cifAlgVar.setName(variableName);
+        cifAlgVar.setName(varName);
         cifAlgVar.setType(CifConstructors.newBoolType());
         cifAlgVar.setValue(cifCombinedExpr);
 
