@@ -185,7 +185,7 @@ public class UmlToCifTranslator {
                 cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
             } else {
                 // Indicate that the CIF variable can have any value by default.
-                cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of()));
+                cifVariable.setValue(CifConstructors.newVariableValue());
             }
         }
 
