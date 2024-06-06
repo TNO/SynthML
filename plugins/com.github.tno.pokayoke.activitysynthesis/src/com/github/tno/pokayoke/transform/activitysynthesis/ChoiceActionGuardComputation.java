@@ -148,6 +148,6 @@ public class ChoiceActionGuardComputation {
             return containsVariable(unExpr.getChild(), varName);
         }
 
-        throw new RuntimeException("Unsupported expression.");
+        throw new RuntimeException("Unsupported expression: " + expr);
     }
 }
