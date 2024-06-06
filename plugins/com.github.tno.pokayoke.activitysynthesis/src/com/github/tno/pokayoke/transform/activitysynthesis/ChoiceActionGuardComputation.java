@@ -130,22 +130,22 @@ public class ChoiceActionGuardComputation {
     }
 
     private boolean containsVariable(Expression expr, String varName) {
-        if (expr instanceof DiscVariableExpression varExpr) {
-            return varExpr.getVariable().getName().equals(varName);
-        } else if (expr instanceof UnaryExpression unExpr) {
-            return containsVariable(unExpr.getChild(), varName);
-        } else if (expr instanceof BinaryExpression binExpr) {
+        if (expr instanceof BinaryExpression binExpr) {
             return containsVariable(binExpr.getLeft(), varName) || containsVariable(binExpr.getRight(), varName);
         } else if (expr instanceof BoolExpression) {
             return false;
-        } else if (expr instanceof LocationExpression) {
-            return false;
+        } else if (expr instanceof DiscVariableExpression varExpr) {
+            return varExpr.getVariable().getName().equals(varName);
         } else if (expr instanceof EnumLiteralExpression) {
             return false;
         } else if (expr instanceof InputVariableExpression) {
             return false;
         } else if (expr instanceof IntExpression) {
             return false;
+        } else if (expr instanceof LocationExpression) {
+            return false;
+        } else if (expr instanceof UnaryExpression unExpr) {
+            return containsVariable(unExpr.getChild(), varName);
         }
 
         throw new RuntimeException("Unsupported expression.");
