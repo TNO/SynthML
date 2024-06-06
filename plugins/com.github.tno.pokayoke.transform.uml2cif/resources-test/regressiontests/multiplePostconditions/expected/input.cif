@@ -1,5 +1,8 @@
 plant automaton Context:
-  marked true and false;
+  alg bool postcondition1 = true;
+  alg bool postcondition2 = false;
+  alg bool __postcondition = postcondition1 and postcondition2;
+  marked __postcondition;
   location:
     initial;
     marked;
