@@ -49,6 +49,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -181,11 +182,15 @@ public class UmlToCifTranslator {
             cifPlant.getDeclarations().add(cifVariable);
             variableMap.put(umlProperty, cifVariable);
 
-            // Translate the default property value, if set.
-            ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
-            if (umlDefaultValue != null) {
+            // Determine the default value(s) of the CIF variable.
+            if (PokaYokeUmlProfileUtil.hasDefaultValue(umlProperty)) {
+                // Translate the UML default property value.
+                ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
                 Expression cifDefaultValueExpr = translator.translate(CifParserHelper.parseExpression(umlDefaultValue));
                 cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
+            } else {
+                // Indicate that the CIF variable can have any value by default.
+                cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of()));
             }
         }
 
