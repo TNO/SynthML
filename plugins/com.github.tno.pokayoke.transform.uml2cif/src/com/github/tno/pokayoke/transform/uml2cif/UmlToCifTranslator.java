@@ -58,6 +58,9 @@ import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator {
+    /** The name of the atomicity variable used in translated CIF specifications. */
+    public static final String ATOMICITY_VARIABLE_NAME = "__activeAction";
+
     /** The UML model to translate. */
     private final Model model;
 
@@ -270,7 +273,7 @@ public class UmlToCifTranslator {
             // Declare a variable that indicates which nondeterministic action is currently active / being executed.
             // The value 0 then indicates that no nondeterministic action is currently active.
             DiscVariable cifAtomicityVar = CifConstructors.newDiscVariable();
-            cifAtomicityVar.setName("__activeAction");
+            cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
             cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
 
