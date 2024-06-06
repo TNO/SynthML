@@ -131,18 +131,8 @@ public class UmlToCifTranslator {
 
         // Translate all postconditions of the classifier behavior of the UML class.
         if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
-            // Define the event that indicates that all postconditions are satisfied.
-            Event cifSatisfiedEvent = CifConstructors.newEvent();
-            cifSatisfiedEvent.setControllable(true);
-            cifSatisfiedEvent.setName("c_satisfied");
-            cifSpec.getDeclarations().add(cifSatisfiedEvent);
-
-            // Combine all postconditions into a single postcondition expression.
             Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
-
-            // Create the postcondition requirement automaton.
-            cifSpec.getComponents()
-                    .add(createPostconditionRequirement("__postcondition", cifPostcondition, cifSatisfiedEvent));
+            cifPlant.getMarkeds().add(cifPostcondition);
         }
 
         // Translate all interval constraints of the classifier behavior of the UML class.
@@ -514,43 +504,6 @@ public class UmlToCifTranslator {
                 (IntType)updateExpr.getRight().getType()));
         update.setValue(updateExpr);
         edge.getUpdates().add(update);
-
-        return automaton;
-    }
-
-    /**
-     * Creates a CIF requirement automaton that expresses the activity postcondition.
-     *
-     * @param name The name of the CIF requirement automaton.
-     * @param predicate The predicate describing the activity postcondition.
-     * @param satisfiedEvent The event that indicates that the postcondition is satisfied.
-     * @return The CIF requirement automaton.
-     */
-    private Automaton createPostconditionRequirement(String name, Expression predicate, Event satisfiedEvent) {
-        // Create the requirement automaton.
-        Automaton automaton = CifConstructors.newAutomaton();
-        automaton.setKind(SupKind.REQUIREMENT);
-        automaton.setName(name);
-
-        // Define the two locations of the automaton.
-        Location notSatisfied = CifConstructors.newLocation();
-        notSatisfied.getInitials().add(createBoolExpression(true));
-        notSatisfied.setName("NotSatisfied");
-        automaton.getLocations().add(notSatisfied);
-        Location satisfied = CifConstructors.newLocation();
-        satisfied.setName("Satisfied");
-        satisfied.getMarkeds().add(createBoolExpression(true));
-        automaton.getLocations().add(satisfied);
-
-        // Define the edge between the two locations.
-        EventExpression eventExpr = CifConstructors.newEventExpression(satisfiedEvent, null,
-                CifConstructors.newBoolType());
-        Edge edge = CifConstructors.newEdge();
-        edge.getEvents().add(CifConstructors.newEdgeEvent(eventExpr, null));
-        edge.getGuards().add(predicate);
-        edge.setTarget(satisfied);
-        edge.setUrgent(false);
-        notSatisfied.getEdges().add(edge);
 
         return automaton;
     }
