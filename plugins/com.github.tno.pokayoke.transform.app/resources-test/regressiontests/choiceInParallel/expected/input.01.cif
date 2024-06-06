@@ -30,7 +30,7 @@ end
 requirement automaton __postcondition:
   location NotSatisfied:
     initial;
-    edge c_satisfied when Context.Is_Computer_On and Context.Is_Computer_Ready and Context.Has_Drank_Coffee_or_Tea and Context.Is_Ready_to_Work goto Satisfied;
+    edge c_satisfied when Context.Is_Computer_On and Context.Is_Computer_Ready and (Context.Has_Drank_Coffee_or_Tea and Context.Is_Ready_to_Work) goto Satisfied;
   location Satisfied:
     marked;
 end

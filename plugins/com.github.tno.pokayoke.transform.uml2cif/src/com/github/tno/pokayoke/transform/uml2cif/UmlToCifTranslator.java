@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -120,9 +122,14 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all postconditions of the classifier behavior of the UML class.
+        // Translate all preconditions of the classifier behavior of the UML class.
         Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
+        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
+            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
+            cifPlant.getInitials().add(cifPrecondition);
+        }
 
+        // Translate all postconditions of the classifier behavior of the UML class.
         if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
             // Define the event that indicates that all postconditions are satisfied.
             Event cifSatisfiedEvent = CifConstructors.newEvent();
@@ -131,18 +138,7 @@ public class UmlToCifTranslator {
             cifSpec.getDeclarations().add(cifSatisfiedEvent);
 
             // Combine all postconditions into a single postcondition expression.
-            Expression cifPostcondition = null;
-
-            for (Constraint umlPostcondition: umlClassifierBehavior.getPostconditions()) {
-                AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
-                Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
-                        "Expected the postcondition to be a state predicate.");
-                Expression cifPredicate = translator.translate(cifInvariant.predicate);
-
-                cifPostcondition = cifPostcondition == null ? cifPredicate
-                        : CifConstructors.newBinaryExpression(cifPredicate, BinaryOperator.CONJUNCTION, null,
-                                cifPostcondition, CifConstructors.newBoolType());
-            }
+            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
 
             // Create the postcondition requirement automaton.
             cifSpec.getComponents()
@@ -181,11 +177,15 @@ public class UmlToCifTranslator {
             cifPlant.getDeclarations().add(cifVariable);
             variableMap.put(umlProperty, cifVariable);
 
-            // Translate the default property value, if set.
-            ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
-            if (umlDefaultValue != null) {
+            // Determine the default value(s) of the CIF variable.
+            if (PokaYokeUmlProfileUtil.hasDefaultValue(umlProperty)) {
+                // Translate the UML default property value.
+                ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
                 Expression cifDefaultValueExpr = translator.translate(CifParserHelper.parseExpression(umlDefaultValue));
                 cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
+            } else {
+                // Indicate that the CIF variable can have any value by default.
+                cifVariable.setValue(CifConstructors.newVariableValue());
             }
         }
 
@@ -387,6 +387,30 @@ public class UmlToCifTranslator {
     private List<List<Update>> getEffects(OpaqueBehavior behavior) {
         return behavior.getBodies().stream().skip(1).map(u -> CifParserHelper.parseUpdates(u, behavior))
                 .map(translator::translate).toList();
+    }
+
+    /**
+     * Translates a UML constraint to a CIF expression, assuming that the UML constraint is a state invariant.
+     *
+     * @param umlConstraint The UML constraint to translate.
+     * @return The translated CIF expression, which is the state invariant predicate.
+     */
+    private Expression translateStateInvariantConstraint(Constraint umlConstraint) {
+        AInvariant cifInvariant = CifParserHelper.parseInvariant(umlConstraint);
+        Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
+                "Expected a state invariant.");
+        return translator.translate(cifInvariant.predicate);
+    }
+
+    /**
+     * Translates a collection of UML constraints to a single CIF expression, assuming they are all state invariants.
+     *
+     * @param umlConstraints The UML constraints to translate.
+     * @return The translated CIF expression, which is the conjunction of all (translated) state invariant predicates.
+     */
+    private Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
+        List<Expression> cifExpressions = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
+        return CifValueUtils.createConjunction(cifExpressions);
     }
 
     /**

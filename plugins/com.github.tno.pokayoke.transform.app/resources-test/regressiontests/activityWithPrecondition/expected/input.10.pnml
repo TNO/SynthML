@@ -1,0 +1,65 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="start">
+        <name>
+          <text>start</text>
+        </name>
+      </transition>
+      <transition id="end">
+        <name>
+          <text>end</text>
+        </name>
+      </transition>
+      <transition id="change">
+        <name>
+          <text>change</text>
+        </name>
+      </transition>
+      <transition id="c_satisfied">
+        <name>
+          <text>c_satisfied</text>
+        </name>
+      </transition>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="c_satisfied__to__p4" source="c_satisfied" target="p4">
+      </arc>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="change__to__p3" source="change" target="p3">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="end__to__p1" source="end" target="p1">
+      </arc>
+      <arc id="p1__to__start" source="p1" target="start">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="p2__to__change" source="p2" target="change">
+      </arc>
+      <arc id="p3__to__c_satisfied" source="p3" target="c_satisfied">
+      </arc>
+      <arc id="p4__to__end" source="p4" target="end">
+      </arc>
+      <arc id="start__to__p2" source="start" target="p2">
+      </arc>
+    </page>
+  </net>
+</pnml>

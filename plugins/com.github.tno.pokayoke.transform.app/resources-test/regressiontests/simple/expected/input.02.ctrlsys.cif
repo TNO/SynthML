@@ -34,7 +34,7 @@ end
 supervisor automaton __postcondition:
   location NotSatisfied:
     initial;
-    edge c_satisfied when not Context.robotHasProduct and Context.robotLocation = Location1 and Context.location2HasProduct and Context.productCorrectlyPlaced = True goto Satisfied;
+    edge c_satisfied when not Context.robotHasProduct and Context.robotLocation = Location1 and (Context.location2HasProduct and Context.productCorrectlyPlaced = True) goto Satisfied;
   location Satisfied:
     marked;
 end

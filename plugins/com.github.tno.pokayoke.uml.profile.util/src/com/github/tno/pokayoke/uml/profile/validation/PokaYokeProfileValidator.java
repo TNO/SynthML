@@ -321,13 +321,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (activity.isAbstract()) {
             Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
-            Set<Constraint> postconditions = new LinkedHashSet<>(activity.getPostconditions());
+
+            Set<Constraint> preAndPostconditions = new LinkedHashSet<>();
+            preAndPostconditions.addAll(activity.getPreconditions());
+            preAndPostconditions.addAll(activity.getPostconditions());
+
             Set<IntervalConstraint> intervalConstraints = activity.getOwnedRules().stream()
                     .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            if (!members.equals(Sets.union(postconditions, intervalConstraints))) {
-                error("Expected abstract activity to contain only postcondition and interval constraint members.",
+            if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
+                error("Expected abstract activity to contain only precondition, postcondition, and interval constraint members.",
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
 
@@ -511,8 +515,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidConstraint(Constraint constraint) {
         checkNamingConventions(constraint, NamingConvention.IDENTIFIER);
 
-        if (CifContext.isActivityPostconditionConstraint(constraint)) {
-            checkValidActivityPostconditionConstraint(constraint);
+        if (CifContext.isActivityPrePostconditionConstraint(constraint)) {
+            checkValidActivityPrePostconditionConstraint(constraint);
         } else if (CifContext.isClassConstraint(constraint)) {
             checkValidClassConstraint(constraint);
         } else if (CifContext.isOptimalityConstraint(constraint)) {
@@ -524,15 +528,15 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidActivityPostconditionConstraint(Constraint constraint) {
+    private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
             new CifTypeChecker(constraint).checkInvariant(invariant);
 
-            // Activity postconditions are constraints and therefore parsed as invariants.
+            // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
             if (invariant.invKind != null || invariant.events != null) {
-                error("Expected all activity postconditions to be state predicates.",
+                error("Expected all activity preconditions and postconditions to be state predicates.",
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
         } catch (RuntimeException e) {
