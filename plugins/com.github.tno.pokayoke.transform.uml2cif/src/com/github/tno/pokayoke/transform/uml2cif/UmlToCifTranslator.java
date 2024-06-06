@@ -122,21 +122,8 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all preconditions of the classifier behavior of the UML class.
-        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
-        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
-            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
-            cifPlant.getInitials().add(cifPrecondition);
-        }
-
-        // Translate all postconditions of the classifier behavior of the UML class.
-        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
-            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
-            cifPlant.getMarkeds().add(cifPostcondition);
-        }
-
         // Translate all interval constraints of the classifier behavior of the UML class.
-        for (Constraint umlConstraint: umlClassifierBehavior.getOwnedRules()) {
+        for (Constraint umlConstraint: umlClass.getClassifierBehavior().getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
                 List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
                 cifSpec.getComponents().addAll(cifRequirements);
@@ -329,6 +316,19 @@ public class UmlToCifTranslator {
                     cifEdge.getUpdates().add(cifUpdate);
                 }
             }
+        }
+
+        // Translate all preconditions of the classifier behavior of the UML class.
+        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
+        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
+            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
+            cifPlant.getInitials().add(cifPrecondition);
+        }
+
+        // Translate all postconditions of the classifier behavior of the UML class.
+        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
+            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
+            cifPlant.getMarkeds().add(cifPostcondition);
         }
 
         // Translate all UML class constraints as CIF invariants.
