@@ -4,9 +4,11 @@ package com.github.tno.pokayoke.transform.uml2cif;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -20,6 +22,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.EdgeEvent;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.automata.Update;
+import org.eclipse.escet.cif.metamodel.cif.declarations.AlgVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
@@ -325,27 +328,46 @@ public class UmlToCifTranslator {
 
         // Translate all preconditions of the classifier behavior of the UML class.
         Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
-        if (!umlClassifierBehavior.getPreconditions().isEmpty()) {
-            Expression cifPrecondition = translateStateInvariantConstraints(umlClassifierBehavior.getPreconditions());
+
+        Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(umlClassifierBehavior.getPreconditions());
+
+        if (!cifPreconditionVars.isEmpty()) {
+            cifPlant.getDeclarations().addAll(cifPreconditionVars);
+            AlgVariable cifPreconditionVar = combinePrePostconditionVariables(cifPreconditionVars, "__precondition");
+            cifPlant.getDeclarations().add(cifPreconditionVar);
+            Expression cifPrecondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
+                    cifPreconditionVar);
             cifPlant.getInitials().add(cifPrecondition);
         }
 
         // Translate all postconditions of the classifier behavior of the UML class.
-        if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
-            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
-            cifPlant.getMarkeds().add(cifPostcondition);
-        }
+        Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(umlClassifierBehavior.getPostconditions());
 
-        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-        // nondeterministic action must be active in order to be in a marked state.
         if (cifAtomicityVar != null) {
+            // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+            // nondeterministic action must be active in order to be in a marked state.
+
+            // First define the atomicity postcondition expression.
             BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
             cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
                     EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
             cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
             cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
             cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
-            cifPlant.getMarkeds().add(cifAtomicityPostcondition);
+
+            // Then define an extra CIF algebraic variable for this atomicity postcondition.
+            AlgVariable cifAtomicityAlgVar = CifConstructors.newAlgVariable(null, "__postcondition_atomicity", null,
+                    CifConstructors.newBoolType(), cifAtomicityPostcondition);
+            cifPostconditionVars.add(cifAtomicityAlgVar);
+        }
+
+        if (!cifPostconditionVars.isEmpty()) {
+            cifPlant.getDeclarations().addAll(cifPostconditionVars);
+            AlgVariable cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
+            cifPlant.getDeclarations().add(cifPostconditionVar);
+            Expression cifPostcondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
+                    cifPostconditionVar);
+            cifPlant.getMarkeds().add(cifPostcondition);
         }
 
         // Translate all UML class constraints as CIF invariants.
@@ -397,6 +419,28 @@ public class UmlToCifTranslator {
     }
 
     /**
+     * Translates a given collection of preconditions or postconditions to a set of CIF algebraic variables, one for
+     * every pre/postcondition, whose values are the state invariant predicates of the corresponding pre/postcondition.
+     *
+     * @param umlConstraints The collection of UML pre/postconditions to translate.
+     * @return The translated set of Boolean-typed CIF algebraic variables.
+     */
+    private Set<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
+        // Define an algebraic CIF variable for every UML constraint, whose value is the state invariant predicate.
+        Set<AlgVariable> cifConstraintVars = new LinkedHashSet<>();
+
+        for (Constraint umlConstraint: umlConstraints) {
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
+            cifAlgVar.setName(umlConstraint.getName());
+            cifAlgVar.setType(CifConstructors.newBoolType());
+            cifAlgVar.setValue(translateStateInvariantConstraint(umlConstraint));
+            cifConstraintVars.add(cifAlgVar);
+        }
+
+        return cifConstraintVars;
+    }
+
+    /**
      * Translates a UML constraint to a CIF expression, assuming that the UML constraint is a state invariant.
      *
      * @param umlConstraint The UML constraint to translate.
@@ -410,14 +454,24 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a collection of UML constraints to a single CIF expression, assuming they are all state invariants.
+     * Combines a set of Boolean-typed CIF algebraic variables into a single Boolean-typed CIF algebraic variable, whose
+     * value is the conjunction of all input variables.
      *
-     * @param umlConstraints The UML constraints to translate.
-     * @return The translated CIF expression, which is the conjunction of all (translated) state invariant predicates.
+     * @param cifAlgVariables The collection of Boolean-typed CIF algebraic variables to combine.
+     * @param variableName The name of the CIF algebraic variable that is the result of the combination.
+     * @return The combined CIF algebraic variable.
      */
-    private Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
-        List<Expression> cifExpressions = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
-        return CifValueUtils.createConjunction(cifExpressions);
+    private AlgVariable combinePrePostconditionVariables(Collection<AlgVariable> cifAlgVariables, String variableName) {
+        Expression cifCombinedExpr = CifValueUtils.createConjunction(cifAlgVariables.stream().map(
+                var -> (Expression)CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), var))
+                .toList());
+
+        AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
+        cifAlgVar.setName(variableName);
+        cifAlgVar.setType(CifConstructors.newBoolType());
+        cifAlgVar.setValue(cifCombinedExpr);
+
+        return cifAlgVar;
     }
 
     /**
