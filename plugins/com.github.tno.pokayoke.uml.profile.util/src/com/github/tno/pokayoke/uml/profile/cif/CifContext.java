@@ -154,8 +154,9 @@ public class CifContext {
         return getAllElements().stream().anyMatch(e -> e instanceof Constraint c && predicate.test(c));
     }
 
-    public static boolean isActivityPostconditionConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity a && a.getPostconditions().contains(constraint);
+    public static boolean isActivityPrePostconditionConstraint(Constraint constraint) {
+        return constraint.getContext() instanceof Activity a
+                && (a.getPreconditions().contains(constraint) || a.getPostconditions().contains(constraint));
     }
 
     public static boolean isClassConstraint(Constraint constraint) {
