@@ -4,9 +4,8 @@ controllable Drink_Coffee;
 controllable Drink_Tea;
 controllable Start_Working;
 controllable Flip_A_Coin;
-controllable c_satisfied;
 automaton minimal:
-  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, c_satisfied;
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin;
   @state(projected = "s1")
   location s1:
     initial;
@@ -15,8 +14,8 @@ automaton minimal:
   location s2:
     edge Flip_A_Coin goto s4;
     edge Starting_Computer goto s5;
-  @state(projected = "s13")
-  @state(projected = "s14")
+  @state(projected = "s11")
+  @state(projected = "s12")
   location s3:
     marked;
   @state(projected = "s3")
@@ -39,9 +38,5 @@ automaton minimal:
   @state(projected = "s10")
   @state(projected = "s9")
   location s8:
-    edge Start_Working goto s9;
-  @state(projected = "s11")
-  @state(projected = "s12")
-  location s9:
-    edge c_satisfied goto s3;
+    edge Start_Working goto s3;
 end

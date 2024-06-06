@@ -1,15 +1,11 @@
 controllable change;
-controllable c_satisfied;
 automaton minimal:
-  alphabet change, c_satisfied;
+  alphabet change;
   @state(projected = "s1")
   location s1:
     initial;
     edge change goto s2;
   @state(projected = "s2")
   location s2:
-    edge c_satisfied goto s3;
-  @state(projected = "s3")
-  location s3:
     marked;
 end

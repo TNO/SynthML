@@ -46,18 +46,6 @@
           <text>measure_product_position</text>
         </name>
       </transition>
-      <transition id="c_satisfied">
-        <name>
-          <text>c_satisfied</text>
-        </name>
-      </transition>
-      <place id="p10">
-        <name>
-          <text>p10</text>
-        </name>
-      </place>
-      <arc id="c_satisfied__to__p10" source="c_satisfied" target="p10">
-      </arc>
       <place id="p1">
         <name>
           <text>p1</text>
@@ -74,8 +62,6 @@
       <arc id="measure_product_position__to__p8" source="measure_product_position" target="p8">
       </arc>
       <arc id="p1__to__start" source="p1" target="start">
-      </arc>
-      <arc id="p10__to__end" source="p10" target="end">
       </arc>
       <place id="p2">
         <name>
@@ -128,7 +114,7 @@
           <text>p9</text>
         </name>
       </place>
-      <arc id="p9__to__c_satisfied" source="p9" target="c_satisfied">
+      <arc id="p9__to__end" source="p9" target="end">
       </arc>
       <arc id="prepare_location2__to__p4" source="prepare_location2" target="p4">
       </arc>

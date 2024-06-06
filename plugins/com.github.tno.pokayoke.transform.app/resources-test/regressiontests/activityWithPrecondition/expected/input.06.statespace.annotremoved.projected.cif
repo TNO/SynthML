@@ -1,15 +1,11 @@
 controllable change;
-controllable c_satisfied;
 automaton projected:
-  alphabet change, c_satisfied;
+  alphabet change;
   @state(statespace = "loc1")
   location s1:
     initial;
     edge change goto s2;
   @state(statespace = "loc2")
   location s2:
-    edge c_satisfied goto s3;
-  @state(statespace = "loc3")
-  location s3:
     marked;
 end
