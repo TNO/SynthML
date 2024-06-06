@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,18 +133,7 @@ public class UmlToCifTranslator {
             cifSpec.getDeclarations().add(cifSatisfiedEvent);
 
             // Combine all postconditions into a single postcondition expression.
-            Expression cifPostcondition = null;
-
-            for (Constraint umlPostcondition: umlClassifierBehavior.getPostconditions()) {
-                AInvariant cifInvariant = CifParserHelper.parseInvariant(umlPostcondition);
-                Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
-                        "Expected the postcondition to be a state predicate.");
-                Expression cifPredicate = translator.translate(cifInvariant.predicate);
-
-                cifPostcondition = cifPostcondition == null ? cifPredicate
-                        : CifConstructors.newBinaryExpression(cifPredicate, BinaryOperator.CONJUNCTION, null,
-                                cifPostcondition, CifConstructors.newBoolType());
-            }
+            Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
 
             // Create the postcondition requirement automaton.
             cifSpec.getComponents()
@@ -392,6 +382,30 @@ public class UmlToCifTranslator {
     private List<List<Update>> getEffects(OpaqueBehavior behavior) {
         return behavior.getBodies().stream().skip(1).map(u -> CifParserHelper.parseUpdates(u, behavior))
                 .map(translator::translate).toList();
+    }
+
+    /**
+     * Translates a UML constraint to a CIF expression, assuming that the UML constraint is a state invariant.
+     *
+     * @param umlConstraint The UML constraint to translate.
+     * @return The translated CIF expression, which is the state invariant predicate.
+     */
+    private Expression translateStateInvariantConstraint(Constraint umlConstraint) {
+        AInvariant cifInvariant = CifParserHelper.parseInvariant(umlConstraint);
+        Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
+                "Expected a state invariant.");
+        return translator.translate(cifInvariant.predicate);
+    }
+
+    /**
+     * Translates a collection of UML constraints to a single CIF expression, assuming they are all state invariants.
+     *
+     * @param umlConstraints The UML constraints to translate.
+     * @return The translated CIF expression, which is the conjunction of all (translated) state invariant predicates.
+     */
+    private Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
+        List<Expression> cifExpressions = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
+        return CifValueUtils.createConjunction(cifExpressions);
     }
 
     /**
