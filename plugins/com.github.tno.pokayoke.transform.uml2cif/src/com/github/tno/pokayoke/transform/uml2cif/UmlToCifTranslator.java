@@ -334,18 +334,18 @@ public class UmlToCifTranslator {
         if (!umlClassifierBehavior.getPostconditions().isEmpty()) {
             Expression cifPostcondition = translateStateInvariantConstraints(umlClassifierBehavior.getPostconditions());
             cifPlant.getMarkeds().add(cifPostcondition);
+        }
 
-            // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-            // nondeterministic action must be active in order to be in a marked state.
-            if (cifAtomicityVar != null) {
-                BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
-                cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
-                cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
-                cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
-                cifPlant.getMarkeds().add(cifAtomicityPostcondition);
-            }
+        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+        // nondeterministic action must be active in order to be in a marked state.
+        if (cifAtomicityVar != null) {
+            BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
+            cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+            cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
+            cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
+            cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
+            cifPlant.getMarkeds().add(cifAtomicityPostcondition);
         }
 
         // Translate all UML class constraints as CIF invariants.
