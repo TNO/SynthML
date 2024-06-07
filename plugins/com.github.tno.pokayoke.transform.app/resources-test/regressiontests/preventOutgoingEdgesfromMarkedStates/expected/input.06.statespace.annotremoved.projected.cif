@@ -1,0 +1,11 @@
+controllable change;
+automaton projected:
+  alphabet change;
+  @state(statespace = "loc1")
+  location s1:
+    initial;
+    edge change goto s2;
+  @state(statespace = "loc2")
+  location s2:
+    marked;
+end

@@ -1,0 +1,9 @@
+controllable change;
+automaton statespace:
+  alphabet change;
+  location loc1:
+    initial;
+    edge change goto loc2;
+  location loc2:
+    marked;
+end
