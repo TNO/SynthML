@@ -25,5 +25,5 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge change when Class.element = First and happens_at_most_once__change.occurrences = 0 or Class.element = Second and happens_at_most_once__change.occurrences = 0;
+    edge change when Class.element = First and happens_at_most_once__change.occurrences = 0;
 end

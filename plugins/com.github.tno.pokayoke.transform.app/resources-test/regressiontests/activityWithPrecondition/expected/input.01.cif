@@ -20,3 +20,4 @@ requirement automaton happens_at_most_once__change:
     marked occurrences >= 0;
     edge change when occurrences < 1 do occurrences := occurrences + 1;
 end
+requirement invariant Class.__postcondition disables change;
