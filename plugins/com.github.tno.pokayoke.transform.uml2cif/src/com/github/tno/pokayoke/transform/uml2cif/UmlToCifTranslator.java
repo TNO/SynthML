@@ -455,7 +455,7 @@ public class UmlToCifTranslator {
 
     /**
      * Combines a set of Boolean-typed CIF algebraic pre/postcondition variables into a single Boolean-typed CIF
-     * algebraic variable, whose value is the conjunction of all input variables.
+     * algebraic variable, whose value is the conjunction of all the given variables.
      *
      * @param cifAlgVars The collection of Boolean-typed CIF algebraic variables to combine.
      * @param varName The name of the CIF algebraic variable that is the result of the combination.
