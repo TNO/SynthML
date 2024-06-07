@@ -65,3 +65,12 @@ requirement automaton happen_at_most_once__prepare_location2:
     marked occurrences >= 0;
     edge prepare_location2 when occurrences < 1 do occurrences := occurrences + 1;
 end
+requirement invariant Context.__postcondition disables prepare_robot;
+requirement invariant Context.__postcondition disables robot_move_to_location1;
+requirement invariant Context.__postcondition disables robot_move_to_location2;
+requirement invariant Context.__postcondition disables robot_adjust_product;
+requirement invariant Context.__postcondition disables robot_release_product_at_location2;
+requirement invariant Context.__postcondition disables prepare_location2;
+requirement invariant Context.__postcondition disables measure_product_position;
+requirement invariant Context.__postcondition disables measure_product_position__result_1;
+requirement invariant Context.__postcondition disables measure_product_position__result_2;

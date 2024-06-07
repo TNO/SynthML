@@ -65,3 +65,11 @@ requirement automaton happens_at_most_once__Starting_Computer:
     marked occurrences >= 0;
     edge Starting_Computer when occurrences < 1 do occurrences := occurrences + 1;
 end
+requirement invariant Context.__postcondition disables Turn_Computer_On;
+requirement invariant Context.__postcondition disables Starting_Computer;
+requirement invariant Context.__postcondition disables Drink_Coffee;
+requirement invariant Context.__postcondition disables Drink_Tea;
+requirement invariant Context.__postcondition disables Start_Working;
+requirement invariant Context.__postcondition disables Flip_A_Coin;
+requirement invariant Context.__postcondition disables Flip_A_Coin__result_1;
+requirement invariant Context.__postcondition disables Flip_A_Coin__result_2;
