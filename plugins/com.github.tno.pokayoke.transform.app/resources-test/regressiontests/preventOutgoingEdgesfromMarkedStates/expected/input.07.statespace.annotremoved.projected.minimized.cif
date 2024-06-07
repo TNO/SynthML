@@ -1,0 +1,11 @@
+controllable change;
+automaton minimal:
+  alphabet change;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge change goto s2;
+  @state(projected = "s2")
+  location s2:
+    marked;
+end

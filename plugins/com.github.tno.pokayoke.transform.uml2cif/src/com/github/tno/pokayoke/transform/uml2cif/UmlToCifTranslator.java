@@ -13,6 +13,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifValueUtils;
+import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
@@ -361,13 +362,29 @@ public class UmlToCifTranslator {
             cifPostconditionVars.add(cifAtomicityAlgVar);
         }
 
+        AlgVariable cifPostconditionVar = null;
+
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
-            AlgVariable cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
+            cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
             cifPlant.getDeclarations().add(cifPostconditionVar);
             Expression cifPostcondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                     cifPostconditionVar);
             cifPlant.getMarkeds().add(cifPostcondition);
+        }
+
+        // Create CIF state/event exclusion invariants to disallow further steps from marked states.
+        if (cifPostconditionVar != null) {
+            for (Event cifEvent: eventEdgeMap.keySet()) {
+                Invariant cifInvariant = CifConstructors.newInvariant();
+                cifInvariant
+                        .setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
+                cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
+                cifInvariant.setPredicate(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
+                        cifPostconditionVar));
+                cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                cifSpec.getInvariants().add(cifInvariant);
+            }
         }
 
         // Translate all UML class constraints as CIF invariants.

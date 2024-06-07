@@ -13,17 +13,4 @@ plant automaton Class:
     marked;
     edge change when element != Third do element := Second;
 end
-supervisor automaton happens_at_most_once__change:
-  disc int[0..1] occurrences;
-  location:
-    initial;
-    marked occurrences >= 0;
-    edge change when occurrences < 1 do occurrences := occurrences + 1;
-end
-supervisor automaton sup:
-  alphabet change;
-  location:
-    initial;
-    marked;
-    edge change when Class.element = First and happens_at_most_once__change.occurrences = 0;
-end
+requirement invariant Class.__postcondition disables change;
