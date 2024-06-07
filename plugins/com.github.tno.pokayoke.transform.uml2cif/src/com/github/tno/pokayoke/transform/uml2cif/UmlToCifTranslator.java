@@ -375,10 +375,10 @@ public class UmlToCifTranslator {
 
         // Create CIF state/event exclusion invariants to disallow further steps from marked states.
         if (cifPostconditionVar != null) {
-            for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
+            for (Event cifEvent: eventEdgeMap.keySet()) {
                 Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant.setEvent(
-                        CifConstructors.newEventExpression(entry.getKey(), null, CifConstructors.newBoolType()));
+                cifInvariant
+                        .setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
                 cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
                 cifInvariant.setPredicate(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                         cifPostconditionVar));
