@@ -361,9 +361,11 @@ public class UmlToCifTranslator {
             cifPostconditionVars.add(cifAtomicityAlgVar);
         }
 
+        AlgVariable cifPostconditionVar = null;
+
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
-            AlgVariable cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
+            cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
             cifPlant.getDeclarations().add(cifPostconditionVar);
             Expression cifPostcondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                     cifPostconditionVar);
