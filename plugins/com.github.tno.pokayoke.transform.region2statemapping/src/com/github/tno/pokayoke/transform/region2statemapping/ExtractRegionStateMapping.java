@@ -148,6 +148,7 @@ public class ExtractRegionStateMapping {
         Set<Transition> transitions = markedPlaces.stream().flatMap(place -> place.getOutArcs().stream())
                 .map(arc -> arc.getTarget()).map(Transition.class::cast)
                 .filter(t -> t.getName().getText().equals(transitionLabel))
+                .filter(t -> t.getInArcs().stream().map(arc -> (Place)arc.getSource()).allMatch(markedPlaces::contains))
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 
         // Ensure there is exactly one such transition.
