@@ -27,13 +27,13 @@ import com.google.common.base.Preconditions;
  * initial/marked locations will then be removed.
  */
 public class CifSourceSinkLocationTransformer {
-    private static final String START_LOCATION_NAME = "__init";
+    public static final String START_LOCATION_NAME = "__init";
 
-    private static final String END_LOCATION_NAME = "__done";
+    public static final String END_LOCATION_NAME = "__done";
 
-    private static final String START_EVENT_NAME = "__start";
+    public static final String START_EVENT_NAME = "__start";
 
-    private static final String END_EVENT_NAME = "__end";
+    public static final String END_EVENT_NAME = "__end";
 
     private CifSourceSinkLocationTransformer() {
         // Static class.
