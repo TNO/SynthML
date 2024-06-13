@@ -33,10 +33,10 @@ public class PostProcessPNML {
         Transition resetTransition = resetTransitions.get(0);
 
         // Remove the reset transition and all arcs attached to it.
+        resetTransition.getInArcs().forEach(arc -> arc.getSource().getOutArcs().remove(arc));
+        resetTransition.getOutArcs().forEach(arc -> arc.getTarget().getInArcs().remove(arc));
         page.getObjects().removeAll(resetTransition.getInArcs());
         page.getObjects().removeAll(resetTransition.getOutArcs());
-        resetTransition.getInArcs().clear();
-        resetTransition.getOutArcs().clear();
         page.getObjects().remove(resetTransition);
     }
 }
