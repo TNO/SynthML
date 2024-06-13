@@ -148,15 +148,17 @@ public class PNML2UMLActivityHelper {
     public static boolean isMarkedPlace(Place place) {
         if (place.getInitialMarking() != null) {
             Preconditions.checkArgument(place.getInArcs().isEmpty(),
-                    "Expected marked places to not have incoming arcs.");
+                    "Expected no incoming arcs, but got " + place.getInArcs().size());
 
-            String startEventName = CifSourceSinkLocationTransformer.START_EVENT_NAME;
+            int numOutArcs = place.getOutArcs().size();
+
+            Preconditions.checkArgument(numOutArcs == 1, "Expected a single outgoing arc, but got " + numOutArcs);
 
             Preconditions.checkArgument(
-                    place.getOutArcs().stream()
-                            .allMatch(arc -> arc.getTarget().getName().getText().equals(startEventName)),
-                    "Expected marked places to only have outgoing arcs leading to a transition named "
-                            + startEventName);
+                    place.getOutArcs().get(0).getTarget().getName().getText()
+                            .equals(CifSourceSinkLocationTransformer.START_EVENT_NAME),
+                    "Expected the single outgoing arc of marked places to lead to a transition named "
+                            + CifSourceSinkLocationTransformer.START_EVENT_NAME);
 
             return true;
         } else {
@@ -206,12 +208,15 @@ public class PNML2UMLActivityHelper {
      */
     private static boolean isFinalPlace(Place place) {
         if (place.getOutArcs().isEmpty()) {
-            String endEventName = CifSourceSinkLocationTransformer.END_EVENT_NAME;
+            int numInArcs = place.getInArcs().size();
+
+            Preconditions.checkArgument(numInArcs == 1, "Expected a single incoming arc, but got " + numInArcs);
 
             Preconditions.checkArgument(
-                    place.getInArcs().stream()
-                            .allMatch(arc -> arc.getSource().getName().getText().equals(endEventName)),
-                    "Expected final places to only have incoming arcs from transitions named " + endEventName);
+                    place.getInArcs().get(0).getSource().getName().getText()
+                            .equals(CifSourceSinkLocationTransformer.END_EVENT_NAME),
+                    "Expected the single incoming arc of final places to come from a transition named "
+                            + CifSourceSinkLocationTransformer.END_EVENT_NAME);
 
             return true;
         } else {
