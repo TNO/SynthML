@@ -3,14 +3,11 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifCollectUtils;
-import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -97,9 +94,7 @@ public class CifSourceSinkLocationTransformer {
         // First, we make a new initial location, which will become the single initial (source) location.
 
         // Find the set of all initial locations.
-        Set<Location> initialLocations = automaton.getLocations().stream()
-                .filter(CifSourceSinkLocationTransformer::isInitial)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Location> initialLocations = CifLocationHelper.getInitialLocations(automaton);
 
         // Create a new initial location that has all the annotations of all original initial locations.
         Location newInitialLocation = CifConstructors.newLocation();
@@ -131,9 +126,7 @@ public class CifSourceSinkLocationTransformer {
         // Next, we make a new marked location, which will become the single marked (sink) location.
 
         // Find the set of all marked locations.
-        Set<Location> markedLocations = automaton.getLocations().stream()
-                .filter(CifSourceSinkLocationTransformer::isMarked)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Location> markedLocations = CifLocationHelper.getMarkedLocations(automaton);
 
         // Create a new marked location that has all the annotations of all original marked locations.
         Location newMarkedLocation = CifConstructors.newLocation();
@@ -161,29 +154,5 @@ public class CifSourceSinkLocationTransformer {
             location.getEdges().add(edge);
             location.getMarkeds().clear();
         }
-    }
-
-    private static boolean isInitial(Location location) {
-        boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
-                : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
-        boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
-                : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
-
-        Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
-                "Expected that locations are either trivially initial or trivially not initial.");
-
-        return isTriviallyInitial;
-    }
-
-    private static boolean isMarked(Location location) {
-        boolean isTriviallyMarked = location.getMarkeds().isEmpty() ? false
-                : CifValueUtils.isTriviallyTrue(location.getMarkeds(), false, true);
-        boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
-                : CifValueUtils.isTriviallyFalse(location.getMarkeds(), false, true);
-
-        Preconditions.checkArgument(isTriviallyMarked || isTriviallyNotMarked,
-                "Expected that locations are either trivially marked or trivially not marked.");
-
-        return isTriviallyMarked;
     }
 }
