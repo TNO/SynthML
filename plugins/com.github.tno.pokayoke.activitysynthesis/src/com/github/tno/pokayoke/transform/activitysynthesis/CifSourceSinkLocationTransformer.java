@@ -103,7 +103,7 @@ public class CifSourceSinkLocationTransformer {
                 initialLocations.stream().flatMap(loc -> loc.getAnnotations().stream()).map(EcoreUtil::copy).toList());
         newInitialLocation.getInitials().add(CifValueUtils.makeTrue());
         newInitialLocation.setName(START_LOCATION_NAME);
-        automaton.getLocations().add(newInitialLocation);
+        automaton.getLocations().add(0, newInitialLocation);
 
         // Declare a new start event and add it to the alphabet of the automaton.
         Event startEvent = CifConstructors.newEvent();
