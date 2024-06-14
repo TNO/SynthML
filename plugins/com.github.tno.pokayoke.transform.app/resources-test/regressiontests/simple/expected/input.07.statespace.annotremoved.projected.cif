@@ -1,0 +1,47 @@
+controllable prepare_robot;
+controllable robot_move_to_location1;
+controllable robot_move_to_location2;
+controllable robot_adjust_product;
+controllable robot_release_product_at_location2;
+controllable prepare_location2;
+controllable measure_product_position;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet prepare_robot, robot_move_to_location1, robot_move_to_location2, robot_adjust_product, robot_release_product_at_location2, prepare_location2, measure_product_position, __start, __end;
+  @state(statespace = "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(statespace = "loc1")
+  location s2:
+    edge prepare_location2 goto s3;
+    edge prepare_robot goto s4;
+  @state(statespace = "loc3")
+  location s3:
+    edge prepare_robot goto s5;
+  @state(statespace = "loc2")
+  location s4:
+    edge prepare_location2 goto s5;
+  @state(statespace = "loc4")
+  location s5:
+    edge robot_move_to_location2 goto s6;
+  @state(statespace = "loc5")
+  location s6:
+    edge robot_release_product_at_location2 goto s7;
+  @state(statespace = "loc6")
+  location s7:
+    edge measure_product_position goto s8;
+  @state(statespace = "loc7")
+  @state(statespace = "loc9")
+  @state(statespace = "loc8")
+  location s8:
+    edge robot_adjust_product goto s7;
+    edge robot_move_to_location1 goto s9;
+  @state(statespace = "loc10")
+  location s9:
+    edge __end goto s10;
+  @state(statespace = "__done")
+  location s10:
+    marked;
+end

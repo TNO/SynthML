@@ -1,0 +1,53 @@
+controllable Turn_Computer_On;
+controllable Starting_Computer;
+controllable Drink_Coffee;
+controllable Drink_Tea;
+controllable Start_Working;
+controllable Flip_A_Coin;
+uncontrollable Flip_A_Coin__result_1;
+uncontrollable Flip_A_Coin__result_2;
+controllable __start;
+controllable __end;
+automaton statespace:
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2, __start, __end;
+  location loc1:
+    edge Turn_Computer_On goto loc2;
+  location loc2:
+    edge Starting_Computer goto loc3;
+    edge Flip_A_Coin goto loc4;
+  location loc3:
+    edge Flip_A_Coin goto loc5;
+  location loc4:
+    edge Flip_A_Coin__result_1 goto loc6;
+    edge Flip_A_Coin__result_2 goto loc7;
+  location loc5:
+    edge Flip_A_Coin__result_1 goto loc8;
+    edge Flip_A_Coin__result_2 goto loc9;
+  location loc6:
+    edge Starting_Computer goto loc8;
+    edge Drink_Coffee goto loc10;
+  location loc7:
+    edge Starting_Computer goto loc9;
+    edge Drink_Tea goto loc11;
+  location loc8:
+    edge Drink_Coffee goto loc12;
+  location loc9:
+    edge Drink_Tea goto loc13;
+  location loc10:
+    edge Starting_Computer goto loc12;
+  location loc11:
+    edge Starting_Computer goto loc13;
+  location loc12:
+    edge Start_Working goto loc14;
+  location loc13:
+    edge Start_Working goto loc15;
+  location loc14:
+    edge __end goto __done;
+  location loc15:
+    edge __end goto __done;
+  location __init:
+    initial;
+    edge __start goto loc1;
+  location __done:
+    marked;
+end
