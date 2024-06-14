@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
 
+import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.google.common.base.Preconditions;
 
 public class PostProcessActivity {
@@ -21,10 +22,10 @@ public class PostProcessActivity {
      * @param activity The activity in which actions to be removed.
      */
     public static void removeInternalActions(Activity activity) {
-        int numberOfRemovedActions = removeOpaqueActions("start", activity);
+        int numberOfRemovedActions = removeOpaqueActions(CifSourceSinkLocationTransformer.START_EVENT_NAME, activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
                 "Expected that there is exactly one 'start' action removed.");
-        numberOfRemovedActions = removeOpaqueActions("end", activity);
+        numberOfRemovedActions = removeOpaqueActions(CifSourceSinkLocationTransformer.END_EVENT_NAME, activity);
         Preconditions.checkArgument(numberOfRemovedActions == 1,
                 "Expected that there is exactly one 'end' action removed.");
     }

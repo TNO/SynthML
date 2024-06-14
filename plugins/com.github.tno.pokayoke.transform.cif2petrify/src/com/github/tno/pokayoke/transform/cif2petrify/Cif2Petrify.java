@@ -12,17 +12,19 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
-import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
+import com.github.tno.pokayoke.transform.activitysynthesis.CifLocationHelper;
 import com.google.common.base.Preconditions;
 
 /** Transforms CIF state spaces to Petrify input. */
 public class Cif2Petrify {
+    private static final String RESET_EVENT_NAME = "__reset";
+
     private Cif2Petrify() {
     }
 
@@ -59,66 +61,38 @@ public class Cif2Petrify {
 
         Preconditions.checkArgument(eventNames.stream().distinct().count() == eventNames.size(),
                 "Expected all event names in the state space alphabet to be uniquely named.");
-        Preconditions.checkArgument(
-                eventNames.stream().filter(e -> e.equals("start") || e.equals("end")).findAny().isEmpty(),
-                "Expected that 'start' and 'end' are not used as event names.");
+        Preconditions.checkArgument(eventNames.stream().noneMatch(RESET_EVENT_NAME::equals),
+                "Expected that '" + RESET_EVENT_NAME + "' is not used as an event name.");
 
-        // Declare a Petrify event for every event in the alphabet of the CIF state space automaton.
-        petrifyInput.add(".dummy start end " + String.join(" ", eventNames));
+        // Declare a Petrify event for every event in the CIF state space automaton alphabet, plus the 'reset' event.
+        petrifyInput.add(".dummy " + String.join(" ", eventNames) + " " + RESET_EVENT_NAME);
 
         petrifyInput.add(".state graph");
 
         // Iterate over all locations in the state space and translate all edges.
         for (Location location: automaton.getLocations()) {
-            String locationName = location.getName();
-
-            Preconditions.checkNotNull(locationName, "Expected locations to have a name.");
-            Preconditions.checkArgument(!locationName.equals("loc0"),
-                    "Expected no locations in the state space automaton to be named 'loc0'.");
-
-            boolean isTriviallyInitial = location.getInitials().isEmpty() ? false
-                    : CifValueUtils.isTriviallyTrue(location.getInitials(), true, true);
-            boolean isTriviallyNotInitial = location.getInitials().isEmpty() ? true
-                    : CifValueUtils.isTriviallyFalse(location.getInitials(), true, true);
-            Preconditions.checkArgument(isTriviallyInitial || isTriviallyNotInitial,
-                    "Expected that locations are either trivially initial or trivially not initial.");
-
-            boolean isTriviallyMarked = location.getMarkeds().isEmpty() ? false
-                    : CifValueUtils.isTriviallyTrue(location.getMarkeds(), false, true);
-            boolean isTriviallyNotMarked = location.getMarkeds().isEmpty() ? true
-                    : CifValueUtils.isTriviallyFalse(location.getMarkeds(), false, true);
-            Preconditions.checkArgument(isTriviallyMarked || isTriviallyNotMarked,
-                    "Expected that locations are either trivially marked or trivially not marked.");
-            Preconditions.checkArgument(!location.getEdges().isEmpty() || isTriviallyMarked,
-                    "Expected non-marked locations to have outgoing edges.");
-
-            // Translate initial locations.
-            if (isTriviallyInitial) {
-                petrifyInput.add(String.format("loc0 start %s", locationName));
-            }
-
-            // Translate marked locations.
-            if (isTriviallyMarked) {
-                Preconditions.checkArgument(location.getEdges().isEmpty(),
-                        "Expected marked locations to not have outgoing edges.");
-
-                petrifyInput.add(String.format("%s end loc0", locationName));
-            }
+            Preconditions.checkNotNull(location.getName(), "Expected locations to have a name.");
 
             // Translate all edges that go out of the current location.
             for (Edge edge: location.getEdges()) {
                 for (Event edgeEvent: CifEventUtils.getEvents(edge)) {
                     Location targetLocation = CifEdgeUtils.getTarget(edge);
                     String targetLocationName = targetLocation.getName();
-                    String edgeString = String.format("%s %s %s", locationName, edgeEvent.getName(),
+                    String edgeString = String.format("%s %s %s", location.getName(), edgeEvent.getName(),
                             targetLocationName);
                     petrifyInput.add(edgeString);
                 }
             }
         }
 
-        // Indicate that the first location has a token initially.
-        petrifyInput.add(".marking {loc0}");
+        // Add the reset transition to go from the marked state back to the initial state, thereby creating a loop.
+        Location initialLocation = CifLocationHelper.getInitialLocation(automaton);
+        Location markedLocation = CifLocationHelper.getMarkedLocation(automaton);
+        petrifyInput
+                .add(String.format("%s %s %s", markedLocation.getName(), RESET_EVENT_NAME, initialLocation.getName()));
+
+        // Indicate that the initial location has a token initially.
+        petrifyInput.add(String.format(".marking {%s}", initialLocation.getName()));
 
         // Indicate the end of the Petrify input graph.
         petrifyInput.add(".end");

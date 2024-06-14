@@ -5,10 +5,8 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 
-import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
-import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 public class PostProcessPNML {
@@ -16,8 +14,9 @@ public class PostProcessPNML {
     }
 
     /**
-     * Removes the loop introduced when transforming CIF to Petrify input, that connects initial locations to ones where
-     * the activity postcondition is satisfied. Such a loop is needed since Petrify does not work well with sink states.
+     * Removes the loop introduced when transforming CIF to Petrify input, i.e., the 'reset transition' that connects
+     * the final location where the activity postcondition is satisfied to the initial location. Such a loop is needed
+     * since Petrify does not work well with sink states.
      *
      * @param petriNet The Petri net to remove the loop from.
      */
@@ -27,29 +26,18 @@ public class PostProcessPNML {
                 "Expected that there is exactly one Petri Net page in the Petri Net.");
         Page page = pages.get(0);
 
-        // Get the marked place.
-        List<Place> places = page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast).toList();
-        List<Place> markedPlaces = places.stream().filter(place -> place.getInitialMarking() != null).toList();
-        Preconditions.checkArgument(markedPlaces.size() == 1, "Expected that there is exactly one marked place.");
-        Place markedPlace = markedPlaces.get(0);
+        // Find the single reset transition in the Petri Net.
+        List<Transition> resetTransitions = page.getObjects().stream().filter(Transition.class::isInstance)
+                .map(Transition.class::cast).filter(t -> t.getName().getText().equals("__reset")).toList();
+        Preconditions.checkArgument(resetTransitions.size() == 1,
+                "Expected exactly one reset transition, but got " + resetTransitions.size());
+        Transition resetTransition = resetTransitions.get(0);
 
-        // Get the source of the incoming arc into the marked place.
-        List<Arc> inArcs = markedPlace.getInArcs();
-        Preconditions.checkArgument(inArcs.size() == 1,
-                "Expected that there is exactly one incoming arc for the marked place.");
-        Transition sourceTransition = (Transition)inArcs.get(0).getSource();
-
-        // Remove the arc between end transition and the marked place.
-        List<Arc> outArcs = sourceTransition.getOutArcs();
-        Preconditions.checkArgument(outArcs.size() == 1, String.format(
-                "Expected that there is exactly one outgoing arc for transition %s.", sourceTransition.getName()));
-        page.getObjects().remove(outArcs.get(0));
-        markedPlace.getInArcs().remove(0);
-        sourceTransition.getOutArcs().remove(0);
-
-        // Add a new arc between the transition and a newly created final place.
-        String finalPlace = "FinalPlace";
-        PetrifyOutput2PNMLTranslator.createArc(sourceTransition,
-                PetrifyOutput2PNMLTranslator.createPlace(finalPlace, page), page);
+        // Remove the reset transition and all arcs attached to it.
+        resetTransition.getInArcs().forEach(arc -> arc.getSource().getOutArcs().remove(arc));
+        resetTransition.getOutArcs().forEach(arc -> arc.getTarget().getInArcs().remove(arc));
+        page.getObjects().removeAll(resetTransition.getInArcs());
+        page.getObjects().removeAll(resetTransition.getOutArcs());
+        page.getObjects().remove(resetTransition);
     }
 }

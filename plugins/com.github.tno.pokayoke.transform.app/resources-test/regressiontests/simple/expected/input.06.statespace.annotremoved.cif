@@ -1,0 +1,41 @@
+controllable prepare_robot;
+controllable robot_move_to_location1;
+controllable robot_move_to_location2;
+controllable robot_adjust_product;
+controllable robot_release_product_at_location2;
+controllable prepare_location2;
+controllable measure_product_position;
+uncontrollable measure_product_position__result_1;
+uncontrollable measure_product_position__result_2;
+controllable __start;
+controllable __end;
+automaton statespace:
+  alphabet prepare_robot, robot_move_to_location1, robot_move_to_location2, robot_adjust_product, robot_release_product_at_location2, prepare_location2, measure_product_position, measure_product_position__result_1, measure_product_position__result_2, __start, __end;
+  location __init:
+    initial;
+    edge __start goto loc1;
+  location loc1:
+    edge prepare_robot goto loc2;
+    edge prepare_location2 goto loc3;
+  location loc2:
+    edge prepare_location2 goto loc4;
+  location loc3:
+    edge prepare_robot goto loc4;
+  location loc4:
+    edge robot_move_to_location2 goto loc5;
+  location loc5:
+    edge robot_release_product_at_location2 goto loc6;
+  location loc6:
+    edge measure_product_position goto loc7;
+  location loc7:
+    edge measure_product_position__result_1 goto loc8;
+    edge measure_product_position__result_2 goto loc9;
+  location loc8:
+    edge robot_move_to_location1 goto loc10;
+  location loc9:
+    edge robot_adjust_product goto loc6;
+  location loc10:
+    edge __end goto __done;
+  location __done:
+    marked;
+end
