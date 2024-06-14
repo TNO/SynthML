@@ -85,6 +85,8 @@ public class CifSourceSinkLocationTransformer {
         Preconditions.checkArgument(automata.size() == 1,
                 "Expected the input specification to contain exactly one automaton.");
         Automaton automaton = automata.get(0);
+        Preconditions.checkNotNull(automaton.getAlphabet(),
+                "Expected the input automaton to have an explicit alphabet.");
 
         // Make sure the automaton does not already contain a location with the new start/end location name.
         Set<String> newLocationNames = Set.of(START_LOCATION_NAME, END_LOCATION_NAME);
