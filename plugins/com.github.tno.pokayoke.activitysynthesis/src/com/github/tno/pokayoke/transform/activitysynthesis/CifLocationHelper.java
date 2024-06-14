@@ -1,9 +1,7 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -24,21 +22,20 @@ public class CifLocationHelper {
      * @return The single (trivially) initial location in the given automaton.
      */
     public static Location getInitialLocation(Automaton automaton) {
-        Set<Location> locations = getInitialLocations(automaton);
+        List<Location> locations = getInitialLocations(automaton);
         Preconditions.checkArgument(locations.size() == 1,
                 "Expected exactly one initial location, but got " + locations.size() + ".");
-        return locations.iterator().next();
+        return locations.get(0);
     }
 
     /**
-     * Gives the set of all (trivially) initial locations in the given automaton.
+     * Gives the list of all (trivially) initial locations in the given automaton.
      *
      * @param automaton The input automaton.
-     * @return The set of all (trivially) initial locations in the given automaton.
+     * @return The list of all (trivially) initial locations in the given automaton.
      */
-    public static Set<Location> getInitialLocations(Automaton automaton) {
-        return automaton.getLocations().stream().filter(CifLocationHelper::isInitial)
-                .toList();
+    public static List<Location> getInitialLocations(Automaton automaton) {
+        return automaton.getLocations().stream().filter(CifLocationHelper::isInitial).toList();
     }
 
     /**
@@ -48,21 +45,20 @@ public class CifLocationHelper {
      * @return The single (trivially) marked location in the given automaton.
      */
     public static Location getMarkedLocation(Automaton automaton) {
-        Set<Location> locations = getMarkedLocations(automaton);
+        List<Location> locations = getMarkedLocations(automaton);
         Preconditions.checkArgument(locations.size() == 1,
                 "Expected exactly one marked location, but got " + locations.size() + ".");
-        return locations.iterator().next();
+        return locations.get(0);
     }
 
     /**
-     * Gives the set of all (trivially) marked locations in the given automaton.
+     * Gives the list of all (trivially) marked locations in the given automaton.
      *
      * @param automaton The input automaton.
-     * @return The set of all (trivially) marked locations in the given automaton.
+     * @return The list of all (trivially) marked locations in the given automaton.
      */
-    public static Set<Location> getMarkedLocations(Automaton automaton) {
-        return automaton.getLocations().stream().filter(CifLocationHelper::isMarked)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+    public static List<Location> getMarkedLocations(Automaton automaton) {
+        return automaton.getLocations().stream().filter(CifLocationHelper::isMarked).toList();
     }
 
     /**

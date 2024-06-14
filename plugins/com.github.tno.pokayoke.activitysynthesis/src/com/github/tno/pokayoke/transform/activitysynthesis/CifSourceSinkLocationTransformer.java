@@ -93,8 +93,8 @@ public class CifSourceSinkLocationTransformer {
 
         // First, we make a new initial location, which will become the single initial (source) location.
 
-        // Find the set of all initial locations.
-        Set<Location> initialLocations = CifLocationHelper.getInitialLocations(automaton);
+        // Find the list of all initial locations.
+        List<Location> initialLocations = CifLocationHelper.getInitialLocations(automaton);
 
         // Create a new initial location that has all the annotations of all original initial locations.
         Location newInitialLocation = CifConstructors.newLocation();
@@ -125,8 +125,8 @@ public class CifSourceSinkLocationTransformer {
 
         // Next, we make a new marked location, which will become the single marked (sink) location.
 
-        // Find the set of all marked locations.
-        Set<Location> markedLocations = CifLocationHelper.getMarkedLocations(automaton);
+        // Find the list of all marked locations.
+        List<Location> markedLocations = CifLocationHelper.getMarkedLocations(automaton);
 
         // Create a new marked location that has all the annotations of all original marked locations.
         Location newMarkedLocation = CifConstructors.newLocation();
