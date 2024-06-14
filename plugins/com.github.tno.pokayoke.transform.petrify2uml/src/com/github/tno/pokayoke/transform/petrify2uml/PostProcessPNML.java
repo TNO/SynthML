@@ -14,8 +14,9 @@ public class PostProcessPNML {
     }
 
     /**
-     * Removes the loop introduced when transforming CIF to Petrify input, that connects initial locations to ones where
-     * the activity postcondition is satisfied. Such a loop is needed since Petrify does not work well with sink states.
+     * Removes the loop introduced when transforming CIF to Petrify input, i.e., the 'reset transition' that connects
+     * the final location where the activity postcondition is satisfied to the initial location. Such a loop is needed
+     * since Petrify does not work well with sink states.
      *
      * @param petriNet The Petri net to remove the loop from.
      */
