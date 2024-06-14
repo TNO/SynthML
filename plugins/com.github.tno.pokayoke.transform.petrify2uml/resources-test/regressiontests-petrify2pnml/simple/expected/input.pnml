@@ -1,14 +1,14 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="statespace" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="statespace">
-      <transition id="start">
+      <transition id="__start">
         <name>
-          <text>start</text>
+          <text>__start</text>
         </name>
       </transition>
-      <transition id="end">
+      <transition id="__end">
         <name>
-          <text>end</text>
+          <text>__end</text>
         </name>
       </transition>
       <transition id="c_act1">
@@ -96,9 +96,9 @@
           <text>p11</text>
         </name>
       </place>
-      <arc id="start__to__p2" source="start" target="p2">
+      <arc id="__start__to__p2" source="__start" target="p2">
       </arc>
-      <arc id="start__to__p11" source="start" target="p11">
+      <arc id="__start__to__p11" source="__start" target="p11">
       </arc>
       <place id="p1">
         <name>
@@ -200,14 +200,13 @@
       </place>
       <arc id="c_satisfied__to__p5" source="c_satisfied" target="p5">
       </arc>
-      <place id="p12">
+      <place id="p20">
         <name>
-          <text>p12</text>
+          <text>p20</text>
         </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
       </place>
+      <arc id="__end__to__p20" source="__end" target="p20">
+      </arc>
       <transition id="u_act10/1">
         <name>
           <text>u_act10</text>
@@ -251,7 +250,7 @@
       </arc>
       <arc id="p4__to__c_act2" source="p4" target="c_act2">
       </arc>
-      <arc id="p5__to__end" source="p5" target="end">
+      <arc id="p5__to____end" source="p5" target="__end">
       </arc>
       <arc id="p6__to__c_satisfied" source="p6" target="c_satisfied">
       </arc>
@@ -265,7 +264,15 @@
       </arc>
       <arc id="p11__to__c_act1" source="p11" target="c_act1">
       </arc>
-      <arc id="p12__to__start" source="p12" target="start">
+      <place id="p12">
+        <name>
+          <text>p12</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p12__to____start" source="p12" target="__start">
       </arc>
       <arc id="p13__to__c_act11" source="p13" target="c_act11">
       </arc>
@@ -280,13 +287,6 @@
       <arc id="p18__to__c_satisfied" source="p18" target="c_satisfied">
       </arc>
       <arc id="p19__to__c_act4" source="p19" target="c_act4">
-      </arc>
-      <place id="FinalPlace">
-        <name>
-          <text>FinalPlace</text>
-        </name>
-      </place>
-      <arc id="end__to__FinalPlace" source="end" target="FinalPlace">
       </arc>
     </page>
   </net>

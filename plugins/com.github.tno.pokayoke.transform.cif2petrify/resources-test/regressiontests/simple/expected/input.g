@@ -1,7 +1,6 @@
 .model statespace
-.dummy start end c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied
+.dummy c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied __reset
 .state graph
-loc0 start loc1
 loc1 c_act1 loc2
 loc1 c_act8 loc3
 loc2 c_act6 loc4
@@ -43,6 +42,6 @@ loc25 c_act5 loc27
 loc26 c_act13 loc28
 loc27 c_act4 loc28
 loc28 c_satisfied loc29
-loc29 end loc0
-.marking {loc0}
+loc29 __reset loc1
+.marking {loc1}
 .end
