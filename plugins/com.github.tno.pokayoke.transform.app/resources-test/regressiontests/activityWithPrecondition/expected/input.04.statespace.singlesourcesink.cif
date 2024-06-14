@@ -4,15 +4,15 @@ controllable __end;
 automaton statespace:
   alphabet change, __start, __end;
   @state(Class = "*", Class.element = "First", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 0, sup = "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+  @state(Class = "*", Class.element = "First", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 0, sup = "*")
   location loc1:
     edge change goto loc2;
   @state(Class = "*", Class.element = "Second", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 1, sup = "*")
   location loc2:
     edge __end goto __done;
-  @state(Class = "*", Class.element = "First", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 0, sup = "*")
-  location __init:
-    initial;
-    edge __start goto loc1;
   @state(Class = "*", Class.element = "Second", happens_at_most_once__change = "*", happens_at_most_once__change.occurrences = 1, sup = "*")
   location __done:
     marked;

@@ -10,6 +10,9 @@ controllable __start;
 controllable __end;
 automaton statespace:
   alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2, __start, __end;
+  location __init:
+    initial;
+    edge __start goto loc1;
   location loc1:
     edge Turn_Computer_On goto loc2;
   location loc2:
@@ -45,9 +48,6 @@ automaton statespace:
     edge __end goto __done;
   location loc15:
     edge __end goto __done;
-  location __init:
-    initial;
-    edge __start goto loc1;
   location __done:
     marked;
 end
