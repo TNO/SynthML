@@ -38,7 +38,7 @@ public class CifLocationHelper {
      */
     public static Set<Location> getInitialLocations(Automaton automaton) {
         return automaton.getLocations().stream().filter(CifLocationHelper::isInitial)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                .toList();
     }
 
     /**

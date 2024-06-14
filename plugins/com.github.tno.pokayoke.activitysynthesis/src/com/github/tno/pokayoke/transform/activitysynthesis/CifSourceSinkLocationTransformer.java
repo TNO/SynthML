@@ -68,10 +68,10 @@ public class CifSourceSinkLocationTransformer {
         // Make sure the input specification does not contain any complex component with separate initials or markeds.
         Preconditions.checkArgument(
                 CifCollectUtils.getComplexComponentsStream(specification).allMatch(c -> c.getInitials().isEmpty()),
-                "Expected the input specification to not contain any initials.");
+                "Expected the input specification to not contain any initialization predicates in components.");
         Preconditions.checkArgument(
                 CifCollectUtils.getComplexComponentsStream(specification).allMatch(c -> c.getMarkeds().isEmpty()),
-                "Expected the input specification to not contain any markeds.");
+                "Expected the input specification to not contain any marker predicates in components.");
 
         // Make sure the input specification does not already contain a declaration with the new start/end event name.
         List<Declaration> declarations = CifCollectUtils.collectDeclarations(specification, new ArrayList<>());
@@ -89,7 +89,7 @@ public class CifSourceSinkLocationTransformer {
         Set<String> newLocationNames = Set.of(START_LOCATION_NAME, END_LOCATION_NAME);
         Preconditions.checkArgument(
                 automaton.getLocations().stream().noneMatch(loc -> newLocationNames.contains(loc.getName())),
-                "Expected none of the location in the input automaton with the new start/end location name. ");
+                "Expected no locations in the input automaton with the new start/end location name.");
 
         // First, we make a new initial location, which will become the single initial (source) location.
 
