@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
@@ -100,8 +101,7 @@ public class CifSourceSinkLocationTransformer {
         Location newInitialLocation = CifConstructors.newLocation();
         newInitialLocation.getAnnotations().addAll(
                 initialLocations.stream().flatMap(loc -> loc.getAnnotations().stream()).map(EcoreUtil::copy).toList());
-        newInitialLocation.getInitials()
-                .add(CifConstructors.newBoolExpression(null, CifConstructors.newBoolType(), true));
+        newInitialLocation.getInitials().add(CifValueUtils.makeTrue());
         newInitialLocation.setName(START_LOCATION_NAME);
         automaton.getLocations().add(newInitialLocation);
 
@@ -132,8 +132,7 @@ public class CifSourceSinkLocationTransformer {
         Location newMarkedLocation = CifConstructors.newLocation();
         newMarkedLocation.getAnnotations().addAll(
                 markedLocations.stream().flatMap(loc -> loc.getAnnotations().stream()).map(EcoreUtil::copy).toList());
-        newMarkedLocation.getMarkeds()
-                .add(CifConstructors.newBoolExpression(null, CifConstructors.newBoolType(), true));
+        newMarkedLocation.getMarkeds().add(CifValueUtils.makeTrue());
         newMarkedLocation.setName(END_LOCATION_NAME);
         automaton.getLocations().add(newMarkedLocation);
 
