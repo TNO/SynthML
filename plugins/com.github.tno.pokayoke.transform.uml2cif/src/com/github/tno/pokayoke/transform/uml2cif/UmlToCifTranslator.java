@@ -188,7 +188,7 @@ public class UmlToCifTranslator {
 
         for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                List<Expression> guards = getGuards(umlOpaqueBehavior);
+                Expression guard = getGuard(umlOpaqueBehavior);
                 List<List<Update>> effects = getEffects(umlOpaqueBehavior);
 
                 // Create a CIF event for starting the action that is represented by the current opaque behavior.
@@ -207,7 +207,7 @@ public class UmlToCifTranslator {
                 cifEdgeEvent.setEvent(cifEventExpr);
                 Edge cifEdge = CifConstructors.newEdge();
                 cifEdge.getEvents().add(cifEdgeEvent);
-                cifEdge.getGuards().addAll(guards);
+                cifEdge.getGuards().add(guard);
 
                 if (effects.size() == 1) {
                     // If the action is deterministic, add its effect as an edge update.
@@ -413,14 +413,14 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives all guards of the given behavior.
+     * Gives the guard of the given behavior.
      *
      * @param behavior The opaque behavior.
-     * @return All guards of the given opaque behavior.
+     * @return The guard of the given opaque behavior.
      */
-    private List<Expression> getGuards(OpaqueBehavior behavior) {
+    public Expression getGuard(OpaqueBehavior behavior) {
         return behavior.getBodies().stream().limit(1).map(e -> CifParserHelper.parseExpression(e, behavior))
-                .map(translator::translate).toList();
+                .map(translator::translate).findAny().orElse(CifValueUtils.makeTrue());
     }
 
     /**
