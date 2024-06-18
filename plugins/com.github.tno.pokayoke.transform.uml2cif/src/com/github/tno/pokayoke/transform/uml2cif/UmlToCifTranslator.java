@@ -426,6 +426,20 @@ public class UmlToCifTranslator {
     }
 
     /**
+     * Gives the original guard corresponding to the given CIF event, where original means: as specified in the UML
+     * model (e.g., without atomicity variables and other auxiliary constructs that the transformation may have added).
+     *
+     * @param event The CIF event, which must have been translated for some opaque behavior in the input UML model.
+     * @return The original guard corresponding to the given CIF event.
+     */
+    public Expression getGuard(Event event) {
+        Map<Event, OpaqueBehavior> inverseEventMap = eventMap.inverse();
+        Preconditions.checkArgument(inverseEventMap.containsKey(event),
+                "Expected a CIF event that has been translated for some opaque behavior in the input UML model.");
+        return getGuard(inverseEventMap.get(event));
+    }
+
+    /**
      * Gives all effects of the given behavior. Every effect consists of a list of updates. If there are multiple
      * effects, then the given opaque behavior represents a nondeterministic action.
      *
