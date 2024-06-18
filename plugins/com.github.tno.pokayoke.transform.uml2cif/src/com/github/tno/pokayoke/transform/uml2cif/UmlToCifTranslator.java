@@ -58,6 +58,8 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
@@ -75,16 +77,16 @@ public class UmlToCifTranslator {
     private final UmlAnnotationsToCif translator;
 
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
-    private final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
+    private final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
 
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
-    private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
+    private final BiMap<EnumerationLiteral, EnumLiteral> enumLiteralMap = HashBiMap.create();
 
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
-    private final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
+    private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
+    private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
     public UmlToCifTranslator(Model model) {
         this.model = model;
