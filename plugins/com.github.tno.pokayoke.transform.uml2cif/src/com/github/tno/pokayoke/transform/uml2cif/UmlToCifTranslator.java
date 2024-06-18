@@ -58,6 +58,8 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
@@ -75,16 +77,16 @@ public class UmlToCifTranslator {
     private final UmlAnnotationsToCif translator;
 
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
-    private final Map<Enumeration, EnumDecl> enumMap = new LinkedHashMap<>();
+    private final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
 
     /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
-    private final Map<EnumerationLiteral, EnumLiteral> enumLiteralMap = new LinkedHashMap<>();
+    private final BiMap<EnumerationLiteral, EnumLiteral> enumLiteralMap = HashBiMap.create();
 
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
-    private final Map<Property, DiscVariable> variableMap = new LinkedHashMap<>();
+    private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap = new LinkedHashMap<>();
+    private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
     public UmlToCifTranslator(Model model) {
         this.model = model;
@@ -188,7 +190,7 @@ public class UmlToCifTranslator {
 
         for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                List<Expression> guards = getGuards(umlOpaqueBehavior);
+                Expression guard = getGuard(umlOpaqueBehavior);
                 List<List<Update>> effects = getEffects(umlOpaqueBehavior);
 
                 // Create a CIF event for starting the action that is represented by the current opaque behavior.
@@ -207,7 +209,7 @@ public class UmlToCifTranslator {
                 cifEdgeEvent.setEvent(cifEventExpr);
                 Edge cifEdge = CifConstructors.newEdge();
                 cifEdge.getEvents().add(cifEdgeEvent);
-                cifEdge.getGuards().addAll(guards);
+                cifEdge.getGuards().add(guard);
 
                 if (effects.size() == 1) {
                     // If the action is deterministic, add its effect as an edge update.
@@ -413,14 +415,28 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives all guards of the given behavior.
+     * Gives the guard of the given behavior.
      *
      * @param behavior The opaque behavior.
-     * @return All guards of the given opaque behavior.
+     * @return The guard of the given opaque behavior.
      */
-    private List<Expression> getGuards(OpaqueBehavior behavior) {
+    public Expression getGuard(OpaqueBehavior behavior) {
         return behavior.getBodies().stream().limit(1).map(e -> CifParserHelper.parseExpression(e, behavior))
-                .map(translator::translate).toList();
+                .map(translator::translate).findAny().orElse(CifValueUtils.makeTrue());
+    }
+
+    /**
+     * Gives the original guard corresponding to the given CIF event, where original means: as specified in the UML
+     * model (e.g., without atomicity variables and other auxiliary constructs that the transformation may have added).
+     *
+     * @param event The CIF event, which must have been translated for some opaque behavior in the input UML model.
+     * @return The original guard corresponding to the given CIF event.
+     */
+    public Expression getGuard(Event event) {
+        Map<Event, OpaqueBehavior> inverseEventMap = eventMap.inverse();
+        Preconditions.checkArgument(inverseEventMap.containsKey(event),
+                "Expected a CIF event that has been translated for some opaque behavior in the input UML model.");
+        return getGuard(inverseEventMap.get(event));
     }
 
     /**

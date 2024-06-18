@@ -75,7 +75,8 @@ public class FullSynthesisApp {
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
         // Translate the UML specification to a CIF specification.
-        Specification cifSpec = new UmlToCifTranslator(umlSpec).translate();
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(umlSpec);
+        Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
             AppEnv.registerSimple();
@@ -90,7 +91,8 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec);
+        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
+                umlToCifTranslator);
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);

@@ -6,6 +6,6 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge act1;
-    edge act2;
+    edge act1 when true;
+    edge act2 when true;
 end

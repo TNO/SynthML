@@ -2,16 +2,15 @@
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
-import com.google.common.base.Preconditions;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 
 /** Helper for working with event guards and updates. */
 public class EventGuardUpdateHelper {
@@ -19,20 +18,30 @@ public class EventGuardUpdateHelper {
     }
 
     /**
-     * Collect uncontrolled system guards from a CIF/BDD specification.
+     * Collect the original uncontrolled system guards of all controllable events for the given CIF/BDD specification,
+     * where original means: as specified in the original UML input model from which the CIF specification was
+     * translated.
      *
      * @param cifBddSpec The CIF/BDD specification.
-     * @return A map from CIF events to their guards as BDDs.
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     *     specification.
+     * @return A map from all controllable CIF events to their guards as BDDs.
      */
-    public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec) {
+    public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec,
+            UmlToCifTranslator translator)
+    {
         Map<Event, BDD> guards = new LinkedHashMap<>();
-        for (Entry<Event, List<CifBddEdge>> entry: cifBddSpec.eventEdges.entrySet()) {
-            List<CifBddEdge> cifBDDEdges = entry.getValue();
-            Preconditions.checkArgument(cifBDDEdges.size() == 1,
-                    "Expected that each event has exactly one CIF/BDD edge.");
-            BDD bdd = cifBDDEdges.get(0).guard.id();
-            guards.put(entry.getKey(), bdd);
+
+        try {
+            for (Event event: cifBddSpec.eventEdges.keySet()) {
+                if (event.getControllable()) {
+                    guards.put(event, CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec));
+                }
+            }
+        } catch (UnsupportedPredicateException ex) {
+            throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage(), ex);
         }
+
         return guards;
     }
 }
