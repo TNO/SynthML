@@ -202,12 +202,6 @@ public class FullSynthesisApp {
         Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionActionMap();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and petrification.
-        Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.internalactionsremoved.uml");
-        PostProcessActivity.removeInternalActions(activity);
-        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
-
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = StateAnnotationHelper
                 .getStateAnnotations(cifReducedStateSpace);
@@ -240,6 +234,12 @@ public class FullSynthesisApp {
 
         // Add the guards for the edges that go from decision nodes to the actions.
         ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+
+        // Remove the internal actions that were added in CIF specification and petrification.
+        Path internalActionsRemovedUMLOutputPath = outputFolderPath
+                .resolve(filePrefix + ".14.internalactionsremoved.uml");
+        PostProcessActivity.removeInternalActions(activity);
+        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process to remove the names of edges and nodes.
         Path umlLabelsRemovedOutputPath = outputFolderPath
