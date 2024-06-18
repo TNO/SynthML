@@ -61,10 +61,14 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Fork__to__Flip_A_Coin" target="48" source="56"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Fork__to__Starting_Computer" target="50" source="56"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Decision__p5__to__Drink_Coffee" target="46" source="54">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="34" value="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
+          <body>true</body>
+        </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p5__to__Drink_Tea" target="47" source="54">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="36" value="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
+          <body>true</body>
+        </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Flip_A_Coin__to__Decision__p5" target="54" source="48"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Starting_Computer__to__Join" target="57" source="50"/>
