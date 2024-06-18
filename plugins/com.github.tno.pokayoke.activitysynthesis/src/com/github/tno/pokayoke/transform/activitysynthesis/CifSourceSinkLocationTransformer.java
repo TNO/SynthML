@@ -3,10 +3,15 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
+import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.io.CifWriter;
@@ -16,9 +21,15 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.Class;
 
+import com.github.javabdd.BDD;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 
 /**
@@ -155,5 +166,54 @@ public class CifSourceSinkLocationTransformer {
             location.getEdges().add(edge);
             location.getMarkeds().clear();
         }
+    }
+
+    /**
+     * Gives a mapping from auxiliary events that are introduced by {@link #transform(Specification)}, i.e., the start
+     * and end event, to the BDD representations of their guards. For the start event this guard is the activity
+     * precondition, and for the end event this guard is the activity postcondition.
+     *
+     * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
+     * @param bddSpec The CIF/BDD specification of {@code specification}, possibly before it was
+     *     {@link #transform(Specification) transformed}.
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     *     specification.
+     * @return A mapping from auxiliary CIF events to their guards, represented as BDDs.
+     */
+    public static Map<Event, BDD> collectAuxiliarySystemGuards(Specification specification, CifBddSpec bddSpec,
+            UmlToCifTranslator translator)
+    {
+        // Find the start and end event in the given CIF specification.
+        Function<String, Event> findEvent = name -> {
+            List<Event> events = specification.getDeclarations().stream()
+                    .filter(decl -> decl instanceof Event event && event.getName().equals(name)).map(Event.class::cast)
+                    .toList();
+
+            Preconditions.checkArgument(events.size() == 1,
+                    String.format("Expected exactly one event named %s but found %s", name, events.size()));
+
+            return events.get(0);
+        };
+
+        Event startEvent = findEvent.apply(START_EVENT_NAME);
+        Event endEvent = findEvent.apply(END_EVENT_NAME);
+
+        // Obtain the original preconditions and postconditions in the UML input model.
+        Class umlClass = translator.getSingleClass();
+        Behavior umlBehavior = umlClass.getClassifierBehavior();
+        Expression cifPrecondition = translator.translateStateInvariantConstraints(umlBehavior.getPreconditions());
+        Expression cifPostcondition = translator.translateStateInvariantConstraints(umlBehavior.getPostconditions());
+
+        // Construct a mapping from the start and end event, to the precondition and postcondition as BDDs, resp.
+        Map<Event, BDD> result = new LinkedHashMap<>();
+
+        try {
+            result.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, false, bddSpec));
+            result.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
+        } catch (UnsupportedPredicateException ex) {
+            throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
+        }
+
+        return result;
     }
 }

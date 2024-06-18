@@ -26,6 +26,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.InputVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.IntExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
+import org.eclipse.escet.common.java.Sets;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
@@ -40,6 +41,8 @@ public class ChoiceActionGuardComputation {
 
     private Map<Event, BDD> uncontrolledSystemGuards;
 
+    private Map<Event, BDD> auxiliarySystemGuards;
+
     private CifDataSynthesisResult cifSynthesisResult;
 
     private PetriNet petriNet;
@@ -49,11 +52,12 @@ public class ChoiceActionGuardComputation {
     private Map<Place, Set<String>> regionMap;
 
     public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> uncontrolledSystemGuards,
-            CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet,
+            Map<Event, BDD> auxiliarySystemGuards, CifDataSynthesisResult cifSynthesisResult, PetriNet petriNet,
             Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
     {
         this.cifMinimizedStateSpace = cifMinimizedStateSpace;
         this.uncontrolledSystemGuards = uncontrolledSystemGuards;
+        this.auxiliarySystemGuards = auxiliarySystemGuards;
         this.cifSynthesisResult = cifSynthesisResult;
         this.petriNet = petriNet;
         this.compositeStateMap = compositeStateMap;
@@ -62,9 +66,11 @@ public class ChoiceActionGuardComputation {
 
     public Map<Transition, Expression> computeChoiceGuards() {
         CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
+
         // Get the map from choice places to their choice events (outgoing events).
+        Set<Event> allEvents = Sets.union(uncontrolledSystemGuards.keySet(), auxiliarySystemGuards.keySet());
         Map<Place, List<Event>> choicePlaceToChoiceEvents = ChoiceActionGuardComputationHelper
-                .getChoiceEventsPerChoicePlace(petriNet, cifBddSpec.alphabet);
+                .getChoiceEventsPerChoicePlace(petriNet, allEvents);
 
         // Compute guards for each choice place.
         Map<Transition, Expression> choiceTransitionToGuard = new LinkedHashMap<>();
@@ -99,16 +105,29 @@ public class ChoiceActionGuardComputation {
 
             // Perform simplification to obtain choice guards.
             for (Event choiceEvent: choiceEvents) {
-                // Get the uncontrolled system guard from the CIF specification.
-                BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(choiceEvent);
+                BDD choiceGuardBdd;
 
-                // Get the controlled system guard from the synthesis result.
-                BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
+                if (uncontrolledSystemGuards.containsKey(choiceEvent)) {
+                    // The current choice event corresponds to an opaque behavior in the input UML model.
 
-                // Perform simplification.
-                BDD supervisorExtraGuard = controlledSystemGuard.simplify(uncontrolledSystemGuard);
-                BDD choiceGuardBdd = supervisorExtraGuard.simplify(choiceStatesPred);
-                supervisorExtraGuard.free();
+                    // Get the uncontrolled system guard from the CIF specification.
+                    BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(choiceEvent);
+
+                    // Get the controlled system guard from the synthesis result.
+                    BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(choiceEvent);
+
+                    // Perform simplification.
+                    BDD supervisorExtraGuard = controlledSystemGuard.simplify(uncontrolledSystemGuard);
+                    choiceGuardBdd = supervisorExtraGuard.simplify(choiceStatesPred);
+                    supervisorExtraGuard.free();
+                } else if (auxiliarySystemGuards.containsKey(choiceEvent)) {
+                    // The current choice event is an auxiliary event introduced earlier in the synthesis chain.
+
+                    // Perform simplification directly, as there is no synthesis result for the current choice event.
+                    choiceGuardBdd = auxiliarySystemGuards.get(choiceEvent).simplify(choiceStatesPred);
+                } else {
+                    throw new RuntimeException("Unknown choice event " + choiceEvent);
+                }
 
                 Expression choiceGuardExpr = BddToCif.bddToCifPred(choiceGuardBdd, cifBddSpec);
                 choiceGuardBdd.free();

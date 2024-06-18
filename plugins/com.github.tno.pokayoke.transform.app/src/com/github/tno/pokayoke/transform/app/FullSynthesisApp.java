@@ -121,6 +121,10 @@ public class FullSynthesisApp {
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
+        // Get the BDDs of the guards of auxiliary events that were introduced by the source/sink location transformer.
+        Map<Event, BDD> auxiliarySystemGuards = CifSourceSinkLocationTransformer
+                .collectAuxiliarySystemGuards(cifStateSpace, cifBddSpec, umlToCifTranslator);
+
         // Remove state annotations from intermediate states.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".05.statespace.annotreduced.cif");
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
@@ -217,7 +221,8 @@ public class FullSynthesisApp {
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, cifSynthesisResult, petriNet, minimizedToReduced, regionMap);
+                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, petriNet, minimizedToReduced,
+                regionMap);
         Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
