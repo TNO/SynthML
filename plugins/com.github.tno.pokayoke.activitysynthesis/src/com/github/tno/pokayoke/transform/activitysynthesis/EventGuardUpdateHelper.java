@@ -39,7 +39,7 @@ public class EventGuardUpdateHelper {
                 }
             }
         } catch (UnsupportedPredicateException ex) {
-            throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage());
+            throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage(), ex);
         }
 
         return guards;
