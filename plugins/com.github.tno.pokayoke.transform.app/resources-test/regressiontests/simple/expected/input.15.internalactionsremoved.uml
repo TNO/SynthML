@@ -90,10 +90,14 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="47" name="robot_release_product_at_location2__to__Merge__p7" target="66" source="63"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="48" name="Merge__p7__to__measure_product_position" target="57" source="66"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="49" name="Decision__p8__to__robot_adjust_product" target="60" source="67">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="50" value="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="50">
+          <body>true</body>
+        </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="51" name="Decision__p8__to__robot_move_to_location1" target="61" source="67">
-        <guard xmi:type="uml:LiteralBoolean" xmi:id="52" value="true"/>
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="52">
+          <body>productCorrectlyPlaced != False</body>
+        </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="53" name="measure_product_position__to__Decision__p8" target="67" source="57"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="54" name="Join__to__robot_move_to_location2" target="62" source="69"/>

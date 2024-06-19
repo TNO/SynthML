@@ -123,9 +123,7 @@ public class UmlToCifTranslator {
         }
 
         // Find the single UML class to translate.
-        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
-        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
-        Class umlClass = umlClasses.get(0);
+        Class umlClass = getSingleClass();
 
         // Translate the UML class.
         Automaton cifPlant = translateClass(umlClass, cifSpec);
@@ -140,6 +138,17 @@ public class UmlToCifTranslator {
         }
 
         return cifSpec;
+    }
+
+    /**
+     * Gives the single UML class within the input UML model.
+     *
+     * @return The single UML class within the input UML model.
+     */
+    public Class getSingleClass() {
+        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
+        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
+        return umlClasses.get(0);
     }
 
     /**
@@ -479,11 +488,23 @@ public class UmlToCifTranslator {
      * @param umlConstraint The UML constraint to translate.
      * @return The translated CIF expression, which is the state invariant predicate.
      */
-    private Expression translateStateInvariantConstraint(Constraint umlConstraint) {
+    public Expression translateStateInvariantConstraint(Constraint umlConstraint) {
         AInvariant cifInvariant = CifParserHelper.parseInvariant(umlConstraint);
         Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
                 "Expected a state invariant.");
         return translator.translate(cifInvariant.predicate);
+    }
+
+    /**
+     * Translates a collection of UML constraints to a single CIF expression, assuming that all given UML constraints
+     * are state invariants.
+     *
+     * @param umlConstraints The UML constraints to translate.
+     * @return The translated CIF expression, which is the conjunction of all state invariant predicates.
+     */
+    public Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
+        List<Expression> cifConstraints = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
+        return CifValueUtils.createConjunction(cifConstraints);
     }
 
     /**

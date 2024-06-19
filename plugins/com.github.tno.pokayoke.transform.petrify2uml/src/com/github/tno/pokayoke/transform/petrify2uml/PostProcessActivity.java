@@ -1,15 +1,24 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 public class PostProcessActivity {
@@ -59,7 +68,8 @@ public class PostProcessActivity {
             ActivityNode target = outgoingEdge.getTarget();
 
             // Add a new control flow from source to target.
-            PNML2UMLActivityHelper.createControlFlow(activity, source, target);
+            ControlFlow newEdge = PNML2UMLActivityHelper.createControlFlow(activity, source, target);
+            newEdge.setGuard(combineGuards(incomingEdge.getGuard(), outgoingEdge.getGuard()));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
@@ -67,6 +77,50 @@ public class PostProcessActivity {
             action.destroy();
         }
         return numerOfActions;
+    }
+
+    /**
+     * Combines two given edge guards into a single edge guard.
+     *
+     * @param left The first edge guard to combine.
+     * @param right The second edge guard to combine.
+     * @return The combined edge guard.
+     */
+    private static ValueSpecification combineGuards(ValueSpecification left, ValueSpecification right) {
+        if (left == null || left instanceof LiteralNull) {
+            return right;
+        }
+        if (right == null || right instanceof LiteralNull) {
+            return left;
+        }
+        if (left instanceof LiteralBoolean leftBool && right instanceof LiteralBoolean rightBool) {
+            LiteralBoolean result = UMLFactory.eINSTANCE.createLiteralBoolean();
+            result.setType(UmlPrimitiveType.BOOLEAN.load(left));
+            result.setValue(leftBool.isValue() && rightBool.isValue());
+            return result;
+        }
+        if (left instanceof OpaqueExpression leftExpr && right instanceof OpaqueExpression rightExpr) {
+            OpaqueExpression result = UMLFactory.eINSTANCE.createOpaqueExpression();
+            result.setType(UmlPrimitiveType.BOOLEAN.load(left));
+
+            // Combine languages.
+            Preconditions.checkArgument(leftExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
+                    "Expected to combine only CIF expressions.");
+            Preconditions.checkArgument(rightExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
+                    "Expected to combine only CIF expressions.");
+            result.getLanguages().add("CIF");
+
+            // Combine bodies.
+            List<String> bodies = new ArrayList<>();
+            bodies.addAll(leftExpr.getBodies());
+            bodies.addAll(rightExpr.getBodies());
+            Optional<String> body = bodies.stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r));
+            body.ifPresent(b -> result.getBodies().add(b));
+
+            return result;
+        }
+
+        throw new RuntimeException("Could not combine " + left + " with " + right);
     }
 
     /**

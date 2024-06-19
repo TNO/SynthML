@@ -1,0 +1,27 @@
+controllable action;
+uncontrollable action__result_1;
+uncontrollable action__result_2;
+plant automaton Context:
+  disc bool field in any;
+  disc int[0..1] __activeAction;
+  alg bool precondition = not field;
+  alg bool __precondition = precondition;
+  alg bool postcondition = field;
+  alg bool __postcondition_atomicity = __activeAction = 0;
+  alg bool __postcondition = postcondition and __postcondition_atomicity;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge action when true, __activeAction = 0 do __activeAction := 1;
+    edge action__result_1 when __activeAction = 1 do field := true, __activeAction := 0;
+    edge action__result_2 when __activeAction = 1 do field := false, __activeAction := 0;
+end
+supervisor automaton sup:
+  alphabet action;
+  location:
+    initial;
+    marked;
+    edge action when Context.__activeAction = 0 and not Context.field;
+end
