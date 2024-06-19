@@ -105,10 +105,11 @@ public class PostProcessActivity {
             result.setType(UmlPrimitiveType.BOOLEAN.load(left));
 
             // Combine languages.
-            Set<String> languages = new LinkedHashSet<>();
-            languages.addAll(leftExpr.getLanguages());
-            languages.addAll(rightExpr.getLanguages());
-            result.getLanguages().addAll(languages);
+            Preconditions.checkArgument(leftExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
+                    "Expected to combine only CIF expressions.");
+            Preconditions.checkArgument(rightExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
+                    "Expected to combine only CIF expressions.");
+            result.getLanguages().add("CIF");
 
             // Combine bodies.
             Set<String> bodies = new LinkedHashSet<>();
