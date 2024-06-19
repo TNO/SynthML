@@ -1,10 +1,9 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -112,7 +111,7 @@ public class PostProcessActivity {
             result.getLanguages().add("CIF");
 
             // Combine bodies.
-            Set<String> bodies = new LinkedHashSet<>();
+            List<String> bodies = new ArrayList<>();
             bodies.addAll(leftExpr.getBodies());
             bodies.addAll(rightExpr.getBodies());
             Optional<String> body = bodies.stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r));
