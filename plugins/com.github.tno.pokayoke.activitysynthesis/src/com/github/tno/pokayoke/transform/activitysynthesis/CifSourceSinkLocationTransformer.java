@@ -207,7 +207,7 @@ public class CifSourceSinkLocationTransformer {
         Map<Event, BDD> result = new LinkedHashMap<>();
 
         try {
-            result.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, false, bddSpec));
+            result.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
             result.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
