@@ -174,8 +174,7 @@ public class CifSourceSinkLocationTransformer {
      * precondition, and for the end event this guard is the activity postcondition.
      *
      * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
-     * @param bddSpec The CIF/BDD specification of {@code specification}, possibly before it was
-     *     {@link #transform(Specification) transformed}.
+     * @param bddSpec The CIF/BDD specification of {@code specification}.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
      * @return A mapping from auxiliary CIF events to their guards, represented as BDDs.
