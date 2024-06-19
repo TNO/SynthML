@@ -170,8 +170,8 @@ public class CifSourceSinkLocationTransformer {
 
     /**
      * Gives a mapping from auxiliary events that are introduced by {@link #transform(Specification)}, i.e., the start
-     * and end event, to the BDD representations of their guards. For the start event this guard is 'true', and for the
-     * end event this guard is the activity postcondition.
+     * and end event, to the BDD representations of their guards. For the start event this guard is the activity
+     * precondition, and for the end event this guard is the activity postcondition.
      *
      * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
      * @param bddSpec The CIF/BDD specification of {@code specification}.
@@ -197,19 +197,20 @@ public class CifSourceSinkLocationTransformer {
         Event startEvent = findEvent.apply(START_EVENT_NAME);
         Event endEvent = findEvent.apply(END_EVENT_NAME);
 
-        // Obtain the original activity postcondition in the UML input model.
+        // Obtain the original preconditions and postconditions in the UML input model.
         Class umlClass = translator.getSingleClass();
         Behavior umlBehavior = umlClass.getClassifierBehavior();
+        Expression cifPrecondition = translator.translateStateInvariantConstraints(umlBehavior.getPreconditions());
         Expression cifPostcondition = translator.translateStateInvariantConstraints(umlBehavior.getPostconditions());
 
-        // Construct a mapping from the start and end event, to 'true' and the activity postcondition as BDDs, resp.
+        // Construct a mapping from the start and end event, to the precondition and postcondition as BDDs, resp.
         Map<Event, BDD> result = new LinkedHashMap<>();
 
         try {
-            result.put(startEvent, CifToBddConverter.convertPred(CifValueUtils.makeTrue(), false, bddSpec));
+            result.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, false, bddSpec));
             result.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
         } catch (UnsupportedPredicateException ex) {
-            throw new RuntimeException("Failed to translate auxiliary guards to BDDs: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
         }
 
         return result;
