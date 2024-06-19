@@ -238,17 +238,19 @@ public class FullSynthesisApp {
                 converter.convertExpressions(cifSpec, Arrays.asList(expression))));
 
         // Add the guards for the edges that go from decision nodes to the actions.
+        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".14.choiceguardsadded.uml");
         ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+        FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.internalactionsremoved.uml");
+                .resolve(filePrefix + ".15.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process to remove the names of edges and nodes.
         Path umlLabelsRemovedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.internalactionsremoved.labelsremoved.uml");
+                .resolve(filePrefix + ".16.internalactionsremoved.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
     }
