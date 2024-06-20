@@ -30,6 +30,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -208,14 +209,11 @@ public class PNML2UMLActivityHelper {
      */
     private static boolean isFinalPlace(Place place) {
         if (place.getOutArcs().isEmpty()) {
-            int numInArcs = place.getInArcs().size();
+            boolean properIncomingArcs = place.getInArcs().stream().allMatch(
+                    arc -> arc.getSource().getName().getText().equals(CifSourceSinkLocationTransformer.END_EVENT_NAME));
 
-            Preconditions.checkArgument(numInArcs == 1, "Expected a single incoming arc, but got " + numInArcs);
-
-            Preconditions.checkArgument(
-                    place.getInArcs().get(0).getSource().getName().getText()
-                            .equals(CifSourceSinkLocationTransformer.END_EVENT_NAME),
-                    "Expected the single incoming arc of final places to come from a transition named "
+            Preconditions.checkArgument(properIncomingArcs,
+                    "Expected all incoming arcs of final places to come from transitions named "
                             + CifSourceSinkLocationTransformer.END_EVENT_NAME);
 
             return true;
@@ -236,10 +234,11 @@ public class PNML2UMLActivityHelper {
         finalNode.setActivity(activity);
         finalNode.setName("FinalNode");
 
-        Node sourceNode = place.getInArcs().get(0).getSource();
-        Action sourceAction = nameActionMap.get(sourceNode.getId());
-
-        createControlFlow(activity, sourceAction, finalNode);
+        for (Arc incomingArc: place.getInArcs()) {
+            Node sourceNode = incomingArc.getSource();
+            Action sourceAction = nameActionMap.get(sourceNode.getId());
+            createControlFlow(activity, sourceAction, finalNode);
+        }
     }
 
     /**

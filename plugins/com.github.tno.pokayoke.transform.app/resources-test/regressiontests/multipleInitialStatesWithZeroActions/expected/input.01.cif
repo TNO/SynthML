@@ -1,0 +1,6 @@
+plant automaton Context:
+  disc bool field in any;
+  location:
+    initial;
+    marked;
+end
