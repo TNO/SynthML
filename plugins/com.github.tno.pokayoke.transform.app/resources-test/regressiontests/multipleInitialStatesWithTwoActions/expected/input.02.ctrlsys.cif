@@ -1,0 +1,22 @@
+controllable left;
+controllable right;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  alg bool postcondition = field2;
+  alg bool __postcondition = postcondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge left when not field1 do field2 := true;
+    edge right when field1 do field2 := true;
+end
+supervisor automaton sup:
+  alphabet left, right;
+  location:
+    initial;
+    marked;
+    edge left when not Context.field2 and not Context.field1;
+    edge right when not Context.field2 and Context.field1;
+end

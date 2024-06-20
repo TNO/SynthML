@@ -1,0 +1,12 @@
+controllable action;
+automaton statespace:
+  alphabet action;
+  @state(Context = "*", Context.field = false, sup = "*")
+  location loc1:
+    initial;
+    edge action goto loc2;
+  @state(Context = "*", Context.field = true, sup = "*")
+  location loc2:
+    initial;
+    marked;
+end

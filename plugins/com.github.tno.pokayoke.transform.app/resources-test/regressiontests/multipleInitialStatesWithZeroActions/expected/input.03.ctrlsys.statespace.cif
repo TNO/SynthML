@@ -1,0 +1,11 @@
+automaton statespace:
+  alphabet;
+  @state(Context = "*", Context.field = false, sup = "*")
+  location loc1:
+    initial;
+    marked;
+  @state(Context = "*", Context.field = true, sup = "*")
+  location loc2:
+    initial;
+    marked;
+end

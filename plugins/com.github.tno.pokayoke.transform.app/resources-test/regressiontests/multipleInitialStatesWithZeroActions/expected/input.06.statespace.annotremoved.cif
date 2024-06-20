@@ -1,0 +1,15 @@
+controllable __start;
+controllable __end;
+automaton statespace:
+  alphabet __start, __end;
+  location __init:
+    initial;
+    edge __start goto loc1;
+    edge __start goto loc2;
+  location loc1:
+    edge __end goto __done;
+  location loc2:
+    edge __end goto __done;
+  location __done:
+    marked;
+end

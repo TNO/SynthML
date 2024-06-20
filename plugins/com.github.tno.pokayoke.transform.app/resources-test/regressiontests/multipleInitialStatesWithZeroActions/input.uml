@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_90zqgCfiEe-Yd-UzBcvFKg" name="Model">
+  <packagedElement xmi:type="uml:Class" xmi:id="__ozXsCfiEe-Yd-UzBcvFKg" name="Context" visibility="public" classifierBehavior="_BgJT0CfjEe-Yd-UzBcvFKg" isActive="true">
+    <ownedAttribute xmi:id="_IT6tsCfjEe-Yd-UzBcvFKg" name="field" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_IT7UwCfjEe-Yd-UzBcvFKg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_IT7UwSfjEe-Yd-UzBcvFKg" value="1"/>
+    </ownedAttribute>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_BgJT0CfjEe-Yd-UzBcvFKg" name="main" isAbstract="true"/>
+  </packagedElement>
+  <profileApplication xmi:id="_JgE-0CfjEe-Yd-UzBcvFKg">
+    <eAnnotations xmi:id="_JgE-0SfjEe-Yd-UzBcvFKg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+    </eAnnotations>
+    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+  </profileApplication>
+</uml:Model>

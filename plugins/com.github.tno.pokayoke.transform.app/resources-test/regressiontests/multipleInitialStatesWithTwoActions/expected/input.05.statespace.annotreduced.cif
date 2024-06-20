@@ -1,0 +1,29 @@
+controllable left;
+controllable right;
+controllable __start;
+controllable __end;
+automaton statespace:
+  alphabet left, right, __start, __end;
+  @state(Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  @state(Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+    edge __start goto loc2;
+  @state(Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  location loc1:
+    edge left goto loc3;
+  @state(Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  location loc2:
+    edge right goto loc4;
+  @state(Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  location loc3:
+    edge __end goto __done;
+  @state(Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  location loc4:
+    edge __end goto __done;
+  @state(Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  @state(Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  location __done:
+    marked;
+end

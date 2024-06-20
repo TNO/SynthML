@@ -1,0 +1,19 @@
+controllable left;
+controllable right;
+automaton statespace:
+  alphabet left, right;
+  @state(Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  location loc1:
+    initial;
+    edge left goto loc3;
+  @state(Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  location loc2:
+    initial;
+    edge right goto loc4;
+  @state(Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  location loc3:
+    marked;
+  @state(Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  location loc4:
+    marked;
+end

@@ -1,0 +1,12 @@
+plant automaton Context:
+  disc bool field in any;
+  location:
+    initial;
+    marked;
+end
+supervisor automaton sup:
+  alphabet;
+  location:
+    initial;
+    marked;
+end
