@@ -35,8 +35,7 @@ public class PostProcessActivity {
         Preconditions.checkArgument(numberOfRemovedActions == 1,
                 "Expected that there is exactly one 'start' action removed.");
         numberOfRemovedActions = removeOpaqueActions(CifSourceSinkLocationTransformer.END_EVENT_NAME, activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'end' action removed.");
+        Preconditions.checkArgument(numberOfRemovedActions > 0, "Expected that at least one 'end' action got removed.");
     }
 
     /**
