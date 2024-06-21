@@ -22,6 +22,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.InputVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.IntExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
@@ -162,6 +163,8 @@ public class ChoiceActionGuardComputation {
             return varExpr.getVariable().getName().startsWith("__");
         } else if (expr instanceof EnumLiteralExpression) {
             return false;
+        } else if (expr instanceof InputVariableExpression) {
+            return true;
         } else if (expr instanceof IntExpression) {
             return false;
         } else if (expr instanceof LocationExpression) {
