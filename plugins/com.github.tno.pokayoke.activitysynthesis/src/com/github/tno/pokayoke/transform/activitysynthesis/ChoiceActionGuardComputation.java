@@ -168,7 +168,7 @@ public class ChoiceActionGuardComputation {
         } else if (expr instanceof IntExpression) {
             return false;
         } else if (expr instanceof LocationExpression) {
-            return false;
+            return true;
         } else if (expr instanceof UnaryExpression unExpr) {
             return containsAdditionalState(unExpr.getChild());
         }
