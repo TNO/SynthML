@@ -29,7 +29,6 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 import org.eclipse.escet.common.java.Sets;
 
 import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -132,10 +131,10 @@ public class ChoiceActionGuardComputation {
                 Expression choiceGuardExpr = BddToCif.bddToCifPred(choiceGuardBdd, cifBddSpec);
                 choiceGuardBdd.free();
 
-                // Make sure the choice guard does not contain the atomicity variable.
-                if (containsVariable(choiceGuardExpr, UmlToCifTranslator.ATOMICITY_VARIABLE_NAME)) {
+                // Make sure the choice guard does not contain additional state.
+                if (containsAdditionalState(choiceGuardExpr)) {
                     throw new RuntimeException(
-                            "Expected choice guards to not be expressed over the atomicity variable.");
+                            "Expected choice guards to not contain extra state that was introduced during synthesis.");
                 }
 
                 choiceTransitionToGuard.put(
@@ -148,13 +147,20 @@ public class ChoiceActionGuardComputation {
         return choiceTransitionToGuard;
     }
 
-    private boolean containsVariable(Expression expr, String varName) {
+    /**
+     * Determines whether the given expression contains auxiliary state that is not in the UML input model, but was
+     * added during the process of activity synthesis, like for example the atomicity variable.
+     *
+     * @param expr The expression to check.
+     * @return {@code true} in case the given expression contains additional state, {@code false} otherwise.
+     */
+    private boolean containsAdditionalState(Expression expr) {
         if (expr instanceof BinaryExpression binExpr) {
-            return containsVariable(binExpr.getLeft(), varName) || containsVariable(binExpr.getRight(), varName);
+            return containsAdditionalState(binExpr.getLeft()) || containsAdditionalState(binExpr.getRight());
         } else if (expr instanceof BoolExpression) {
             return false;
         } else if (expr instanceof DiscVariableExpression varExpr) {
-            return varExpr.getVariable().getName().equals(varName);
+            return varExpr.getVariable().getName().startsWith("__");
         } else if (expr instanceof EnumLiteralExpression) {
             return false;
         } else if (expr instanceof InputVariableExpression) {
@@ -164,7 +170,7 @@ public class ChoiceActionGuardComputation {
         } else if (expr instanceof LocationExpression) {
             return false;
         } else if (expr instanceof UnaryExpression unExpr) {
-            return containsVariable(unExpr.getChild(), varName);
+            return containsAdditionalState(unExpr.getChild());
         }
 
         throw new RuntimeException("Unsupported expression: " + expr);
