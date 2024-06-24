@@ -277,6 +277,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (minConstraint.getSpecification() instanceof LiteralInteger minValue
                 && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
         {
+            if (minValue.getValue() < 0) {
+                error("Expected integer type ranges to not include negative values.", minConstraint,
+                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+            }
             if (minValue.getValue() > maxValue.getValue()) {
                 error("Minimum value cannot be greater than maximum value.", minConstraint,
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
