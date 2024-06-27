@@ -131,15 +131,11 @@ public class FullSynthesisApp {
         StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
                 outputFolderPath);
 
-        // Remove state annotations from all states.
-        Path cifAnnotRemovedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.annotremoved.cif");
-        StateAnnotationHelper.removeStateAnnotations(cifStateSpace, cifAnnotRemovedStateSpacePath, outputFolderPath);
-
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath
                 .resolve(filePrefix + ".07.statespace.annotremoved.projected.cif");
-        String[] projectionArgs = new String[] {cifAnnotRemovedStateSpacePath.toString(),
+        String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
         AppStreams projectionAppStreams = new AppStreams(InputStream.nullInputStream(), projectionAppStream,
