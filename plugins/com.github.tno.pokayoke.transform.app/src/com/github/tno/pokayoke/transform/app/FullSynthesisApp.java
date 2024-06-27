@@ -133,8 +133,7 @@ public class FullSynthesisApp {
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
-        Path cifProjectedStateSpacePath = outputFolderPath
-                .resolve(filePrefix + ".07.statespace.annotremoved.projected.cif");
+        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
@@ -149,7 +148,7 @@ public class FullSynthesisApp {
 
         // Perform DFA minimization.
         Path cifMinimizedStateSpacePath = outputFolderPath
-                .resolve(filePrefix + ".08.statespace.annotremoved.projected.minimized.cif");
+                .resolve(filePrefix + ".08.statespace.projected.minimized.cif");
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         AppStream dfaMinimizationAppStream = new MemAppStream();
