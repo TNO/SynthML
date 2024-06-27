@@ -46,6 +46,7 @@
 \label{sec:intro}
 
 % Outline:
+% - Goal and aim of this document
 % - Short description of what's in the document.
 % - Document outline; what to find where.
 
@@ -59,6 +60,71 @@
 %	- What does it mean for a UML model to be valid?
 % 	- Do we need to define them? If so, do we need to define them concretely (e.g., Petrify format), or abstractly/conceptually?
 %	- At least we need to know what they must (not) contain.
+
+\subsection{Formalisms}
+
+Our activity synthesis algorithm deals with various different formalisms that each have their own terminology.
+Here is a high-level overview.
+
+\begin{description}
+	\item[Finite automata.]
+	Finite automata are finite directed graphs consisting of \emph{locations} and \emph{edges}.
+	Locations can be marked \emph{initial} when they are `starting' locations.
+	Locations can also be \emph{marked} when they are accepting locations, with the standard meaning of acceptance from automata theory.
+	
+	\item[Extended finite automata (EFA).]
+	EFAs are finite automata that are used in the presence of \emph{state}, i.e., variables that have a value.
+	The edges of EFAs have \emph{guards}, which is a state predicate, and \emph{updates}, which is a state transformer.
+	
+	\item[(UML) Model.]
+	A UML Model may consist of a number of UML enum declaration, and consists of a single UML Class, which may contain:
+	\begin{itemize}
+		\item A number of UML properties, whose type is either Boolean, bounded integer or an enum as is defined in the UML model.
+		\item A number of UML opaque behaviors that have a \emph{guard} and zero or more \emph{effects}.
+		These opaque behaviors model \emph{actions} to be performed in the synthesized activities.
+		In case such an action has at most one effect we say the action is \emph{deterministic}, and otherwise it is \emph{nondeterministic}.
+		The execution semantics of nondeterministic actions is that by executing the action, one of its effects is nondeterministically chosen and executed.
+		\item A number of UML constraints that model the requirements for synthesis.
+		\item An abstract UML activity, with preconditions, postconditions, and optimality constraints.
+		Optimality contraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times' and thus limit the number of occurrences of some action in a to-be-synthesized activity.
+		Abstract UML activities are `empty' in the sense that they contain no nodes and no control flow.
+	\end{itemize}
+	
+	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator (see the code implementation).
+	
+	\item[(UML) Activity.]
+	Activities are finite directed graphs consisting of \emph{nodes} and \emph{control flow}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
+	A node can either be a \emph{control node} (initial, final, fork, join, decision, or merge node), or an \emph{call opaque behavior node} which executes an action by calling an opaque behavior\footnote{Technically there are other types of activity nodes that are supported by our formalim as well, like UML opaque actions and other types of call behavior nodes. But for the purpose of this document and understanding the synthesis algorithm, let us keep those out of scope.}.
+	The goal of the activity synthesis algorithm is to synthesize (concrete) UML activities for the specified abstract UML activities in UML models, and updating the UML model by replacing these abstract activities by the concrete syntehsized ones.
+	
+	\item[Petri Net.]
+	A Petri Net is a finite directed graphs consisting of \emph{places}, \emph{transitions}, and \emph{arcs}.
+	Any place in a Petri Net can have at most one \emph{token}.
+	Transitions in a Petri Net can be \emph{fired} to move tokens around between adjacent places.
+	If some transition can fire, we say that it is \emph{enabled}.
+	Any arc in a Petri Net must be connecting a place with a transition.
+	That is, there cannot be an arc from a place to some other place, or from a transition to some other transition.
+	Further details on Petri Nets can be found in the standard literature.
+\end{description}
+
+\subsection{Tooling and standards}
+
+% TODO describe tooling: CIF (which uses EFAs) and Petrify (which uses Petri Nets)
+% TODO describe standards: UML, PNML, ...
+
+\subsection{Supervisory controller synthesis}
+
+% TODO What is a plant and requirement?
+% TODO How does controller synthesis roughly work?
+% TODO What guarantees does it give?
+% TODO Where to find more info?
+
+\subsection{Petri Net synthesis}
+
+% TODO What does it do?
+% TODO How does it roughly work?
+% TODO What guarantees does it give?
+% TODO Where to find more info?
 
 \section{Activity Synthesis}
 \label{sec:algorithm}
@@ -122,7 +188,7 @@ This operation requires:
 	\item The input UML model to be valid.
 	See also \autoref{sec:prelims}.
 	\item The input UML model to contain exactly one UML class.
-	\item The single class within the UML model to have a classifier behavior that is an abstract activity, without nodes and edges.
+	\item The single class within the UML model to have a classifier behavior that is an abstract activity, without nodes and control flow.
 \end{itemize}
 
 This operation produces a CIF specification that:
@@ -176,31 +242,76 @@ The requirements and guarantees of data-based synthesis are as described on \url
 
 \subsubsection{State space generation}
 
-The operation $\keyw{generate-statespace}(\var{cifSupervisor}$ executes the CIF explorer tool that comes with ESCET/CIF.
-This tool is used to unfold the statespace of the synthesized supervisor.
-We need to have this statespace explicitly unfolded, to be able to construct input for Petri Net synthesis, in order to synthesize an activity.
+The operation $\keyw{generate-statespace}(\var{cifSupervisor})$ executes the CIF explorer tool that comes with ESCET/CIF.
+This tool is used to unfold the statespace of the synthesized supervisor, \var{cifSupervisor}.
+We need to have this statespace explicitly unfolded to be able to construct input for Petri Net synthesis, in order to later synthesize an activity.
 
 The general requirements and guarantees of state space generation are as described on \url{https://eclipse.dev/escet/cif/tools/explorer.html}.
-Moreover, due to the way our UML/CIF input for synthesis is constructed, the resulting statespace has particular properties:
+The CIF statespace will have state annotations, $\texttt{@state(\dots)}$, that indicate the values of all variables in every location.
+This information will later be used for computing edge guards in the synthesized activity.
+
+Moreover, due to the way our UML/CIF input for synthesis is constructed, the resulting statespace has the following properties:
 \begin{itemize}
 	\item All initial locations in the statespace correspond to states that satisfy the precondition of the to-be-synthesized activity.
 	\item All marked locations in the statespace correspond to states that satisfy the postcondition of the to-be-synthesized activity.
 	\item Marked locations do not have outgoing edges.
 	This is because it does not make sense to perform further actions after the activity postcondition has been satisfied.
 	\item The statespace is deadlock-free.
-	That is, all paths from any location in the statespace will either end up in a marked location, or will loop forever.
+	That is, any path from any location in the statespace will either end up in a marked location, or will loop forever.
 	In other words, the only locations from which no further edges can be taken are the marked locations.
 	\item Unless the supervisor was empty (in which case the synthesis chain will have crashed already before generating the statespace), there is at least one initial location and at least one marked location.
+	\item For every location is holds that all events on outgoing edges are either all controllable, or all uncontrollable.
+	This property is a consequence of the atomic execution semantics of actions.
+	If a nondeterministic action is being executed in some location in the CIF statespace, then by the atomicity constraint the only thing that could happen is an uncontrollable event to finish the atomic action.
+	And conversely, if no nondeterministic action were being executed, then only controllable events can be executed to start some new action (assuming the location is not marked).
 \end{itemize}
 
 Note that state space generation could later become a performance bottleneck, e.g., in case there are many initial states.
-If this problem materialized in practical cases, then we could consider symbolic state space generation instead, and/or adapting the Petri Net synthesis algorithms to directly use these symbolic specifications.
+If this problem materializes in practical cases, then we could consider symbolic statespace generation instead of explicit statespace generation, and/or adapting the Petri Net synthesis algorithms to directly use these symbolic specifications.
 
 \subsubsection{Ensuring a single source and sink location}
 
-The operation $\keyw{ensure-single-source-and-sink}(\var{cifStatespace})$ transforms a given CIF statespace specification as described above, to ensure it has exactly one initial location and exactly one marked location.
+The operation $\keyw{ensure-single-source-and-sink}(\var{cifStatespace})$ transforms a given CIF statespace specification, $\var{cifStatespace}$, as described above, to ensure it has exactly one initial location and exactly one marked location.
 
-% TODO why?
+Having exactly one initial location later helps, for synthesizing activities that must handle multiple initial states.
+We would like to synthesize activities that have exactly one initial node and exactly one final node (in order to keep the activities themselves, as well as their execution semantics, understandable).
+However, it may happen that $\var{cifStatespace}$ has multiple initial locations, for example when the activity precondition allows having more than one initial state.
+In such cases, we want the synthesized activity to have one initial node, and from there have a decision node that has outgoing edges for the multiple things that can happen.
+Thus, the single CIF initial location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will directly correspond to the single initial node in the synthesized activity.
+
+The situation is likewise for final locations.
+The single CIF final location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will directly correspond to the single final node in the synthesized activity.
+In case the to-be-synthesized activity has multiple different ways to satisfy the activity postcondition, then this single final node will be preceded by a merge node.
+
+As a precondition, \keyw{ensure-single-source-and-sink} requires the input CIF specification to:
+\begin{itemize}
+	\item Not contain any CIF initialization predicates. (Which is guaranteed if \var{cifStatespace} is generated by the CIF explorer.)
+	\item Not contain any CIF marker predicates. (Which is guaranteed if \var{cifStatespace} is generated by the CIF explorer.)
+	\item Contain exacty one automaton, with an explicit alphabet.
+	\item Not contain declarations/identifiers with the names '\_\_init', '\_\_done', '\_\_start', or '\_\_end'. These will be the names of the new initial (source) location, the new marked (sink) location, and the auxiliary events that connect these locations to the original initial/marked locations. More on this later.
+\end{itemize}
+
+The \keyw{ensure-single-source-and-sink} operation guarantees that:
+\begin{itemize}
+	\item The resulting CIF specification has two new declared controllable events, '\_\_start' and '\_\_end', which have also been added to the alphabet of the automaton.
+	\item The resulting CIF specification has a single initial location named '\_\_init', even when it already had a single initial location.
+	Moreover, auxiliary edges with event '\_\_start' have been added to the automaton that go from the new '\_\_init' location to the original initial locations.
+	The original initial locations are now no longer initial.
+	\item  The resulting CIF specification has a single marked location named '\_\_done', even when it already had a single marked location.
+	Moreover, auxiliary edges with event '\_\_end' have been added to the automaton that go from the original marked locations to the new '\_\_done' location.
+	The original marked locations are now no longer marked.
+	\item Other than the extra initial/marked locations, the CIF statespace is unchanged.
+\end{itemize}
+
+\subsubsection{Removing state annotations}
+
+The operation $\keyw{remove-state-annotations}(\var{cifStatespace})$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF statespace, \var{cifStatespace}, in which a nondeterministic action is being executed.
+
+Recall that, during the UML-to-CIF conversion, all nondeterministic actions are `split' into controllable and uncontrollable events, to start and end the action, respectively.
+Moreover, an atomicity constraint is imposed, stating that no action can happen while some other nondeterministic action is being executed.
+Of course, in the to-be-synthesized activity, we do not want to see such `splitted' nondeterministic actions, but we want to see them as single nodes instead.
+Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the non-deterministic actions.
+The `getting rid of uncontrollable events' step is done by another operation, called event-based projection. However, 
 
 
 \end{document}
