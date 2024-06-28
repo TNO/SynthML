@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.escet.cif.cif2cif.RemoveAnnotations;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.io.CifWriter;
@@ -66,24 +65,6 @@ public class StateAnnotationHelper {
                 }
             }
         }
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-    }
-
-    /**
-     * Remove state annotations.
-     *
-     * @param spec CIF specification from which to remove state annotations.
-     * @param outputFilePath The output path of the specification.
-     * @param outputFolderPath The path of the output folder.
-     */
-    public static void removeStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
-        RemoveAnnotations annotationRemover = new RemoveAnnotations();
-        annotationRemover.transform(spec);
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
