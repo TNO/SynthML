@@ -415,6 +415,53 @@ Neither $m_1$ nor $m_2$ can have outgoing edges.
 But then there can be no word in the automaton language that would distinguish $m_1$ and $m_2$.
 Hence they must be the same location.
 
+\subsubsection{Petri Net synthesis}
+\label{sec:petrinet-synthesis}
+
+The operation $\keyw{petrinet-synthesis}(\var{cifStatespace_{min}})$ performs Petri Net synthesis to compute a minimal free-choice Petri Net whose behavior is trace equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
+Moreover, this operation produces a \emph{region mapping}, which is a mapping that relates the input specification \var{cifStatespace_{min}} to the synthesized Petri Net.
+
+We use the Petrify tool for performing Petri Net synthesis\footnote{See \url{https://www.cs.upc.edu/~jordicf/petrify}.}.
+We thereby use the following options of Petrify: \texttt{-opt} to try to find the best possible result; \texttt{-fc} to synthesize a free-choice Petri Net; \texttt{-ip} to produce a Petri Net with intermediate places (otherwise certain places could be omitted to make the result a bit smaller for visualization purposes); and \texttt{-log} to generate a log file.
+
+In our synthesis algorithm, we use PNML\footnote{See \url{https://pnml.lip6.fr}.} as the intermediate format for representing Petri Nets.
+Therefore, part of the \keyw{petrinet-synthesis} operation is to translate \var{cifStatespace_{min}} to the input language of Petrify, and transforming the output of Petrify to PNML.
+
+Moreover, although Petrify constructs a region mapping internally, there is no way to retrieve this region mapping by, e.g., some command-line option.
+The developers of Petrify recommended us to write a separate algorithm to `recover' this region mapping, by co-simulating the input and output of Petrify to find out which CIF locations correspond to which Petri Net places.
+Therefore, the implementation of \keyw{petrinet-synthesis} also required recovering this region mapping, at least as long a Petrify is being used.
+
+\paragraph{Motivation.}
+By having computed a CIF state space, \var{cifStatespace_{min}}, we are still quite distant from an UML activity.
+The main reason is that concurrency can more concisely be represented in UML activities, via their fork and join nodes, with respect to state machines and automata.
+In contrast, \var{cifStatespace_{min}} has all concurrent interleaving explicitly unfolded as diamond patterns.
+We now somehow have to detect all (diamond) patterns of concurrent interleaving in \var{cifStatespace_{min}} and translate those to fork/join patterns in the to-be-synthesized activity.
+This is done by means of Peri Net synthesis, which is a field of research aiming to do exactly that, but then on Petri Nets rather than (UML) activities.
+Nevertheless, Petri Nets and activities are quite closely related, in the sense that the semantics of activities is usually defined as a Petri Net semantics.
+Moreover, there are particular classes of Petri Nets, in particular \emph{free-choice} Petri Nets, that can relatively straightforwardly be translated to activities.
+Our main strategy is therefore to synthesize a minimal free-choice Petri Net from \var{cifStatespace_{min}}, and translate that to an UML activity.
+We thus use Petri Nets as an intermediate formalism in our activity synthesis algorithm.
+
+However, translating a free-choice Petri Net to an UML activity is not yet sufficient: we then still have to compute the edge guards for the decision nodes of the synthesized UML activity.
+This step must be done separately (see \autoref{sec:compute-edge-guards}), since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
+Therefore, we must be able to relate the output of Petri Net synthesis to the input specification, \var{cifStatespace_{min}}.
+Such a relation is (or should be) produced by the Petri Net synthesis algorithm, and is called a \emph{region mapping}.
+The reason for this, is that Petri Net synthesis is based on the \emph{theory of regions}.
+Without going too deep into this theory; the main idea is to group locations from \var{cifStatespace_{min}} together so that every such group (roughly) corresponds to a Petri Net place.
+These groups are then called \emph{regions}.
+So the Petri Net algorithm can produce a mapping from Petri Net places to the regions from which they are formed, thereby providing an input-output relation.
+With this relation, we can later find the relevant data/state and synthesized guards on the level of CIF, for the Petri Net places that will become UML decision nodes, and from those calculate the edge guards.
+\autoref{sec:compute-edge-guards} explains this further.
+
+\paragraph{Preconditions.}
+todo
+
+\paragraph{Postconditions.}
+todo
+
+\subsubsection{Transform Petri Net to activity}
+\label{sec:transform-petrinet-to-activity}
+
 \subsubsection{Reduce state annotations}
 
 The operation $\keyw{reduce-state-annotations}(\var{cifStatespace})$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF state space, \var{cifStatespace}, in which a nondeterministic action is being executed.
@@ -425,14 +472,7 @@ Of course, in the to-be-synthesized activity, we do not want to see such `splitt
 Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the non-deterministic actions.
 The `getting rid of uncontrollable events' step is done by another operation, called event-based projection. However, 
 
-\subsubsection{Petri Net synthesis}
-\label{sec:petrinet-synthesis}
-
-\subsubsection{Transform Petri Net to activity}
-\label{sec:transform-petrinet-to-activity}
-
 \subsubsection{Compute edge guards}
 \label{sec:compute-edge-guards}
-
 
 \end{document}
