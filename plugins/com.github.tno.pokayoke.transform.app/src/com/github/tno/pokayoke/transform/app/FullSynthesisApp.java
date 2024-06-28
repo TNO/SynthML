@@ -125,13 +125,17 @@ public class FullSynthesisApp {
         Map<Event, BDD> auxiliarySystemGuards = CifSourceSinkLocationTransformer
                 .collectAuxiliarySystemGuards(cifStateSpace, cifBddSpec, umlToCifTranslator);
 
-        // Remove state annotations from intermediate states.
+        // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
+        // technically invalid, since it may then have locations with state annotations as well as locations without
+        // state annotations. However, this is still fine for our internal analysis.
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".05.statespace.annotreduced.cif");
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
                 outputFolderPath);
 
-        // Perform event-based automaton projection.
+        // Perform event-based automaton projection. Note that we can't use the state space with reduced state
+        // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
+        // input the earlier version of the CIF specification that still has all state annotations.
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
