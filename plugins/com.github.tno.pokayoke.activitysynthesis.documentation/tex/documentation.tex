@@ -1,5 +1,6 @@
 \documentclass{article}
 
+% Packages.
 \usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage{amsfonts}
 \usepackage{amsmath}
@@ -11,10 +12,11 @@
 \usepackage{mathpar}
 \usepackage{mathtools}
 
-% Algorithm.
+% Color of comments in algorithms.
 \newcommand{\commfont}[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
 \SetCommentSty{commfont}
 
+% Redefine reference names for \autoref.
 \addto\extrasenglish{
   \renewcommand{\algorithmautorefname}{Algorithm}
 }
@@ -24,11 +26,11 @@
 \addto\extrasenglish{
   \renewcommand{\subsectionautorefname}{Section}
 }
+\addto\extrasenglish{
+  \renewcommand{\subsubsectionautorefname}{Section}
+}
 
-\newtheorem{definition}{Definition}[section]
-\newtheorem{example}{Example}[section]
-\newtheorem{lemma}{Lemma}[section]
-
+% Extra commands for common constructs in the document body.
 \newcommand{\keyw}[1]{\texttt{#1}}
 \newcommand{\var}[1]{\ensuremath{\mathit{#1}}}
 
@@ -141,6 +143,8 @@ Here is a high-level overview.
 This algorithm is a sequence of operations performed on some input UML model, \var{umlModel}, containing an abstract activity, to produce a UML model, \var{umlModel_{concr}}, where the abstract activity is replaced by a synthesized concrete activity.
 The remainder of this section explains these operations and their preconditions and guarantees.
 
+% TODO explain the algorithm first at a high level, before going in details on the operations.
+
 \begin{algorithm}[t!]
 	% Keywords.
 	\SetKwFunction{synth}{activity-synthesis}
@@ -149,26 +153,26 @@ The remainder of this section explains these operations and their preconditions 
 	% Algorithm
 	\procedure{\synth{\var{umlModel}}}{
 		\tcp{Synthesize a CIF supervisor using data-based synthesis.}
-		\var{cifModel} := \keyw{transform-uml-to-cif}(\var{umlModel})\;
-		\var{cifSupervisor} := \keyw{data-based-synthesis}(\var{cifModel})\;
+		\var{cifSpec} := \keyw{transform-uml-to-cif}(\var{umlModel})\;
+		\var{cifSupervisor} := \keyw{data-based-synthesis}(\var{cifSpec})\;
 		\tcp{Generate the CIF state space as a minimal DFA.}
 		\var{cifStatespace} := \keyw{generate-statespace}(\var{cifSupervisor})\;
 		\var{cifStatespace} := \keyw{ensure-single-source-and-sink}(\var{cifStatespace})\;
-		\var{cifStatespace_{rem}} := \keyw{remove-state-annotations}(\var{cifStatespace})\;
-		\var{cifStatespace_{proj}} := \keyw{event-based-projection}(\var{cifStatespace_{rem}})\;
+		\var{cifStatespace_{proj}} := \keyw{event-based-projection}(\var{cifStatespace})\;
 		\var{cifStatespace_{min}} := \keyw{dfa-minimization}(\var{cifStatespace_{proj}})\;
 		\tcp{Synthesize a minimal Petri Net.}
 		$(\var{petriNet}, \var{regionMapping})$ := \keyw{petrinet-synthesis}(\var{cifStatespace_{min}})\;
 		\tcp{Transform the Petri Net to an UML activity without edge guards.}
 		\var{umlActivity} := \keyw{transform-to-activity}(\var{petriNet})\;
 		\tcp{Compute the edge guards for the UML decision nodes.}
-		\var{umlActivity_{guards}} := \keyw{compute-edge-guards}($\dots$)\;
+		\var{cifStatespace_{red}} := \keyw{reduce-state-annotations}(\var{cifStatespace})\;
+		\var{umlActivity_{guards}} := \keyw{compute-edge-guards}($\var{cifStatespace_{red}}, \dots$)\;
 		\tcp{Post-process the synthesized activity.}
 		\var{umlActivity_{post}} := \keyw{postprocess-activity}(\var{umlActivity_{guards}})\;
 		\tcp{Replace abstract UML activity by the synthesized one.}
 		\var{umlModel_{concr}} := \keyw{replace-abstract-activity}(\var{umlActivity_{post}})\;
 		\Return \var{umlModel_{concr}}\;
-	}
+	} 
 
 	% Caption
 	\caption{Synthesis of Poka Yoke activity diagrams}
@@ -177,12 +181,19 @@ The remainder of this section explains these operations and their preconditions 
 
 \subsection{Operations}
 
-Activity synthesis uses the following operations.
+This section describes the operations performed by activity synthesis.
+For every operation in \autoref{alg:activity-synthesis} a short explanation is given, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
 \subsubsection{Transforming UML to CIF}
+\label{sec:transform-uml-to-cif}
 
 The $\keyw{transform-uml-to-cif}(\var{umlModel})$ operation translates a given UML model, \var{umlModel}, to a CIF specification to be used for synthesis.
-With respect to synthesis, the UML model specifies the plant (i.e., UML opaque behaviors) and requirements (i.e, UML constraints and pre/postconditions), which are translated one-to-one to CIF.
+
+\paragraph{Motivation.}
+With respect to synthesis, the UML model specifies the plant (i.e., UML opaque behaviors) and requirements (i.e, UML constraints).
+These are translated one-to-one to CIF, to enable data-based synthesis.
+
+\paragraph{Preconditions.}
 This operation requires:
 \begin{itemize}
 	\item The input UML model to be valid.
@@ -191,6 +202,7 @@ This operation requires:
 	\item The single class within the UML model to have a classifier behavior that is an abstract activity, without nodes and control flow.
 \end{itemize}
 
+\paragraph{Postconditions.}
 This operation produces a CIF specification that:
 \begin{itemize}
 	\item For every UML enum declaration, contains a corresponding CIF enum declaration.
@@ -232,86 +244,195 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \subsubsection{Data-based synthesis}
+\label{sec:data-based-synthesis}
 
-The operation $\keyw{data-based-synthesis}(\var{cifModel})$ executes the data-based supervisory controller synthesis tool that comes with ESCET/CIF.
-Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}) for performance reasons, and to do no BDD predicate simplification (i.e., removing all simplifications from \texttt{--bdd-simplify}). The latter configuration is needed to be able to later compute edge guards.
+The operation $\keyw{data-based-synthesis}(\var{cifSpec})$ executes the data-based supervisory controller synthesis tool that comes with ESCET/CIF.
+Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}) for performance reasons, and to do no BDD predicate simplification (i.e., removing all simplifications from \texttt{--bdd-simplify}).
 
-The goal of performing data-based synthesis in our algorithm is to compute all extra restrictions on actions that are required for activities to never violate a specified requirement.
+\paragraph{Motivation.}
+Our goal of performing data-based synthesis is to compute all extra restrictions on actions that must be considered by the to-be-synthesized activity to never violate a specified requirement.
+Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity precondition, to a state that satisfies the postcondition, without violating requiements, running into deadlocks, etc.
+We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri Net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to an activity (\autoref{sec:transform-petrinet-to-activity}).
 
-The requirements and guarantees of data-based synthesis are as described on \url{https://eclipse.dev/escet/cif/synthesis-based-engineering}.
+Once we have the UML activity structure, we need to compute the guards of the outgoing edges of its decision nodes (see \autoref{sec:compute-edge-guards}).
+To be able to do that, we need to configure data-based synthesis to disable all BDD predicate simplifications.
+Otherwise, the extra synthesized conditions would be simplified with respect to specified requirements (and probably other things as well), so that the conditions become smaller while the requirements are explicit in the CIF supervisor.
+Instead, we want the synthesized conditions to completely capture all imposed restrictions, including requirements.
+
+Forward reachability is configured simply for performance reasons, and might make synthesized conditions smaller.
+We should later evaluate if, and how much, forward reachability actually contributes to that. 
+
+\paragraph{Preconditions.}
+All preconditions of the Data-Based Synthesis tool apply\footnote{See \url{https://eclipse.dev/escet/cif/tools/datasynth}.}.
+
+\paragraph{Postconditions.}
+All guarantees of the Data-Based Synthesis tool apply.
+Moreover, since BDD predicate simplification is disabled, the resulting CIF supervisor contains no requirement invariants.
+These requirements are instead included in the synthesized conditions.
 
 \subsubsection{State space generation}
+\label{sec:state-space-generation}
 
-The operation $\keyw{generate-statespace}(\var{cifSupervisor})$ executes the CIF explorer tool that comes with ESCET/CIF.
-This tool is used to unfold the statespace of the synthesized supervisor, \var{cifSupervisor}.
-We need to have this statespace explicitly unfolded to be able to construct input for Petri Net synthesis, in order to later synthesize an activity.
+The operation $\keyw{generate-statespace}(\var{cifSupervisor})$ executes the CIF Explorer tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/explorer.html}.}.
+This tool unfolds the state space expressed by the given CIF specification.
 
-The general requirements and guarantees of state space generation are as described on \url{https://eclipse.dev/escet/cif/tools/explorer.html}.
-The CIF statespace will have state annotations, $\texttt{@state(\dots)}$, that indicate the values of all variables in every location.
-This information will later be used for computing edge guards in the synthesized activity.
+\paragraph{Motivation.}
+We need to explicitly unfold the (safe) state space of the synthesized supervisor to be able to construct input for Petri Net synthesis, in order to later synthesize an activity.
+The state space that is generated from the synthesized supervisor expresses all possible orderings of events, taking into account the synthesized guards and the original action guards as specified in the UML model.
+The goal of Petri Net synthesis is then to find a compact Petri Net representation of all these possible orderings, whose structure can then relatively easily be translated to a UML activity.
 
-Moreover, due to the way our UML/CIF input for synthesis is constructed, the resulting statespace has the following properties:
+As a side remark; state space generation could later become a performance bottleneck, e.g., in case there are many initial states or large diamond patterns.
+If this problem materializes, then we could consider symbolic state space generation instead of explicit state space generation, and possibly adapting the Petri Net synthesis algorithms to directly use these symbolic specifications.
+
+\paragraph{Preconditions.}
+Since state space generation uses the CIF Explorer tool that comes with Eclipse ESCET, all preconditions from that tool apply.
+
+\paragraph{Postconditions.}
+All guarantees of the CIF Explorer tool from Eclipse ESCET apply.
+Noteworthy is that the CIF state space will have state annotations, $\texttt{@state(\dots)}$, that indicate the values of all variables in every location.
+This information will later be used for computing edge guards (see \autoref{sec:compute-edge-guards}).
+
+Moreover, due to the way our UML/CIF input for synthesis is constructed (e.g., by \autoref{sec:transform-uml-to-cif}), the resulting state space has the following properties:
 \begin{itemize}
-	\item All initial locations in the statespace correspond to states that satisfy the precondition of the to-be-synthesized activity.
-	\item All marked locations in the statespace correspond to states that satisfy the postcondition of the to-be-synthesized activity.
+	\item All initial locations in the state space correspond to states that satisfy the precondition of the to-be-synthesized activity.
+	\item All marked locations in the state space correspond to states that satisfy the postcondition of the to-be-synthesized activity.
 	\item Marked locations do not have outgoing edges.
 	This is because it does not make sense to perform further actions after the activity postcondition has been satisfied.
-	\item The statespace is deadlock-free.
-	That is, any path from any location in the statespace will either end up in a marked location, or will loop forever.
+	\item The state space is deadlock-free.
+	That is, any path from any location in the state space will either end up in a marked location, or will loop forever.
 	In other words, the only locations from which no further edges can be taken are the marked locations.
-	\item Unless the supervisor was empty (in which case the synthesis chain will have crashed already before generating the statespace), there is at least one initial location and at least one marked location.
+	\item Unless the supervisor was empty (in which case the synthesis chain will have crashed already before generating the state space), there is at least one initial location and at least one marked location.
 	\item For every location is holds that all events on outgoing edges are either all controllable, or all uncontrollable.
 	This property is a consequence of the atomic execution semantics of actions.
-	If a nondeterministic action is being executed in some location in the CIF statespace, then by the atomicity constraint the only thing that could happen is an uncontrollable event to finish the atomic action.
+	If a nondeterministic action is being executed in some location in the CIF state space, then by the atomicity constraint the only thing that could happen is an uncontrollable event to finish the atomic action.
 	And conversely, if no nondeterministic action were being executed, then only controllable events can be executed to start some new action (assuming the location is not marked).
 \end{itemize}
 
-Note that state space generation could later become a performance bottleneck, e.g., in case there are many initial states.
-If this problem materializes in practical cases, then we could consider symbolic statespace generation instead of explicit statespace generation, and/or adapting the Petri Net synthesis algorithms to directly use these symbolic specifications.
-
 \subsubsection{Ensuring a single source and sink location}
+\label{sec:single-source-and-sink}
 
-The operation $\keyw{ensure-single-source-and-sink}(\var{cifStatespace})$ transforms a given CIF statespace specification, $\var{cifStatespace}$, as described above, to ensure it has exactly one initial location and exactly one marked location.
+The operation $\keyw{ensure-single-source-and-sink}(\var{cifStatespace})$ transforms the single automaton in the given CIF specification, $\var{cifStatespace}$, to ensure it has exactly one initial (source) location and exactly one marked (sink) location.
 
-Having exactly one initial location later helps, for synthesizing activities that must handle multiple initial states.
-We would like to synthesize activities that have exactly one initial node and exactly one final node (in order to keep the activities themselves, as well as their execution semantics, understandable).
+\paragraph{Motivation.}
+Having exactly one initial location is required for the event-based projection and DFA minimization, described in \autoref{sec:event-based-projection} and \autoref{sec:dfa-minimization}.
+
+Moreover, having exactly one initial location makes it easier to synthesize activities that must handle multiple initial states.
+To elaborate on that, we would like to synthesize activities that have exactly one initial node and exactly one final node (in order to keep the activities themselves, as well as their execution semantics, understandable).
 However, it may happen that $\var{cifStatespace}$ has multiple initial locations, for example when the activity precondition allows having more than one initial state.
 In such cases, we want the synthesized activity to have one initial node, and from there have a decision node that has outgoing edges for the multiple things that can happen.
-Thus, the single CIF initial location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will directly correspond to the single initial node in the synthesized activity.
+Thus, the single CIF initial location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will then directly correspond to the single initial node in the synthesized activity.
 
 The situation is likewise for final locations.
 The single CIF final location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will directly correspond to the single final node in the synthesized activity.
 In case the to-be-synthesized activity has multiple different ways to satisfy the activity postcondition, then this single final node will be preceded by a merge node.
+So $\keyw{ensure-single-source-and-sink}$ ensures that the CIF specification already has the right structure with respect to that.
 
-As a precondition, \keyw{ensure-single-source-and-sink} requires the input CIF specification to:
+\paragraph{Preconditions.}
+The input CIF specification is required to:
 \begin{itemize}
-	\item Not contain any CIF initialization predicates. (Which is guaranteed if \var{cifStatespace} is generated by the CIF explorer.)
-	\item Not contain any CIF marker predicates. (Which is guaranteed if \var{cifStatespace} is generated by the CIF explorer.)
-	\item Contain exacty one automaton, with an explicit alphabet.
-	\item Not contain declarations/identifiers with the names '\_\_init', '\_\_done', '\_\_start', or '\_\_end'. These will be the names of the new initial (source) location, the new marked (sink) location, and the auxiliary events that connect these locations to the original initial/marked locations. More on this later.
+	\item Not contain any CIF initialization predicates nor any CIF marker predicates.
+	(This is ensured if \var{cifStatespace} is generated by the CIF Explorer.)
+	\item Contain exacty one automaton with an explicit alphabet.
+	\item Not contain declarations/identifiers with the names \texttt{\_\_init}, \texttt{\_\_done}, \texttt{\_\_start}, or \texttt{\_\_end}.
+	These will be the names of the new initial (source) location, the new marked (sink) location, and the auxiliary events that connect these locations to the original initial/marked locations.
 \end{itemize}
 
-The \keyw{ensure-single-source-and-sink} operation guarantees that:
+\paragraph{Postconditions.}
+This operation guarantees that:
 \begin{itemize}
-	\item The resulting CIF specification has two new declared controllable events, '\_\_start' and '\_\_end', which have also been added to the alphabet of the automaton.
-	\item The resulting CIF specification has a single initial location named '\_\_init', even when it already had a single initial location.
-	Moreover, auxiliary edges with event '\_\_start' have been added to the automaton that go from the new '\_\_init' location to the original initial locations.
+	\item The resulting CIF specification has two new declared controllable events, \texttt{\_\_start} and \texttt{\_\_end}, which have been added to the automaton alphabet.
+	\item The resulting CIF specification has a single initial location named \texttt{\_\_init}, even when it already had a single initial location.
+	Auxiliary edges with event \texttt{\_\_start} have been added that go from \texttt{\_\_init} to all original initial locations.
 	The original initial locations are now no longer initial.
-	\item  The resulting CIF specification has a single marked location named '\_\_done', even when it already had a single marked location.
-	Moreover, auxiliary edges with event '\_\_end' have been added to the automaton that go from the original marked locations to the new '\_\_done' location.
+	\item  The resulting CIF specification has a single marked location named \texttt{\_\_done}, even when it already had a single marked location.
+	Auxiliary edges with event \texttt{\_\_end} have been added that go from all original marked locations to \texttt{\_\_done}.
 	The original marked locations are now no longer marked.
-	\item Other than the extra initial/marked locations, the CIF statespace is unchanged.
+	\item Apart from initial/marked locations, the CIF specification is unchanged.
 \end{itemize}
 
-\subsubsection{Removing state annotations}
+\subsubsection{Event-based projection}
+\label{sec:event-based-projection}
 
-The operation $\keyw{remove-state-annotations}(\var{cifStatespace})$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF statespace, \var{cifStatespace}, in which a nondeterministic action is being executed.
+The operation $\keyw{event-based-projection}(\var{cifStatespace})$ projects the single automaton in the given CIF specification for all controllable events.
+This means that all uncontrollable events are projected away, i.e., \var{cifStatespace} is transformed to a DFA without keeping any uncontrollable events.
+
+\paragraph{Motivation.}
+Recall that uncontrollable CIF events were created for nondeterministic actions, to model the nondeterministic execution of their effects.
+However, these uncontrollable events and their corresponding edges are an internal, intermediate step that should not be visible in the synthesized UML activity.
+So at some point, these uncontrollable events have to be eliminated.
+This elimination should be done before Petri Net synthesis, due to the atomicity constraint.
+The goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace equivalent to the CIF state space that was given as input to Petri Net synthesis.
+While doing so, Petri Net synthesis aims to reduce diamond pattern in the state space to fork/join constructs in Petri Nets as much as possible.
+However, due to the atomicity constraint, the uncontrollable events do not give perfect diamond patterns, since whenever some nondeterministic action is being executed, the atomicity constraint enforces that no other action can be performed, thus impacting interleaving.
+Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before doing Petri Net synthesis.
+
+Note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--hide} to hide a list of given events.
+In earlier versions of our implementation, we used this option instead of doing event-based projection on the level of CIF.
+However, Petrify's hiding option seems broken, in the sense that we observed that Petrify does not always hide all events in the specified list.
+This further motivates doing this on the level of CIF instead.
+
+\paragraph{Preconditions.}
+Since $\keyw{event-based-projection}$ uses the automaton projection tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/projection.html}.}, all preconditions from that tool apply.
+Notably, the input should be a valid CIF specification (e.g., it does not accept automata where some locations have state annotations and some do not) that contains a single automaton, which in our case is the CIF state space.
+Moreover, this single automaton must have a single initial location.
+
+\paragraph{Postconditions.}
+All guarantees of the automaton projection tool from Eclipse ESCET apply.
+Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is language equivalent to the input specification with respect to those events.
+In our case, this means that the resulting CIF specification no longer contains the uncontrollable events, and is language equivalent to the input modulo those events. 
+The resulting DFA is not guaranteed to be minimal.
+
+\subsubsection{DFA minimization}
+\label{sec:dfa-minimization}
+
+The $\keyw{dfa-minimization}(\var{cifStatespace_{proj}})$ operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
+
+\paragraph{Motivation.}
+We use DFA minimization to minimize the input for Petri Net synthesis, to avoid unnecessary work and possibly non-optimal results.
+
+Moreover, note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--mints} to minimize the input graph modulo trace equivelance.
+From the documentation of Petrify\footnote{Which is included in the distribution that can be downloaded from \url{https://www.cs.upc.edu/~jordicf/petrify/distrib}.} this option seems to have some interaction with the \texttt{--hide} option.
+However, as explained in \autoref{sec:event-based-projection}, \texttt{--hide} does not seem to always work.
+Therefore, in addition to event-based projection, we also do the minimization on the level of CIF.
+
+\paragraph{Preconditions.}
+Since $\keyw{dfa-minimization}$ uses the Event-based DFA minimization tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/dfa-minimize.html}.}, all preconditions from that tool apply.
+Notably, the input should be a CIF specification containing one deterministic automaton with a (single) initial location.
+In our case this is the CIF state space.
+Note that the previous steps of the activity synthesis algorithm ensure that the input we give to $\keyw{dfa-minimization}$ is deterministic and has exactly one initial location.
+
+\paragraph{Postconditions.}
+All guarantees of the Event-based DFA minimization tool from Eclipse ESCET apply.
+Notably, the result is a minimal DFA that has the same language as the input DFA.
+(Minimal DFAs are also unique in the sense that there cannot exist two different minimal DFAs with the same language.
+But at the moment we do not make use of this uniqueness property.)
+
+The resulting automaton has exactly one initial location due to it being a DFA.
+Moreover, this operation preserves the property from \autoref{sec:single-source-and-sink} that there is exactly one marked (sink) location.
+To see why, suppose that event-based projection and/or DFA minimization would somehow have split-up the single marked location into multiple ones.
+Let us take two of them and refer to these locations as $m_1$ and $m_2$.
+Neither $m_1$ nor $m_2$ can have outgoing edges.
+But then there can be no word in the automaton language that would distinguish $m_1$ and $m_2$.
+Hence they must be the same location.
+
+\subsubsection{Reduce state annotations}
+
+The operation $\keyw{reduce-state-annotations}(\var{cifStatespace})$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF state space, \var{cifStatespace}, in which a nondeterministic action is being executed.
 
 Recall that, during the UML-to-CIF conversion, all nondeterministic actions are `split' into controllable and uncontrollable events, to start and end the action, respectively.
 Moreover, an atomicity constraint is imposed, stating that no action can happen while some other nondeterministic action is being executed.
 Of course, in the to-be-synthesized activity, we do not want to see such `splitted' nondeterministic actions, but we want to see them as single nodes instead.
 Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the non-deterministic actions.
 The `getting rid of uncontrollable events' step is done by another operation, called event-based projection. However, 
+
+\subsubsection{Petri Net synthesis}
+\label{sec:petrinet-synthesis}
+
+\subsubsection{Transform Petri Net to activity}
+\label{sec:transform-petrinet-to-activity}
+
+\subsubsection{Compute edge guards}
+\label{sec:compute-edge-guards}
 
 
 \end{document}
