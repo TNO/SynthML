@@ -19,10 +19,6 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_or7u8BHLEe-mHaHlFJZwLw" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_or7u8RHLEe-mHaHlFJZwLw" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="_p900oBHLEe-mHaHlFJZwLw" name="myNegative" visibility="public" type="_UPff8BHLEe-mHaHlFJZwLw">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_p91bsBHLEe-mHaHlFJZwLw" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_p91bsRHLEe-mHaHlFJZwLw" value="1"/>
-      </ownedAttribute>
       <ownedAttribute xmi:id="_rEFSEBHLEe-mHaHlFJZwLw" name="myPositive" visibility="public" type="_WC4JIBHLEe-mHaHlFJZwLw">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rEFSERHLEe-mHaHlFJZwLw" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rEFSEhHLEe-mHaHlFJZwLw" value="1"/>
@@ -64,23 +60,12 @@
     </packagedElement>
     <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_R5t7YBHLEe-mHaHlFJZwLw" name="Range" visibility="public">
       <ownedRule xmi:id="_aE7pUBHLEe-mHaHlFJZwLw" name="min">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="_aE7pURHLEe-mHaHlFJZwLw" value="-1"/>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_Tp0v8DUeEe-YGfsNm2-Ykg"/>
       </ownedRule>
       <ownedRule xmi:id="_aR68cBHLEe-mHaHlFJZwLw" name="max">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="_aR68cRHLEe-mHaHlFJZwLw" value="1"/>
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_UWfBoDUeEe-YGfsNm2-Ykg" value="2"/>
       </ownedRule>
       <generalization xmi:id="_ZoFVQBHLEe-mHaHlFJZwLw">
-        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
-      </generalization>
-    </packagedElement>
-    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_UPff8BHLEe-mHaHlFJZwLw" name="Negative" visibility="public">
-      <ownedRule xmi:id="_buwt4BHLEe-mHaHlFJZwLw" name="min">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="_buwt4RHLEe-mHaHlFJZwLw" value="-100"/>
-      </ownedRule>
-      <ownedRule xmi:id="_cLuWsBHLEe-mHaHlFJZwLw" name="max">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="_61oCwBHMEe-mHaHlFJZwLw" value="-10"/>
-      </ownedRule>
-      <generalization xmi:id="_a1_54BHLEe-mHaHlFJZwLw">
         <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </generalization>
     </packagedElement>
