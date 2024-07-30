@@ -17,25 +17,30 @@
 \SetCommentSty{commfont}
 
 % Redefine reference names for \autoref.
-\addto\extrasenglish{
-  \renewcommand{\algorithmautorefname}{Algorithm}
-}
-\addto\extrasenglish{
-  \renewcommand{\sectionautorefname}{Section}
-}
-\addto\extrasenglish{
-  \renewcommand{\subsectionautorefname}{Section}
-}
-\addto\extrasenglish{
-  \renewcommand{\subsubsectionautorefname}{Section}
-}
+\addto\extrasenglish{\renewcommand{\algorithmautorefname}{Algorithm}}
+\addto\extrasenglish{\renewcommand{\sectionautorefname}{Section}}
+\addto\extrasenglish{\renewcommand{\subsectionautorefname}{Section}}
+\addto\extrasenglish{\renewcommand{\subsubsectionautorefname}{Section}}
 
-% Extra commands for common constructs in the document body.
+% Convenient auxiliary commands.
 \newcommand{\keyw}[1]{\texttt{#1}}
 \newcommand{\var}[1]{\ensuremath{\mathit{#1}}}
 
+% Activity synthesis steps.
+\newcommand{\transformUmlToCif}[1]{\keyw{transform-uml-to-cif}(\ensuremath{#1})}
+\newcommand{\dataBasedSynthesis}[1]{\keyw{data-based-synthesis}(\ensuremath{#1})}
+\newcommand{\generateStatespace}[1]{\keyw{generate-statespace}(\ensuremath{#1})}
+\newcommand{\ensureSingleSourceAndSink}[1]{\keyw{ensure-single-source-and-sink}(\ensuremath{#1})}
+\newcommand{\eventBasedProjection}[1]{\keyw{event-based-projection}(\ensuremath{#1})}
+\newcommand{\dfaMinimization}[1]{\keyw{dfa-minimization}(\ensuremath{#1})}
+\newcommand{\petrinetSynthesis}[1]{\keyw{petrinet-synthesis}(\ensuremath{#1})}
+\newcommand{\transformToActivity}[1]{\keyw{transform-to-activity}(\ensuremath{#1})}
+\newcommand{\reduceStateAnnotations}[1]{\keyw{reduce-state-annotations}(\ensuremath{#1})}
+\newcommand{\computeEdgeGuards}[1]{\keyw{compute-edge-guards}(\ensuremath{#1})}
+\newcommand{\postprocessActivity}[1]{\keyw{postprocess-activity}(\ensuremath{#1})}
+\newcommand{\replaceAbstractActivity}[1]{\keyw{replace-abstract-activity}(\ensuremath{#1})}
+
 \title{Synthesis of Poka Yoke Activity Diagrams}
-\date{Version 0.1 (June 2024)}
 
 \begin{document}
 
@@ -71,20 +76,21 @@ Here is a high-level overview.
 \begin{description}
 	\item[Finite automata.]
 	Finite automata are finite directed graphs consisting of \emph{locations} and \emph{edges}.
-	Locations can be marked \emph{initial} when they are `starting' locations.
+	Locations can be \emph{initial} when they are `starting' locations.
 	Locations can also be \emph{marked} when they are accepting locations, with the standard meaning of acceptance from automata theory.
 	
 	\item[Extended finite automata (EFA).]
 	EFAs are finite automata that are used in the presence of \emph{state}, i.e., variables that have a value.
-	The edges of EFAs have \emph{guards}, which is a state predicate, and \emph{updates}, which is a state transformer.
+	The edges of EFAs have \emph{guards} which are state predicates, as well as \emph{updates} which are state transformers.
 	
-	\item[(UML) Model.]
-	A UML Model may consist of a number of UML enum declaration, and consists of a single UML Class, which may contain:
+	\item[(UML) model.]
+	UML models consist of any number (i.e., zero or more) of UML enum declarations as well as exactly one UML class.
+	An UML class contains:
 	\begin{itemize}
-		\item A number of UML properties, whose type is either Boolean, bounded integer or an enum as is defined in the UML model.
-		\item A number of UML opaque behaviors that have a \emph{guard} and zero or more \emph{effects}.
-		These opaque behaviors model \emph{actions} to be performed in the synthesized activities.
-		In case such an action has at most one effect we say the action is \emph{deterministic}, and otherwise it is \emph{nondeterministic}.
+		\item Any number of UML properties, whose type are either Boolean, bounded integer or enum.
+		\item Any number of UML opaque behaviors that have exactly one \emph{guard} and zero or more \emph{effects}.
+		These opaque behaviors model \emph{actions} to be performed in synthesized activities.
+		In case an action has at most one effect we say the action is \emph{deterministic}, otherwise it is \emph{nondeterministic}.
 		The execution semantics of nondeterministic actions is that by executing the action, one of its effects is nondeterministically chosen and executed.
 		\item A number of UML constraints that model the requirements for synthesis.
 		\item An abstract UML activity, with preconditions, postconditions, and optimality constraints.
@@ -92,9 +98,9 @@ Here is a high-level overview.
 		Abstract UML activities are `empty' in the sense that they contain no nodes and no control flow.
 	\end{itemize}
 	
-	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator (see the code implementation).
+	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
 	
-	\item[(UML) Activity.]
+	\item[(UML) activity.]
 	Activities are finite directed graphs consisting of \emph{nodes} and \emph{control flow}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
 	A node can either be a \emph{control node} (initial, final, fork, join, decision, or merge node), or an \emph{call opaque behavior node} which executes an action by calling an opaque behavior\footnote{Technically there are other types of activity nodes that are supported by our formalim as well, like UML opaque actions and other types of call behavior nodes. But for the purpose of this document and understanding the synthesis algorithm, let us keep those out of scope.}.
 	The goal of the activity synthesis algorithm is to synthesize (concrete) UML activities for the specified abstract UML activities in UML models, and updating the UML model by replacing these abstract activities by the concrete syntehsized ones.
@@ -104,7 +110,7 @@ Here is a high-level overview.
 	Any place in a Petri Net can have at most one \emph{token}.
 	Transitions in a Petri Net can be \emph{fired} to move tokens around between adjacent places.
 	If some transition can fire, we say that it is \emph{enabled}.
-	Any arc in a Petri Net must be connecting a place with a transition.
+	Any arc in a Petri Net must be connected to a place with a transition.
 	That is, there cannot be an arc from a place to some other place, or from a transition to some other transition.
 	Further details on Petri Nets can be found in the standard literature.
 \end{description}
@@ -153,24 +159,24 @@ The remainder of this section explains these operations and their preconditions 
 	% Algorithm
 	\procedure{\synth{\var{umlModel}}}{
 		\tcp{Synthesize a CIF supervisor using data-based synthesis.}
-		\var{cifSpec} := \keyw{transform-uml-to-cif}(\var{umlModel})\;
-		\var{cifSupervisor} := \keyw{data-based-synthesis}(\var{cifSpec})\;
+		\var{cifSpec} := \transformUmlToCif{\var{umlModel}}\;
+		\var{cifSupervisor} := \dataBasedSynthesis{\var{cifSpec}}\;
 		\tcp{Generate the CIF state space as a minimal DFA.}
-		\var{cifStatespace} := \keyw{generate-statespace}(\var{cifSupervisor})\;
-		\var{cifStatespace} := \keyw{ensure-single-source-and-sink}(\var{cifStatespace})\;
-		\var{cifStatespace_{proj}} := \keyw{event-based-projection}(\var{cifStatespace})\;
-		\var{cifStatespace_{min}} := \keyw{dfa-minimization}(\var{cifStatespace_{proj}})\;
+		\var{cifStatespace} := \generateStatespace{\var{cifSupervisor}}\;
+		\var{cifStatespace} := \ensureSingleSourceAndSink{\var{cifStatespace}}\;
+		\var{cifStatespace_{proj}} := \eventBasedProjection{\var{cifStatespace}}\;
+		\var{cifStatespace_{min}} := \dfaMinimization{\var{cifStatespace_{proj}}}\;
 		\tcp{Synthesize a minimal Petri Net.}
-		$(\var{petriNet}, \var{regionMapping})$ := \keyw{petrinet-synthesis}(\var{cifStatespace_{min}})\;
+		$(\var{petriNet}, \var{regionMapping})$ := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
 		\tcp{Transform the Petri Net to an UML activity without edge guards.}
-		\var{umlActivity} := \keyw{transform-to-activity}(\var{petriNet})\;
+		\var{umlActivity} := \transformToActivity{\var{petriNet}}\;
 		\tcp{Compute the edge guards for the UML decision nodes.}
-		\var{cifStatespace_{red}} := \keyw{reduce-state-annotations}(\var{cifStatespace})\;
-		\var{umlActivity_{guards}} := \keyw{compute-edge-guards}($\var{cifStatespace_{red}}, \dots$)\;
+		\var{cifStatespace_{red}} := \reduceStateAnnotations{\var{cifStatespace}}\;
+		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{cifStatespace_{red}}, \dots}\;
 		\tcp{Post-process the synthesized activity.}
-		\var{umlActivity_{post}} := \keyw{postprocess-activity}(\var{umlActivity_{guards}})\;
+		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
 		\tcp{Replace abstract UML activity by the synthesized one.}
-		\var{umlModel_{concr}} := \keyw{replace-abstract-activity}(\var{umlActivity_{post}})\;
+		\var{umlModel_{concr}} := \replaceAbstractActivity{\var{umlActivity_{post}}}\;
 		\Return \var{umlModel_{concr}}\;
 	} 
 
@@ -182,12 +188,12 @@ The remainder of this section explains these operations and their preconditions 
 \subsection{Operations}
 
 This section describes the operations performed by activity synthesis.
-For every operation in \autoref{alg:activity-synthesis} a short explanation is given, followed by the motivation for having that operation, followed by its preconditions and postconditions.
+A short explanation is given for every operation in \autoref{alg:activity-synthesis}, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
 \subsubsection{Transforming UML to CIF}
 \label{sec:transform-uml-to-cif}
 
-The $\keyw{transform-uml-to-cif}(\var{umlModel})$ operation translates a given UML model, \var{umlModel}, to a CIF specification to be used for synthesis.
+The $\transformUmlToCif{\var{umlModel}}$ operation translates a given UML model, \var{umlModel}, to a CIF specification to be used for synthesis.
 
 \paragraph{Motivation.}
 With respect to synthesis, the UML model specifies the plant (i.e., UML opaque behaviors) and requirements (i.e, UML constraints).
@@ -199,7 +205,7 @@ This operation requires:
 	\item The input UML model to be valid.
 	See also \autoref{sec:prelims}.
 	\item The input UML model to contain exactly one UML class.
-	\item The single class within the UML model to have a classifier behavior that is an abstract activity, without nodes and control flow.
+	\item The single class within the UML model to have a classifier behavior that is an abstract UML activity, without nodes and control flow.
 \end{itemize}
 
 \paragraph{Postconditions.}
@@ -212,11 +218,11 @@ This operation produces a CIF specification that:
 	If a UML class property has a default value, then this value is translated as the default value of the CIF variable.
 	If not, then the corresponding CIF variable is specified to have any value initially, with the 'in any' CIF construct.
 	\item Contains CIF event declarations corresponding to all defined UML opaque behaviors.
-	All opaque behaviors that model deterministic actions are translated as a single controllable event.
-	All opaque behaviors that model non-deterministic actions are translated to multiple CIF events, namely a controllable one for starting the action, and uncontrollable ones for each of its non-deterministic effects to end the action.
-	Such separate uncontrollable events must be defined, since data-based synthesis in CIF disallows controllable events that can happen non-deterministically.
-	So, for data-based synthesis, we need a controllable event to (controllably) start some non-deterministic action, and uncontrollable events for the non-deterministic effects.
-	Moreover, in case the UML model contains non-deterministic actions, an internal \emph{atomicity variable} is declared and maintained in the CIF specification, to ensure that no event may occur between the start and end event of a non-deterministic action.
+	All opaque behaviors that model deterministic actions are translated as single controllable events.
+	All opaque behaviors that model nondeterministic actions are translated to multiple CIF events, namely a controllable one for starting the action, and uncontrollable ones for each of their nondeterministic effects to end the action.
+	Such separate uncontrollable events must be defined since data-based synthesis in CIF disallows controllable events that can happen nondeterministically.
+	So, for data-based synthesis, we need a controllable event to (controllably) start some nondeterministic action, and uncontrollable events to nondeterministically perform one of its effects.
+	Moreover, in case the UML model contains nondeterministic actions, an internal \emph{atomicity variable} is declared and maintained in the CIF specification, to ensure that no event may occur between the start and end event of a nondeterministic action.
 	\item Contains an 'initial' predicate from the conjunction of all translated preconditions of the classifier behavior activity of the single UML class.
 	There may be multiple preconditions defined for this activity.
 	Each of these preconditions are translated as Boolean algebraic variables in CIF, for better traceability.
@@ -226,19 +232,19 @@ This operation produces a CIF specification that:
 	There may be multiple postconditions defined for this activity.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity precondition, for which an algebraic variable is created as well.
-	Moreover, in case there are non-deterministic actions, an extra implicit postcondition is generated, stating that no non-deterministic action must be active (with respect to the atomicity variable explained earlier) for the postcondition to hold.
+	Moreover, in case there are nondeterministic actions, an extra implicit postcondition is generated, stating that no nondeterministic action must be active (with respect to the atomicity variable explained earlier) for the postcondition to hold.
 	This combined postcondition is then used as the 'marked' predicate.
 	\item Contains requirement invariants stating that the postcondition disables any CIF event.
 	In other words, if you reach a state where the activity postcondition holds, then no further actions have to be taken as they will not contribute to coming closer to a postcondition state.
-	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering irrelevant actions/events.
+	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering irrelevant steps.
 	\item Contains an edge in the flower automaton plant for every defined UML opaque behavior.
 	An edge is defined for all declared CIF events, both controllable and uncontrollable ones.
 	All controllable CIF events correspond one-to-one to UML opaque behavior definitions, and thus their edge guards are the translated action guard.
 	Moreover, in case of a deterministic action, the edge updates are the translated action effect.
-	In case of a non-deterministic action, the action effects (plural, as in, more than one) are translated on the corresponding uncontrollable events instead.
+	In case of a nondeterministic action, the action effects (plural, as in, more than one) are translated on the corresponding uncontrollable events instead.
 	These edge guards and updates also correctly handle and maintain the atomicity variable, as explained before.
 	\item Contains requirement automata for the optimality constraints defined in the UML model\footnote{Note that optimality constraints are temporary, and intended to be removed.}.
-	Optimality contraints are roughly of the form `action A must happen at least M times and at most N times'.
+	Optimality contraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
 	This variable can then be incremented every time the action occurs, and via edge guards and marked predicates the requirement can be enforced.
 \end{itemize}
@@ -246,7 +252,7 @@ This operation produces a CIF specification that:
 \subsubsection{Data-based synthesis}
 \label{sec:data-based-synthesis}
 
-The operation $\keyw{data-based-synthesis}(\var{cifSpec})$ executes the data-based supervisory controller synthesis tool that comes with ESCET/CIF.
+The operation $\dataBasedSynthesis{\var{cifSpec}}$ executes the data-based supervisory controller synthesis tool that comes with ESCET/CIF.
 Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}) for performance reasons, and to do no BDD predicate simplification (i.e., removing all simplifications from \texttt{--bdd-simplify}).
 
 \paragraph{Motivation.}
@@ -254,7 +260,7 @@ Our goal of performing data-based synthesis is to compute all extra restrictions
 Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity precondition, to a state that satisfies the postcondition, without violating requiements, running into deadlocks, etc.
 We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri Net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to an activity (\autoref{sec:transform-petrinet-to-activity}).
 
-Once we have the UML activity structure, we need to compute the guards of the outgoing edges of its decision nodes (see \autoref{sec:compute-edge-guards}).
+Once we have the UML activity structure at a later stage in the activity synthesis algorithm, we will need to compute the guards of the outgoing edges of its decision nodes (see \autoref{sec:compute-edge-guards}).
 To be able to do that, we need to configure data-based synthesis to disable all BDD predicate simplifications.
 Otherwise, the extra synthesized conditions would be simplified with respect to specified requirements (and probably other things as well), so that the conditions become smaller while the requirements are explicit in the CIF supervisor.
 Instead, we want the synthesized conditions to completely capture all imposed restrictions, including requirements.
@@ -273,7 +279,7 @@ These requirements are instead included in the synthesized conditions.
 \subsubsection{State space generation}
 \label{sec:state-space-generation}
 
-The operation $\keyw{generate-statespace}(\var{cifSupervisor})$ executes the CIF Explorer tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/explorer.html}.}.
+The operation $\generateStatespace{\var{cifSupervisor}}$ executes the CIF Explorer tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/explorer.html}.}.
 This tool unfolds the state space expressed by the given CIF specification.
 
 \paragraph{Motivation.}
@@ -299,10 +305,10 @@ Moreover, due to the way our UML/CIF input for synthesis is constructed (e.g., b
 	\item Marked locations do not have outgoing edges.
 	This is because it does not make sense to perform further actions after the activity postcondition has been satisfied.
 	\item The state space is deadlock-free.
-	That is, any path from any location in the state space will either end up in a marked location, or will loop forever.
+	That is, any path from any location in the state space will either end up in a marked location, or will loop.
 	In other words, the only locations from which no further edges can be taken are the marked locations.
-	\item Unless the supervisor was empty (in which case the synthesis chain will have crashed already before generating the state space), there is at least one initial location and at least one marked location.
-	\item For every location is holds that all events on outgoing edges are either all controllable, or all uncontrollable.
+	\item Unless the supervisor was empty (in which case the activity synthesis chain will have crashed already before generating the state space), there is at least one initial location and at least one marked location.
+	\item For every location it holds that all events on outgoing edges are either all controllable, or all uncontrollable.
 	This property is a consequence of the atomic execution semantics of actions.
 	If a nondeterministic action is being executed in some location in the CIF state space, then by the atomicity constraint the only thing that could happen is an uncontrollable event to finish the atomic action.
 	And conversely, if no nondeterministic action were being executed, then only controllable events can be executed to start some new action (assuming the location is not marked).
@@ -311,7 +317,7 @@ Moreover, due to the way our UML/CIF input for synthesis is constructed (e.g., b
 \subsubsection{Ensuring a single source and sink location}
 \label{sec:single-source-and-sink}
 
-The operation $\keyw{ensure-single-source-and-sink}(\var{cifStatespace})$ transforms the single automaton in the given CIF specification, $\var{cifStatespace}$, to ensure it has exactly one initial (source) location and exactly one marked (sink) location.
+The operation $\ensureSingleSourceAndSink{\var{cifStatespace}}$ transforms the single automaton in the given CIF specification, $\var{cifStatespace}$, to ensure it has exactly one initial (source) location and exactly one marked (sink) location.
 
 \paragraph{Motivation.}
 Having exactly one initial location is required for the event-based projection and DFA minimization, described in \autoref{sec:event-based-projection} and \autoref{sec:dfa-minimization}.
@@ -320,12 +326,12 @@ Moreover, having exactly one initial location makes it easier to synthesize acti
 To elaborate on that, we would like to synthesize activities that have exactly one initial node and exactly one final node (in order to keep the activities themselves, as well as their execution semantics, understandable).
 However, it may happen that $\var{cifStatespace}$ has multiple initial locations, for example when the activity precondition allows having more than one initial state.
 In such cases, we want the synthesized activity to have one initial node, and from there have a decision node that has outgoing edges for the multiple things that can happen.
-Thus, the single CIF initial location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will then directly correspond to the single initial node in the synthesized activity.
+Thus, the single CIF initial location that is guaranteed by $\ensureSingleSourceAndSink{\dots}$ will then directly correspond to the single initial node in the synthesized activity.
 
 The situation is likewise for final locations.
-The single CIF final location that is guaranteed by $\keyw{ensure-single-source-and-sink}$ will directly correspond to the single final node in the synthesized activity.
+The single CIF final location that is guaranteed by $\ensureSingleSourceAndSink{\dots}$ will directly correspond to the single final node in the synthesized activity.
 In case the to-be-synthesized activity has multiple different ways to satisfy the activity postcondition, then this single final node will be preceded by a merge node.
-So $\keyw{ensure-single-source-and-sink}$ ensures that the CIF specification already has the right structure with respect to that.
+So $\ensureSingleSourceAndSink{\dots}$ ensures that the CIF specification already has the right structure with respect to that.
 
 \paragraph{Preconditions.}
 The input CIF specification is required to:
@@ -353,15 +359,15 @@ This operation guarantees that:
 \subsubsection{Event-based projection}
 \label{sec:event-based-projection}
 
-The operation $\keyw{event-based-projection}(\var{cifStatespace})$ projects the single automaton in the given CIF specification for all controllable events.
+The operation $\eventBasedProjection{\var{cifStatespace}}$ projects the single automaton in the given CIF specification for all controllable events.
 This means that all uncontrollable events are projected away, i.e., \var{cifStatespace} is transformed to a DFA without keeping any uncontrollable events.
 
 \paragraph{Motivation.}
 Recall that uncontrollable CIF events were created for nondeterministic actions, to model the nondeterministic execution of their effects.
 However, these uncontrollable events and their corresponding edges are an internal, intermediate step that should not be visible in the synthesized UML activity.
 So at some point, these uncontrollable events have to be eliminated.
-This elimination should be done before Petri Net synthesis, due to the atomicity constraint.
-The goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace equivalent to the CIF state space that was given as input to Petri Net synthesis.
+This elimination should be done before Petri Net synthesis due to the atomicity constraint.
+To clarify this further, recall that the goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace equivalent to the CIF state space that was given as input to Petri Net synthesis.
 While doing so, Petri Net synthesis aims to reduce diamond pattern in the state space to fork/join constructs in Petri Nets as much as possible.
 However, due to the atomicity constraint, the uncontrollable events do not give perfect diamond patterns, since whenever some nondeterministic action is being executed, the atomicity constraint enforces that no other action can be performed, thus impacting interleaving.
 Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before doing Petri Net synthesis.
@@ -372,7 +378,7 @@ However, Petrify's hiding option seems broken, in the sense that we observed tha
 This further motivates doing this on the level of CIF instead.
 
 \paragraph{Preconditions.}
-Since $\keyw{event-based-projection}$ uses the automaton projection tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/projection.html}.}, all preconditions from that tool apply.
+Since $\eventBasedProjection{\dots}$ uses the automaton projection tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/projection.html}.}, all preconditions from that tool apply.
 Notably, the input should be a valid CIF specification (e.g., it does not accept automata where some locations have state annotations and some do not) that contains a single automaton, which in our case is the CIF state space.
 Moreover, this single automaton must have a single initial location.
 
@@ -385,7 +391,7 @@ The resulting DFA is not guaranteed to be minimal.
 \subsubsection{DFA minimization}
 \label{sec:dfa-minimization}
 
-The $\keyw{dfa-minimization}(\var{cifStatespace_{proj}})$ operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
+The $\dfaMinimization{\var{cifStatespace_{proj}}}$ operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
 
 \paragraph{Motivation.}
 We use DFA minimization to minimize the input for Petri Net synthesis, to avoid unnecessary work and possibly non-optimal results.
@@ -396,15 +402,15 @@ However, as explained in \autoref{sec:event-based-projection}, \texttt{--hide} d
 Therefore, in addition to event-based projection, we also do the minimization on the level of CIF.
 
 \paragraph{Preconditions.}
-Since $\keyw{dfa-minimization}$ uses the Event-based DFA minimization tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/dfa-minimize.html}.}, all preconditions from that tool apply.
+Since $\dfaMinimization{\dots}$ uses the Event-based DFA minimization tool that comes with Eclipse ESCET\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/dfa-minimize.html}.}, all preconditions from that tool apply.
 Notably, the input should be a CIF specification containing one deterministic automaton with a (single) initial location.
 In our case this is the CIF state space.
-Note that the previous steps of the activity synthesis algorithm ensure that the input we give to $\keyw{dfa-minimization}$ is deterministic and has exactly one initial location.
+Note that the previous steps of the activity synthesis algorithm ensure that the input we give to $\dfaMinimization{\dots}$ is deterministic and has exactly one initial location.
 
 \paragraph{Postconditions.}
 All guarantees of the Event-based DFA minimization tool from Eclipse ESCET apply.
 Notably, the result is a minimal DFA that has the same language as the input DFA.
-(Minimal DFAs are also unique in the sense that there cannot exist two different minimal DFAs with the same language.
+(Note that minimal DFAs are also unique in the sense that there cannot exist two different minimal DFAs with the same language.
 But at the moment we do not make use of this uniqueness property.)
 
 The resulting automaton has exactly one initial location due to it being a DFA.
@@ -418,18 +424,18 @@ Hence they must be the same location.
 \subsubsection{Petri Net synthesis}
 \label{sec:petrinet-synthesis}
 
-The operation $\keyw{petrinet-synthesis}(\var{cifStatespace_{min}})$ performs Petri Net synthesis to compute a minimal free-choice Petri Net whose behavior is trace equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
+The operation $\petrinetSynthesis{\var{cifStatespace_{min}}}$ performs Petri Net synthesis to compute a minimal free-choice Petri Net whose behavior is trace equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
 Moreover, this operation produces a \emph{region mapping}, which is a mapping that relates the input specification \var{cifStatespace_{min}} to the synthesized Petri Net.
 
 We use the Petrify tool for performing Petri Net synthesis\footnote{See \url{https://www.cs.upc.edu/~jordicf/petrify}.}.
 We thereby use the following options of Petrify: \texttt{-opt} to try to find the best possible result; \texttt{-fc} to synthesize a free-choice Petri Net; \texttt{-ip} to produce a Petri Net with intermediate places (otherwise certain places could be omitted to make the result a bit smaller for visualization purposes); and \texttt{-log} to generate a log file.
 
-In our synthesis algorithm, we use PNML\footnote{See \url{https://pnml.lip6.fr}.} as the intermediate format for representing Petri Nets.
-Therefore, part of the \keyw{petrinet-synthesis} operation is to translate \var{cifStatespace_{min}} to the input language of Petrify, and transforming the output of Petrify to PNML.
+In our activity synthesis algorithm, we use PNML\footnote{See \url{https://pnml.lip6.fr}.} as the intermediate format for representing Petri Nets.
+Therefore, part of the $\petrinetSynthesis{\dots}$ operation is to translate \var{cifStatespace_{min}} to the input language of Petrify, and transforming the output of Petrify to PNML.
 
 Moreover, although Petrify constructs a region mapping internally, there is no way to retrieve this region mapping by, e.g., some command-line option.
 The developers of Petrify recommended us to write a separate algorithm to `recover' this region mapping, by co-simulating the input and output of Petrify to find out which CIF locations correspond to which Petri Net places.
-Therefore, the implementation of \keyw{petrinet-synthesis} also required recovering this region mapping, at least as long a Petrify is being used.
+Therefore, the implementation of $\petrinetSynthesis{\dots}$ also requires recovering this region mapping, at least as long a Petrify is being used.
 
 \paragraph{Motivation.}
 By having computed a CIF state space, \var{cifStatespace_{min}}, we are still quite distant from an UML activity.
@@ -454,22 +460,47 @@ With this relation, we can later find the relevant data/state and synthesized gu
 \autoref{sec:compute-edge-guards} explains this further.
 
 \paragraph{Preconditions.}
-todo
+Since Petrify is used for Petri Net synthesis, all preconditions from that tool apply.
+However, these preconditions do not seem to be well-documented.
+In any case the input CIF specification should not contain identifiers which are reserved keywords in the input formalism of Petrify.
+But since all Petrify reserved keywords seem to start with a dot, e.g., \texttt{.inputs} and \texttt{.graph}, this is (probably) already ensured as valid UML models do not contain identifiers containing a dot.
+
+Moreover, the input CIF specification must contain exactly one automaton, i.e., the minimized CIF state space computed in the previous steps.
+This automaton must have an explicit alphabet that contains no duplicate events.
+
+Furthermore, the event name \texttt{\_\_reset} must not be in the automaton alphabet.
+This is because $\petrinetSynthesis{\dots}$ will create an auxiliary edge named \texttt{\_\_reset} before Petrify is invoked, which is removed later from the output of Petrify.
+This extra \texttt{\_\_reset} edge connects the single marked location to the single initial location, turning the input automaton into a big loop.
+This is needed by Petrify, since it seems unable to do Petri Net synthesis in case the input automaton has sink locations.
+After having invoked Petrify, the synthesized Petri Net will contain exactly one transition for \texttt{\_\_reset} (since the input automaton has exactly one marked location, exactly one initial location, and we added exactly one \texttt{\_\_reset} edge), so it's easy to remove it again.
+
+Finally, the string \texttt{\_\_to\_\_} must not occur in any event names in the input automaton.
+This is later needed for transforming Petrify output to PNML, where \texttt{\_\_to\_\_} will be used as part of PNML arc identifiers.
 
 \paragraph{Postconditions.}
-todo
+All guarantees from Petrify apply, with respect to the options that we used.
+In particular, the output is an optimal free-choice Petri Net that is trace equivalent to the input automaton.
+As explained above, the \texttt{\_\_reset} event has been removed from this Petri Net.
+The synthesized Petri Net is given in PNML format.
+
+Moreover, the synthesized Petri Net has been normalized (by relabeling all places).
+This is needed since Petrify seems able to produce nondeterministic results in the sense that running Petrify multiple times on the same model may give different results.
+We therefore normalize the Petri Nets, for example to allow proper regression testing.
+
+Furthermore, a region mapping is calculated that indicates how Petri Net places correspond to locations in the input automaton.
+This region mapping is thus a mapping from Petri Net places to sets of automaton locations.
 
 \subsubsection{Transform Petri Net to activity}
 \label{sec:transform-petrinet-to-activity}
 
 \subsubsection{Reduce state annotations}
 
-The operation $\keyw{reduce-state-annotations}(\var{cifStatespace})$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF state space, \var{cifStatespace}, in which a nondeterministic action is being executed.
+The operation $\reduceStateAnnotations{\var{cifStatespace}}$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF state space, \var{cifStatespace}, in which a nondeterministic action is being executed.
 
 Recall that, during the UML-to-CIF conversion, all nondeterministic actions are `split' into controllable and uncontrollable events, to start and end the action, respectively.
 Moreover, an atomicity constraint is imposed, stating that no action can happen while some other nondeterministic action is being executed.
 Of course, in the to-be-synthesized activity, we do not want to see such `splitted' nondeterministic actions, but we want to see them as single nodes instead.
-Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the non-deterministic actions.
+Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the nondeterministic actions.
 The `getting rid of uncontrollable events' step is done by another operation, called event-based projection. However, 
 
 \subsubsection{Compute edge guards}
