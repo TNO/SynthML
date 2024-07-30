@@ -38,7 +38,6 @@
 \newcommand{\reduceStateAnnotations}[1]{\keyw{reduce-state-annotations}(\ensuremath{#1})}
 \newcommand{\computeEdgeGuards}[1]{\keyw{compute-edge-guards}(\ensuremath{#1})}
 \newcommand{\postprocessActivity}[1]{\keyw{postprocess-activity}(\ensuremath{#1})}
-\newcommand{\replaceAbstractActivity}[1]{\keyw{replace-abstract-activity}(\ensuremath{#1})}
 
 \title{Synthesis of Poka Yoke Activity Diagrams}
 
@@ -168,15 +167,12 @@ The remainder of this section explains these operations and their preconditions 
 		\var{cifStatespace_{min}} := \dfaMinimization{\var{cifStatespace_{proj}}}\;
 		\tcp{Synthesize a minimal Petri Net.}
 		$(\var{petriNet}, \var{regionMapping})$ := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
-		\tcp{Transform the Petri Net to an UML activity without edge guards.}
-		\var{umlActivity} := \transformToActivity{\var{petriNet}}\;
-		\tcp{Compute the edge guards for the UML decision nodes.}
-		\var{cifStatespace_{red}} := \reduceStateAnnotations{\var{cifStatespace}}\;
-		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{cifStatespace_{red}}, \dots}\;
+		\tcp{Transform the Petri Net to an UML activity without control flow guards.}
+		\var{umlModel_{concr}} := \transformToActivity{\var{petriNet}, \var{umlModel}}\;
+		\tcp{Compute the control flow guards for the UML decision nodes.}
+		\var{umlModel_{guards}} := \computeEdgeGuards{\var{umlModel_{concr}}, \, \dots}\;
 		\tcp{Post-process the synthesized activity.}
-		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
-		\tcp{Replace abstract UML activity by the synthesized one.}
-		\var{umlModel_{concr}} := \replaceAbstractActivity{\var{umlActivity_{post}}}\;
+		\var{umlModel_{post}} := \postprocessActivity{\var{umlModel_{guards}}}\;
 		\Return \var{umlModel_{concr}}\;
 	} 
 
@@ -184,6 +180,9 @@ The remainder of this section explains these operations and their preconditions 
 	\caption{Synthesis of Poka Yoke activity diagrams}
 	\label{alg:activity-synthesis}
 \end{algorithm}
+
+Note that this document explains the conceptual steps performed by the activity synthesis algorithm, rather than explaining what the code implementation is doing exactly.
+Therefore, the steps in \autoref{alg:activity-synthesis} may sometimes deviate slightly from how the code implementation is organized, and may be more abstract.
 
 \subsection{Operations}
 
@@ -239,14 +238,14 @@ This operation produces a CIF specification that:
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering irrelevant steps.
 	\item Contains an edge in the flower automaton plant for every defined UML opaque behavior.
 	An edge is defined for all declared CIF events, both controllable and uncontrollable ones.
-	All controllable CIF events correspond one-to-one to UML opaque behavior definitions, and thus their edge guards are the translated action guard.
+	All controllable CIF events correspond one-to-one to UML opaque behavior definitions, and thus their control flow guards are the translated action guard.
 	Moreover, in case of a deterministic action, the edge updates are the translated action effect.
 	In case of a nondeterministic action, the action effects (plural, as in, more than one) are translated on the corresponding uncontrollable events instead.
-	These edge guards and updates also correctly handle and maintain the atomicity variable, as explained before.
+	These control flow guards and updates also correctly handle and maintain the atomicity variable, as explained before.
 	\item Contains requirement automata for the optimality constraints defined in the UML model\footnote{Note that optimality constraints are temporary, and intended to be removed.}.
 	Optimality contraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
-	This variable can then be incremented every time the action occurs, and via edge guards and marked predicates the requirement can be enforced.
+	This variable can then be incremented every time the action occurs, and via control flow guards and marked predicates the requirement can be enforced.
 \end{itemize}
 
 \subsubsection{Data-based synthesis}
@@ -260,7 +259,7 @@ Our goal of performing data-based synthesis is to compute all extra restrictions
 Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity precondition, to a state that satisfies the postcondition, without violating requiements, running into deadlocks, etc.
 We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri Net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to an activity (\autoref{sec:transform-petrinet-to-activity}).
 
-Once we have the UML activity structure at a later stage in the activity synthesis algorithm, we will need to compute the guards of the outgoing edges of its decision nodes (see \autoref{sec:compute-edge-guards}).
+Once we have the UML activity structure at a later stage in the activity synthesis algorithm, we will need to compute the guards of the outgoing edges of its decision nodes (see \autoref{sec:compute-control-flow-guards}).
 To be able to do that, we need to configure data-based synthesis to disable all BDD predicate simplifications.
 Otherwise, the extra synthesized conditions would be simplified with respect to specified requirements (and probably other things as well), so that the conditions become smaller while the requirements are explicit in the CIF supervisor.
 Instead, we want the synthesized conditions to completely capture all imposed restrictions, including requirements.
@@ -296,7 +295,7 @@ Since state space generation uses the CIF Explorer tool that comes with Eclipse 
 \paragraph{Postconditions.}
 All guarantees of the CIF Explorer tool from Eclipse ESCET apply.
 Noteworthy is that the CIF state space will have state annotations, $\texttt{@state(\dots)}$, that indicate the values of all variables in every location.
-This information will later be used for computing edge guards (see \autoref{sec:compute-edge-guards}).
+This information will later be used for computing control flow guards (see \autoref{sec:compute-control-flow-guards}).
 
 Moreover, due to the way our UML/CIF input for synthesis is constructed (e.g., by \autoref{sec:transform-uml-to-cif}), the resulting state space has the following properties:
 \begin{itemize}
@@ -448,16 +447,16 @@ Moreover, there are particular classes of Petri Nets, in particular \emph{free-c
 Our main strategy is therefore to synthesize a minimal free-choice Petri Net from \var{cifStatespace_{min}}, and translate that to an UML activity.
 We thus use Petri Nets as an intermediate formalism in our activity synthesis algorithm.
 
-However, translating a free-choice Petri Net to an UML activity is not yet sufficient: we then still have to compute the edge guards for the decision nodes of the synthesized UML activity.
-This step must be done separately (see \autoref{sec:compute-edge-guards}), since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
+However, translating a free-choice Petri Net to an UML activity is not yet sufficient: we then still have to compute the control flow guards for the decision nodes of the synthesized UML activity.
+This step must be done separately (see \autoref{sec:compute-control-flow-guards}), since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
 Therefore, we must be able to relate the output of Petri Net synthesis to the input specification, \var{cifStatespace_{min}}.
 Such a relation is (or should be) produced by the Petri Net synthesis algorithm, and is called a \emph{region mapping}.
 The reason for this, is that Petri Net synthesis is based on the \emph{theory of regions}.
 Without going too deep into this theory; the main idea is to group locations from \var{cifStatespace_{min}} together so that every such group (roughly) corresponds to a Petri Net place.
 These groups are then called \emph{regions}.
 So the Petri Net algorithm can produce a mapping from Petri Net places to the regions from which they are formed, thereby providing an input-output relation.
-With this relation, we can later find the relevant data/state and synthesized guards on the level of CIF, for the Petri Net places that will become UML decision nodes, and from those calculate the edge guards.
-\autoref{sec:compute-edge-guards} explains this further.
+With this relation, we can later find the relevant data/state and synthesized guards on the level of CIF, for the Petri Net places that will become UML decision nodes, and from those calculate the control flow guards.
+\autoref{sec:compute-control-flow-guards} explains this further.
 
 \paragraph{Preconditions.}
 Since Petrify is used for Petri Net synthesis, all preconditions from that tool apply.
@@ -480,8 +479,12 @@ This is later needed for transforming Petrify output to PNML, where \texttt{\_\_
 \paragraph{Postconditions.}
 All guarantees from Petrify apply, with respect to the options that we used.
 In particular, the output is an optimal free-choice Petri Net that is trace equivalent to the input automaton.
-As explained above, the \texttt{\_\_reset} event has been removed from this Petri Net.
 The synthesized Petri Net is given in PNML format.
+
+As explained above, the \texttt{\_\_reset} event has been removed from this Petri Net.
+The synthesized Petri Net contains exactly one place that initially holds a token, which has no incoming arcs and exactly one outgoing arc to a transition named \texttt{\_\_start}.
+The synthesized Petri Net contains exactly one sink place with no outgoing arcs and a single incoming arc from a transition named  \texttt{\_\_end}.
+These two places will later become the initial and final node of the synthesized activity.
 
 Moreover, the synthesized Petri Net has been normalized (by relabeling all places).
 This is needed since Petrify seems able to produce nondeterministic results in the sense that running Petrify multiple times on the same model may give different results.
@@ -493,17 +496,85 @@ This region mapping is thus a mapping from Petri Net places to sets of automaton
 \subsubsection{Transform Petri Net to activity}
 \label{sec:transform-petrinet-to-activity}
 
-\subsubsection{Reduce state annotations}
+The operation \transformToActivity{\var{petriNet}, \var{umlModel}} transforms the given free-choice Petri Net $\var{petriNet}$ in PNML format to a (concrete) UML activity, which replaces the abstract UML activity in \var{umlModel}, which is the original UML model that was given as input to the activity synthesis algorithm.
 
-The operation $\reduceStateAnnotations{\var{cifStatespace}}$ removes all state annotations, $\texttt{@state(\dots)}$, from locations in the given CIF state space, \var{cifStatespace}, in which a nondeterministic action is being executed.
+\paragraph{Motivation.}
+The overall aim of the activity synthesis chain is to synthesize UML activities.
+Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to an activity using \transformToActivity{\dots}.
 
-Recall that, during the UML-to-CIF conversion, all nondeterministic actions are `split' into controllable and uncontrollable events, to start and end the action, respectively.
-Moreover, an atomicity constraint is imposed, stating that no action can happen while some other nondeterministic action is being executed.
-Of course, in the to-be-synthesized activity, we do not want to see such `splitted' nondeterministic actions, but we want to see them as single nodes instead.
-Therefore, we need to get rid of all these uncontrollable events, so that by the time we do Petri Net synthesis, we just have single events for the nondeterministic actions.
-The `getting rid of uncontrollable events' step is done by another operation, called event-based projection. However, 
+Note that translating Petri Nets to activities in the general sense is non-trivial since Petri Nets may have patterns that are difficult to translate to an activity (in particular when the Petri Net has choice patterns where some choices have further token constraints).
+However, we use a particular kind of Petri Nets, namely free-choice ones, which are straightforwardly translatable to activities.
 
-\subsubsection{Compute edge guards}
-\label{sec:compute-edge-guards}
+\paragraph{Preconditions.}
+The input $\var{petriNet}$ must be in PNML format.
+It must have exactly one place that has an initial token, which must additionally have no incoming arcs and exactly one outgoing arc to a transition named \texttt{\_\_start}.
+It must have exactly one (sink) place that doesn't have any outgoing arcs, which must additionally have exactly one incoming arc from a transition named \texttt{\_\_end}.
+
+The input $\var{umlModel}$ must be the original UML model that was given as input to the activity synthesis algorithm.
+See also the preconditions described in \autoref{sec:transform-uml-to-cif}.
+Notably, it must have a single abstract UML activity.
+
+\paragraph{Postconditions.}
+The output is an UML model in which the abstract UML activity is replaced by a concrete one, which has been translated from $\var{petriNet}$.
+The concrete UML activity contains:
+\begin{itemize}
+	\item Exactly one initial node and one final node, which have been translated from the two places described above in the preconditions section.
+	\item Fork nodes, join nodes, decision nodes, and merge nodes, as translated from similar patterns in $\var{petriNet}$.
+	For example, a Petri Net place with multiple incoming arcs and one outgoing arc is translated to an UML merge node.
+	\item Call behavior nodes for all action nodes, that call the appropriate UML opaque behavior for the action.
+	\item No guards on any control flows.
+	Control flow guards are computed later, in \autoref{sec:compute-control-flow-guards}.
+\end{itemize}
+
+\subsubsection{Compute control flow guards}
+\label{sec:compute-control-flow-guards}
+
+The operation \computeEdgeGuards{\var{umlModel_{concr}}, \, \dots} computes guards for all control flows in the single concretized UML activity in $\var{umlModel_{concr}}$.
+These guards are computed by using intermediate results from earlier steps in the activity synthesis algorithm (abbreviated here as $\dots$), notably the extra conditions that have been synthesized earlier by data-based synthesis, as well as the CIF state annotations in the generated/projected/minimized CIF state space.
+
+\paragraph{Motivation.}
+At this point in the activity synthesis algorithm we managed to synthesize the structure of the concrete UML activity.
+This activity may have decision nodes.
+The execution of these decision nodes should follow one of its outgoing control flows, based on the current state of the system.
+However, the guards that determine which control flow should be followed are missing at this point.
+These choice guards were not yet computed since Petrify (or any other known algorithm/implementation to synthesize Petri Nets) cannot handle data.
+So we need to compute them separately, and add them to the UML activity.
+However, this is a non-trivial task that requires various intermediate steps.
+
+Firstly, for every action defined in \var{umlModel_{concr}} we need to know its action guard, as well as the condition that was synthesized for it during data-based synthesis (recall \autoref{sec:data-based-synthesis})\footnote{In fact, we only really need this for the actions that are directly connected to a decision node by a control flow.}.
+The former can directly be obtained from the UML model.
+The latter can straightforwardly be obtained from the CIF supervisor, by looking up the synthesized condition for the controllable event that was defined for the action (recall \autoref{sec:transform-uml-to-cif}).
+
+Secondly, for every decision node in the synthesized UML activity, we need to know the set of all states in which the system may be at that point.
+These sets of states can be found by tracing back the CIF state annotations from the earlier generated CIF state space (see \autoref{sec:state-space-generation}).
+So for every UML activity decision node\footnote{Note that we could do this for any UML activity node. But since we only need to compute guards for control flows out of decision nodes, we only do this for decision nodes.} we must: (1) determine the Petri Net place corresponding to it, (2) use the region mapping produced in \autoref{sec:petrinet-synthesis} to determine which CIF locations correspond to that Petri Net place, and (3) collect the state annotations from these locations in the generated CIF state space.
+Step (3) is slightly tricky in case there were non-deterministic actions, as we should not consider the state annotations of any `intermediate' CIF locations in which a non-atomic action is being executed (e.g., since the atomicity variable is true in any such intermediate state, and choice guards should not depend on internal details).
+Therefore, any such state annotations must be filtered out first.
+
+We can now compute the choice guards with the information gathered so far.
+Given any control flow from some decision node $\var{D}$ to some (call behavior) action node $\var{A}$, its guard is $\texttt{simplify}(\texttt{simplify}(\var{A_{cond}}, \var{A_{guard}}), \var{D_{pred}})$, where:
+\begin{itemize}
+	\item $\var{A_{guard}}$ is the guard predicate of $A$ as defined in the input UML model.
+	\item $\var{A_{cond}}$ is the extra synthesized condition predicate for $A$.
+	\item $\var{D_{pred}}$ is the predicate describing all states the system may be in at the point of executing $D$.
+	\item $\texttt{simplify}(p,q)$ is an operation that simplifies some given predicate $p$ with respect to some predicate $q$, and returns the simplified predicate.
+\end{itemize}
+
+Note that all these predicates are represented in the code implementation as Binary Decision Diagrams (BDD).
+This is because BDDs allow easy manipulation of Boolean functions, in this case simplification of BDDs, i.e., \texttt{simplify}.
+
+To elaborate further on guard computation; one might consider to simply use $\var{A_{cond}}$ as the control flow guard, without doing any simplification.
+However, it is known that data-based synthesis may synthesize long control conditions that are difficult to read and understand by engineers.
+Moreover, $\var{A_{cond}}$ may be expressed over internal state, like internal CIF variables for encoding optimality constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
+It therefore makes sense to simplify $\var{A_{cond}}$ by using any contextual information we have at hand.
+We can simplify $\var{A_{cond}}$ with respect to the guard of $A$, since any restrictions covered by the guard of $A$ are already considered by the execution semantics of activities.
+We can further simplify against $\var{D_{pred}}$, i.e, the knowledge of which states the system can be in while evaluating $D$, as it does not make sense for the control flow guard to restrict irrelevant system states.
+With these simplifications we can hopefully also eliminate any parts of the control flow guard that depends on internal state.
+We are not sure though whether such parts can actually always be eliminated.
+
+\paragraph{Preconditions.}
+
+\paragraph{Postconditions.}
+% additional state?
 
 \end{document}
