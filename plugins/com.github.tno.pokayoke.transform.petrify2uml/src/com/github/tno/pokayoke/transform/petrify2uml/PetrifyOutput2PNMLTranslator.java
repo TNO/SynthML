@@ -53,9 +53,6 @@ public class PetrifyOutput2PNMLTranslator {
      * @return The Petri Net.
      */
     public static PetriNet transform(List<String> petrifyOutput) {
-        Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("FinalPlace")),
-                "Expected that the Petrify output does not contain string 'FinalPlace' as this string is going to be used as the identifier of the final place");
-
         Preconditions.checkArgument(!petrifyOutput.stream().anyMatch(line -> line.contains("__to__")),
                 "Expected that the Petrify output does not contain '__to__' as they are going to be used in the name of arcs.");
 
