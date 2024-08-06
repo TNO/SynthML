@@ -21,14 +21,14 @@
         </specification>
       </ownedRule>
       <edge xmi:type="uml:ControlFlow" xmi:id="12" name="InitialNode__to____start" target="17" source="19"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="__end__to__FinalNode" target="20" source="16"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="14" name="__start__to__change" target="18" source="17"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="change__to____end" target="16" source="18"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="16" name="__end" incoming="15" outgoing="13"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="17" name="__start" incoming="12" outgoing="14"/>
-      <node xmi:type="uml:CallBehaviorAction" xmi:id="18" name="change" incoming="14" outgoing="15" behavior="6"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="__start__to__change" target="18" source="17"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="14" name="change__to____end" target="16" source="18"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="__end__to__FinalNode" target="20" source="16"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="16" name="__end" incoming="14" outgoing="15"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="17" name="__start" incoming="12" outgoing="13"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="18" name="change" incoming="13" outgoing="14" behavior="6"/>
       <node xmi:type="uml:InitialNode" xmi:id="19" name="InitialNode" outgoing="12"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="20" name="FinalNode" incoming="13"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="20" name="FinalNode" incoming="15"/>
     </ownedBehavior>
   </packagedElement>
   <packagedElement xmi:type="uml:Enumeration" xmi:id="21" name="Number" visibility="public">

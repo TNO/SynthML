@@ -10,32 +10,34 @@
       <body>not field</body>
       <body>field := true</body>
     </ownedBehavior>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="7" name="main" postcondition="8" node="16 17 18 19">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="7" name="main" postcondition="8" node="17 18 19 20 21">
       <ownedRule xmi:id="8" name="postcondition">
         <specification xmi:type="uml:OpaqueExpression" xmi:id="9" name="">
           <body>field</body>
         </specification>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="10" name="Decision__p2__to__action" target="16" source="19">
+      <edge xmi:type="uml:ControlFlow" xmi:id="10" name="Decision__p2__to__action" target="17" source="19">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="11">
           <body>true</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="InitialNode__to__Decision__p2" target="19" source="17"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="action__to__FinalNode" target="18" source="16"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="14" name="Decision__p2__to__FinalNode" target="18" source="19">
-        <guard xmi:type="uml:OpaqueExpression" xmi:id="15">
+      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="Merge__p3__to__FinalNode" target="21" source="20"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="InitialNode__to__Decision__p2" target="19" source="18"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="14" name="action__to__Merge__p3" target="20" source="17"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p2__to__Merge__p3" target="20" source="19">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
           <body>field</body>
         </guard>
       </edge>
-      <node xmi:type="uml:CallBehaviorAction" xmi:id="16" name="action" incoming="10" outgoing="13" behavior="6"/>
-      <node xmi:type="uml:InitialNode" xmi:id="17" name="InitialNode" outgoing="12"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="18" name="FinalNode" incoming="13 14"/>
-      <node xmi:type="uml:DecisionNode" xmi:id="19" name="Decision__p2" incoming="12" outgoing="10 14"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="17" name="action" incoming="10" outgoing="14" behavior="6"/>
+      <node xmi:type="uml:InitialNode" xmi:id="18" name="InitialNode" outgoing="13"/>
+      <node xmi:type="uml:DecisionNode" xmi:id="19" name="Decision__p2" incoming="13" outgoing="10 15"/>
+      <node xmi:type="uml:MergeNode" xmi:id="20" name="Merge__p3" incoming="14 15" outgoing="12"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="21" name="FinalNode" incoming="12"/>
     </ownedBehavior>
   </packagedElement>
-  <profileApplication xmi:id="20">
-    <eAnnotations xmi:id="21" source="http://www.eclipse.org/uml2/2.0.0/UML">
+  <profileApplication xmi:id="22">
+    <eAnnotations xmi:id="23" source="http://www.eclipse.org/uml2/2.0.0/UML">
       <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
     </eAnnotations>
     <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>

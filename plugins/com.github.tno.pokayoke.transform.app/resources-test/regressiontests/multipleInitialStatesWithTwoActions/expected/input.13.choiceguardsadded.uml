@@ -26,29 +26,29 @@
         </specification>
       </ownedRule>
       <edge xmi:type="uml:ControlFlow" xmi:id="14" name="InitialNode__to____start" target="25" source="28"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="__end__to__FinalNode" target="29" source="24"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Decision__p2__to__left" target="26" source="30">
-        <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
+      <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p2__to__left" target="26" source="29">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
           <body>true</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p2__to__right" target="27" source="30">
-        <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+      <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Decision__p2__to__right" target="27" source="29">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="18">
           <body>true</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="20" name="__start__to__Decision__p2" target="30" source="25"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="21" name="left__to__Merge__p3" target="31" source="26"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="22" name="right__to__Merge__p3" target="31" source="27"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Merge__p3__to____end" target="24" source="31"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="24" name="__end" incoming="23" outgoing="15"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="25" name="__start" incoming="14" outgoing="20"/>
-      <node xmi:type="uml:CallBehaviorAction" xmi:id="26" name="left" incoming="16" outgoing="21" behavior="10"/>
-      <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="right" incoming="18" outgoing="22" behavior="32"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="19" name="__start__to__Decision__p2" target="29" source="25"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="20" name="left__to__Merge__p3" target="30" source="26"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="21" name="right__to__Merge__p3" target="30" source="27"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Merge__p3__to____end" target="24" source="30"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="23" name="__end__to__FinalNode" target="31" source="24"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="24" name="__end" incoming="22" outgoing="23"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="25" name="__start" incoming="14" outgoing="19"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="26" name="left" incoming="15" outgoing="20" behavior="10"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="right" incoming="17" outgoing="21" behavior="32"/>
       <node xmi:type="uml:InitialNode" xmi:id="28" name="InitialNode" outgoing="14"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="29" name="FinalNode" incoming="15"/>
-      <node xmi:type="uml:DecisionNode" xmi:id="30" name="Decision__p2" incoming="20" outgoing="16 18"/>
-      <node xmi:type="uml:MergeNode" xmi:id="31" name="Merge__p3" incoming="21 22" outgoing="23"/>
+      <node xmi:type="uml:DecisionNode" xmi:id="29" name="Decision__p2" incoming="19" outgoing="15 17"/>
+      <node xmi:type="uml:MergeNode" xmi:id="30" name="Merge__p3" incoming="20 21" outgoing="22"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="31" name="FinalNode" incoming="23"/>
     </ownedBehavior>
     <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="32" name="right">
       <body>field1</body>
