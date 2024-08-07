@@ -283,9 +283,9 @@ public class PNML2UMLTranslator {
                 join.setName("Join__" + action.getName());
                 nodeMapping.put(join, nodeMapping.get(action));
 
-                for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
-                    edge.setName(concatenateNamesOf(edge.getSource(), join));
-                    edge.setTarget(join);
+                for (ActivityEdge controlFlow: new ArrayList<>(action.getIncomings())) {
+                    controlFlow.setName(concatenateNamesOf(controlFlow.getSource(), join));
+                    controlFlow.setTarget(join);
                 }
 
                 ControlFlow controlFlow = createControlFlow(activity, join, action);
