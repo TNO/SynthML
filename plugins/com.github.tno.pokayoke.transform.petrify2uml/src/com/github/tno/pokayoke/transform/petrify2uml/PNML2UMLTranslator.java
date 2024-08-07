@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +30,6 @@ import org.eclipse.uml2.uml.UMLFactory;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
@@ -173,8 +173,7 @@ public class PNML2UMLTranslator {
         }
 
         action.setActivity(activity);
-        String actionName = transition.getId();
-        action.setName(actionName);
+        action.setName(transition.getId());
 
         transitionMapping.put(transition, action);
     }
@@ -259,7 +258,7 @@ public class PNML2UMLTranslator {
                 join.setActivity(activity);
                 join.setName("Join__" + action.getName());
 
-                for (ActivityEdge edge: Lists.newArrayList(action.getIncomings())) {
+                for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
                     edge.setName(concatenateNamesOf(edge.getSource(), join));
                     edge.setTarget(join);
                 }
@@ -273,7 +272,7 @@ public class PNML2UMLTranslator {
                 fork.setActivity(activity);
                 fork.setName("Fork__" + action.getName());
 
-                for (ActivityEdge controlFlow: Lists.newArrayList(action.getOutgoings())) {
+                for (ActivityEdge controlFlow: new ArrayList<>(action.getOutgoings())) {
                     controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
                     controlFlow.setSource(fork);
                 }
