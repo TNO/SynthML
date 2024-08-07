@@ -34,6 +34,7 @@ import com.google.common.base.Preconditions;
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
 import fr.lip6.move.pnml.framework.utils.exception.InvalidIDException;
 import fr.lip6.move.pnml.ptnet.Arc;
+import fr.lip6.move.pnml.ptnet.Node;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -54,6 +55,12 @@ public class PNML2UMLTranslator {
 
     /** The mapping from Petri Net transitions to corresponding translated UML action nodes. */
     private final Map<Transition, Action> transitionMapping = new LinkedHashMap<>();
+
+    /** The mapping from UML activity nodes to corresponding Petri Net nodes. */
+    private final Map<ActivityNode, Node> nodeMapping = new LinkedHashMap<>();
+
+    /** The mapping from UML activity control flows to corresponding Petri Net objects. */
+    private final Map<ControlFlow, PnObject> controlFlowMapping = new LinkedHashMap<>();
 
     public PNML2UMLTranslator() {
         this(createEmptyUMLModel());
@@ -93,6 +100,14 @@ public class PNML2UMLTranslator {
 
     public Map<Transition, Action> getTransitionMapping() {
         return Collections.unmodifiableMap(transitionMapping);
+    }
+
+    public Map<ActivityNode, Node> getNodeMapping() {
+        return Collections.unmodifiableMap(nodeMapping);
+    }
+
+    public Map<ControlFlow, PnObject> getControlFlowMapping() {
+        return Collections.unmodifiableMap(controlFlowMapping);
     }
 
     public void translateFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
@@ -175,6 +190,7 @@ public class PNML2UMLTranslator {
         action.setActivity(activity);
         action.setName(transition.getId());
 
+        nodeMapping.put(action, transition);
         transitionMapping.put(transition, action);
     }
 
@@ -194,16 +210,19 @@ public class PNML2UMLTranslator {
             sourceNode = UML_FACTORY.createInitialNode();
             sourceNode.setActivity(activity);
             sourceNode.setName("InitialNode");
+            nodeMapping.put(sourceNode, place);
         } else if (place.getInArcs().size() == 1) {
             sourceNode = transitionMapping.get(place.getInArcs().get(0).getSource());
         } else {
             sourceNode = UML_FACTORY.createMergeNode();
             sourceNode.setActivity(activity);
             sourceNode.setName("Merge__" + place.getId());
+            nodeMapping.put(sourceNode, place);
 
             for (Arc arc: sorted(place.getInArcs())) {
                 ControlFlow flow = createControlFlow(activity, transitionMapping.get(arc.getSource()), sourceNode);
                 arcMapping.put(arc, flow);
+                controlFlowMapping.put(flow, arc);
             }
         }
 
@@ -214,16 +233,20 @@ public class PNML2UMLTranslator {
             targetNode = UML_FACTORY.createActivityFinalNode();
             targetNode.setActivity(activity);
             targetNode.setName("FinalNode");
+            nodeMapping.put(targetNode, place);
         } else if (place.getOutArcs().size() == 1) {
             targetNode = transitionMapping.get(place.getOutArcs().get(0).getTarget());
         } else {
             targetNode = UML_FACTORY.createDecisionNode();
             targetNode.setActivity(activity);
             targetNode.setName("Decision__" + place.getId());
+            nodeMapping.put(targetNode, place);
 
             for (Arc arc: sorted(place.getOutArcs())) {
                 ControlFlow flow = createControlFlow(activity, targetNode, transitionMapping.get(arc.getTarget()));
                 arcMapping.put(arc, flow);
+                controlFlowMapping.put(flow, arc);
+
                 LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
                 guard.setValue(true);
                 flow.setGuard(guard);
@@ -232,6 +255,7 @@ public class PNML2UMLTranslator {
 
         // Create the control flow that connects the source node to the target node.
         ControlFlow controlFlow = createControlFlow(activity, sourceNode, targetNode);
+        controlFlowMapping.put(controlFlow, place);
         placeMapping.put(place, controlFlow);
 
         if (place.getInArcs().size() == 1) {
@@ -242,7 +266,7 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private static void introduceForksAndJoins(Activity activity) {
+    private void introduceForksAndJoins(Activity activity) {
         // Collect all action nodes in the given UML activity.
         List<Action> actions = activity.getNodes().stream().filter(Action.class::isInstance).map(Action.class::cast)
                 .toList();
@@ -257,13 +281,15 @@ public class PNML2UMLTranslator {
                 JoinNode join = UML_FACTORY.createJoinNode();
                 join.setActivity(activity);
                 join.setName("Join__" + action.getName());
+                nodeMapping.put(join, nodeMapping.get(action));
 
                 for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
                     edge.setName(concatenateNamesOf(edge.getSource(), join));
                     edge.setTarget(join);
                 }
 
-                createControlFlow(activity, join, action);
+                ControlFlow controlFlow = createControlFlow(activity, join, action);
+                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
             }
 
             // Introduce a fork node in case there are multiple outgoing control flows.
@@ -271,13 +297,15 @@ public class PNML2UMLTranslator {
                 ForkNode fork = UML_FACTORY.createForkNode();
                 fork.setActivity(activity);
                 fork.setName("Fork__" + action.getName());
+                nodeMapping.put(fork, nodeMapping.get(action));
 
                 for (ActivityEdge controlFlow: new ArrayList<>(action.getOutgoings())) {
                     controlFlow.setName(concatenateNamesOf(fork, controlFlow.getTarget()));
                     controlFlow.setSource(fork);
                 }
 
-                createControlFlow(activity, action, fork);
+                ControlFlow controlFlow = createControlFlow(activity, action, fork);
+                controlFlowMapping.put(controlFlow, nodeMapping.get(action));
             }
         }
     }
