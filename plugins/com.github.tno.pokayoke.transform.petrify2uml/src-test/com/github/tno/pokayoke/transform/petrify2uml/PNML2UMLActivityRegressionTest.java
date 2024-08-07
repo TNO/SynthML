@@ -33,7 +33,7 @@ class PNML2UMLActivityRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, ImportException, InvalidIDException {
-        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity();
-        petriNet2Activity.transformFile(inputPath, outputPath);
+        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator();
+        petriNet2Activity.translateFile(inputPath, outputPath);
     }
 }

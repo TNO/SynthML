@@ -50,7 +50,7 @@ import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
-import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLActivity;
+import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
@@ -200,9 +200,9 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
-        PNML2UMLActivity petriNet2Activity = new PNML2UMLActivity(umlSpec);
-        Activity activity = petriNet2Activity.transform(petriNet);
-        Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionActionMap();
+        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
+        Activity activity = petriNet2Activity.translate(petriNet);
+        Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionMapping();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Obtain the composite state mapping.

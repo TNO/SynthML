@@ -8,12 +8,12 @@
     </ownedAttribute>
     <ownedBehavior xmi:type="uml:Activity" xmi:id="6" name="main" node="10 11 12 13">
       <edge xmi:type="uml:ControlFlow" xmi:id="7" name="InitialNode__to____start" target="11" source="12"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="8" name="__end__to__FinalNode" target="13" source="10"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="9" name="__start__to____end" target="10" source="11"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="10" name="__end" incoming="9" outgoing="8"/>
-      <node xmi:type="uml:OpaqueAction" xmi:id="11" name="__start" incoming="7" outgoing="9"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="8" name="__start__to____end" target="10" source="11"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="9" name="__end__to__FinalNode" target="13" source="10"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="10" name="__end" incoming="8" outgoing="9"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="11" name="__start" incoming="7" outgoing="8"/>
       <node xmi:type="uml:InitialNode" xmi:id="12" name="InitialNode" outgoing="7"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="13" name="FinalNode" incoming="8"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="13" name="FinalNode" incoming="9"/>
     </ownedBehavior>
   </packagedElement>
   <profileApplication xmi:id="14">

@@ -67,7 +67,7 @@ public class PostProcessActivity {
             ActivityNode target = outgoingEdge.getTarget();
 
             // Add a new control flow from source to target.
-            ControlFlow newEdge = PNML2UMLActivityHelper.createControlFlow(activity, source, target);
+            ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
             newEdge.setGuard(combineGuards(incomingEdge.getGuard(), outgoingEdge.getGuard()));
 
             // Destroy the action and its incoming and outgoing edges.
