@@ -30,9 +30,9 @@ import org.eclipse.escet.common.java.Sets;
 
 import com.github.javabdd.BDD;
 
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
-import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Compute the guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
@@ -63,7 +63,7 @@ public class ChoiceActionGuardComputation {
         this.regionMap = regionMap;
     }
 
-    public Map<Transition, Expression> computeChoiceGuards() {
+    public Map<Arc, Expression> computeChoiceGuards() {
         CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
 
         // Get the map from choice places to their choice events (outgoing events).
@@ -72,7 +72,7 @@ public class ChoiceActionGuardComputation {
                 .getChoiceEventsPerChoicePlace(petriNet, allEvents);
 
         // Compute guards for each choice place.
-        Map<Transition, Expression> choiceTransitionToGuard = new LinkedHashMap<>();
+        Map<Arc, Expression> arcToGuard = new LinkedHashMap<>();
         for (Entry<Place, List<Event>> entry: choicePlaceToChoiceEvents.entrySet()) {
             Place choicePlace = entry.getKey();
             List<Event> choiceEvents = entry.getValue();
@@ -137,14 +137,13 @@ public class ChoiceActionGuardComputation {
                             "Expected choice guards to not contain extra state that was introduced during synthesis.");
                 }
 
-                choiceTransitionToGuard.put(
-                        ChoiceActionGuardComputationHelper.getChoiceTransition(choicePlace, choiceEvent),
+                arcToGuard.put(ChoiceActionGuardComputationHelper.getChoiceArc(choicePlace, choiceEvent),
                         choiceGuardExpr);
             }
             choiceStatesPred.free();
         }
 
-        return choiceTransitionToGuard;
+        return arcToGuard;
     }
 
     /**
