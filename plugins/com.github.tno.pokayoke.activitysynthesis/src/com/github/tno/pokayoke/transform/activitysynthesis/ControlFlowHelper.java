@@ -8,10 +8,10 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 
 /** Helper for adding guards to UML control flows. */
-public class ActionHelper {
+public class ControlFlowHelper {
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
-    private ActionHelper() {
+    private ControlFlowHelper() {
     }
 
     /**
@@ -20,7 +20,7 @@ public class ActionHelper {
      * @param controlFlowToGuard The map from UML control flows to their guards as textual CIF expressions.
      */
     public static void addGuardToControlFlows(Map<ControlFlow, String> controlFlowToGuard) {
-        controlFlowToGuard.forEach(ActionHelper::addGuardToControlFlow);
+        controlFlowToGuard.forEach(ControlFlowHelper::addGuardToControlFlow);
     }
 
     private static void addGuardToControlFlow(ControlFlow controlFlow, String guard) {

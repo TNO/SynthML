@@ -38,10 +38,10 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
 import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.transform.activitysynthesis.ActionHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
+import com.github.tno.pokayoke.transform.activitysynthesis.ControlFlowHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
@@ -236,7 +236,7 @@ public class FullSynthesisApp {
 
         // Add the computed choice guards to their corresponding UML control flows.
         Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".13.choiceguardsadded.uml");
-        ActionHelper.addGuardToControlFlows(controlFlowToTextualGuard);
+        ControlFlowHelper.addGuardToControlFlows(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
