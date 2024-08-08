@@ -1,0 +1,38 @@
+controllable action1;
+controllable action2;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet action1, action2, __start, __end;
+  @state(statespace = "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(statespace = "loc1")
+  location s2:
+    edge action2 goto s3;
+    edge action1 goto s4;
+  @state(statespace = "loc3")
+  location s3:
+    edge action1 goto s6;
+  @state(statespace = "loc2")
+  @state(statespace = "loc1")
+  @state(statespace = "loc4")
+  location s4:
+    edge action2 goto s5;
+    edge action1;
+  @state(statespace = "loc3")
+  @state(statespace = "loc6")
+  location s5:
+    edge __end goto s7;
+    edge action1 goto s6;
+  @state(statespace = "loc5")
+  @state(statespace = "loc3")
+  @state(statespace = "loc6")
+  location s6:
+    edge __end goto s7;
+    edge action1;
+  @state(statespace = "__done")
+  location s7:
+    marked;
+end

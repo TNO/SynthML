@@ -40,11 +40,12 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
-import fr.lip6.move.pnml.ptnet.Transition;
 
 public class ChoiceActionGuardComputationHelper {
     private ChoiceActionGuardComputationHelper() {
@@ -204,21 +205,20 @@ public class ChoiceActionGuardComputationHelper {
     }
 
     /**
-     * Get the transition that corresponds to a CIF event from a choice place.
+     * Get the arc that goes from the given place to the transition that corresponds to the given CIF event.
      *
-     * @param place The choice place.
+     * @param place The place.
      * @param event The CIF event.
      * @return The corresponding transition.
      */
-    public static Transition getChoiceTransition(Place place, Event event) {
-        List<Transition> targetTransitions = place.getOutArcs().stream().map(arc -> arc.getTarget())
-                .map(Transition.class::cast).toList();
-        List<Transition> transitions = targetTransitions.stream()
-                .filter(transition -> transition.getName().getText().equals(event.getName())).toList();
-        Preconditions.checkArgument(transitions.size() == 1,
-                String.format("Expected that there is exactly one transition named %s from choice place %s.",
-                        event.getName(), place.getName()));
+    public static Arc getChoiceArc(Place place, Event event) {
+        List<Arc> arcs = place.getOutArcs().stream()
+                .filter(arc -> arc.getTarget().getName().getText().equals(event.getName())).toList();
 
-        return transitions.get(0);
+        Verify.verify(arcs.size() == 1,
+                String.format("Expected the place %s to have exactly one outgoing arc to a transition named %s.",
+                        place.getName(), event.getName()));
+
+        return arcs.get(0);
     }
 }
