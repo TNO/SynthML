@@ -209,7 +209,7 @@ public class PNML2UMLTranslator {
             Preconditions.checkNotNull(place.getInitialMarking(), "Expected initial tokens but found none.");
             sourceNode = UML_FACTORY.createInitialNode();
             sourceNode.setActivity(activity);
-            sourceNode.setName("InitialNode");
+            sourceNode.setName("InitialNode__" + place.getId());
             nodeMapping.put(sourceNode, place);
         } else if (place.getInArcs().size() == 1) {
             sourceNode = transitionMapping.get(place.getInArcs().get(0).getSource());
@@ -232,7 +232,7 @@ public class PNML2UMLTranslator {
         if (place.getOutArcs().isEmpty()) {
             targetNode = UML_FACTORY.createActivityFinalNode();
             targetNode.setActivity(activity);
-            targetNode.setName("FinalNode");
+            targetNode.setName("FinalNode__" + place.getId());
             nodeMapping.put(targetNode, place);
         } else if (place.getOutArcs().size() == 1) {
             targetNode = transitionMapping.get(place.getOutArcs().get(0).getTarget());
