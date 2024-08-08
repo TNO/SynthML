@@ -133,4 +133,19 @@ public class PostProcessActivity {
                 .filter(node -> !(node instanceof OpaqueAction) && !(node instanceof CallBehaviorAction)).toList();
         nodes.stream().forEach(node -> node.setName(null));
     }
+
+    /**
+     * Updates the names of any UML edges with choice guards, to be the textual choice guard expression.
+     *
+     * @param activity The activity to process.
+     */
+    public static void addGuardsToControlFlowNames(Activity activity) {
+        for (ActivityEdge edge: activity.getEdges()) {
+            if (edge.getGuard() instanceof OpaqueExpression guard) {
+                Preconditions.checkArgument(guard.getBodies().size() == 1,
+                        "Expected choice guards to have exacty one body expression.");
+                edge.setName(guard.getBodies().get(0));
+            }
+        }
+    }
 }
