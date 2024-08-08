@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
+  <nameExpression xmi:id="2" name="literals">
+    <operand xmi:type="uml:LiteralInteger" xmi:id="3" name=""/>
+    <operand xmi:type="uml:LiteralInteger" xmi:id="4" name="" value="1"/>
+  </nameExpression>
+  <packagedElement xmi:type="uml:Class" xmi:id="5" name="Context" visibility="public" classifierBehavior="26" isActive="true">
+    <ownedAttribute xmi:id="6" name="Is_Computer_Ready" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="9">
+        <language>CIF</language>
+        <body>false</body>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="10" name="Is_Computer_On" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="11" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="12" value="1"/>
+      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="13">
+        <language>CIF</language>
+        <body>false</body>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="14" name="Coffee_or_Tea" visibility="public" type="64">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="15" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="16" value="1"/>
+      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="17">
+        <language>CIF</language>
+        <body>Unknown</body>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="18" name="Has_Drank_Coffee_or_Tea" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="19" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="20" value="1"/>
+      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="21">
+        <language>CIF</language>
+        <body>false</body>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="22" name="Is_Ready_to_Work" visibility="public">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="23" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="24" value="1"/>
+      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="25">
+        <language>CIF</language>
+        <body>false</body>
+      </defaultValue>
+    </ownedAttribute>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="26" name="main" postcondition="27" node="46 47 48 49 50 51 52 53 54 55 56 57">
+      <ownedRule xmi:id="27" name="postcondition">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
+          <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="29" name="happens_at_most_once" constrainedElement="58 60 61 62 59">
+        <specification xmi:type="uml:Interval" xmi:id="30" name="" max="4" min="3"/>
+      </ownedRule>
+      <edge xmi:type="uml:ControlFlow" xmi:id="31" target="48" source="57">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="32" target="50" source="57">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="33" name="true" target="46" source="53">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
+          <body>true</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="35" name="true" target="47" source="53">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
+          <body>true</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="37" target="53" source="48">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="38" target="56" source="50">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="39" target="54" source="46">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="40" target="54" source="47">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="41" target="56" source="54">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="42" target="49" source="56">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="43" target="57" source="51">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="44" target="51" source="52">
+        <name xsi:nil="true"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="45" target="55" source="49">
+        <name xsi:nil="true"/>
+      </edge>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="Drink_Coffee" incoming="33" outgoing="39" behavior="60"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="Drink_Tea" incoming="35" outgoing="40" behavior="61"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Flip_A_Coin" incoming="31" outgoing="37" behavior="63"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Start_Working" incoming="42" outgoing="45" behavior="62"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="Starting_Computer" incoming="32" outgoing="38" behavior="59"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Turn_Computer_On" incoming="44" outgoing="43" behavior="58"/>
+      <node xmi:type="uml:InitialNode" xmi:id="52" outgoing="44">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:DecisionNode" xmi:id="53" incoming="37" outgoing="33 35">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:MergeNode" xmi:id="54" incoming="39 40" outgoing="41">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="55" incoming="45">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:JoinNode" xmi:id="56" incoming="38 41" outgoing="42">
+        <name xsi:nil="true"/>
+      </node>
+      <node xmi:type="uml:ForkNode" xmi:id="57" incoming="43" outgoing="31 32">
+        <name xsi:nil="true"/>
+      </node>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="58" name="Turn_Computer_On">
+      <body>not Is_Computer_Ready and not Is_Computer_On</body>
+      <body>Is_Computer_On := true</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="59" name="Starting_Computer">
+      <body>not Is_Computer_Ready and Is_Computer_On</body>
+      <body>Is_Computer_Ready := true</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="60" name="Drink_Coffee">
+      <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee</body>
+      <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="61" name="Drink_Tea">
+      <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea</body>
+      <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="62" name="Start_Working">
+      <body>Has_Drank_Coffee_or_Tea and Is_Computer_Ready</body>
+      <body>Is_Ready_to_Work:= true</body>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="63" name="Flip_A_Coin">
+      <body>Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown</body>
+      <body>Coffee_or_Tea:= Coffee</body>
+      <body>Coffee_or_Tea:= Tea</body>
+    </ownedBehavior>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Enumeration" xmi:id="64" name="UnknownDrink" visibility="public">
+    <ownedLiteral xmi:id="65" name="Coffee">
+      <specification xmi:type="uml:LiteralInteger" xmi:id="66"/>
+    </ownedLiteral>
+    <ownedLiteral xmi:id="67" name="Tea">
+      <specification xmi:type="uml:LiteralInteger" xmi:id="68" value="1"/>
+    </ownedLiteral>
+    <ownedLiteral xmi:id="69" name="Unknown">
+      <specification xmi:type="uml:LiteralInteger" xmi:id="70" value="2"/>
+    </ownedLiteral>
+  </packagedElement>
+  <profileApplication xmi:id="71">
+    <eAnnotations xmi:id="72" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+    </eAnnotations>
+    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+  </profileApplication>
+</uml:Model>
