@@ -31,7 +31,7 @@
           <body>field1 and field2</body>
         </specification>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="16" name="InitialNode__to____start" target="40" source="46"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="16" name="InitialNode__p1__to____start" target="40" source="46"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Decision__p2__to__action1/2" target="43" source="47">
         <guard xmi:type="uml:LiteralBoolean" xmi:id="18" value="true"/>
       </edge>
@@ -51,7 +51,7 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Merge__p3__to__Decision__p3" target="49" source="48"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Fork__action1/2__to__action2/1" target="45" source="54"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="31" name="action2__to__action1/1" target="42" source="44"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="32" name="__end__to__FinalNode" target="50" source="39"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="32" name="__end__to__FinalNode__p6" target="50" source="39"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Fork__action1/1__to__Merge__p7" target="51" source="53"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="34" name="action2/1__to__Merge__p7" target="51" source="45"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Merge__p7__to__Join____end" target="52" source="51"/>
@@ -65,11 +65,11 @@
       <node xmi:type="uml:CallBehaviorAction" xmi:id="43" name="action1" incoming="17" outgoing="38" behavior="9"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="action2" incoming="19" outgoing="31" behavior="10"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="45" name="action2" incoming="30" outgoing="34" behavior="10"/>
-      <node xmi:type="uml:InitialNode" xmi:id="46" name="InitialNode" outgoing="16"/>
+      <node xmi:type="uml:InitialNode" xmi:id="46" name="InitialNode__p1" outgoing="16"/>
       <node xmi:type="uml:DecisionNode" xmi:id="47" name="Decision__p2" incoming="21" outgoing="17 19"/>
       <node xmi:type="uml:MergeNode" xmi:id="48" name="Merge__p3" incoming="22 23 24" outgoing="29"/>
       <node xmi:type="uml:DecisionNode" xmi:id="49" name="Decision__p3" incoming="29" outgoing="25 27"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="50" name="FinalNode" incoming="32"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="50" name="FinalNode__p6" incoming="32"/>
       <node xmi:type="uml:MergeNode" xmi:id="51" name="Merge__p7" incoming="33 34" outgoing="35"/>
       <node xmi:type="uml:JoinNode" xmi:id="52" name="Join____end" incoming="25 35" outgoing="36"/>
       <node xmi:type="uml:ForkNode" xmi:id="53" name="Fork__action1/1" incoming="37" outgoing="22 33"/>
