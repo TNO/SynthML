@@ -27,15 +27,15 @@
       <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="15" name="happens_at_most_once" constrainedElement="9">
         <specification xmi:type="uml:Interval" xmi:id="16" name="" max="3" min="4"/>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="17" name="InitialNode__to____start" target="22" source="24"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="17" name="InitialNode__p1__to____start" target="22" source="24"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="18" name="__start__to__change" target="23" source="22"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="19" name="change__to____end" target="21" source="23"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="20" name="__end__to__FinalNode" target="25" source="21"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="20" name="__end__to__FinalNode__p4" target="25" source="21"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="21" name="__end" incoming="19" outgoing="20"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="22" name="__start" incoming="17" outgoing="18"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="23" name="change" incoming="18" outgoing="19" behavior="9"/>
-      <node xmi:type="uml:InitialNode" xmi:id="24" name="InitialNode" outgoing="17"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="25" name="FinalNode" incoming="20"/>
+      <node xmi:type="uml:InitialNode" xmi:id="24" name="InitialNode__p1" outgoing="17"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="25" name="FinalNode__p4" incoming="20"/>
     </ownedBehavior>
   </packagedElement>
   <packagedElement xmi:type="uml:Enumeration" xmi:id="26" name="Number" visibility="public">

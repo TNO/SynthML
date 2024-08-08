@@ -101,8 +101,8 @@
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="53" name="measure_product_position__to__Decision__p8" target="67" source="57"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="54" name="Join__robot_move_to_location2__to__robot_move_to_location2" target="62" source="69"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="55" name="InitialNode__to__Fork____start" target="68" source="64"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="56" name="robot_move_to_location1__to__FinalNode" target="65" source="61"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="55" name="InitialNode__p1__to__Fork____start" target="68" source="64"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="56" name="robot_move_to_location1__to__FinalNode__p10" target="65" source="61"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="57" name="measure_product_position" incoming="48" outgoing="53" behavior="76"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="58" name="prepare_location2" incoming="41" outgoing="43" behavior="75"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="59" name="prepare_robot" incoming="42" outgoing="44" behavior="70"/>
@@ -110,8 +110,8 @@
       <node xmi:type="uml:CallBehaviorAction" xmi:id="61" name="robot_move_to_location1" incoming="51" outgoing="56" behavior="71"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="62" name="robot_move_to_location2" incoming="54" outgoing="45" behavior="72"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="63" name="robot_release_product_at_location2" incoming="45" outgoing="47" behavior="74"/>
-      <node xmi:type="uml:InitialNode" xmi:id="64" name="InitialNode" outgoing="55"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="65" name="FinalNode" incoming="56"/>
+      <node xmi:type="uml:InitialNode" xmi:id="64" name="InitialNode__p1" outgoing="55"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="65" name="FinalNode__p10" incoming="56"/>
       <node xmi:type="uml:MergeNode" xmi:id="66" name="Merge__p7" incoming="46 47" outgoing="48"/>
       <node xmi:type="uml:DecisionNode" xmi:id="67" name="Decision__p8" incoming="53" outgoing="49 51"/>
       <node xmi:type="uml:ForkNode" xmi:id="68" name="Fork____start" incoming="55" outgoing="41 42"/>

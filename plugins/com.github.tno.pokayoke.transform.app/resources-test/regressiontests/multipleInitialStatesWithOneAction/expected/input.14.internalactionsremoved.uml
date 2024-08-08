@@ -21,8 +21,8 @@
           <body>true</body>
         </guard>
       </edge>
-      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="Merge__p3__to__FinalNode" target="21" source="20"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="InitialNode__to__Decision__p2" target="19" source="18"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="Merge__p3__to__FinalNode__p3" target="21" source="20"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="InitialNode__p1__to__Decision__p2" target="19" source="18"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="14" name="action__to__Merge__p3" target="20" source="17"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p2__to__Merge__p3" target="20" source="19">
         <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
@@ -30,10 +30,10 @@
         </guard>
       </edge>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="17" name="action" incoming="10" outgoing="14" behavior="6"/>
-      <node xmi:type="uml:InitialNode" xmi:id="18" name="InitialNode" outgoing="13"/>
+      <node xmi:type="uml:InitialNode" xmi:id="18" name="InitialNode__p1" outgoing="13"/>
       <node xmi:type="uml:DecisionNode" xmi:id="19" name="Decision__p2" incoming="13" outgoing="10 15"/>
       <node xmi:type="uml:MergeNode" xmi:id="20" name="Merge__p3" incoming="14 15" outgoing="12"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="21" name="FinalNode" incoming="12"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="21" name="FinalNode__p3" incoming="12"/>
     </ownedBehavior>
   </packagedElement>
   <profileApplication xmi:id="22">
