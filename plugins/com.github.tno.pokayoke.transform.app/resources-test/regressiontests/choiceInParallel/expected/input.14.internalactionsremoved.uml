@@ -77,18 +77,18 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Merge__p7__to__Join__Start_Working" target="56" source="54"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Join__Start_Working__to__Start_Working" target="49" source="56"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Turn_Computer_On__to__Fork__Turn_Computer_On" target="57" source="51"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="44" name="InitialNode__to__Turn_Computer_On" target="51" source="52"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="45" name="Start_Working__to__FinalNode" target="55" source="49"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="44" name="InitialNode__p1__to__Turn_Computer_On" target="51" source="52"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="45" name="Start_Working__to__FinalNode__p9" target="55" source="49"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="Drink_Coffee" incoming="33" outgoing="39" behavior="60"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="Drink_Tea" incoming="35" outgoing="40" behavior="61"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Flip_A_Coin" incoming="31" outgoing="37" behavior="63"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Start_Working" incoming="42" outgoing="45" behavior="62"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="Starting_Computer" incoming="32" outgoing="38" behavior="59"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Turn_Computer_On" incoming="44" outgoing="43" behavior="58"/>
-      <node xmi:type="uml:InitialNode" xmi:id="52" name="InitialNode" outgoing="44"/>
+      <node xmi:type="uml:InitialNode" xmi:id="52" name="InitialNode__p1" outgoing="44"/>
       <node xmi:type="uml:DecisionNode" xmi:id="53" name="Decision__p5" incoming="37" outgoing="33 35"/>
       <node xmi:type="uml:MergeNode" xmi:id="54" name="Merge__p7" incoming="39 40" outgoing="41"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="55" name="FinalNode" incoming="45"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="55" name="FinalNode__p9" incoming="45"/>
       <node xmi:type="uml:JoinNode" xmi:id="56" name="Join__Start_Working" incoming="38 41" outgoing="42"/>
       <node xmi:type="uml:ForkNode" xmi:id="57" name="Fork__Turn_Computer_On" incoming="43" outgoing="31 32"/>
     </ownedBehavior>

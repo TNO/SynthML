@@ -16,7 +16,7 @@
           <body>field</body>
         </specification>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="10" name="InitialNode__to____start" target="22" source="24"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="10" name="InitialNode__p1__to____start" target="22" source="24"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="11" name="Decision__p2__to____end/1" target="21" source="25">
         <guard xmi:type="uml:LiteralBoolean" xmi:id="12" value="true"/>
       </edge>
@@ -26,16 +26,16 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="15" name="__start__to__Decision__p2" target="25" source="22"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="16" name="__end/1__to__Merge__p3" target="26" source="21"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="17" name="__end__to__Merge__p3" target="26" source="20"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Merge__p3__to__FinalNode" target="27" source="26"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Merge__p3__to__FinalNode__p3" target="27" source="26"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="19" name="action__to____end" target="20" source="23"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="20" name="__end" incoming="19" outgoing="17"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="21" name="__end" incoming="11" outgoing="16"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="22" name="__start" incoming="10" outgoing="15"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="23" name="action" incoming="13" outgoing="19" behavior="6"/>
-      <node xmi:type="uml:InitialNode" xmi:id="24" name="InitialNode" outgoing="10"/>
+      <node xmi:type="uml:InitialNode" xmi:id="24" name="InitialNode__p1" outgoing="10"/>
       <node xmi:type="uml:DecisionNode" xmi:id="25" name="Decision__p2" incoming="15" outgoing="11 13"/>
       <node xmi:type="uml:MergeNode" xmi:id="26" name="Merge__p3" incoming="16 17" outgoing="18"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="27" name="FinalNode" incoming="18"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="27" name="FinalNode__p3" incoming="18"/>
     </ownedBehavior>
   </packagedElement>
   <profileApplication xmi:id="28">

@@ -7,9 +7,9 @@
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
     </ownedAttribute>
     <ownedBehavior xmi:type="uml:Activity" xmi:id="6" name="main" node="8 9">
-      <edge xmi:type="uml:ControlFlow" xmi:id="7" name="InitialNode__to__FinalNode" target="9" source="8"/>
-      <node xmi:type="uml:InitialNode" xmi:id="8" name="InitialNode" outgoing="7"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="9" name="FinalNode" incoming="7"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="7" name="InitialNode__p1__to__FinalNode__p3" target="9" source="8"/>
+      <node xmi:type="uml:InitialNode" xmi:id="8" name="InitialNode__p1" outgoing="7"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="9" name="FinalNode__p3" incoming="7"/>
     </ownedBehavior>
   </packagedElement>
   <profileApplication xmi:id="10">

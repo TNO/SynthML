@@ -20,11 +20,11 @@
           <body>element = First</body>
         </specification>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="InitialNode__to__change" target="14" source="15"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="change__to__FinalNode" target="16" source="14"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="12" name="InitialNode__p1__to__change" target="14" source="15"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="13" name="change__to__FinalNode__p4" target="16" source="14"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="14" name="change" incoming="12" outgoing="13" behavior="6"/>
-      <node xmi:type="uml:InitialNode" xmi:id="15" name="InitialNode" outgoing="12"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="16" name="FinalNode" incoming="13"/>
+      <node xmi:type="uml:InitialNode" xmi:id="15" name="InitialNode__p1" outgoing="12"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="16" name="FinalNode__p4" incoming="13"/>
     </ownedBehavior>
   </packagedElement>
   <packagedElement xmi:type="uml:Enumeration" xmi:id="17" name="Number" visibility="public">

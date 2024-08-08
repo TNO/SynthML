@@ -58,7 +58,7 @@
       <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="29" name="happens_at_most_once" constrainedElement="62 64 65 66 63">
         <specification xmi:type="uml:Interval" xmi:id="30" name="" max="4" min="3"/>
       </ownedRule>
-      <edge xmi:type="uml:ControlFlow" xmi:id="31" name="InitialNode__to____start" target="55" source="56"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="31" name="InitialNode__p1__to____start" target="55" source="56"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="32" name="__start__to__Turn_Computer_On" target="53" source="55"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Fork__Turn_Computer_On__to__Flip_A_Coin" target="50" source="61"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="34" name="Fork__Turn_Computer_On__to__Starting_Computer" target="52" source="61"/>
@@ -78,7 +78,7 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Drink_Tea__to__Merge__p7" target="58" source="49"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Merge__p7__to__Join__Start_Working" target="60" source="58"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="44" name="Start_Working__to____end" target="54" source="51"/>
-      <edge xmi:type="uml:ControlFlow" xmi:id="45" name="__end__to__FinalNode" target="59" source="54"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="45" name="__end__to__FinalNode__p9" target="59" source="54"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="46" name="Join__Start_Working__to__Start_Working" target="51" source="60"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="47" name="Turn_Computer_On__to__Fork__Turn_Computer_On" target="61" source="53"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Drink_Coffee" incoming="35" outgoing="41" behavior="64"/>
@@ -89,10 +89,10 @@
       <node xmi:type="uml:CallBehaviorAction" xmi:id="53" name="Turn_Computer_On" incoming="32" outgoing="47" behavior="62"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="54" name="__end" incoming="44" outgoing="45"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="55" name="__start" incoming="31" outgoing="32"/>
-      <node xmi:type="uml:InitialNode" xmi:id="56" name="InitialNode" outgoing="31"/>
+      <node xmi:type="uml:InitialNode" xmi:id="56" name="InitialNode__p1" outgoing="31"/>
       <node xmi:type="uml:DecisionNode" xmi:id="57" name="Decision__p5" incoming="39" outgoing="35 37"/>
       <node xmi:type="uml:MergeNode" xmi:id="58" name="Merge__p7" incoming="41 42" outgoing="43"/>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="59" name="FinalNode" incoming="45"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="59" name="FinalNode__p9" incoming="45"/>
       <node xmi:type="uml:JoinNode" xmi:id="60" name="Join__Start_Working" incoming="40 43" outgoing="46"/>
       <node xmi:type="uml:ForkNode" xmi:id="61" name="Fork__Turn_Computer_On" incoming="47" outgoing="33 34"/>
     </ownedBehavior>
