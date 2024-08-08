@@ -33,8 +33,8 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
 import com.github.javabdd.BDD;
@@ -58,9 +58,9 @@ import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
-import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -202,7 +202,6 @@ public class FullSynthesisApp {
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
         Activity activity = petriNet2Activity.translate(petriNet);
-        Map<Transition, Action> transitionToAction = petriNet2Activity.getTransitionMapping();
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Obtain the composite state mapping.
@@ -222,23 +221,22 @@ public class FullSynthesisApp {
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
                 uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, petriNet, minimizedToReduced,
                 regionMap);
-        Map<Transition, Expression> choiceTransitionToGuard = guardComputation.computeChoiceGuards();
+        Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards();
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
-        // Get a map from actions to the guards of the incoming edges of the actions.
-        Map<Action, Expression> choiceActionToGuardExpression = new LinkedHashMap<>();
-        choiceTransitionToGuard.forEach((transition, expression) -> choiceActionToGuardExpression
-                .put(transitionToAction.get(transition), expression));
+        // Get a map from UML control flows to the choice guards that have been computed for them.
+        Map<ControlFlow, Expression> controlFlowToGuard = new LinkedHashMap<>();
+        arcToGuard.forEach((arc, guard) -> controlFlowToGuard.put(petriNet2Activity.getArcMapping().get(arc), guard));
 
         // Convert CIF expression of choice guards into CIF expression text.
         ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-        Map<Action, String> choiceActionToGuardText = new LinkedHashMap<>();
-        choiceActionToGuardExpression.forEach((action, expression) -> choiceActionToGuardText.put(action,
-                converter.convertExpressions(cifSpec, Arrays.asList(expression))));
+        Map<ControlFlow, String> controlFlowToTextualGuard = new LinkedHashMap<>();
+        controlFlowToGuard.forEach((controlFlow, guard) -> controlFlowToTextualGuard.put(controlFlow,
+                converter.convertExpressions(cifSpec, Arrays.asList(guard))));
 
-        // Add the guards for the edges that go from decision nodes to the actions.
+        // Add the computed choice guards to their corresponding UML control flows.
         Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".13.choiceguardsadded.uml");
-        ActionHelper.addGuardToIncomingEdges(choiceActionToGuardText);
+        ActionHelper.addGuardToControlFlows(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.

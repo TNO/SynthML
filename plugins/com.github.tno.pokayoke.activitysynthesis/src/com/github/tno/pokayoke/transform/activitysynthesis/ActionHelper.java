@@ -1,17 +1,13 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
-import java.util.List;
 import java.util.Map;
 
-import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 
-import com.google.common.base.Preconditions;
-
-/** Helper for adding guards to the incoming edges of actions. */
+/** Helper for adding guards to UML control flows. */
 public class ActionHelper {
     private static final UMLFactory FACTORY = UMLFactory.eINSTANCE;
 
@@ -19,22 +15,17 @@ public class ActionHelper {
     }
 
     /**
-     * Add guards to the incoming edges of actions.
+     * Add guards to UML control flows as indicated by the specified mapping.
      *
-     * @param actionToGuard The map from the actions to the CIF expressions of the guards.
+     * @param controlFlowToGuard The map from UML control flows to their guards as textual CIF expressions.
      */
-    public static void addGuardToIncomingEdges(Map<Action, String> actionToGuard) {
-        actionToGuard.forEach((action, expression) -> addGuardToSingleIncomingEdge(action, expression));
+    public static void addGuardToControlFlows(Map<ControlFlow, String> controlFlowToGuard) {
+        controlFlowToGuard.forEach(ActionHelper::addGuardToControlFlow);
     }
 
-    private static void addGuardToSingleIncomingEdge(Action action, String expression) {
-        List<ActivityEdge> incomingEdges = action.getIncomings();
-        Preconditions.checkArgument(incomingEdges.size() == 1,
-                String.format("Expected that action %s has exactly one incoming edge.", action.getName()));
-        ActivityEdge incomingEdge = incomingEdges.get(0);
-
-        OpaqueExpression guard = FACTORY.createOpaqueExpression();
-        guard.getBodies().add(expression);
-        incomingEdge.setGuard(guard);
+    private static void addGuardToControlFlow(ControlFlow controlFlow, String guard) {
+        OpaqueExpression expression = FACTORY.createOpaqueExpression();
+        expression.getBodies().add(guard);
+        controlFlow.setGuard(expression);
     }
 }
