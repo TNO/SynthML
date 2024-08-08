@@ -236,7 +236,7 @@ public class FullSynthesisApp {
 
         // Add the computed choice guards to their corresponding UML control flows.
         Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".13.choiceguardsadded.uml");
-        ControlFlowHelper.addGuardToControlFlows(controlFlowToTextualGuard);
+        ControlFlowHelper.addGuards(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.

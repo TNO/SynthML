@@ -19,11 +19,11 @@ public class ControlFlowHelper {
      *
      * @param controlFlowToGuard The map from UML control flows to their guards as textual CIF expressions.
      */
-    public static void addGuardToControlFlows(Map<ControlFlow, String> controlFlowToGuard) {
-        controlFlowToGuard.forEach(ControlFlowHelper::addGuardToControlFlow);
+    public static void addGuards(Map<ControlFlow, String> controlFlowToGuard) {
+        controlFlowToGuard.forEach(ControlFlowHelper::addGuard);
     }
 
-    private static void addGuardToControlFlow(ControlFlow controlFlow, String guard) {
+    private static void addGuard(ControlFlow controlFlow, String guard) {
         OpaqueExpression expression = FACTORY.createOpaqueExpression();
         expression.getBodies().add(guard);
         controlFlow.setGuard(expression);
