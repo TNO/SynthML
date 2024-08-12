@@ -21,10 +21,12 @@ public class PetrifyHelper {
      * @param petrifyOutputPath The path of the Petrify output file.
      * @param executablePath The path of the executable.
      * @param petrifyLogPath The path of the Petrify log file.
+     * @param petrifyStdoutPath The Petrify standard output (stdout) destination file.
+     * @param petrifyStderrPath The Petrify standard error (stderr) destination file.
      * @param timeoutInSeconds The timeout for the conversion process.
      */
     public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, String executablePath,
-            Path petrifyLogPath, int timeoutInSeconds)
+            Path petrifyLogPath, Path petrifyStdoutPath, Path petrifyStderrPath, int timeoutInSeconds)
     {
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
@@ -50,6 +52,8 @@ public class PetrifyHelper {
         command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
+        petrifyProcessBuilder.redirectError(petrifyStderrPath.toFile());
+        petrifyProcessBuilder.redirectOutput(petrifyStdoutPath.toFile());
 
         petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.

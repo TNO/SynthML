@@ -174,9 +174,11 @@ public class FullSynthesisApp {
         // Petrify the state space.
         Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".09.out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
+        Path petrifyStdoutPath = outputFolderPath.resolve("petrify.stdout");
+        Path petrifyStderrPath = outputFolderPath.resolve("petrify.stderr");
         PetrifyHelper.convertToPetriNet(petrifyInputPath, petrifyOutputPath,
                 ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"),
-                petrifyLogPath, 20);
+                petrifyLogPath, petrifyStdoutPath, petrifyStderrPath, 20);
 
         // Load Petrify output.
         List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
