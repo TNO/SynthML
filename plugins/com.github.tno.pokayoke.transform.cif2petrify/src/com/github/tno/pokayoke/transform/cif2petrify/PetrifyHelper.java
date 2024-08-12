@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.cif2petrify;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,12 @@ public class PetrifyHelper {
         Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
 
         if (errorFile.length() != 0) {
-            throw new RuntimeException("Petrify reported errors during Petri Net synthesis.");
+            try {
+                throw new RuntimeException(
+                        "Petrify reported errors during Petri Net synthesis: " + Files.readString(petrifyErrorPath));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed read the Petrify error file.", e);
+            }
         }
     }
 }
