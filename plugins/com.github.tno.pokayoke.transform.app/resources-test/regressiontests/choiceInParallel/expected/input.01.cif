@@ -31,39 +31,39 @@ plant automaton Context:
     edge Flip_A_Coin__result_2 when __activeAction = 1 do Coffee_or_Tea := Tea, __activeAction := 0;
 end
 requirement automaton happens_at_most_once__Turn_Computer_On:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge Turn_Computer_On when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge Turn_Computer_On when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton happens_at_most_once__Drink_Coffee:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge Drink_Coffee when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge Drink_Coffee when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton happens_at_most_once__Drink_Tea:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge Drink_Tea when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge Drink_Tea when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton happens_at_most_once__Start_Working:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge Start_Working when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge Start_Working when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton happens_at_most_once__Starting_Computer:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge Starting_Computer when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge Starting_Computer when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Context.__postcondition disables Turn_Computer_On;
 requirement invariant Context.__postcondition disables Starting_Computer;

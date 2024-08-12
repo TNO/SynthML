@@ -584,7 +584,7 @@ public class UmlToCifTranslator {
         // Create the discrete variable that tracks the number of occurrences of the specified event.
         DiscVariable variable = CifConstructors.newDiscVariable();
         CifType variableType = CifConstructors.newIntType(0, null, max);
-        variable.setName("occurrences");
+        variable.setName("__occurrences");
         variable.setType(variableType);
         automaton.getDeclarations().add(variable);
 
