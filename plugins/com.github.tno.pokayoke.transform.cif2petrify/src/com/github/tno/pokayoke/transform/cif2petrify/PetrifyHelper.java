@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.cif2petrify;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -83,5 +84,13 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+
+        // Check whether Petrify reported any errors during Petri Net synthesis.
+        File stderrFile = petrifyStderrPath.toFile();
+        Verify.verify(stderrFile.exists(), "Expected a stderr destination file to have been created.");
+
+        if (stderrFile.length() != 0) {
+            throw new RuntimeException("Petrify reported errors during Petri Net synthesis.");
+        }
     }
 }
