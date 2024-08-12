@@ -35,8 +35,6 @@ public class PetrifyHelper {
         command.add(parentPath.relativize(petrifyInputPath).toString());
         command.add("-o");
         command.add(parentPath.relativize(petrifyOutputPath).toString());
-        command.add("-err");
-        command.add(parentPath.relativize(petrifyErrorPath).toString());
 
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
@@ -54,6 +52,7 @@ public class PetrifyHelper {
         command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
+        petrifyProcessBuilder.redirectError(petrifyErrorPath.toFile());
 
         petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.
