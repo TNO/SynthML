@@ -1,7 +1,9 @@
 
 package com.github.tno.pokayoke.transform.cif2petrify;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +23,11 @@ public class PetrifyHelper {
      * @param petrifyOutputPath The path of the Petrify output file.
      * @param executablePath The path of the executable.
      * @param petrifyLogPath The path of the Petrify log file.
+     * @param petrifyErrorPath The Petrify standard error (stderr) destination file.
      * @param timeoutInSeconds The timeout for the conversion process.
      */
     public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, String executablePath,
-            Path petrifyLogPath, int timeoutInSeconds)
+            Path petrifyLogPath, Path petrifyErrorPath, int timeoutInSeconds)
     {
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
@@ -37,7 +40,7 @@ public class PetrifyHelper {
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
 
-        // Produce a choice free Petri net. By being choice free, the Petri Net becomes easier to translate to an
+        // Produce a free choice Petri net. By being free choice, the Petri Net becomes easier to translate to an
         // activity.
         command.add("-fc");
 
@@ -50,6 +53,7 @@ public class PetrifyHelper {
         command.add(parentPath.relativize(petrifyLogPath).toString());
 
         ProcessBuilder petrifyProcessBuilder = new ProcessBuilder(command);
+        petrifyProcessBuilder.redirectError(petrifyErrorPath.toFile());
 
         petrifyProcessBuilder.directory(parentPath.toAbsolutePath().toFile());
         // Start the process for Petrify.
@@ -79,5 +83,18 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+
+        // Check whether Petrify reported any errors during Petri Net synthesis.
+        File errorFile = petrifyErrorPath.toFile();
+        Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
+
+        if (errorFile.length() != 0) {
+            try {
+                throw new RuntimeException(
+                        "Petrify reported errors during Petri Net synthesis: " + Files.readString(petrifyErrorPath));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed read the Petrify error file.", e);
+            }
+        }
     }
 }
