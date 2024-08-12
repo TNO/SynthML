@@ -14,10 +14,10 @@ plant automaton Class:
     edge change when element != Third do element := Second;
 end
 requirement automaton happens_at_most_once__change:
-  disc int[0..1] occurrences;
+  disc int[0..1] __occurrences;
   location:
     initial;
-    marked occurrences >= 0;
-    edge change when occurrences < 1 do occurrences := occurrences + 1;
+    marked __occurrences >= 0;
+    edge change when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Class.__postcondition disables change;
