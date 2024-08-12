@@ -41,7 +41,7 @@ public class PetrifyHelper {
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
 
-        // Produce a choice free Petri net. By being choice free, the Petri Net becomes easier to translate to an
+        // Produce a free choice Petri net. By being free choice, the Petri Net becomes easier to translate to an
         // activity.
         command.add("-fc");
 
