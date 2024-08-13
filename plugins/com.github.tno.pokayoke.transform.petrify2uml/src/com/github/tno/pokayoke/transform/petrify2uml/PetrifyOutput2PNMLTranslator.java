@@ -10,10 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Arc;
@@ -35,7 +35,7 @@ public class PetrifyOutput2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(Path inputPath, Path outputPath) throws IOException {
-        List<String> input = PNMLUMLFileHelper.readFile(inputPath.toString());
+        List<String> input = PetrifyHelper.readFile(inputPath.toString());
         PetriNet petriNet = transform(input);
         PostProcessPNML.removeLoop(petriNet);
 
@@ -111,7 +111,7 @@ public class PetrifyOutput2PNMLTranslator {
             // corresponding objects in the map.
             for (String element: elements) {
                 if (!transitionsPlacesMap.containsKey(element)) {
-                    if (isDuplicateTransition(element, transitionsPlacesMap.keySet())) {
+                    if (PetrifyHelper.isDuplicateTransition(element, transitionsPlacesMap.keySet())) {
                         transitionsPlacesMap.put(element, createDuplicateTransition(element, petriNetPage));
                     } else {
                         transitionsPlacesMap.put(element, createPlace(element, petriNetPage));
@@ -175,17 +175,6 @@ public class PetrifyOutput2PNMLTranslator {
         Name nameObject = PETRI_NET_FACTORY.createName();
         nameObject.setText(name);
         return nameObject;
-    }
-
-    public static boolean isDuplicateTransition(String elementName, Set<String> declaredNames) {
-        // Since CIF does not accept '/' in identifiers, the generated state space cannot contain '/'. It is safe to use
-        // '/' to identify duplicate transitions.
-        for (String declaredName: declaredNames) {
-            if (elementName.startsWith(declaredName) && elementName.contains("/")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static Transition createDuplicateTransition(String name, Page page) {

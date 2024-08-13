@@ -1,6 +1,9 @@
 
-package com.github.tno.pokayoke.transform.petrify2uml;
+package com.github.tno.pokayoke.transform.petrify;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +26,17 @@ import com.google.common.collect.Sets;
 /** Normalize Petrify output by relabeling the places. */
 public class NormalizePetrifyOutput {
     private NormalizePetrifyOutput() {
+    }
+
+    /**
+     * Normalize the specified Petrify output file.
+     *
+     * @param petrifyOutputPath The path to the Petrify output file.
+     * @throws IOException In case the Petrify output file could not be read or written to.
+     */
+    public static void normalize(Path petrifyOutputPath) throws IOException {
+        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
+        Files.write(petrifyOutputPath, NormalizePetrifyOutput.normalize(petrifyOutput));
     }
 
     /**
@@ -57,7 +71,7 @@ public class NormalizePetrifyOutput {
             // Add the duplicate transitions.
             nodes.stream()
                     .filter(element -> !declaredTransitionNames.contains(element)
-                            && PetrifyOutput2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
+                            && PetrifyHelper.isDuplicateTransition(element, declaredTransitionNames))
                     .forEach(element -> allTransitionNames.add(element));
 
             parentToChild.put(parentNode, childNodes);

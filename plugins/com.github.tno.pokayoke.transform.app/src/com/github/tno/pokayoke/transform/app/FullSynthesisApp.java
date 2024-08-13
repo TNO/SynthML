@@ -47,9 +47,8 @@ import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
-import com.github.tno.pokayoke.transform.cif2petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
+import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
@@ -180,11 +179,7 @@ public class FullSynthesisApp {
                 petrifyLogPath, petrifyErrorPath, 20);
 
         // Load Petrify output.
-        List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
-
-        // Normalize Petrify output by relabeling the places.
-        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
-        Files.write(petrifyOutputPath, petrifyOutput);
+        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".10.pnml");
