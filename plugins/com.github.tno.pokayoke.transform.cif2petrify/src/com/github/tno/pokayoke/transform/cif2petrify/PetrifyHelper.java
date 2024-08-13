@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.base.Verify;
 
@@ -43,13 +46,20 @@ public class PetrifyHelper {
         Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
 
         if (errorFile.length() != 0) {
-            // Petrify reported errors. First delete all earlier Petrify output.
+            // Petrify reported errors. First rename all earlier Petrify output.
             try {
-                Files.delete(petrifyOutputPath);
-                Files.delete(petrifyLogPath);
-                Files.delete(petrifyErrorPath);
+                Function<Path, Path> targetPath = path -> {
+                    String fileName = path.getFileName().toString();
+                    String filePrefix = FilenameUtils.removeExtension(fileName);
+                    String fileExtension = FilenameUtils.getExtension(fileName);
+                    return path.getParent().resolve(filePrefix + ".freechoice." + fileExtension);
+                };
+
+                Files.move(petrifyOutputPath, targetPath.apply(petrifyOutputPath));
+                Files.move(petrifyLogPath, targetPath.apply(petrifyLogPath));
+                Files.move(petrifyErrorPath, targetPath.apply(petrifyErrorPath));
             } catch (IOException e) {
-                throw new RuntimeException("Failed to delete Petrify output files.", e);
+                throw new RuntimeException("Failed to rename Petrify output files.", e);
             }
 
             // Then run Petrify to synthesize an ordinary, non free choice Petri Net.
