@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Functionality for Petri Net synthesis using Petrify
+Bundle-SymbolicName: com.github.tno.pokayoke.transform.petrify
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: TNO
+Automatic-Module-Name: com.github.tno.pokayoke.transform.petrify
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: com.github.tno.pokayoke.transform.petrify
+Require-Bundle: org.apache.commons.io;bundle-version="2.8.0",
+ com.google.guava;bundle-version="30.1.0"
