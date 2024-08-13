@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -150,5 +151,16 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+    }
+
+    public static boolean isDuplicateTransition(String elementName, Set<String> declaredNames) {
+        // Since CIF does not accept '/' in identifiers, the generated state space cannot contain '/'. It is safe to use
+        // '/' to identify duplicate transitions.
+        for (String declaredName: declaredNames) {
+            if (elementName.startsWith(declaredName) && elementName.contains("/")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

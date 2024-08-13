@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.petrify2uml;
+package com.github.tno.pokayoke.transform.petrify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class NormalizePetrifyOutput {
             // Add the duplicate transitions.
             nodes.stream()
                     .filter(element -> !declaredTransitionNames.contains(element)
-                            && PetrifyOutput2PNMLTranslator.isDuplicateTransition(element, declaredTransitionNames))
+                            && PetrifyHelper.isDuplicateTransition(element, declaredTransitionNames))
                     .forEach(element -> allTransitionNames.add(element));
 
             parentToChild.put(parentNode, childNodes);
