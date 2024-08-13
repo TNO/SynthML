@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.cif2petrify;
+package com.github.tno.pokayoke.transform.petrify;
 
 import java.io.File;
 import java.io.IOException;
