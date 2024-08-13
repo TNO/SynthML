@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import com.google.common.base.Verify;
 
@@ -17,7 +18,9 @@ public class PetrifyHelper {
     }
 
     /**
-     * Convert CIF state space to Petri Net using Petrify.
+     * Converts a given CIF state space to a Petri Net using Petrify. This conversion first tries to synthesize a free
+     * choice Petri Net. If this fails, then an ordinary, non free choice Petri Net is synthesized instead. This
+     * conversion assumes that Petrify is always able to synthesize an ordinary Petri Net.
      *
      * @param petrifyInputPath The path of the Petrify input file.
      * @param petrifyOutputPath The path of the Petrify output file.
@@ -28,6 +31,59 @@ public class PetrifyHelper {
      */
     public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, String executablePath,
             Path petrifyLogPath, Path petrifyErrorPath, int timeoutInSeconds)
+    {
+        // Try to synthesize a free choice Petri Net.
+        Consumer<Boolean> runPetrify = freeChoice -> convertToPetriNet(petrifyInputPath, petrifyOutputPath,
+                executablePath, petrifyLogPath, petrifyErrorPath, freeChoice, timeoutInSeconds);
+
+        runPetrify.accept(true);
+
+        // Check whether Petrify reported any errors. If not, then we are done.
+        File errorFile = petrifyErrorPath.toFile();
+        Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
+
+        if (errorFile.length() != 0) {
+            // Petrify reported errors. First delete all earlier Petrify output.
+            try {
+                Files.delete(petrifyOutputPath);
+                Files.delete(petrifyLogPath);
+                Files.delete(petrifyErrorPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to delete Petrify output files.", e);
+            }
+
+            // Then run Petrify to synthesize an ordinary, non free choice Petri Net.
+            runPetrify.accept(false);
+
+            // Check again whether any errors were reported. If so, then Petri Net synthesis failed.
+            errorFile = petrifyErrorPath.toFile();
+            Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
+
+            if (errorFile.length() != 0) {
+                try {
+                    throw new RuntimeException(
+                            "Petrify failed to synthesize a Petri Net: " + Files.readString(petrifyErrorPath));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to read the Petrify error file.", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Convert CIF state space to Petri Net using Petrify.
+     *
+     * @param petrifyInputPath The path of the Petrify input file.
+     * @param petrifyOutputPath The path of the Petrify output file.
+     * @param executablePath The path of the executable.
+     * @param petrifyLogPath The path of the Petrify log file.
+     * @param petrifyErrorPath The Petrify standard error (stderr) destination file.
+     * @param produceFreeChoiceResult Whether Petrify should synthesize a free choice Petri Net ({@code true}) or an
+     *     ordinary Petri Net ({@code false}).
+     * @param timeoutInSeconds The timeout for the conversion process.
+     */
+    public static void convertToPetriNet(Path petrifyInputPath, Path petrifyOutputPath, String executablePath,
+            Path petrifyLogPath, Path petrifyErrorPath, boolean produceFreeChoiceResult, int timeoutInSeconds)
     {
         // Construct the command for Petrify.
         List<String> command = new ArrayList<>();
@@ -40,9 +96,10 @@ public class PetrifyHelper {
         // When this option is used, Petrify tries to produce the best possible result.
         command.add("-opt");
 
-        // Produce a free choice Petri net. By being free choice, the Petri Net becomes easier to translate to an
-        // activity.
-        command.add("-fc");
+        if (produceFreeChoiceResult) {
+            // Produce a free choice Petri Net, which may lead to more intuitive activity synthesis results.
+            command.add("-fc");
+        }
 
         // Produce Petri Net with intermediate places. If this option is not used, implied places are described as
         // transition-transition arcs.
@@ -83,18 +140,5 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
-
-        // Check whether Petrify reported any errors during Petri Net synthesis.
-        File errorFile = petrifyErrorPath.toFile();
-        Verify.verify(errorFile.exists(), "Expected a stderr destination file to have been created.");
-
-        if (errorFile.length() != 0) {
-            try {
-                throw new RuntimeException(
-                        "Petrify reported errors during Petri Net synthesis: " + Files.readString(petrifyErrorPath));
-            } catch (IOException e) {
-                throw new RuntimeException("Failed read the Petrify error file.", e);
-            }
-        }
     }
 }
