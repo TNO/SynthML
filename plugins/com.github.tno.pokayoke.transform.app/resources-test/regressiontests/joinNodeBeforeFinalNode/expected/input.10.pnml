@@ -1,0 +1,97 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="action1">
+        <name>
+          <text>action1</text>
+        </name>
+      </transition>
+      <transition id="action2">
+        <name>
+          <text>action2</text>
+        </name>
+      </transition>
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__reset">
+        <name>
+          <text>__reset</text>
+        </name>
+      </transition>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__end__to__p6" source="__end" target="p6">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="__reset__to__p1" source="__reset" target="p1">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <arc id="__start__to__p3" source="__start" target="p3">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="action1__to__p4" source="action1" target="p4">
+      </arc>
+      <transition id="action1/1">
+        <name>
+          <text>action1</text>
+        </name>
+      </transition>
+      <arc id="action1/1__to__p4" source="action1/1" target="p4">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="action2__to__p5" source="action2" target="p5">
+      </arc>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p2__to__action1/1" source="p2" target="action1/1">
+      </arc>
+      <arc id="p3__to__action2" source="p3" target="action2">
+      </arc>
+      <arc id="p4__to____end" source="p4" target="__end">
+      </arc>
+      <arc id="p4__to__action1" source="p4" target="action1">
+      </arc>
+      <arc id="p5__to____end" source="p5" target="__end">
+      </arc>
+      <arc id="p6__to____reset" source="p6" target="__reset">
+      </arc>
+    </page>
+  </net>
+</pnml>
