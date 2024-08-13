@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -151,6 +153,10 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+    }
+
+    public static List<String> readFile(String sourcePath) throws IOException {
+        return new LinkedList<>(Files.readAllLines(Paths.get(sourcePath)));
     }
 
     public static boolean isDuplicateTransition(String elementName, Set<String> declaredNames) {

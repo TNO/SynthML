@@ -3,10 +3,7 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -32,10 +29,6 @@ import fr.lip6.move.pnml.ptnet.hlapi.PetriNetDocHLAPI;
 
 public class PNMLUMLFileHelper {
     private PNMLUMLFileHelper() {
-    }
-
-    public static List<String> readFile(String sourcePath) throws IOException {
-        return new LinkedList<>(Files.readAllLines(Paths.get(sourcePath)));
     }
 
     public static PetriNet readPetriNet(String inputPath) throws ImportException, InvalidIDException {

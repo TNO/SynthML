@@ -19,7 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.common.java.Triple;
 import org.json.JSONObject;
 
-import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
+import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -44,8 +44,8 @@ public class ExtractRegionStateMapping {
     public static void extractMappingFromFiles(Path petrifyInputPath, Path petrifyOutputPath, Path outputFolderPath)
             throws IOException
     {
-        List<String> petrifyInput = PNMLUMLFileHelper.readFile(petrifyInputPath.toString());
-        List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
+        List<String> petrifyInput = PetrifyHelper.readFile(petrifyInputPath.toString());
+        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(petrifyOutput);
         Map<Place, Set<String>> regionMapping1 = extract(petrifyInput, petriNet);
         Map<String, Set<String>> regionMapping2 = new LinkedHashMap<>();

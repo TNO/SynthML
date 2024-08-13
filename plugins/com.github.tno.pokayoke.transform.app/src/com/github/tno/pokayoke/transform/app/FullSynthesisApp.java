@@ -180,7 +180,7 @@ public class FullSynthesisApp {
                 petrifyLogPath, petrifyErrorPath, 20);
 
         // Load Petrify output.
-        List<String> petrifyOutput = PNMLUMLFileHelper.readFile(petrifyOutputPath.toString());
+        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Normalize Petrify output by relabeling the places.
         petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);

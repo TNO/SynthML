@@ -35,7 +35,7 @@ public class PetrifyOutput2PNMLTranslator {
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
 
     public static void transformFile(Path inputPath, Path outputPath) throws IOException {
-        List<String> input = PNMLUMLFileHelper.readFile(inputPath.toString());
+        List<String> input = PetrifyHelper.readFile(inputPath.toString());
         PetriNet petriNet = transform(input);
         PostProcessPNML.removeLoop(petriNet);
 
