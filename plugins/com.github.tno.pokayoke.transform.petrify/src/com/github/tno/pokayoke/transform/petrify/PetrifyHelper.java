@@ -153,6 +153,13 @@ public class PetrifyHelper {
 
         Verify.verify(petrifyProcess.exitValue() == 0,
                 "Petrify process exited with non-zero exit code (" + petrifyProcess.exitValue() + ").");
+
+        // Normalize the output of Petrify.
+        try {
+            NormalizePetrifyOutput.normalize(petrifyOutputPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to normalize Petrify output.", e);
+        }
     }
 
     public static List<String> readFile(String sourcePath) throws IOException {

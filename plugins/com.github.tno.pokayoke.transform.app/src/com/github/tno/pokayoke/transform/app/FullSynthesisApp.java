@@ -48,7 +48,6 @@ import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.transform.petrify.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
@@ -179,8 +178,7 @@ public class FullSynthesisApp {
                 ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"),
                 petrifyLogPath, petrifyErrorPath, 20);
 
-        // Normalize Petrify output by relabeling the places.
-        NormalizePetrifyOutput.normalize(petrifyOutputPath);
+        // Load Petrify output.
         List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
