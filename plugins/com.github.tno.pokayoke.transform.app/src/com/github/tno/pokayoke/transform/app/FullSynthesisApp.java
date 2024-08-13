@@ -48,8 +48,8 @@ import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.petrify.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify.PetrifyHelper;
-import com.github.tno.pokayoke.transform.petrify2uml.NormalizePetrifyOutput;
 import com.github.tno.pokayoke.transform.petrify2uml.PNML2UMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
