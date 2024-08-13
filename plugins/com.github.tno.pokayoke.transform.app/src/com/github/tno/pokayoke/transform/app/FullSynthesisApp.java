@@ -179,12 +179,9 @@ public class FullSynthesisApp {
                 ExecutableHelper.getExecutable("petrify", "com.github.tno.pokayoke.transform.distribution", "bin"),
                 petrifyLogPath, petrifyErrorPath, 20);
 
-        // Load Petrify output.
-        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
-
         // Normalize Petrify output by relabeling the places.
-        petrifyOutput = NormalizePetrifyOutput.normalize(petrifyOutput);
-        Files.write(petrifyOutputPath, petrifyOutput);
+        NormalizePetrifyOutput.normalize(petrifyOutputPath);
+        List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
         Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".10.pnml");
