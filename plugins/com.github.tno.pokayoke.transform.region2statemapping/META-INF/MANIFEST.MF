@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.tno.pokayoke.transform.petrify2uml;bundle-version="0.0.1",
  org.eclipse.escet.common.java;bundle-version="3.0.0",
  org.json;bundle-version="1.0.0",
- org.apache.commons.io;bundle-version="2.8.0"
+ org.apache.commons.io;bundle-version="2.8.0",
+ com.github.tno.pokayoke.transform.petrify;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.region2statemapping
 Bundle-RequiredExecutionEnvironment: JavaSE-17
