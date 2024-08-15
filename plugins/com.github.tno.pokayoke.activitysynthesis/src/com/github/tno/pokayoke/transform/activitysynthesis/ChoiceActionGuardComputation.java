@@ -180,19 +180,18 @@ public class ChoiceActionGuardComputation {
                 .toList();
 
         // Get BDDs of these state annotations.
-        List<BDD> choiceStatesPreds = new ArrayList<>();
+        List<BDD> statesPreds = new ArrayList<>();
         for (Annotation annotation: annotations) {
             Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation, cifBddSpec);
             try {
-                BDD bdd = CifToBddConverter.convertPred(expression, false, cifBddSpec);
-                choiceStatesPreds.add(bdd);
+                statesPreds.add(CifToBddConverter.convertPred(expression, false, cifBddSpec));
             } catch (UnsupportedPredicateException e) {
                 throw new RuntimeException("Failed to convert CIF expression into BDD.", e);
             }
         }
 
         // Compute the disjunction of these BDDs.
-        return choiceStatesPreds.stream().reduce(BDD::orWith).get();
+        return statesPreds.stream().reduce(BDD::orWith).get();
     }
 
     /**
