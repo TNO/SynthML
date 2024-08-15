@@ -10,9 +10,7 @@ import static org.eclipse.escet.common.emf.EMFHelper.deepclone;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.escet.cif.bdd.spec.CifBddDiscVariable;
@@ -27,7 +25,6 @@ import org.eclipse.escet.cif.metamodel.cif.annotations.AnnotationArgument;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
-import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
@@ -40,55 +37,9 @@ import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
-
-import fr.lip6.move.pnml.ptnet.Arc;
-import fr.lip6.move.pnml.ptnet.Page;
-import fr.lip6.move.pnml.ptnet.PetriNet;
-import fr.lip6.move.pnml.ptnet.Place;
 
 public class ChoiceActionGuardComputationHelper {
     private ChoiceActionGuardComputationHelper() {
-    }
-
-    /**
-     * Get CIF events that correspond to the transitions from all the choice places in the Petri net.
-     *
-     * @param petriNet The Petri net.
-     * @param allEvents Events from the CIF specification corresponding to the Petri net.
-     * @return Per choice place in the Petri net, the CIF events corresponding to the choices (outgoing transitions from
-     *     the choice place).
-     */
-    public static Map<Place, List<Event>> getChoiceEventsPerChoicePlace(PetriNet petriNet, Set<Event> allEvents) {
-        List<Page> pnPages = petriNet.getPages();
-        Map<Place, List<Event>> placeToEvent = new LinkedHashMap<>();
-        Preconditions.checkArgument(pnPages.size() == 1, "Expected the Petri Net to have exactly one Petri Net page.");
-        Page pnPage = pnPages.get(0);
-
-        List<Place> places = pnPage.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast)
-                .toList();
-        List<Place> choicePlaces = places.stream().filter(place -> place.getOutArcs().size() > 1).toList();
-
-        for (Place choicePlace: choicePlaces) {
-            List<String> eventNames = choicePlace.getOutArcs().stream().map(arc -> arc.getTarget().getName().getText())
-                    .toList();
-
-            List<Event> choiceEvents = new ArrayList<>();
-            for (String eventName: eventNames) {
-                List<Event> events = allEvents.stream().filter(event -> event.getName().equals(eventName)).toList();
-                Preconditions.checkArgument(events.size() == 1,
-                        String.format("Expected that there is exactly one event named %s.", eventName));
-                Event event = events.get(0);
-                Preconditions.checkArgument(!choiceEvents.contains(event), String.format(
-                        "There is a duplicate of choice event %s. Expected to have no duplicates as choices should be deterministic.",
-                        eventName));
-                choiceEvents.add(event);
-            }
-
-            placeToEvent.put(choicePlace, choiceEvents);
-        }
-
-        return placeToEvent;
     }
 
     /**
@@ -202,23 +153,5 @@ public class ChoiceActionGuardComputationHelper {
     private static boolean isSynthesisVariable(String variableName, List<CifBddVariable> bddVariables) {
         List<String> synthesisVariableNames = bddVariables.stream().map(variable -> variable.rawName).toList();
         return synthesisVariableNames.contains(variableName);
-    }
-
-    /**
-     * Get the arc that goes from the given place to the transition that corresponds to the given CIF event.
-     *
-     * @param place The place.
-     * @param event The CIF event.
-     * @return The corresponding transition.
-     */
-    public static Arc getChoiceArc(Place place, Event event) {
-        List<Arc> arcs = place.getOutArcs().stream()
-                .filter(arc -> arc.getTarget().getName().getText().equals(event.getName())).toList();
-
-        Verify.verify(arcs.size() == 1,
-                String.format("Expected the place %s to have exactly one outgoing arc to a transition named %s.",
-                        place.getName(), event.getName()));
-
-        return arcs.get(0);
     }
 }
