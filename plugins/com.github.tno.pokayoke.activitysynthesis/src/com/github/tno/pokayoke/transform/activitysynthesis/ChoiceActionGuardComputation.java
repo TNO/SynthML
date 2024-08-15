@@ -81,7 +81,7 @@ public class ChoiceActionGuardComputation {
      * @param page The input page.
      * @return A mapping from all choice arcs to their choice guards, as CIF expressions.
      */
-    public Map<Arc, Expression> computeChoiceGuards(Page page) {
+    private Map<Arc, Expression> computeChoiceGuards(Page page) {
         Map<Arc, Expression> result = new LinkedHashMap<>();
 
         // Collect all choice places, which are places that have multiple outgoing arcs.
@@ -107,7 +107,7 @@ public class ChoiceActionGuardComputation {
      *     and the target of this arc should be a {@link Transition transition}.
      * @return The computed choice guard as a BDD predicate.
      */
-    public BDD computeChoiceGuard(Arc arc) {
+    private BDD computeChoiceGuard(Arc arc) {
         Transition transition = (Transition)arc.getTarget();
 
         // Compute an initial choice guard for the target transition of the arc.
@@ -122,7 +122,7 @@ public class ChoiceActionGuardComputation {
         choiceGuard.free();
         stateInfo.free();
 
-        return simplifiedShoiceGuard;
+        return simplifiedChoiceGuard;
     }
 
     /**
