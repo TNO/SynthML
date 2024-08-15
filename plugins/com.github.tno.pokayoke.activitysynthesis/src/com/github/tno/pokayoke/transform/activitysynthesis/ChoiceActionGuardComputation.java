@@ -108,14 +108,14 @@ public class ChoiceActionGuardComputation {
      * @return The computed choice guard as a BDD predicate.
      */
     public BDD computeChoiceGuard(Arc arc) {
-        Place place = (Place)arc.getSource();
         Transition transition = (Transition)arc.getTarget();
 
         // Compute an initial choice guard for the target transition of the arc.
         BDD choiceGuard = getExtraTransitionGuard(transition);
 
-        // Further simplify the choice guard by the state information of the source place.
-        BDD stateInfo = getStateInformation(place);
+        // Further simplify the choice guard by the state information of all incoming places of the transition.
+        BDD stateInfo = transition.getInArcs().stream().map(a -> (Place)a.getSource()).map(this::getStateInformation)
+                .reduce(BDD::andWith).get();
         BDD simplifiedShoiceGuard = choiceGuard.simplify(stateInfo);
 
         // Free all intermediate BDDs.
