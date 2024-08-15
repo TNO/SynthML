@@ -39,17 +39,17 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Compute the guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
-    private Specification cifMinimizedStateSpace;
+    private final Specification cifMinimizedStateSpace;
 
-    private Map<Event, BDD> uncontrolledSystemGuards;
+    private final Map<Event, BDD> uncontrolledSystemGuards;
 
-    private Map<Event, BDD> auxiliarySystemGuards;
+    private final Map<Event, BDD> auxiliarySystemGuards;
 
-    private CifDataSynthesisResult cifSynthesisResult;
+    private final CifDataSynthesisResult cifSynthesisResult;
 
-    private Map<Location, List<Annotation>> compositeStateMap;
+    private final Map<Location, List<Annotation>> compositeStateMap;
 
-    private Map<Place, Set<String>> regionMap;
+    private final Map<Place, Set<String>> regionMap;
 
     public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> uncontrolledSystemGuards,
             Map<Event, BDD> auxiliarySystemGuards, CifDataSynthesisResult cifSynthesisResult,
