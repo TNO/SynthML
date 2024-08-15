@@ -116,7 +116,7 @@ public class ChoiceActionGuardComputation {
         // Further simplify the choice guard by the state information of all incoming places of the transition.
         BDD stateInfo = transition.getInArcs().stream().map(a -> (Place)a.getSource()).map(this::getStateInformation)
                 .reduce(BDD::andWith).get();
-        BDD simplifiedShoiceGuard = choiceGuard.simplify(stateInfo);
+        BDD simplifiedChoiceGuard = choiceGuard.simplify(stateInfo);
 
         // Free all intermediate BDDs.
         choiceGuard.free();
@@ -155,7 +155,7 @@ public class ChoiceActionGuardComputation {
         event = findEvent.apply(auxiliarySystemGuards);
 
         if (event != null) {
-            // Since there no synthesis result for this auxiliary event, return it without simplification.
+            // Since there is no synthesis result for this auxiliary event, return it without simplification.
             return auxiliarySystemGuards.get(event).id();
         }
 
