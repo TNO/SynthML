@@ -46,7 +46,7 @@
       <edge xmi:type="uml:ControlFlow" xmi:id="20" target="35" source="33">
         <name xsi:nil="true"/>
         <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
-          <body>field1 and field2</body>
+          <body>field1</body>
         </guard>
       </edge>
       <edge xmi:type="uml:ControlFlow" xmi:id="22" target="28" source="33">

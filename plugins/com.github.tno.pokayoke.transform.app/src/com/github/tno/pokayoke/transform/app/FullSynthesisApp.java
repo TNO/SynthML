@@ -215,9 +215,9 @@ public class FullSynthesisApp {
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, petriNet, minimizedToReduced,
+                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, minimizedToReduced,
                 regionMap);
-        Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards();
+        Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards(petriNet);
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
         // Get a map from UML control flows to the choice guards that have been computed for them.
