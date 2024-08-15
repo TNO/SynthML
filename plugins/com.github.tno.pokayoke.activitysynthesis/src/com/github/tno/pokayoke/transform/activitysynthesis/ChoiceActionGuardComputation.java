@@ -13,6 +13,7 @@ import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
@@ -205,8 +206,8 @@ public class ChoiceActionGuardComputation {
 
         // Make sure the choice guard does not contain additional state.
         if (containsAdditionalState(expr)) {
-            throw new RuntimeException(
-                    "Expected choice guards to not contain extra variables that were introduced during synthesis.");
+            throw new RuntimeException("Expected choice guard '" + CifTextUtils.exprToStr(expr)
+                    + "' to not contain extra variables that were introduced during synthesis.");
         }
 
         return expr;
