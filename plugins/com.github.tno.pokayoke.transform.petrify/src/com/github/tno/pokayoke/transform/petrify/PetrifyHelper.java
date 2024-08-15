@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,9 +59,9 @@ public class PetrifyHelper {
                     return path.getParent().resolve(filePrefix + ".freechoice." + fileExtension);
                 };
 
-                Files.move(petrifyOutputPath, targetPath.apply(petrifyOutputPath));
-                Files.move(petrifyLogPath, targetPath.apply(petrifyLogPath));
-                Files.move(petrifyErrorPath, targetPath.apply(petrifyErrorPath));
+                Files.move(petrifyOutputPath, targetPath.apply(petrifyOutputPath), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(petrifyLogPath, targetPath.apply(petrifyLogPath), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(petrifyErrorPath, targetPath.apply(petrifyErrorPath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to rename Petrify output files.", e);
             }
