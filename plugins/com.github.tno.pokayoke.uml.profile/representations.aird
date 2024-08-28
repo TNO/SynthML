@@ -25,7 +25,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="_6P8FUM_tEe6QioSmOybrPw">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1710859110265">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1724832809128">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
         <target xmi:type="uml:Profile" href="pokayoke.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
       </ownedRepresentationDescriptors>
@@ -44,6 +44,10 @@
             <children xmi:type="notation:Node" xmi:id="__C3BwM_tEe6QioSmOybrPw" type="3010" element="__BkoUM_tEe6QioSmOybrPw">
               <styles xmi:type="notation:FontStyle" xmi:id="__C3Bwc_tEe6QioSmOybrPw" fontName="Segoe UI" fontHeight="8"/>
               <layoutConstraint xmi:type="notation:Location" xmi:id="__C3Bws_tEe6QioSmOybrPw"/>
+            </children>
+            <children xmi:type="notation:Node" xmi:id="_PsqgQGUVEe-AGoeleYNWcA" type="3010" element="_PsObYGUVEe-AGoeleYNWcA">
+              <styles xmi:type="notation:FontStyle" xmi:id="_PsqgQWUVEe-AGoeleYNWcA" fontName="Segoe UI" fontHeight="8"/>
+              <layoutConstraint xmi:type="notation:Location" xmi:id="_PsqgQmUVEe-AGoeleYNWcA"/>
             </children>
             <styles xmi:type="notation:SortingStyle" xmi:id="__CvtAc_tEe6QioSmOybrPw"/>
             <styles xmi:type="notation:FilteringStyle" xmi:id="__CvtAs_tEe6QioSmOybrPw"/>
@@ -104,6 +108,15 @@
         <target xmi:type="uml:Property" href="pokayoke.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
         <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
         <ownedStyle xmi:type="diagram:Square" uid="__BkoUc_tEe6QioSmOybrPw" labelAlignment="LEFT">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
+      </ownedElements>
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_PsObYGUVEe-AGoeleYNWcA" name="atomic : Boolean [0..1] = true">
+        <target xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
+        <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
+        <semanticElements xmi:type="uml:LiteralBoolean" href="pokayoke.profile.uml#_V2SJ4GUVEe-AGoeleYNWcA"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_PsPCcGUVEe-AGoeleYNWcA" labelAlignment="LEFT">
           <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
