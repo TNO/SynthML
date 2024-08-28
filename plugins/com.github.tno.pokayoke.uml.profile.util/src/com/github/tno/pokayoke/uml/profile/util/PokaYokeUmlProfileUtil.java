@@ -35,6 +35,9 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_GUARD_EFFECTS_ACTION_EFFECTS = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__EFFECTS
             .getName();
 
+    private static final String PROP_GUARD_EFFECTS_ACTION_ATOMIC = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__ATOMIC
+            .getName();
+
     /** Qualified name for the {@link PokaYokePackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = PokaYokePackage.eNAME;
 
@@ -74,6 +77,16 @@ public class PokaYokeUmlProfileUtil {
     public static void setEffects(Action action, String newValue) {
         Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
         action.setValue(st, PROP_GUARD_EFFECTS_ACTION_EFFECTS, newValue);
+    }
+
+    public static boolean isAtomic(Action action) {
+        return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
+                .map(st -> (Boolean)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_ATOMIC)).orElse(true);
+    }
+
+    public static void setAtomic(Action action, Boolean newValue) {
+        Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
+        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_ATOMIC, newValue);
     }
 
     /**

@@ -154,6 +154,29 @@ public class PokaYokeProfileServices {
     }
 
     /**
+     * Returns the {@link GuardEffectsAction#isAtomic()} property value if <code>action</code> is stereotype,
+     * <code>true</code> otherwise.
+     *
+     * @param action The action to interrogate.
+     * @return The {@link GuardEffectsAction#isAtomic()} property value if <code>action</code> is stereotype,
+     *     <code>true</code> otherwise.
+     */
+    public boolean isAtomic(Action action) {
+        return PokaYokeUmlProfileUtil.isAtomic(action);
+    }
+
+    /**
+     * Applies the {@link GuardEffectsAction} stereotype and set its {@link GuardEffectsAction#setAtomic(boolean)
+     * atomic} property for <code>action</code>.
+     *
+     * @param action The action to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setAtomic(Action action, Boolean newValue) {
+        PokaYokeUmlProfileUtil.setAtomic(action, newValue);
+    }
+
+    /**
      * Returns the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
      *
      * @param controlFlow The control-flow to interrogate.

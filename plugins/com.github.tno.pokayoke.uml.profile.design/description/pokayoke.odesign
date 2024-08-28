@@ -217,6 +217,11 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
           </initialOperation>
         </controls>
+        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Atomic" labelExpression="Atomic" helpExpression="Specifies if guard and effects are executed atomicly" valueExpression="service:self.isAtomic()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setAtomic(newValue)"/>
+          </initialOperation>
+        </controls>
       </groups>
       <groups name="PR_ControlFlowGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_CF_Name" labelExpression="Name:" helpExpression="The Name of the Control Flow" valueExpression="feature:name">
