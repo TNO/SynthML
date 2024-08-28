@@ -105,7 +105,8 @@ A high-level overview is presented below.
 	Semantically, an edge can be taken when its guard holds with respect to the state of the EFA are the current execution point, and this state is then updated (transformed) according to the edge update.
 	
 	\item[UML models and activities.]
-	UML models consist of any number of UML enum declarations, and exactly one UML class.
+	For our purposes we use a subset of the UML2 metamodel\footnote{See \url{https://www.omg.org/spec/UML/2.5.1} (Accessed 2024-08-28) for the full UML2 specification.}.
+	In our restricted scope, UML models consist of any number of UML enum declarations, and exactly one UML class.
 	A UML class contains:
 	\begin{itemize}
 		\item Any number of UML properties.
@@ -123,25 +124,25 @@ A high-level overview is presented below.
 		A UML constraint can also be an action exclusion invariant, which indicates that the execution of some action requires the system to be in a certain state as expressed by a state invariant.
 		\item A single UML activity, which can either be \emph{abstract} or \emph{concrete}.
 		\begin{itemize}
-			\item An abstract UML activity consists of preconditions, postconditions, and optimality constraints.
+			\item An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
 			The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
-			Optimality constraints\footnote{Note that optimality constraints are temporary, and intended to be removed later.} are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times' and thus limit the number of occurrences of some action in a to-be-synthesized activity.
+			Occurrence constraints\footnote{Note that occurrence constraints are temporary, and intended to be removed later.} are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times' and thus limit the number of occurrences of some action in a to-be-synthesized activity.
 			Abstract UML activities are `empty' in the sense that they contain no nodes nor control flow.
 			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
 			A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action.
-			Concrete UML activities cannot contain preconditions, postconditions, or optimality constraints.
+			Concrete UML activities cannot contain preconditions, postconditions, or occurrence constraints.
 		\end{itemize}
 	\end{itemize}
 	
 	The activity synthesis algorithm takes UML models with an abstract UML activity as input.
-	The goal of activity synthesis is then to synthesize a concrete UML activity for the specified abstract UML activity, and updating the UML model by replacing the abstract UML activity by the concrete synthesizedones.
+	The goal of activity synthesis is then to synthesize a concrete UML activity for the specified abstract UML activity, and updating the UML model by replacing the abstract UML activity by the concrete synthesized ones.
 	
 	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
-	Being valid for example means that the UML model contains no abstract UML activities containing nodes or control flows.
+	Being valid for example means that the UML model contains no abstract UML activities that have nodes or control flows.
 	
 	\item[Petri Nets.]
 	A Petri Net is a finite directed graph consisting of \emph{places}, \emph{transitions}, and \emph{arcs}.
-	Any place in a Petri Net can have at most one \emph{token}.
+	We consider \emph{elementary Petri Nets}, where (by definition) any place holds at most one \emph{token}.
 	Transitions in a Petri Net can be \emph{fired} to move tokens around between adjacent places.
 	If some transition can fire, we say that it is \emph{enabled}.
 	Any arc in a Petri Net must be connected to a place with a transition.
@@ -167,8 +168,9 @@ A brief overview is given below.
 	We use the data-based synthesis tool of CIF to do supervisory controller synthesis, and the CIF explorer tool for state space generation.
 	\item[Petrify.]
 	Petrify is a tool for Petri Net synthesis.
-	Giving some state machine (or finite automaton), the goal of Petri Net synthesis is to synthesize a (minimal) Petri Net that is trace equivalent to the input state machine.
+	Given some state machine (or finite automaton), the goal of Petri Net synthesis is to synthesize a (minimal) Petri Net that is trace-equivalent to the input state machine.
 	Petrify has its own input and output specification language.
+	We use Petrify to synthesize a Petri Net from a state machine, as a stepping stone for synthesizing UML activities.
 	Further information on Petrify can be found here: \url{https://www.cs.upc.edu/~jordicf/petrify} (accessed 2024-07-31).
 	\item[PNML.]
 	PNML stands for Petri Net Markup Language, and is an XML-based syntax for representing Petri Nets.
@@ -186,6 +188,8 @@ The activity synthesis procedure internally uses two types of synthesis algorith
 
 Supervisory controller synthesis is used to compute a minimally restrictive supervisor, which is essentially a state machine that describes all safe system behavior. 
 After that, Petri Net synthesis is used to synthesize a (possibly free-choice) Petri Net from this state machine, which is then transformed to a concrete UML activity.
+The intermediate step of synthesizing a Petri Net is performed since Petri Nets are structurally much closer to UML activities compared to state machines, and thus easier to translate.
+
 The field of Petri Net synthesis is developed around the \emph{theory of regions}.
 Intuitively, the idea is to find groups of locations in the input state machine that can be turned into single places in the output Petri Net.
 These groups are then called regions.
@@ -239,11 +243,12 @@ A short explanation is given for every operation, followed by the motivation for
 The \transformUmlToCif{\var{umlModel}} operation translates a given UML model, \var{umlModel}, to a CIF specification to be used for supervisory controller synthesis.
 
 \paragraph{Motivation.}
-With respect to supervisory controller synthesis, the input UML model specifies the plant and requirements, i.e., the UML opaque behaviors and UML (optimality) constraints.
+With respect to supervisory controller synthesis, the input UML model specifies the plant and requirements, i.e., the UML opaque behaviors and UML (occurrence) constraints.
 These plant and requirement constructs are translated one-to-one to CIF, to enable running its data-based synthesis tool.
 
 \paragraph{Preconditions.}
 This operation requires the input UML model to be valid and have an abstract UML activity (see also \autoref{sec:prelims:formalisms}).
+The abstract UML activity is specified up front since it contains, e.g., the name of the to-be-synthesized activity, as well as its preconditions and postconditions.
 
 \paragraph{Postconditions.}
 This operation produces a CIF specification that:
@@ -275,7 +280,7 @@ This operation produces a CIF specification that:
 	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
-	\item Contains an edge in the flower automaton plant for every defined UML opaque behavior.
+	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
 	An edge is defined for every declared CIF events, both controllable and uncontrollable ones.
 	Every controllable CIF event corresponds one-to-one to UML opaque behavior definitions, and thus their edge guards are the translated action guards.
 	Moreover, in case of a deterministic action, the edge update is the translated action effect.
@@ -283,11 +288,11 @@ This operation produces a CIF specification that:
 	The edges for uncontrollable events do not have guards.
 	We don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the corresponding controlled `start' events.
 	These control flow guards and updates also correctly handle and maintain the atomicity variable.
-	\item Contains requirement automata for the optimality constraints defined in the UML model.
-	Optimality constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
+	\item Contains requirement automata for the occurrence constraints defined in the UML model.
+	Occurrence constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
 	This variable can then be incremented every time the action occurs.
-	The optimality requirement can then be expressed over this requirement (using edge guards and marked predicates).
+	The occurrence requirement can then be expressed over this requirement (using edge guards and marked predicates).
 \end{itemize}
 
 \subsection{Data-based synthesis with CIF}
@@ -296,6 +301,7 @@ This operation produces a CIF specification that:
 The operation \dataBasedSynthesis{\var{cifSpec}} executes the data-based synthesis tool of CIF.
 Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}), and to do no BDD predicate simplification (i.e., removing all simplifications from \texttt{--bdd-simplify}).
 Forward reachability is done for performance reasons, and because it may lead to more readable results (in particular UML edge guards).
+And by disabling all simplifications, we ensure that the synthesized conditions fully capture under which conditions the controllable events are enabled in the controlled system.
 
 \paragraph{Motivation.}
 Our goal of performing data-based synthesis is to compute all extra restrictions on actions that must be considered by the to-be-synthesized activity to never violate specified requirements.
@@ -325,7 +331,8 @@ The operation \generateStatespace{\var{cifSupervisor}} executes the CIF explorer
 
 \paragraph{Motivation.}
 We need to explicitly unfold the (safe) state space of the synthesized supervisor \var{cifSupervisor} to be able to construct input for Petri Net synthesis, in order to later synthesize a concrete UML activity.
-The reason is that Petrify does not have symbolic Petri Net synthesis algorithms.
+With `explicitly unfold' we mean that all data (e.g., discrete variables) is eliminated, leading to a state space that is a DFA/NFA.
+The reason is that Petrify does not have symbolic Petri Net synthesis algorithms, i.e., it cannot handle data.
 As input Petrify requires a DFA or NFA (i.e., a traditional supervisor in the form of a single DFA/NFA), rather than an EFA.
 Petrify does not support variables.
 
@@ -353,7 +360,7 @@ Moreover, due to the way our UML/CIF input for synthesis is constructed (as resu
 	\item The state space is non-blocking.
 	That is, any path from any location in the state space will either end up in a marked location (if it's not a marked location itself), or will loop.
 	In other words, the only locations from which no further edges can be taken are the marked locations.
-	\item Unless the supervisor was empty (in which case the activity synthesis chain will have crashed already before having generated the state space), there is at least one initial location and at least one marked location.
+	\item Unless the supervisor was empty (in which case the activity synthesis chain will have terminated already before having generated the state space), there is at least one initial location and at least one marked location.
 	\item For every location it holds that all events on outgoing edges are either all controllable, or all uncontrollable.
 	This property is a consequence of the atomic execution semantics of actions.
 	If a nondeterministic action is being executed in some location in the CIF state space, then by the atomicity constraint the only thing that could happen is an uncontrollable event to finish the atomic action.
@@ -416,7 +423,7 @@ Recall that uncontrollable CIF events were created for nondeterministic actions 
 However, these uncontrollable events and their corresponding edges are an internal, intermediate step that should not be visible in the synthesized UML activity.
 So at some point, these uncontrollable events have to be eliminated.
 This elimination should be done before Petri Net synthesis due to the atomicity constraint.
-To clarify this further, recall that the goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace equivalent to the CIF state space that was given as input to Petri Net synthesis.
+To clarify this further, recall that the goal of Petri Net synthesis is to find a minimal Petri Net whose behavior is trace-equivalent to the CIF state space that was given as input to Petri Net synthesis.
 While doing so, Petri Net synthesis aims to reduce diamond patterns in the state space to fork/join constructs in Petri Nets as much as possible.
 However, due to the atomicity constraint, the uncontrollable events do not give perfect diamond patterns, since whenever some nondeterministic action is being executed, the atomicity constraint enforces that no other action can be performed, thus impacting interleaving.
 Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before performing Petri Net synthesis.
@@ -433,8 +440,8 @@ The input CIF specification must contain a single automaton, which in our case i
 
 \paragraph{Postconditions.}
 All guarantees of the automaton projection tool from CIF apply.
-Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is trace equivalent to the input specification with respect to those events.
-In our case, this means that the resulting CIF specification no longer contains the uncontrollable events, and is trace equivalent to the input modulo those events. 
+Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is trace-equivalent to the input specification with respect to those events.
+In our case, this means that the resulting CIF specification no longer contains the uncontrollable events, and is trace-equivalent to the input modulo those events. 
 The resulting DFA is not guaranteed to be minimal.
 We will minimize it in the next step.
 
@@ -444,7 +451,7 @@ We will minimize it in the next step.
 The \dfaMinimization{\var{cifStatespace_{proj}}} operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
 
 \paragraph{Motivation.}
-We use DFA minimization to minimize the input for Petri Net synthesis, to avoid unnecessary work and possibly non-optimal results.
+We use DFA minimization to minimize the input for Petri Net synthesis, such that we get the smallest possible UML activity that is still optimal.
 
 Moreover, note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--mints} to minimize the input graph modulo trace equivalence.
 From the documentation of Petrify\footnote{Which is included in the distribution that can be downloaded from the Petrify webpage.} this option seems to have some interaction with the \texttt{--hide} option.
@@ -460,7 +467,7 @@ Note that the previous event-based projection step ensures that the input we giv
 
 \paragraph{Postconditions.}
 All guarantees of the DFA minimization tool from CIF apply.
-Notably, the result is a CIF specification containing a single minimal DFA that is trace equivalent to the DFA in the input CIF specification.
+Notably, the result is a CIF specification containing a single minimal DFA that is trace-equivalent to the DFA in the input CIF specification.
 
 The resulting automaton has exactly one initial location due to it being a DFA.
 Moreover, this operation preserves the property from \autoref{sec:single-source-and-sink} that there is exactly one marked (sink) location.
@@ -473,7 +480,7 @@ Hence they must be the same location.
 \subsection{Petri Net synthesis}
 \label{sec:petrinet-synthesis}
 
-The operation \petrinetSynthesis{\var{cifStatespace_{min}}} performs Petri Net synthesis to compute a minimal Petri Net whose behavior is trace equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
+The operation \petrinetSynthesis{\var{cifStatespace_{min}}} performs Petri Net synthesis to compute a minimal Petri Net whose behavior is trace-equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
 This operation attempts to synthesize a free-choice Petri Net, and if that fails, it synthesizes an ordinary Petri Net instead.
 Moreover, this operation produces a \emph{region mapping}, which is a mapping that relates the input specification \var{cifStatespace_{min}} to the synthesized Petri Net.
 
@@ -495,7 +502,7 @@ The main reason is that concurrency can more concisely be represented in UML act
 In contrast, \var{cifStatespace_{min}} has all concurrent interleaving explicitly unfolded as diamond patterns.
 We now somehow have to detect all diamond patterns of concurrent interleaving in \var{cifStatespace_{min}} and translate those to fork/join patterns in the to-be-synthesized UML activity.
 This is done by means of Petri Net synthesis, which is a field of research aiming to do exactly that, but then on Petri Nets rather than UML activities.
-Nevertheless, Petri Nets and activities are quite closely related, in the sense that the semantics of activities is usually defined as a Petri Net semantics.
+Nevertheless, Petri Nets and activities are quite closely related, in the sense that the semantics of activities is usually defined as a token-based semantics.
 Our main strategy is therefore to synthesize a minimal Petri Net from \var{cifStatespace_{min}} (in this section), and translate that to a UML activity (in \autoref{sec:transform-petrinet-to-activity}).
 We thus use Petri Nets as an intermediate formalism in our activity synthesis algorithm.
 
@@ -503,6 +510,7 @@ Moreover, there are particular classes of Petri Nets, \emph{free-choice} Petri N
 Therefore we attempt to synthesize a free-choice Petri Net whenever possible.
 
 However, translating a Petri Net to a UML activity structure is not yet sufficient: we then still need to compute the control flow guards for the decision nodes of the synthesized UML activity.
+These control flow guards are needed, since without them any UML decision node could freely follow any of its outgoing control flows, leading to executions that are not allowed by the synthesized CIF supervisor.
 This step must be done separately (in \autoref{sec:compute-control-flow-guards}), since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
 Therefore, we must be able to relate the output of Petri Net synthesis to the input specification, \var{cifStatespace_{min}}.
 Such a relation is (or should be) produced by the Petri Net synthesis algorithm, and is called a \emph{region mapping}.
@@ -535,7 +543,7 @@ This is later needed for transforming Petrify output to PNML, where \toLabel{} w
 
 \paragraph{Postconditions.}
 All guarantees from Petrify apply.
-In particular, the output is an optimal (possibly free-choice) Petri Net that is trace equivalent to the input automaton.
+In particular, the output is an optimal (possibly free-choice) Petri Net that is trace-equivalent to the input automaton.
 The synthesized Petri Net is returned in PNML format.
 
 As explained above, the \resetLabel{} event has been removed from this Petri Net.
@@ -603,7 +611,8 @@ To give another example of a pattern that cannot occur: it is not possible for t
 \label{sec:compute-control-flow-guards}
 
 The operation \computeEdgeGuards{\var{umlModel_{concr}}, \, \dots} computes guards for every control flow in the single concretized UML activity in \var{umlModel_{concr}} that goes out of a decision node.
-These guards are computed by using intermediate results from earlier steps in the activity synthesis algorithm (abbreviated here as $\dots$), notably the extra conditions that have been synthesized earlier by data-based synthesis, as well as the CIF state annotations in the generated/projected/minimized CIF state space.
+These guards are computed by using intermediate results from earlier steps in the activity synthesis algorithm, notably the extra conditions that have been synthesized earlier by data-based synthesis, the CIF state annotations in the generated/projected/minimized CIF state space, the region mapping, the tracing information from the earlier steps in the synthesis chain, etc.
+Rather than listing all items explicitly, we abbreviate them as $\dots$.
 
 \paragraph{Motivation.}
 At this point in the activity synthesis algorithm we managed to synthesize the structure of the concrete UML activity.
@@ -630,7 +639,7 @@ CIF contains functionality for translating BDD representations of predicates, to
 
 To elaborate further on guard computation; one might consider to simply use \var{A_{cond}} as the control flow guard for $\mathit{cf}$, without doing any simplification.
 However, it is known that data-based synthesis may synthesize long control conditions that are difficult to read and understand by engineers.
-Moreover, \var{A_{cond}} may be expressed over internal state, like internal CIF variables for encoding optimality constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
+Moreover, \var{A_{cond}} may be expressed over internal state, like internal CIF variables for encoding occurrence constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
 It therefore makes sense to simplify \var{A_{cond}} by using any contextual information we have at hand.
 We can simplify \var{A_{cond}} with respect to the guard of $A$, since any restrictions covered by the guard of $A$ are already considered by the execution semantics of activities.
 We can further simplify against \var{D_{pred}}, i.e, the knowledge of which states the system may be in while following $\mathit{cf}$, as it does not make sense for the control flow guard to restrict irrelevant system states.
