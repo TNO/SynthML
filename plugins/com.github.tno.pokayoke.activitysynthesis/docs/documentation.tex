@@ -171,6 +171,9 @@ A brief overview is given below.
 	Given some state machine (or finite automaton), the goal of Petri Net synthesis is to synthesize a (minimal) Petri Net that is trace-equivalent to the input state machine.
 	Petrify has its own input and output specification language.
 	We use Petrify to synthesize a Petri Net from a state machine, as a stepping stone for synthesizing UML activities.
+	This is because Petri Nets can more compactly represent concurrency, by forking/joining from a Petri Net transition.
+	In contrast, in state machines, concurrency is represented by explicit interleaving, i.e., as diamond patterns.
+	Petri Net synthesis can automatically turn such diamond patterns in the input state machine to more compact fork/join patterns in the resulting Petri Net.
 	Further information on Petrify can be found here: \url{https://www.cs.upc.edu/~jordicf/petrify} (accessed 2024-07-31).
 	\item[PNML.]
 	PNML stands for Petri Net Markup Language, and is an XML-based syntax for representing Petri Nets.
@@ -469,7 +472,7 @@ Note that the previous event-based projection step ensures that the input we giv
 All guarantees of the DFA minimization tool from CIF apply.
 Notably, the result is a CIF specification containing a single minimal DFA that is trace-equivalent to the DFA in the input CIF specification.
 
-The resulting automaton has exactly one initial location due to it being a DFA.
+The resulting automaton is a DFA with exactly one initial location.
 Moreover, this operation preserves the property from \autoref{sec:single-source-and-sink} that there is exactly one marked (sink) location.
 To see why, suppose that event-based projection and/or DFA minimization would somehow have split-up the single marked location into multiple ones.
 Let us take two of them and refer to these locations as $m_1$ and $m_2$.
@@ -622,10 +625,15 @@ However, the guards that determine which control flow should be followed are mis
 These choice guards could not have yet been computed since Petrify (or any other known algorithm for Petri Net synthesis) cannot handle data.
 So we need to compute them separately, and add them to the concrete UML activity.
 
-Given any control flow $\mathit{cf}$ in the UML activity that goes from some decision node \var{D} to some (call behavior) action node \var{A}, the guard for this control flow $\mathit{cf}$ can be computed as $\texttt{simplify}(\texttt{simplify}(\var{A_{cond}}, \var{A_{guard}}), \var{D_{pred}})$, where:
+Given any control flow $\mathit{cf}$ in the UML activity that goes from some decision node \var{D} to some node \var{N}, the guard for this control flow $\mathit{cf}$ can be computed as $\texttt{simplify}(\texttt{simplify}(\var{N_{cond}}, \var{N_{guard}}), \var{D_{pred}})$, where:
 \begin{itemize}
-	\item \var{A_{guard}} is the original guard predicate of $A$ as defined in the input UML model.
-	\item \var{A_{cond}} is the full synthesized condition predicate for $A$ that was computed by data-based synthesis, under which \var{A} is enabled in the controlled system.
+	\item \var{N_{cond}} is the original condition for executing \var{N} as specified in the input UML model.
+	In case \var{N} is an action node, \var{N_{cond}} is the original guard predicate of the action as defined in the input UML model.
+	In case \var{N} is a final node, \var{N_{cond}} is the activity postcondition, i.e., the condition needed to `finalize' the activity.
+	For all other types of activity nodes, the \var{N_{cond}} predicate is simply \texttt{true}, since no enabling condition is explicitly defined in the input UML for fork/join/decision/merge/initial nodes. 
+	\item \var{N_{guard}} is the full synthesized condition predicate for \var{N}, under which \var{N} can be executed in the controlled system.
+	In case \var{N} is an action node, \var{N_{guard}} is the full condition that is computed by data-based synthesis, under which the action is enabled in the controlled system.
+	For all other types of activity nodes, the \var{N_{guard}} predicate is simply \texttt{true}, since data-based synthesis only computes extra conditions for controllable events, which correspond only to actions.
 	\item \var{D_{pred}} is the predicate describing all states the system may be in at the point of taking/following $\mathit{cf}$.
 	\item $\texttt{simplify}(p,q)$ is an operation that simplifies some given predicate $p$ with respect to some predicate $q$, and returns the simplified predicate.
 	Simplification can be performed by assuming $q$, and removing parts of $p$ that are covered by this assumption (i.e., if $q$ were true, what remains of $p$?).
@@ -637,11 +645,11 @@ Note that all these predicates are internally represented in the code implementa
 This is because BDDs allow easy manipulation of Boolean functions, like BDD simplification, i.e., \texttt{simplify}.
 CIF contains functionality for translating BDD representations of predicates, to CIF expressions.
 
-To elaborate further on guard computation; one might consider to simply use \var{A_{cond}} as the control flow guard for $\mathit{cf}$, without doing any simplification.
+To elaborate further on guard computation; one might consider to simply use \var{N_{cond}} as the control flow guard for $\mathit{cf}$, without doing any simplification.
 However, it is known that data-based synthesis may synthesize long control conditions that are difficult to read and understand by engineers.
-Moreover, \var{A_{cond}} may be expressed over internal state, like internal CIF variables for encoding occurrence constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
-It therefore makes sense to simplify \var{A_{cond}} by using any contextual information we have at hand.
-We can simplify \var{A_{cond}} with respect to the guard of $A$, since any restrictions covered by the guard of $A$ are already considered by the execution semantics of activities.
+Moreover, \var{N_{cond}} may be expressed over internal state, like internal CIF variables for encoding occurrence constraints that keep track of the number of occurrences of actions, which should not end up in control flow guards.
+It therefore makes sense to simplify \var{N_{cond}} by using any contextual information we have at hand, if \var{N_{cond}} happens to be non-trivial.
+We can simplify \var{N_{cond}} with respect to the guard of \var{N} in case \var{N_{guard}} is non-trivial, since any restrictions covered by \var{N_{guard}} are already considered by the execution semantics of activities.
 We can further simplify against \var{D_{pred}}, i.e, the knowledge of which states the system may be in while following $\mathit{cf}$, as it does not make sense for the control flow guard to restrict irrelevant system states.
 With these simplifications we can hopefully also eliminate any parts of the control flow guard that depends on internal state.
 We are not sure though whether such parts can actually always be eliminated.
