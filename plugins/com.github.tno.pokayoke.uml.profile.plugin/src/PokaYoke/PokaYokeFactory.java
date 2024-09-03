@@ -22,13 +22,13 @@ public interface PokaYokeFactory extends EFactory {
 	PokaYokeFactory eINSTANCE = PokaYoke.impl.PokaYokeFactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>Guard Effects Action</em>'.
+	 * Returns a new object of class '<em>Formal Element</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Guard Effects Action</em>'.
+	 * @return a new object of class '<em>Formal Element</em>'.
 	 * @generated
 	 */
-	GuardEffectsAction createGuardEffectsAction();
+	FormalElement createFormalElement();
 
 	/**
 	 * Returns the package supported by this factory.

@@ -56,7 +56,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
 public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
@@ -392,7 +392,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        if (node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+        if (node instanceof Action action && PokaYokeUmlProfileUtil.isFormalElement(action)) {
             checkNamingConventions(node, NamingConvention.MANDATORY);
         } else {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
@@ -400,19 +400,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates when {@link PokaYokeUmlProfileUtil#isGuardEffectsAction(Action) guards and effects} are set on
-     * {@code action}, that its behavioral activity doesn't also have guards and effects specified.
+     * Validates when {@link PokaYokeUmlProfileUtil#isFormalElement(org.eclipse.uml2.uml.RedefinableElement) guards and
+     * effects} are set on {@code action}, that its behavioral activity doesn't also have guards and effects specified.
      *
      * @param action The action to validate.
      */
     @Check
-    private void checkShadowedGuardEffectsAction(CallBehaviorAction action) {
+    private void checkShadowedFormalElement(CallBehaviorAction action) {
         if (!isPokaYokaUmlProfileApplied(action)) {
             return;
         }
         Behavior behavior = action.getBehavior();
         if (behavior instanceof Activity subActivity) {
-            if (!PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+            if (!PokaYokeUmlProfileUtil.isFormalElement(action)) {
                 // No shadowing
                 return;
             }
@@ -427,9 +427,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
-        boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
-                .exists(PokaYokeUmlProfileUtil::isGuardEffectsAction);
-        if (containsGuardEffectsActions) {
+        boolean containsFormalElements = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
+                .exists(PokaYokeUmlProfileUtil::isFormalElement);
+        if (containsFormalElements) {
             return true;
         } else if (!history.add(activity)) {
             // Cope with cycles
@@ -441,7 +441,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link GuardEffectsAction#getGuard()} property if set.
+     * Validates the {@link FormalElement#getGuard()} property if set.
      *
      * @param action The action to validate.
      */
@@ -462,7 +462,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link GuardEffectsAction#getEffects()} property if set.
+     * Validates the {@link FormalElement#getEffects()} property if set.
      *
      * @param action The action to validate.
      */

@@ -56,7 +56,7 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case PokaYokePackage.GUARD_EFFECTS_ACTION: return createGuardEffectsAction();
+			case PokaYokePackage.FORMAL_ELEMENT: return createFormalElement();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -68,9 +68,9 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * @generated
 	 */
 	@Override
-	public GuardEffectsAction createGuardEffectsAction() {
-		GuardEffectsActionImpl guardEffectsAction = new GuardEffectsActionImpl();
-		return guardEffectsAction;
+	public FormalElement createFormalElement() {
+		FormalElementImpl formalElement = new FormalElementImpl();
+		return formalElement;
 	}
 
 	/**

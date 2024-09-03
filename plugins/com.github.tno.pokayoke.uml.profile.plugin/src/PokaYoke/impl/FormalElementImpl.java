@@ -2,7 +2,7 @@
  */
 package PokaYoke.impl;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -13,25 +13,25 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
-import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.RedefinableElement;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Guard Effects Action</b></em>'.
+ * An implementation of the model object '<em><b>Formal Element</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getGuard <em>Guard</em>}</li>
- *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getEffects <em>Effects</em>}</li>
- *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#getBase_Action <em>Base Action</em>}</li>
- *   <li>{@link PokaYoke.impl.GuardEffectsActionImpl#isAtomic <em>Atomic</em>}</li>
+ *   <li>{@link PokaYoke.impl.FormalElementImpl#getGuard <em>Guard</em>}</li>
+ *   <li>{@link PokaYoke.impl.FormalElementImpl#getEffects <em>Effects</em>}</li>
+ *   <li>{@link PokaYoke.impl.FormalElementImpl#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
+ *   <li>{@link PokaYoke.impl.FormalElementImpl#isAtomic <em>Atomic</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container implements GuardEffectsAction {
+public class FormalElementImpl extends MinimalEObjectImpl.Container implements FormalElement {
 	/**
 	 * The default value of the '{@link #getGuard() <em>Guard</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -73,14 +73,14 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	protected String effects = EFFECTS_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getBase_Action() <em>Base Action</em>}' reference.
+	 * The cached value of the '{@link #getBase_RedefinableElement() <em>Base Redefinable Element</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getBase_Action()
+	 * @see #getBase_RedefinableElement()
 	 * @generated
 	 * @ordered
 	 */
-	protected Action base_Action;
+	protected RedefinableElement base_RedefinableElement;
 
 	/**
 	 * The default value of the '{@link #isAtomic() <em>Atomic</em>}' attribute.
@@ -90,7 +90,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * @generated
 	 * @ordered
 	 */
-	protected static final boolean ATOMIC_EDEFAULT = true;
+	protected static final boolean ATOMIC_EDEFAULT = false;
 
 	/**
 	 * The cached value of the '{@link #isAtomic() <em>Atomic</em>}' attribute.
@@ -107,7 +107,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected GuardEffectsActionImpl() {
+	protected FormalElementImpl() {
 		super();
 	}
 
@@ -118,7 +118,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PokaYokePackage.Literals.GUARD_EFFECTS_ACTION;
+		return PokaYokePackage.Literals.FORMAL_ELEMENT;
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 		String oldGuard = guard;
 		guard = newGuard;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__GUARD, oldGuard, guard));
+			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__GUARD, oldGuard, guard));
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 		String oldEffects = effects;
 		effects = newEffects;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS, oldEffects, effects));
+			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__EFFECTS, oldEffects, effects));
 	}
 
 	/**
@@ -173,16 +173,16 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * @generated
 	 */
 	@Override
-	public Action getBase_Action() {
-		if (base_Action != null && base_Action.eIsProxy()) {
-			InternalEObject oldBase_Action = (InternalEObject)base_Action;
-			base_Action = (Action)eResolveProxy(oldBase_Action);
-			if (base_Action != oldBase_Action) {
+	public RedefinableElement getBase_RedefinableElement() {
+		if (base_RedefinableElement != null && base_RedefinableElement.eIsProxy()) {
+			InternalEObject oldBase_RedefinableElement = (InternalEObject)base_RedefinableElement;
+			base_RedefinableElement = (RedefinableElement)eResolveProxy(oldBase_RedefinableElement);
+			if (base_RedefinableElement != oldBase_RedefinableElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION, oldBase_Action, base_Action));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
 			}
 		}
-		return base_Action;
+		return base_RedefinableElement;
 	}
 
 	/**
@@ -190,8 +190,8 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Action basicGetBase_Action() {
-		return base_Action;
+	public RedefinableElement basicGetBase_RedefinableElement() {
+		return base_RedefinableElement;
 	}
 
 	/**
@@ -200,11 +200,11 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	 * @generated
 	 */
 	@Override
-	public void setBase_Action(Action newBase_Action) {
-		Action oldBase_Action = base_Action;
-		base_Action = newBase_Action;
+	public void setBase_RedefinableElement(RedefinableElement newBase_RedefinableElement) {
+		RedefinableElement oldBase_RedefinableElement = base_RedefinableElement;
+		base_RedefinableElement = newBase_RedefinableElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION, oldBase_Action, base_Action));
+			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 		boolean oldAtomic = atomic;
 		atomic = newAtomic;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.GUARD_EFFECTS_ACTION__ATOMIC, oldAtomic, atomic));
+			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__ATOMIC, oldAtomic, atomic));
 	}
 
 	/**
@@ -238,14 +238,14 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__GUARD:
+			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
 				return getGuard();
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
+			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
 				return getEffects();
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION:
-				if (resolve) return getBase_Action();
-				return basicGetBase_Action();
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__ATOMIC:
+			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+				if (resolve) return getBase_RedefinableElement();
+				return basicGetBase_RedefinableElement();
+			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
 				return isAtomic();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -259,16 +259,16 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__GUARD:
+			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
 				setGuard((String)newValue);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
+			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
 				setEffects((String)newValue);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION:
-				setBase_Action((Action)newValue);
+			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+				setBase_RedefinableElement((RedefinableElement)newValue);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__ATOMIC:
+			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
 				setAtomic((Boolean)newValue);
 				return;
 		}
@@ -283,16 +283,16 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__GUARD:
+			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
 				setGuard(GUARD_EDEFAULT);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
+			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
 				setEffects(EFFECTS_EDEFAULT);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION:
-				setBase_Action((Action)null);
+			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+				setBase_RedefinableElement((RedefinableElement)null);
 				return;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__ATOMIC:
+			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
 				setAtomic(ATOMIC_EDEFAULT);
 				return;
 		}
@@ -307,13 +307,13 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__GUARD:
+			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
 				return GUARD_EDEFAULT == null ? guard != null : !GUARD_EDEFAULT.equals(guard);
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__EFFECTS:
+			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
 				return EFFECTS_EDEFAULT == null ? effects != null : !EFFECTS_EDEFAULT.equals(effects);
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__BASE_ACTION:
-				return base_Action != null;
-			case PokaYokePackage.GUARD_EFFECTS_ACTION__ATOMIC:
+			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+				return base_RedefinableElement != null;
+			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
 				return atomic != ATOMIC_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
@@ -339,4 +339,4 @@ public class GuardEffectsActionImpl extends MinimalEObjectImpl.Container impleme
 		return result.toString();
 	}
 
-} //GuardEffectsActionImpl
+} //FormalElementImpl

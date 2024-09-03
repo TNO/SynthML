@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 
 public class ApplyPokaYokeUmlProfile {
     private ApplyPokaYokeUmlProfile() {
@@ -33,10 +33,10 @@ public class ApplyPokaYokeUmlProfile {
     }
 
     /**
-     * Applies {@link GuardEffectsAction} stereotype and copies the {@link OpaqueAction#getBodies()} to its
-     * {@link GuardEffectsAction#setGuard(String)} and {@link GuardEffectsAction#setEffects(String)}. If the
-     * {@link GuardEffectsAction} stereotype is already applied, copies its <code>guard</code> and <code>effects</code>
-     * back to the <code>bodies</code> of the <code>action</code>.
+     * Applies {@link FormalElement} stereotype and copies the {@link OpaqueAction#getBodies()} to its
+     * {@link FormalElement#setGuard(String)} and {@link FormalElement#setEffects(String)}. If the {@link FormalElement}
+     * stereotype is already applied, copies its <code>guard</code> and <code>effects</code> back to the
+     * <code>bodies</code> of the <code>action</code>.
      *
      * @param action The action to transform
      */

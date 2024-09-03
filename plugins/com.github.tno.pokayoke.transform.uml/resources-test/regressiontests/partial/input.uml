@@ -54,6 +54,6 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:GuardEffectsAction xmi:id="_t7QdgPGgEe6w6rfsvEI-Kw" guard="not myBool" effects="myBool := true" base_Action="_ercrcPGgEe6w6rfsvEI-Kw"/>
-  <PokaYoke:GuardEffectsAction xmi:id="_4px1sPGgEe6w6rfsvEI-Kw" guard="myBool" effects="myBool := false" base_Action="_gPScwPGgEe6w6rfsvEI-Kw"/>
+  <PokaYoke:FormalElement xmi:id="_t7QdgPGgEe6w6rfsvEI-Kw" guard="not myBool" effects="myBool := true" base_RedefinableElement="_ercrcPGgEe6w6rfsvEI-Kw"/>
+  <PokaYoke:FormalElement xmi:id="_4px1sPGgEe6w6rfsvEI-Kw" guard="myBool" effects="myBool := false" base_RedefinableElement="_gPScwPGgEe6w6rfsvEI-Kw"/>
 </xmi:XMI>

@@ -68,8 +68,8 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 	protected PokaYokeSwitch<Adapter> modelSwitch =
 		new PokaYokeSwitch<Adapter>() {
 			@Override
-			public Adapter caseGuardEffectsAction(GuardEffectsAction object) {
-				return createGuardEffectsActionAdapter();
+			public Adapter caseFormalElement(FormalElement object) {
+				return createFormalElementAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -92,16 +92,16 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link PokaYoke.GuardEffectsAction <em>Guard Effects Action</em>}'.
+	 * Creates a new adapter for an object of class '{@link PokaYoke.FormalElement <em>Formal Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see PokaYoke.GuardEffectsAction
+	 * @see PokaYoke.FormalElement
 	 * @generated
 	 */
-	public Adapter createGuardEffectsActionAdapter() {
+	public Adapter createFormalElementAdapter() {
 		return null;
 	}
 

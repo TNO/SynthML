@@ -7,11 +7,11 @@
     operationReflection="true" importOrganizing="true">
   <foreignModel>PokaYoke.ecore</foreignModel>
   <genPackages prefix="PokaYoke" disposableProviderFactory="true" ecorePackage="PokaYoke.ecore#/">
-    <genClasses ecoreClass="PokaYoke.ecore#//GuardEffectsAction">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//GuardEffectsAction/guard"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//GuardEffectsAction/effects"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PokaYoke.ecore#//GuardEffectsAction/base_Action"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//GuardEffectsAction/atomic"/>
+    <genClasses ecoreClass="PokaYoke.ecore#//FormalElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//FormalElement/guard"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//FormalElement/effects"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PokaYoke.ecore#//FormalElement/base_RedefinableElement"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PokaYoke.ecore#//FormalElement/atomic"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

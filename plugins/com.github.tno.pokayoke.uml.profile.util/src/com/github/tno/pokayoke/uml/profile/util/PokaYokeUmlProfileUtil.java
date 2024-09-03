@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -15,6 +14,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPlugin;
@@ -23,70 +23,68 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
 public class PokaYokeUmlProfileUtil {
-    private static final String ST_GUARD_EFFECTS_ACTION = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION.getName();
+    private static final String ST_FORMAL_ELEMENT = PokaYokePackage.Literals.FORMAL_ELEMENT.getName();
 
-    private static final String PROP_GUARD_EFFECTS_ACTION_GUARD = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__GUARD
+    private static final String PROP_FORMAL_ELEMENT_GUARD = PokaYokePackage.Literals.FORMAL_ELEMENT__GUARD.getName();
+
+    private static final String PROP_FORMAL_ELEMENT_EFFECTS = PokaYokePackage.Literals.FORMAL_ELEMENT__EFFECTS
             .getName();
 
-    private static final String PROP_GUARD_EFFECTS_ACTION_EFFECTS = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__EFFECTS
-            .getName();
-
-    private static final String PROP_GUARD_EFFECTS_ACTION_ATOMIC = PokaYokePackage.Literals.GUARD_EFFECTS_ACTION__ATOMIC
-            .getName();
+    private static final String PROP_FORMAL_ELEMENT_ATOMIC = PokaYokePackage.Literals.FORMAL_ELEMENT__ATOMIC.getName();
 
     /** Qualified name for the {@link PokaYokePackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = PokaYokePackage.eNAME;
 
-    /** Qualified name for the {@link GuardEffectsAction} stereotype. */
-    public static final String GUARD_EFFECTS_ACTION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
-            + ST_GUARD_EFFECTS_ACTION;
+    /** Qualified name for the {@link FormalElement} stereotype. */
+    public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_ELEMENT;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
     }
 
     /**
-     * Returns <code>true</code> if {@link GuardEffectsAction} stereotype is applied on {@link Action action}.
+     * Returns <code>true</code> if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}.
      *
-     * @param action The action to interrogate.
-     * @return <code>true</code> if {@link GuardEffectsAction} stereotype is applied on action.
+     * @param element The element to interrogate.
+     * @return <code>true</code> if {@link FormalElement} stereotype is applied on element.
      */
-    public static boolean isGuardEffectsAction(Action action) {
-        return PokaYokeUmlProfileUtil.getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE).isPresent();
+    public static boolean isFormalElement(RedefinableElement element) {
+        return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
     }
 
-    public static String getGuard(Action action) {
-        return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
-                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_GUARD)).orElse(null);
+    public static String getGuard(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
     }
 
-    public static void setGuard(Action action, String newValue) {
-        Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
-        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_GUARD, newValue);
+    public static void setGuard(RedefinableElement element, String newValue) {
+        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
+        element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
     }
 
-    public static String getEffects(Action action) {
-        return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
-                .map(st -> (String)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_EFFECTS)).orElse(null);
+    public static String getEffects(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS)).orElse(null);
     }
 
-    public static void setEffects(Action action, String newValue) {
-        Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
-        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_EFFECTS, newValue);
+    public static void setEffects(RedefinableElement element, String newValue) {
+        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
+        element.setValue(st, PROP_FORMAL_ELEMENT_EFFECTS, newValue);
     }
 
-    public static boolean isAtomic(Action action) {
-        return getAppliedStereotype(action, GUARD_EFFECTS_ACTION_STEREOTYPE)
-                .map(st -> (Boolean)action.getValue(st, PROP_GUARD_EFFECTS_ACTION_ATOMIC)).orElse(true);
+    public static boolean isAtomic(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> (Boolean)element.getValue(st, PROP_FORMAL_ELEMENT_ATOMIC)).orElse(false);
     }
 
-    public static void setAtomic(Action action, Boolean newValue) {
-        Stereotype st = applyStereotype(action, getPokaYokeProfile(action).getOwnedStereotype(ST_GUARD_EFFECTS_ACTION));
-        action.setValue(st, PROP_GUARD_EFFECTS_ACTION_ATOMIC, newValue);
+    public static void setAtomic(RedefinableElement element, Boolean newValue) {
+        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
+        element.setValue(st, PROP_FORMAL_ELEMENT_ATOMIC, newValue);
     }
 
     /**

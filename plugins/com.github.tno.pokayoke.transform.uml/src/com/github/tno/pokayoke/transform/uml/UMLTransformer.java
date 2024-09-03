@@ -314,7 +314,7 @@ public class UMLTransformer {
     }
 
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
-        if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+        if (PokaYokeUmlProfileUtil.isFormalElement(action)) {
             transformAction(activity, action, acquireSignal);
         }
     }

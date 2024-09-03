@@ -2,7 +2,7 @@
  */
 package PokaYoke.impl;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 import PokaYoke.PokaYokeFactory;
 import PokaYoke.PokaYokePackage;
 
@@ -30,7 +30,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass guardEffectsActionEClass = null;
+	private EClass formalElementEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -103,8 +103,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EClass getGuardEffectsAction() {
-		return guardEffectsActionEClass;
+	public EClass getFormalElement() {
+		return formalElementEClass;
 	}
 
 	/**
@@ -113,8 +113,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EAttribute getGuardEffectsAction_Guard() {
-		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(0);
+	public EAttribute getFormalElement_Guard() {
+		return (EAttribute)formalElementEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -123,8 +123,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EAttribute getGuardEffectsAction_Effects() {
-		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(1);
+	public EAttribute getFormalElement_Effects() {
+		return (EAttribute)formalElementEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -133,8 +133,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EReference getGuardEffectsAction_Base_Action() {
-		return (EReference)guardEffectsActionEClass.getEStructuralFeatures().get(2);
+	public EReference getFormalElement_Base_RedefinableElement() {
+		return (EReference)formalElementEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -143,8 +143,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public EAttribute getGuardEffectsAction_Atomic() {
-		return (EAttribute)guardEffectsActionEClass.getEStructuralFeatures().get(3);
+	public EAttribute getFormalElement_Atomic() {
+		return (EAttribute)formalElementEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -176,11 +176,11 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		isCreated = true;
 
 		// Create classes and their features
-		guardEffectsActionEClass = createEClass(GUARD_EFFECTS_ACTION);
-		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__GUARD);
-		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__EFFECTS);
-		createEReference(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__BASE_ACTION);
-		createEAttribute(guardEffectsActionEClass, GUARD_EFFECTS_ACTION__ATOMIC);
+		formalElementEClass = createEClass(FORMAL_ELEMENT);
+		createEAttribute(formalElementEClass, FORMAL_ELEMENT__GUARD);
+		createEAttribute(formalElementEClass, FORMAL_ELEMENT__EFFECTS);
+		createEReference(formalElementEClass, FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT);
+		createEAttribute(formalElementEClass, FORMAL_ELEMENT__ATOMIC);
 	}
 
 	/**
@@ -217,11 +217,11 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(guardEffectsActionEClass, GuardEffectsAction.class, "GuardEffectsAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGuardEffectsAction_Guard(), theTypesPackage.getString(), "guard", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
-		initEAttribute(getGuardEffectsAction_Effects(), theTypesPackage.getString(), "effects", null, 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
-		initEReference(getGuardEffectsAction_Base_Action(), theUMLPackage.getAction(), null, "base_Action", null, 1, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
-		initEAttribute(getGuardEffectsAction_Atomic(), theTypesPackage.getBoolean(), "atomic", "true", 0, 1, GuardEffectsAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEClass(formalElementEClass, FormalElement.class, "FormalElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFormalElement_Guard(), theTypesPackage.getString(), "guard", null, 0, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEAttribute(getFormalElement_Effects(), theTypesPackage.getString(), "effects", null, 0, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getFormalElement_Base_RedefinableElement(), theUMLPackage.getRedefinableElement(), null, "base_RedefinableElement", null, 1, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEAttribute(getFormalElement_Atomic(), theTypesPackage.getBoolean(), "atomic", "false", 0, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

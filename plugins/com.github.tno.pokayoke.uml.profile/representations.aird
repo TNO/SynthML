@@ -25,7 +25,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="_6P8FUM_tEe6QioSmOybrPw">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1724832809128">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1725344501220">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
         <target xmi:type="uml:Profile" href="pokayoke.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
       </ownedRepresentationDescriptors>
@@ -55,38 +55,38 @@
           <styles xmi:type="notation:ShapeStyle" xmi:id="__CpmYc_tEe6QioSmOybrPw" fontName="Segoe UI" fontHeight="10"/>
           <layoutConstraint xmi:type="notation:Bounds" xmi:id="__CpmYs_tEe6QioSmOybrPw" x="96" y="144"/>
         </children>
-        <children xmi:type="notation:Node" xmi:id="_SwYd0OX-Ee6ZO_SxkN1pjA" type="2002" element="_SwKbYOX-Ee6ZO_SxkN1pjA">
-          <children xmi:type="notation:Node" xmi:id="_SwZr8OX-Ee6ZO_SxkN1pjA" type="5006"/>
-          <children xmi:type="notation:Node" xmi:id="_SwZr8eX-Ee6ZO_SxkN1pjA" type="7001">
-            <styles xmi:type="notation:SortingStyle" xmi:id="_SwZr8uX-Ee6ZO_SxkN1pjA"/>
-            <styles xmi:type="notation:FilteringStyle" xmi:id="_SwZr8-X-Ee6ZO_SxkN1pjA"/>
+        <children xmi:type="notation:Node" xmi:id="_qRDuIGm5Ee-S7IuSQSKmQw" type="2002" element="_qQmbImm5Ee-S7IuSQSKmQw">
+          <children xmi:type="notation:Node" xmi:id="_qRH_kGm5Ee-S7IuSQSKmQw" type="5006"/>
+          <children xmi:type="notation:Node" xmi:id="_qRH_kWm5Ee-S7IuSQSKmQw" type="7001">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_qRH_kmm5Ee-S7IuSQSKmQw"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_qRH_k2m5Ee-S7IuSQSKmQw"/>
           </children>
-          <styles xmi:type="notation:ShapeStyle" xmi:id="_SwYd0eX-Ee6ZO_SxkN1pjA" fontName="Segoe UI" fontHeight="8"/>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_SwYd0uX-Ee6ZO_SxkN1pjA" x="122" y="24"/>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_qRDuIWm5Ee-S7IuSQSKmQw" fontName="Segoe UI" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_qRDuImm5Ee-S7IuSQSKmQw" x="110" y="12"/>
         </children>
         <styles xmi:type="notation:DiagramStyle" xmi:id="__BDq8c_tEe6QioSmOybrPw"/>
-        <edges xmi:type="notation:Edge" xmi:id="_UKRB4OX-Ee6ZO_SxkN1pjA" type="4001" element="_UKH38OX-Ee6ZO_SxkN1pjA" source="__CpmYM_tEe6QioSmOybrPw" target="_SwYd0OX-Ee6ZO_SxkN1pjA">
-          <children xmi:type="notation:Node" xmi:id="_UKRB5OX-Ee6ZO_SxkN1pjA" type="6001">
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UKRB5eX-Ee6ZO_SxkN1pjA" y="-10"/>
+        <edges xmi:type="notation:Edge" xmi:id="_rB9moGm5Ee-S7IuSQSKmQw" type="4001" element="_UKH38OX-Ee6ZO_SxkN1pjA" source="__CpmYM_tEe6QioSmOybrPw" target="_qRDuIGm5Ee-S7IuSQSKmQw">
+          <children xmi:type="notation:Node" xmi:id="_rB-0wGm5Ee-S7IuSQSKmQw" type="6001">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_rB-0wWm5Ee-S7IuSQSKmQw" y="-10"/>
           </children>
-          <children xmi:type="notation:Node" xmi:id="_UKRo8OX-Ee6ZO_SxkN1pjA" type="6002">
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UKRo8eX-Ee6ZO_SxkN1pjA" y="10"/>
+          <children xmi:type="notation:Node" xmi:id="_rB-0wmm5Ee-S7IuSQSKmQw" type="6002">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_rB-0w2m5Ee-S7IuSQSKmQw" y="10"/>
           </children>
-          <children xmi:type="notation:Node" xmi:id="_UKRo8uX-Ee6ZO_SxkN1pjA" type="6003">
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UKRo8-X-Ee6ZO_SxkN1pjA" y="10"/>
+          <children xmi:type="notation:Node" xmi:id="_rCAC4Gm5Ee-S7IuSQSKmQw" type="6003">
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_rCAC4Wm5Ee-S7IuSQSKmQw" y="10"/>
           </children>
-          <styles xmi:type="notation:ConnectorStyle" xmi:id="_UKRB4eX-Ee6ZO_SxkN1pjA" routing="Tree"/>
-          <styles xmi:type="notation:FontStyle" xmi:id="_UKRB4uX-Ee6ZO_SxkN1pjA" fontName="Segoe UI" fontHeight="8"/>
-          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_UKRB4-X-Ee6ZO_SxkN1pjA" points="[0, 0, 0, 86]$[0, -34, 0, 52]$[-1, -34, -1, 52]$[-1, -52, -1, 34]"/>
-          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_UKRo9OX-Ee6ZO_SxkN1pjA" id="(0.495,0.0759493670886076)"/>
-          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_UKRo9eX-Ee6ZO_SxkN1pjA" id="(0.5,0.5)"/>
+          <styles xmi:type="notation:ConnectorStyle" xmi:id="_rB9moWm5Ee-S7IuSQSKmQw" routing="Tree"/>
+          <styles xmi:type="notation:FontStyle" xmi:id="_rB9momm5Ee-S7IuSQSKmQw" fontName="Segoe UI" fontHeight="8"/>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_rB9mo2m5Ee-S7IuSQSKmQw" points="[0, -7, -260, 58]$[0, -41, -260, 24]$[214, -41, -46, 24]$[214, -59, -46, 6]"/>
+          <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_rCGwkGm5Ee-S7IuSQSKmQw" id="(0.495,0.0759493670886076)"/>
+          <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_rCGwkWm5Ee-S7IuSQSKmQw" id="(0.8040540540540541,0.9117647058823529)"/>
         </edges>
       </data>
     </ownedAnnotationEntries>
     <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="__ChDgM_tEe6QioSmOybrPw" source="DANNOTATION_CUSTOMIZATION_KEY">
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="__ChDgc_tEe6QioSmOybrPw"/>
     </ownedAnnotationEntries>
-    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="__BMN0M_tEe6QioSmOybrPw" name="«Stereotype» &#xA;PokaYoke :: GuardEffectsAction" outgoingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="__BMN0M_tEe6QioSmOybrPw" name="«Stereotype» &#xA;PokaYoke :: FormalElement" outgoingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
       <target xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
       <semanticElements xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -112,7 +112,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
       </ownedElements>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_PsObYGUVEe-AGoeleYNWcA" name="atomic : Boolean [0..1] = true">
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_PsObYGUVEe-AGoeleYNWcA" name="atomic : Boolean [0..1] = false">
         <target xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
         <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
         <semanticElements xmi:type="uml:LiteralBoolean" href="pokayoke.profile.uml#_V2SJ4GUVEe-AGoeleYNWcA"/>
@@ -122,18 +122,7 @@
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
       </ownedElements>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_SwKbYOX-Ee6ZO_SxkN1pjA" name="«Metaclass»&#xA;Action" incomingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
-      <target xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_SkdhsOX-Ee6ZO_SxkN1pjA"/>
-      <semanticElements xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_SkdhsOX-Ee6ZO_SxkN1pjA"/>
-      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
-      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
-      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
-      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_SwKbYeX-Ee6ZO_SxkN1pjA" borderSize="1" borderSizeComputationExpression="1" borderColor="194,239,255" backgroundColor="194,239,255" foregroundColor="194,239,255">
-        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']/@style"/>
-      </ownedStyle>
-      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']"/>
-    </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_UKH38OX-Ee6ZO_SxkN1pjA" sourceNode="__BMN0M_tEe6QioSmOybrPw" targetNode="_SwKbYOX-Ee6ZO_SxkN1pjA">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_UKH38OX-Ee6ZO_SxkN1pjA" sourceNode="__BMN0M_tEe6QioSmOybrPw" targetNode="_qQmbImm5Ee-S7IuSQSKmQw">
       <target xmi:type="uml:Extension" href="pokayoke.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
       <semanticElements xmi:type="uml:Extension" href="pokayoke.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_UKH38eX-Ee6ZO_SxkN1pjA" targetArrow="InputFillClosedArrow" size="2" routingStyle="tree">
@@ -141,6 +130,17 @@
         <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_UKH38uX-Ee6ZO_SxkN1pjA"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@edgeMappings[name='PD_Extension']"/>
+    </ownedDiagramElements>
+    <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_qQmbImm5Ee-S7IuSQSKmQw" name="«Metaclass»&#xA;RedefinableElement" incomingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
+      <target xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
+      <semanticElements xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_qQnCMGm5Ee-S7IuSQSKmQw" borderSize="1" borderSizeComputationExpression="1" borderColor="194,239,255" backgroundColor="194,239,255" foregroundColor="194,239,255">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']"/>
     </ownedDiagramElements>
     <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
     <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="__AiGgM_tEe6QioSmOybrPw"/>

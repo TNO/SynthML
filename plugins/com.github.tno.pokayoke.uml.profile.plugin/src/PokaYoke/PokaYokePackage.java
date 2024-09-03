@@ -57,14 +57,14 @@ public interface PokaYokePackage extends EPackage {
 	PokaYokePackage eINSTANCE = PokaYoke.impl.PokaYokePackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link PokaYoke.impl.GuardEffectsActionImpl <em>Guard Effects Action</em>}' class.
+	 * The meta object id for the '{@link PokaYoke.impl.FormalElementImpl <em>Formal Element</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see PokaYoke.impl.GuardEffectsActionImpl
-	 * @see PokaYoke.impl.PokaYokePackageImpl#getGuardEffectsAction()
+	 * @see PokaYoke.impl.FormalElementImpl
+	 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalElement()
 	 * @generated
 	 */
-	int GUARD_EFFECTS_ACTION = 0;
+	int FORMAL_ELEMENT = 0;
 
 	/**
 	 * The feature id for the '<em><b>Guard</b></em>' attribute.
@@ -73,7 +73,7 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__GUARD = 0;
+	int FORMAL_ELEMENT__GUARD = 0;
 
 	/**
 	 * The feature id for the '<em><b>Effects</b></em>' attribute.
@@ -82,16 +82,16 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__EFFECTS = 1;
+	int FORMAL_ELEMENT__EFFECTS = 1;
 
 	/**
-	 * The feature id for the '<em><b>Base Action</b></em>' reference.
+	 * The feature id for the '<em><b>Base Redefinable Element</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__BASE_ACTION = 2;
+	int FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT = 2;
 
 	/**
 	 * The feature id for the '<em><b>Atomic</b></em>' attribute.
@@ -100,80 +100,80 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION__ATOMIC = 3;
+	int FORMAL_ELEMENT__ATOMIC = 3;
 
 	/**
-	 * The number of structural features of the '<em>Guard Effects Action</em>' class.
+	 * The number of structural features of the '<em>Formal Element</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION_FEATURE_COUNT = 4;
+	int FORMAL_ELEMENT_FEATURE_COUNT = 4;
 
 	/**
-	 * The number of operations of the '<em>Guard Effects Action</em>' class.
+	 * The number of operations of the '<em>Formal Element</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GUARD_EFFECTS_ACTION_OPERATION_COUNT = 0;
+	int FORMAL_ELEMENT_OPERATION_COUNT = 0;
 
 
 	/**
-	 * Returns the meta object for class '{@link PokaYoke.GuardEffectsAction <em>Guard Effects Action</em>}'.
+	 * Returns the meta object for class '{@link PokaYoke.FormalElement <em>Formal Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Guard Effects Action</em>'.
-	 * @see PokaYoke.GuardEffectsAction
+	 * @return the meta object for class '<em>Formal Element</em>'.
+	 * @see PokaYoke.FormalElement
 	 * @generated
 	 */
-	EClass getGuardEffectsAction();
+	EClass getFormalElement();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.GuardEffectsAction#getGuard <em>Guard</em>}'.
+	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Guard</em>'.
-	 * @see PokaYoke.GuardEffectsAction#getGuard()
-	 * @see #getGuardEffectsAction()
+	 * @see PokaYoke.FormalElement#getGuard()
+	 * @see #getFormalElement()
 	 * @generated
 	 */
-	EAttribute getGuardEffectsAction_Guard();
+	EAttribute getFormalElement_Guard();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.GuardEffectsAction#getEffects <em>Effects</em>}'.
+	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Effects</em>'.
-	 * @see PokaYoke.GuardEffectsAction#getEffects()
-	 * @see #getGuardEffectsAction()
+	 * @see PokaYoke.FormalElement#getEffects()
+	 * @see #getFormalElement()
 	 * @generated
 	 */
-	EAttribute getGuardEffectsAction_Effects();
+	EAttribute getFormalElement_Effects();
 
 	/**
-	 * Returns the meta object for the reference '{@link PokaYoke.GuardEffectsAction#getBase_Action <em>Base Action</em>}'.
+	 * Returns the meta object for the reference '{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Base Action</em>'.
-	 * @see PokaYoke.GuardEffectsAction#getBase_Action()
-	 * @see #getGuardEffectsAction()
+	 * @return the meta object for the reference '<em>Base Redefinable Element</em>'.
+	 * @see PokaYoke.FormalElement#getBase_RedefinableElement()
+	 * @see #getFormalElement()
 	 * @generated
 	 */
-	EReference getGuardEffectsAction_Base_Action();
+	EReference getFormalElement_Base_RedefinableElement();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.GuardEffectsAction#isAtomic <em>Atomic</em>}'.
+	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Atomic</em>'.
-	 * @see PokaYoke.GuardEffectsAction#isAtomic()
-	 * @see #getGuardEffectsAction()
+	 * @see PokaYoke.FormalElement#isAtomic()
+	 * @see #getFormalElement()
 	 * @generated
 	 */
-	EAttribute getGuardEffectsAction_Atomic();
+	EAttribute getFormalElement_Atomic();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -199,14 +199,14 @@ public interface PokaYokePackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link PokaYoke.impl.GuardEffectsActionImpl <em>Guard Effects Action</em>}' class.
+		 * The meta object literal for the '{@link PokaYoke.impl.FormalElementImpl <em>Formal Element</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see PokaYoke.impl.GuardEffectsActionImpl
-		 * @see PokaYoke.impl.PokaYokePackageImpl#getGuardEffectsAction()
+		 * @see PokaYoke.impl.FormalElementImpl
+		 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalElement()
 		 * @generated
 		 */
-		EClass GUARD_EFFECTS_ACTION = eINSTANCE.getGuardEffectsAction();
+		EClass FORMAL_ELEMENT = eINSTANCE.getFormalElement();
 
 		/**
 		 * The meta object literal for the '<em><b>Guard</b></em>' attribute feature.
@@ -214,7 +214,7 @@ public interface PokaYokePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute GUARD_EFFECTS_ACTION__GUARD = eINSTANCE.getGuardEffectsAction_Guard();
+		EAttribute FORMAL_ELEMENT__GUARD = eINSTANCE.getFormalElement_Guard();
 
 		/**
 		 * The meta object literal for the '<em><b>Effects</b></em>' attribute feature.
@@ -222,15 +222,15 @@ public interface PokaYokePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute GUARD_EFFECTS_ACTION__EFFECTS = eINSTANCE.getGuardEffectsAction_Effects();
+		EAttribute FORMAL_ELEMENT__EFFECTS = eINSTANCE.getFormalElement_Effects();
 
 		/**
-		 * The meta object literal for the '<em><b>Base Action</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Base Redefinable Element</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GUARD_EFFECTS_ACTION__BASE_ACTION = eINSTANCE.getGuardEffectsAction_Base_Action();
+		EReference FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT = eINSTANCE.getFormalElement_Base_RedefinableElement();
 
 		/**
 		 * The meta object literal for the '<em><b>Atomic</b></em>' attribute feature.
@@ -238,7 +238,7 @@ public interface PokaYokePackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute GUARD_EFFECTS_ACTION__ATOMIC = eINSTANCE.getGuardEffectsAction_Atomic();
+		EAttribute FORMAL_ELEMENT__ATOMIC = eINSTANCE.getFormalElement_Atomic();
 
 	}
 

@@ -4,42 +4,42 @@ package PokaYoke;
 
 import org.eclipse.emf.ecore.EObject;
 
-import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.RedefinableElement;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Guard Effects Action</b></em>'.
+ * A representation of the model object '<em><b>Formal Element</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link PokaYoke.GuardEffectsAction#getGuard <em>Guard</em>}</li>
- *   <li>{@link PokaYoke.GuardEffectsAction#getEffects <em>Effects</em>}</li>
- *   <li>{@link PokaYoke.GuardEffectsAction#getBase_Action <em>Base Action</em>}</li>
- *   <li>{@link PokaYoke.GuardEffectsAction#isAtomic <em>Atomic</em>}</li>
+ *   <li>{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}</li>
+ *   <li>{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}</li>
+ *   <li>{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
+ *   <li>{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}</li>
  * </ul>
  *
- * @see PokaYoke.PokaYokePackage#getGuardEffectsAction()
+ * @see PokaYoke.PokaYokePackage#getFormalElement()
  * @model
  * @generated
  */
-public interface GuardEffectsAction extends EObject {
+public interface FormalElement extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Guard</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Guard</em>' attribute.
 	 * @see #setGuard(String)
-	 * @see PokaYoke.PokaYokePackage#getGuardEffectsAction_Guard()
+	 * @see PokaYoke.PokaYokePackage#getFormalElement_Guard()
 	 * @model dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
 	String getGuard();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.GuardEffectsAction#getGuard <em>Guard</em>}' attribute.
+	 * Sets the value of the '{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Guard</em>' attribute.
@@ -54,14 +54,14 @@ public interface GuardEffectsAction extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Effects</em>' attribute.
 	 * @see #setEffects(String)
-	 * @see PokaYoke.PokaYokePackage#getGuardEffectsAction_Effects()
+	 * @see PokaYoke.PokaYokePackage#getFormalElement_Effects()
 	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
 	String getEffects();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.GuardEffectsAction#getEffects <em>Effects</em>}' attribute.
+	 * Sets the value of the '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Effects</em>' attribute.
@@ -71,42 +71,42 @@ public interface GuardEffectsAction extends EObject {
 	void setEffects(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Base Action</b></em>' reference.
+	 * Returns the value of the '<em><b>Base Redefinable Element</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Base Action</em>' reference.
-	 * @see #setBase_Action(Action)
-	 * @see PokaYoke.PokaYokePackage#getGuardEffectsAction_Base_Action()
+	 * @return the value of the '<em>Base Redefinable Element</em>' reference.
+	 * @see #setBase_RedefinableElement(RedefinableElement)
+	 * @see PokaYoke.PokaYokePackage#getFormalElement_Base_RedefinableElement()
 	 * @model required="true" ordered="false"
 	 * @generated
 	 */
-	Action getBase_Action();
+	RedefinableElement getBase_RedefinableElement();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.GuardEffectsAction#getBase_Action <em>Base Action</em>}' reference.
+	 * Sets the value of the '{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Base Action</em>' reference.
-	 * @see #getBase_Action()
+	 * @param value the new value of the '<em>Base Redefinable Element</em>' reference.
+	 * @see #getBase_RedefinableElement()
 	 * @generated
 	 */
-	void setBase_Action(Action value);
+	void setBase_RedefinableElement(RedefinableElement value);
 
 	/**
 	 * Returns the value of the '<em><b>Atomic</b></em>' attribute.
-	 * The default value is <code>"true"</code>.
+	 * The default value is <code>"false"</code>.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Atomic</em>' attribute.
 	 * @see #setAtomic(boolean)
-	 * @see PokaYoke.PokaYokePackage#getGuardEffectsAction_Atomic()
-	 * @model default="true" dataType="org.eclipse.uml2.types.Boolean" ordered="false"
+	 * @see PokaYoke.PokaYokePackage#getFormalElement_Atomic()
+	 * @model default="false" dataType="org.eclipse.uml2.types.Boolean" ordered="false"
 	 * @generated
 	 */
 	boolean isAtomic();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.GuardEffectsAction#isAtomic <em>Atomic</em>}' attribute.
+	 * Sets the value of the '{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Atomic</em>' attribute.
@@ -115,4 +115,4 @@ public interface GuardEffectsAction extends EObject {
 	 */
 	void setAtomic(boolean value);
 
-} // GuardEffectsAction
+} // FormalElement
