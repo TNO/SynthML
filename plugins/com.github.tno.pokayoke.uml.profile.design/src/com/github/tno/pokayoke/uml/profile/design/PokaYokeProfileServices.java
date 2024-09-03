@@ -58,11 +58,11 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#getGuard()} property value if <code>element</code> is stereotype,
+     * Returns the {@link FormalElement#getGuard() guard} property value if <code>element</code> is stereotyped,
      * <code>null</code> otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#getGuard()} property value if <code>element</code> is stereotype,
+     * @return The {@link FormalElement#getGuard() guard} property value if <code>element</code> is stereotyped,
      *     <code>null</code> otherwise.
      */
     public String getGuard(RedefinableElement element) {
@@ -70,12 +70,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Applies the {@link FormalElement} stereotype and set its {@link FormalElement#setGuard(String) guard} property
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setGuard(String) guard} property
      * for <code>element</code>.
      * <p>
      * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
      * {@link String#isEmpty() empty} and {@link #getEffects(RedefinableElement)} also is <code>null</code> or
-     * {@link String#isEmpty() empty}.
+     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is <code>false</code>.
      * </p>
      *
      * @param element The element to set the property on.
@@ -85,7 +85,8 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(element);
-            if (Strings.isNullOrEmpty(effects)) {
+            Boolean atomic = isAtomic(element);
+            if (Strings.isNullOrEmpty(effects) && !atomic) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
                 // is used in the odesign file. So we trigger a refresh here.
@@ -106,11 +107,11 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#getEffects()} property value if <code>element</code> is stereotype,
+     * Returns the {@link FormalElement#getEffects() effects} property value if <code>element</code> is stereotyped,
      * <code>null</code> otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#getEffects()} property value if <code>element</code> is stereotype,
+     * @return The {@link FormalElement#getEffects() effects} property value if <code>element</code> is stereotyped,
      *     <code>null</code> otherwise.
      */
     public String getEffects(RedefinableElement element) {
@@ -118,12 +119,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Applies the {@link FormalElement} stereotype and set its {@link FormalElement#setEffects(String) effects}
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setEffects(String) effects}
      * property for <code>element</code>.
      * <p>
      * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
-     * {@link String#isEmpty() empty} and {@link #getEffects(RedefinableElement)} also is <code>null</code> or
-     * {@link String#isEmpty() empty}.
+     * {@link String#isEmpty() empty} and {@link #getGuard(RedefinableElement)} also is <code>null</code> or
+     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is <code>false</code>.
      * </p>
      *
      * @param element The element to set the property on.
@@ -133,7 +134,8 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             String guard = getGuard(element);
-            if (Strings.isNullOrEmpty(guard)) {
+            Boolean atomic = isAtomic(element);
+            if (Strings.isNullOrEmpty(guard) && !atomic) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
                 // is used in the odesign file. So we trigger the refresh here.
@@ -154,25 +156,42 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#isAtomic()} property value if <code>element</code> is stereotype,
-     * <code>true</code> otherwise.
+     * Returns the {@link FormalElement#isAtomic() atomic} property value if <code>element</code> is stereotyped,
+     * <code>false</code> otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#isAtomic()} property value if <code>element</code> is stereotype,
-     *     <code>true</code> otherwise.
+     * @return The {@link FormalElement#isAtomic() atomic} property value if <code>element</code> is stereotyped,
+     *     <code>false</code> otherwise.
      */
     public boolean isAtomic(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.isAtomic(element);
     }
 
     /**
-     * Applies the {@link FormalElement} stereotype and set its {@link FormalElement#setAtomic(boolean) atomic} property
-     * for <code>element</code>.
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setAtomic(boolean) atomic}
+     * property for <code>element</code>.
+     * <p>
+     * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
+     * <code>false</code> and {@link #getGuard(RedefinableElement)} is <code>null</code> or {@link String#isEmpty()
+     * empty} and {@link #getEffects(RedefinableElement)} also is <code>null</code> or {@link String#isEmpty() empty}.
+     * </p>
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
     public void setAtomic(RedefinableElement element, Boolean newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
+        if (newValue == null || !newValue) {
+            String guard = getGuard(element);
+            String effects = getEffects(element);
+            if (Strings.isNullOrEmpty(guard) && Strings.isNullOrEmpty(effects)) {
+                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
+                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+                // is used in the odesign file. So we trigger the refresh here.
+                refresh(element);
+                return;
+            }
+        }
         PokaYokeUmlProfileUtil.setAtomic(element, newValue);
     }
 
