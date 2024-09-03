@@ -215,8 +215,7 @@ public class FullSynthesisApp {
 
         // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, minimizedToReduced,
-                regionMap);
+                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, minimizedToReduced, regionMap);
         Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards(petriNet);
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
