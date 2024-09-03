@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_8jozACfhEe-Yd-UzBcvFKg" name="Model">
-  <packagedElement xmi:type="uml:Class" xmi:id="_AlmMkCfiEe-Yd-UzBcvFKg" name="Context" visibility="public" classifierBehavior="_KTlU0CfiEe-Yd-UzBcvFKg" isActive="true">
-    <ownedAttribute xmi:id="_BW5tsCfiEe-Yd-UzBcvFKg" name="field1" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BW5tsSfiEe-Yd-UzBcvFKg" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BW5tsifiEe-Yd-UzBcvFKg" value="1"/>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_icY5ICfoEe-tYas_VaobtQ" name="field2" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_icb8cCfoEe-tYas_VaobtQ" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_iccjgCfoEe-tYas_VaobtQ" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_kNd1MCfoEe-tYas_VaobtQ">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_GBaVACfiEe-Yd-UzBcvFKg" name="left">
-      <body>not field1</body>
-      <body>field2 := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_KTlU0CfiEe-Yd-UzBcvFKg" name="main" isAbstract="true" postcondition="_MTy5ECfiEe-Yd-UzBcvFKg">
-      <ownedRule xmi:id="_MTy5ECfiEe-Yd-UzBcvFKg" name="postcondition">
-        <specification xmi:type="uml:OpaqueExpression" xmi:id="_NpikACfiEe-Yd-UzBcvFKg" name="">
-          <body>field2</body>
-        </specification>
-      </ownedRule>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_o-BaICfoEe-tYas_VaobtQ" name="right">
-      <body>field1</body>
-      <body>field2 := true</body>
-    </ownedBehavior>
-  </packagedElement>
-  <profileApplication xmi:id="_Czg1oCfiEe-Yd-UzBcvFKg">
-    <eAnnotations xmi:id="_Cziq0CfiEe-Yd-UzBcvFKg" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
-    </eAnnotations>
-    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
-  </profileApplication>
-</uml:Model>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="11" isActive="true">
+      <ownedAttribute xmi:id="3" name="field1" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="6" name="field2" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="9">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="10" name="left">
+        <body>not field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="11" name="main" isAbstract="true" postcondition="12">
+        <ownedRule xmi:id="12" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="13" name="">
+            <body>field2</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="14" name="right">
+        <body>field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="15">
+      <eAnnotations xmi:id="16" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_ngL0EGncEe-j8ICAb4wpzA" guard="not field1" effects="field2 := true" base_RedefinableElement="10"/>
+  <PokaYoke:FormalElement xmi:id="_ngMbIGncEe-j8ICAb4wpzA" guard="field1" effects="field2 := true" base_RedefinableElement="14"/>
+</xmi:XMI>

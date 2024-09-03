@@ -12,11 +12,10 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.cif.parser.CifExpressionParser;
@@ -48,19 +47,11 @@ public class CifParserHelper {
         return parseExpression(valueSpecification.stringValue(), valueSpecification);
     }
 
-    public static AExpression parseGuard(Action action) throws SyntaxException {
-        if (action == null) {
+    public static AExpression parseGuard(RedefinableElement element) throws SyntaxException {
+        if (element == null) {
             return null;
         }
-        return parseExpression(PokaYokeUmlProfileUtil.getGuard(action), action);
-    }
-
-    public static AExpression parseGuard(OpaqueBehavior behavior) throws SyntaxException {
-        if (behavior == null) {
-            return null;
-        }
-        List<String> bodies = behavior.getBodies();
-        return parseExpression(bodies.isEmpty() ? "true" : bodies.get(0), behavior);
+        return parseExpression(PokaYokeUmlProfileUtil.getGuard(element), element);
     }
 
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
@@ -73,18 +64,11 @@ public class CifParserHelper {
         return updatesParser.parseString(updates, getLocation(context));
     }
 
-    public static List<AUpdate> parseEffects(Action action) throws SyntaxException {
-        if (action == null) {
+    public static List<AUpdate> parseEffects(RedefinableElement element) throws SyntaxException {
+        if (element == null) {
             return null;
         }
-        return parseUpdates(PokaYokeUmlProfileUtil.getEffects(action), action);
-    }
-
-    public static List<List<AUpdate>> parseEffects(OpaqueBehavior behavior) throws SyntaxException {
-        if (behavior == null) {
-            return null;
-        }
-        return behavior.getBodies().stream().skip(1).map(effect -> parseUpdates(effect, behavior)).toList();
+        return parseUpdates(PokaYokeUmlProfileUtil.getEffects(element), element);
     }
 
     public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {

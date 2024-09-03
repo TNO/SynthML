@@ -2,7 +2,9 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,6 +39,8 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -429,9 +433,12 @@ public class UmlToCifTranslator {
      * @param behavior The opaque behavior.
      * @return The guard of the given opaque behavior.
      */
-    public Expression getGuard(OpaqueBehavior behavior) {
-        return behavior.getBodies().stream().limit(1).map(e -> CifParserHelper.parseExpression(e, behavior))
-                .map(translator::translate).findAny().orElse(CifValueUtils.makeTrue());
+    private Expression getGuard(OpaqueBehavior behavior) {
+        AExpression guard = CifParserHelper.parseGuard(behavior);
+        if (guard == null) {
+            return CifValueUtils.makeTrue();
+        }
+        return translator.translate(guard);
     }
 
     /**
@@ -456,8 +463,9 @@ public class UmlToCifTranslator {
      * @return All effects of the given opaque behavior.
      */
     private List<List<Update>> getEffects(OpaqueBehavior behavior) {
-        return behavior.getBodies().stream().skip(1).map(u -> CifParserHelper.parseUpdates(u, behavior))
-                .map(translator::translate).toList();
+        List<AUpdate> effects = CifParserHelper.parseEffects(behavior);
+        // FIXME: Multiple effects are not yet supported in the UML profile
+        return effects == null ? Collections.emptyList() : Arrays.asList(translator.translate(effects));
     }
 
     /**

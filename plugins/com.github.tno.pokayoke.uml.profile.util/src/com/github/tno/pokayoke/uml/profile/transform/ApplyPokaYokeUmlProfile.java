@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.eclipse.uml2.uml.BodyOwner;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
+import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -27,42 +30,53 @@ public class ApplyPokaYokeUmlProfile {
     private static void applyUmlProfile(Model model) {
         model.eAllContents().forEachRemaining(o -> {
             if (o instanceof OpaqueAction oa) {
-                applyUmlProfile(oa);
+                applyUmlProfile(oa, false);
+            } else if (o instanceof OpaqueBehavior ob) {
+                applyUmlProfile(ob, true);
             }
         });
     }
 
     /**
-     * Applies {@link FormalElement} stereotype and copies the {@link OpaqueAction#getBodies()} to its
+     * Applies {@link FormalElement} stereotype and copies the {@link BodyOwner#getBodies()} to its
      * {@link FormalElement#setGuard(String)} and {@link FormalElement#setEffects(String)}. If the {@link FormalElement}
      * stereotype is already applied, copies its <code>guard</code> and <code>effects</code> back to the
      * <code>bodies</code> of the <code>action</code>.
      *
-     * @param action The action to transform
+     * @param <T> type that can both be a {@link FormalElement} and a {@link BodyOwner}.
+     * @param element The action to transform
+     * @param multiEffects {@code true} if the remaining bodies should be treated as separate effects.
      */
-    private static void applyUmlProfile(OpaqueAction action) {
-        String guard = PokaYokeUmlProfileUtil.getGuard(action);
-        String effects = PokaYokeUmlProfileUtil.getEffects(action);
+    private static <T extends RedefinableElement & BodyOwner> void applyUmlProfile(T element, boolean multiEffects) {
+        String guard = PokaYokeUmlProfileUtil.getGuard(element);
+        String effects = PokaYokeUmlProfileUtil.getEffects(element);
         if (guard != null || effects != null) {
             // Data provisioned on stereotype, copy to bodies
-            action.getBodies().clear();
-            action.getBodies().add(guard == null || guard.isEmpty() ? "true" : guard);
+            element.getBodies().clear();
+            element.getBodies().add(guard == null || guard.isEmpty() ? "true" : guard);
             if (effects != null) {
-                action.getBodies().addAll(Arrays.asList(effects.split(",")));
+                if (multiEffects) {
+                    element.getBodies().add(effects);
+                } else {
+                    element.getBodies().addAll(Arrays.asList(effects.split(",")));
+                }
             }
             return;
-        } else if (action.getBodies().isEmpty()) {
+        } else if (element.getBodies().isEmpty()) {
             return;
         }
-        Iterator<String> bodiesIterator = action.getBodies().iterator();
-        PokaYokeUmlProfileUtil.setGuard(action, bodiesIterator.next());
+        Iterator<String> bodiesIterator = element.getBodies().iterator();
+        PokaYokeUmlProfileUtil.setGuard(element, bodiesIterator.next());
         if (!bodiesIterator.hasNext()) {
             return;
         }
         StringBuilder effectsBuilder = new StringBuilder(bodiesIterator.next());
+        if (multiEffects && bodiesIterator.hasNext()) {
+            throw new RuntimeException("Multiple effects are not supported yet!");
+        }
         while (bodiesIterator.hasNext()) {
             effectsBuilder.append(",\n").append(bodiesIterator.next());
         }
-        PokaYokeUmlProfileUtil.setEffects(action, effectsBuilder.toString());
+        PokaYokeUmlProfileUtil.setEffects(element, effectsBuilder.toString());
     }
 }

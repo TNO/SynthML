@@ -198,13 +198,19 @@
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
+      <pages name="PR_OpaqueBehaviorPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueBehavior" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_ControlFlowPage" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" preconditionExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)" groups="//@extensions.0/@categories.0/@groups.1"/>
       <pages name="PR_PropertyPage" labelExpression="Poka Yoke" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="Poka Yoke" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
-      <groups name="PR_ActionGroup" labelExpression="General">
+      <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Atomic" labelExpression="Atomic" helpExpression="Specifies if the behavior is atomicly executed" valueExpression="service:self.isAtomic()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setAtomic(newValue)"/>
           </initialOperation>
         </controls>
         <controls xsi:type="properties:TextAreaDescription" name="PR_AC_Guard" labelExpression="Guard:" helpExpression="The Guard of the Action" lineCount="3" valueExpression="service:self.getGuard()">
@@ -215,11 +221,6 @@
         <controls xsi:type="properties:TextAreaDescription" name="PR_AC_Effects" labelExpression="Effects:" helpExpression="The Effects of the Action" lineCount="9" valueExpression="service:self.getEffects()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setEffects(newValue)"/>
-          </initialOperation>
-        </controls>
-        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Atomic" labelExpression="Atomic" helpExpression="Specifies if guard and effects are executed atomicly" valueExpression="service:self.isAtomic()">
-          <initialOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setAtomic(newValue)"/>
           </initialOperation>
         </controls>
       </groups>
