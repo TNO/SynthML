@@ -24,6 +24,8 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import PokaYoke.FormalElement;
@@ -37,6 +39,8 @@ import PokaYoke.FormalElement;
  */
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
+
+    private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
     /**
      * Returns <code>true</code> if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}
@@ -115,12 +119,12 @@ public class PokaYokeProfileServices {
      *     <code>null</code> otherwise.
      */
     public String getEffects(RedefinableElement element) {
-        return PokaYokeUmlProfileUtil.getEffects(element);
+        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getEffectsList(element));
     }
 
     /**
-     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setEffects(String) effects}
-     * property for <code>element</code>.
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#getEffects() effects} property for
+     * <code>element</code>.
      * <p>
      * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
      * {@link String#isEmpty() empty} and {@link #getGuard(RedefinableElement)} also is <code>null</code> or
@@ -143,8 +147,12 @@ public class PokaYokeProfileServices {
                 return;
             }
         }
-        // Empty values are not allowed, so reset the value
-        PokaYokeUmlProfileUtil.setEffects(element, Strings.emptyToNull(newValue));
+        if (Strings.isNullOrEmpty(newValue)) {
+            // Empty values are not allowed, so reset the value
+            PokaYokeUmlProfileUtil.setEffectsList(element, null);
+        } else {
+            PokaYokeUmlProfileUtil.setEffectsList(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
+        }
     }
 
     public void unsetEffects(RedefinableElement element) {
@@ -152,7 +160,7 @@ public class PokaYokeProfileServices {
     }
 
     public boolean isSetEffects(RedefinableElement element) {
-        return getEffects(element) != null;
+        return !PokaYokeUmlProfileUtil.getEffectsList(element).isEmpty();
     }
 
     /**
