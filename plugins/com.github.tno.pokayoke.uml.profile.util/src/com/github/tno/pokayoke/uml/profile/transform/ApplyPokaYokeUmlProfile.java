@@ -43,7 +43,7 @@ public class ApplyPokaYokeUmlProfile {
      * stereotype is already applied, copies its <code>guard</code> and <code>effects</code> back to the
      * <code>bodies</code> of the <code>action</code>.
      *
-     * @param <T> type that can both be a {@link FormalElement} and a {@link BodyOwner}.
+     * @param <T> type that is both a {@link FormalElement} and a {@link BodyOwner}.
      * @param element The action to transform
      * @param multiEffects {@code true} if the remaining bodies should be treated as separate effects.
      */

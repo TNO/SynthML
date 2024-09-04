@@ -85,7 +85,7 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(element);
-            Boolean atomic = isAtomic(element);
+            boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(effects) && !atomic) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
@@ -134,7 +134,7 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             String guard = getGuard(element);
-            Boolean atomic = isAtomic(element);
+            boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(guard) && !atomic) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'

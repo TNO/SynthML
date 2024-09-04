@@ -208,7 +208,7 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Atomic" labelExpression="Atomic" helpExpression="Specifies if the behavior is atomicly executed" valueExpression="service:self.isAtomic()">
+        <controls xsi:type="properties:CheckboxDescription" name="PR_AC_Atomic" labelExpression="Atomic" helpExpression="Specifies whether the behavior is atomicly executed" valueExpression="service:self.isAtomic()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setAtomic(newValue)"/>
           </initialOperation>
