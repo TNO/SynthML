@@ -469,7 +469,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidEffects(Action action) {
         try {
-            checkValidEffects(CifParserHelper.parseEffects(action), action);
+            CifParserHelper.parseEffects(action).forEach(effects -> checkValidEffects(effects, action));
         } catch (RuntimeException e) {
             error("Invalid effects: " + e.getLocalizedMessage(), null);
         }
@@ -509,7 +509,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         // Validates the effects of the given opaque behavior.
         try {
-            checkValidEffects(CifParserHelper.parseEffects(behavior), behavior);
+            CifParserHelper.parseEffects(behavior).forEach(effects -> checkValidEffects(effects, behavior));
         } catch (RuntimeException e) {
             error("Invalid effects: " + e.getLocalizedMessage(), null);
         }

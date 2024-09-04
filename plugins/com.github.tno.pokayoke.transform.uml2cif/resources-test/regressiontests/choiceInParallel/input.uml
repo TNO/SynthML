@@ -1,105 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_ZEU08Bd-Ee-TFtQPmfUP2A" name="Model">
-  <nameExpression xmi:id="_sjzP8Bd_Ee-TFtQPmfUP2A" name="literals">
-    <operand xmi:type="uml:LiteralInteger" xmi:id="_uKHGcBd_Ee-TFtQPmfUP2A" name=""/>
-    <operand xmi:type="uml:LiteralInteger" xmi:id="_vBrAkBd_Ee-TFtQPmfUP2A" name="" value="1"/>
-  </nameExpression>
-  <packagedElement xmi:type="uml:Class" xmi:id="_c-NQkBd-Ee-TFtQPmfUP2A" name="Context" visibility="public" classifierBehavior="_7lUj0Bd-Ee-TFtQPmfUP2A" isActive="true">
-    <ownedAttribute xmi:id="_nsTyABd-Ee-TFtQPmfUP2A" name="Is_Computer_Ready" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_nsTyARd-Ee-TFtQPmfUP2A" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_nsUZEBd-Ee-TFtQPmfUP2A" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_qW5wABd-Ee-TFtQPmfUP2A">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_rULQkBd-Ee-TFtQPmfUP2A" name="Is_Computer_On" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rULQkRd-Ee-TFtQPmfUP2A" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rULQkhd-Ee-TFtQPmfUP2A" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_sz-2cBd-Ee-TFtQPmfUP2A">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_tCLqgBd-Ee-TFtQPmfUP2A" name="Coffee_or_Tea" visibility="public" type="_d-IcgBd-Ee-TFtQPmfUP2A">
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_tCMRkBd-Ee-TFtQPmfUP2A" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_tCMRkRd-Ee-TFtQPmfUP2A" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_u9030Bd-Ee-TFtQPmfUP2A">
-        <language>CIF</language>
-        <body>Unknown</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_vPyKgBd-Ee-TFtQPmfUP2A" name="Has_Drank_Coffee_or_Tea" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vPyKgRd-Ee-TFtQPmfUP2A" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vPyKghd-Ee-TFtQPmfUP2A" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_wvj7MBd-Ee-TFtQPmfUP2A">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_xPc8MBd-Ee-TFtQPmfUP2A" name="Is_Ready_to_Work" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xPc8MRd-Ee-TFtQPmfUP2A" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xPc8Mhd-Ee-TFtQPmfUP2A" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_y6_4ABd-Ee-TFtQPmfUP2A">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_7lUj0Bd-Ee-TFtQPmfUP2A" name="main" isAbstract="true" postcondition="_fV2n8Bd_Ee-TFtQPmfUP2A">
-      <ownedRule xmi:id="_fV2n8Bd_Ee-TFtQPmfUP2A" name="postcondition">
-        <specification xmi:type="uml:OpaqueExpression" xmi:id="_g9tWkBd_Ee-TFtQPmfUP2A" name="">
-          <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
-        </specification>
-      </ownedRule>
-      <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_whsB0Bd_Ee-TFtQPmfUP2A" name="happens_at_most_once" constrainedElement="__V22MBd-Ee-TFtQPmfUP2A _IWUKEBd_Ee-TFtQPmfUP2A _NPjJ4Bd_Ee-TFtQPmfUP2A _R67T4Bd_Ee-TFtQPmfUP2A _DsYxkBd_Ee-TFtQPmfUP2A">
-        <specification xmi:type="uml:Interval" xmi:id="_ybKr8Bd_Ee-TFtQPmfUP2A" name="" max="_vBrAkBd_Ee-TFtQPmfUP2A" min="_uKHGcBd_Ee-TFtQPmfUP2A"/>
-      </ownedRule>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="__V22MBd-Ee-TFtQPmfUP2A" name="Turn_Computer_On">
-      <body>not Is_Computer_Ready and not Is_Computer_On</body>
-      <body>Is_Computer_On := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DsYxkBd_Ee-TFtQPmfUP2A" name="Starting_Computer">
-      <body>not Is_Computer_Ready and Is_Computer_On</body>
-      <body>Is_Computer_Ready := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_IWUKEBd_Ee-TFtQPmfUP2A" name="Drink_Coffee">
-      <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee</body>
-      <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_NPjJ4Bd_Ee-TFtQPmfUP2A" name="Drink_Tea">
-      <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea</body>
-      <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_R67T4Bd_Ee-TFtQPmfUP2A" name="Start_Working">
-      <body>Has_Drank_Coffee_or_Tea and Is_Computer_Ready</body>
-      <body>Is_Ready_to_Work:= true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_WE8dQBd_Ee-TFtQPmfUP2A" name="Flip_A_Coin">
-      <body>Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown</body>
-      <body>Coffee_or_Tea:= Coffee</body>
-      <body>Coffee_or_Tea:= Tea</body>
-    </ownedBehavior>
-  </packagedElement>
-  <packagedElement xmi:type="uml:Enumeration" xmi:id="_d-IcgBd-Ee-TFtQPmfUP2A" name="UnknownDrink" visibility="public">
-    <ownedLiteral xmi:id="_kP0dABd-Ee-TFtQPmfUP2A" name="Coffee">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_kP1EEBd-Ee-TFtQPmfUP2A"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_lIlRABd-Ee-TFtQPmfUP2A" name="Tea">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_lImfIBd-Ee-TFtQPmfUP2A" value="1"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_mA5ZEBd-Ee-TFtQPmfUP2A" name="Unknown">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_mA6AIBd-Ee-TFtQPmfUP2A" value="2"/>
-    </ownedLiteral>
-  </packagedElement>
-  <profileApplication xmi:id="_p4LMoBd-Ee-TFtQPmfUP2A">
-    <eAnnotations xmi:id="_p4OP8Bd-Ee-TFtQPmfUP2A" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
-    </eAnnotations>
-    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
-  </profileApplication>
-</uml:Model>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_ZEU08Bd-Ee-TFtQPmfUP2A" name="Model">
+    <nameExpression xmi:id="_sjzP8Bd_Ee-TFtQPmfUP2A" name="literals">
+      <operand xmi:type="uml:LiteralInteger" xmi:id="_uKHGcBd_Ee-TFtQPmfUP2A" name=""/>
+      <operand xmi:type="uml:LiteralInteger" xmi:id="_vBrAkBd_Ee-TFtQPmfUP2A" name="" value="1"/>
+    </nameExpression>
+    <packagedElement xmi:type="uml:Class" xmi:id="_c-NQkBd-Ee-TFtQPmfUP2A" name="Context" visibility="public" classifierBehavior="_7lUj0Bd-Ee-TFtQPmfUP2A" isActive="true">
+      <ownedAttribute xmi:id="_nsTyABd-Ee-TFtQPmfUP2A" name="Is_Computer_Ready" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_nsTyARd-Ee-TFtQPmfUP2A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_nsUZEBd-Ee-TFtQPmfUP2A" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_qW5wABd-Ee-TFtQPmfUP2A">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_rULQkBd-Ee-TFtQPmfUP2A" name="Is_Computer_On" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rULQkRd-Ee-TFtQPmfUP2A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rULQkhd-Ee-TFtQPmfUP2A" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_sz-2cBd-Ee-TFtQPmfUP2A">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_tCLqgBd-Ee-TFtQPmfUP2A" name="Coffee_or_Tea" visibility="public" type="_d-IcgBd-Ee-TFtQPmfUP2A">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_tCMRkBd-Ee-TFtQPmfUP2A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_tCMRkRd-Ee-TFtQPmfUP2A" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_u9030Bd-Ee-TFtQPmfUP2A">
+          <language>CIF</language>
+          <body>Unknown</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_vPyKgBd-Ee-TFtQPmfUP2A" name="Has_Drank_Coffee_or_Tea" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vPyKgRd-Ee-TFtQPmfUP2A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vPyKghd-Ee-TFtQPmfUP2A" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_wvj7MBd-Ee-TFtQPmfUP2A">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_xPc8MBd-Ee-TFtQPmfUP2A" name="Is_Ready_to_Work" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xPc8MRd-Ee-TFtQPmfUP2A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xPc8Mhd-Ee-TFtQPmfUP2A" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_y6_4ABd-Ee-TFtQPmfUP2A">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_7lUj0Bd-Ee-TFtQPmfUP2A" name="main" isAbstract="true" postcondition="_fV2n8Bd_Ee-TFtQPmfUP2A">
+        <ownedRule xmi:id="_fV2n8Bd_Ee-TFtQPmfUP2A" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_g9tWkBd_Ee-TFtQPmfUP2A" name="">
+            <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_whsB0Bd_Ee-TFtQPmfUP2A" name="happens_at_most_once" constrainedElement="__V22MBd-Ee-TFtQPmfUP2A _IWUKEBd_Ee-TFtQPmfUP2A _NPjJ4Bd_Ee-TFtQPmfUP2A _R67T4Bd_Ee-TFtQPmfUP2A _DsYxkBd_Ee-TFtQPmfUP2A">
+          <specification xmi:type="uml:Interval" xmi:id="_ybKr8Bd_Ee-TFtQPmfUP2A" name="" max="_vBrAkBd_Ee-TFtQPmfUP2A" min="_uKHGcBd_Ee-TFtQPmfUP2A"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="__V22MBd-Ee-TFtQPmfUP2A" name="Turn_Computer_On">
+        <body>not Is_Computer_Ready and not Is_Computer_On</body>
+        <body>Is_Computer_On := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DsYxkBd_Ee-TFtQPmfUP2A" name="Starting_Computer">
+        <body>not Is_Computer_Ready and Is_Computer_On</body>
+        <body>Is_Computer_Ready := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_IWUKEBd_Ee-TFtQPmfUP2A" name="Drink_Coffee">
+        <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee</body>
+        <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_NPjJ4Bd_Ee-TFtQPmfUP2A" name="Drink_Tea">
+        <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea</body>
+        <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_R67T4Bd_Ee-TFtQPmfUP2A" name="Start_Working">
+        <body>Has_Drank_Coffee_or_Tea and Is_Computer_Ready</body>
+        <body>Is_Ready_to_Work:= true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_WE8dQBd_Ee-TFtQPmfUP2A" name="Flip_A_Coin">
+        <body>Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown</body>
+        <body>Coffee_or_Tea:= Coffee</body>
+        <body>Coffee_or_Tea:= Tea</body>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_d-IcgBd-Ee-TFtQPmfUP2A" name="UnknownDrink" visibility="public">
+      <ownedLiteral xmi:id="_kP0dABd-Ee-TFtQPmfUP2A" name="Coffee">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_kP1EEBd-Ee-TFtQPmfUP2A"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_lIlRABd-Ee-TFtQPmfUP2A" name="Tea">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_lImfIBd-Ee-TFtQPmfUP2A" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_mA5ZEBd-Ee-TFtQPmfUP2A" name="Unknown">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_mA6AIBd-Ee-TFtQPmfUP2A" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="_p4LMoBd-Ee-TFtQPmfUP2A">
+      <eAnnotations xmi:id="_p4OP8Bd-Ee-TFtQPmfUP2A" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_55x_gGq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="__V22MBd-Ee-TFtQPmfUP2A">
+    <effects>Is_Computer_On := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_55x_gWq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="_DsYxkBd_Ee-TFtQPmfUP2A">
+    <effects>Is_Computer_Ready := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_55x_gmq2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="_IWUKEBd_Ee-TFtQPmfUP2A">
+    <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_55x_g2q2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="_NPjJ4Bd_Ee-TFtQPmfUP2A">
+    <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_55ymkGq2Ee-WMPTErzIKyg" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="_R67T4Bd_Ee-TFtQPmfUP2A">
+    <effects>Is_Ready_to_Work:= true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_55ymkWq2Ee-WMPTErzIKyg" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="_WE8dQBd_Ee-TFtQPmfUP2A">
+    <effects>Coffee_or_Tea:= Coffee</effects>
+    <effects>Coffee_or_Tea:= Tea</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

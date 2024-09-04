@@ -2,9 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +37,6 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
-import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
@@ -463,9 +460,7 @@ public class UmlToCifTranslator {
      * @return All effects of the given opaque behavior.
      */
     private List<List<Update>> getEffects(OpaqueBehavior behavior) {
-        List<AUpdate> effects = CifParserHelper.parseEffects(behavior);
-        // FIXME: Multiple effects are not yet supported in the UML profile
-        return effects == null ? Collections.emptyList() : Arrays.asList(translator.translate(effects));
+        return CifParserHelper.parseEffects(behavior).stream().map(translator::translate).toList();
     }
 
     /**

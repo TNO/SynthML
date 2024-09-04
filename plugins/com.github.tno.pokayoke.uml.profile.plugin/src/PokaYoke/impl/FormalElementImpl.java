@@ -5,13 +5,19 @@ package PokaYoke.impl;
 import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+
+import org.eclipse.emf.ecore.util.EDataTypeEList;
 
 import org.eclipse.uml2.uml.RedefinableElement;
 
@@ -53,24 +59,14 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	protected String guard = GUARD_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getEffects() <em>Effects</em>}' attribute.
+	 * The cached value of the '{@link #getEffects() <em>Effects</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getEffects()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String EFFECTS_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getEffects() <em>Effects</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getEffects()
-	 * @generated
-	 * @ordered
-	 */
-	protected String effects = EFFECTS_EDEFAULT;
+	protected EList<String> effects;
 
 	/**
 	 * The cached value of the '{@link #getBase_RedefinableElement() <em>Base Redefinable Element</em>}' reference.
@@ -150,21 +146,11 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	 * @generated
 	 */
 	@Override
-	public String getEffects() {
+	public EList<String> getEffects() {
+		if (effects == null) {
+			effects = new EDataTypeEList<String>(String.class, this, PokaYokePackage.FORMAL_ELEMENT__EFFECTS);
+		}
 		return effects;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setEffects(String newEffects) {
-		String oldEffects = effects;
-		effects = newEffects;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__EFFECTS, oldEffects, effects));
 	}
 
 	/**
@@ -256,6 +242,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -263,7 +250,8 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 				setGuard((String)newValue);
 				return;
 			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
-				setEffects((String)newValue);
+				getEffects().clear();
+				getEffects().addAll((Collection<? extends String>)newValue);
 				return;
 			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				setBase_RedefinableElement((RedefinableElement)newValue);
@@ -287,7 +275,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 				setGuard(GUARD_EDEFAULT);
 				return;
 			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
-				setEffects(EFFECTS_EDEFAULT);
+				getEffects().clear();
 				return;
 			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				setBase_RedefinableElement((RedefinableElement)null);
@@ -310,7 +298,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
 				return GUARD_EDEFAULT == null ? guard != null : !GUARD_EDEFAULT.equals(guard);
 			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
-				return EFFECTS_EDEFAULT == null ? effects != null : !EFFECTS_EDEFAULT.equals(effects);
+				return effects != null && !effects.isEmpty();
 			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				return base_RedefinableElement != null;
 			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
