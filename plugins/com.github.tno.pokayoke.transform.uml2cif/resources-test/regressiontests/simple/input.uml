@@ -1,140 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_YvCF8Bd0Ee-SDZ3U5sFKhw" name="Model">
-  <nameExpression xmi:id="_ErnJABd2Ee-SDZ3U5sFKhw" name="literals">
-    <operand xmi:type="uml:LiteralInteger" xmi:id="_HzW9EBd2Ee-SDZ3U5sFKhw" name=""/>
-    <operand xmi:type="uml:LiteralInteger" xmi:id="_IvyJEBd2Ee-SDZ3U5sFKhw" name="" value="1"/>
-  </nameExpression>
-  <packagedElement xmi:type="uml:Class" xmi:id="_hSq68Bd0Ee-SDZ3U5sFKhw" name="Context" visibility="public" classifierBehavior="_6xVtsBd0Ee-SDZ3U5sFKhw" isActive="true">
-    <ownedRule xmi:id="_uaw9IBd1Ee-SDZ3U5sFKhw" name="Req1">
-      <specification xmi:type="uml:OpaqueExpression" xmi:id="_zILugBd1Ee-SDZ3U5sFKhw" name="">
-        <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
-      </specification>
-    </ownedRule>
-    <ownedRule xmi:id="_4Di1QBd1Ee-SDZ3U5sFKhw" name="Req2">
-      <specification xmi:type="uml:OpaqueExpression" xmi:id="_5MVpUBd1Ee-SDZ3U5sFKhw" name="">
-        <body>robot_move_to_location1 needs robotLocation = Location2</body>
-      </specification>
-    </ownedRule>
-    <ownedRule xmi:id="_9i9rUBd1Ee-SDZ3U5sFKhw" name="Req3">
-      <specification xmi:type="uml:OpaqueExpression" xmi:id="_-nAiQBd1Ee-SDZ3U5sFKhw" name="">
-        <body>robot_adjust_product needs robotLocation = Location2</body>
-      </specification>
-    </ownedRule>
-    <ownedAttribute xmi:id="_ii7B4Bd0Ee-SDZ3U5sFKhw" name="robotPrepared" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ii7o8Bd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ii7o8Rd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_kjjc4Bd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_lRs8UBd0Ee-SDZ3U5sFKhw" name="location2Prepared" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_lRtjYBd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_lRtjYRd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_mhLnMBd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_wUNngBd0Ee-SDZ3U5sFKhw" name="robotLocation" visibility="public" type="_m-9vYBd0Ee-SDZ3U5sFKhw">
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_wUOOkBd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_wUOOkRd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_xY9pEBd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>Location1</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_yEf5YBd0Ee-SDZ3U5sFKhw" name="robotHasProduct" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yEggcBd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yEggcRd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_zt_mwBd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>true</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_0cGC4Bd0Ee-SDZ3U5sFKhw" name="location2HasProduct" visibility="public">
-      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0cGp8Bd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0cGp8Rd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_1nW8IBd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>false</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedAttribute xmi:id="_2UAmwBd0Ee-SDZ3U5sFKhw" name="productCorrectlyPlaced" visibility="public" type="_rFL94Bd0Ee-SDZ3U5sFKhw">
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2UBN0Bd0Ee-SDZ3U5sFKhw" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2UBN0Rd0Ee-SDZ3U5sFKhw" value="1"/>
-      <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_3kmr8Bd0Ee-SDZ3U5sFKhw">
-        <language>CIF</language>
-        <body>Unknown</body>
-      </defaultValue>
-    </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_6xVtsBd0Ee-SDZ3U5sFKhw" name="main" isAbstract="true" postcondition="_lJXDMBd1Ee-SDZ3U5sFKhw">
-      <ownedRule xmi:id="_lJXDMBd1Ee-SDZ3U5sFKhw" name="postcondition">
-        <specification xmi:type="uml:OpaqueExpression" xmi:id="_m1ZuQBd1Ee-SDZ3U5sFKhw" name="">
-          <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_YvCF8Bd0Ee-SDZ3U5sFKhw" name="Model">
+    <nameExpression xmi:id="_ErnJABd2Ee-SDZ3U5sFKhw" name="literals">
+      <operand xmi:type="uml:LiteralInteger" xmi:id="_HzW9EBd2Ee-SDZ3U5sFKhw" name=""/>
+      <operand xmi:type="uml:LiteralInteger" xmi:id="_IvyJEBd2Ee-SDZ3U5sFKhw" name="" value="1"/>
+    </nameExpression>
+    <packagedElement xmi:type="uml:Class" xmi:id="_hSq68Bd0Ee-SDZ3U5sFKhw" name="Context" visibility="public" classifierBehavior="_6xVtsBd0Ee-SDZ3U5sFKhw" isActive="true">
+      <ownedRule xmi:id="_uaw9IBd1Ee-SDZ3U5sFKhw" name="Req1">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_zILugBd1Ee-SDZ3U5sFKhw" name="">
+          <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
         </specification>
       </ownedRule>
-      <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_LJdWMBd2Ee-SDZ3U5sFKhw" name="happen_at_most_once" constrainedElement="__QuDEBd0Ee-SDZ3U5sFKhw _HUY-kBd1Ee-SDZ3U5sFKhw _P33bgBd1Ee-SDZ3U5sFKhw _UmoQsBd1Ee-SDZ3U5sFKhw">
-        <specification xmi:type="uml:Interval" xmi:id="_NLEBkBd2Ee-SDZ3U5sFKhw" name="" max="_IvyJEBd2Ee-SDZ3U5sFKhw" min="_HzW9EBd2Ee-SDZ3U5sFKhw"/>
+      <ownedRule xmi:id="_4Di1QBd1Ee-SDZ3U5sFKhw" name="Req2">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_5MVpUBd1Ee-SDZ3U5sFKhw" name="">
+          <body>robot_move_to_location1 needs robotLocation = Location2</body>
+        </specification>
       </ownedRule>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="__QuDEBd0Ee-SDZ3U5sFKhw" name="prepare_robot">
-      <body>not robotPrepared</body>
-      <body>robotPrepared := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DiNtcBd1Ee-SDZ3U5sFKhw" name="robot_move_to_location1">
-      <body>robotPrepared</body>
-      <body>robotLocation := Location1</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_HUY-kBd1Ee-SDZ3U5sFKhw" name="robot_move_to_location2">
-      <body>robotPrepared</body>
-      <body>robotLocation := Location2</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_K-l_cBd1Ee-SDZ3U5sFKhw" name="robot_adjust_product">
-      <body>robotPrepared and productCorrectlyPlaced = False</body>
-      <body>productCorrectlyPlaced := Unknown</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_P33bgBd1Ee-SDZ3U5sFKhw" name="robot_release_product_at_location2">
-      <body>robotPrepared and robotLocation = Location2</body>
-      <body>robotHasProduct := false, location2HasProduct := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UmoQsBd1Ee-SDZ3U5sFKhw" name="prepare_location2">
-      <body>not location2Prepared</body>
-      <body>location2Prepared := true</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_Y-YUEBd1Ee-SDZ3U5sFKhw" name="measure_product_position">
-      <body>location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown</body>
-      <body>productCorrectlyPlaced := True</body>
-      <body>productCorrectlyPlaced := False</body>
-    </ownedBehavior>
-  </packagedElement>
-  <packagedElement xmi:type="uml:Enumeration" xmi:id="_m-9vYBd0Ee-SDZ3U5sFKhw" name="RobotLocation" visibility="public">
-    <ownedLiteral xmi:id="_pOyc8Bd0Ee-SDZ3U5sFKhw" name="Location1">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_pOyc8Rd0Ee-SDZ3U5sFKhw"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_qF3O4Bd0Ee-SDZ3U5sFKhw" name="Location2">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_qF3O4Rd0Ee-SDZ3U5sFKhw" value="1"/>
-    </ownedLiteral>
-  </packagedElement>
-  <packagedElement xmi:type="uml:Enumeration" xmi:id="_rFL94Bd0Ee-SDZ3U5sFKhw" name="UnknownBool" visibility="public">
-    <ownedLiteral xmi:id="_sO4J0Bd0Ee-SDZ3U5sFKhw" name="True">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_sO4w4Bd0Ee-SDZ3U5sFKhw"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_tO9t0Bd0Ee-SDZ3U5sFKhw" name="False">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_tO-78Bd0Ee-SDZ3U5sFKhw" value="1"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_uBZ3YBd0Ee-SDZ3U5sFKhw" name="Unknown">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_uBZ3YRd0Ee-SDZ3U5sFKhw" value="2"/>
-    </ownedLiteral>
-  </packagedElement>
-  <profileApplication xmi:id="_kVE8ABd0Ee-SDZ3U5sFKhw">
-    <eAnnotations xmi:id="_kVH_UBd0Ee-SDZ3U5sFKhw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
-    </eAnnotations>
-    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
-  </profileApplication>
-</uml:Model>
+      <ownedRule xmi:id="_9i9rUBd1Ee-SDZ3U5sFKhw" name="Req3">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_-nAiQBd1Ee-SDZ3U5sFKhw" name="">
+          <body>robot_adjust_product needs robotLocation = Location2</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="_ii7B4Bd0Ee-SDZ3U5sFKhw" name="robotPrepared" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ii7o8Bd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ii7o8Rd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_kjjc4Bd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_lRs8UBd0Ee-SDZ3U5sFKhw" name="location2Prepared" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_lRtjYBd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_lRtjYRd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_mhLnMBd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_wUNngBd0Ee-SDZ3U5sFKhw" name="robotLocation" visibility="public" type="_m-9vYBd0Ee-SDZ3U5sFKhw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_wUOOkBd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_wUOOkRd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_xY9pEBd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>Location1</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_yEf5YBd0Ee-SDZ3U5sFKhw" name="robotHasProduct" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yEggcBd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yEggcRd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_zt_mwBd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0cGC4Bd0Ee-SDZ3U5sFKhw" name="location2HasProduct" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0cGp8Bd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0cGp8Rd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_1nW8IBd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_2UAmwBd0Ee-SDZ3U5sFKhw" name="productCorrectlyPlaced" visibility="public" type="_rFL94Bd0Ee-SDZ3U5sFKhw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2UBN0Bd0Ee-SDZ3U5sFKhw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2UBN0Rd0Ee-SDZ3U5sFKhw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_3kmr8Bd0Ee-SDZ3U5sFKhw">
+          <language>CIF</language>
+          <body>Unknown</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_6xVtsBd0Ee-SDZ3U5sFKhw" name="main" isAbstract="true" postcondition="_lJXDMBd1Ee-SDZ3U5sFKhw">
+        <ownedRule xmi:id="_lJXDMBd1Ee-SDZ3U5sFKhw" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_m1ZuQBd1Ee-SDZ3U5sFKhw" name="">
+            <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_LJdWMBd2Ee-SDZ3U5sFKhw" name="happen_at_most_once" constrainedElement="__QuDEBd0Ee-SDZ3U5sFKhw _HUY-kBd1Ee-SDZ3U5sFKhw _P33bgBd1Ee-SDZ3U5sFKhw _UmoQsBd1Ee-SDZ3U5sFKhw">
+          <specification xmi:type="uml:Interval" xmi:id="_NLEBkBd2Ee-SDZ3U5sFKhw" name="" max="_IvyJEBd2Ee-SDZ3U5sFKhw" min="_HzW9EBd2Ee-SDZ3U5sFKhw"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="__QuDEBd0Ee-SDZ3U5sFKhw" name="prepare_robot">
+        <body>not robotPrepared</body>
+        <body>robotPrepared := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DiNtcBd1Ee-SDZ3U5sFKhw" name="robot_move_to_location1">
+        <body>robotPrepared</body>
+        <body>robotLocation := Location1</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_HUY-kBd1Ee-SDZ3U5sFKhw" name="robot_move_to_location2">
+        <body>robotPrepared</body>
+        <body>robotLocation := Location2</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_K-l_cBd1Ee-SDZ3U5sFKhw" name="robot_adjust_product">
+        <body>robotPrepared and productCorrectlyPlaced = False</body>
+        <body>productCorrectlyPlaced := Unknown</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_P33bgBd1Ee-SDZ3U5sFKhw" name="robot_release_product_at_location2">
+        <body>robotPrepared and robotLocation = Location2</body>
+        <body>robotHasProduct := false, location2HasProduct := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UmoQsBd1Ee-SDZ3U5sFKhw" name="prepare_location2">
+        <body>not location2Prepared</body>
+        <body>location2Prepared := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_Y-YUEBd1Ee-SDZ3U5sFKhw" name="measure_product_position">
+        <body>location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown</body>
+        <body>productCorrectlyPlaced := True</body>
+        <body>productCorrectlyPlaced := False</body>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_m-9vYBd0Ee-SDZ3U5sFKhw" name="RobotLocation" visibility="public">
+      <ownedLiteral xmi:id="_pOyc8Bd0Ee-SDZ3U5sFKhw" name="Location1">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_pOyc8Rd0Ee-SDZ3U5sFKhw"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_qF3O4Bd0Ee-SDZ3U5sFKhw" name="Location2">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_qF3O4Rd0Ee-SDZ3U5sFKhw" value="1"/>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_rFL94Bd0Ee-SDZ3U5sFKhw" name="UnknownBool" visibility="public">
+      <ownedLiteral xmi:id="_sO4J0Bd0Ee-SDZ3U5sFKhw" name="True">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_sO4w4Bd0Ee-SDZ3U5sFKhw"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_tO9t0Bd0Ee-SDZ3U5sFKhw" name="False">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_tO-78Bd0Ee-SDZ3U5sFKhw" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_uBZ3YBd0Ee-SDZ3U5sFKhw" name="Unknown">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_uBZ3YRd0Ee-SDZ3U5sFKhw" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="_kVE8ABd0Ee-SDZ3U5sFKhw">
+      <eAnnotations xmi:id="_kVH_UBd0Ee-SDZ3U5sFKhw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_7xYaUGq2Ee-WMPTErzIKyg" guard="not robotPrepared" base_RedefinableElement="__QuDEBd0Ee-SDZ3U5sFKhw">
+    <effects>robotPrepared := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBYGq2Ee-WMPTErzIKyg" guard="robotPrepared" base_RedefinableElement="_DiNtcBd1Ee-SDZ3U5sFKhw">
+    <effects>robotLocation := Location1</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBYWq2Ee-WMPTErzIKyg" guard="robotPrepared" base_RedefinableElement="_HUY-kBd1Ee-SDZ3U5sFKhw">
+    <effects>robotLocation := Location2</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBYmq2Ee-WMPTErzIKyg" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="_K-l_cBd1Ee-SDZ3U5sFKhw">
+    <effects>productCorrectlyPlaced := Unknown</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBY2q2Ee-WMPTErzIKyg" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="_P33bgBd1Ee-SDZ3U5sFKhw">
+    <effects>robotHasProduct := false, location2HasProduct := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBZGq2Ee-WMPTErzIKyg" guard="not location2Prepared" base_RedefinableElement="_UmoQsBd1Ee-SDZ3U5sFKhw">
+    <effects>location2Prepared := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_7xZBZWq2Ee-WMPTErzIKyg" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="_Y-YUEBd1Ee-SDZ3U5sFKhw">
+    <effects>productCorrectlyPlaced := True</effects>
+    <effects>productCorrectlyPlaced := False</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

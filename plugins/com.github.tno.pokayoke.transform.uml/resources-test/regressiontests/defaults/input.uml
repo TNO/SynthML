@@ -87,5 +87,9 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_X398YAxCEe-xDvtDM-gL4Q" guard="myBool" effects="myBool := false,&#xD;&#xA;myChoice := A,&#xD;&#xA;myPercentage := 50" base_RedefinableElement="_S4OE4AxCEe-xDvtDM-gL4Q"/>
+  <PokaYoke:FormalElement xmi:id="_X398YAxCEe-xDvtDM-gL4Q" guard="myBool" base_RedefinableElement="_S4OE4AxCEe-xDvtDM-gL4Q">
+    <effects>myBool := false,&#xD;
+myChoice := A,&#xD;
+myPercentage := 50</effects>
+  </PokaYoke:FormalElement>
 </xmi:XMI>

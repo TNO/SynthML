@@ -2,6 +2,8 @@
  */
 package PokaYoke;
 
+import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -49,26 +51,16 @@ public interface FormalElement extends EObject {
 	void setGuard(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Effects</b></em>' attribute.
+	 * Returns the value of the '<em><b>Effects</b></em>' attribute list.
+	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Effects</em>' attribute.
-	 * @see #setEffects(String)
+	 * @return the value of the '<em>Effects</em>' attribute list.
 	 * @see PokaYoke.PokaYokePackage#getFormalElement_Effects()
 	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
-	String getEffects();
-
-	/**
-	 * Sets the value of the '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Effects</em>' attribute.
-	 * @see #getEffects()
-	 * @generated
-	 */
-	void setEffects(String value);
+	EList<String> getEffects();
 
 	/**
 	 * Returns the value of the '<em><b>Base Redefinable Element</b></em>' reference.

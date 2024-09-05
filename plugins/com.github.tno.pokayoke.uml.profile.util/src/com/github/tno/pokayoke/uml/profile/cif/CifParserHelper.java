@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,11 +65,16 @@ public class CifParserHelper {
         return updatesParser.parseString(updates, getLocation(context));
     }
 
-    public static List<AUpdate> parseEffects(RedefinableElement element) throws SyntaxException {
+    public static List<List<AUpdate>> parseEffects(RedefinableElement element) throws SyntaxException {
         if (element == null) {
             return null;
         }
-        return parseUpdates(PokaYokeUmlProfileUtil.getEffects(element), element);
+        List<String> updatesList = PokaYokeUmlProfileUtil.getEffectsList(element);
+        List<List<AUpdate>> effects = new ArrayList<>(updatesList.size());
+        for (String updates: updatesList) {
+            effects.add(parseUpdates(updates, element));
+        }
+        return effects;
     }
 
     public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {

@@ -1,11 +1,17 @@
 
 package com.github.tno.pokayoke.uml.profile.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.lsat.common.util.IterableUtil;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -67,14 +73,40 @@ public class PokaYokeUmlProfileUtil {
         element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
     }
 
+    @Deprecated
     public static String getEffects(RedefinableElement element) {
-        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
-                .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS)).orElse(null);
+        return IterableUtil.first(getEffectsList(element));
     }
 
+    @SuppressWarnings("unchecked")
+    public static List<String> getEffectsList(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS)))
+                .orElse(new ArrayList<>());
+    }
+
+    @Deprecated
     public static void setEffects(RedefinableElement element, String newValue) {
+        setEffectsList(element, Arrays.asList(newValue));
+    }
+
+    /**
+     * Sets {@code newValue} as contents of the {@link FormalElement#getEffects() effects list}. We are using a setter
+     * here to deal with the stereotype that is required to set the value. We do not want to implicitly create the
+     * stereotype on read, but explicitly create it on write.
+     *
+     * @param element The element to set the property on.
+     * @param newValue The new property value.
+     */
+    @SuppressWarnings("unchecked")
+    public static void setEffectsList(RedefinableElement element, List<String> newValue) {
         Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
-        element.setValue(st, PROP_FORMAL_ELEMENT_EFFECTS, newValue);
+        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS);
+        if (newValue == null) {
+            value.clear();
+        } else {
+            ECollections.setEList(value, newValue);
+        }
     }
 
     public static boolean isAtomic(RedefinableElement element) {

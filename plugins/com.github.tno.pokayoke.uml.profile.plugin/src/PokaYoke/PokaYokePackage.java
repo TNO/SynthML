@@ -76,7 +76,7 @@ public interface PokaYokePackage extends EPackage {
 	int FORMAL_ELEMENT__GUARD = 0;
 
 	/**
-	 * The feature id for the '<em><b>Effects</b></em>' attribute.
+	 * The feature id for the '<em><b>Effects</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -143,10 +143,10 @@ public interface PokaYokePackage extends EPackage {
 	EAttribute getFormalElement_Guard();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}'.
+	 * Returns the meta object for the attribute list '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Effects</em>'.
+	 * @return the meta object for the attribute list '<em>Effects</em>'.
 	 * @see PokaYoke.FormalElement#getEffects()
 	 * @see #getFormalElement()
 	 * @generated
@@ -217,7 +217,7 @@ public interface PokaYokePackage extends EPackage {
 		EAttribute FORMAL_ELEMENT__GUARD = eINSTANCE.getFormalElement_Guard();
 
 		/**
-		 * The meta object literal for the '<em><b>Effects</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Effects</b></em>' attribute list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated

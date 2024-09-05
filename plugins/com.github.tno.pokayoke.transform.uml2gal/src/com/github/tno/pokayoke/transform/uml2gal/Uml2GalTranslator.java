@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2gal;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -43,6 +45,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import fr.lip6.move.gal.Assignment;
 import fr.lip6.move.gal.BooleanExpression;
@@ -292,7 +295,12 @@ public class Uml2GalTranslator {
         // Translate the guards and effects of the given action, and include them in the GAL transition.
         BooleanExpression guard = expressionTranslator.translateBoolExpr(CifParserHelper.parseGuard(node));
         List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
-        List<Assignment> effects = expressionTranslator.translateUpdates(CifParserHelper.parseEffects(node));
+        List<List<AUpdate>> updates = CifParserHelper.parseEffects(node);
+        if (updates.size() > 1) {
+            throw new RuntimeException("Multiple effects are not supported yet, on activity node: " + node);
+        }
+        List<Assignment> effects = expressionTranslator
+                .translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
 
         typeBuilder
                 .addTransition(translateActivityNode(node, node.getIncomings(), node.getOutgoings(), guards, effects));
