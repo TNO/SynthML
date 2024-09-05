@@ -417,7 +417,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 // No shadowing
                 return;
             }
-            if (isFormalActivity(subActivity, new HashSet<>())) {
+            if (isGuardEffectsActivity(subActivity, new HashSet<>())) {
                 warning("The guard and effects on this call behavior action overrides the guards and effects of its sub-activity",
                         null);
             }
@@ -427,10 +427,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private static boolean isFormalActivity(Activity activity, Set<Activity> history) {
-        boolean containsFormalElements = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
-                .exists(PokaYokeUmlProfileUtil::isFormalElement);
-        if (containsFormalElements) {
+    private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
+        boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
+                .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
+        if (containsGuardEffectsActions) {
             return true;
         } else if (!history.add(activity)) {
             // Cope with cycles
@@ -438,7 +438,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         return from(activity.getOwnedNodes()).objectsOfKind(CallBehaviorAction.class)
                 .xcollectOne(CallBehaviorAction::getBehavior).objectsOfKind(Activity.class)
-                .exists(a -> isFormalActivity(a, history));
+                .exists(a -> isGuardEffectsActivity(a, history));
     }
 
     /**
@@ -466,7 +466,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidEffects(RedefinableElement element) {
-        List<String> effects = PokaYokeUmlProfileUtil.getEffectsList(element);
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
         for (int i = 0; i < effects.size(); i++) {
             try {
                 checkValidUpdates(CifParserHelper.parseUpdates(effects.get(i), element), element);

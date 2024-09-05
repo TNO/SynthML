@@ -39,10 +39,10 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_uXiQ4GqhEe-qao499TBi1A" guard="not field1" base_RedefinableElement="_GBaVACfiEe-Yd-UzBcvFKg">
+  <PokaYoke:FormalElement xmi:id="_uXiQ4GqhEe-qao499TBi1A" guard="not field1" base_RedefinableElement="_GBaVACfiEe-Yd-UzBcvFKg" atomic="true">
     <effects>field2 := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_uXjfAGqhEe-qao499TBi1A" guard="field1" base_RedefinableElement="_o-BaICfoEe-tYas_VaobtQ">
+  <PokaYoke:FormalElement xmi:id="_uXjfAGqhEe-qao499TBi1A" guard="field1" base_RedefinableElement="_o-BaICfoEe-tYas_VaobtQ" atomic="true">
     <effects>field2 := true</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

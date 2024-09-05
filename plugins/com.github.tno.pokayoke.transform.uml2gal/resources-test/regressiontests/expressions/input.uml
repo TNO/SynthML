@@ -39,7 +39,7 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = A" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA">
+  <PokaYoke:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = A" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA" atomic="true">
     <effects>myEnum := B,&#xD;
 myBool := (true != not true) and (myEnum = B or myBool = (false and false))&#xD;
 </effects>

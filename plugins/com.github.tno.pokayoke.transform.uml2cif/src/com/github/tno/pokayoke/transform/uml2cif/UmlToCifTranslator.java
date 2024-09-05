@@ -200,6 +200,11 @@ public class UmlToCifTranslator {
 
         for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
+                if (!PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior)) {
+                    throw new RuntimeException(
+                            String.format("Non-atomic action '%s'is not supported yet!", umlOpaqueBehavior.getName()));
+                }
+
                 Expression guard = getGuard(umlOpaqueBehavior);
                 List<List<Update>> effects = getEffects(umlOpaqueBehavior);
 

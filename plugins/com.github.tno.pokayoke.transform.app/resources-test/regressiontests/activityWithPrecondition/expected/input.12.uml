@@ -57,7 +57,7 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_hzMmkGqhEe-qao499TBi1A" guard="element != Third" base_RedefinableElement="9">
+  <PokaYoke:FormalElement xmi:id="_hzMmkGqhEe-qao499TBi1A" guard="element != Third" base_RedefinableElement="9" atomic="true">
     <effects>element := Second</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

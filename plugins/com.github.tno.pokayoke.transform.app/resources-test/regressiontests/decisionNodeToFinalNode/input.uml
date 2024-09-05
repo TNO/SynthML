@@ -33,7 +33,7 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_s1G00GqhEe-qao499TBi1A" guard="true" base_RedefinableElement="_h0vMkCiTEe-7ULz3tevy1w">
+  <PokaYoke:FormalElement xmi:id="_s1G00GqhEe-qao499TBi1A" guard="true" base_RedefinableElement="_h0vMkCiTEe-7ULz3tevy1w" atomic="true">
     <effects>field := true</effects>
     <effects>field := false</effects>
   </PokaYoke:FormalElement>

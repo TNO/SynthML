@@ -66,17 +66,17 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_I-7xoPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw">
+  <PokaYoke:FormalElement xmi:id="_I-7xoPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot1_claimed := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_I-8YsPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw">
+  <PokaYoke:FormalElement xmi:id="_I-8YsPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot2_claimed := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_I-8YsfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_XTDwsI3LEe6_8e6M7syDNw">
+  <PokaYoke:FormalElement xmi:id="_I-8YsfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_XTDwsI3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot1_claimed := false,
 robot2_claimed := false</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_I-8YsvyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_aS-ecI3LEe6_8e6M7syDNw">
+  <PokaYoke:FormalElement xmi:id="_I-8YsvyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_aS-ecI3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot1_claimed := false,
 robot2_claimed := false</effects>
   </PokaYoke:FormalElement>

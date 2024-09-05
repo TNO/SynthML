@@ -41,7 +41,7 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_vvuy4GqhEe-qao499TBi1A" guard="element != Third" base_RedefinableElement="_UdMy0CP1Ee-FSYGmPhs3xA">
+  <PokaYoke:FormalElement xmi:id="_vvuy4GqhEe-qao499TBi1A" guard="element != Third" base_RedefinableElement="_UdMy0CP1Ee-FSYGmPhs3xA" atomic="true">
     <effects>element := Second</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

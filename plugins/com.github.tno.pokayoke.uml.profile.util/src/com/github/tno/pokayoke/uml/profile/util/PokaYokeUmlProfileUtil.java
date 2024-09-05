@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.uml.profile.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.lsat.common.util.IterableUtil;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -63,6 +61,11 @@ public class PokaYokeUmlProfileUtil {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
     }
 
+    public static boolean isSetGuard(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> element.hasValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(false);
+    }
+
     public static String getGuard(RedefinableElement element) {
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
@@ -73,33 +76,38 @@ public class PokaYokeUmlProfileUtil {
         element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
     }
 
-    @Deprecated
-    public static String getEffects(RedefinableElement element) {
-        return IterableUtil.first(getEffectsList(element));
+    public static boolean isSetEffects(RedefinableElement element) {
+        return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
+                .map(st -> element.hasValue(st, PROP_FORMAL_ELEMENT_EFFECTS)).orElse(false);
     }
 
+    /**
+     * Returns the contents of the {@link FormalElement#getEffects() effects} if the {@link FormalElement} stereotype is
+     * applied on {@code element}, and an empty list otherwise. The returned list is a copy of the effects and as such,
+     * modifications to the list are not reflected on the {@code element}. Instead, use the
+     * {@link #setEffects(RedefinableElement, List)} method to set the new value on the {@code element}.
+     *
+     * @param element The element to get the property from.
+     * @return The new property value.
+     * @see #setEffects(RedefinableElement, List)
+     */
     @SuppressWarnings("unchecked")
-    public static List<String> getEffectsList(RedefinableElement element) {
+    public static List<String> getEffects(RedefinableElement element) {
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS)))
                 .orElse(new ArrayList<>());
     }
 
-    @Deprecated
-    public static void setEffects(RedefinableElement element, String newValue) {
-        setEffectsList(element, Arrays.asList(newValue));
-    }
-
     /**
-     * Sets {@code newValue} as contents of the {@link FormalElement#getEffects() effects list}. We are using a setter
-     * here to deal with the stereotype that is required to set the value. We do not want to implicitly create the
-     * stereotype on read, but explicitly create it on write.
+     * Sets {@code newValue} as contents of the {@link FormalElement#getEffects() effects}. We are using a setter here
+     * to deal with the stereotype that is required to set the value. We do not want to implicitly create the stereotype
+     * on read, but explicitly create it on write.
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
     @SuppressWarnings("unchecked")
-    public static void setEffectsList(RedefinableElement element, List<String> newValue) {
+    public static void setEffects(RedefinableElement element, List<String> newValue) {
         Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
         EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS);
         if (newValue == null) {

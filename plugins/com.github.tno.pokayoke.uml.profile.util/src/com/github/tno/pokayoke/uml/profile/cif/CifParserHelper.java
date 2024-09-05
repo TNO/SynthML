@@ -69,12 +69,12 @@ public class CifParserHelper {
         if (element == null) {
             return null;
         }
-        List<String> updatesList = PokaYokeUmlProfileUtil.getEffectsList(element);
-        List<List<AUpdate>> effects = new ArrayList<>(updatesList.size());
-        for (String updates: updatesList) {
-            effects.add(parseUpdates(updates, element));
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
+        List<List<AUpdate>> updates = new ArrayList<>(effects.size());
+        for (String effect: effects) {
+            updates.add(parseUpdates(effect, element));
         }
-        return effects;
+        return updates;
     }
 
     public static AInvariant parseInvariant(Constraint constraint) throws SyntaxException {

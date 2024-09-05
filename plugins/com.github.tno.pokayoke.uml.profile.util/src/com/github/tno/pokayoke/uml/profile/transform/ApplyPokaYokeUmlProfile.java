@@ -51,15 +51,15 @@ public class ApplyPokaYokeUmlProfile {
     private static void applyUmlProfile(OpaqueAction action) {
         if (PokaYokeUmlProfileUtil.isFormalElement(action)) {
             String guard = PokaYokeUmlProfileUtil.getGuard(action);
-            List<String> effectsList = PokaYokeUmlProfileUtil.getEffectsList(action);
-            if (effectsList.size() > 1) {
+            List<String> effects = PokaYokeUmlProfileUtil.getEffects(action);
+            if (effects.size() > 1) {
                 throw new RuntimeException("Multi-effects are not supported on OpaqueActions");
             }
             // Data provisioned on stereotype, copy to bodies
             action.getBodies().clear();
             action.getBodies().add(Strings.isNullOrEmpty(guard) ? "true" : guard);
-            if (!effectsList.isEmpty()) {
-                action.getBodies().addAll(Arrays.asList(effectsList.get(0).split(",")));
+            if (!effects.isEmpty()) {
+                action.getBodies().addAll(Arrays.asList(effects.get(0).split(",")));
             }
             return;
         } else if (action.getBodies().isEmpty()) {
@@ -74,7 +74,7 @@ public class ApplyPokaYokeUmlProfile {
         while (bodiesIterator.hasNext()) {
             effectsBuilder.append(",\n").append(bodiesIterator.next());
         }
-        PokaYokeUmlProfileUtil.setEffectsList(action, Arrays.asList(effectsBuilder.toString()));
+        PokaYokeUmlProfileUtil.setEffects(action, Arrays.asList(effectsBuilder.toString()));
     }
 
     /**
@@ -88,17 +88,17 @@ public class ApplyPokaYokeUmlProfile {
     private static void applyUmlProfile(OpaqueBehavior behavior) {
         if (PokaYokeUmlProfileUtil.isFormalElement(behavior)) {
             String guard = PokaYokeUmlProfileUtil.getGuard(behavior);
-            List<String> effectsList = PokaYokeUmlProfileUtil.getEffectsList(behavior);
+            List<String> effects = PokaYokeUmlProfileUtil.getEffects(behavior);
 
             // Data provisioned on stereotype, copy to bodies
-            effectsList.add(0, Strings.isNullOrEmpty(guard) ? "true" : guard);
-            ECollections.setEList(behavior.getBodies(), effectsList);
+            effects.add(0, Strings.isNullOrEmpty(guard) ? "true" : guard);
+            ECollections.setEList(behavior.getBodies(), effects);
             return;
         } else if (behavior.getBodies().isEmpty()) {
             return;
         }
         Iterator<String> bodiesIterator = behavior.getBodies().iterator();
         PokaYokeUmlProfileUtil.setGuard(behavior, bodiesIterator.next());
-        PokaYokeUmlProfileUtil.setEffectsList(behavior, Lists.newArrayList(bodiesIterator));
+        PokaYokeUmlProfileUtil.setEffects(behavior, Lists.newArrayList(bodiesIterator));
     }
 }

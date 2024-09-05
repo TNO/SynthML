@@ -327,6 +327,10 @@ public class UMLTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
+        if (!PokaYokeUmlProfileUtil.isAtomic(action)) {
+            throw new RuntimeException(String.format("Non-atomic action '%s'is not supported yet!", action.getName()));
+        }
+
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         String guard = translator.translateExpression(CifParserHelper.parseGuard(action));

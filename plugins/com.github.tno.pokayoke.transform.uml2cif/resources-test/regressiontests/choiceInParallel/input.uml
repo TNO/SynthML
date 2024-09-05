@@ -104,22 +104,22 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_55x_gGq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="__V22MBd-Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55x_gGq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="__V22MBd-Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Computer_On := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_55x_gWq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="_DsYxkBd_Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55x_gWq2Ee-WMPTErzIKyg" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="_DsYxkBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Computer_Ready := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_55x_gmq2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="_IWUKEBd_Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55x_gmq2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="_IWUKEBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_55x_g2q2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="_NPjJ4Bd_Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55x_g2q2Ee-WMPTErzIKyg" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="_NPjJ4Bd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_55ymkGq2Ee-WMPTErzIKyg" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="_R67T4Bd_Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55ymkGq2Ee-WMPTErzIKyg" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="_R67T4Bd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Ready_to_Work:= true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_55ymkWq2Ee-WMPTErzIKyg" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="_WE8dQBd_Ee-TFtQPmfUP2A">
+  <PokaYoke:FormalElement xmi:id="_55ymkWq2Ee-WMPTErzIKyg" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="_WE8dQBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Coffee_or_Tea:= Coffee</effects>
     <effects>Coffee_or_Tea:= Tea</effects>
   </PokaYoke:FormalElement>

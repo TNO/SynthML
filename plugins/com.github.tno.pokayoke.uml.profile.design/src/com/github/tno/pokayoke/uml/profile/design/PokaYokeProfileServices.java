@@ -107,7 +107,7 @@ public class PokaYokeProfileServices {
     }
 
     public boolean isSetGuard(RedefinableElement element) {
-        return getGuard(element) != null;
+        return PokaYokeUmlProfileUtil.isSetGuard(element);
     }
 
     /**
@@ -119,7 +119,7 @@ public class PokaYokeProfileServices {
      *     <code>null</code> otherwise.
      */
     public String getEffects(RedefinableElement element) {
-        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getEffectsList(element));
+        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getEffects(element));
     }
 
     /**
@@ -149,9 +149,9 @@ public class PokaYokeProfileServices {
         }
         if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value
-            PokaYokeUmlProfileUtil.setEffectsList(element, null);
+            PokaYokeUmlProfileUtil.setEffects(element, null);
         } else {
-            PokaYokeUmlProfileUtil.setEffectsList(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
+            PokaYokeUmlProfileUtil.setEffects(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
         }
     }
 
@@ -160,7 +160,7 @@ public class PokaYokeProfileServices {
     }
 
     public boolean isSetEffects(RedefinableElement element) {
-        return !PokaYokeUmlProfileUtil.getEffectsList(element).isEmpty();
+        return PokaYokeUmlProfileUtil.isSetEffects(element);
     }
 
     /**
