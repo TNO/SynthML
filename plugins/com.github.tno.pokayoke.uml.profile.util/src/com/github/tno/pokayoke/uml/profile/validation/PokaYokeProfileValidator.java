@@ -413,7 +413,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         Behavior behavior = action.getBehavior();
         if (behavior instanceof Activity subActivity) {
-            if (!PokaYokeUmlProfileUtil.isFormalElement(action)) {
+            if (!PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
                 // No shadowing
                 return;
             }

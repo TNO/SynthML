@@ -10,6 +10,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -59,6 +60,10 @@ public class PokaYokeUmlProfileUtil {
      */
     public static boolean isFormalElement(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
+    }
+
+    public static boolean isGuardEffectsAction(Action action) {
+        return isSetGuard(action) || isSetEffects(action);
     }
 
     public static boolean isSetGuard(RedefinableElement element) {
