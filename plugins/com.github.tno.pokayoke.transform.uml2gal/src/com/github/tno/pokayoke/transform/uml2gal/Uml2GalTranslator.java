@@ -293,7 +293,7 @@ public class Uml2GalTranslator {
 
     private void translateActionNode(Action node) {
         if (!PokaYokeUmlProfileUtil.isAtomic(node)) {
-            throw new RuntimeException(String.format("Non-atomic action '%s'is not supported yet!", node.getName()));
+            throw new RuntimeException(String.format("Non-atomic action '%s' is not supported yet!", node.getName()));
         }
 
         // Translate the guards and effects of the given action, and include them in the GAL transition.

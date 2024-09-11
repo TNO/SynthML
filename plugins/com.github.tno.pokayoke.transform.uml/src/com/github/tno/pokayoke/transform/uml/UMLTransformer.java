@@ -328,7 +328,7 @@ public class UMLTransformer {
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
         if (!PokaYokeUmlProfileUtil.isAtomic(action)) {
-            throw new RuntimeException(String.format("Non-atomic action '%s'is not supported yet!", action.getName()));
+            throw new RuntimeException(String.format("Non-atomic action '%s' is not supported yet!", action.getName()));
         }
 
         // Extract the guard of the action, if any, to be encoded later.
