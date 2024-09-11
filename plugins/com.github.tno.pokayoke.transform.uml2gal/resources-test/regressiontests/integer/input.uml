@@ -67,5 +67,9 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:GuardEffectsAction xmi:id="_KNd3QPGTEe6asLMew-pIxQ" guard="intA2 &lt; 8" effects="intA1 := intA1 + 1,&#xD;&#xA;intB1 := 16&#xD;&#xA;" base_Action="_CVWrgPGTEe6asLMew-pIxQ"/>
+  <PokaYoke:FormalElement xmi:id="_KNd3QPGTEe6asLMew-pIxQ" guard="intA2 &lt; 8" base_RedefinableElement="_CVWrgPGTEe6asLMew-pIxQ" atomic="true">
+    <effects>intA1 := intA1 + 1,&#xD;
+intB1 := 16&#xD;
+</effects>
+  </PokaYoke:FormalElement>
 </xmi:XMI>

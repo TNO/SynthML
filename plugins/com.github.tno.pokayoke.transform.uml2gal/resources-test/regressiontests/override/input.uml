@@ -56,18 +56,10 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="_wGQMgI-XEe6xDuEp1zNm9g" target="_l-w_II-XEe6xDuEp1zNm9g" source="_sJCJAo-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:InitialNode" xmi:id="_koqu4I-XEe6xDuEp1zNm9g" name="" outgoing="_vowYMI-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="_l-w_II-XEe6xDuEp1zNm9g" name="" incoming="_wGQMgI-XEe6xDuEp1zNm9g"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJAI-XEe6xDuEp1zNm9g" name="process_A" incoming="_sJCJCI-XEe6xDuEp1zNm9g" outgoing="_sJCJBI-XEe6xDuEp1zNm9g">
-          <body>true</body>
-          <body>robot1_claimed := false</body>
-          <body>robot2_claimed := false</body>
-        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJAI-XEe6xDuEp1zNm9g" name="process_A" incoming="_sJCJCI-XEe6xDuEp1zNm9g" outgoing="_sJCJBI-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:DecisionNode" xmi:id="_sJCJAY-XEe6xDuEp1zNm9g" name="" incoming="_vowYMI-XEe6xDuEp1zNm9g" outgoing="_sJCJCI-XEe6xDuEp1zNm9g _sJCJBo-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:MergeNode" xmi:id="_sJCJAo-XEe6xDuEp1zNm9g" name="" incoming="_sJCJBY-XEe6xDuEp1zNm9g _sJCJBI-XEe6xDuEp1zNm9g" outgoing="_wGQMgI-XEe6xDuEp1zNm9g"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJA4-XEe6xDuEp1zNm9g" name="process_B" incoming="_sJCJBo-XEe6xDuEp1zNm9g" outgoing="_sJCJBY-XEe6xDuEp1zNm9g">
-          <body>true</body>
-          <body>robot1_claimed := false</body>
-          <body>robot2_claimed := false</body>
-        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJA4-XEe6xDuEp1zNm9g" name="process_B" incoming="_sJCJBo-XEe6xDuEp1zNm9g" outgoing="_sJCJBY-XEe6xDuEp1zNm9g"/>
       </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_iJrxcI3KEe6_8e6M7syDNw" name="InputLocation">
@@ -81,9 +73,22 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:GuardEffectsAction xmi:id="_IK3QYPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" effects="robot1_claimed := true" base_Action="_Rj_8II3LEe6_8e6M7syDNw"/>
-  <PokaYoke:GuardEffectsAction xmi:id="_IK33cPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" effects="robot2_claimed := true" base_Action="_SkzR0I3LEe6_8e6M7syDNw"/>
-  <PokaYoke:GuardEffectsAction xmi:id="_IK33cfyWEe6JbLeUfj0rXg" guard="true" effects="robot1_claimed := false,&#xA;robot2_claimed := false" base_Action="_sJCJAI-XEe6xDuEp1zNm9g"/>
-  <PokaYoke:GuardEffectsAction xmi:id="_IK4egPyWEe6JbLeUfj0rXg" guard="true" effects="robot1_claimed := false,&#xA;robot2_claimed := false" base_Action="_sJCJA4-XEe6xDuEp1zNm9g"/>
-  <PokaYoke:GuardEffectsAction xmi:id="_OH074AFpEe-kj6Ms76Mokg" guard="true" effects="robot1_claimed := false,&#xD;&#xA;robot2_claimed := false" base_Action="_yXwVEI-XEe6xDuEp1zNm9g"/>
+  <PokaYoke:FormalElement xmi:id="_IK3QYPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw" atomic="true">
+    <effects>robot1_claimed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK33cPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw" atomic="true">
+    <effects>robot2_claimed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_OH074AFpEe-kj6Ms76Mokg" guard="true" base_RedefinableElement="_yXwVEI-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1_claimed := false,&#xD;
+robot2_claimed := false</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK33cfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJAI-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1_claimed := false,
+robot2_claimed := false</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK4egPyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJA4-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1_claimed := false,
+robot2_claimed := false</effects>
+  </PokaYoke:FormalElement>
 </xmi:XMI>

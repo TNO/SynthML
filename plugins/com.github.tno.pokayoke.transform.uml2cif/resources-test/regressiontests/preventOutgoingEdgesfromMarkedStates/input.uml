@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Fz_twCP1Ee-FSYGmPhs3xA" name="Model">
-  <packagedElement xmi:type="uml:Class" xmi:id="_Jlm-MCP1Ee-FSYGmPhs3xA" name="Class" visibility="public" classifierBehavior="_baPdcCP1Ee-FSYGmPhs3xA" isActive="true">
-    <ownedAttribute xmi:id="_PF1skCP1Ee-FSYGmPhs3xA" name="element" visibility="public" type="_KiVFICP1Ee-FSYGmPhs3xA">
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_PF26sCP1Ee-FSYGmPhs3xA" value="1"/>
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_PF26sSP1Ee-FSYGmPhs3xA" value="1"/>
-    </ownedAttribute>
-    <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UdMy0CP1Ee-FSYGmPhs3xA" name="change">
-      <body>element != Third</body>
-      <body>element := Second</body>
-    </ownedBehavior>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_baPdcCP1Ee-FSYGmPhs3xA" name="main" isAbstract="true" postcondition="_gKRd8CP1Ee-FSYGmPhs3xA" precondition="_xYW6kCP1Ee-FSYGmPhs3xA">
-      <ownedRule xmi:id="_gKRd8CP1Ee-FSYGmPhs3xA" name="post">
-        <specification xmi:type="uml:OpaqueExpression" xmi:id="_iMaU0CP1Ee-FSYGmPhs3xA" name="">
-          <body>element = Second</body>
-        </specification>
-      </ownedRule>
-      <ownedRule xmi:id="_xYW6kCP1Ee-FSYGmPhs3xA" name="pre">
-        <specification xmi:type="uml:OpaqueExpression" xmi:id="_1OyZkCP1Ee-FSYGmPhs3xA" name="">
-          <body>element = First</body>
-        </specification>
-      </ownedRule>
-    </ownedBehavior>
-  </packagedElement>
-  <packagedElement xmi:type="uml:Enumeration" xmi:id="_KiVFICP1Ee-FSYGmPhs3xA" name="Number" visibility="public">
-    <ownedLiteral xmi:id="_MhguoCP1Ee-FSYGmPhs3xA" name="First">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_MhhVsCP1Ee-FSYGmPhs3xA"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_NYrAICP1Ee-FSYGmPhs3xA" name="Second">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_NYrAISP1Ee-FSYGmPhs3xA" value="1"/>
-    </ownedLiteral>
-    <ownedLiteral xmi:id="_OO-9ECP1Ee-FSYGmPhs3xA" name="Third">
-      <specification xmi:type="uml:LiteralInteger" xmi:id="_OPALMCP1Ee-FSYGmPhs3xA" value="2"/>
-    </ownedLiteral>
-  </packagedElement>
-  <profileApplication xmi:id="_QKWdkCP1Ee-FSYGmPhs3xA">
-    <eAnnotations xmi:id="_QKZg4CP1Ee-FSYGmPhs3xA" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
-    </eAnnotations>
-    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
-  </profileApplication>
-</uml:Model>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_Fz_twCP1Ee-FSYGmPhs3xA" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_Jlm-MCP1Ee-FSYGmPhs3xA" name="Class" visibility="public" classifierBehavior="_baPdcCP1Ee-FSYGmPhs3xA" isActive="true">
+      <ownedAttribute xmi:id="_PF1skCP1Ee-FSYGmPhs3xA" name="element" visibility="public" type="_KiVFICP1Ee-FSYGmPhs3xA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_PF26sCP1Ee-FSYGmPhs3xA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_PF26sSP1Ee-FSYGmPhs3xA" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_UdMy0CP1Ee-FSYGmPhs3xA" name="change">
+        <body>element != Third</body>
+        <body>element := Second</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_baPdcCP1Ee-FSYGmPhs3xA" name="main" isAbstract="true" postcondition="_gKRd8CP1Ee-FSYGmPhs3xA" precondition="_xYW6kCP1Ee-FSYGmPhs3xA">
+        <ownedRule xmi:id="_gKRd8CP1Ee-FSYGmPhs3xA" name="post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_iMaU0CP1Ee-FSYGmPhs3xA" name="">
+            <body>element = Second</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_xYW6kCP1Ee-FSYGmPhs3xA" name="pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_1OyZkCP1Ee-FSYGmPhs3xA" name="">
+            <body>element = First</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_KiVFICP1Ee-FSYGmPhs3xA" name="Number" visibility="public">
+      <ownedLiteral xmi:id="_MhguoCP1Ee-FSYGmPhs3xA" name="First">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_MhhVsCP1Ee-FSYGmPhs3xA"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_NYrAICP1Ee-FSYGmPhs3xA" name="Second">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_NYrAISP1Ee-FSYGmPhs3xA" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="_OO-9ECP1Ee-FSYGmPhs3xA" name="Third">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_OPALMCP1Ee-FSYGmPhs3xA" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="_QKWdkCP1Ee-FSYGmPhs3xA">
+      <eAnnotations xmi:id="_QKZg4CP1Ee-FSYGmPhs3xA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_7NfDEGq2Ee-WMPTErzIKyg" guard="element != Third" base_RedefinableElement="_UdMy0CP1Ee-FSYGmPhs3xA" atomic="true">
+    <effects>element := Second</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -52,6 +54,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
 
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
@@ -324,13 +327,21 @@ public class UMLTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
+        if (!PokaYokeUmlProfileUtil.isAtomic(action)) {
+            throw new RuntimeException(String.format("Non-atomic action '%s' is not supported yet!", action.getName()));
+        }
+
         // Extract the guard of the action, if any, to be encoded later.
         // If the action has at least one body, then parse the first body, which is assumed to be its guard.
         String guard = translator.translateExpression(CifParserHelper.parseGuard(action));
 
         // Extract the effects of the action, if any, to be encoded later.
         // Parse all bodies except the first one, all of which should be updates.
-        List<String> effects = translator.translateUpdates(CifParserHelper.parseEffects(action));
+        List<List<AUpdate>> updates = CifParserHelper.parseEffects(action);
+        if (updates.size() > 1) {
+            throw new RuntimeException("Multiple effects are not supported yet, on action: " + action);
+        }
+        List<String> effects = translator.translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
 
         // Define a new activity that encodes the behavior of the action.
         Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,

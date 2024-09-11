@@ -5381,119 +5381,6 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="RedefinableElement" abstract="true"
-      eSuperTypes="#//NamedElement">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="A RedefinableElement is an element that, when defined in the context of a Classifier, can be redefined more specifically or differently in the context of another Classifier that specializes (directly or indirectly) the context Classifier."/>
-    </eAnnotations>
-    <eOperations name="redefinition_consistent" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="redefinedElement->forAll(re | re.isConsistentWith(self))"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A redefining element must be consistent with each redefined element."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="non_leaf_redefinition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="redefinedElement->forAll(re | not re.isLeaf)"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A RedefinableElement can only redefine non-leaf RedefinableElements."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="redefinition_context_valid" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="redefinedElement->forAll(re | self.isRedefinitionContextValid(re))"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="At least one of the redefinition contexts of the redefining element must be a specialization of at least one of the redefinition contexts for each redefined element."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="isConsistentWith" ordered="false" lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The query isConsistentWith() specifies, for any two RedefinableElements in a context in which redefinition is possible, whether redefinition would be logically consistent. By default, this is false; this operation must be overridden for subclasses of RedefinableElement to define the consistency conditions."/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="false"/>
-      </eAnnotations>
-      <eParameters name="redefiningElement" ordered="false" lowerBound="1" eType="#//RedefinableElement"/>
-    </eOperations>
-    <eOperations name="isRedefinitionContextValid" ordered="false" lowerBound="1"
-        eType="ecore:EDataType types.ecore#//Boolean">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The query isRedefinitionContextValid() specifies whether the redefinition contexts of this RedefinableElement are properly related to the redefinition contexts of the specified RedefinableElement to allow this element to redefine the other. By default at least one of the redefinition contexts of this element must be a specialization of at least one of the redefinition contexts of the specified element."/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="redefinitionContext->exists(c | c.allParents()->includesAll(redefinedElement.redefinitionContext))"/>
-      </eAnnotations>
-      <eParameters name="redefinedElement" ordered="false" lowerBound="1" eType="#//RedefinableElement"/>
-    </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLeaf" ordered="false"
-        lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean" defaultValueLiteral="false">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="Indicates whether it is possible to further redefine a RedefinableElement. If the value is true, then it is not possible to further redefine the RedefinableElement."/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="redefinedElement" ordered="false"
-        upperBound="-1" eType="#//RedefinableElement" changeable="false" volatile="true"
-        transient="true" derived="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The RedefinableElement that is being redefined by this element."/>
-      </eAnnotations>
-      <eAnnotations source="union"/>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="redefinitionContext" ordered="false"
-        upperBound="-1" eType="#//Classifier" changeable="false" volatile="true" transient="true"
-        derived="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The contexts that this element may be redefined from."/>
-      </eAnnotations>
-      <eAnnotations source="union"/>
-    </eStructuralFeatures>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="CallConcurrencyKind">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="CallConcurrencyKind is an Enumeration used to specify the semantics of concurrent calls to a BehavioralFeature."/>
@@ -10032,86 +9919,259 @@
       <eAnnotations source="subsets" references="#//ActivityGroup/containedNode #//Element/ownedElement"/>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InputPin" eSuperTypes="#//Pin">
+  <eClassifiers xsi:type="ecore:EClass" name="Action" abstract="true" eSuperTypes="#//ExecutableNode">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="An InputPin is a Pin that holds input values to be consumed by an Action."/>
+      <details key="documentation" value="An Action is the fundamental unit of executable functionality. The execution of an Action represents some transformation or processing in the modeled system. Actions provide the ExecutableNodes within Activities and may also be used within Interactions."/>
     </eAnnotations>
-    <eOperations name="outgoing_edges_structured_only" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="outgoing->notEmpty() implies&#xD;&#xA;&#x9;action&lt;>null and&#xD;&#xA;&#x9;action.oclIsKindOf(StructuredActivityNode) and&#xD;&#xA;&#x9;action.oclAsType(StructuredActivityNode).allOwnedNodes()->includesAll(outgoing.target)"/>
-      </eAnnotations>
+    <eOperations name="getContext" ordered="false" eType="#//Classifier">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="An InputPin may have outgoing ActivityEdges only when it is owned by a StructuredActivityNode, and these edges must target a node contained (directly or indirectly) in the owning StructuredActivityNode."/>
+        <details key="documentation" value="The derivation for the context property."/>
+        <details key="suppressedVisibility" value="true"/>
       </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Pin" abstract="true" eSuperTypes="#//ObjectNode #//MultiplicityElement">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="A Pin is an ObjectNode and MultiplicityElement that provides input values to an Action or accepts output values from an Action."/>
-    </eAnnotations>
-    <eOperations name="control_pins" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <details key="originalName" value="context"/>
+      </eAnnotations>
       <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="isControl implies isControlType"/>
+        <details key="body" value="let behavior: Behavior = self.containingBehavior() in&#xD;&#xA;if behavior=null then null&#xD;&#xA;else if behavior._'context' = null then behavior&#xD;&#xA;else behavior._'context'&#xD;&#xA;endif&#xD;&#xA;endif"/>
       </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A control Pin has a control type."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
     </eOperations>
-    <eOperations name="not_unique" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+    <eOperations name="allActions" ordered="false" upperBound="-1" eType="#//Action">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Return this Action and all Actions contained directly or indirectly in it. By default only the Action itself is returned, but the operation is overridden for StructuredActivityNodes."/>
+      </eAnnotations>
       <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="not isUnique"/>
+        <details key="body" value="self->asSet()"/>
       </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="Pin multiplicity is not unique."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
     </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isControl" ordered="false"
+    <eOperations name="allOwnedNodes" ordered="false" upperBound="-1" eType="#//ActivityNode">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Returns all the ActivityNodes directly or indirectly owned by this Action. This includes at least all the Pins of the Action."/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="input.oclAsType(Pin)->asSet()->union(output->asSet())"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="containingBehavior" ordered="false" eType="#//Behavior">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="if inStructuredNode&lt;>null then inStructuredNode.containingBehavior() &#xD;&#xA;else if activity&lt;>null then activity&#xD;&#xA;else interaction &#xD;&#xA;endif&#xD;&#xA;endif"/>
+      </eAnnotations>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="context" ordered="false"
+        eType="#//Classifier" changeable="false" volatile="true" transient="true"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The context Classifier of the Behavior that contains this Action, or the Behavior itself if it has no context."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="input" upperBound="-1"
+        eType="#//InputPin" changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The ordered set of InputPins representing the inputs to the Action."/>
+      </eAnnotations>
+      <eAnnotations source="union"/>
+      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLocallyReentrant" ordered="false"
         lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean" defaultValueLiteral="false">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="Indicates whether the Pin provides data to the Action or just controls how the Action executes."/>
+        <details key="documentation" value="If true, the Action can begin a new, concurrent execution, even if there is already another execution of the Action ongoing. If false, the Action cannot begin a new execution until any previous execution has completed."/>
       </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="localPostcondition" ordered="false"
+        upperBound="-1" eType="#//Constraint" containment="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A Constraint that must be satisfied when execution of the Action is completed."/>
+      </eAnnotations>
+      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="localPrecondition" ordered="false"
+        upperBound="-1" eType="#//Constraint" containment="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A Constraint that must be satisfied when execution of the Action is started."/>
+      </eAnnotations>
+      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="output" upperBound="-1"
+        eType="#//OutputPin" changeable="false" volatile="true" transient="true" derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The ordered set of OutputPins representing outputs from the Action."/>
+      </eAnnotations>
+      <eAnnotations source="union"/>
+      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExecutableNode" abstract="true" eSuperTypes="#//ActivityNode">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An ExecutableNode is an abstract class for ActivityNodes whose execution may be controlled using ControlFlows and to which ExceptionHandlers may be attached."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="handler" ordered="false"
+        upperBound="-1" eType="#//ExceptionHandler" containment="true" eOpposite="#//ExceptionHandler/protectedNode">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A set of ExceptionHandlers that are examined if an exception propagates out of the ExceptionNode."/>
+      </eAnnotations>
+      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExceptionHandler" eSuperTypes="#//Element">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An ExceptionHandler is an Element that specifies a handlerBody ExecutableNode to execute in case the specified exception occurs during the execution of the protected ExecutableNode."/>
+    </eAnnotations>
+    <eOperations name="handler_body_edges" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="handlerBody.incoming->isEmpty() and handlerBody.outgoing->isEmpty() and exceptionInput.incoming->isEmpty()"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The handlerBody has no incoming or outgoing ActivityEdges and the exceptionInput has no incoming ActivityEdges."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="output_pins" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="(protectedNode.oclIsKindOf(Action) and protectedNode.oclAsType(Action).output->notEmpty()) implies&#xD;&#xA;(&#xD;&#xA;  handlerBody.oclIsKindOf(Action) and &#xD;&#xA;  let protectedNodeOutput : OrderedSet(OutputPin) = protectedNode.oclAsType(Action).output,&#xD;&#xA;        handlerBodyOutput : OrderedSet(OutputPin) =  handlerBody.oclAsType(Action).output in&#xD;&#xA;    protectedNodeOutput->size() = handlerBodyOutput->size() and&#xD;&#xA;    Sequence{1..protectedNodeOutput->size()}->forAll(i |&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).type.conformsTo(protectedNodeOutput->at(i).type) and&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).isOrdered=protectedNodeOutput->at(i).isOrdered and&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).compatibleWith(protectedNodeOutput->at(i)))&#xD;&#xA;)"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="If the protectedNode is an Action with OutputPins, then the handlerBody must also be an Action with the same number of OutputPins, which are compatible in type, ordering, and multiplicity to those of the protectedNode."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="one_input" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="handlerBody.oclIsKindOf(Action) and&#xD;&#xA;let inputs: OrderedSet(InputPin) = handlerBody.oclAsType(Action).input in&#xD;&#xA;inputs->size()=1 and inputs->first()=exceptionInput"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The handlerBody is an Action with one InputPin, and that InputPin is the same as the exceptionInput."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="edge_source_target" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="let nodes:Set(ActivityNode) = handlerBody.oclAsType(Action).allOwnedNodes() in&#xD;&#xA;nodes.outgoing->forAll(nodes->includes(target)) and&#xD;&#xA;nodes.incoming->forAll(nodes->includes(source))"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="An ActivityEdge that has a source within the handlerBody of an ExceptionHandler must have its target in the handlerBody also, and vice versa."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="handler_body_owner" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="handlerBody.owner=protectedNode.owner"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The handlerBody must have the same owner as the protectedNode."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="exception_input_type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="exceptionInput.type=null or &#xD;&#xA;exceptionType->forAll(conformsTo(exceptionInput.type.oclAsType(Classifier)))"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The exceptionInput must either have no type or every exceptionType must conform to the exceptionInput type."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="exceptionInput" ordered="false"
+        lowerBound="1" eType="#//ObjectNode">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="An ObjectNode within the handlerBody. When the ExceptionHandler catches an exception, the exception token is placed on this ObjectNode, causing the handlerBody to execute."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="exceptionType" ordered="false"
+        lowerBound="1" upperBound="-1" eType="#//Classifier">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The Classifiers whose instances the ExceptionHandler catches as exceptions. If an exception occurs whose type is any exceptionType, the ExceptionHandler catches the exception and executes the handlerBody."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="handlerBody" ordered="false"
+        lowerBound="1" eType="#//ExecutableNode">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="An ExecutableNode that is executed if the ExceptionHandler catches an exception."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="protectedNode" ordered="false"
+        lowerBound="1" eType="#//ExecutableNode" eOpposite="#//ExecutableNode/handler">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The ExecutableNode protected by the ExceptionHandler. If an exception propagates out of the protectedNode and has a type matching one of the exceptionTypes, then it is caught by this ExceptionHandler."/>
+      </eAnnotations>
+      <eAnnotations source="subsets" references="#//Element/owner"/>
     </eStructuralFeatures>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ObjectNode" abstract="true" eSuperTypes="#//ActivityNode #//TypedElement">
@@ -10240,6 +10300,88 @@
         <details key="documentation" value="Indicates that tokens are queued in a first in, first out manner."/>
       </eAnnotations>
     </eLiterals>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InputPin" eSuperTypes="#//Pin">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An InputPin is a Pin that holds input values to be consumed by an Action."/>
+    </eAnnotations>
+    <eOperations name="outgoing_edges_structured_only" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="outgoing->notEmpty() implies&#xD;&#xA;&#x9;action&lt;>null and&#xD;&#xA;&#x9;action.oclIsKindOf(StructuredActivityNode) and&#xD;&#xA;&#x9;action.oclAsType(StructuredActivityNode).allOwnedNodes()->includesAll(outgoing.target)"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="An InputPin may have outgoing ActivityEdges only when it is owned by a StructuredActivityNode, and these edges must target a node contained (directly or indirectly) in the owning StructuredActivityNode."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Pin" abstract="true" eSuperTypes="#//ObjectNode #//MultiplicityElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A Pin is an ObjectNode and MultiplicityElement that provides input values to an Action or accepts output values from an Action."/>
+    </eAnnotations>
+    <eOperations name="control_pins" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="isControl implies isControlType"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A control Pin has a control type."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="not_unique" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="not isUnique"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Pin multiplicity is not unique."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isControl" ordered="false"
+        lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean" defaultValueLiteral="false">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="Indicates whether the Pin provides data to the Action or just controls how the Action executes."/>
+      </eAnnotations>
+    </eStructuralFeatures>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="OutputPin" eSuperTypes="#//Pin">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -11877,180 +12019,6 @@
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
         <details key="documentation" value="The set of ExecutableNodes that are executed in order to provide a test result for the Clause."/>
       </eAnnotations>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ExecutableNode" abstract="true" eSuperTypes="#//ActivityNode">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="An ExecutableNode is an abstract class for ActivityNodes whose execution may be controlled using ControlFlows and to which ExceptionHandlers may be attached."/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="handler" ordered="false"
-        upperBound="-1" eType="#//ExceptionHandler" containment="true" eOpposite="#//ExceptionHandler/protectedNode">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A set of ExceptionHandlers that are examined if an exception propagates out of the ExceptionNode."/>
-      </eAnnotations>
-      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
-    </eStructuralFeatures>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ExceptionHandler" eSuperTypes="#//Element">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="An ExceptionHandler is an Element that specifies a handlerBody ExecutableNode to execute in case the specified exception occurs during the execution of the protected ExecutableNode."/>
-    </eAnnotations>
-    <eOperations name="handler_body_edges" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="handlerBody.incoming->isEmpty() and handlerBody.outgoing->isEmpty() and exceptionInput.incoming->isEmpty()"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The handlerBody has no incoming or outgoing ActivityEdges and the exceptionInput has no incoming ActivityEdges."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="output_pins" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="(protectedNode.oclIsKindOf(Action) and protectedNode.oclAsType(Action).output->notEmpty()) implies&#xD;&#xA;(&#xD;&#xA;  handlerBody.oclIsKindOf(Action) and &#xD;&#xA;  let protectedNodeOutput : OrderedSet(OutputPin) = protectedNode.oclAsType(Action).output,&#xD;&#xA;        handlerBodyOutput : OrderedSet(OutputPin) =  handlerBody.oclAsType(Action).output in&#xD;&#xA;    protectedNodeOutput->size() = handlerBodyOutput->size() and&#xD;&#xA;    Sequence{1..protectedNodeOutput->size()}->forAll(i |&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).type.conformsTo(protectedNodeOutput->at(i).type) and&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).isOrdered=protectedNodeOutput->at(i).isOrdered and&#xD;&#xA;    &#x9;handlerBodyOutput->at(i).compatibleWith(protectedNodeOutput->at(i)))&#xD;&#xA;)"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="If the protectedNode is an Action with OutputPins, then the handlerBody must also be an Action with the same number of OutputPins, which are compatible in type, ordering, and multiplicity to those of the protectedNode."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="one_input" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="handlerBody.oclIsKindOf(Action) and&#xD;&#xA;let inputs: OrderedSet(InputPin) = handlerBody.oclAsType(Action).input in&#xD;&#xA;inputs->size()=1 and inputs->first()=exceptionInput"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The handlerBody is an Action with one InputPin, and that InputPin is the same as the exceptionInput."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="edge_source_target" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="let nodes:Set(ActivityNode) = handlerBody.oclAsType(Action).allOwnedNodes() in&#xD;&#xA;nodes.outgoing->forAll(nodes->includes(target)) and&#xD;&#xA;nodes.incoming->forAll(nodes->includes(source))"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="An ActivityEdge that has a source within the handlerBody of an ExceptionHandler must have its target in the handlerBody also, and vice versa."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="handler_body_owner" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="handlerBody.owner=protectedNode.owner"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The handlerBody must have the same owner as the protectedNode."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eOperations name="exception_input_type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="exceptionInput.type=null or &#xD;&#xA;exceptionType->forAll(conformsTo(exceptionInput.type.oclAsType(Classifier)))"/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The exceptionInput must either have no type or every exceptionType must conform to the exceptionInput type."/>
-      </eAnnotations>
-      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
-        </eAnnotations>
-      </eParameters>
-      <eParameters name="context">
-        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-          <details key="documentation" value="The cache of context-specific information."/>
-        </eAnnotations>
-        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
-        </eGenericType>
-      </eParameters>
-    </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="exceptionInput" ordered="false"
-        lowerBound="1" eType="#//ObjectNode">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="An ObjectNode within the handlerBody. When the ExceptionHandler catches an exception, the exception token is placed on this ObjectNode, causing the handlerBody to execute."/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="exceptionType" ordered="false"
-        lowerBound="1" upperBound="-1" eType="#//Classifier">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The Classifiers whose instances the ExceptionHandler catches as exceptions. If an exception occurs whose type is any exceptionType, the ExceptionHandler catches the exception and executes the handlerBody."/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="handlerBody" ordered="false"
-        lowerBound="1" eType="#//ExecutableNode">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="An ExecutableNode that is executed if the ExceptionHandler catches an exception."/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="protectedNode" ordered="false"
-        lowerBound="1" eType="#//ExecutableNode" eOpposite="#//ExecutableNode/handler">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The ExecutableNode protected by the ExceptionHandler. If an exception propagates out of the protectedNode and has a type matching one of the exceptionTypes, then it is caught by this ExceptionHandler."/>
-      </eAnnotations>
-      <eAnnotations source="subsets" references="#//Element/owner"/>
     </eStructuralFeatures>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ClearAssociationAction" eSuperTypes="#//Action">
@@ -19155,85 +19123,117 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Action" abstract="true" eSuperTypes="#//ExecutableNode">
+  <eClassifiers xsi:type="ecore:EClass" name="RedefinableElement" abstract="true"
+      eSuperTypes="#//NamedElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="An Action is the fundamental unit of executable functionality. The execution of an Action represents some transformation or processing in the modeled system. Actions provide the ExecutableNodes within Activities and may also be used within Interactions."/>
+      <details key="documentation" value="A RedefinableElement is an element that, when defined in the context of a Classifier, can be redefined more specifically or differently in the context of another Classifier that specializes (directly or indirectly) the context Classifier."/>
     </eAnnotations>
-    <eOperations name="getContext" ordered="false" eType="#//Classifier">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The derivation for the context property."/>
-        <details key="suppressedVisibility" value="true"/>
+    <eOperations name="redefinition_consistent" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="redefinedElement->forAll(re | re.isConsistentWith(self))"/>
       </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <details key="originalName" value="context"/>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A redefining element must be consistent with each redefined element."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="non_leaf_redefinition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="redefinedElement->forAll(re | not re.isLeaf)"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="A RedefinableElement can only redefine non-leaf RedefinableElements."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="redefinition_context_valid" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
+        <details key="body" value="redefinedElement->forAll(re | self.isRedefinitionContextValid(re))"/>
+      </eAnnotations>
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="At least one of the redefinition contexts of the redefining element must be a specialization of at least one of the redefinition contexts for each redefined element."/>
+      </eAnnotations>
+      <eParameters name="diagnostics" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDiagnosticChain">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The chain of diagnostics to which problems are to be appended."/>
+        </eAnnotations>
+      </eParameters>
+      <eParameters name="context">
+        <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+          <details key="documentation" value="The cache of context-specific information."/>
+        </eAnnotations>
+        <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EMap">
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+          <eTypeArguments eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+        </eGenericType>
+      </eParameters>
+    </eOperations>
+    <eOperations name="isConsistentWith" ordered="false" lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The query isConsistentWith() specifies, for any two RedefinableElements in a context in which redefinition is possible, whether redefinition would be logically consistent. By default, this is false; this operation must be overridden for subclasses of RedefinableElement to define the consistency conditions."/>
       </eAnnotations>
       <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="let behavior: Behavior = self.containingBehavior() in&#xD;&#xA;if behavior=null then null&#xD;&#xA;else if behavior._'context' = null then behavior&#xD;&#xA;else behavior._'context'&#xD;&#xA;endif&#xD;&#xA;endif"/>
+        <details key="body" value="false"/>
       </eAnnotations>
+      <eParameters name="redefiningElement" ordered="false" lowerBound="1" eType="#//RedefinableElement"/>
     </eOperations>
-    <eOperations name="allActions" ordered="false" upperBound="-1" eType="#//Action">
+    <eOperations name="isRedefinitionContextValid" ordered="false" lowerBound="1"
+        eType="ecore:EDataType types.ecore#//Boolean">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="Return this Action and all Actions contained directly or indirectly in it. By default only the Action itself is returned, but the operation is overridden for StructuredActivityNodes."/>
+        <details key="documentation" value="The query isRedefinitionContextValid() specifies whether the redefinition contexts of this RedefinableElement are properly related to the redefinition contexts of the specified RedefinableElement to allow this element to redefine the other. By default at least one of the redefinition contexts of this element must be a specialization of at least one of the redefinition contexts of the specified element."/>
       </eAnnotations>
       <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="self->asSet()"/>
+        <details key="body" value="redefinitionContext->exists(c | c.allParents()->includesAll(redefinedElement.redefinitionContext))"/>
       </eAnnotations>
+      <eParameters name="redefinedElement" ordered="false" lowerBound="1" eType="#//RedefinableElement"/>
     </eOperations>
-    <eOperations name="allOwnedNodes" ordered="false" upperBound="-1" eType="#//ActivityNode">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="Returns all the ActivityNodes directly or indirectly owned by this Action. This includes at least all the Pins of the Action."/>
-      </eAnnotations>
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="input.oclAsType(Pin)->asSet()->union(output->asSet())"/>
-      </eAnnotations>
-    </eOperations>
-    <eOperations name="containingBehavior" ordered="false" eType="#//Behavior">
-      <eAnnotations source="http://www.eclipse.org/uml2/1.1.0/GenModel">
-        <details key="body" value="if inStructuredNode&lt;>null then inStructuredNode.containingBehavior() &#xD;&#xA;else if activity&lt;>null then activity&#xD;&#xA;else interaction &#xD;&#xA;endif&#xD;&#xA;endif"/>
-      </eAnnotations>
-    </eOperations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="context" ordered="false"
-        eType="#//Classifier" changeable="false" volatile="true" transient="true"
-        derived="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The context Classifier of the Behavior that contains this Action, or the Behavior itself if it has no context."/>
-      </eAnnotations>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="input" upperBound="-1"
-        eType="#//InputPin" changeable="false" volatile="true" transient="true" derived="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The ordered set of InputPins representing the inputs to the Action."/>
-      </eAnnotations>
-      <eAnnotations source="union"/>
-      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLocallyReentrant" ordered="false"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLeaf" ordered="false"
         lowerBound="1" eType="ecore:EDataType types.ecore#//Boolean" defaultValueLiteral="false">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="If true, the Action can begin a new, concurrent execution, even if there is already another execution of the Action ongoing. If false, the Action cannot begin a new execution until any previous execution has completed."/>
+        <details key="documentation" value="Indicates whether it is possible to further redefine a RedefinableElement. If the value is true, then it is not possible to further redefine the RedefinableElement."/>
       </eAnnotations>
     </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="localPostcondition" ordered="false"
-        upperBound="-1" eType="#//Constraint" containment="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="redefinedElement" ordered="false"
+        upperBound="-1" eType="#//RedefinableElement" changeable="false" volatile="true"
+        transient="true" derived="true">
       <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A Constraint that must be satisfied when execution of the Action is completed."/>
-      </eAnnotations>
-      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="localPrecondition" ordered="false"
-        upperBound="-1" eType="#//Constraint" containment="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="A Constraint that must be satisfied when execution of the Action is started."/>
-      </eAnnotations>
-      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="output" upperBound="-1"
-        eType="#//OutputPin" changeable="false" volatile="true" transient="true" derived="true">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="The ordered set of OutputPins representing outputs from the Action."/>
+        <details key="documentation" value="The RedefinableElement that is being redefined by this element."/>
       </eAnnotations>
       <eAnnotations source="union"/>
-      <eAnnotations source="subsets" references="#//Element/ownedElement"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="redefinitionContext" ordered="false"
+        upperBound="-1" eType="#//Classifier" changeable="false" volatile="true" transient="true"
+        derived="true">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="documentation" value="The contexts that this element may be redefined from."/>
+      </eAnnotations>
+      <eAnnotations source="union"/>
     </eStructuralFeatures>
   </eClassifiers>
 </ecore:EPackage>

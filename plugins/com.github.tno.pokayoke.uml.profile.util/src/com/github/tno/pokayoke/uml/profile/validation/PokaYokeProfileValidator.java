@@ -42,6 +42,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
@@ -56,7 +57,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import PokaYoke.GuardEffectsAction;
+import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
 public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
@@ -392,7 +393,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
-        if (node instanceof Action action && PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+        if (node instanceof Action action && PokaYokeUmlProfileUtil.isFormalElement(action)) {
             checkNamingConventions(node, NamingConvention.MANDATORY);
         } else {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
@@ -400,13 +401,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates when {@link PokaYokeUmlProfileUtil#isGuardEffectsAction(Action) guards and effects} are set on
-     * {@code action}, that its behavioral activity doesn't also have guards and effects specified.
+     * Validates when {@link PokaYokeUmlProfileUtil#isFormalElement(org.eclipse.uml2.uml.RedefinableElement) guards and
+     * effects} are set on {@code action}, that its behavioral activity doesn't also have guards and effects specified.
      *
      * @param action The action to validate.
      */
     @Check
-    private void checkShadowedGuardEffectsAction(CallBehaviorAction action) {
+    private void checkShadowedFormalElement(CallBehaviorAction action) {
         if (!isPokaYokaUmlProfileApplied(action)) {
             return;
         }
@@ -428,7 +429,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
         boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
-                .exists(PokaYokeUmlProfileUtil::isGuardEffectsAction);
+                .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
         if (containsGuardEffectsActions) {
             return true;
         } else if (!history.add(activity)) {
@@ -441,41 +442,45 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link GuardEffectsAction#getGuard()} property if set.
+     * Validates the {@link FormalElement#getGuard()} property if set.
      *
-     * @param action The action to validate.
+     * @param element The element to validate.
      */
     @Check
-    private void checkValidGuard(Action action) {
+    private void checkValidGuard(RedefinableElement element) {
         try {
-            checkValidGuard(CifParserHelper.parseGuard(action), action);
+            AExpression guardExpr = CifParserHelper.parseGuard(element);
+            if (guardExpr == null) {
+                return;
+            }
+            new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
     }
 
-    private void checkValidGuard(AExpression guardExpr, Element element) {
-        if (guardExpr == null) {
-            return;
-        }
-        new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
-    }
-
     /**
-     * Validates the {@link GuardEffectsAction#getEffects()} property if set.
+     * Validates the {@link FormalElement#getEffects()} property if set.
      *
-     * @param action The action to validate.
+     * @param element The element to validate.
      */
     @Check
-    private void checkValidEffects(Action action) {
-        try {
-            checkValidEffects(CifParserHelper.parseEffects(action), action);
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
+    private void checkValidEffects(RedefinableElement element) {
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
+        for (int i = 0; i < effects.size(); i++) {
+            try {
+                checkValidUpdates(CifParserHelper.parseUpdates(effects.get(i), element), element);
+            } catch (RuntimeException re) {
+                String prefix = "Invalid effects: ";
+                if (effects.size() > 1) {
+                    prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
+                }
+                error(prefix + re.getLocalizedMessage(), null);
+            }
         }
     }
 
-    private void checkValidEffects(List<AUpdate> updates, Element element) {
+    private void checkValidUpdates(List<AUpdate> updates, Element element) {
         HashSet<String> updatedVariables = new HashSet<>();
         for (AUpdate update: updates) {
             new CifTypeChecker(element).checkAssignment(update);
@@ -499,20 +504,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidOpaqueBehavior(OpaqueBehavior behavior) {
         // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
         checkNamingConventions(behavior, NamingConvention.IDENTIFIER);
-
-        // Validates the guard of the given opaque behavior.
-        try {
-            checkValidGuard(CifParserHelper.parseGuard(behavior), behavior);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
-        }
-
-        // Validates the effects of the given opaque behavior.
-        try {
-            CifParserHelper.parseEffects(behavior).forEach(effect -> checkValidEffects(effect, behavior));
-        } catch (RuntimeException e) {
-            error("Invalid effects: " + e.getLocalizedMessage(), null);
-        }
     }
 
     @Check

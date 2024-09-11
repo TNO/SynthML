@@ -37,6 +37,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -199,6 +200,11 @@ public class UmlToCifTranslator {
 
         for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
+                if (!PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior)) {
+                    throw new RuntimeException(
+                            String.format("Non-atomic action '%s' is not supported yet!", umlOpaqueBehavior.getName()));
+                }
+
                 Expression guard = getGuard(umlOpaqueBehavior);
                 List<List<Update>> effects = getEffects(umlOpaqueBehavior);
 
@@ -429,9 +435,12 @@ public class UmlToCifTranslator {
      * @param behavior The opaque behavior.
      * @return The guard of the given opaque behavior.
      */
-    public Expression getGuard(OpaqueBehavior behavior) {
-        return behavior.getBodies().stream().limit(1).map(e -> CifParserHelper.parseExpression(e, behavior))
-                .map(translator::translate).findAny().orElse(CifValueUtils.makeTrue());
+    private Expression getGuard(OpaqueBehavior behavior) {
+        AExpression guard = CifParserHelper.parseGuard(behavior);
+        if (guard == null) {
+            return CifValueUtils.makeTrue();
+        }
+        return translator.translate(guard);
     }
 
     /**
@@ -456,8 +465,7 @@ public class UmlToCifTranslator {
      * @return All effects of the given opaque behavior.
      */
     private List<List<Update>> getEffects(OpaqueBehavior behavior) {
-        return behavior.getBodies().stream().skip(1).map(u -> CifParserHelper.parseUpdates(u, behavior))
-                .map(translator::translate).toList();
+        return CifParserHelper.parseEffects(behavior).stream().map(translator::translate).toList();
     }
 
     /**
