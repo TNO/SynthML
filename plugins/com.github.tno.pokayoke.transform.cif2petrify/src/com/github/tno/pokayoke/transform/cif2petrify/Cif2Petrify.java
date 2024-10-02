@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 
 /** Transforms CIF state spaces to Petrify input. */
 public class Cif2Petrify {
-    private static final String RESET_EVENT_NAME = "__reset";
+    private static final String LOOP_EVENT_NAME = "__loop";
 
     private Cif2Petrify() {
     }
@@ -61,11 +61,11 @@ public class Cif2Petrify {
 
         Preconditions.checkArgument(eventNames.stream().distinct().count() == eventNames.size(),
                 "Expected all event names in the state space alphabet to be uniquely named.");
-        Preconditions.checkArgument(eventNames.stream().noneMatch(RESET_EVENT_NAME::equals),
-                "Expected that '" + RESET_EVENT_NAME + "' is not used as an event name.");
+        Preconditions.checkArgument(eventNames.stream().noneMatch(LOOP_EVENT_NAME::equals),
+                "Expected that '" + LOOP_EVENT_NAME + "' is not used as an event name.");
 
-        // Declare a Petrify event for every event in the CIF state space automaton alphabet, plus the 'reset' event.
-        petrifyInput.add(".dummy " + String.join(" ", eventNames) + " " + RESET_EVENT_NAME);
+        // Declare a Petrify event for every event in the CIF state space automaton alphabet, plus the 'loop' event.
+        petrifyInput.add(".dummy " + String.join(" ", eventNames) + " " + LOOP_EVENT_NAME);
 
         petrifyInput.add(".state graph");
 
@@ -85,13 +85,13 @@ public class Cif2Petrify {
             }
         }
 
-        // Add the reset transition to go from the marked state back to the initial state, thereby creating a loop.
-        Location initialLocation = CifLocationHelper.getInitialLocation(automaton);
+        // Add the self-loop transition to the marked state, that indicates being done.
         Location markedLocation = CifLocationHelper.getMarkedLocation(automaton);
-        petrifyInput
-                .add(String.format("%s %s %s", markedLocation.getName(), RESET_EVENT_NAME, initialLocation.getName()));
+        String markedLocationName = markedLocation.getName();
+        petrifyInput.add(String.format("%s %s %s", markedLocationName, LOOP_EVENT_NAME, markedLocationName));
 
         // Indicate that the initial location has a token initially.
+        Location initialLocation = CifLocationHelper.getInitialLocation(automaton);
         petrifyInput.add(String.format(".marking {%s}", initialLocation.getName()));
 
         // Indicate the end of the Petrify input graph.
