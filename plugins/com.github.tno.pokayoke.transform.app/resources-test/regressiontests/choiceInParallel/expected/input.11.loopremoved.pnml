@@ -92,6 +92,13 @@
       </place>
       <arc id="__end__to__p9" source="__end" target="p9">
       </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
       <place id="p1">
         <name>
           <text>p1</text>
@@ -100,13 +107,6 @@
           <text>1</text>
         </initialMarking>
       </place>
-      <place id="p2">
-        <name>
-          <text>p2</text>
-        </name>
-      </place>
-      <arc id="__start__to__p2" source="__start" target="p2">
-      </arc>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
       <arc id="p2__to__Turn_Computer_On" source="p2" target="Turn_Computer_On">

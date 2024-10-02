@@ -1,6 +1,6 @@
 # It is a Free-Choice Petri net
 .model statespace
-.dummy __start __end __reset c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied
+.dummy __start __end __loop c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied
 .graph
 __start p2 p11
 c_act1 p1
@@ -41,7 +41,7 @@ p16 c_act9
 p17 c_act3
 p18 c_satisfied
 p19 c_act4
-p20 __reset
-__reset p12
+p20 __loop
+__loop p20
 .marking { p12 }
 .end
