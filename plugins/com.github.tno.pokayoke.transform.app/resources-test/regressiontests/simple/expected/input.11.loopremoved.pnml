@@ -53,14 +53,6 @@
       </place>
       <arc id="__end__to__p10" source="__end" target="p10">
       </arc>
-      <place id="p1">
-        <name>
-          <text>p1</text>
-        </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
-      </place>
       <place id="p2">
         <name>
           <text>p2</text>
@@ -82,6 +74,14 @@
       </place>
       <arc id="measure_product_position__to__p8" source="measure_product_position" target="p8">
       </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
       <arc id="p2__to__prepare_location2" source="p2" target="prepare_location2">

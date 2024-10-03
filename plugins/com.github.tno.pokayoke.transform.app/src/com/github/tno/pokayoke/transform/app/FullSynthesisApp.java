@@ -189,7 +189,7 @@ public class FullSynthesisApp {
         // Extract region-state mapping.
         Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
 
-        // Remove the loop that was added for petrification.
+        // Remove the self-loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());

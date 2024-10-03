@@ -1,8 +1,8 @@
 .model minimal
-.dummy  action1 action2 __start __end __reset
+.dummy  action1 action2 __start __end __loop
 .graph
 __end p6
-__reset p1
+__loop p6
 __start p2
 action1 p3
 action1/1 p3 p7
@@ -14,7 +14,7 @@ p2 action1/2 action2
 p3 __end action1
 p4 action2/1
 p5 action1/1
-p6 __reset
+p6 __loop
 p7 __end
 .marking { p1 }
 .end

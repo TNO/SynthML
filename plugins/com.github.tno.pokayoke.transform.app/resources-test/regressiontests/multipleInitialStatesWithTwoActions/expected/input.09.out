@@ -1,14 +1,14 @@
 .model minimal
-.dummy  left right __start __end __reset
+.dummy  left right __start __end __loop
 .graph
 __end p4
-__reset p1
+__loop p4
 __start p2
 left p3
 p1 __start
 p2 left right
 p3 __end
-p4 __reset
+p4 __loop
 right p3
 .marking { p1 }
 .end

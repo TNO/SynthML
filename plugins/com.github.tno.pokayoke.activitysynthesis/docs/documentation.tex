@@ -51,7 +51,7 @@
 
 \newcommand{\doneLabel}[0]{\texttt{\_\_done}}
 \newcommand{\initLabel}[0]{\texttt{\_\_init}}
-\newcommand{\resetLabel}[0]{\texttt{\_\_reset}}
+\newcommand{\loopLabel}[0]{\texttt{\_\_loop}}
 \newcommand{\startLabel}[0]{\texttt{\_\_start}}
 \newcommand{\stopLabel}[0]{\texttt{\_\_end}} % Note: the command name \endLabel cannot be used since \end seems reserved.
 \newcommand{\toLabel}[0]{\texttt{\_\_to\_\_}}
@@ -533,13 +533,13 @@ But since all Petrify reserved keywords seem to start with a dot, e.g., \texttt{
 Moreover, the input CIF specification must contain exactly one automaton, i.e., the minimized CIF state space computed in the previous steps.
 This automaton must have an explicit alphabet that contains no duplicate events.
 
-Furthermore, the event name \resetLabel{} must not be in the automaton alphabet.
-This is because \petrinetSynthesisLabel{} will create an auxiliary edge named \resetLabel{} before Petrify is invoked, which is removed later from the output of Petrify.
-This auxiliary edge is added to make Petrify work.
-This is because Petrify seems unable to do Petri Net synthesis in case the input automaton has deadlock locations, i.e., locations without outgoing edges to other locations.
+Furthermore, the event name \loopLabel{} must not be in the automaton alphabet.
+This is because \petrinetSynthesisLabel{} will create an auxiliary self-loop edge named \loopLabel{} before Petrify is invoked, which is removed later from the output of Petrify.
+This auxiliary self-loop is added to make Petrify work.
+This is because Petrify seems unable to do Petri Net synthesis in case the input automaton has deadlock locations, i.e., locations without outgoing edges.
 And recall that \var{cifStatespace_{min}} has a single marked location which is a sink location, and thus when you get into this location during some execution, the execution deadlocks.
-Hence, to resolve this, we add an extra edge that connects the single marked location to the single initial location, turning the input automaton into a big loop.
-After having invoked Petrify, the synthesized Petri Net will contain exactly one transition for \resetLabel{} (since the input automaton has exactly one marked location, exactly one initial location, and we added exactly one \resetLabel{} edge), so it's easy to remove it again.
+Hence, to resolve this, we add an extra self-loop edge that connects the single marked location to itself, to still allow `progress' from this sink location.
+After having invoked Petrify, the synthesized Petri Net will contain exactly one transition for \loopLabel{} (since the input automaton has exactly one marked location and we added exactly one \loopLabel{} edge), so it's easy to remove it again.
 
 Finally, the string \toLabel{} must not occur in any event name in the input automaton.
 This is later needed for transforming Petrify output to PNML, where \toLabel{} will be used as part of PNML arc identifiers.
@@ -549,7 +549,7 @@ All guarantees from Petrify apply.
 In particular, the output is an optimal (possibly free-choice) Petri Net that is trace-equivalent to the input automaton.
 The synthesized Petri Net is returned in PNML format.
 
-As explained above, the \resetLabel{} event has been removed from this Petri Net.
+As explained above, the \loopLabel{} event has been removed from this Petri Net.
 The synthesized Petri Net contains exactly one place that initially holds a token.
 This place has no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
 The returned Petri Net also contains exactly one sink place with no outgoing arcs and at least one incoming arc from a transition named \stopLabel{} (there could be multiple such arcs, in contrast to the initial place).

@@ -1,12 +1,12 @@
 .model minimal
-.dummy  prepare_robot robot_move_to_location1 robot_move_to_location2 robot_adjust_product robot_release_product_at_location2 prepare_location2 measure_product_position __start __end __reset
+.dummy  prepare_robot robot_move_to_location1 robot_move_to_location2 robot_adjust_product robot_release_product_at_location2 prepare_location2 measure_product_position __start __end __loop
 .graph
 __end p10
-__reset p1
+__loop p10
 __start p2 p3
 measure_product_position p8
 p1 __start
-p10 __reset
+p10 __loop
 p2 prepare_location2
 p3 prepare_robot
 p4 robot_move_to_location2

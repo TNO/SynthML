@@ -23,14 +23,6 @@
       </place>
       <arc id="__end__to__p4" source="__end" target="p4">
       </arc>
-      <place id="p1">
-        <name>
-          <text>p1</text>
-        </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
-      </place>
       <place id="p2">
         <name>
           <text>p2</text>
@@ -52,6 +44,14 @@
       </transition>
       <arc id="action/1__to__p3" source="action/1" target="p3">
       </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
       <arc id="p2__to__action/1" source="p2" target="action/1">

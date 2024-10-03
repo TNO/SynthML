@@ -11,9 +11,9 @@
           <text>__end</text>
         </name>
       </transition>
-      <transition id="__reset">
+      <transition id="__loop">
         <name>
-          <text>__reset</text>
+          <text>__loop</text>
         </name>
       </transition>
       <place id="p3">
@@ -23,15 +23,7 @@
       </place>
       <arc id="__end__to__p3" source="__end" target="p3">
       </arc>
-      <place id="p1">
-        <name>
-          <text>p1</text>
-        </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
-      </place>
-      <arc id="__reset__to__p1" source="__reset" target="p1">
+      <arc id="__loop__to__p3" source="__loop" target="p3">
       </arc>
       <place id="p2">
         <name>
@@ -40,11 +32,19 @@
       </place>
       <arc id="__start__to__p2" source="__start" target="p2">
       </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
       <arc id="p2__to____end" source="p2" target="__end">
       </arc>
-      <arc id="p3__to____reset" source="p3" target="__reset">
+      <arc id="p3__to____loop" source="p3" target="__loop">
       </arc>
     </page>
   </net>
