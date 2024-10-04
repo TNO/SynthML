@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
@@ -33,11 +34,13 @@ import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -99,7 +102,6 @@ public class UMLTransformer {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
         ValidationHelper.validateModel(model);
 
-        Preconditions.checkArgument(!cifContext.hasOpaqueBehaviors(), "Opaque behaviors are unsupported.");
         Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
@@ -198,6 +200,11 @@ public class UMLTransformer {
         activeProperty.setDefaultValue(activePropertyDefaultValue);
         contextClass.getOwnedAttributes().add(activeProperty);
 
+        // Transform all opaque behaviors within the model.
+        for (OpaqueBehavior behavior: getNestedOpaqueBehaviorsOf(model)) {
+            transformOpaqueBehavior(behavior, acquireSignal);
+        }
+
         // Transform all activity behaviors within the model.
         for (Activity activity: getNestedActivitiesOf(model)) {
             transformActivity(activity, acquireSignal);
@@ -244,37 +251,84 @@ public class UMLTransformer {
     }
 
     /**
-     * Get the nested activities of the model.
+     * Get all nested behaviors in the model that satisfy the given predicate.
      *
      * @param model The model.
-     * @return The nested activities of the provided model.
+     * @param filter The predicate for filtering behaviors to return.
+     * @return The nested behaviors of the provided model that satisfy the given predicate.
      */
-    private List<Activity> getNestedActivitiesOf(Model model) {
-        List<Activity> returnValue = new ArrayList<>();
+    private List<Behavior> getNestedBehaviorsOf(Model model, Predicate<Behavior> filter) {
+        List<Behavior> returnValue = new ArrayList<>();
+
         for (PackageableElement element: model.getPackagedElements()) {
             // Since an element can have multiple types, we don't use else if.
 
             if (element instanceof Model modelElement) {
-                List<Activity> childActivities = getNestedActivitiesOf(modelElement);
-                returnValue.addAll(childActivities);
+                List<Behavior> childBehaviors = getNestedBehaviorsOf(modelElement, filter);
+                returnValue.addAll(childBehaviors);
             }
 
-            if (element instanceof Activity activityElement) {
-                returnValue.add(activityElement);
+            if (element instanceof Behavior behavior && filter.test(behavior)) {
+                returnValue.add(behavior);
             }
 
             if (element instanceof Class cls) {
                 // Skip class generated for lock.
                 if (!cls.getName().equals(LOCK_CLASS_NAME)) {
                     for (Behavior behavior: cls.getOwnedBehaviors()) {
-                        if (behavior instanceof Activity activity) {
-                            returnValue.add(activity);
+                        if (filter.test(behavior)) {
+                            returnValue.add(behavior);
                         }
                     }
                 }
             }
         }
+
         return returnValue;
+    }
+
+    /**
+     * Get the nested opaque behaviors of the model.
+     *
+     * @param model The model.
+     * @return The nested opaque behaviors of the provided model.
+     */
+    private List<OpaqueBehavior> getNestedOpaqueBehaviorsOf(Model model) {
+        return getNestedBehaviorsOf(model, e -> e instanceof OpaqueBehavior).stream().map(OpaqueBehavior.class::cast)
+                .toList();
+    }
+
+    /**
+     * Translates the given opaque behavior.
+     *
+     * @param behavior The behavior to translate.
+     * @param acquireSignal The signal for acquiring the lock.
+     */
+    private void transformOpaqueBehavior(OpaqueBehavior behavior, Signal acquireSignal) {
+        Preconditions.checkArgument(behavior.getOwnedElements().isEmpty(),
+                "Expected opaque behaviors to not have owned elements.");
+
+        // Translate the guard and effects of the given behavior.
+        String guard = translateGuard(behavior);
+        List<String> effects = translateEffects(behavior);
+
+        // Define a new activity that encodes the behavior of the action.
+        Activity activity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
+                behavior.getQualifiedName() + "__" + IDHelper.getID(behavior));
+        activity.setName(behavior.getName());
+
+        // Store the created activity as the single owned behavior of the given opaque behavior.
+        behavior.getOwnedBehaviors().add(activity);
+    }
+
+    /**
+     * Get the nested activities of the model.
+     *
+     * @param model The model.
+     * @return The nested activities of the provided model.
+     */
+    private List<Activity> getNestedActivitiesOf(Model model) {
+        return getNestedBehaviorsOf(model, e -> e instanceof Activity).stream().map(Activity.class::cast).toList();
     }
 
     /**
@@ -319,6 +373,8 @@ public class UMLTransformer {
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
         if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
             transformAction(activity, action, acquireSignal);
+        } else if (action.getBehavior() instanceof OpaqueBehavior behavior) {
+            action.setBehavior(behavior.getOwnedBehaviors().get(0));
         }
     }
 
@@ -331,17 +387,9 @@ public class UMLTransformer {
             throw new RuntimeException(String.format("Non-atomic action '%s' is not supported yet!", action.getName()));
         }
 
-        // Extract the guard of the action, if any, to be encoded later.
-        // If the action has at least one body, then parse the first body, which is assumed to be its guard.
-        String guard = translator.translateExpression(CifParserHelper.parseGuard(action));
-
-        // Extract the effects of the action, if any, to be encoded later.
-        // Parse all bodies except the first one, all of which should be updates.
-        List<List<AUpdate>> updates = CifParserHelper.parseEffects(action);
-        if (updates.size() > 1) {
-            throw new RuntimeException("Multiple effects are not supported yet, on action: " + action);
-        }
-        List<String> effects = translator.translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
+        // Translate the guard and effects of the action.
+        String guard = translateGuard(action);
+        List<String> effects = translateEffects(action);
 
         // Define a new activity that encodes the behavior of the action.
         Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
@@ -368,6 +416,40 @@ public class UMLTransformer {
         // Remove the old action that is now replaced.
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
+    }
+
+    /**
+     * Translates the guard of the specified {@link PokaYokeUmlProfileUtil#isFormalElement(RedefinableElement) formal
+     * element}.
+     *
+     * @param element The element of which to translate the guard.
+     * @return The translated guard.
+     */
+    private String translateGuard(RedefinableElement element) {
+        Preconditions.checkArgument(PokaYokeUmlProfileUtil.isFormalElement(element),
+                "Expected a formal element but got: " + element);
+
+        return translator.translateExpression(CifParserHelper.parseGuard(element));
+    }
+
+    /**
+     * Translates the effects of the specified {@link PokaYokeUmlProfileUtil#isFormalElement(RedefinableElement) formal
+     * element}.
+     *
+     * @param element The element of which to translate the effects.
+     * @return The translated effects.
+     */
+    private List<String> translateEffects(RedefinableElement element) {
+        Preconditions.checkArgument(PokaYokeUmlProfileUtil.isFormalElement(element),
+                "Expected a formal element but got: " + element);
+
+        List<List<AUpdate>> updates = CifParserHelper.parseEffects(element);
+
+        if (updates.size() > 1) {
+            throw new RuntimeException("Multiple effects are not supported yet, on element: " + element);
+        }
+
+        return translator.translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {
