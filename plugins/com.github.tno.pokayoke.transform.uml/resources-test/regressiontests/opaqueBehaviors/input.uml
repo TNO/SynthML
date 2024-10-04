@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_G5frMIJFEe-UOvjtanTzaA" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_JkLv0IJFEe-UOvjtanTzaA" name="Context" visibility="public" classifierBehavior="_Raj2MIJFEe-UOvjtanTzaA" isActive="true">
+      <ownedAttribute xmi:id="_KYmPUIJFEe-UOvjtanTzaA" name="flag" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KYm2YIJFEe-UOvjtanTzaA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KYm2YYJFEe-UOvjtanTzaA" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_LVHh8IJFEe-UOvjtanTzaA">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_OOp64IJFEe-UOvjtanTzaA" name="flip"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_Raj2MIJFEe-UOvjtanTzaA" name="activity" node="_UGyL4IJFEe-UOvjtanTzaA _VZJysIJFEe-UOvjtanTzaA _WquvUIJFEe-UOvjtanTzaA">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_X6OoUIJFEe-UOvjtanTzaA" target="_VZJysIJFEe-UOvjtanTzaA" source="_UGyL4IJFEe-UOvjtanTzaA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_X6OoUYJFEe-UOvjtanTzaA" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_X6OoUoJFEe-UOvjtanTzaA" name="_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_YT7hwIJFEe-UOvjtanTzaA" target="_WquvUIJFEe-UOvjtanTzaA" source="_VZJysIJFEe-UOvjtanTzaA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_YT7hwYJFEe-UOvjtanTzaA" name="_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_YT7hwoJFEe-UOvjtanTzaA" name="_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_UGyL4IJFEe-UOvjtanTzaA" name="" outgoing="_X6OoUIJFEe-UOvjtanTzaA"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_VZJysIJFEe-UOvjtanTzaA" incoming="_X6OoUIJFEe-UOvjtanTzaA" outgoing="_YT7hwIJFEe-UOvjtanTzaA" behavior="_OOp64IJFEe-UOvjtanTzaA"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_WquvUIJFEe-UOvjtanTzaA" name="" incoming="_YT7hwIJFEe-UOvjtanTzaA"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="_LHxpgIJFEe-UOvjtanTzaA">
+      <eAnnotations xmi:id="_LH1T4IJFEe-UOvjtanTzaA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_O_6YsIJFEe-UOvjtanTzaA" guard="not flag" base_RedefinableElement="_OOp64IJFEe-UOvjtanTzaA" atomic="true">
+    <effects>flag := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>
