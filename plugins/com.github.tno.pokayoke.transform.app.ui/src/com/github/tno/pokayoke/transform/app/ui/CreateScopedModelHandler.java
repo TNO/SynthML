@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.IJobFunction;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Evaluate;
@@ -47,6 +46,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.UMLFactory;
 
@@ -88,15 +88,26 @@ public class CreateScopedModelHandler {
             activities = activities.union(
                     activities.closure(CreateScopedModelHandler::getCalledActivities).sortedBy(Activity::getName));
         }
-        Model scope = createScope(activities.asOrderedSet());
-        Package commonPackage = getCommonPackage(activities);
-        if (commonPackage != null) {
-            scope.setName(commonPackage.getName());
-        } else {
-            scope.setName(saveFile.getFullPath().removeFileExtension().lastSegment());
-        }
 
-        Job job = Job.create("Create scoped model", (IJobFunction)m -> storeScope(scope, saveFile, m));
+        // Note: a local variable can only be referenced from a closure when its final, hence this extra declaration.
+        final QueryableIterable<Activity> finalActivities = activities;
+
+        Job job = Job.create("Create scoped model", monitor -> {
+            try {
+                Model scope = createScope(finalActivities.asOrderedSet());
+                Package commonPackage = getCommonPackage(finalActivities);
+                if (commonPackage != null) {
+                    scope.setName(commonPackage.getName());
+                } else {
+                    scope.setName(saveFile.getFullPath().removeFileExtension().lastSegment());
+                }
+                return storeScope(scope, saveFile, monitor);
+            } catch (Throwable e) {
+                return new Status(IStatus.ERROR, CreateScopedModelHandler.class,
+                        "Failed to create scoped model: " + e.getLocalizedMessage(), e);
+            }
+        });
+
         job.setUser(true);
         job.schedule();
     }
@@ -139,13 +150,17 @@ public class CreateScopedModelHandler {
                 .collect(Activity::getNodes).objectsOfKind(CallBehaviorAction.class)
                 .reject(a -> activitiesCopy.contains(a.getBehavior())).asList();
         for (CallBehaviorAction cbAction: cbActionsToTransform) {
-            OpaqueAction oAction = UMLFactory.eINSTANCE.createOpaqueAction();
-            oAction.setName(cbAction.getName());
-            cbAction.getActivity().getOwnedNodes().add(oAction);
-            // Copy the incomings and outgoings to avoid ConcurrentModificationException
-            new LinkedList<>(cbAction.getIncomings()).forEach(e -> e.setTarget(oAction));
-            new LinkedList<>(cbAction.getOutgoings()).forEach(e -> e.setSource(oAction));
-            cbAction.destroy();
+            if (cbAction.getBehavior() instanceof Activity) {
+                OpaqueAction oAction = UMLFactory.eINSTANCE.createOpaqueAction();
+                oAction.setName(cbAction.getName());
+                cbAction.getActivity().getOwnedNodes().add(oAction);
+                // Copy the incomings and outgoings to avoid ConcurrentModificationException
+                new LinkedList<>(cbAction.getIncomings()).forEach(e -> e.setTarget(oAction));
+                new LinkedList<>(cbAction.getOutgoings()).forEach(e -> e.setSource(oAction));
+                cbAction.destroy();
+            } else if (cbAction.getBehavior() instanceof OpaqueBehavior) {
+                throw new RuntimeException("Call opaque behavior actions are currently unsupported.");
+            }
         }
 
         context.getOwnedBehaviors().addAll(activitiesCopy);

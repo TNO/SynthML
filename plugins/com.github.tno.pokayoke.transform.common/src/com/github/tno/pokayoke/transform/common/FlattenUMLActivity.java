@@ -14,12 +14,14 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -84,11 +86,16 @@ public class FlattenUMLActivity {
     private void transformActivity(Activity childBehavior, CallBehaviorAction callBehaviorActionToReplace) {
         // Depth-first recursion. Transform children first, for a bottom-up flattening.
         for (ActivityNode node: new ArrayList<>(childBehavior.getNodes())) {
-            if (node instanceof CallBehaviorAction actionNode && actionNode.getBehavior() instanceof Activity behavior
-            // Do not flatten stereotyped CallBehaviorActions as they should be considered leafs
-                    && actionNode.getAppliedStereotypes().isEmpty())
-            {
-                transformActivity(behavior, actionNode);
+            // Check whether the current child node needs to be transformed.
+            if (node instanceof CallBehaviorAction action) {
+                Behavior behavior = action.getBehavior();
+
+                // Do not flatten stereotyped CallBehaviorActions as they should be considered leafs.
+                if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
+                    transformActivity(activity, action);
+                } else if (behavior instanceof OpaqueBehavior) {
+                    throw new RuntimeException("Call opaque behavior actions are currently unsupported.");
+                }
             }
         }
 

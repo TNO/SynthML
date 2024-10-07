@@ -401,8 +401,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates when {@link PokaYokeUmlProfileUtil#isFormalElement(org.eclipse.uml2.uml.RedefinableElement) guards and
-     * effects} are set on {@code action}, that its behavioral activity doesn't also have guards and effects specified.
+     * Validates that the behavior that is called by {@code action} does not have guards and effects whenever
+     * {@code action} itself has {@link PokaYokeUmlProfileUtil#isFormalElement(org.eclipse.uml2.uml.RedefinableElement)
+     * guards and effects}.
      *
      * @param action The action to validate.
      */
@@ -421,9 +422,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 warning("The guard and effects on this call behavior action overrides the guards and effects of its sub-activity",
                         null);
             }
+        } else if (behavior instanceof OpaqueBehavior opaqueBehavior) {
+            // Shadowing is not allowed in case of call opaque behavior actions, as such behaviors directly have guards
+            // and effects.
+            if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
+                error("Cannot override the guards and effects of an opaque behavior in a call opaque behavior action.",
+                        UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+            }
         } else {
             // Added this validation here, as we're already checking the behavior type.
-            error("Expected the behavior to be an activity", UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+            error("Expected the called behavior to be an activity or an opaque behavior",
+                    UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
         }
     }
 
@@ -436,9 +445,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Cope with cycles
             return false;
         }
+
         return from(activity.getOwnedNodes()).objectsOfKind(CallBehaviorAction.class)
-                .xcollectOne(CallBehaviorAction::getBehavior).objectsOfKind(Activity.class)
-                .exists(a -> isGuardEffectsActivity(a, history));
+                .xcollectOne(CallBehaviorAction::getBehavior).exists(b -> b instanceof OpaqueBehavior
+                        || b instanceof Activity a && isGuardEffectsActivity(a, history));
     }
 
     /**
