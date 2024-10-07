@@ -426,7 +426,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Shadowing is not allowed in case of call opaque behavior actions, as such behaviors directly have guards
             // and effects.
             if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
-                error("Cannot override the guards and effects of an call opaque behavior action.",
+                error("Cannot override the guards and effects of an opaque behavior in a call opaque behavior action.",
                         UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
             }
         } else {
