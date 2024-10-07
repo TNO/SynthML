@@ -101,9 +101,8 @@ public class CreateScopedModelHandler {
                 } else {
                     scope.setName(saveFile.getFullPath().removeFileExtension().lastSegment());
                 }
-
                 return storeScope(scope, saveFile, monitor);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 return new Status(IStatus.ERROR, CreateScopedModelHandler.class,
                         "Failed to create scoped model: " + e.getLocalizedMessage(), e);
             }
