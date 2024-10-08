@@ -14,6 +14,7 @@ import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
+import org.eclipse.escet.cif.metamodel.cif.automata.ElifUpdate;
 import org.eclipse.escet.cif.metamodel.cif.automata.Update;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
@@ -132,6 +133,26 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     @Override
     protected Object visit(Object addressable, TextPosition assignmentPos, Object value, CifContext ctx) {
         return CifConstructors.newAssignment((Expression)addressable, null, (Expression)value);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, List<Object> thens, List<Object> elifs, List<Object> elses,
+            TextPosition updatePos, CifContext ctx)
+    {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        List<Update> thenUpdates = thens.stream().map(Update.class::cast).toList();
+        List<ElifUpdate> elifUpdates = elifs.stream().map(ElifUpdate.class::cast).toList();
+        List<Update> elseUpdates = elses.stream().map(Update.class::cast).toList();
+
+        return CifConstructors.newIfUpdate(elifUpdates, elseUpdates, guardExprs, null, thenUpdates);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, List<Object> thens, TextPosition updatePos, CifContext ctx) {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        List<Update> thenUpdates = thens.stream().map(Update.class::cast).toList();
+
+        return CifConstructors.newElifUpdate(guardExprs, null, thenUpdates);
     }
 
     @Override
