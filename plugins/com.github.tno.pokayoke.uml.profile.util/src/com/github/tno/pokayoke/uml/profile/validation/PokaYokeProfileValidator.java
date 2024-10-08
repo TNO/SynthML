@@ -535,13 +535,23 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         varExpr.position);
             }
         } else if (update instanceof AIfUpdate ifUpdate) {
-            checkUniqueAddressables(ifUpdate.thens, addrVars);
+            Set<String> newAddrVars = new LinkedHashSet<>(addrVars);
+
+            Set<String> addrVarsThens = new LinkedHashSet<>(addrVars);
+            checkUniqueAddressables(ifUpdate.thens, addrVarsThens);
+            newAddrVars.addAll(addrVarsThens);
 
             for (AElifUpdate elifUpdate: ifUpdate.elifs) {
-                checkUniqueAddressables(elifUpdate.thens, addrVars);
+                Set<String> addrVarsElifs = new LinkedHashSet<>(addrVars);
+                checkUniqueAddressables(elifUpdate.thens, addrVarsElifs);
+                newAddrVars.addAll(addrVarsElifs);
             }
 
-            checkUniqueAddressables(ifUpdate.elses, addrVars);
+            Set<String> addrVarsElses = new LinkedHashSet<>(addrVars);
+            checkUniqueAddressables(ifUpdate.elses, addrVarsElses);
+            newAddrVars.addAll(addrVarsElses);
+
+            addrVars.addAll(newAddrVars);
         } else {
             error("Unsupported update: " + update, UMLPackage.Literals.TYPED_ELEMENT__TYPE);
         }
