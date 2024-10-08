@@ -62,7 +62,7 @@ public class ActivityHelper {
         if (!effects.isEmpty()) {
             effectBody = "if guard:";
             for (String effect: effects) {
-                effectBody += "\n\t" + effect;
+                effectBody += "\n" + CifToPythonTranslator.increaseIndentation(effect);
             }
             // Validate the property bounds at runtime
             for (Map.Entry<String, Range<Integer>> entry: propertyBounds.entrySet()) {
