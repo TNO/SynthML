@@ -80,6 +80,10 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         List<T> elifs = update.elifs.stream().map(upd -> visit(upd, ctx)).toList();
         List<T> elses = update.elses.stream().map(upd -> visit(upd, ctx)).toList();
 
+        if (thens.isEmpty()) {
+            throw new CustomSyntaxException("Expected a non-empty 'then'. ", update.position);
+        }
+
         return visit(guards, thens, elifs, elses, update.position, ctx);
     }
 
@@ -89,6 +93,10 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     protected T visit(AElifUpdate update, CifContext ctx) {
         List<T> guards = update.guards.stream().map(grd -> visit(grd, ctx)).toList();
         List<T> thens = update.thens.stream().map(upd -> visit(upd, ctx)).toList();
+
+        if (thens.isEmpty()) {
+            throw new CustomSyntaxException("Expected a non-empty 'then'. ", update.position);
+        }
 
         return visit(guards, thens, update.position, ctx);
     }

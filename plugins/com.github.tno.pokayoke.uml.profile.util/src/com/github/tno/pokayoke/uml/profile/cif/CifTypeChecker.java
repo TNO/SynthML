@@ -128,7 +128,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             }
         }
 
-        return booleanType;
+        return thens.get(0);
     }
 
     @Override
