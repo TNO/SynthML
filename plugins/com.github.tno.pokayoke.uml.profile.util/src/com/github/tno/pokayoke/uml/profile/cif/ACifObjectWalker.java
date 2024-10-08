@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
+import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
+import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -70,6 +72,28 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     }
 
     protected abstract T visit(T addressable, TextPosition assignmentPos, T value, CifContext ctx);
+
+    @Override
+    protected T visit(AIfUpdate update, CifContext ctx) {
+        List<T> guards = update.guards.stream().map(grd -> visit(grd, ctx)).toList();
+        List<T> thens = update.thens.stream().map(upd -> visit(upd, ctx)).toList();
+        List<T> elifs = update.elifs.stream().map(upd -> visit(upd, ctx)).toList();
+        List<T> elses = update.elses.stream().map(upd -> visit(upd, ctx)).toList();
+
+        return visit(guards, thens, elifs, elses, update.position, ctx);
+    }
+
+    protected abstract T visit(List<T> guards, List<T> thens, List<T> elifs, List<T> elses, TextPosition updatePos,
+            CifContext ctx);
+
+    protected T visit(AElifUpdate update, CifContext ctx) {
+        List<T> guards = update.guards.stream().map(grd -> visit(grd, ctx)).toList();
+        List<T> thens = update.thens.stream().map(upd -> visit(upd, ctx)).toList();
+
+        return visit(guards, thens, update.position, ctx);
+    }
+
+    protected abstract T visit(List<T> guards, List<T> thens, TextPosition updatePos, CifContext ctx);
 
     @Override
     protected T visit(ABinaryExpression expr, CifContext ctx) {

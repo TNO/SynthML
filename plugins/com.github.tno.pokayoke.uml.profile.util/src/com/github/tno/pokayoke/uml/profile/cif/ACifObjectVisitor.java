@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
+import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
@@ -28,12 +29,16 @@ public abstract class ACifObjectVisitor<T, C> {
     protected T visit(AUpdate update, C ctx) {
         if (update instanceof AAssignmentUpdate assignment) {
             return visit(assignment, ctx);
+        } else if (update instanceof AIfUpdate ifUpdate) {
+            return visit(ifUpdate, ctx);
         } else {
             throw new RuntimeException("Unsupported update: " + update.getClass().getSimpleName());
         }
     }
 
     protected abstract T visit(AAssignmentUpdate update, C ctx);
+
+    protected abstract T visit(AIfUpdate update, C ctx);
 
     protected T visit(AExpression expr, C ctx) {
         if (expr instanceof ABinaryExpression binExpr) {
