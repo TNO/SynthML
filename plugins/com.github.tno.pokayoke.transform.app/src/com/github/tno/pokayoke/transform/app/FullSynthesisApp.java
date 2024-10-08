@@ -16,6 +16,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.cif2cif.ElimIfUpdates;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
@@ -83,6 +84,10 @@ public class FullSynthesisApp {
         } finally {
             AppEnv.unregisterApplication();
         }
+
+        // Post-process the CIF specification to eliminate all if-updates.
+        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
+        elimIfUpdates.transform(cifSpec);
 
         // Get CIF/BDD specification.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".02.ctrlsys.cif");
