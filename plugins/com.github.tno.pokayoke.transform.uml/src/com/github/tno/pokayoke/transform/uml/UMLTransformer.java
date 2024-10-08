@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.function.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -57,7 +55,6 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
@@ -310,7 +307,7 @@ public class UMLTransformer {
 
         // Translate the guard and effects of the given behavior.
         String guard = translateGuard(behavior);
-        List<String> effects = translateEffects(behavior);
+        List<List<String>> effects = translateEffects(behavior);
 
         // Define a new activity that encodes the behavior of the action.
         Activity activity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
@@ -389,7 +386,7 @@ public class UMLTransformer {
 
         // Translate the guard and effects of the action.
         String guard = translateGuard(action);
-        List<String> effects = translateEffects(action);
+        List<List<String>> effects = translateEffects(action);
 
         // Define a new activity that encodes the behavior of the action.
         Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
@@ -439,17 +436,11 @@ public class UMLTransformer {
      * @param element The element of which to translate the effects.
      * @return The translated effects.
      */
-    private List<String> translateEffects(RedefinableElement element) {
+    private List<List<String>> translateEffects(RedefinableElement element) {
         Preconditions.checkArgument(PokaYokeUmlProfileUtil.isFormalElement(element),
                 "Expected a formal element but got: " + element);
 
-        List<List<AUpdate>> updates = CifParserHelper.parseEffects(element);
-
-        if (updates.size() > 1) {
-            throw new RuntimeException("Multiple effects are not supported yet, on element: " + element);
-        }
-
-        return translator.translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
+        return CifParserHelper.parseEffects(element).stream().map(translator::translateUpdates).toList();
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {

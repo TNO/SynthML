@@ -101,6 +101,7 @@
           <body>guard = not (myBool)
 if guard:
 	myBool = True
+pass
 active = ''
 isSuccessful = guard</body>
         </node>
@@ -193,6 +194,7 @@ isSuccessful = guard</body>
           <body>guard = myBool
 if guard:
 	myBool = False
+pass
 active = ''
 isSuccessful = guard</body>
         </node>

@@ -101,6 +101,7 @@
           <body>guard = not (flag)
 if guard:
 	flag = True
+pass
 active = ''
 isSuccessful = guard</body>
         </node>

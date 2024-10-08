@@ -120,6 +120,7 @@ if guard:
 	myBool = False
 	myChoice = 'A'
 	myPercentage = 50
+if guard:
 	if not (0 &lt;= myPercentage &lt;= 100):
 		print(&quot;Expected 'myPercentage' to stay between 0 and 100, but got &quot; + str(myPercentage))
 	if not (0 &lt;= myRange &lt;= 2):
