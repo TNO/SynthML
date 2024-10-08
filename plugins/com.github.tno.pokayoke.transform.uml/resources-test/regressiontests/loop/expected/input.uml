@@ -96,6 +96,7 @@
           <body>guard = True
 if guard:
 	Value = False
+pass
 active = ''
 isSuccessful = guard</body>
         </node>
@@ -188,6 +189,7 @@ isSuccessful = guard</body>
           <body>guard = True
 if guard:
 	Value = True
+pass
 active = ''
 isSuccessful = guard</body>
         </node>

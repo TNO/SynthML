@@ -114,6 +114,7 @@
 if guard:
 	intA1 = (intA1) + (1)
 	intB1 = 16
+if guard:
 	if not (1 &lt;= intA1 &lt;= 10):
 		print(&quot;Expected 'intA1' to stay between 1 and 10, but got &quot; + str(intA1))
 	if not (1 &lt;= intA2 &lt;= 10):
