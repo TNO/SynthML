@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.uml;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,18 +39,18 @@ public class ActivityHelper {
     }
 
     /**
-     * Creates an activity that waits until the specified guard becomes {@code true} and then executes the specified
-     * effect. The evaluation of the guard and possible execution of the effect happen together atomically.
+     * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
+     * specified effects. The evaluation of the guard and possible execution of the effect happen together atomically.
      *
      * @param guard A single-line Python boolean expression.
-     * @param effects A list of single-line Python programs.
+     * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(String guard, List<String> effects,
+    public static Activity createAtomicActivity(String guard, List<List<String>> effects,
             Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
@@ -57,23 +58,12 @@ public class ActivityHelper {
         Preconditions.checkArgument(!callerId.contains("'"),
                 "Argument callerId contains quote character ('): " + callerId);
 
-        // Combine all given effects into a single Python program.
-        String effectBody = "pass";
+        // Translate the given effects as a single Python program.
+        String effectBody = translateEffects(effects);
+
+        // Validate the property bounds at runtime.
         if (!effects.isEmpty()) {
-            effectBody = "if guard:";
-            for (String effect: effects) {
-                effectBody += "\n" + CifToPythonTranslator.increaseIndentation(effect);
-            }
-            // Validate the property bounds at runtime
-            for (Map.Entry<String, Range<Integer>> entry: propertyBounds.entrySet()) {
-                String property = entry.getKey();
-                Range<Integer> bounds = entry.getValue();
-                effectBody += String.format("\n\tif not (%d <= %s <= %d):", bounds.getMinimum(), property,
-                        bounds.getMaximum());
-                effectBody += String.format(
-                        "\n\t\tprint(\"Expected '%s' to stay between %d and %d, but got \" + str(%s))", property,
-                        bounds.getMinimum(), bounds.getMaximum(), property);
-            }
+            effectBody += "\n" + translatePropertyBounds(propertyBounds);
         }
 
         // Define a new activity that encodes the guard and effect.
@@ -213,8 +203,9 @@ public class ActivityHelper {
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
         guardAndEffectNode.setActivity(activity);
         guardAndEffectNode.getLanguages().add("Python");
-        String guardAndEffectBody = String.format("guard = %s\n%s\nactive = ''\nisSuccessful = guard", guard,
-                effectBody);
+        String randomImport = effects.size() > 1 ? "import random\n" : "";
+        String guardAndEffectBody = String.format("%sguard = %s\n%s\nactive = ''\nisSuccessful = guard", randomImport,
+                guard, effectBody);
         guardAndEffectNode.getBodies().add(guardAndEffectBody);
         OutputPin guardAndEffectOutput = guardAndEffectNode.createOutputValue("isSuccessful",
                 UmlPrimitiveType.BOOLEAN.load(acquire));
@@ -417,5 +408,77 @@ public class ActivityHelper {
         decisionToInnerMergeFlow.setGuard(decisionToInnerMergeGuard);
 
         return activity;
+    }
+
+    /**
+     * Translates the given given list of effects (which are themselves represented as lists of single-line Python
+     * programs) to a Python program that performs these effects.
+     * <p>
+     * If {@code effects} is empty, then the translated Python program will do nothing. If {@code effects} contains
+     * exactly one effect (i.e., the corresponding action is deterministic), then the translated Python program will
+     * perform this effect under the condition that the action guard holds. If {@code effects} contains multiple effects
+     * (i.e., the corresponding action is non-deterministic), then the translated Python program will randomly perform
+     * one of the effects, under the condition that the action guard holds.
+     * </p>
+     *
+     * @param effects The list of effects to translate. Every effect must be a list of single-line Python programs.
+     * @return The translated Python program that performs the effect(s) as described above.
+     */
+    private static String translateEffects(List<List<String>> effects) {
+        if (effects.isEmpty()) {
+            return "pass";
+        }
+
+        // Translate the individual effects and ensure proper indentation.
+        List<String> translatedEffects = effects.stream().map(effect -> CifToPythonTranslator
+                .mergeAll(CifToPythonTranslator.increaseIndentation(effect), "\n").orElse("pass")).toList();
+
+        if (translatedEffects.size() == 1) {
+            // If there is only one effect, i.e., the corresponding action is deterministic, then return a Python
+            // program that performs the effect under the condition that the action guard holds.
+            return String.format("if guard:\n%s", translatedEffects.get(0));
+        } else {
+            // If there are multiple effects, i.e., the corresponding action is non-deterministic, then return a Python
+            // program that generates a random number and performs one of the effects based on this generated number.
+
+            // First we 'extend' the translated effects with randomization as described above.
+            List<String> extendedEffects = new ArrayList<>(translatedEffects.size() + 1);
+            extendedEffects.add(String.format("__branch = random.randint(0, %d)", translatedEffects.size() - 1));
+
+            for (int i = 0; i < translatedEffects.size(); i++) {
+                extendedEffects.add(String.format("if __branch == %d:\n%s", i, translatedEffects.get(i)));
+            }
+
+            // Then we return a Python program that randomly performs one of the effects if the action guard holds.
+            return String.format("if guard:\n%s", CifToPythonTranslator
+                    .mergeAll(CifToPythonTranslator.increaseIndentation(extendedEffects), "\n").get());
+        }
+    }
+
+    /**
+     * Translates the given mapping from integer properties to their integer bounds, to a Python program that checks
+     * whether all these integer properties stay within their bounds. If not, then the Python program will print a
+     * message.
+     *
+     * @param propertyBounds The property bounds to translate.
+     * @return The translated Python program.
+     */
+    private static String translatePropertyBounds(Map<String, Range<Integer>> propertyBounds) {
+        if (propertyBounds.isEmpty()) {
+            return "pass";
+        }
+
+        String result = "if guard:";
+
+        for (Map.Entry<String, Range<Integer>> entry: propertyBounds.entrySet()) {
+            String property = entry.getKey();
+            Range<Integer> bounds = entry.getValue();
+
+            result += String.format("\n\tif not (%d <= %s <= %d):", bounds.getMinimum(), property, bounds.getMaximum());
+            result += String.format("\n\t\tprint(\"Expected '%s' to stay between %d and %d, but got \" + str(%s))",
+                    property, bounds.getMinimum(), bounds.getMaximum(), property);
+        }
+
+        return result;
     }
 }
