@@ -88,9 +88,16 @@ public class FullSynthesisApp {
         // Post-process the CIF specification to eliminate all if-updates.
         ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
         elimIfUpdates.transform(cifSpec);
+        Path cifPostProcessedSpecPath = outputFolderPath.resolve(filePrefix + ".02.postprocessed.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
 
         // Get CIF/BDD specification.
-        Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".02.ctrlsys.cif");
+        Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
@@ -106,7 +113,7 @@ public class FullSynthesisApp {
                 outputFolderPath.toString());
 
         // Perform state space generation.
-        Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.statespace.cif");
+        Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif");
         String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
@@ -121,7 +128,7 @@ public class FullSynthesisApp {
 
         // Transform the state space by creating a single (initial) source and a single (marked) sink location.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
-                .resolve(filePrefix + ".04.statespace.singlesourcesink.cif");
+                .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
@@ -132,7 +139,7 @@ public class FullSynthesisApp {
         // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
         // technically invalid, since it may then have locations with state annotations as well as locations without
         // state annotations. However, this is still fine for our internal analysis.
-        Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".05.statespace.annotreduced.cif");
+        Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.annotreduced.cif");
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
                 outputFolderPath);
@@ -141,7 +148,7 @@ public class FullSynthesisApp {
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
         // input the earlier version of the CIF specification that still has all state annotations.
         String preservedEvents = getPreservedEvents(cifStateSpace);
-        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
+        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
@@ -156,7 +163,7 @@ public class FullSynthesisApp {
 
         // Perform DFA minimization.
         Path cifMinimizedStateSpacePath = outputFolderPath
-                .resolve(filePrefix + ".07.statespace.projected.minimized.cif");
+                .resolve(filePrefix + ".08.statespace.projected.minimized.cif");
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         AppStream dfaMinimizationAppStream = new MemAppStream();
@@ -170,13 +177,13 @@ public class FullSynthesisApp {
         }
 
         // Translate the CIF state space to Petrify input.
-        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".08.g");
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".09.g");
         Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         List<String> petrifyInput = Cif2Petrify.transform(cifMinimizedStateSpace);
         Files.write(petrifyInputPath, petrifyInput);
 
         // Petrify the state space.
-        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".09.out");
+        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".10.out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         Path petrifyErrorPath = outputFolderPath.resolve("petrify.err");
         PetrifyHelper.convertToPetriNet(petrifyInputPath, petrifyOutputPath,
@@ -187,7 +194,7 @@ public class FullSynthesisApp {
         List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
-        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".10.pnml");
+        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.pnml");
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
@@ -195,12 +202,12 @@ public class FullSynthesisApp {
         Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
 
         // Remove the self-loop that was added for petrification.
-        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".12.loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Translate PNML into UML activity.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".12.uml");
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
         Activity activity = petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
@@ -235,24 +242,24 @@ public class FullSynthesisApp {
                 converter.convertExpressions(cifSpec, Arrays.asList(guard))));
 
         // Add the computed choice guards to their corresponding UML control flows.
-        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".13.choiceguardsadded.uml");
+        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".14.choiceguardsadded.uml");
         ControlFlowHelper.addGuards(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".14.internalactionsremoved.uml");
+                .resolve(filePrefix + ".15.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".15.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".16.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Post-process the activity to add choice guards to the name of the UML control flow they are on.
         Path umlChoiceGuardNamesAddedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".16.choiceguardnamesadded.uml");
+                .resolve(filePrefix + ".17.choiceguardnamesadded.uml");
         PostProcessActivity.addGuardsToControlFlowNames(activity);
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
     }
