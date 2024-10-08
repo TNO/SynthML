@@ -1,0 +1,12 @@
+controllable action;
+plant automaton Context:
+  disc bool field in any;
+  alg bool postcondition = field;
+  alg bool __postcondition = postcondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge action when not field do field := true;
+end
+requirement invariant Context.__postcondition disables action;

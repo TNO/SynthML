@@ -82,6 +82,18 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     }
 
     @Override
+    protected Object visit(List<Object> guards, List<Object> thens, List<Object> elifs, List<Object> elses,
+            TextPosition updatePos, CifContext ctx)
+    {
+        throw new UnsupportedOperationException("Conditional updates are unsupported.");
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, List<Object> thens, TextPosition updatePos, CifContext ctx) {
+        throw new UnsupportedOperationException("Conditional updates are unsupported.");
+    }
+
+    @Override
     protected Object visit(BinaryOperator operator, TextPosition operatorPos, Object left, Object right,
             CifContext ctx)
     {

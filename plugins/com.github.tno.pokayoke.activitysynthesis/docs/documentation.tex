@@ -284,13 +284,17 @@ This operation produces a CIF specification that:
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
 	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
-	An edge is defined for every declared CIF events, both controllable and uncontrollable ones.
+	An edge is defined for every declared CIF event, both controllable and uncontrollable ones.
 	Every controllable CIF event corresponds one-to-one to UML opaque behavior definitions, and thus their edge guards are the translated action guards.
 	Moreover, in case of a deterministic action, the edge update is the translated action effect.
 	In case of a nondeterministic action, the action effects are translated on the corresponding uncontrollable events instead.
 	The edges for uncontrollable events do not have guards.
 	We don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the corresponding controlled `start' events.
 	These control flow guards and updates also correctly handle and maintain the atomicity variable.
+	
+	Furthermore, edges are guaranteed not to contain conditional `if'-updates, since these are not supported by data-based synthesis.
+	Any conditional updates have been eliminated from the CIF specification.
+	They are turned into conditional expressions, which are supported by data-based synthesis.
 	\item Contains requirement automata for the occurrence constraints defined in the UML model.
 	Occurrence constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.

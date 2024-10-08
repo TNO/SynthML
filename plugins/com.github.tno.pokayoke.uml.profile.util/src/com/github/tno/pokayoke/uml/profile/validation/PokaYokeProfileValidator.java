@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
+import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
+import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
@@ -491,17 +493,67 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidUpdates(List<AUpdate> updates, Element element) {
-        HashSet<String> updatedVariables = new HashSet<>();
-        for (AUpdate update: updates) {
-            new CifTypeChecker(element).checkAssignment(update);
+        // Type check all updates.
+        CifTypeChecker typeChecker = new CifTypeChecker(element);
 
-            // Update is checked above, so ClassCastException is not possible on next lines
-            AExpression variableExpr = ((AAssignmentUpdate)update).addressable;
-            String variable = ((ANameExpression)variableExpr).name.name;
-            if (!updatedVariables.add(variable)) {
-                throw new CustomSyntaxException(String.format("variable '%s' is updated multiple times", variable),
-                        variableExpr.position);
+        for (AUpdate update: updates) {
+            typeChecker.checkUpdate(update);
+        }
+
+        // Ensure that no variable is assigned more than once by the given list of updates.
+        checkUniqueAddressables(updates, new LinkedHashSet<>());
+    }
+
+    /**
+     * Checks that no variable is assigned more than once by the given list of {@code updates}, where {@code addrVars}
+     * is the set of variables that are already known to be assigned.
+     *
+     * @param updates The updates to check.
+     * @param addrVars The set of assigned variables, which is modified in-place.
+     */
+    private void checkUniqueAddressables(List<AUpdate> updates, Set<String> addrVars) {
+        for (AUpdate update: updates) {
+            checkUniqueAddressables(update, addrVars);
+        }
+    }
+
+    /**
+     * Checks that no variable is assigned more than once by the given {@code update}, where {@code addrVars} is the set
+     * of variables that are already known to be assigned.
+     *
+     * @param update The update to check.
+     * @param addrVars The set of assigned variables, which is modified in-place.
+     */
+    private void checkUniqueAddressables(AUpdate update, Set<String> addrVars) {
+        if (update instanceof AAssignmentUpdate assignment) {
+            ANameExpression varExpr = (ANameExpression)assignment.addressable;
+            String varName = varExpr.name.name;
+            boolean added = addrVars.add(varName);
+
+            if (!added) {
+                throw new CustomSyntaxException(String.format("Variable '%s' is updated multiple times.", varName),
+                        varExpr.position);
             }
+        } else if (update instanceof AIfUpdate ifUpdate) {
+            Set<String> newAddrVars = new LinkedHashSet<>(addrVars);
+
+            Set<String> addrVarsThens = new LinkedHashSet<>(addrVars);
+            checkUniqueAddressables(ifUpdate.thens, addrVarsThens);
+            newAddrVars.addAll(addrVarsThens);
+
+            for (AElifUpdate elifUpdate: ifUpdate.elifs) {
+                Set<String> addrVarsElifs = new LinkedHashSet<>(addrVars);
+                checkUniqueAddressables(elifUpdate.thens, addrVarsElifs);
+                newAddrVars.addAll(addrVarsElifs);
+            }
+
+            Set<String> addrVarsElses = new LinkedHashSet<>(addrVars);
+            checkUniqueAddressables(ifUpdate.elses, addrVarsElses);
+            newAddrVars.addAll(addrVarsElses);
+
+            addrVars.addAll(newAddrVars);
+        } else {
+            error("Unsupported update: " + update, UMLPackage.Literals.TYPED_ELEMENT__TYPE);
         }
     }
 

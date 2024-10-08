@@ -53,17 +53,6 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     /**
-     * Checks if the evaluated value type of an {@code update} can be assigned to its addressable type.
-     *
-     * @param update The update to evaluate.
-     * @throws TypeException If {@code update} cannot be evaluated or if the value type cannot be assigned to its
-     *     addressable type.
-     */
-    public void checkAssignment(AUpdate update) throws TypeException {
-        visit(update, ctx);
-    }
-
-    /**
      * Checks if the evaluated {@code value} type can be assigned to the {@code addressable} type.
      *
      * @param addressable The expected addressable type.
@@ -84,6 +73,15 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      */
     public Type checkInvariant(AInvariant invariant) throws TypeException {
         return visit(invariant, ctx);
+    }
+
+    /**
+     * Checks whether the given update is correctly typed.
+     *
+     * @param update The update to type check.
+     */
+    public void checkUpdate(AUpdate update) {
+        visit(update, ctx);
     }
 
     @Override
@@ -113,6 +111,24 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
                     PokaYokeTypeUtil.getLabel(value)), assignmentPos);
         }
         return addressable;
+    }
+
+    @Override
+    protected Type visit(List<Type> guards, List<Type> thens, List<Type> elifs, List<Type> elses,
+            TextPosition updatePos, CifContext ctx)
+    {
+        return visit(guards, thens, updatePos, ctx);
+    }
+
+    @Override
+    protected Type visit(List<Type> guards, List<Type> thens, TextPosition updatePos, CifContext ctx) {
+        for (Type type: guards) {
+            if (!type.conformsTo(booleanType)) {
+                throw new TypeException(String.format("Expected a Boolean but got '%s'", type), updatePos);
+            }
+        }
+
+        return thens.get(0);
     }
 
     @Override

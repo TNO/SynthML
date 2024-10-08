@@ -45,6 +45,26 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     }
 
     @Override
+    protected String visit(List<String> guards, List<String> thens, List<String> elifs, List<String> elses,
+            TextPosition updatePos, CifContext ctx)
+    {
+        String guard = conjoinExprs(guards);
+        String then = mergeAll(increaseIndentation(thens), "\n").orElse("\tpass");
+        String elif = mergeAll(elifs, "\n").map(e -> "\n" + e).orElse("");
+        String elze = mergeAll(increaseIndentation(elses), "\n").orElse("\tpass");
+
+        return String.format("if %s:\n%s%s\nelse:\n%s", guard, then, elif, elze);
+    }
+
+    @Override
+    protected String visit(List<String> guards, List<String> thens, TextPosition updatePos, CifContext ctx) {
+        String guard = conjoinExprs(guards);
+        String then = mergeAll(increaseIndentation(thens), "\n").orElse("\tpass");
+
+        return String.format("elif %s:\n%s", guard, then);
+    }
+
+    @Override
     protected String visit(BinaryOperator operator, TextPosition operatorPos, String left, String right,
             CifContext ctx)
     {
@@ -87,5 +107,46 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
             CifContext ctx)
     {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Increases the tab indentation of the given Python element by one.
+     *
+     * @param element The Python element.
+     * @return The given Python element, with an increased tab indentation.
+     */
+    static String increaseIndentation(String element) {
+        return "\t" + element.replace("\n", "\n\t");
+    }
+
+    /**
+     * Increases the tab indentation of all given Python elements by one.
+     *
+     * @param elements The Python elements.
+     * @return The given Python elements, with an increased tab indentation.
+     */
+    static List<String> increaseIndentation(List<String> elements) {
+        return elements.stream().map(CifToPythonTranslator::increaseIndentation).toList();
+    }
+
+    /**
+     * Gives the conjunction of all given Python expressions as a single expression.
+     *
+     * @param exprs The Python expressions to conjoin.
+     * @return The conjunction of all given Python expressions as a single expression.
+     */
+    static String conjoinExprs(List<String> exprs) {
+        return exprs.stream().reduce((left, right) -> String.format("(%s) and (%s)", left, right)).orElse("True");
+    }
+
+    /**
+     * Merges the given list of Python elements into a single element.
+     *
+     * @param elements The Python elements to merge.
+     * @param delimiter The delimiter for merging the elements.
+     * @return The reduced Python element, or {@link Optional#empty()} in case the list of input elements was empty.
+     */
+    static Optional<String> mergeAll(List<String> elements, String delimiter) {
+        return elements.stream().reduce((left, right) -> String.format("%s%s%s", left, delimiter, right));
     }
 }
