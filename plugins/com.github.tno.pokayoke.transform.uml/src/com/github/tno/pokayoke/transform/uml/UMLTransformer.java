@@ -310,8 +310,9 @@ public class UMLTransformer {
         List<List<String>> effects = translateEffects(behavior);
 
         // Define a new activity that encodes the behavior of the action.
-        Activity activity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
-                behavior.getQualifiedName() + "__" + IDHelper.getID(behavior));
+        Activity activity = ActivityHelper.createActivity(guard, effects, propertyBounds, acquireSignal,
+                behavior.getQualifiedName() + "__" + IDHelper.getID(behavior),
+                PokaYokeUmlProfileUtil.isAtomic(behavior));
         activity.setName(behavior.getName());
 
         // Store the created activity as the single owned behavior of the given opaque behavior.
@@ -380,17 +381,13 @@ public class UMLTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
-        if (!PokaYokeUmlProfileUtil.isAtomic(action)) {
-            throw new RuntimeException(String.format("Non-atomic action '%s' is not supported yet!", action.getName()));
-        }
-
         // Translate the guard and effects of the action.
         String guard = translateGuard(action);
         List<List<String>> effects = translateEffects(action);
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createAtomicActivity(guard, effects, propertyBounds, acquireSignal,
-                action.getQualifiedName() + "__" + IDHelper.getID(action));
+        Activity newActivity = ActivityHelper.createActivity(guard, effects, propertyBounds, acquireSignal,
+                action.getQualifiedName() + "__" + IDHelper.getID(action), PokaYokeUmlProfileUtil.isAtomic(action));
         String actionName = action.getName();
         newActivity.setName(actionName);
 

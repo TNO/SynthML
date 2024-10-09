@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.FinalNode;
@@ -36,6 +37,28 @@ import com.google.common.base.Strings;
 public class ActivityHelper {
     private ActivityHelper() {
         // Empty for utility classes
+    }
+
+    /**
+     * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
+     * specified effects.
+     *
+     * @param guard A single-line Python boolean expression.
+     * @param effects The list of effects. Every effect must be a list of single-line Python programs.
+     * @param propertyBounds The integer properties in the model with their bounds.
+     * @param acquire The signal for acquiring the lock.
+     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
+     * @param isAtomic Whether the activity to create should be atomic.
+     * @return The created activity.
+     */
+    public static Activity createActivity(String guard, List<List<String>> effects,
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId, boolean isAtomic)
+    {
+        if (isAtomic) {
+            return createAtomicActivity(guard, effects, propertyBounds, acquire, callerId);
+        } else {
+            return createNonAtomicActivity(guard, effects, propertyBounds, acquire, callerId);
+        }
     }
 
     /**
@@ -269,6 +292,74 @@ public class ActivityHelper {
         outerDecisionToOuterMergeGuard.getBodies().add("else");
         outerDecisionToOuterMergeGuard.getLanguages().add("Python");
         outerDecisionToOuterMergeFlow.setGuard(outerDecisionToOuterMergeGuard);
+
+        return activity;
+    }
+
+    /**
+     * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
+     * specified effects. The evaluation of the guard and possible execution of the effect happen non-atomically, as two
+     * separate steps (which themselves are atomic).
+     *
+     * @param guard A single-line Python boolean expression.
+     * @param effects The list of effects. Every effect must be a list of single-line Python programs.
+     * @param propertyBounds The integer properties in the model with their bounds.
+     * @param acquire The signal for acquiring the lock.
+     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
+     *
+     * @return The created activity that executes non-atomically.
+     */
+    public static Activity createNonAtomicActivity(String guard, List<List<String>> effects,
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+    {
+        // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
+        Activity start = createAtomicActivity(guard, List.of(), propertyBounds, acquire, callerId);
+        Activity end = createAtomicActivity("True", effects, propertyBounds, acquire, callerId);
+        start.setName("__start");
+        end.setName("__end");
+
+        // Create the activity that calls the start and end activities in sequence.
+        Activity activity = FileHelper.FACTORY.createActivity();
+        activity.getOwnedBehaviors().add(start);
+        activity.getOwnedBehaviors().add(end);
+
+        // Define the initial node.
+        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
+        initNode.setActivity(activity);
+
+        // Define the call behavior node that calls the start activity.
+        CallBehaviorAction callStartNode = FileHelper.FACTORY.createCallBehaviorAction();
+        callStartNode.setActivity(activity);
+        callStartNode.setBehavior(start);
+        callStartNode.setName(start.getName());
+
+        // Define the control flow from the initial node to the node that calls the start activity.
+        ControlFlow initToStartFlow = FileHelper.FACTORY.createControlFlow();
+        initToStartFlow.setActivity(activity);
+        initToStartFlow.setSource(initNode);
+        initToStartFlow.setTarget(callStartNode);
+
+        // Define the call behavior node that calls the end activity.
+        CallBehaviorAction callEndNode = FileHelper.FACTORY.createCallBehaviorAction();
+        callEndNode.setActivity(activity);
+        callEndNode.setBehavior(end);
+        callEndNode.setName(end.getName());
+
+        // Define the control flow from the node that calls the start activity to the node that calls the end activity.
+        ControlFlow startToEndFlow = FileHelper.FACTORY.createControlFlow();
+        startToEndFlow.setActivity(activity);
+        startToEndFlow.setSource(callStartNode);
+        startToEndFlow.setTarget(callEndNode);
+
+        // Define the final node.
+        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        finalNode.setActivity(activity);
+
+        // Define the control flow from the node that calls the end activity to the final node.
+        ControlFlow endToFinalFlow = FileHelper.FACTORY.createControlFlow();
+        endToFinalFlow.setActivity(activity);
+        endToFinalFlow.setSource(callEndNode);
+        endToFinalFlow.setTarget(finalNode);
 
         return activity;
     }
