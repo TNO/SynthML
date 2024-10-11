@@ -310,10 +310,9 @@ public class UMLTransformer {
         List<List<String>> effects = translateEffects(behavior);
 
         // Define a new activity that encodes the behavior of the action.
-        Activity activity = ActivityHelper.createActivity(guard, effects, propertyBounds, acquireSignal,
-                behavior.getQualifiedName() + "__" + IDHelper.getID(behavior),
+        Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
+                acquireSignal, behavior.getQualifiedName() + "__" + IDHelper.getID(behavior),
                 PokaYokeUmlProfileUtil.isAtomic(behavior));
-        activity.setName(behavior.getName());
 
         // Store the created activity as the single owned behavior of the given opaque behavior.
         behavior.getOwnedBehaviors().add(activity);
@@ -386,10 +385,9 @@ public class UMLTransformer {
         List<List<String>> effects = translateEffects(action);
 
         // Define a new activity that encodes the behavior of the action.
-        Activity newActivity = ActivityHelper.createActivity(guard, effects, propertyBounds, acquireSignal,
-                action.getQualifiedName() + "__" + IDHelper.getID(action), PokaYokeUmlProfileUtil.isAtomic(action));
         String actionName = action.getName();
-        newActivity.setName(actionName);
+        Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
+                action.getQualifiedName() + "__" + IDHelper.getID(action), PokaYokeUmlProfileUtil.isAtomic(action));
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();

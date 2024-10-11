@@ -43,6 +43,7 @@ public class ActivityHelper {
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
      * specified effects.
      *
+     * @param name The name of the activity to create.
      * @param guard A single-line Python boolean expression.
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
@@ -51,13 +52,13 @@ public class ActivityHelper {
      * @param isAtomic Whether the activity to create should be atomic.
      * @return The created activity.
      */
-    public static Activity createActivity(String guard, List<List<String>> effects,
+    public static Activity createActivity(String name, String guard, List<List<String>> effects,
             Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId, boolean isAtomic)
     {
         if (isAtomic) {
-            return createAtomicActivity(guard, effects, propertyBounds, acquire, callerId);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
         } else {
-            return createNonAtomicActivity(guard, effects, propertyBounds, acquire, callerId);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
         }
     }
 
@@ -65,6 +66,7 @@ public class ActivityHelper {
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
      * specified effects. The evaluation of the guard and possible execution of the effect happen together atomically.
      *
+     * @param name The name of the activity to create.
      * @param guard A single-line Python boolean expression.
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
@@ -73,7 +75,7 @@ public class ActivityHelper {
      *
      * @return The created activity that executes atomically.
      */
-    public static Activity createAtomicActivity(String guard, List<List<String>> effects,
+    public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
             Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
@@ -91,6 +93,7 @@ public class ActivityHelper {
 
         // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
+        activity.setName(name);
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -301,6 +304,7 @@ public class ActivityHelper {
      * specified effects. The evaluation of the guard and possible execution of the effect happen non-atomically, as two
      * separate steps (which themselves are atomic).
      *
+     * @param name The name of the activity to create.
      * @param guard A single-line Python boolean expression.
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
@@ -309,19 +313,18 @@ public class ActivityHelper {
      *
      * @return The created activity that executes non-atomically.
      */
-    public static Activity createNonAtomicActivity(String guard, List<List<String>> effects,
+    public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
             Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
-        Activity start = createAtomicActivity(guard, List.of(), propertyBounds, acquire, callerId);
-        Activity end = createAtomicActivity("True", effects, propertyBounds, acquire, callerId);
-        start.setName("__start");
-        end.setName("__end");
+        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire, callerId);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, callerId);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.getOwnedBehaviors().add(start);
         activity.getOwnedBehaviors().add(end);
+        activity.setName(name);
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
