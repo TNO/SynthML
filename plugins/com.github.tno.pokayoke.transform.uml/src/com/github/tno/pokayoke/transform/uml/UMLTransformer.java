@@ -411,30 +411,22 @@ public class UMLTransformer {
     }
 
     /**
-     * Translates the guard of the specified {@link PokaYokeUmlProfileUtil#isFormalElement(RedefinableElement) formal
-     * element}.
+     * Translates the guard of the specified element.
      *
      * @param element The element of which to translate the guard.
      * @return The translated guard.
      */
     private String translateGuard(RedefinableElement element) {
-        Preconditions.checkArgument(PokaYokeUmlProfileUtil.isFormalElement(element),
-                "Expected a formal element but got: " + element);
-
         return translator.translateExpression(CifParserHelper.parseGuard(element));
     }
 
     /**
-     * Translates the effects of the specified {@link PokaYokeUmlProfileUtil#isFormalElement(RedefinableElement) formal
-     * element}.
+     * Translates the effects of the specified element.
      *
      * @param element The element of which to translate the effects.
      * @return The translated effects.
      */
     private List<List<String>> translateEffects(RedefinableElement element) {
-        Preconditions.checkArgument(PokaYokeUmlProfileUtil.isFormalElement(element),
-                "Expected a formal element but got: " + element);
-
         return CifParserHelper.parseEffects(element).stream().map(translator::translateUpdates).toList();
     }
 
