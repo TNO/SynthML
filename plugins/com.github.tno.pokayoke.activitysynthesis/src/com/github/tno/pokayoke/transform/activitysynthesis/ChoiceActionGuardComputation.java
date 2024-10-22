@@ -2,11 +2,9 @@
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.github.javabdd.BDD;
-import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -37,9 +35,13 @@ public class ChoiceActionGuardComputation {
      * @return A mapping from all choice arcs to their choice guards, as BDDs.
      */
     public Map<Arc, BDD> computeChoiceGuards(PetriNet petriNet) {
-        Preconditions.checkArgument(petriNet.getPages().size() == 1,
-                "Expected the Petri Net to have exactly one page.");
-        return computeChoiceGuards(petriNet.getPages().get(0));
+        Map<Arc, BDD> result = new LinkedHashMap<>();
+
+        for (Page page: petriNet.getPages()) {
+            result.putAll(computeChoiceGuards(page));
+        }
+
+        return result;
     }
 
     /**
@@ -51,14 +53,9 @@ public class ChoiceActionGuardComputation {
     private Map<Arc, BDD> computeChoiceGuards(Page page) {
         Map<Arc, BDD> result = new LinkedHashMap<>();
 
-        // Collect all choice places, which are places that have multiple outgoing arcs.
-        List<Place> choicePlaces = page.getObjects().stream()
-                .filter(o -> o instanceof Place p && p.getOutArcs().size() > 1).map(Place.class::cast).toList();
-
-        // Iterate over all choice places and their outgoing arcs, and compute choice guards for all these arcs.
-        for (Place choicePlace: choicePlaces) {
-            for (Arc outgoingArc: choicePlace.getOutArcs()) {
-                result.put(outgoingArc, computeChoiceGuard(outgoingArc));
+        for (Object object: page.getObjects()) {
+            if (object instanceof Arc arc && arc.getSource() instanceof Place place && place.getOutArcs().size() > 1) {
+                result.put(arc, computeChoiceGuard(arc));
             }
         }
 
