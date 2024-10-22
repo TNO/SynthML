@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
@@ -56,7 +55,12 @@ public class EventGuardUpdateHelper {
      * @return The controlled system guards mapping.
      */
     public static Map<String, BDD> collectControlledSystemGuards(CifDataSynthesisResult synthesisResult) {
-        return synthesisResult.outputGuards.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getName(),
-                Entry::getValue, (left, right) -> left, LinkedHashMap::new));
+        Map<String, BDD> guards = new LinkedHashMap<>();
+
+        for (Entry<Event, BDD> entry: synthesisResult.outputGuards.entrySet()) {
+            guards.put(entry.getKey().getName(), entry.getValue());
+        }
+
+        return guards;
     }
 }

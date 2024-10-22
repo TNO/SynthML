@@ -102,7 +102,7 @@ public class ChoiceActionGuardComputation {
         BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(transitionName);
         BDD controlledSystemGuard = controlledSystemGuards.get(transitionName);
 
-        Verify.verifyNotNull(uncontrolledSystemGuard, "Expected a non-null uncontrolled system guard");
+        Verify.verifyNotNull(uncontrolledSystemGuard, "Expected a non-null uncontrolled system guard.");
 
         // If a controlled system guard is available, simplify it with respect to the uncontrolled system guard.
         if (controlledSystemGuard != null) {
