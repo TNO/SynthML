@@ -44,14 +44,12 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="19" target="32" source="28">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" target="35" source="33">
-          <name xsi:nil="true"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="field1" target="35" source="33">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
             <body>field1</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" target="28" source="33">
-          <name xsi:nil="true"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="true" target="28" source="33">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="23">
             <body>true</body>
           </guard>
@@ -62,16 +60,16 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="25" target="35" source="30">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="36" source="31">
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="34" source="35">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" target="34" source="35">
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" target="36" source="31">
           <name xsi:nil="true"/>
         </edge>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="action1" incoming="22" outgoing="19" behavior="9"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="29" name="action1" incoming="16" outgoing="18" behavior="9"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="30" name="action2" incoming="17" outgoing="25" behavior="10"/>
-        <node xmi:type="uml:InitialNode" xmi:id="31" outgoing="26">
+        <node xmi:type="uml:InitialNode" xmi:id="31" outgoing="27">
           <name xsi:nil="true"/>
         </node>
         <node xmi:type="uml:MergeNode" xmi:id="32" incoming="18 19" outgoing="24">
@@ -80,13 +78,13 @@
         <node xmi:type="uml:DecisionNode" xmi:id="33" incoming="24" outgoing="20 22">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" incoming="27">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" incoming="26">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:JoinNode" xmi:id="35" incoming="20 25" outgoing="27">
+        <node xmi:type="uml:JoinNode" xmi:id="35" incoming="20 25" outgoing="26">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ForkNode" xmi:id="36" incoming="26" outgoing="16 17">
+        <node xmi:type="uml:ForkNode" xmi:id="36" incoming="27" outgoing="16 17">
           <name xsi:nil="true"/>
         </node>
       </ownedBehavior>

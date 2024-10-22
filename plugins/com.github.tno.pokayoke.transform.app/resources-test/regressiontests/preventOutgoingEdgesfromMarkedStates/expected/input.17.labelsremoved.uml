@@ -21,17 +21,17 @@
             <body>element = First</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="12" target="14" source="15">
+        <edge xmi:type="uml:ControlFlow" xmi:id="12" target="16" source="14">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="13" target="16" source="14">
+        <edge xmi:type="uml:ControlFlow" xmi:id="13" target="14" source="15">
           <name xsi:nil="true"/>
         </edge>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="14" name="change" incoming="12" outgoing="13" behavior="6"/>
-        <node xmi:type="uml:InitialNode" xmi:id="15" outgoing="12">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="14" name="change" incoming="13" outgoing="12" behavior="6"/>
+        <node xmi:type="uml:InitialNode" xmi:id="15" outgoing="13">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="16" incoming="13">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="16" incoming="12">
           <name xsi:nil="true"/>
         </node>
       </ownedBehavior>

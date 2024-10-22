@@ -28,17 +28,17 @@
         <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="15" name="happens_at_most_once" constrainedElement="9">
           <specification xmi:type="uml:Interval" xmi:id="16" name="" max="3" min="4"/>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="19" source="20">
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="21" source="19">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="21" source="19">
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="19" source="20">
           <name xsi:nil="true"/>
         </edge>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="19" name="change" incoming="17" outgoing="18" behavior="9"/>
-        <node xmi:type="uml:InitialNode" xmi:id="20" outgoing="17">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="19" name="change" incoming="18" outgoing="17" behavior="9"/>
+        <node xmi:type="uml:InitialNode" xmi:id="20" outgoing="18">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="21" incoming="18">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="21" incoming="17">
           <name xsi:nil="true"/>
         </node>
       </ownedBehavior>

@@ -65,12 +65,14 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="32" target="50" source="57">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="true" target="46" source="53">
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="46" source="53">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="true" target="47" source="53">
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" target="47" source="53">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
             <body>true</body>
           </guard>
@@ -96,19 +98,19 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="43" target="57" source="51">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="51" source="52">
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="55" source="49">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="55" source="49">
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="51" source="52">
           <name xsi:nil="true"/>
         </edge>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="Drink_Coffee" incoming="33" outgoing="39" behavior="60"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="Drink_Tea" incoming="35" outgoing="40" behavior="61"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Flip_A_Coin" incoming="31" outgoing="37" behavior="63"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Start_Working" incoming="42" outgoing="45" behavior="62"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Start_Working" incoming="42" outgoing="44" behavior="62"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="Starting_Computer" incoming="32" outgoing="38" behavior="59"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Turn_Computer_On" incoming="44" outgoing="43" behavior="58"/>
-        <node xmi:type="uml:InitialNode" xmi:id="52" outgoing="44">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Turn_Computer_On" incoming="45" outgoing="43" behavior="58"/>
+        <node xmi:type="uml:InitialNode" xmi:id="52" outgoing="45">
           <name xsi:nil="true"/>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="53" incoming="37" outgoing="33 35">
@@ -117,7 +119,7 @@
         <node xmi:type="uml:MergeNode" xmi:id="54" incoming="39 40" outgoing="41">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="55" incoming="45">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="55" incoming="44">
           <name xsi:nil="true"/>
         </node>
         <node xmi:type="uml:JoinNode" xmi:id="56" incoming="38 41" outgoing="42">

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="Model">
     <packagedElement xmi:type="uml:Class" xmi:id="2" name="Example" visibility="public" classifierBehavior="11" isActive="true">
       <ownedAttribute xmi:id="3" name="field1" visibility="public">
@@ -32,33 +32,63 @@
             <body>field1 and field2</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Fork____start__to__action1/1" target="29" source="36"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Fork____start__to__action2" target="30" source="36"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="action1/1__to__Merge__p4" target="32" source="29"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" name="action1__to__Merge__p4" target="32" source="28"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="Decision__p4__to__Join____end" target="35" source="33">
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" target="29" source="36">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="30" source="36">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="32" source="29">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="32" source="28">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" target="35" source="33">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
             <body>field1</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Decision__p4__to__action1" target="28" source="33">
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" target="28" source="33">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="23">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Merge__p4__to__Decision__p4" target="33" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="action2__to__Join____end" target="35" source="30"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="InitialNode__p1__to__Fork____start" target="36" source="31"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="Join____end__to__FinalNode__p6" target="34" source="35"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="33" source="32">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" target="35" source="30">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="34" source="35">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" target="36" source="31">
+          <name xsi:nil="true"/>
+        </edge>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="action1" incoming="22" outgoing="19" behavior="9"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="29" name="action1" incoming="16" outgoing="18" behavior="9"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="30" name="action2" incoming="17" outgoing="25" behavior="10"/>
-        <node xmi:type="uml:InitialNode" xmi:id="31" name="InitialNode__p1" outgoing="26"/>
-        <node xmi:type="uml:MergeNode" xmi:id="32" name="Merge__p4" incoming="18 19" outgoing="24"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="33" name="Decision__p4" incoming="24" outgoing="20 22"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" name="FinalNode__p6" incoming="27"/>
-        <node xmi:type="uml:JoinNode" xmi:id="35" name="Join____end" incoming="20 25" outgoing="27"/>
-        <node xmi:type="uml:ForkNode" xmi:id="36" name="Fork____start" incoming="26" outgoing="16 17"/>
+        <node xmi:type="uml:InitialNode" xmi:id="31" outgoing="27">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="32" incoming="18 19" outgoing="24">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="33" incoming="24" outgoing="20 22">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" incoming="26">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:JoinNode" xmi:id="35" incoming="20 25" outgoing="26">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="36" incoming="27" outgoing="16 17">
+          <name xsi:nil="true"/>
+        </node>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="37">
