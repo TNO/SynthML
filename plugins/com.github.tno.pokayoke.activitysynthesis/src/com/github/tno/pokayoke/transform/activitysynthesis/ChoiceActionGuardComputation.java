@@ -7,19 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import org.eclipse.escet.cif.bdd.conversion.BddToCif;
-import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.InputVariableExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.IntExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
-import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
@@ -53,9 +42,9 @@ public class ChoiceActionGuardComputation {
      * Computes choice guards for all choice arcs in the given Petri Net, i.e., arcs that go out of choice places.
      *
      * @param petriNet The input Petri Net.
-     * @return A mapping from all choice arcs to their choice guards, as CIF expressions.
+     * @return A mapping from all choice arcs to their choice guards, as BDDs.
      */
-    public Map<Arc, Expression> computeChoiceGuards(PetriNet petriNet) {
+    public Map<Arc, BDD> computeChoiceGuards(PetriNet petriNet) {
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected the Petri Net to have exactly one page.");
         return computeChoiceGuards(petriNet.getPages().get(0));
@@ -65,10 +54,10 @@ public class ChoiceActionGuardComputation {
      * Computes choice guards for all choice arcs in the given page, i.e., arcs that go out of choice places.
      *
      * @param page The input page.
-     * @return A mapping from all choice arcs to their choice guards, as CIF expressions.
+     * @return A mapping from all choice arcs to their choice guards, as BDDs.
      */
-    private Map<Arc, Expression> computeChoiceGuards(Page page) {
-        Map<Arc, Expression> result = new LinkedHashMap<>();
+    private Map<Arc, BDD> computeChoiceGuards(Page page) {
+        Map<Arc, BDD> result = new LinkedHashMap<>();
 
         // Collect all choice places, which are places that have multiple outgoing arcs.
         List<Place> choicePlaces = page.getObjects().stream()
@@ -77,9 +66,7 @@ public class ChoiceActionGuardComputation {
         // Iterate over all choice places and their outgoing arcs, and compute choice guards for all these arcs.
         for (Place choicePlace: choicePlaces) {
             for (Arc outgoingArc: choicePlace.getOutArcs()) {
-                BDD choiceGuard = computeChoiceGuard(outgoingArc);
-                result.put(outgoingArc, convertToExpr(choiceGuard));
-                choiceGuard.free();
+                result.put(outgoingArc, computeChoiceGuard(outgoingArc));
             }
         }
 
@@ -146,52 +133,5 @@ public class ChoiceActionGuardComputation {
         }
 
         throw new RuntimeException("Unknown event: " + event);
-    }
-
-    /**
-     * Converts a given BDD predicate to a CIF expression.
-     *
-     * @param pred The BDD predicate to convert.
-     * @return The converted CIF expression which doesn't use auxiliary variables that were introduced during synthesis.
-     */
-    private Expression convertToExpr(BDD pred) {
-        Expression expr = BddToCif.bddToCifPred(pred, cifSynthesisResult.cifBddSpec);
-
-        // Make sure the choice guard does not contain additional state.
-        if (containsAdditionalState(expr)) {
-            throw new RuntimeException("Expected choice guard '" + CifTextUtils.exprToStr(expr)
-                    + "' to not contain extra variables that were introduced during synthesis.");
-        }
-
-        return expr;
-    }
-
-    /**
-     * Determines whether the given expression contains auxiliary state that is not in the UML input model, but was
-     * added during the process of activity synthesis, like for example the atomicity variable.
-     *
-     * @param expr The expression to check.
-     * @return {@code true} in case the given expression contains additional state, {@code false} otherwise.
-     */
-    private boolean containsAdditionalState(Expression expr) {
-        if (expr instanceof BinaryExpression binExpr) {
-            return containsAdditionalState(binExpr.getLeft()) || containsAdditionalState(binExpr.getRight());
-        } else if (expr instanceof BoolExpression) {
-            return false;
-        } else if (expr instanceof DiscVariableExpression varExpr) {
-            return varExpr.getVariable().getName().startsWith("__");
-        } else if (expr instanceof EnumLiteralExpression) {
-            return false;
-        } else if (expr instanceof InputVariableExpression) {
-            return true;
-        } else if (expr instanceof IntExpression) {
-            return false;
-        } else if (expr instanceof LocationExpression) {
-            return true;
-        } else if (expr instanceof UnaryExpression unExpr) {
-            return containsAdditionalState(unExpr.getChild());
-        }
-
-        throw new RuntimeException("Unsupported expression: " + expr);
     }
 }

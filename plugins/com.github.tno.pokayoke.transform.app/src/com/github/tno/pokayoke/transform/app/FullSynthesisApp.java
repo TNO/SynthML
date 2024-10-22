@@ -231,8 +231,10 @@ public class FullSynthesisApp {
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
                 auxiliarySystemGuards, cifSynthesisResult, stateInfo);
-        Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards(petriNet);
-        uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
+        Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
+        Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
+        uncontrolledSystemGuards.values().forEach(BDD::free);
+        arcToBdd.values().forEach(BDD::free);
 
         // Get a map from UML control flows to the choice guards that have been computed for them.
         Map<ControlFlow, Expression> controlFlowToGuard = new LinkedHashMap<>();

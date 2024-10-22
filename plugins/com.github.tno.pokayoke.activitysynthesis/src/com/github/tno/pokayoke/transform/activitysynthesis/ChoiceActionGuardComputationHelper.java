@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddDiscVariable;
@@ -23,6 +24,7 @@ import org.eclipse.escet.cif.bdd.spec.CifBddLocPtrVariable;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.bdd.spec.CifBddVariable;
 import org.eclipse.escet.cif.common.CifCollectUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
@@ -32,10 +34,15 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
+import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.EnumLiteralExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.InputVariableExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.IntExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.LocationExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.types.BoolType;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.EnumType;
@@ -201,5 +208,71 @@ public class ChoiceActionGuardComputationHelper {
     private static boolean isSynthesisVariable(String variableName, List<CifBddVariable> bddVariables) {
         List<String> synthesisVariableNames = bddVariables.stream().map(variable -> variable.rawName).toList();
         return synthesisVariableNames.contains(variableName);
+    }
+
+    /**
+     * Converts a given mapping to BDD predicates, to a mapping to CIF expressions.
+     *
+     * @param <T> The domain of the mapping to convert.
+     * @param map The mapping to convert.
+     * @param bddSpec The CIF/BDD specification.
+     * @return The converted mapping which doesn't use auxiliary variables that were introduced during synthesis.
+     */
+    public static <T> Map<T, Expression> convertToExpr(Map<T, BDD> map, CifBddSpec bddSpec) {
+        Map<T, Expression> result = new LinkedHashMap<>();
+
+        for (Entry<T, BDD> entry: map.entrySet()) {
+            result.put(entry.getKey(), convertToExpr(entry.getValue(), bddSpec));
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts a given BDD predicate to a CIF expression.
+     *
+     * @param pred The BDD predicate to convert.
+     * @param bddSpec The CIF/BDD specification.
+     * @return The converted CIF expression which doesn't use auxiliary variables that were introduced during synthesis.
+     */
+    public static Expression convertToExpr(BDD pred, CifBddSpec bddSpec) {
+        Expression expr = BddToCif.bddToCifPred(pred, bddSpec);
+
+        // Make sure the choice guard does not contain additional state.
+        if (containsAuxilaryState(expr)) {
+            throw new RuntimeException("Expected choice guard '" + CifTextUtils.exprToStr(expr)
+                    + "' to not contain extra variables that were introduced during synthesis.");
+        }
+
+        return expr;
+    }
+
+    /**
+     * Determines whether the given expression contains auxiliary state that is not in the UML input model, but was
+     * added during the process of activity synthesis, e.g., the atomicity variable.
+     *
+     * @param expr The expression to check.
+     * @return {@code true} in case the given expression contains additional state, {@code false} otherwise.
+     */
+    public static boolean containsAuxilaryState(Expression expr) {
+        if (expr instanceof BinaryExpression binExpr) {
+            return containsAuxilaryState(binExpr.getLeft()) || containsAuxilaryState(binExpr.getRight());
+        } else if (expr instanceof BoolExpression) {
+            return false;
+        } else if (expr instanceof DiscVariableExpression varExpr) {
+            return varExpr.getVariable().getName().startsWith("__");
+        } else if (expr instanceof EnumLiteralExpression) {
+            return false;
+        } else if (expr instanceof InputVariableExpression) {
+            return true;
+        } else if (expr instanceof IntExpression) {
+            return false;
+        } else if (expr instanceof LocationExpression) {
+            return true;
+        } else if (expr instanceof UnaryExpression unExpr) {
+            return containsAuxilaryState(unExpr.getChild());
+        }
+
+        throw new RuntimeException("Unsupported expression: " + expr);
     }
 }
