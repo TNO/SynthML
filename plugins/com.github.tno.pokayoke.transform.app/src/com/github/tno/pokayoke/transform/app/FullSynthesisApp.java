@@ -103,12 +103,12 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
+        Map<String, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
                 umlToCifTranslator);
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
-        Map<Event, BDD> controlledSystemGuards = EventGuardUpdateHelper
+        Map<String, BDD> controlledSystemGuards = EventGuardUpdateHelper
                 .collectControlledSystemGuards(cifSynthesisResult);
 
         // Convert synthesis result back to CIF.

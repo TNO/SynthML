@@ -4,14 +4,9 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
-
-import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -21,14 +16,14 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Compute the guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
-    private final Map<Event, BDD> uncontrolledSystemGuards;
+    private final Map<String, BDD> uncontrolledSystemGuards;
 
-    private final Map<Event, BDD> controlledSystemGuards;
+    private final Map<String, BDD> controlledSystemGuards;
 
     private final Map<Place, BDD> stateInfo;
 
-    public ChoiceActionGuardComputation(Map<Event, BDD> uncontrolledSystemGuards,
-            Map<Event, BDD> controlledSystemGuards, Map<Place, BDD> stateInfo)
+    public ChoiceActionGuardComputation(Map<String, BDD> uncontrolledSystemGuards,
+            Map<String, BDD> controlledSystemGuards, Map<Place, BDD> stateInfo)
     {
         this.uncontrolledSystemGuards = uncontrolledSystemGuards;
         this.controlledSystemGuards = controlledSystemGuards;
@@ -80,19 +75,19 @@ public class ChoiceActionGuardComputation {
     private BDD computeChoiceGuard(Arc arc) {
         Transition transition = (Transition)arc.getTarget();
 
-        // Compute an initial choice guard for the target transition of the arc.
-        BDD choiceGuard = getExtraTransitionGuard(transition);
+        // Compute the extra (synthesized) condition for the target transition of the arc.
+        BDD extraGuard = getExtraTransitionGuard(transition);
 
-        // Further simplify the choice guard by the state information of all incoming places of the transition.
+        // Further simplify the computed extra guard by the state information of all incoming places of the transition.
         BDD statePredicate = transition.getInArcs().stream().map(a -> stateInfo.get(a.getSource()).id())
                 .reduce(BDD::andWith).get();
-        BDD simplifiedChoiceGuard = choiceGuard.simplify(statePredicate);
+        BDD simplifiedExtraGuard = extraGuard.simplify(statePredicate);
 
         // Free all intermediate BDDs.
-        choiceGuard.free();
+        extraGuard.free();
         statePredicate.free();
 
-        return simplifiedChoiceGuard;
+        return simplifiedExtraGuard;
     }
 
     /**
@@ -103,17 +98,11 @@ public class ChoiceActionGuardComputation {
      * @return The extra guard as a BDD predicate.
      */
     private BDD getExtraTransitionGuard(Transition transition) {
-        Function<Map<Event, BDD>, Event> findEvent = map -> map.entrySet().stream()
-                .filter(entry -> entry.getKey().getName().equals(transition.getName().getText())).map(Entry::getKey)
-                .findFirst().orElse(null);
-
-        // Try to process the transition as an event in the uncontrolled system.
-        Event event = findEvent.apply(uncontrolledSystemGuards);
-        Verify.verifyNotNull(event, "Unknown event: " + event);
+        String transitionName = transition.getName().getText();
 
         // Obtain the uncontrolled and controlled system guard for the given transition.
-        BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(event);
-        BDD controlledSystemGuard = controlledSystemGuards.get(event);
+        BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(transitionName);
+        BDD controlledSystemGuard = controlledSystemGuards.get(transitionName);
 
         // If a controlled system guard is available, simplify it with respect to the uncontrolled system guard.
         if (controlledSystemGuard != null) {

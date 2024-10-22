@@ -177,7 +177,7 @@ public class CifSourceSinkLocationTransformer {
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
      */
-    public static void addAuxiliarySystemGuards(Map<Event, BDD> uncontrolledSystemGuards, Specification specification,
+    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, Specification specification,
             CifBddSpec bddSpec, UmlToCifTranslator translator)
     {
         // Find the start and end event in the given CIF specification.
@@ -203,8 +203,10 @@ public class CifSourceSinkLocationTransformer {
 
         // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
         try {
-            uncontrolledSystemGuards.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
-            uncontrolledSystemGuards.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
+            uncontrolledSystemGuards.put(startEvent.getName(),
+                    CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
+            uncontrolledSystemGuards.put(endEvent.getName(),
+                    CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
         }
