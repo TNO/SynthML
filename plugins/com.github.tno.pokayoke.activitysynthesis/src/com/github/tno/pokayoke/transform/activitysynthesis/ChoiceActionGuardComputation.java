@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.github.javabdd.BDD;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -100,6 +101,8 @@ public class ChoiceActionGuardComputation {
         // Obtain the uncontrolled and controlled system guard for the given transition.
         BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(transitionName);
         BDD controlledSystemGuard = controlledSystemGuards.get(transitionName);
+
+        Verify.verifyNotNull(uncontrolledSystemGuard, "Expected a non-null uncontrolled system guard.");
 
         // If a controlled system guard is available, simplify it with respect to the uncontrolled system guard.
         if (controlledSystemGuard != null) {
