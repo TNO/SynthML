@@ -3,10 +3,12 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
@@ -25,21 +27,38 @@ public class EventGuardUpdateHelper {
      * @param cifBddSpec The CIF/BDD specification.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
-     * @return A map from all controllable CIF events to their guards as BDDs.
+     * @return A map from the names of all controllable CIF events to their guards as BDDs.
      */
-    public static Map<Event, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec,
+    public static Map<String, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec,
             UmlToCifTranslator translator)
     {
-        Map<Event, BDD> guards = new LinkedHashMap<>();
+        Map<String, BDD> guards = new LinkedHashMap<>();
 
         try {
             for (Event event: cifBddSpec.eventEdges.keySet()) {
                 if (event.getControllable()) {
-                    guards.put(event, CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec));
+                    guards.put(event.getName(),
+                            CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec));
                 }
             }
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage(), ex);
+        }
+
+        return guards;
+    }
+
+    /**
+     * Collect all controlled system guards as a mapping from names of controllable events, to their synthesized guards.
+     *
+     * @param synthesisResult The data-based synthesis results.
+     * @return The controlled system guards mapping.
+     */
+    public static Map<String, BDD> collectControlledSystemGuards(CifDataSynthesisResult synthesisResult) {
+        Map<String, BDD> guards = new LinkedHashMap<>();
+
+        for (Entry<Event, BDD> entry: synthesisResult.outputGuards.entrySet()) {
+            guards.put(entry.getKey().getName(), entry.getValue());
         }
 
         return guards;

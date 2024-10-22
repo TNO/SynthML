@@ -41,6 +41,7 @@ import org.eclipse.uml2.uml.Model;
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
+import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.ControlFlowHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
@@ -102,11 +103,13 @@ public class FullSynthesisApp {
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
         // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<Event, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
+        Map<String, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
                 umlToCifTranslator);
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
+        Map<String, BDD> controlledSystemGuards = EventGuardUpdateHelper
+                .collectControlledSystemGuards(cifSynthesisResult);
 
         // Convert synthesis result back to CIF.
         CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
@@ -132,9 +135,9 @@ public class FullSynthesisApp {
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
-        // Get the BDDs of the guards of auxiliary events that were introduced by the source/sink location transformer.
-        Map<Event, BDD> auxiliarySystemGuards = CifSourceSinkLocationTransformer
-                .collectAuxiliarySystemGuards(cifStateSpace, cifBddSpec, umlToCifTranslator);
+        // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
+        CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifStateSpace, cifBddSpec,
+                umlToCifTranslator);
 
         // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
         // technically invalid, since it may then have locations with state annotations as well as locations without
@@ -226,10 +229,14 @@ public class FullSynthesisApp {
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
         // Compute choice guards.
-        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, minimizedToReduced, regionMap);
-        Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards(petriNet);
-        uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
+        Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
+                minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
+        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
+                controlledSystemGuards, stateInfo);
+        Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
+        Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
+        uncontrolledSystemGuards.values().forEach(BDD::free);
+        arcToBdd.values().forEach(BDD::free);
 
         // Get a map from UML control flows to the choice guards that have been computed for them.
         Map<ControlFlow, Expression> controlFlowToGuard = new LinkedHashMap<>();
