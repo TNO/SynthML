@@ -239,7 +239,7 @@ public class ChoiceActionGuardComputationHelper {
         Expression expr = BddToCif.bddToCifPred(pred, bddSpec);
 
         // Make sure the choice guard does not contain additional state.
-        if (containsAuxilaryState(expr)) {
+        if (containsAuxiliaryState(expr)) {
             throw new RuntimeException("Expected choice guard '" + CifTextUtils.exprToStr(expr)
                     + "' to not contain extra variables that were introduced during synthesis.");
         }
@@ -254,9 +254,9 @@ public class ChoiceActionGuardComputationHelper {
      * @param expr The expression to check.
      * @return {@code true} in case the given expression contains additional state, {@code false} otherwise.
      */
-    public static boolean containsAuxilaryState(Expression expr) {
+    public static boolean containsAuxiliaryState(Expression expr) {
         if (expr instanceof BinaryExpression binExpr) {
-            return containsAuxilaryState(binExpr.getLeft()) || containsAuxilaryState(binExpr.getRight());
+            return containsAuxiliaryState(binExpr.getLeft()) || containsAuxiliaryState(binExpr.getRight());
         } else if (expr instanceof BoolExpression) {
             return false;
         } else if (expr instanceof DiscVariableExpression varExpr) {
@@ -270,7 +270,7 @@ public class ChoiceActionGuardComputationHelper {
         } else if (expr instanceof LocationExpression) {
             return true;
         } else if (expr instanceof UnaryExpression unExpr) {
-            return containsAuxilaryState(unExpr.getChild());
+            return containsAuxiliaryState(unExpr.getChild());
         }
 
         throw new RuntimeException("Unsupported expression: " + expr);
