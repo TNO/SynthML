@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,18 +168,17 @@ public class CifSourceSinkLocationTransformer {
     }
 
     /**
-     * Gives a mapping from auxiliary events that are introduced by {@link #transform(Specification)}, i.e., the start
-     * and end event, to the BDD representations of their guards. For the start event this guard is the activity
-     * precondition, and for the end event this guard is the activity postcondition.
+     * Extends the given mapping of uncontrolled system guards with auxiliary events that were introduced as part of the
+     * {@link CifSourceSinkLocationTransformer 'single source and sink location' transformation}.
      *
+     * @param uncontrolledSystemGuards The uncontrolled system guards mapping, which is modified in-place.
      * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
      * @param bddSpec The CIF/BDD specification of {@code specification}.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
-     * @return A mapping from auxiliary CIF events to their guards, represented as BDDs.
      */
-    public static Map<Event, BDD> collectAuxiliarySystemGuards(Specification specification, CifBddSpec bddSpec,
-            UmlToCifTranslator translator)
+    public static void addAuxiliarySystemGuards(Map<Event, BDD> uncontrolledSystemGuards, Specification specification,
+            CifBddSpec bddSpec, UmlToCifTranslator translator)
     {
         // Find the start and end event in the given CIF specification.
         Function<String, Event> findEvent = name -> {
@@ -203,16 +201,12 @@ public class CifSourceSinkLocationTransformer {
         Expression cifPrecondition = translator.translateStateInvariantConstraints(umlBehavior.getPreconditions());
         Expression cifPostcondition = translator.translateStateInvariantConstraints(umlBehavior.getPostconditions());
 
-        // Construct a mapping from the start and end event, to the precondition and postcondition as BDDs, resp.
-        Map<Event, BDD> result = new LinkedHashMap<>();
-
+        // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
         try {
-            result.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
-            result.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
+            uncontrolledSystemGuards.put(startEvent, CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
+            uncontrolledSystemGuards.put(endEvent, CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
         }
-
-        return result;
     }
 }

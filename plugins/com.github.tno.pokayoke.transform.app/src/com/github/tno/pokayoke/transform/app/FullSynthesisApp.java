@@ -135,9 +135,9 @@ public class FullSynthesisApp {
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
-        // Get the BDDs of the guards of auxiliary events that were introduced by the source/sink location transformer.
-        Map<Event, BDD> auxiliarySystemGuards = CifSourceSinkLocationTransformer
-                .collectAuxiliarySystemGuards(cifStateSpace, cifBddSpec, umlToCifTranslator);
+        // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
+        CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifStateSpace, cifBddSpec,
+                umlToCifTranslator);
 
         // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
         // technically invalid, since it may then have locations with state annotations as well as locations without
@@ -232,7 +232,7 @@ public class FullSynthesisApp {
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
-                controlledSystemGuards, auxiliarySystemGuards, stateInfo);
+                controlledSystemGuards, stateInfo);
         Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
         Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
         uncontrolledSystemGuards.values().forEach(BDD::free);

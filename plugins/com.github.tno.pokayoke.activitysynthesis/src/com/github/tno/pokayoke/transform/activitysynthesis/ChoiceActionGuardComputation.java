@@ -11,6 +11,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -24,16 +25,13 @@ public class ChoiceActionGuardComputation {
 
     private final Map<Event, BDD> controlledSystemGuards;
 
-    private final Map<Event, BDD> auxiliarySystemGuards;
-
     private final Map<Place, BDD> stateInfo;
 
     public ChoiceActionGuardComputation(Map<Event, BDD> uncontrolledSystemGuards,
-            Map<Event, BDD> controlledSystemGuards, Map<Event, BDD> auxiliarySystemGuards, Map<Place, BDD> stateInfo)
+            Map<Event, BDD> controlledSystemGuards, Map<Place, BDD> stateInfo)
     {
         this.uncontrolledSystemGuards = uncontrolledSystemGuards;
         this.controlledSystemGuards = controlledSystemGuards;
-        this.auxiliarySystemGuards = auxiliarySystemGuards;
         this.stateInfo = stateInfo;
     }
 
@@ -111,26 +109,17 @@ public class ChoiceActionGuardComputation {
 
         // Try to process the transition as an event in the uncontrolled system.
         Event event = findEvent.apply(uncontrolledSystemGuards);
+        Verify.verifyNotNull(event, "Unknown event: " + event);
 
-        if (event != null) {
-            // Get the uncontrolled system guard from the CIF specification.
-            BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(event);
+        // Obtain the uncontrolled and controlled system guard for the given transition.
+        BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(event);
+        BDD controlledSystemGuard = controlledSystemGuards.get(event);
 
-            // Get the controlled system guard from the synthesis result.
-            BDD controlledSystemGuard = controlledSystemGuards.get(event);
-
-            // Perform simplification so that only the extra synthesized condition is left over.
+        // If a controlled system guard is available, simplify it with respect to the uncontrolled system guard.
+        if (controlledSystemGuard != null) {
             return controlledSystemGuard.simplify(uncontrolledSystemGuard);
+        } else {
+            return uncontrolledSystemGuard.id();
         }
-
-        // Try to process the transition as an auxiliary event that was introduced earlier in the synthesis chain.
-        event = findEvent.apply(auxiliarySystemGuards);
-
-        if (event != null) {
-            // Since there is no synthesis result for this auxiliary event, return it without simplification.
-            return auxiliarySystemGuards.get(event).id();
-        }
-
-        throw new RuntimeException("Unknown event: " + event);
     }
 }
