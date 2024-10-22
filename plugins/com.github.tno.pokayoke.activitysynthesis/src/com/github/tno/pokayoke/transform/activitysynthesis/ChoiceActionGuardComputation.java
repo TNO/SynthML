@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
@@ -23,18 +22,18 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class ChoiceActionGuardComputation {
     private final Map<Event, BDD> uncontrolledSystemGuards;
 
-    private final Map<Event, BDD> auxiliarySystemGuards;
+    private final Map<Event, BDD> controlledSystemGuards;
 
-    private final CifDataSynthesisResult cifSynthesisResult;
+    private final Map<Event, BDD> auxiliarySystemGuards;
 
     private final Map<Place, BDD> stateInfo;
 
-    public ChoiceActionGuardComputation(Map<Event, BDD> uncontrolledSystemGuards, Map<Event, BDD> auxiliarySystemGuards,
-            CifDataSynthesisResult cifSynthesisResult, Map<Place, BDD> stateInfo)
+    public ChoiceActionGuardComputation(Map<Event, BDD> uncontrolledSystemGuards,
+            Map<Event, BDD> controlledSystemGuards, Map<Event, BDD> auxiliarySystemGuards, Map<Place, BDD> stateInfo)
     {
         this.uncontrolledSystemGuards = uncontrolledSystemGuards;
+        this.controlledSystemGuards = controlledSystemGuards;
         this.auxiliarySystemGuards = auxiliarySystemGuards;
-        this.cifSynthesisResult = cifSynthesisResult;
         this.stateInfo = stateInfo;
     }
 
@@ -118,7 +117,7 @@ public class ChoiceActionGuardComputation {
             BDD uncontrolledSystemGuard = uncontrolledSystemGuards.get(event);
 
             // Get the controlled system guard from the synthesis result.
-            BDD controlledSystemGuard = cifSynthesisResult.outputGuards.get(event);
+            BDD controlledSystemGuard = controlledSystemGuards.get(event);
 
             // Perform simplification so that only the extra synthesized condition is left over.
             return controlledSystemGuard.simplify(uncontrolledSystemGuard);

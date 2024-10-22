@@ -3,10 +3,12 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.javabdd.BDD;
@@ -40,6 +42,22 @@ public class EventGuardUpdateHelper {
             }
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage(), ex);
+        }
+
+        return guards;
+    }
+
+    /**
+     * Collect all controlled system guards as a mapping from controllable events, to their synthesized guards.
+     *
+     * @param synthesisResult The data-based synthesis results.
+     * @return The controlled system guards mapping.
+     */
+    public static Map<Event, BDD> collectControlledSystemGuards(CifDataSynthesisResult synthesisResult) {
+        Map<Event, BDD> guards = new LinkedHashMap<>();
+
+        for (Entry<Event, BDD> entry: synthesisResult.outputGuards.entrySet()) {
+            guards.put(entry.getKey(), entry.getValue());
         }
 
         return guards;

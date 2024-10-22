@@ -108,6 +108,8 @@ public class FullSynthesisApp {
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
+        Map<Event, BDD> controlledSystemGuards = EventGuardUpdateHelper
+                .collectControlledSystemGuards(cifSynthesisResult);
 
         // Convert synthesis result back to CIF.
         CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
@@ -230,7 +232,7 @@ public class FullSynthesisApp {
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
-                auxiliarySystemGuards, cifSynthesisResult, stateInfo);
+                controlledSystemGuards, auxiliarySystemGuards, stateInfo);
         Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
         Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
         uncontrolledSystemGuards.values().forEach(BDD::free);
