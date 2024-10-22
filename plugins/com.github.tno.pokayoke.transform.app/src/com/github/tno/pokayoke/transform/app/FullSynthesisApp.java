@@ -282,7 +282,11 @@ public class FullSynthesisApp {
 
     private static String getPreservedEvents(Specification spec) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
-        List<String> eventNames = events.stream().filter(event -> event.getControllable())
+
+        // Preserve only controllable events and non-controllable events that end a non-atomic action.
+        List<String> eventNames = events.stream()
+                .filter(event -> event.getControllable()
+                        || event.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
