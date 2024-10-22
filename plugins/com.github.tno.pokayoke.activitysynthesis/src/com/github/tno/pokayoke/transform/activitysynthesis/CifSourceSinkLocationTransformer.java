@@ -24,11 +24,9 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.uml2.uml.Behavior;
-import org.eclipse.uml2.uml.Class;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 
 /**
@@ -180,33 +178,15 @@ public class CifSourceSinkLocationTransformer {
     public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, Specification specification,
             CifBddSpec bddSpec, UmlToCifTranslator translator)
     {
-        // Find the start and end event in the given CIF specification.
-        Function<String, Event> findEvent = name -> {
-            List<Event> events = specification.getDeclarations().stream()
-                    .filter(decl -> decl instanceof Event event && event.getName().equals(name)).map(Event.class::cast)
-                    .toList();
-
-            Preconditions.checkArgument(events.size() == 1,
-                    String.format("Expected exactly one event named %s but found %s", name, events.size()));
-
-            return events.get(0);
-        };
-
-        Event startEvent = findEvent.apply(START_EVENT_NAME);
-        Event endEvent = findEvent.apply(END_EVENT_NAME);
-
         // Obtain the original preconditions and postconditions in the UML input model.
-        Class umlClass = translator.getSingleClass();
-        Behavior umlBehavior = umlClass.getClassifierBehavior();
-        Expression cifPrecondition = translator.translateStateInvariantConstraints(umlBehavior.getPreconditions());
-        Expression cifPostcondition = translator.translateStateInvariantConstraints(umlBehavior.getPostconditions());
+        Behavior behavior = translator.getSingleClass().getClassifierBehavior();
+        Expression precondition = translator.translateStateInvariantConstraints(behavior.getPreconditions());
+        Expression postcondition = translator.translateStateInvariantConstraints(behavior.getPostconditions());
 
         // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
         try {
-            uncontrolledSystemGuards.put(startEvent.getName(),
-                    CifToBddConverter.convertPred(cifPrecondition, true, bddSpec));
-            uncontrolledSystemGuards.put(endEvent.getName(),
-                    CifToBddConverter.convertPred(cifPostcondition, false, bddSpec));
+            uncontrolledSystemGuards.put(START_EVENT_NAME, CifToBddConverter.convertPred(precondition, true, bddSpec));
+            uncontrolledSystemGuards.put(END_EVENT_NAME, CifToBddConverter.convertPred(postcondition, false, bddSpec));
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
         }
