@@ -1,23 +1,15 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.eclipse.escet.cif.bdd.conversion.BddToCif;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
-import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
-import org.eclipse.escet.cif.metamodel.cif.Specification;
-import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
-import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
@@ -40,28 +32,21 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Compute the guards of the actions for choices. */
 public class ChoiceActionGuardComputation {
-    private final Specification cifMinimizedStateSpace;
-
     private final Map<Event, BDD> uncontrolledSystemGuards;
 
     private final Map<Event, BDD> auxiliarySystemGuards;
 
     private final CifDataSynthesisResult cifSynthesisResult;
 
-    private final Map<Location, List<Annotation>> compositeStateMap;
+    private final Map<Place, BDD> stateInfo;
 
-    private final Map<Place, Set<String>> regionMap;
-
-    public ChoiceActionGuardComputation(Specification cifMinimizedStateSpace, Map<Event, BDD> uncontrolledSystemGuards,
-            Map<Event, BDD> auxiliarySystemGuards, CifDataSynthesisResult cifSynthesisResult,
-            Map<Location, List<Annotation>> compositeStateMap, Map<Place, Set<String>> regionMap)
+    public ChoiceActionGuardComputation(Map<Event, BDD> uncontrolledSystemGuards, Map<Event, BDD> auxiliarySystemGuards,
+            CifDataSynthesisResult cifSynthesisResult, Map<Place, BDD> stateInfo)
     {
-        this.cifMinimizedStateSpace = cifMinimizedStateSpace;
         this.uncontrolledSystemGuards = uncontrolledSystemGuards;
         this.auxiliarySystemGuards = auxiliarySystemGuards;
         this.cifSynthesisResult = cifSynthesisResult;
-        this.compositeStateMap = compositeStateMap;
-        this.regionMap = regionMap;
+        this.stateInfo = stateInfo;
     }
 
     /**
@@ -115,13 +100,13 @@ public class ChoiceActionGuardComputation {
         BDD choiceGuard = getExtraTransitionGuard(transition);
 
         // Further simplify the choice guard by the state information of all incoming places of the transition.
-        BDD stateInfo = transition.getInArcs().stream().map(a -> (Place)a.getSource()).map(this::getStateInformation)
+        BDD statePredicate = transition.getInArcs().stream().map(a -> stateInfo.get(a.getSource()).id())
                 .reduce(BDD::andWith).get();
-        BDD simplifiedChoiceGuard = choiceGuard.simplify(stateInfo);
+        BDD simplifiedChoiceGuard = choiceGuard.simplify(statePredicate);
 
         // Free all intermediate BDDs.
         choiceGuard.free();
-        stateInfo.free();
+        statePredicate.free();
 
         return simplifiedChoiceGuard;
     }
@@ -161,38 +146,6 @@ public class ChoiceActionGuardComputation {
         }
 
         throw new RuntimeException("Unknown event: " + event);
-    }
-
-    /**
-     * Gives the predicate that represents all states the system can be in while there is a token on the given place.
-     *
-     * @param place The place for which to obtain state information.
-     * @return The state information as a BDD predicate.
-     */
-    private BDD getStateInformation(Place place) {
-        CifBddSpec cifBddSpec = cifSynthesisResult.cifBddSpec;
-
-        // Get all CIF locations corresponding to the choice place.
-        List<Location> locations = ChoiceActionGuardComputationHelper.getLocations(cifMinimizedStateSpace,
-                regionMap.get(place));
-
-        // Get all state annotations of these locations.
-        List<Annotation> annotations = locations.stream().flatMap(location -> compositeStateMap.get(location).stream())
-                .toList();
-
-        // Get BDDs of these state annotations.
-        List<BDD> statesPreds = new ArrayList<>();
-        for (Annotation annotation: annotations) {
-            Expression expression = ChoiceActionGuardComputationHelper.stateAnnotationToCifPred(annotation, cifBddSpec);
-            try {
-                statesPreds.add(CifToBddConverter.convertPred(expression, false, cifBddSpec));
-            } catch (UnsupportedPredicateException e) {
-                throw new RuntimeException("Failed to convert CIF expression into BDD.", e);
-            }
-        }
-
-        // Compute the disjunction of these BDDs.
-        return statesPreds.stream().reduce(BDD::orWith).get();
     }
 
     /**

@@ -41,6 +41,7 @@ import org.eclipse.uml2.uml.Model;
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
+import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.ControlFlowHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
@@ -226,8 +227,10 @@ public class FullSynthesisApp {
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
         // Compute choice guards.
-        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(cifMinimizedStateSpace,
-                uncontrolledSystemGuards, auxiliarySystemGuards, cifSynthesisResult, minimizedToReduced, regionMap);
+        Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
+                minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
+        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
+                auxiliarySystemGuards, cifSynthesisResult, stateInfo);
         Map<Arc, Expression> arcToGuard = guardComputation.computeChoiceGuards(petriNet);
         uncontrolledSystemGuards.values().stream().forEach(guard -> guard.free());
 
