@@ -1,0 +1,22 @@
+.model minimal
+.dummy  NonAtomicA NonAtomicA__na_result_1 NonAtomicA__na_result_2 NonAtomicB NonAtomicB__na_result_1 NonAtomicB__na_result_2 __start __end __loop
+.graph
+NonAtomicA p4
+NonAtomicA__na_result_1 p6
+NonAtomicA__na_result_2 p6
+NonAtomicB p5
+NonAtomicB__na_result_1 p7
+NonAtomicB__na_result_2 p7
+__end p8
+__loop p8
+__start p2 p3
+p1 __start
+p2 NonAtomicA
+p3 NonAtomicB
+p4 NonAtomicA__na_result_1 NonAtomicA__na_result_2
+p5 NonAtomicB__na_result_1 NonAtomicB__na_result_2
+p6 __end
+p7 __end
+p8 __loop
+.marking { p1 }
+.end

@@ -1,0 +1,44 @@
+controllable AtomicA;
+uncontrollable AtomicA__result_1;
+uncontrollable AtomicA__result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+automaton statespace:
+  alphabet AtomicA, AtomicA__result_1, AtomicA__result_2, NonAtomicB, NonAtomicB__na_result_1, NonAtomicB__na_result_2;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 0, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 0, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  location loc1:
+    initial;
+    edge AtomicA goto loc2;
+    edge NonAtomicB goto loc3;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 0, Machine = "*", Machine.__activeAction = 1, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  location loc2:
+    edge AtomicA__result_1 goto loc4;
+    edge AtomicA__result_2 goto loc4;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 0, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  location loc3:
+    edge AtomicA goto loc5;
+    edge NonAtomicB__na_result_1 goto loc6;
+    edge NonAtomicB__na_result_2 goto loc6;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 0, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
+  location loc4:
+    edge NonAtomicB goto loc7;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 1, Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  location loc5:
+    edge AtomicA__result_1 goto loc7;
+    edge AtomicA__result_2 goto loc7;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 0, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = true, sup = "*")
+  location loc6:
+    edge AtomicA goto loc8;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
+  location loc7:
+    edge NonAtomicB__na_result_1 goto loc9;
+    edge NonAtomicB__na_result_2 goto loc9;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 1, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = true, sup = "*")
+  location loc8:
+    edge AtomicA__result_1 goto loc9;
+    edge AtomicA__result_2 goto loc9;
+  @state(IntervalConstraintA__AtomicA = "*", IntervalConstraintA__AtomicA.__occurrences = 1, IntervalConstraintB__NonAtomicB = "*", IntervalConstraintB__NonAtomicB.__occurrences = 1, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = true, sup = "*")
+  location loc9:
+    marked;
+end

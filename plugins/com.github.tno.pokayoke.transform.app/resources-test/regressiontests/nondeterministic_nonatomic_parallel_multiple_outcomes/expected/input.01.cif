@@ -1,0 +1,48 @@
+controllable AtomicA;
+uncontrollable AtomicA__result_1;
+uncontrollable AtomicA__result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+plant automaton Machine:
+  disc bool a_executed in any;
+  disc bool b_executed in any;
+  disc int[0..1] __activeAction;
+  disc bool __nonAtomicActive__NonAtomicB;
+  alg bool Precondition = not a_executed and not b_executed;
+  alg bool __precondition = Precondition;
+  alg bool Postcondition = a_executed = true and b_executed = true;
+  alg bool __postcondition_atomicity = __activeAction = 0;
+  alg bool __postcondition = Postcondition and __postcondition_atomicity;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge AtomicA when true, __activeAction = 0 do __activeAction := 1;
+    edge AtomicA__result_1 when __activeAction = 1 do a_executed := true, __activeAction := 0;
+    edge AtomicA__result_2 when __activeAction = 1 do a_executed := true, __activeAction := 0;
+    edge NonAtomicB when true, __activeAction = 0, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
+    edge NonAtomicB__na_result_1 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicB__na_result_2 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+end
+requirement automaton IntervalConstraintA__AtomicA:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintB__NonAtomicB:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Machine.__postcondition disables AtomicA;
+requirement invariant Machine.__postcondition disables AtomicA__result_1;
+requirement invariant Machine.__postcondition disables AtomicA__result_2;
+requirement invariant Machine.__postcondition disables NonAtomicB;
+requirement invariant Machine.__postcondition disables NonAtomicB__na_result_1;
+requirement invariant Machine.__postcondition disables NonAtomicB__na_result_2;

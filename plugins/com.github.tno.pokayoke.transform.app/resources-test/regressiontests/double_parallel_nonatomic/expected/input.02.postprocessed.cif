@@ -1,0 +1,83 @@
+controllable NonAtomicA;
+uncontrollable NonAtomicA__na_result_1;
+uncontrollable NonAtomicA__na_result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+controllable NonAtomicC;
+uncontrollable NonAtomicC__na_result_1;
+uncontrollable NonAtomicC__na_result_2;
+controllable NonAtomicD;
+uncontrollable NonAtomicD__na_result_1;
+uncontrollable NonAtomicD__na_result_2;
+plant automaton Machine:
+  disc bool a_executed in any;
+  disc bool b_executed in any;
+  disc bool c_executed in any;
+  disc bool d_executed in any;
+  disc bool __nonAtomicActive__NonAtomicA;
+  disc bool __nonAtomicActive__NonAtomicB;
+  disc bool __nonAtomicActive__NonAtomicC;
+  disc bool __nonAtomicActive__NonAtomicD;
+  alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
+  alg bool __precondition = Precondition;
+  alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
+  alg bool __postcondition = Postcondition;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge NonAtomicA when true, not __nonAtomicActive__NonAtomicA do __nonAtomicActive__NonAtomicA := true;
+    edge NonAtomicA__na_result_1 when __nonAtomicActive__NonAtomicA do a_executed := true, __nonAtomicActive__NonAtomicA := false;
+    edge NonAtomicA__na_result_2 when __nonAtomicActive__NonAtomicA do a_executed := true, __nonAtomicActive__NonAtomicA := false;
+    edge NonAtomicB when a_executed = true, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
+    edge NonAtomicB__na_result_1 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicB__na_result_2 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicC when true, not __nonAtomicActive__NonAtomicC do __nonAtomicActive__NonAtomicC := true;
+    edge NonAtomicC__na_result_1 when __nonAtomicActive__NonAtomicC do c_executed := true, __nonAtomicActive__NonAtomicC := false;
+    edge NonAtomicC__na_result_2 when __nonAtomicActive__NonAtomicC do c_executed := true, __nonAtomicActive__NonAtomicC := false;
+    edge NonAtomicD when c_executed = true, not __nonAtomicActive__NonAtomicD do __nonAtomicActive__NonAtomicD := true;
+    edge NonAtomicD__na_result_1 when __nonAtomicActive__NonAtomicD do d_executed := true, __nonAtomicActive__NonAtomicD := false;
+    edge NonAtomicD__na_result_2 when __nonAtomicActive__NonAtomicD do d_executed := true, __nonAtomicActive__NonAtomicD := false;
+end
+requirement automaton IntervalConstraintA__NonAtomicA:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintB__NonAtomicB:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintC__NonAtomicC:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicC when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintD__NonAtomicD:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicD when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Machine.__postcondition disables NonAtomicA;
+requirement invariant Machine.__postcondition disables NonAtomicA__na_result_1;
+requirement invariant Machine.__postcondition disables NonAtomicA__na_result_2;
+requirement invariant Machine.__postcondition disables NonAtomicB;
+requirement invariant Machine.__postcondition disables NonAtomicB__na_result_1;
+requirement invariant Machine.__postcondition disables NonAtomicB__na_result_2;
+requirement invariant Machine.__postcondition disables NonAtomicC;
+requirement invariant Machine.__postcondition disables NonAtomicC__na_result_1;
+requirement invariant Machine.__postcondition disables NonAtomicC__na_result_2;
+requirement invariant Machine.__postcondition disables NonAtomicD;
+requirement invariant Machine.__postcondition disables NonAtomicD__na_result_1;
+requirement invariant Machine.__postcondition disables NonAtomicD__na_result_2;
