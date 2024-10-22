@@ -46,6 +46,8 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocation
 import com.github.tno.pokayoke.transform.activitysynthesis.ControlFlowHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
+import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -209,12 +211,6 @@ public class FullSynthesisApp {
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
-        // Translate PNML into UML activity.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
-        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
-        Activity activity = petriNet2Activity.translate(petriNet);
-        FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
-
         // Obtain the composite state mapping.
         Map<Location, List<Annotation>> annotationFromReducedSP = StateAnnotationHelper
                 .getStateAnnotations(cifReducedStateSpace);
@@ -228,15 +224,28 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = StateAnnotationHelper
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
-        // Compute choice guards.
+        // Rewrite all non-atomic patterns in the Petri Net.
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
+        Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
+        NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter();
+        List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
+        nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);
+
+        // Compute choice guards.
         ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
                 controlledSystemGuards, stateInfo);
         Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
         Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
         uncontrolledSystemGuards.values().forEach(BDD::free);
         arcToBdd.values().forEach(BDD::free);
+
+        // Translate PNML into UML activity.
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
+        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
+        Activity activity = petriNet2Activity.translate(petriNet);
+        FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Get a map from UML control flows to the choice guards that have been computed for them.
         Map<ControlFlow, Expression> controlFlowToGuard = new LinkedHashMap<>();
@@ -249,24 +258,24 @@ public class FullSynthesisApp {
                 converter.convertExpressions(cifSpec, Arrays.asList(guard))));
 
         // Add the computed choice guards to their corresponding UML control flows.
-        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".14.choiceguardsadded.uml");
+        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".15.choiceguardsadded.uml");
         ControlFlowHelper.addGuards(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".15.internalactionsremoved.uml");
+                .resolve(filePrefix + ".16.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".16.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Post-process the activity to add choice guards to the name of the UML control flow they are on.
         Path umlChoiceGuardNamesAddedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".17.choiceguardnamesadded.uml");
+                .resolve(filePrefix + ".18.choiceguardnamesadded.uml");
         PostProcessActivity.addGuardsToControlFlowNames(activity);
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
     }
