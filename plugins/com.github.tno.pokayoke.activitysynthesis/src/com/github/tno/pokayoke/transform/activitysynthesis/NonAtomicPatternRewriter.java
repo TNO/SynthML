@@ -174,7 +174,7 @@ public class NonAtomicPatternRewriter {
             this.startTransition = startTransition;
 
             Preconditions.checkArgument(startTransition.getOutArcs().size() == 1,
-                    String.format("Expected non-atomic start transitions to have a single outcoming arc, but found %d.",
+                    String.format("Expected non-atomic start transitions to have a single outgoing arc, but found %d.",
                             startTransition.getOutArcs().size()));
 
             Arc startArc = startTransition.getOutArcs().get(0);
