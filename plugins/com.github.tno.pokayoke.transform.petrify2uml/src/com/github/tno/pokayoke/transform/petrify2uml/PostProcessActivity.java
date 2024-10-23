@@ -56,7 +56,7 @@ public class PostProcessActivity {
                 .filter(node -> node.getName().equals(actionName)).toList();
         List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
                 .toList();
-        int numerOfActions = actions.size();
+        int numberOfActions = actions.size();
 
         for (OpaqueAction action: actions) {
             List<ActivityEdge> incomingEdges = action.getIncomings();
@@ -81,7 +81,7 @@ public class PostProcessActivity {
             outgoingEdge.destroy();
             action.destroy();
         }
-        return numerOfActions;
+        return numberOfActions;
     }
 
     /**
