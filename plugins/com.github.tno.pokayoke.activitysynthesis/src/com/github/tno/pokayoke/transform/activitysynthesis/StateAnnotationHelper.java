@@ -73,7 +73,9 @@ public class StateAnnotationHelper {
                 Verify.verify(edgeEvents.stream().allMatch(isAtomicEndEvent),
                         "Expected to find only atomic end events on outgoing edges.", location);
 
-                location.getAnnotations().removeIf(annotation -> annotation.getName().equals("state"));
+                List<Annotation> annotationToRemove = location.getAnnotations().stream()
+                        .filter(annotation -> annotation.getName().equals("state")).toList();
+                location.getAnnotations().removeAll(annotationToRemove);
             }
         }
     }
