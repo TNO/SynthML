@@ -381,7 +381,7 @@ public class UmlToCifTranslator {
         for (Event cifStartEvent: nonAtomicStartEvents) {
             List<Event> cifEndEvents = startEndEventMap.get(cifStartEvent);
 
-            // Declare a Boolean variable that indicates whether the current non-atomic action is currently active.
+            // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
             // Value 'false' indicates inactive, and 'true' indicates active.
             DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
             cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
@@ -437,7 +437,7 @@ public class UmlToCifTranslator {
 
         if (cifAtomicityVar != null) {
             // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-            // non-deterministic action must be active in order to be in a marked state.
+            // atomic non-deterministic action must be active in order to be in a marked state.
 
             // First define the atomicity postcondition expression.
             BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();

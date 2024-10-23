@@ -74,7 +74,7 @@ public class NonAtomicPatternRewriter {
 
             if (nameParts.length > 1) {
                 String startEvent = nameParts[0];
-                Set<String> endEvents = nonAtomicEventMap.get(startEvent);
+                Set<String> endEvents = nonAtomicEventMap.computeIfAbsent(startEvent, e -> new LinkedHashMap<>());
 
                 if (endEvents == null) {
                     endEvents = new LinkedHashSet<>();
@@ -111,7 +111,7 @@ public class NonAtomicPatternRewriter {
      * of non-atomic patterns that have been rewritten.
      *
      * @param patterns The non-atomic patterns which have been rewritten.
-     * @param stateInfo The input state information mapping, which is modified in-place.
+     * @param stateInfo The state information mapping, which is modified in-place.
      * @param uncontrollableSystemGuards The uncontrollable system guards mapping, which is modified in-place.
      */
     public void updateMappings(List<NonAtomicPattern> patterns, Map<Place, BDD> stateInfo,
@@ -187,7 +187,7 @@ public class NonAtomicPatternRewriter {
                             "Expected non-atomic intermediate places to have a single incoming arc, but found %d.",
                             intermediatePlace.getInArcs().size()));
 
-            // Check whether the end transitions conforms to the non-atomic pattern.
+            // Check whether the end transitions conform to the non-atomic pattern.
             this.endTransitions = sorted(intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
 
             Set<String> expectedEndEvents = nonAtomicEventMap.get(startTransition.getName().getText());
