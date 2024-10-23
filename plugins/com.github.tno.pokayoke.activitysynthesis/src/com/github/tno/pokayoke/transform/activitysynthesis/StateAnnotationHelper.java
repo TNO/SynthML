@@ -70,8 +70,8 @@ public class StateAnnotationHelper {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             if (edgeEvents.stream().anyMatch(isAtomicEndEvent)) {
-                Verify.verify(edgeEvents.stream().allMatch(isAtomicEndEvent),
-                        "Expected to find only atomic end events on outgoing edges.", location);
+                Verify.verify(edgeEvents.stream().allMatch(isAtomicEndEvent), String.format(
+                        "Expected to find only atomic end events on outgoing edges on location '%s'.", location));
 
                 List<Annotation> annotationToRemove = location.getAnnotations().stream()
                         .filter(annotation -> annotation.getName().equals("state")).toList();
