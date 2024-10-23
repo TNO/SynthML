@@ -2,8 +2,11 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -17,7 +20,6 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
@@ -31,11 +33,15 @@ public class PostProcessActivity {
      * @param activity The activity in which actions to be removed.
      */
     public static void removeInternalActions(Activity activity) {
-        int numberOfRemovedActions = removeOpaqueActions(CifSourceSinkLocationTransformer.START_EVENT_NAME, activity);
-        Preconditions.checkArgument(numberOfRemovedActions == 1,
-                "Expected that there is exactly one 'start' action removed.");
-        numberOfRemovedActions = removeOpaqueActions(CifSourceSinkLocationTransformer.END_EVENT_NAME, activity);
-        Preconditions.checkArgument(numberOfRemovedActions > 0, "Expected that at least one 'end' action got removed.");
+        // Find all names of internal actions in the activity, which are the opaque actions whose name contain '__'.
+        Set<String> internalActionNames = activity.getNodes().stream()
+                .filter(node -> node instanceof OpaqueAction && node.getName().contains("__"))
+                .map(node -> node.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // Remove all internal opaque actions that were found.
+        for (String internalActionName: internalActionNames) {
+            removeOpaqueActions(internalActionName, activity);
+        }
     }
 
     /**
@@ -50,7 +56,7 @@ public class PostProcessActivity {
                 .filter(node -> node.getName().equals(actionName)).toList();
         List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
                 .toList();
-        int numerOfActions = actions.size();
+        int numberOfActions = actions.size();
 
         for (OpaqueAction action: actions) {
             List<ActivityEdge> incomingEdges = action.getIncomings();
@@ -75,7 +81,7 @@ public class PostProcessActivity {
             outgoingEdge.destroy();
             action.destroy();
         }
-        return numerOfActions;
+        return numberOfActions;
     }
 
     /**

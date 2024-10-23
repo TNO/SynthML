@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_lzBbwGUHEe-ozYJaiv7rRg" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_9LahoGqxEe-p_p2iQq3wLQ" name="Machine" visibility="public" classifierBehavior="_mc1bcGqyEe-p_p2iQq3wLQ" isActive="true">
+      <ownedAttribute xmi:id="_cQzDQGrIEe-p_p2iQq3wLQ" name="a_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cQzqUGrIEe-p_p2iQq3wLQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cQzqUWrIEe-p_p2iQq3wLQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_8-V7AHWeEe-hWPBWRQQu4g" name="b_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_8-V7AXWeEe-hWPBWRQQu4g" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_8-V7AnWeEe-hWPBWRQQu4g" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_gK-FgICPEe-Na-k4aRHa_A" name="c_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gK-FgYCPEe-Na-k4aRHa_A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gK-FgoCPEe-Na-k4aRHa_A" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_gPwe4ICPEe-Na-k4aRHa_A" name="d_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gPwe4YCPEe-Na-k4aRHa_A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gPwe4oCPEe-Na-k4aRHa_A" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_mc1bcGqyEe-p_p2iQq3wLQ" name="AbstractActivity" isAbstract="true" postcondition="__uZmUGqyEe-p_p2iQq3wLQ" precondition="_4pGXkGqyEe-p_p2iQq3wLQ">
+        <nameExpression xmi:id="_JVh4oGqzEe-p_p2iQq3wLQ" name="StringExpression1">
+          <operand xmi:type="uml:LiteralInteger" xmi:id="_MNY2kGqzEe-p_p2iQq3wLQ" name="LiteralInteger1" value="1"/>
+          <operand xmi:type="uml:LiteralInteger" xmi:id="_g3oRAGqzEe-p_p2iQq3wLQ" name="LiteralInteger0"/>
+        </nameExpression>
+        <ownedRule xmi:id="_4pGXkGqyEe-p_p2iQq3wLQ" name="Precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_5mxgwGqyEe-p_p2iQq3wLQ" name="" visibility="public">
+            <body>not a_executed and not b_executed and not c_executed and not d_executed</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="__uZmUGqyEe-p_p2iQq3wLQ" name="Postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_AyQQAGqzEe-p_p2iQq3wLQ" name="">
+            <body>a_executed = true and b_executed = true and c_executed = true and d_executed = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_P_9wUGqzEe-p_p2iQq3wLQ" name="IntervalConstraintA" constrainedElement="_sZN6UGqyEe-p_p2iQq3wLQ">
+          <specification xmi:type="uml:Interval" xmi:id="_SRuXkGqzEe-p_p2iQq3wLQ" name="IntervalA" max="_MNY2kGqzEe-p_p2iQq3wLQ" min="_g3oRAGqzEe-p_p2iQq3wLQ"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_blcVQHWhEe-hWPBWRQQu4g" name="IntervalConstraintB" constrainedElement="_CR108HWfEe-hWPBWRQQu4g">
+          <specification xmi:type="uml:Interval" xmi:id="_blcVQXWhEe-hWPBWRQQu4g" name="IntervalB" max="_MNY2kGqzEe-p_p2iQq3wLQ" min="_g3oRAGqzEe-p_p2iQq3wLQ"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_0ndX0ICPEe-Na-k4aRHa_A" name="IntervalConstraintC" constrainedElement="_TnsyMICPEe-Na-k4aRHa_A">
+          <specification xmi:type="uml:Interval" xmi:id="_0ndX0YCPEe-Na-k4aRHa_A" name="IntervalC" max="_MNY2kGqzEe-p_p2iQq3wLQ" min="_g3oRAGqzEe-p_p2iQq3wLQ"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_02tUwICPEe-Na-k4aRHa_A" name="IntervalConstraintD" constrainedElement="_Zm6ioICPEe-Na-k4aRHa_A">
+          <specification xmi:type="uml:Interval" xmi:id="_02tUwYCPEe-Na-k4aRHa_A" name="IntervalD" max="_MNY2kGqzEe-p_p2iQq3wLQ" min="_g3oRAGqzEe-p_p2iQq3wLQ"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_sZN6UGqyEe-p_p2iQq3wLQ" name="NonAtomicA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_CR108HWfEe-hWPBWRQQu4g" name="AtomicB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_TnsyMICPEe-Na-k4aRHa_A" name="NonAtomicC"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_Zm6ioICPEe-Na-k4aRHa_A" name="AtomicD"/>
+    </packagedElement>
+    <profileApplication xmi:id="_vGIMgGqyEe-p_p2iQq3wLQ">
+      <eAnnotations xmi:id="_vGL24GqyEe-p_p2iQq3wLQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_7EAeUGqzEe-p_p2iQq3wLQ" guard="true" base_RedefinableElement="_sZN6UGqyEe-p_p2iQq3wLQ">
+    <effects>a_executed := true</effects>
+    <effects>a_executed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_P8YSUHWfEe-hWPBWRQQu4g" guard="a_executed = true" base_RedefinableElement="_CR108HWfEe-hWPBWRQQu4g" atomic="true">
+    <effects>b_executed := true</effects>
+    <effects>b_executed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_Wss0QICPEe-Na-k4aRHa_A" guard="true" base_RedefinableElement="_TnsyMICPEe-Na-k4aRHa_A">
+    <effects>c_executed := true</effects>
+    <effects>c_executed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_bM0JcICPEe-Na-k4aRHa_A" guard="a_executed = true" base_RedefinableElement="_Zm6ioICPEe-Na-k4aRHa_A" atomic="true">
+    <effects>d_executed := true</effects>
+    <effects>d_executed := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

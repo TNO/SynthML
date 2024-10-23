@@ -31,8 +31,11 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryExpression;
+import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
@@ -62,11 +65,21 @@ import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 /** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator {
     /** The name of the atomicity variable used in translated CIF specifications. */
     public static final String ATOMICITY_VARIABLE_NAME = "__activeAction";
+
+    /** The prefix of a variable used in translated CIF specifications indicating that an action is active. */
+    public static final String NONATOMIC_PREFIX = "__nonAtomicActive";
+
+    /** The suffix of an atomic action outcome. */
+    public static final String ATOMIC_OUTCOME_SUFFIX = "__result_";
+
+    /** The suffix of a non-atomic action outcome. */
+    public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
     /** The UML model to translate. */
     private final Model model;
@@ -89,10 +102,32 @@ public class UmlToCifTranslator {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
+    /** The mapping from non-atomic and non-deterministic CIF start events, to their corresponding CIF end events. */
+    private final Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
+
     public UmlToCifTranslator(Model model) {
         this.model = model;
         this.context = new CifContext(model);
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
+    }
+
+    /**
+     * Gives all CIF events related to non-atomic actions, as a mapping from non-atomic CIF start events to their
+     * corresponding CIF end events.
+     *
+     * @return A mapping from all non-atomic start events to their corresponding end events.
+     */
+    public Map<Event, List<Event>> getNonAtomicEvents() {
+        Map<Event, List<Event>> result = new LinkedHashMap<>();
+
+        for (Entry<OpaqueBehavior, Event> entry: eventMap.entrySet()) {
+            if (!PokaYokeUmlProfileUtil.isAtomic(entry.getKey())) {
+                Event startEvent = entry.getValue();
+                result.put(startEvent, startEndEventMap.get(startEvent));
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -191,25 +226,29 @@ public class UmlToCifTranslator {
         cifLocation.getMarkeds().add(createBoolExpression(true));
         cifPlant.getLocations().add(cifLocation);
 
-        // Translate all opaque behaviors as CIF event declarations and CIF edges.
-        // While doing so, maintain the one-to-one relation between events and flower automaton edges in a mapping.
-        // Opaque behaviors that represent nondeterministic actions are translated as multiple CIF start and end events.
-        // Therefore a second mapping is maintained to keep track of which such start and end events belong together.
+        // Translate all opaque behaviors as CIF event declarations and CIF edges. While doing so, maintain the
+        // one-to-one relation between events and flower automaton edges in a mapping. Opaque behaviors that represent
+        // non-deterministic or non-atomic actions are translated as multiple CIF start and end events. Therefore a
+        // second mapping is maintained to keep track of which such start and end events belong together. We also
+        // maintain sets to keep track of the start and end events of all non-atomic and non-deterministic actions, for
+        // later use.
         Map<Event, Edge> eventEdgeMap = new LinkedHashMap<>();
-        Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
+        Set<Event> nonAtomicStartEvents = new LinkedHashSet<>();
+        Set<Event> nonAtomicEndEvents = new LinkedHashSet<>();
+        Set<Event> nonDeterministicStartEvents = new LinkedHashSet<>();
+        Set<Event> nonDeterministicEndEvents = new LinkedHashSet<>();
 
         for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                if (!PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior)) {
-                    throw new RuntimeException(
-                            String.format("Non-atomic action '%s' is not supported yet!", umlOpaqueBehavior.getName()));
-                }
-
+                // Obtain the guard and effects of the current action. Ensure that there is at least one effect.
                 Expression guard = getGuard(umlOpaqueBehavior);
                 List<List<Update>> effects = getEffects(umlOpaqueBehavior);
 
+                if (effects.isEmpty()) {
+                    effects = List.of(List.of());
+                }
+
                 // Create a CIF event for starting the action that is represented by the current opaque behavior.
-                // In case the action is deterministic, this event also ends the action.
                 Event cifEvent = CifConstructors.newEvent();
                 cifEvent.setControllable(true);
                 cifEvent.setName(umlOpaqueBehavior.getName());
@@ -225,25 +264,29 @@ public class UmlToCifTranslator {
                 Edge cifEdge = CifConstructors.newEdge();
                 cifEdge.getEvents().add(cifEdgeEvent);
                 cifEdge.getGuards().add(guard);
-
-                if (effects.size() == 1) {
-                    // If the action is deterministic, add its effect as an edge update.
-                    cifEdge.getUpdates().addAll(effects.get(0));
-                }
-
                 cifLocation.getEdges().add(cifEdge);
                 eventEdgeMap.put(cifEvent, cifEdge);
 
-                // In case of a nondeterministic action, also make uncontrollable events and edges to end the action.
-                if (effects.size() > 1) {
+                // Determine whether the action is atomic and/or deterministic.
+                boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior);
+                boolean isDeterministic = effects.size() == 1;
+
+                if (isAtomic && isDeterministic) {
+                    // In case the action is both deterministic and atomic, then the start event also ends the action.
+                    // Add its effect as an edge update. (Remember that we ensured that there is at least one effect.)
+                    cifEdge.getUpdates().addAll(effects.get(0));
+                } else {
+                    // In all other cases, add uncontrollable events and edges to end the action.
                     List<Event> cifEndEvents = new ArrayList<>();
 
-                    // Make an uncontrollable event and corresponding edge for every effect.
+                    // Make an uncontrollable event and corresponding edge for every effect (there is at least one).
                     for (int i = 0; i < effects.size(); i++) {
                         // Declare the CIF uncontrollable event.
                         Event cifEndEvent = CifConstructors.newEvent();
                         cifEndEvent.setControllable(false);
-                        cifEndEvent.setName(umlOpaqueBehavior.getName() + "__result_" + (i + 1));
+                        String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
+                                : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
+                        cifEndEvent.setName(umlOpaqueBehavior.getName() + outcomeSuffix + (i + 1));
                         cifSpec.getDeclarations().add(cifEndEvent);
                         cifEndEvents.add(cifEndEvent);
 
@@ -262,51 +305,57 @@ public class UmlToCifTranslator {
 
                     // Remember which start and end events belong together.
                     startEndEventMap.put(cifEvent, cifEndEvents);
+
+                    if (!isAtomic) {
+                        nonAtomicStartEvents.add(cifEvent);
+                        nonAtomicEndEvents.addAll(cifEndEvents);
+                    }
+                    if (!isDeterministic) {
+                        nonDeterministicStartEvents.add(cifEvent);
+                        nonDeterministicEndEvents.addAll(cifEndEvents);
+                    }
                 }
             }
         }
 
-        // In case nondeterministic actions were encountered, encode the necessary atomicity constraints.
+        // In case atomic non-deterministic actions were encountered, encode the necessary atomicity constraints.
         DiscVariable cifAtomicityVar = null;
 
-        if (!startEndEventMap.isEmpty()) {
-            // Declare a variable that indicates which nondeterministic action is currently active / being executed.
-            // The value 0 then indicates that no nondeterministic action is currently active.
+        Set<Event> nonDeterministicAtomicStartEvents = Sets.difference(nonDeterministicStartEvents,
+                nonAtomicStartEvents);
+        Set<Event> nonDeterministicAtomicEndEvents = Sets.difference(nonDeterministicEndEvents, nonAtomicEndEvents);
+
+        if (!nonDeterministicAtomicStartEvents.isEmpty()) {
+            // Declare a variable that indicates which atomic non-deterministic action is currently active.
+            // The value 0 then indicates that no non-deterministic action is currently active.
             cifAtomicityVar = CifConstructors.newDiscVariable();
             cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
-            cifAtomicityVar.setType(CifConstructors.newIntType(0, null, startEndEventMap.size()));
+            cifAtomicityVar.setType(CifConstructors.newIntType(0, null, nonDeterministicAtomicStartEvents.size()));
             cifPlant.getDeclarations().add(cifAtomicityVar);
 
-            // Define a mapping from (start and end) events that are related to nondeterministic actions, to the index
-            // of the nondeterministic action, starting with index 1. So all CIF events related to the first
-            // nondeterministic action get index 1, all events related to the second such action get index 2, etc.
+            // Define a mapping from (start and end) events that are related to atomic non-deterministic actions, to the
+            // index of the atomic non-deterministic action, starting with index 1. So all CIF events related to the
+            // first such action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;
 
-            for (Entry<Event, List<Event>> entry: startEndEventMap.entrySet()) {
-                Event cifStartEvent = entry.getKey();
+            for (Event cifStartEvent: nonDeterministicAtomicStartEvents) {
                 eventIndex.put(cifStartEvent, index);
 
-                for (Event cifEndEvent: entry.getValue()) {
+                for (Event cifEndEvent: startEndEventMap.get(cifStartEvent)) {
                     eventIndex.put(cifEndEvent, index);
                 }
 
                 index++;
             }
 
-            // Add guards and updates to every edge to ensure that actions are atomically executed.
+            // Add guards and updates to the edges to ensure that atomic actions are indeed atomically executed.
             for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
                 Event cifEvent = entry.getKey();
                 Edge cifEdge = entry.getValue();
 
-                // The current event, which has been created for the current edge, can be one of three things:
-                // 1. The start and end event of a deterministic action.
-                // 2. The start event of a nondeterministic action.
-                // 3. The end event of a nondeterministic action.
-
-                // Do a case distinction, and add appropriate CIF edge guards and updates for the case that applies.
-                if (cifEvent.getControllable()) {
-                    // Case 1 or 2 applies. Either way, add the guard '__activeAction = 0' to the edge.
+                // Add guard '__activeAction = 0' for every start event, and every end event of a non-atomic action.
+                if (cifEvent.getControllable() || nonAtomicEndEvents.contains(cifEvent)) {
                     BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -314,18 +363,19 @@ public class UmlToCifTranslator {
                     cifGuard.setRight(CifValueUtils.makeInt(0));
                     cifGuard.setType(CifConstructors.newBoolType());
                     cifEdge.getGuards().add(cifGuard);
+                }
 
-                    // If case 1 applies, no further work is needed. Otherwise, the atomicity variable must be updated.
-                    if (startEndEventMap.containsKey(cifEvent)) {
-                        // Case 2 applies. Add the update '__activeAction := i' to the edge, with 'i' the action index.
-                        Assignment cifUpdate = CifConstructors.newAssignment();
-                        cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                                EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                        cifUpdate.setValue(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
-                        cifEdge.getUpdates().add(cifUpdate);
-                    }
-                } else {
-                    // Case 3 applies. Add the guard '__activeAction = i' to the edge, with 'i' the action index.
+                // Add update '__activeAction := i' for every start event of an atomic non-deterministic action.
+                if (nonDeterministicAtomicStartEvents.contains(cifEvent)) {
+                    Assignment cifUpdate = CifConstructors.newAssignment();
+                    cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                    cifUpdate.setValue(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
+                    cifEdge.getUpdates().add(cifUpdate);
+                }
+
+                // Add guard '__activeAction = i' for every end event of an atomic non-deterministic action.
+                if (nonDeterministicAtomicEndEvents.contains(cifEvent)) {
                     BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
                     cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
@@ -333,14 +383,58 @@ public class UmlToCifTranslator {
                     cifGuard.setRight(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
                     cifGuard.setType(CifConstructors.newBoolType());
                     cifEdge.getGuards().add(cifGuard);
+                }
 
-                    // Add the update '__activeAction := 0' to indicate that the nondeterministic action has completed.
+                // Add update '__activeAction := 0' for every end event of an atomic non-deterministic action.
+                if (nonDeterministicAtomicEndEvents.contains(cifEvent)) {
                     Assignment cifUpdate = CifConstructors.newAssignment();
                     cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
                             EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
                     cifUpdate.setValue(CifValueUtils.makeInt(0));
                     cifEdge.getUpdates().add(cifUpdate);
                 }
+            }
+        }
+
+        // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
+        // to constrain their start and end events accordingly.
+        for (Event cifStartEvent: nonAtomicStartEvents) {
+            List<Event> cifEndEvents = startEndEventMap.get(cifStartEvent);
+
+            // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
+            // Value 'false' indicates inactive, and 'true' indicates active.
+            DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
+            cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
+            cifNonAtomicVar.setType(CifConstructors.newBoolType());
+            cifPlant.getDeclarations().add(cifNonAtomicVar);
+
+            // Add guard 'not __nonAtomicActive__{startEvent}' for the start event of this non-atomic action.
+            UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
+            cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+            cifStartGuard.setOperator(UnaryOperator.INVERSE);
+            cifStartGuard.setType(CifConstructors.newBoolType());
+            eventEdgeMap.get(cifStartEvent).getGuards().add(cifStartGuard);
+
+            // Add update '__nonAtomicActive__{startEvent} := true' for the start event of this non-atomic action.
+            Assignment cifStartUpdate = CifConstructors.newAssignment();
+            cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+            cifStartUpdate.setValue(CifValueUtils.makeTrue());
+            eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
+
+            for (Event cifEndEvent: cifEndEvents) {
+                // Add guard '__nonAtomicActive__{startEvent}' for every end event of this non-atomic action.
+                DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
+                eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
+
+                // Add update '__nonAtomicActive__{startEvent} := false' for every end event of this non-atomic action.
+                Assignment cifEndUpdate = CifConstructors.newAssignment();
+                cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+                cifEndUpdate.setValue(CifValueUtils.makeFalse());
+                eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
             }
         }
 
@@ -363,7 +457,7 @@ public class UmlToCifTranslator {
 
         if (cifAtomicityVar != null) {
             // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-            // nondeterministic action must be active in order to be in a marked state.
+            // atomic non-deterministic action must be active in order to be in a marked state.
 
             // First define the atomicity postcondition expression.
             BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
@@ -459,7 +553,7 @@ public class UmlToCifTranslator {
 
     /**
      * Gives all effects of the given behavior. Every effect consists of a list of updates. If there are multiple
-     * effects, then the given opaque behavior represents a nondeterministic action.
+     * effects, then the given opaque behavior represents a non-deterministic action.
      *
      * @param behavior The opaque behavior.
      * @return All effects of the given opaque behavior.

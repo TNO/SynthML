@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -20,8 +22,8 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.StringExpression;
 import org.eclipse.escet.common.app.framework.AppEnv;
-import org.eclipse.escet.common.java.Sets;
 
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -31,45 +33,50 @@ public class StateAnnotationHelper {
     }
 
     /**
-     * Remove state annotations from intermediate states, states that have uncontrollable events on their outgoing
-     * edges.
+     * Removes state annotations from intermediate locations where an atomic action is being executed.
      *
-     * @param spec CIF specification from which to remove state annotations.
+     * @param specification The CIF specification, which is modified in-place.
      * @param outputFilePath The output path of the specification.
      * @param outputFolderPath The path of the output folder.
      */
-    public static void reduceStateAnnotations(Specification spec, Path outputFilePath, Path outputFolderPath) {
-        Set<Event> events = CifCollectUtils.collectEvents(spec, new LinkedHashSet<>());
-        Set<Event> uncontrollableEvents = events.stream().filter(event -> !event.getControllable())
-                .collect(Sets.toSet());
-        Set<Event> controllableEvents = events.stream().filter(event -> event.getControllable()).collect(Sets.toSet());
+    public static void reduceStateAnnotations(Specification specification, Path outputFilePath, Path outputFolderPath) {
+        reduceStateAnnotations(specification);
 
-        // Obtain the automaton in the CIF specification.
-        List<Automaton> automata = CifCollectUtils.collectAutomata(spec, new ArrayList<>());
-        Preconditions.checkArgument(automata.size() == 1,
-                "Expected the CIF specification to include exactly one automaton.");
-        Automaton automaton = automata.get(0);
-
-        for (Location loc: automaton.getLocations()) {
-            Set<Event> edgeEvents = loc.getEdges().stream().flatMap(edge -> CifEventUtils.getEvents(edge).stream())
-                    .collect(Sets.toSet());
-
-            if (!edgeEvents.isEmpty()) {
-                if (uncontrollableEvents.containsAll(edgeEvents)) {
-                    List<Annotation> annotationToRemove = loc.getAnnotations().stream()
-                            .filter(annotation -> annotation.getName().equals("state")).toList();
-                    loc.getAnnotations().removeAll(annotationToRemove);
-                } else {
-                    Verify.verify(controllableEvents.containsAll(edgeEvents),
-                            "Expected that the events of an edge are either controllable events or uncontrollable events.");
-                }
-            }
-        }
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(spec, outputFilePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(specification, outputFilePath.toString(), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
+        }
+    }
+
+    /**
+     * Removes state annotations from intermediate locations where an atomic action is being executed.
+     *
+     * @param specification The CIF specification, which is modified in-place.
+     */
+    public static void reduceStateAnnotations(Specification specification) {
+        Predicate<Event> isAtomicEndEvent = event -> event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX);
+
+        // Obtain the single automaton in the CIF specification.
+        List<Automaton> automata = CifCollectUtils.collectAutomata(specification, new ArrayList<>());
+        Preconditions.checkArgument(automata.size() == 1,
+                String.format("Expected exactly one automaton but found '%d'.", automata.size()));
+        Automaton automaton = automata.get(0);
+
+        // Find intermediate locations where an atomic action is being executed, and remove their state annotations.
+        for (Location location: automaton.getLocations()) {
+            Set<Event> edgeEvents = location.getEdges().stream().flatMap(edge -> CifEventUtils.getEvents(edge).stream())
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            if (edgeEvents.stream().anyMatch(isAtomicEndEvent)) {
+                Verify.verify(edgeEvents.stream().allMatch(isAtomicEndEvent), String.format(
+                        "Expected to find only atomic end events on outgoing edges on location '%s'.", location));
+
+                List<Annotation> annotationToRemove = location.getAnnotations().stream()
+                        .filter(annotation -> annotation.getName().equals("state")).toList();
+                location.getAnnotations().removeAll(annotationToRemove);
+            }
         }
     }
 

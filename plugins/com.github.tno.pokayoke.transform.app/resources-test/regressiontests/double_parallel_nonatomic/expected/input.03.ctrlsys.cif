@@ -1,0 +1,81 @@
+controllable NonAtomicA;
+uncontrollable NonAtomicA__na_result_1;
+uncontrollable NonAtomicA__na_result_2;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+controllable NonAtomicC;
+uncontrollable NonAtomicC__na_result_1;
+uncontrollable NonAtomicC__na_result_2;
+controllable NonAtomicD;
+uncontrollable NonAtomicD__na_result_1;
+uncontrollable NonAtomicD__na_result_2;
+plant automaton Machine:
+  disc bool a_executed in any;
+  disc bool b_executed in any;
+  disc bool c_executed in any;
+  disc bool d_executed in any;
+  disc bool __nonAtomicActive__NonAtomicA;
+  disc bool __nonAtomicActive__NonAtomicB;
+  disc bool __nonAtomicActive__NonAtomicC;
+  disc bool __nonAtomicActive__NonAtomicD;
+  alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
+  alg bool __precondition = Precondition;
+  alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
+  alg bool __postcondition = Postcondition;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge NonAtomicA when true, not __nonAtomicActive__NonAtomicA do __nonAtomicActive__NonAtomicA := true;
+    edge NonAtomicA__na_result_1 when __nonAtomicActive__NonAtomicA do a_executed := true, __nonAtomicActive__NonAtomicA := false;
+    edge NonAtomicA__na_result_2 when __nonAtomicActive__NonAtomicA do a_executed := true, __nonAtomicActive__NonAtomicA := false;
+    edge NonAtomicB when a_executed = true, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
+    edge NonAtomicB__na_result_1 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicB__na_result_2 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+    edge NonAtomicC when true, not __nonAtomicActive__NonAtomicC do __nonAtomicActive__NonAtomicC := true;
+    edge NonAtomicC__na_result_1 when __nonAtomicActive__NonAtomicC do c_executed := true, __nonAtomicActive__NonAtomicC := false;
+    edge NonAtomicC__na_result_2 when __nonAtomicActive__NonAtomicC do c_executed := true, __nonAtomicActive__NonAtomicC := false;
+    edge NonAtomicD when c_executed = true, not __nonAtomicActive__NonAtomicD do __nonAtomicActive__NonAtomicD := true;
+    edge NonAtomicD__na_result_1 when __nonAtomicActive__NonAtomicD do d_executed := true, __nonAtomicActive__NonAtomicD := false;
+    edge NonAtomicD__na_result_2 when __nonAtomicActive__NonAtomicD do d_executed := true, __nonAtomicActive__NonAtomicD := false;
+end
+supervisor automaton IntervalConstraintA__NonAtomicA:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintB__NonAtomicB:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintC__NonAtomicC:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicC when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintD__NonAtomicD:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge NonAtomicD when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet NonAtomicA, NonAtomicB, NonAtomicC, NonAtomicD;
+  location:
+    initial;
+    marked;
+    edge NonAtomicA when IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 1))) or IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 1)))));
+    edge NonAtomicB when IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 1))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 1)))));
+    edge NonAtomicC when IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 1 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 1 and not Machine.__nonAtomicActive__NonAtomicA) and (Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (not Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 0 and IntervalConstraintD__NonAtomicD.__occurrences = 0)))));
+    edge NonAtomicD when IntervalConstraintA__NonAtomicA.__occurrences = 0 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 0 and Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (not Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or (IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 1 and not Machine.__nonAtomicActive__NonAtomicA) and (not Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0))) or IntervalConstraintA__NonAtomicA.__occurrences = 1 and (IntervalConstraintB__NonAtomicB.__occurrences = 1 and not Machine.__nonAtomicActive__NonAtomicA) and (Machine.__nonAtomicActive__NonAtomicB and (Machine.a_executed and not Machine.b_executed)) and (Machine.c_executed and (not Machine.d_executed and not Machine.__nonAtomicActive__NonAtomicD) and (not Machine.__nonAtomicActive__NonAtomicC and (IntervalConstraintC__NonAtomicC.__occurrences = 1 and IntervalConstraintD__NonAtomicD.__occurrences = 0)))));
+end

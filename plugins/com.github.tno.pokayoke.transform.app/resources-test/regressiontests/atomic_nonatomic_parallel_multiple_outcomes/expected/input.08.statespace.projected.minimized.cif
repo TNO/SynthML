@@ -1,0 +1,38 @@
+controllable AtomicA;
+controllable NonAtomicB;
+uncontrollable NonAtomicB__na_result_1;
+uncontrollable NonAtomicB__na_result_2;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet AtomicA, NonAtomicB, NonAtomicB__na_result_1, NonAtomicB__na_result_2, __start, __end;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected = "s2")
+  location s2:
+    edge NonAtomicB goto s4;
+    edge AtomicA goto s5;
+  @state(projected = "s8")
+  location s3:
+    marked;
+  @state(projected = "s3")
+  location s4:
+    edge NonAtomicB__na_result_2 goto s7;
+    edge NonAtomicB__na_result_1 goto s7;
+    edge AtomicA goto s6;
+  @state(projected = "s4")
+  location s5:
+    edge NonAtomicB goto s6;
+  @state(projected = "s5")
+  location s6:
+    edge NonAtomicB__na_result_2 goto s8;
+    edge NonAtomicB__na_result_1 goto s8;
+  @state(projected = "s6")
+  location s7:
+    edge AtomicA goto s8;
+  @state(projected = "s7")
+  location s8:
+    edge __end goto s3;
+end

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="8" isActive="true">
+      <ownedAttribute xmi:id="3" name="field" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="6"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="7" name="action">
+        <body>true</body>
+        <body>field := true</body>
+        <body>field := false</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="8" name="main" postcondition="11" precondition="9" node="21 22 23 24 25 26">
+        <ownedRule xmi:id="9" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="10" name="">
+            <body>not field</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="11" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="12" name="">
+            <body>field</body>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="13" name="action/1__to__Merge__p3" target="24" source="22"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="14" name="action__to__Merge__p3" target="24" source="21"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p3__to__action" target="21" source="25">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
+            <body>not field</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Merge__p3__to__Decision__p3" target="25" source="24"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p3__to__FinalNode__p4" target="26" source="25">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+            <body>field</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="InitialNode__p1__to__action" target="22" source="23"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="21" name="action" incoming="15" outgoing="14" behavior="7"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="22" name="action" incoming="20" outgoing="13" behavior="7"/>
+        <node xmi:type="uml:InitialNode" xmi:id="23" name="InitialNode__p1" outgoing="20"/>
+        <node xmi:type="uml:MergeNode" xmi:id="24" name="Merge__p3" incoming="13 14" outgoing="17"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="25" name="Decision__p3" incoming="17" outgoing="15 18"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="26" name="FinalNode__p4" incoming="18"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="27">
+      <eAnnotations xmi:id="28" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_s1G00GqhEe-qao499TBi1A" guard="true" base_RedefinableElement="7" atomic="true">
+    <effects>field := true</effects>
+    <effects>field := false</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>
