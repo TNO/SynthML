@@ -100,7 +100,6 @@ public class FullSynthesisApp {
         }
 
         // Get CIF/BDD specification.
-        Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
@@ -114,6 +113,7 @@ public class FullSynthesisApp {
                 .collectControlledSystemGuards(cifSynthesisResult);
 
         // Convert synthesis result back to CIF.
+        Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
         CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
 
