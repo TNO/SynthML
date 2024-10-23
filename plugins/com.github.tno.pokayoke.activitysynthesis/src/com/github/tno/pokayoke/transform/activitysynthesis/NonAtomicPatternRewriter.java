@@ -3,12 +3,9 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
@@ -197,10 +194,9 @@ public class NonAtomicPatternRewriter {
             // Check whether the end transitions conform to the non-atomic pattern.
             this.endTransitions = sorted(intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
 
-            Set<String> expectedEndEvents = new LinkedHashSet<>(
-                    nonAtomicEventMap.get(startTransition.getName().getText()));
-            Set<String> actualEndEvents = endTransitions.stream().map(a -> a.getName().getText())
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            List<String> expectedEndEvents = nonAtomicEventMap.get(startTransition.getName().getText()).stream()
+                    .sorted().toList();
+            List<String> actualEndEvents = endTransitions.stream().map(a -> a.getName().getText()).sorted().toList();
 
             Preconditions.checkArgument(actualEndEvents.equals(expectedEndEvents),
                     String.format("Expected to find non-atomic end events '%s', but found '%s'.", expectedEndEvents,
