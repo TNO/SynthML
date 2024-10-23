@@ -6,14 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+
 import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -29,6 +30,34 @@ public class NonAtomicPatternRewriter {
 
     /** The number of tau transitions that have been introduced by this rewriter. */
     private int tauCounter = 0;
+
+    /** A mapping from names of non-atomic start events to the names of their corresponding end events. */
+    private final Map<String, List<String>> nonAtomicEventMap;
+
+    /**
+     * Constructs a new non-atomic pattern rewriter.
+     *
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     */
+    public NonAtomicPatternRewriter(Map<Event, List<Event>> nonAtomicEventMap) {
+        this.nonAtomicEventMap = convertToNameMapping(nonAtomicEventMap);
+    }
+
+    /**
+     * Converts a given non-atomic event map to a mapping where the names of the events are used instead.
+     *
+     * @param nonAtomicEventMap The mapping from non-atomic start events to their corresponding end events.
+     * @return The converted non-atomic event map.
+     */
+    private static Map<String, List<String>> convertToNameMapping(Map<Event, List<Event>> nonAtomicEventMap) {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+
+        for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
+            result.put(entry.getKey().getName(), entry.getValue().stream().map(Event::getName).toList());
+        }
+
+        return result;
+    }
 
     /**
      * Finds and rewrites all non-atomic patterns in the given Petri Net, by renaming all their end transitions to tau.
@@ -63,31 +92,9 @@ public class NonAtomicPatternRewriter {
         List<Transition> transitions = sorted(
                 page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast));
 
-        // Build a map from (names of) non-atomic start events to their corresponding non-atomic end events.
-        Map<String, Set<String>> nonAtomicEventMap = new LinkedHashMap<>();
-
-        for (Transition transition: transitions) {
-            String[] nameParts = transition.getName().getText().split(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX);
-
-            Verify.verify(nameParts.length == 1 || nameParts.length == 2,
-                    String.format("Expected to find either one or two name parts, but found %d.", nameParts.length));
-
-            if (nameParts.length > 1) {
-                String startEvent = nameParts[0];
-                Set<String> endEvents = nonAtomicEventMap.computeIfAbsent(startEvent, e -> new LinkedHashMap<>());
-
-                if (endEvents == null) {
-                    endEvents = new LinkedHashSet<>();
-                    nonAtomicEventMap.put(startEvent, endEvents);
-                }
-
-                endEvents.add(startEvent + UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX + nameParts[1]);
-            }
-        }
-
         // Obtain all non-atomic patterns (and by doing so, check whether they are as expected).
         return transitions.stream().filter(transition -> nonAtomicEventMap.containsKey(transition.getName().getText()))
-                .map(transition -> new NonAtomicPattern(transition, nonAtomicEventMap)).toList();
+                .map(NonAtomicPattern::new).toList();
     }
 
     /**
@@ -166,10 +173,8 @@ public class NonAtomicPatternRewriter {
          * Constructs a new non-atomic Petri Net pattern.
          *
          * @param startTransition The transition that starts the non-atomic action.
-         * @param nonAtomicEventMap The mapping from (names of) non-atomic start events to their corresponding
-         *     non-atomic end events.
          */
-        NonAtomicPattern(Transition startTransition, Map<String, Set<String>> nonAtomicEventMap) {
+        NonAtomicPattern(Transition startTransition) {
             // Check whether the start transition conforms to the non-atomic pattern.
             this.startTransition = startTransition;
 
@@ -190,7 +195,8 @@ public class NonAtomicPatternRewriter {
             // Check whether the end transitions conform to the non-atomic pattern.
             this.endTransitions = sorted(intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
 
-            Set<String> expectedEndEvents = nonAtomicEventMap.get(startTransition.getName().getText());
+            Set<String> expectedEndEvents = new LinkedHashSet<>(
+                    nonAtomicEventMap.get(startTransition.getName().getText()));
             Set<String> actualEndEvents = endTransitions.stream().map(a -> a.getName().getText())
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 

@@ -228,7 +228,8 @@ public class FullSynthesisApp {
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
-        NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter();
+        NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
+                umlToCifTranslator.getNonAtomicEvents());
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
         nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);

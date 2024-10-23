@@ -102,10 +102,32 @@ public class UmlToCifTranslator {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
+    /** The mapping from non-atomic and non-deterministic CIF start events, to their corresponding CIF end events. */
+    private final Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
+
     public UmlToCifTranslator(Model model) {
         this.model = model;
         this.context = new CifContext(model);
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
+    }
+
+    /**
+     * Gives all CIF events related to non-atomic actions, as a mapping from non-atomic CIF start events to their
+     * corresponding CIF end events.
+     *
+     * @return A mapping from all non-atomic start events to their corresponding end events.
+     */
+    public Map<Event, List<Event>> getNonAtomicEvents() {
+        Map<Event, List<Event>> result = new LinkedHashMap<>();
+
+        for (Entry<OpaqueBehavior, Event> entry: eventMap.entrySet()) {
+            if (!PokaYokeUmlProfileUtil.isAtomic(entry.getKey())) {
+                Event startEvent = entry.getValue();
+                result.put(startEvent, startEndEventMap.get(startEvent));
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -211,8 +233,6 @@ public class UmlToCifTranslator {
         // maintain sets to keep track of the start and end events of all non-atomic and non-deterministic actions, for
         // later use.
         Map<Event, Edge> eventEdgeMap = new LinkedHashMap<>();
-        Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
-
         Set<Event> nonAtomicStartEvents = new LinkedHashSet<>();
         Set<Event> nonAtomicEndEvents = new LinkedHashSet<>();
         Set<Event> nonDeterministicStartEvents = new LinkedHashSet<>();
