@@ -1,0 +1,97 @@
+
+package com.github.tno.pokayoke.transform.petrify2uml.patterns;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.MergeNode;
+
+import com.google.common.base.Preconditions;
+
+/**
+ * Functionality for finding and rewriting redundant decision-merge patterns in UML activities.
+ * <p>
+ * A <i>redundant decision-merge pattern</i> is a pattern where the activity branches and after that directly merges.
+ * This pattern consists of a decision node and a merge node, such that all control flows from the decision node go
+ * directly to the merge node, with nothing in between. Every such pattern can be rewritten by replacing the decision
+ * node and merge node an all control flows in between, by a single control flow.
+ * </p>
+ */
+public class RedundantDecisionMergePattern {
+    private final DecisionNode decisionNode;
+
+    private final MergeNode mergeNode;
+
+    private RedundantDecisionMergePattern(DecisionNode decisionNode, MergeNode mergeNode) {
+        this.decisionNode = decisionNode;
+        this.mergeNode = mergeNode;
+    }
+
+    /**
+     * Finds and rewrites all redundant decision-merge patterns in the given activity.
+     *
+     * @param activity The input activity.
+     */
+    public static void findAndRewriteAll(Activity activity) {
+        findAll(activity).forEach(RedundantDecisionMergePattern::rewrite);
+    }
+
+    /**
+     * Finds all redundant decision-merge patterns in the given activity.
+     *
+     * @param activity The input activity.
+     * @return All redundant decision-merge patterns in the given activity.
+     */
+    public static List<RedundantDecisionMergePattern> findAll(Activity activity) {
+        return activity.getNodes().stream().flatMap(node -> findAny(node).stream()).toList();
+    }
+
+    /**
+     * Tries finding a redundant decision-merge pattern that starts from the given activity node.
+     *
+     * @param node The input activity node.
+     * @return Some redundant decision-merge pattern in case one was found, or an empty result otherwise.
+     */
+    private static Optional<RedundantDecisionMergePattern> findAny(ActivityNode node) {
+        // If the given node is not a decision node, then it does not start a redundant decision-merge pattern.
+        if (node instanceof DecisionNode decisionNode) {
+            // Find the set of all target nodes that are reachable from the decision node by a control flow.
+            Set<ActivityNode> targetNodes = decisionNode.getOutgoings().stream().map(ActivityEdge::getTarget)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            // If there is exactly one target node which is a merge node, then we have found a pattern.
+            if (targetNodes.size() == 1 && targetNodes.iterator().next() instanceof MergeNode mergeNode) {
+                return Optional.of(new RedundantDecisionMergePattern(decisionNode, mergeNode));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    /** Rewrites this redundant decision-merge pattern. */
+    public void rewrite() {
+        Preconditions.checkArgument(decisionNode.getIncomings().size() == 1,
+                String.format("Expected decision nodes to have only one incoming control flow, but found '%d'.",
+                        decisionNode.getIncomings().size()));
+        Preconditions.checkArgument(mergeNode.getOutgoings().size() == 1,
+                String.format("Expected merge nodes to have only one outgoing control flow, but found '%d'.",
+                        mergeNode.getOutgoings().size()));
+
+        // Update the target of the single incoming control flow into the decision node, to be the target of the single
+        // outgoing control flow out of the merge node.
+        decisionNode.getIncomings().get(0).setTarget(mergeNode.getOutgoings().get(0).getTarget());
+
+        // Delete the decision and merge nodes, and all control flows between them.
+        List.copyOf(decisionNode.getOutgoings()).forEach(ActivityEdge::destroy);
+        List.copyOf(mergeNode.getOutgoings()).forEach(ActivityEdge::destroy);
+        decisionNode.destroy();
+        mergeNode.destroy();
+    }
+}

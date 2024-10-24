@@ -27,7 +27,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.petrify2uml
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Export-Package: com.github.tno.pokayoke.transform.petrify2uml
+Export-Package: com.github.tno.pokayoke.transform.petrify2uml,
+ com.github.tno.pokayoke.transform.petrify2uml.patterns
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
  org.eclipse.escet.cif.parser;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",

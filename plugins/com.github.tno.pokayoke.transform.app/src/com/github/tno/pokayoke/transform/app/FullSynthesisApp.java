@@ -269,14 +269,19 @@ public class FullSynthesisApp {
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
-        // Post-process to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
+        // Post-process the activity to simplify it.
+        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".17.simplified.uml");
+        PostProcessActivity.simplify(activity);
+        FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
+
+        // Post-process the activity to remove the names of edges and nodes.
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".18.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Post-process the activity to add choice guards to the name of the UML control flow they are on.
         Path umlChoiceGuardNamesAddedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".18.choiceguardnamesadded.uml");
+                .resolve(filePrefix + ".19.choiceguardnamesadded.uml");
         PostProcessActivity.addGuardsToControlFlowNames(activity);
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
     }
