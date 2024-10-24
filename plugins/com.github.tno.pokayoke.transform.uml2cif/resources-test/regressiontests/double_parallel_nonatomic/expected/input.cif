@@ -81,3 +81,7 @@ requirement invariant Machine.__postcondition disables NonAtomicC__na_result_2;
 requirement invariant Machine.__postcondition disables NonAtomicD;
 requirement invariant Machine.__postcondition disables NonAtomicD__na_result_1;
 requirement invariant Machine.__postcondition disables NonAtomicD__na_result_2;
+requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicA;
+requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicB;
+requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicC;
+requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicD;
