@@ -9,8 +9,7 @@ plant automaton Example:
   alg bool precondition = not field1 and not field2;
   alg bool __precondition = precondition;
   alg bool postcondition = field1 and field2;
-  alg bool __postcondition_atomicity = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition_atomicity;
+  alg bool __postcondition = postcondition;
   initial __precondition;
   marked __postcondition;
   location:

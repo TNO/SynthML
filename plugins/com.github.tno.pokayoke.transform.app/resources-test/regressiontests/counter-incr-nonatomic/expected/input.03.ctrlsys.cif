@@ -48,7 +48,7 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge incr1 when not Context.__nonAtomicActive__initialize and (Context.init and Context.count = 2) and (occurrences__initialize.__occurrences = 1 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
-    edge incr2 when not Context.__nonAtomicActive__initialize and (Context.init and Context.count = 1) and (occurrences__initialize.__occurrences = 1 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
-    edge initialize when not Context.__nonAtomicActive__initialize and (not Context.init and Context.count = 0) and (occurrences__initialize.__occurrences = 0 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
+    edge incr1 when not Context.__nonAtomicActive__initialize and (Context.count = 2 and Context.init) and (occurrences__initialize.__occurrences = 1 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
+    edge incr2 when not Context.__nonAtomicActive__initialize and (Context.count = 1 and Context.init) and (occurrences__initialize.__occurrences = 1 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
+    edge initialize when not Context.__nonAtomicActive__initialize and (Context.count = 0 and not Context.init) and (occurrences__initialize.__occurrences = 0 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
 end

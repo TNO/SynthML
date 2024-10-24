@@ -7,8 +7,7 @@ plant automaton Context:
   alg bool precondition = not field;
   alg bool __precondition = precondition;
   alg bool postcondition = field;
-  alg bool __postcondition_atomicity = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition_atomicity;
+  alg bool __postcondition = postcondition;
   initial __precondition;
   marked __postcondition;
   location:
@@ -21,3 +20,4 @@ end
 requirement invariant Context.__postcondition disables action;
 requirement invariant Context.__postcondition disables action__result_1;
 requirement invariant Context.__postcondition disables action__result_2;
+requirement invariant Context.__postcondition => Context.__activeAction = 0;
