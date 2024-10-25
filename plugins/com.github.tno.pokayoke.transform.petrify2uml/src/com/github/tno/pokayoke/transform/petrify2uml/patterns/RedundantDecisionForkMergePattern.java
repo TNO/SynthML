@@ -128,6 +128,10 @@ public class RedundantDecisionForkMergePattern {
 
         // Update the source of the outgoing control flows of all merge nodes, to be the new fork node instead.
         for (MergeNode mergeNode: mergeNodes) {
+            Preconditions.checkArgument(mergeNode.getOutgoings().size() == 1,
+                    String.format("Expected merge nodes to have only one outgoing control flow, but found '%d'.",
+                            mergeNode.getOutgoings().size()));
+
             mergeNode.getOutgoings().get(0).setSource(newForkNode);
         }
 
