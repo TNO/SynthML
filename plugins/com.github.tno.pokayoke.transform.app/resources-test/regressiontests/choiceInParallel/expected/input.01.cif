@@ -15,8 +15,7 @@ plant automaton Context:
   disc bool Is_Ready_to_Work = false;
   disc int[0..1] __activeAction;
   alg bool postcondition = Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work;
-  alg bool __postcondition_atomicity = __activeAction = 0;
-  alg bool __postcondition = postcondition and __postcondition_atomicity;
+  alg bool __postcondition = postcondition;
   marked __postcondition;
   location:
     initial;
@@ -73,3 +72,4 @@ requirement invariant Context.__postcondition disables Start_Working;
 requirement invariant Context.__postcondition disables Flip_A_Coin;
 requirement invariant Context.__postcondition disables Flip_A_Coin__result_1;
 requirement invariant Context.__postcondition disables Flip_A_Coin__result_2;
+requirement invariant Context.__postcondition => Context.__activeAction = 0;

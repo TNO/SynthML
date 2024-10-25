@@ -48,3 +48,4 @@ requirement invariant Context.__postcondition disables initialize__na_result_1;
 requirement invariant Context.__postcondition disables initialize__na_result_2;
 requirement invariant Context.__postcondition disables incr1;
 requirement invariant Context.__postcondition disables incr2;
+requirement invariant Context.__postcondition => not Context.__nonAtomicActive__initialize;

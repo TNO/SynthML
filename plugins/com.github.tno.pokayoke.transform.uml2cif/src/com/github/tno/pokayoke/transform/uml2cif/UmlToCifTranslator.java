@@ -398,12 +398,15 @@ public class UmlToCifTranslator {
 
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
+        Set<DiscVariable> cifNonAtomicVars = new LinkedHashSet<>();
+
         for (Event cifStartEvent: nonAtomicStartEvents) {
             List<Event> cifEndEvents = startEndEventMap.get(cifStartEvent);
 
             // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
             // Value 'false' indicates inactive, and 'true' indicates active.
             DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
+            cifNonAtomicVars.add(cifNonAtomicVar);
             cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
             cifNonAtomicVar.setType(CifConstructors.newBoolType());
             cifPlant.getDeclarations().add(cifNonAtomicVar);
@@ -438,7 +441,7 @@ public class UmlToCifTranslator {
             }
         }
 
-        // Translate all preconditions of the classifier behavior of the UML class.
+        // Translate all preconditions of the classifier behavior of the UML class as an initial predicate in CIF.
         Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
 
         Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(umlClassifierBehavior.getPreconditions());
@@ -452,29 +455,10 @@ public class UmlToCifTranslator {
             cifPlant.getInitials().add(cifPrecondition);
         }
 
-        // Translate all postconditions of the classifier behavior of the UML class.
+        // Translate all postconditions of the classifier behavior of the UML class as a marked predicate in CIF.
         Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(umlClassifierBehavior.getPostconditions());
 
-        if (cifAtomicityVar != null) {
-            // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-            // atomic non-deterministic action must be active in order to be in a marked state.
-
-            // First define the atomicity postcondition expression.
-            BinaryExpression cifAtomicityPostcondition = CifConstructors.newBinaryExpression();
-            cifAtomicityPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-            cifAtomicityPostcondition.setOperator(BinaryOperator.EQUAL);
-            cifAtomicityPostcondition.setRight(CifValueUtils.makeInt(0));
-            cifAtomicityPostcondition.setType(CifConstructors.newBoolType());
-
-            // Then define an extra CIF algebraic variable for this atomicity postcondition.
-            AlgVariable cifAtomicityAlgVar = CifConstructors.newAlgVariable(null, "__postcondition_atomicity", null,
-                    CifConstructors.newBoolType(), cifAtomicityPostcondition);
-            cifPostconditionVars.add(cifAtomicityAlgVar);
-        }
-
         AlgVariable cifPostconditionVar = null;
-
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
             cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
@@ -484,8 +468,8 @@ public class UmlToCifTranslator {
             cifPlant.getMarkeds().add(cifPostcondition);
         }
 
-        // Create CIF state/event exclusion invariants to disallow further steps from marked states.
         if (cifPostconditionVar != null) {
+            // Add state/event exclusion invariants to prevent further steps from states satisfying the postcondition.
             for (Event cifEvent: eventEdgeMap.keySet()) {
                 Invariant cifInvariant = CifConstructors.newInvariant();
                 cifInvariant
@@ -493,6 +477,56 @@ public class UmlToCifTranslator {
                 cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
                 cifInvariant.setPredicate(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                         cifPostconditionVar));
+                cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                cifSpec.getInvariants().add(cifInvariant);
+            }
+
+            // Add extra requirements stating that no non-atomic/non-deterministic actions must be active whenever the
+            // activity postcondition holds. By doing so, we can ask data-based synthesis to figure out the extra
+            // conditions needed to prevent performing actions that would cause the activity postcondition to be
+            // satisfied, whenever other non-atomic/deterministic actions are still being executed. This helps for
+            // example to keep non-atomic patterns intact.
+            for (DiscVariable cifInternalVar: cifNonAtomicVars) {
+                // Construct the invariant predicate.
+                BinaryExpression cifInvariantPredicate = CifConstructors.newBinaryExpression();
+                cifInvariantPredicate.setLeft(CifConstructors.newAlgVariableExpression(null,
+                        CifConstructors.newBoolType(), cifPostconditionVar));
+                cifInvariantPredicate.setOperator(BinaryOperator.IMPLICATION);
+                UnaryExpression cifRightOperand = CifConstructors.newUnaryExpression();
+                cifRightOperand.setChild(
+                        CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifInternalVar));
+                cifRightOperand.setOperator(UnaryOperator.INVERSE);
+                cifRightOperand.setType(CifConstructors.newBoolType());
+                cifInvariantPredicate.setRight(cifRightOperand);
+                cifInvariantPredicate.setType(CifConstructors.newBoolType());
+
+                // Construct the invariant.
+                Invariant cifInvariant = CifConstructors.newInvariant();
+                cifInvariant.setInvKind(InvKind.STATE);
+                cifInvariant.setPredicate(cifInvariantPredicate);
+                cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                cifSpec.getInvariants().add(cifInvariant);
+            }
+
+            if (cifAtomicityVar != null) {
+                // Construct the invariant predicate.
+                BinaryExpression cifInvariantPredicate = CifConstructors.newBinaryExpression();
+                cifInvariantPredicate.setLeft(CifConstructors.newAlgVariableExpression(null,
+                        CifConstructors.newBoolType(), cifPostconditionVar));
+                cifInvariantPredicate.setOperator(BinaryOperator.IMPLICATION);
+                BinaryExpression cifRightOperand = CifConstructors.newBinaryExpression();
+                cifRightOperand.setLeft(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                cifRightOperand.setOperator(BinaryOperator.EQUAL);
+                cifRightOperand.setRight(CifValueUtils.makeInt(0));
+                cifRightOperand.setType(CifConstructors.newBoolType());
+                cifInvariantPredicate.setRight(cifRightOperand);
+                cifInvariantPredicate.setType(CifConstructors.newBoolType());
+
+                // Construct the invariant.
+                Invariant cifInvariant = CifConstructors.newInvariant();
+                cifInvariant.setInvKind(InvKind.STATE);
+                cifInvariant.setPredicate(cifInvariantPredicate);
                 cifInvariant.setSupKind(SupKind.REQUIREMENT);
                 cifSpec.getInvariants().add(cifInvariant);
             }

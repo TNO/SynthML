@@ -10,8 +10,7 @@ plant automaton Context:
   alg bool $pre = not init and count = 0;
   alg bool __precondition = $pre;
   alg bool $post = count = 3;
-  alg bool __postcondition_atomicity = __activeAction = 0;
-  alg bool __postcondition = $post and __postcondition_atomicity;
+  alg bool __postcondition = $post;
   initial __precondition;
   marked __postcondition;
   location:
@@ -49,3 +48,4 @@ requirement invariant Context.__postcondition disables initialize__result_1;
 requirement invariant Context.__postcondition disables initialize__result_2;
 requirement invariant Context.__postcondition disables incr1;
 requirement invariant Context.__postcondition disables incr2;
+requirement invariant Context.__postcondition => Context.__activeAction = 0;
