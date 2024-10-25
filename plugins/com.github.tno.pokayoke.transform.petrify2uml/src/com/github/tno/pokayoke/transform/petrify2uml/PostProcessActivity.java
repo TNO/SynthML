@@ -20,6 +20,8 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
+import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
@@ -153,5 +155,15 @@ public class PostProcessActivity {
                 edge.setName(guard.getBodies().get(0));
             }
         }
+    }
+
+    /**
+     * Simplifies the given activity.
+     *
+     * @param activity The activity to simplify, which is modified in-place.
+     */
+    public static void simplify(Activity activity) {
+        RedundantDecisionMergePattern.findAndRewriteAll(activity);
+        RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
     }
 }
