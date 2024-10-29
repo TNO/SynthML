@@ -239,8 +239,12 @@ public class FullSynthesisApp {
                 controlledSystemGuards, stateInfo);
         Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
         Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
+
+        // Clean up all BDD references.
         uncontrolledSystemGuards.values().forEach(BDD::free);
+        controlledSystemGuards.values().forEach(BDD::free);
         arcToBdd.values().forEach(BDD::free);
+        stateInfo.values().forEach(BDD::free);
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
