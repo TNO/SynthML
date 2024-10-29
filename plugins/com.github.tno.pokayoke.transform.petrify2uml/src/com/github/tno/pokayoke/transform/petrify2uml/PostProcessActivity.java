@@ -192,7 +192,7 @@ public class PostProcessActivity {
                     // If so, we replace the action by an opaque action that keeps the guard of the original action.
                     OpaqueAction replacementAction = UMLFactory.eINSTANCE.createOpaqueAction();
                     replacementAction.setActivity(activity);
-                    replacementAction.setName(behavior.getName() + "_start");
+                    replacementAction.setName(behavior.getName() + "_nonatomic_start");
                     PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
                     PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
 
@@ -219,7 +219,7 @@ public class PostProcessActivity {
                                 "Expected every non-atomic CIF end event to map to a non-atomic UML opaque behavior.");
 
                         // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
-                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end_"));
+                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_nonatomic_end_"));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(opaqueBehavior.left)
