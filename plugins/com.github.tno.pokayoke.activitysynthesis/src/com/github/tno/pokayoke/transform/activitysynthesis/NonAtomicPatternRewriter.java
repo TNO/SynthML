@@ -173,7 +173,7 @@ public class NonAtomicPatternRewriter {
             // only allows the tau transition to be taken from the system states that you would be in when you'd perform
             // the corresponding end event (with its effects) of the non-atomic action.
             for (Transition endTransition: pattern.endTransitions) {
-                // Check whether the current transition is indeed a tau transition.
+                // Check whether the current transition is indeed a tau transition, i.e., has indeed been rewritten.
                 String transitionName = endTransition.getName().getText();
                 Preconditions.checkArgument(transitionName.contains(TAU_PREFIX),
                         String.format("Expected to find a tau transition, but got '%s'.", transitionName));

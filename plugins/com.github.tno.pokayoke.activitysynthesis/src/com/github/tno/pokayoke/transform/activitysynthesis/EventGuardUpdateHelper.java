@@ -20,14 +20,14 @@ public class EventGuardUpdateHelper {
     }
 
     /**
-     * Collect the original uncontrolled system guards of all controllable events for the given CIF/BDD specification,
-     * where original means: as specified in the original UML input model from which the CIF specification was
-     * translated.
+     * Collect the uncontrolled system guards of all events for the given CIF/BDD specification. The uncontrolled system
+     * guard for every controllable event is the guard that is specified in the original UML input model from which the
+     * CIF specification was translated. The uncontrolled system guard for every uncontrollable event is simply 'true'.
      *
      * @param cifBddSpec The CIF/BDD specification.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
-     * @return A map from the names of all controllable CIF events to their guards as BDDs.
+     * @return A map from the names of all CIF events to their uncontrollable system guards as BDDs.
      */
     public static Map<String, BDD> collectUncontrolledSystemGuards(CifBddSpec cifBddSpec,
             UmlToCifTranslator translator)
@@ -36,10 +36,15 @@ public class EventGuardUpdateHelper {
 
         try {
             for (Event event: cifBddSpec.eventEdges.keySet()) {
+                BDD guard = null;
+
                 if (event.getControllable()) {
-                    guards.put(event.getName(),
-                            CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec));
+                    guard = CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec);
+                } else {
+                    guard = cifBddSpec.factory.one();
                 }
+
+                guards.put(event.getName(), guard);
             }
         } catch (UnsupportedPredicateException ex) {
             throw new RuntimeException("Failed to translate a guard predicate to a BDD: " + ex.getMessage(), ex);

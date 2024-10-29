@@ -224,7 +224,7 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = StateAnnotationHelper
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
-        // Rewrite all non-atomic patterns in the Petri Net.
+        // Rewrite all rewritable non-atomic patterns in the Petri Net.
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
