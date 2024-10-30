@@ -15,12 +15,14 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 
 /** Normalize Petrify output by relabeling the places. */
@@ -60,8 +62,8 @@ public class NormalizePetrifyOutput {
         List<String> specificationLines = petrifyOutput.stream()
                 .filter(line -> !line.startsWith(".") && !line.startsWith("#")).toList();
 
-        // Add duplicate transitions to the list, and get a map from parent node to child node.
-        Map<String, List<String>> parentToChild = new HashMap<>();
+        // Collect duplicate transitions, and make a map from nodes to all nodes they can reach in one forward step.
+        Map<String, List<String>> nextNodes = new HashMap<>();
         for (String currentLine: specificationLines) {
             // Split the specification line into nodes.
             List<String> nodes = Arrays.asList(currentLine.split(" "));
@@ -74,7 +76,27 @@ public class NormalizePetrifyOutput {
                             && PetrifyHelper.isDuplicateTransition(element, declaredTransitionNames))
                     .forEach(element -> allTransitionNames.add(element));
 
-            parentToChild.put(parentNode, childNodes);
+            nextNodes.put(parentNode, childNodes);
+        }
+
+        // From 'nextNodes' also construct a mapping from nodes to all nodes they can reach in one backward step.
+        Map<String, List<String>> prevNodes = new HashMap<>();
+
+        for (Entry<String, List<String>> entry: nextNodes.entrySet()) {
+            String source = entry.getKey();
+
+            for (String target: entry.getValue()) {
+                List<String> sources = prevNodes.get(target);
+
+                if (sources == null) {
+                    sources = new ArrayList<>();
+                    prevNodes.put(target, sources);
+                }
+
+                if (!sources.contains(source)) {
+                    sources.add(source);
+                }
+            }
         }
 
         // Sort the transition names.
@@ -103,7 +125,7 @@ public class NormalizePetrifyOutput {
 
         while (!queue.isEmpty()) {
             String currentPlace = queue.poll();
-            List<String> childTransitions = parentToChild.get(currentPlace);
+            List<String> childTransitions = nextNodes.get(currentPlace);
             Collections.sort(childTransitions);
 
             // Rename the place that has not been renamed.
@@ -114,21 +136,40 @@ public class NormalizePetrifyOutput {
             nextPlaceNr++;
 
             for (String childTransition: childTransitions) {
-                List<String> places = parentToChild.get(childTransition);
-                Map<String, Integer> placeToIndex = new LinkedHashMap<>();
+                List<String> places = nextNodes.get(childTransition);
 
-                // Get the index for the places.
+                // Recall that earlier we assigned a unique index to every transition, resulting in 'transitionIndices'.
+                // Now, for every place we find the lowest index of all its incoming transitions, as well as the lowest
+                // index of all its outgoing transitions.
+                Map<String, Integer> placeToNextIndex = new LinkedHashMap<>();
+                Map<String, Integer> placeToPrevIndex = new LinkedHashMap<>();
+
                 for (String place: places) {
-                    List<String> transitions = parentToChild.get(place);
-                    Integer minTransitionIndex = transitions.stream()
-                            .map(transition -> transitionIndices.get(transition))
+                    int minPrevIndex = prevNodes.get(place).stream().map(transitionIndices::get)
                             .collect(Collectors.minBy(Comparator.naturalOrder())).get();
-                    placeToIndex.put(place, minTransitionIndex);
+                    int minNextIndex = nextNodes.get(place).stream().map(transitionIndices::get)
+                            .collect(Collectors.minBy(Comparator.naturalOrder())).get();
+
+                    placeToPrevIndex.put(place, minPrevIndex);
+                    placeToNextIndex.put(place, minNextIndex);
                 }
 
-                // Sort the places based on the index.
-                List<String> sortedPlaces = placeToIndex.entrySet().stream().sorted(Map.Entry.comparingByValue())
-                        .map(entry -> entry.getKey()).toList();
+                // Sort the places based on the lowest indices found above.
+                List<String> sortedPlaces = places.stream().sorted(Comparator.comparingInt(placeToNextIndex::get)
+                        .thenComparing(Comparator.comparingInt(placeToPrevIndex::get))).toList();
+
+                // Make sure that there is no ambiguity in the order of places to consider next.
+                for (int i = 0; i < sortedPlaces.size() - 1; i++) {
+                    String current = sortedPlaces.get(i);
+                    String next = sortedPlaces.get(i + 1);
+
+                    Verify.verify(
+                            placeToNextIndex.get(current) != placeToNextIndex.get(next)
+                                    || placeToPrevIndex.get(current) != placeToPrevIndex.get(next),
+                            String.format(
+                                    "Places '%s' and '%s' have the same lowest prev index and the same lowest next index, leading to ambiguous results.",
+                                    current, next));
+                }
 
                 // Enqueue the places.
                 for (String place: sortedPlaces) {
