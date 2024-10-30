@@ -44,7 +44,7 @@
         <node xmi:type="uml:OpaqueAction" xmi:id="30" name="__end" incoming="28" outgoing="27"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="31" name="__start" incoming="21" outgoing="22"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="32" name="do_a" incoming="23" outgoing="25" behavior="12"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="33" name="do_b_end_1" incoming="24" outgoing="26"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="33" name="do_b_end1" incoming="24" outgoing="26"/>
         <node xmi:type="uml:InitialNode" xmi:id="34" name="InitialNode__p1" outgoing="21"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="35" name="FinalNode__p7" incoming="27"/>
         <node xmi:type="uml:JoinNode" xmi:id="36" name="Join____end" incoming="25 26" outgoing="28"/>

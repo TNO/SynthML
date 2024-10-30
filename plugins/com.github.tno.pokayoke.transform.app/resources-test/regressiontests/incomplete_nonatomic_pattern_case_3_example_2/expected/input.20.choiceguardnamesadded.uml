@@ -50,7 +50,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="28" target="47" source="50">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="29" target="47" source="43">
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" target="47" source="41">
           <name xsi:nil="true"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" target="52" source="47">
@@ -59,7 +59,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="31" target="48" source="50">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="48" source="41">
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="48" source="43">
           <name xsi:nil="true"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="33" target="52" source="48">
@@ -86,9 +86,9 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="40" target="46" source="45">
           <name xsi:nil="true"/>
         </edge>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="41" name="do_a" incoming="34" outgoing="32" behavior="15"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="41" name="do_a" incoming="34" outgoing="29" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="42" name="do_a" incoming="24" outgoing="36" behavior="15"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="43" name="do_b_end_1" incoming="35" outgoing="29"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="43" name="do_b_end1" incoming="35" outgoing="32"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="do_c" incoming="38" outgoing="39" behavior="54"/>
         <node xmi:type="uml:InitialNode" xmi:id="45" outgoing="40">
           <name xsi:nil="true"/>

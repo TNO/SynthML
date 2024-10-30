@@ -87,9 +87,9 @@
         <node xmi:type="uml:CallBehaviorAction" xmi:id="53" name="do_a" incoming="43" outgoing="47" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="54" name="do_a" incoming="26" outgoing="31" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="55" name="do_a" incoming="32" outgoing="42" behavior="15"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="56" name="do_b_end_1" incoming="46" outgoing="49"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="57" name="do_b_end_1" incoming="38" outgoing="48"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="58" name="do_b_end_1" incoming="34" outgoing="43"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="56" name="do_b_end1" incoming="46" outgoing="49"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="57" name="do_b_end1" incoming="38" outgoing="48"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="58" name="do_b_end1" incoming="34" outgoing="43"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="59" name="reset" incoming="31" outgoing="37" behavior="70"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="60" name="reset" incoming="40" outgoing="45" behavior="70"/>
         <node xmi:type="uml:InitialNode" xmi:id="61" name="InitialNode__p1" outgoing="24"/>

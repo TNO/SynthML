@@ -67,8 +67,8 @@
         <node xmi:type="uml:OpaqueAction" xmi:id="41" name="__start" incoming="21" outgoing="26"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="42" name="do_a" incoming="22" outgoing="27" behavior="12"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="43" name="do_a" incoming="28" outgoing="33" behavior="12"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="44" name="do_b_end_1" incoming="35" outgoing="37"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="45" name="do_b_end_1" incoming="30" outgoing="36"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="44" name="do_b_end1" incoming="35" outgoing="37"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="45" name="do_b_end1" incoming="30" outgoing="36"/>
         <node xmi:type="uml:InitialNode" xmi:id="46" name="InitialNode__p1" outgoing="21"/>
         <node xmi:type="uml:DecisionNode" xmi:id="47" name="Decision__p2" incoming="26" outgoing="22 24"/>
         <node xmi:type="uml:DecisionNode" xmi:id="48" name="Decision__p4" incoming="32" outgoing="28 30"/>

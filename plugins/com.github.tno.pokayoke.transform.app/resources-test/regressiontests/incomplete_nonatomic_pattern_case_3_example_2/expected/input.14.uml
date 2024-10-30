@@ -46,10 +46,10 @@
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="29" name="__start__to__Decision__p2" target="51" source="44"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Fork__do_a/1__to__Merge__p3" target="52" source="55"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="do_b__na_result_1__to__Merge__p3" target="52" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="do_a__to__Merge__p3" target="52" source="45"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Merge__p3__to__Join__do_c" target="57" source="52"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Fork__do_a/1__to__Merge__p4" target="53" source="55"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="do_a__to__Merge__p4" target="53" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="do_b__na_result_1__to__Merge__p4" target="53" source="48"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Merge__p4__to__Join__do_c" target="57" source="53"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="36" name="Fork__do_b__to__do_a" target="45" source="56"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Fork__do_b__to__do_b__na_result_1" target="48" source="56"/>
@@ -60,10 +60,10 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Join__do_c__to__do_c" target="49" source="57"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="43" name="__end" incoming="38" outgoing="39"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="44" name="__start" incoming="24" outgoing="29"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="45" name="do_a" incoming="36" outgoing="34" behavior="15"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="45" name="do_a" incoming="36" outgoing="31" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="do_a" incoming="25" outgoing="40" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="do_b" incoming="27" outgoing="41" behavior="16"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="48" name="do_b__na_result_1" incoming="37" outgoing="31"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="48" name="do_b__na_result_1" incoming="37" outgoing="34"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="do_c" incoming="42" outgoing="38" behavior="58"/>
         <node xmi:type="uml:InitialNode" xmi:id="50" name="InitialNode__p1" outgoing="24"/>
         <node xmi:type="uml:DecisionNode" xmi:id="51" name="Decision__p2" incoming="29" outgoing="25 27"/>

@@ -63,8 +63,8 @@
           <name xsi:nil="true"/>
         </edge>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="31" name="do_a" incoming="21" outgoing="26" behavior="12"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="32" name="do_b_end_1" incoming="26" outgoing="28"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="33" name="do_b_end_1" incoming="23" outgoing="27"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="32" name="do_b_end1" incoming="26" outgoing="28"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="33" name="do_b_end1" incoming="23" outgoing="27"/>
         <node xmi:type="uml:InitialNode" xmi:id="34" outgoing="30">
           <name xsi:nil="true"/>
         </node>

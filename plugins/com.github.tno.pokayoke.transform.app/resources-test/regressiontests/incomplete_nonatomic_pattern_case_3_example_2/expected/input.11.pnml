@@ -52,21 +52,21 @@
       </place>
       <arc id="__start__to__p2" source="__start" target="p2">
       </arc>
-      <place id="p4">
+      <place id="p3">
         <name>
-          <text>p4</text>
+          <text>p3</text>
         </name>
       </place>
-      <arc id="do_a__to__p4" source="do_a" target="p4">
+      <arc id="do_a__to__p3" source="do_a" target="p3">
       </arc>
       <transition id="do_a/1">
         <name>
           <text>do_a</text>
         </name>
       </transition>
-      <place id="p3">
+      <place id="p4">
         <name>
-          <text>p3</text>
+          <text>p4</text>
         </name>
       </place>
       <arc id="do_a/1__to__p3" source="do_a/1" target="p3">
@@ -87,7 +87,7 @@
       </arc>
       <arc id="do_b__to__p6" source="do_b" target="p6">
       </arc>
-      <arc id="do_b__na_result_1__to__p3" source="do_b__na_result_1" target="p3">
+      <arc id="do_b__na_result_1__to__p4" source="do_b__na_result_1" target="p4">
       </arc>
       <place id="p7">
         <name>

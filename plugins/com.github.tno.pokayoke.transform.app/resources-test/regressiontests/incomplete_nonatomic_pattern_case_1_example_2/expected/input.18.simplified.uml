@@ -63,8 +63,8 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="InitialNode__p1__to__Decision__p2" target="43" source="42"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="38" name="do_a" incoming="21" outgoing="25" behavior="12"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="39" name="do_a" incoming="26" outgoing="31" behavior="12"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="do_b_end_1" incoming="33" outgoing="35"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="41" name="do_b_end_1" incoming="28" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="do_b_end1" incoming="33" outgoing="35"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="41" name="do_b_end1" incoming="28" outgoing="34"/>
         <node xmi:type="uml:InitialNode" xmi:id="42" name="InitialNode__p1" outgoing="37"/>
         <node xmi:type="uml:DecisionNode" xmi:id="43" name="Decision__p2" incoming="37" outgoing="21 23"/>
         <node xmi:type="uml:DecisionNode" xmi:id="44" name="Decision__p4" incoming="30" outgoing="26 28"/>

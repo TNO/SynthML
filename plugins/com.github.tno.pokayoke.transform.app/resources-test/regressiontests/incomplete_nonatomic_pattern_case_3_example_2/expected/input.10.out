@@ -4,10 +4,10 @@
 __end p8
 __loop p8
 __start p2
-do_a p4
+do_a p3
 do_a/1 p3 p4
 do_b p5 p6
-do_b__na_result_1 p3
+do_b__na_result_1 p4
 do_c p7
 p1 __start
 p2 do_a/1 do_b
