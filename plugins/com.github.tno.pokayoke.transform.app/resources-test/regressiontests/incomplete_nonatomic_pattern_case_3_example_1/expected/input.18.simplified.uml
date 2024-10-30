@@ -38,7 +38,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="24" name="do_b__na_result_1__to__Join____end" target="32" source="29"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="25" name="do_b__to__Fork__do_b" target="33" source="34"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Join____end__to__FinalNode__p7" target="31" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to__do_b" target="34" source="30"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to__do_b_start" target="34" source="30"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="do_a" incoming="21" outgoing="23" behavior="12"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="29" name="do_b_end_1" incoming="22" outgoing="24"/>
         <node xmi:type="uml:InitialNode" xmi:id="30" name="InitialNode__p1" outgoing="27"/>
