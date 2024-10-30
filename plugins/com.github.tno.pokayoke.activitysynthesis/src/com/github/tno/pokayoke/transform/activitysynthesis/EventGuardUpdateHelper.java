@@ -36,7 +36,7 @@ public class EventGuardUpdateHelper {
 
         try {
             for (Event event: cifBddSpec.eventEdges.keySet()) {
-                BDD guard = null;
+                BDD guard;
 
                 if (event.getControllable()) {
                     guard = CifToBddConverter.convertPred(translator.getGuard(event), false, cifBddSpec);
