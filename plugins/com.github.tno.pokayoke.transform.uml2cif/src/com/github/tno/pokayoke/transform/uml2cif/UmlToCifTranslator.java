@@ -56,6 +56,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.BiMapUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
@@ -139,7 +140,7 @@ public class UmlToCifTranslator {
      *     index of the corresponding effect of the end event.
      */
     public BiMap<Event, Pair<OpaqueBehavior, Integer>> getEndEventMap() {
-        Map<Event, OpaqueBehavior> startEventMap = eventMap.inverse();
+        Map<Event, OpaqueBehavior> startEventMap = BiMapUtils.orderPreservingInverse(eventMap);
 
         BiMap<Event, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
 
@@ -623,7 +624,7 @@ public class UmlToCifTranslator {
      * @return The original guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        Map<Event, OpaqueBehavior> inverseEventMap = eventMap.inverse();
+        Map<Event, OpaqueBehavior> inverseEventMap = BiMapUtils.orderPreservingInverse(eventMap);
         Preconditions.checkArgument(inverseEventMap.containsKey(event),
                 "Expected a CIF event that has been translated for some opaque behavior in the input UML model.");
         return getGuard(inverseEventMap.get(event));
