@@ -70,7 +70,9 @@ public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException, CoreException {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath, List<String> warnings)
+            throws IOException, CoreException
+    {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
@@ -224,7 +226,7 @@ public class FullSynthesisApp {
         Map<Location, List<Annotation>> minimizedToReduced = StateAnnotationHelper
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
-        // Rewrite all non-atomic patterns in the Petri Net.
+        // Rewrite all rewritable non-atomic patterns in the Petri Net.
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
@@ -239,8 +241,12 @@ public class FullSynthesisApp {
                 controlledSystemGuards, stateInfo);
         Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
         Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
+
+        // Clean up all BDD references.
         uncontrolledSystemGuards.values().forEach(BDD::free);
+        controlledSystemGuards.values().forEach(BDD::free);
         arcToBdd.values().forEach(BDD::free);
+        stateInfo.values().forEach(BDD::free);
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
@@ -263,25 +269,33 @@ public class FullSynthesisApp {
         ControlFlowHelper.addGuards(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
+        // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
+        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
+        PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
+                NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
+                        petriNet2Activity.getTransitionMapping()),
+                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
+        FileHelper.storeModel(activity.getModel(), nonAtomicsRewrittenOutputPath.toString());
+
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".16.internalactionsremoved.uml");
+                .resolve(filePrefix + ".17.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
-        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".17.simplified.uml");
+        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".18.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
 
         // Post-process the activity to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".18.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".19.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Post-process the activity to add choice guards to the name of the UML control flow they are on.
         Path umlChoiceGuardNamesAddedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".19.choiceguardnamesadded.uml");
+                .resolve(filePrefix + ".20.choiceguardnamesadded.uml");
         PostProcessActivity.addGuardsToControlFlowNames(activity);
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
     }

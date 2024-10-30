@@ -1,0 +1,38 @@
+controllable do_a;
+controllable do_b;
+uncontrollable do_b__na_result_1;
+controllable reset;
+automaton statespace:
+  alphabet do_a, do_b, do_b__na_result_1, reset;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = false, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 0, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc1:
+    initial;
+    edge do_a goto loc2;
+    edge do_b goto loc3;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = true, Context.done_b = false, Context.flag = true, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 0, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc2:
+    edge reset goto loc4;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = true, Context.done_a = false, Context.done_b = false, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc3:
+    edge do_a goto loc5;
+    edge do_b__na_result_1 goto loc6;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = true, Context.done_b = false, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 0, occurrences__reset = "*", occurrences__reset.__occurrences = 1, sup = "*")
+  location loc4:
+    edge do_b goto loc7;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = true, Context.done_a = true, Context.done_b = false, Context.flag = true, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc5:
+    edge do_b__na_result_1 goto loc8;
+    edge reset goto loc7;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = true, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc6:
+    edge do_a goto loc8;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = true, Context.done_a = true, Context.done_b = false, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 1, sup = "*")
+  location loc7:
+    edge do_b__na_result_1 goto loc9;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = true, Context.done_b = true, Context.flag = true, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
+  location loc8:
+    marked;
+  @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = true, Context.done_b = true, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 1, sup = "*")
+  location loc9:
+    marked;
+end

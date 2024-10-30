@@ -4,10 +4,13 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -16,14 +19,20 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
+
+import fr.lip6.move.pnml.ptnet.PetriNet;
 
 public class PostProcessActivity {
     private PostProcessActivity() {
@@ -165,5 +174,82 @@ public class PostProcessActivity {
     public static void simplify(Activity activity) {
         RedundantDecisionMergePattern.findAndRewriteAll(activity);
         RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
+    }
+
+    /**
+     * Rewrites all actions in the given activity which start or end a non-atomic action, that have not been rewritten
+     * as {@link NonAtomicPatternRewriter#findAndRewritePatterns(PetriNet) non-atomic patterns}.
+     *
+     * @param activity The activity to rewrite.
+     * @param rewrittenActions All actions that have already been rewritten (on Petri Net level).
+     * @param endEventMap The mapping from the names of end events to their corresponding non-atomic opaque behaviors,
+     *     and the index of the corresponding effect.
+     * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
+     * @param warnings Any warnings to notify the user of, which is modified in-place.
+     */
+    public static void rewriteLeftoverNonAtomicActions(Activity activity, Set<Action> rewrittenActions,
+            Map<String, Pair<OpaqueBehavior, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
+            List<String> warnings)
+    {
+        // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
+        for (ActivityNode node: List.copyOf(activity.getNodes())) {
+            if (node instanceof Action action && !rewrittenActions.contains(action)) {
+                // Check whether the current action is a call opaque behavior action to start a non-atomic action.
+                if (action instanceof CallBehaviorAction cbAction
+                        && cbAction.getBehavior() instanceof OpaqueBehavior behavior
+                        && !PokaYokeUmlProfileUtil.isAtomic(behavior))
+                {
+                    // If so, we replace the action by an opaque action that keeps the guard of the original action.
+                    OpaqueAction replacementAction = UMLFactory.eINSTANCE.createOpaqueAction();
+                    replacementAction.setActivity(activity);
+                    replacementAction.setName(behavior.getName() + "_start");
+                    PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
+                    PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
+
+                    // Redirect all incoming/outgoing control flow edges, and destroy the original action.
+                    for (ActivityEdge edge: List.copyOf(action.getIncomings())) {
+                        edge.setTarget(replacementAction);
+                    }
+
+                    for (ActivityEdge edge: List.copyOf(action.getOutgoings())) {
+                        edge.setSource(replacementAction);
+                    }
+
+                    action.destroy();
+
+                    // Add a warning that the current non-atomic start action has not been fully merged.
+                    warnings.add(String.format(
+                            "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                            behavior.getName(), replacementAction.getName()));
+                }
+
+                // Check whether the current action is an opaque action that ends a non-atomic action.
+                if (action instanceof OpaqueAction && !rewrittenActions.contains(action)) {
+                    String actionName = action.getName();
+
+                    if (actionName.contains(nonAtomicOutcomeSuffix)) {
+                        // Find the corresponding non-atomic opaque behavior, and the index to the relevant effect.
+                        Pair<OpaqueBehavior, Integer> opaqueBehavior = endEventMap.get(actionName);
+                        Verify.verifyNotNull(opaqueBehavior,
+                                String.format(
+                                        "Expected the CIF end event '%s' to map to a non-atomic UML opaque behavior.",
+                                        actionName));
+
+                        // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
+                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end"));
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
+                        PokaYokeUmlProfileUtil.setGuard(action, "true");
+                        String effect = PokaYokeUmlProfileUtil.getEffects(opaqueBehavior.left)
+                                .get(opaqueBehavior.right);
+                        PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
+
+                        // Add a warning that the current non-atomic end action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
+                                opaqueBehavior.left.getName(), action.getName()));
+                    }
+                }
+            }
+        }
     }
 }

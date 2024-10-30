@@ -3,17 +3,20 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.uml2.uml.Action;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
 
-import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -69,7 +72,7 @@ public class NonAtomicPatternRewriter {
     }
 
     /**
-     * Gives all non-atomic patterns in the given Petri Net.
+     * Gives all rewritable non-atomic patterns in the given Petri Net.
      *
      * @param petriNet The input Petri Net.
      * @return All non-atomic patterns in the given Petri Net.
@@ -79,7 +82,7 @@ public class NonAtomicPatternRewriter {
     }
 
     /**
-     * Gives all non-atomic patterns in the given Petri Net page.
+     * Gives all rewritable non-atomic patterns in the given Petri Net page.
      *
      * @param page The input Petri Net page.
      * @return All non-atomic patterns in the given Petri Net page.
@@ -89,9 +92,54 @@ public class NonAtomicPatternRewriter {
         List<Transition> transitions = sorted(
                 page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast));
 
-        // Obtain all non-atomic patterns (and by doing so, check whether they are as expected).
-        return transitions.stream().filter(transition -> nonAtomicEventMap.containsKey(transition.getName().getText()))
-                .map(NonAtomicPattern::new).toList();
+        // Obtain all non-atomic patterns.
+        return transitions.stream().flatMap(t -> findPattern(t).stream()).toList();
+    }
+
+    /**
+     * Tries finding a rewritable non-atomic pattern that starts from the given transition.
+     *
+     * @param transition The input transition.
+     * @return Some rewritable non-atomic pattern in case one was found, or an empty result otherwise.
+     */
+    private Optional<NonAtomicPattern> findPattern(Transition transition) {
+        String transitionName = transition.getName().getText();
+
+        // Check whether the given transition is the start of a non-atomic action.
+        if (!nonAtomicEventMap.containsKey(transitionName)) {
+            return Optional.empty();
+        }
+        if (transition.getOutArcs().size() != 1) {
+            return Optional.empty();
+        }
+
+        // Check whether the intermediate place does not have any incoming transitions other than the given transition.
+        Place intermediatePlace = (Place)transition.getOutArcs().get(0).getTarget();
+
+        if (intermediatePlace.getInArcs().size() != 1) {
+            return Optional.empty();
+        }
+
+        // Check whether all outgoing transitions of the intermediate place are for ending the non-atomic action.
+        List<Transition> endTransitions = sorted(
+                intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
+
+        List<String> expectedEndEvents = nonAtomicEventMap.get(transitionName).stream().sorted().toList();
+        List<String> actualEndEvents = endTransitions.stream().map(t -> t.getName().getText()).sorted().toList();
+
+        if (!actualEndEvents.equals(expectedEndEvents)) {
+            return Optional.empty();
+        }
+
+        // Check whether none of the end transitions have a join pattern. This is because any such join pattern would
+        // make ending the non-atomic action dependent on some condition that is non-local for the non-atomic pattern.
+        for (Transition endTransition: endTransitions) {
+            if (endTransition.getInArcs().size() != 1) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions));
     }
 
     /**
@@ -128,7 +176,7 @@ public class NonAtomicPatternRewriter {
             // only allows the tau transition to be taken from the system states that you would be in when you'd perform
             // the corresponding end event (with its effects) of the non-atomic action.
             for (Transition endTransition: pattern.endTransitions) {
-                // Check whether the current transition is indeed a tau transition.
+                // Check whether the current transition is indeed a tau transition, i.e., has indeed been rewritten.
                 String transitionName = endTransition.getName().getText();
                 Preconditions.checkArgument(transitionName.contains(TAU_PREFIX),
                         String.format("Expected to find a tau transition, but got '%s'.", transitionName));
@@ -149,61 +197,43 @@ public class NonAtomicPatternRewriter {
         }
     }
 
+    /**
+     * Finds all activity actions corresponding to start or end transitions in the given list of rewritten patterns.
+     *
+     * @param patterns The rewritten non-atomic patterns on Petri Net level.
+     * @param transitionMap The mapping from Petri Net transitions to corresponding UML actions.
+     * @return All activity actions corresponding to start or end transitions in the given list of rewritten patterns.
+     */
+    public static Set<Action> getRewrittenActions(List<NonAtomicPattern> patterns,
+            Map<Transition, Action> transitionMap)
+    {
+        Set<Action> rewrittenActions = new LinkedHashSet<>();
+
+        for (NonAtomicPattern pattern: patterns) {
+            rewrittenActions.add(transitionMap.get(pattern.startTransition()));
+
+            for (Transition endTransition: pattern.endTransitions()) {
+                rewrittenActions.add(transitionMap.get(endTransition));
+            }
+        }
+
+        return rewrittenActions;
+    }
+
     private static <T extends PnObject> List<T> sorted(Stream<T> stream) {
         return stream.sorted(Comparator.comparing(PnObject::getId)).toList();
     }
 
-    /** A non-atomic Petri Net pattern to rewrite. */
-    public class NonAtomicPattern {
-        /** The transition that starts the non-atomic action. */
-        final Transition startTransition;
-
-        /** The intermediate place that contains a token whenever the non-atomic action is executing. */
-        final Place intermediatePlace;
-
-        /** All transitions that end the execution of the non-atomic action. */
-        final List<Transition> endTransitions;
-
-        /**
-         * Constructs a new non-atomic Petri Net pattern.
-         *
-         * @param startTransition The transition that starts the non-atomic action.
-         */
-        NonAtomicPattern(Transition startTransition) {
-            // Check whether the start transition conforms to the non-atomic pattern.
-            this.startTransition = startTransition;
-
-            Preconditions.checkArgument(startTransition.getOutArcs().size() == 1,
-                    String.format("Expected non-atomic start transitions to have a single outgoing arc, but found %d.",
-                            startTransition.getOutArcs().size()));
-
-            Arc startArc = startTransition.getOutArcs().get(0);
-
-            // Check whether the intermediate place conforms to the non-atomic pattern.
-            this.intermediatePlace = (Place)startArc.getTarget();
-
-            Preconditions.checkArgument(intermediatePlace.getInArcs().size() == 1,
-                    String.format(
-                            "Expected non-atomic intermediate places to have a single incoming arc, but found %d.",
-                            intermediatePlace.getInArcs().size()));
-
-            // Check whether the end transitions conform to the non-atomic pattern.
-            this.endTransitions = sorted(intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
-
-            List<String> expectedEndEvents = nonAtomicEventMap.get(startTransition.getName().getText()).stream()
-                    .sorted().toList();
-            List<String> actualEndEvents = endTransitions.stream().map(a -> a.getName().getText()).sorted().toList();
-
-            Preconditions.checkArgument(actualEndEvents.equals(expectedEndEvents),
-                    String.format("Expected to find non-atomic end events '%s', but found '%s'.", expectedEndEvents,
-                            actualEndEvents));
-
-            for (Transition endTransition: endTransitions) {
-                Preconditions.checkArgument(endTransition.getInArcs().size() == 1,
-                        String.format(
-                                "Expected non-atomic end transitions to have a single incoming arc, but found %d.",
-                                endTransition.getInArcs().size()));
-            }
-        }
+    /**
+     * A rewritable non-atomic Petri Net pattern.
+     *
+     * @param startTransition The transition that starts the non-atomic action.
+     * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
+     *     executing.
+     * @param endTransitions All transitions that end the execution of the non-atomic action.
+     */
+    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace,
+            List<Transition> endTransitions)
+    {
     }
 }

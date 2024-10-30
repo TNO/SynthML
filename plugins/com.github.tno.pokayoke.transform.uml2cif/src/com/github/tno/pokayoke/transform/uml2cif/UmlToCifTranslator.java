@@ -41,6 +41,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -55,6 +56,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.BiMapUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
@@ -125,6 +127,49 @@ public class UmlToCifTranslator {
                 Event startEvent = entry.getValue();
                 result.put(startEvent, startEndEventMap.get(startEvent));
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gives a mapping from non-atomic/non-deterministic end events to their corresponding opaque behaviors and the
+     * index of the corresponding effect of the end event.
+     *
+     * @return The mapping from non-atomic/non-deterministic end events to their corresponding opaque behaviors and the
+     *     index of the corresponding effect of the end event.
+     */
+    public BiMap<Event, Pair<OpaqueBehavior, Integer>> getEndEventMap() {
+        Map<Event, OpaqueBehavior> startEventMap = BiMapUtils.orderPreservingInverse(eventMap);
+
+        BiMap<Event, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
+
+        for (Entry<Event, List<Event>> entry: startEndEventMap.entrySet()) {
+            Event startEvent = entry.getKey();
+            List<Event> endEvents = entry.getValue();
+
+            for (int i = 0; i < endEvents.size(); i++) {
+                result.put(endEvents.get(i), Pair.pair(startEventMap.get(startEvent), i));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gives a mapping from non-atomic/non-deterministic end event names to their corresponding opaque behaviors and the
+     * index of the corresponding effect of the end event.
+     *
+     * @return The mapping from non-atomic/non-deterministic end event names to their corresponding opaque behaviors and
+     *     the index of the corresponding effect of the end event.
+     */
+    public BiMap<String, Pair<OpaqueBehavior, Integer>> getEndEventNameMap() {
+        BiMap<Event, Pair<OpaqueBehavior, Integer>> endEventMap = getEndEventMap();
+
+        BiMap<String, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
+
+        for (Entry<Event, Pair<OpaqueBehavior, Integer>> entry: endEventMap.entrySet()) {
+            result.put(entry.getKey().getName(), entry.getValue());
         }
 
         return result;
@@ -579,7 +624,7 @@ public class UmlToCifTranslator {
      * @return The original guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        Map<Event, OpaqueBehavior> inverseEventMap = eventMap.inverse();
+        Map<Event, OpaqueBehavior> inverseEventMap = BiMapUtils.orderPreservingInverse(eventMap);
         Preconditions.checkArgument(inverseEventMap.containsKey(event),
                 "Expected a CIF event that has been translated for some opaque behavior in the input UML model.");
         return getGuard(inverseEventMap.get(event));
