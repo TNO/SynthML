@@ -32,6 +32,8 @@ import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.PetriNet;
+
 public class PostProcessActivity {
     private PostProcessActivity() {
     }
@@ -176,7 +178,7 @@ public class PostProcessActivity {
 
     /**
      * Rewrites all actions in the given activity which start or end a non-atomic action, that have not been rewritten
-     * as {@link NonAtomicPatternRewriter#findAndRewritePatterns(fr.lip6.move.pnml.ptnet.PetriNet) non-atomic patterns}.
+     * as {@link NonAtomicPatternRewriter#findAndRewritePatterns(PetriNet) non-atomic patterns}.
      *
      * @param activity The activity to rewrite.
      * @param rewrittenActions All actions that have already been rewritten (on Petri Net level).
