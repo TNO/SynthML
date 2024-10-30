@@ -81,12 +81,12 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_w9bFwJFIEe-UOLvXYrTP9Q" guard="not done_a" base_RedefinableElement="12" atomic="true">
+  <PokaYoke:FormalElement xmi:id="39" guard="not done_a" base_RedefinableElement="12" atomic="true">
     <effects>done_a := true</effects>
     <effects>done_a := true&#xD;
 </effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_5SKjIJFIEe-UOLvXYrTP9Q" guard="not done_b" base_RedefinableElement="13">
+  <PokaYoke:FormalElement xmi:id="40" guard="not done_b" base_RedefinableElement="13">
     <effects>done_b := true</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

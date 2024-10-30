@@ -171,22 +171,22 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_sYjbsGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="58" atomic="true">
+  <PokaYoke:FormalElement xmi:id="73" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="58" atomic="true">
     <effects>Is_Computer_On := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="59" atomic="true">
+  <PokaYoke:FormalElement xmi:id="74" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="59" atomic="true">
     <effects>Is_Computer_Ready := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwWqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="60" atomic="true">
+  <PokaYoke:FormalElement xmi:id="75" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="60" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwmqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="61" atomic="true">
+  <PokaYoke:FormalElement xmi:id="76" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="61" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCw2qhEe-qao499TBi1A" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="62" atomic="true">
+  <PokaYoke:FormalElement xmi:id="77" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="62" atomic="true">
     <effects>Is_Ready_to_Work:= true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCxGqhEe-qao499TBi1A" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="63" atomic="true">
+  <PokaYoke:FormalElement xmi:id="78" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="63" atomic="true">
     <effects>Coffee_or_Tea:= Coffee</effects>
     <effects>Coffee_or_Tea:= Tea</effects>
   </PokaYoke:FormalElement>

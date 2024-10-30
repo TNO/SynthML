@@ -210,25 +210,25 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_wYKr4GqhEe-qao499TBi1A" guard="not robotPrepared" base_RedefinableElement="70" atomic="true">
+  <PokaYoke:FormalElement xmi:id="91" guard="not robotPrepared" base_RedefinableElement="70" atomic="true">
     <effects>robotPrepared := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr4WqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="71" atomic="true">
+  <PokaYoke:FormalElement xmi:id="92" guard="robotPrepared" base_RedefinableElement="71" atomic="true">
     <effects>robotLocation := Location1</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr4mqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="72" atomic="true">
+  <PokaYoke:FormalElement xmi:id="93" guard="robotPrepared" base_RedefinableElement="72" atomic="true">
     <effects>robotLocation := Location2</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr42qhEe-qao499TBi1A" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="73" atomic="true">
+  <PokaYoke:FormalElement xmi:id="94" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="73" atomic="true">
     <effects>productCorrectlyPlaced := Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr5GqhEe-qao499TBi1A" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="74" atomic="true">
+  <PokaYoke:FormalElement xmi:id="95" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="74" atomic="true">
     <effects>robotHasProduct := false, location2HasProduct := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYLS8GqhEe-qao499TBi1A" guard="not location2Prepared" base_RedefinableElement="75" atomic="true">
+  <PokaYoke:FormalElement xmi:id="96" guard="not location2Prepared" base_RedefinableElement="75" atomic="true">
     <effects>location2Prepared := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYLS8WqhEe-qao499TBi1A" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="76" atomic="true">
+  <PokaYoke:FormalElement xmi:id="97" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="76" atomic="true">
     <effects>productCorrectlyPlaced := True</effects>
     <effects>productCorrectlyPlaced := False</effects>
   </PokaYoke:FormalElement>

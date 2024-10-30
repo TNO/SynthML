@@ -58,7 +58,7 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_t09vUGqhEe-qao499TBi1A" guard="not field" base_RedefinableElement="6" atomic="true">
+  <PokaYoke:FormalElement xmi:id="24" guard="not field" base_RedefinableElement="6" atomic="true">
     <effects>field := true</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>
