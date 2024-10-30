@@ -46,7 +46,7 @@ public class FullSynthesisHandler {
 
                 // In case warnings came up during synthesis, show a warning dialog to notify the user.
                 if (!warnings.isEmpty()) {
-                    MessageDialog dialog = new WarningDialog(shell, "Warnings",
+                    MessageDialog dialog = new WarningDialog(shell, "Warnings from activity synthesis",
                             "Activity synthesis resulted in warnings:", warnings);
                     Display.getDefault().asyncExec(dialog::open);
                 }

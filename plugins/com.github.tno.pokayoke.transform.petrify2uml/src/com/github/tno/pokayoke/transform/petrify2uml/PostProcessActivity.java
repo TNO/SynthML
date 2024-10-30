@@ -177,7 +177,7 @@ public class PostProcessActivity {
      * @param endEventMap The mapping from the names of end events to their corresponding non-atomic opaque behaviors,
      *     and the index of the corresponding effect.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
-     * @param warnings Any warnings to show to the users, which is modified in-place in case warnings show up.
+     * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     public static void rewriteLeftoverNonAtomicActions(Activity activity, Set<Action> rewrittenActions,
             Map<String, Pair<OpaqueBehavior, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
@@ -209,7 +209,7 @@ public class PostProcessActivity {
 
                     action.destroy();
 
-                    // Notify the user that the current non-atomic action has not been fully merged, by a warning.
+                    // Add a warning that the current non-atomic start action has not been fully merged.
                     warnings.add(String.format(
                             "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
                             behavior.getName(), replacementAction.getName()));
@@ -233,7 +233,7 @@ public class PostProcessActivity {
                                 .get(opaqueBehavior.right);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
-                        // Notify the user that the current non-atomic action has not been fully merged, by a warning.
+                        // Add a warning that the current non-atomic end action has not been fully merged.
                         warnings.add(String.format(
                                 "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
                                 opaqueBehavior.left.getName(), action.getName()));
