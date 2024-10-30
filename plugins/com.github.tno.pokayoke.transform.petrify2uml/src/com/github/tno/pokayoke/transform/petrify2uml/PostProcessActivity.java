@@ -236,7 +236,7 @@ public class PostProcessActivity {
                                         actionName));
 
                         // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
-                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end_"));
+                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end"));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(opaqueBehavior.left)
