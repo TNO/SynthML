@@ -52,15 +52,17 @@ public class FileHelper {
     }
 
     public static void storeModel(Model model, URI uri) throws IOException {
-        // Store the model.
+        // Build the resource to store.
         Resource resource = createModelResourceSet().createResource(uri);
         resource.getContents().add(model);
-        EMFHelper.normalizeXmiIds((XMLResource)resource);
 
         // Also add the UML profiles information to the resource
         List<EObject> stereotypeApplications = model.allOwnedElements().stream()
                 .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
         resource.getContents().addAll(stereotypeApplications);
+
+        // Store the model.
+        EMFHelper.normalizeXmiIds((XMLResource)resource);
         resource.save(Collections.EMPTY_MAP);
     }
 
