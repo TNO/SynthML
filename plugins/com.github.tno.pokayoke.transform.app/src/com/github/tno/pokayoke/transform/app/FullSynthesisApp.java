@@ -269,19 +269,19 @@ public class FullSynthesisApp {
         ControlFlowHelper.addGuards(controlFlowToTextualGuard);
         FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
-        // Remove the internal actions that were added in CIF specification and petrification.
-        Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".16.internalactionsremoved.uml");
-        PostProcessActivity.removeInternalActions(activity);
-        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
-
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
-        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".17.nonatomicsrewritten.uml");
+        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
                 umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
         FileHelper.storeModel(activity.getModel(), nonAtomicsRewrittenOutputPath.toString());
+
+        // Remove the internal actions that were added in CIF specification and petrification.
+        Path internalActionsRemovedUMLOutputPath = outputFolderPath
+                .resolve(filePrefix + ".17.internalactionsremoved.uml");
+        PostProcessActivity.removeInternalActions(activity);
+        FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".18.simplified.uml");

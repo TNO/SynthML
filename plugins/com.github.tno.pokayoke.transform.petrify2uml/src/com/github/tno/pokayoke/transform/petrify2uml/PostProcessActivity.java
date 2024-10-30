@@ -2,11 +2,12 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
@@ -23,7 +24,6 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
@@ -42,21 +42,27 @@ public class PostProcessActivity {
      * @param activity The activity in which actions to be removed.
      */
     public static void removeInternalActions(Activity activity) {
-        removeOpaqueActions(name -> name.equals(CifSourceSinkLocationTransformer.END_EVENT_NAME), activity);
-        removeOpaqueActions(name -> name.equals(CifSourceSinkLocationTransformer.START_EVENT_NAME), activity);
-        removeOpaqueActions(name -> name.contains(NonAtomicPatternRewriter.TAU_PREFIX), activity);
+        // Find all names of internal actions in the activity, which are the opaque actions whose name contain '__'.
+        Set<String> internalActionNames = activity.getNodes().stream()
+                .filter(node -> node instanceof OpaqueAction && node.getName().contains("__"))
+                .map(node -> node.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // Remove all internal opaque actions that were found.
+        for (String internalActionName: internalActionNames) {
+            removeOpaqueActions(internalActionName, activity);
+        }
     }
 
     /**
      * Remove opaque actions from activity.
      *
-     * @param actionNamePredicate The predicate over the names of actions to remove.
+     * @param actionName The name of the opaque actions to remove.
      * @param activity The activity from which to remove the actions.
      * @return Number of actions that were removed.
      */
-    public static int removeOpaqueActions(Predicate<String> actionNamePredicate, Activity activity) {
+    public static int removeOpaqueActions(String actionName, Activity activity) {
         List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
-                .filter(node -> actionNamePredicate.test(node.getName())).toList();
+                .filter(node -> node.getName().equals(actionName)).toList();
         List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
                 .toList();
         int numberOfActions = actions.size();
