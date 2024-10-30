@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
@@ -33,6 +34,6 @@ class FullSynthesisAppRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        FullSynthesisApp.performFullSynthesis(inputPath, outputPath);
+        FullSynthesisApp.performFullSynthesis(inputPath, outputPath, new ArrayList<>());
     }
 }

@@ -397,16 +397,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (node instanceof Action action && PokaYokeUmlProfileUtil.isFormalElement(action)) {
             checkNamingConventions(node, NamingConvention.MANDATORY);
-
-            String actionName = action.getName();
-            if (actionName.contains("_nonatomic_start")) {
-                warning(String.format("Action '%s' may be the explicit start event of a non-atomic action.",
-                        actionName), null);
-            }
-            if (actionName.contains("_nonatomic_end")) {
-                warning(String.format("Action '%s' may be the explicit end event of a non-atomic action.", actionName),
-                        null);
-            }
         } else {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
         }

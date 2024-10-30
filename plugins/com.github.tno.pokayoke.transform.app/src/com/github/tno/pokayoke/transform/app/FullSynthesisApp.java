@@ -70,7 +70,9 @@ public class FullSynthesisApp {
     private FullSynthesisApp() {
     }
 
-    public static void performFullSynthesis(Path inputPath, Path outputFolderPath) throws IOException, CoreException {
+    public static void performFullSynthesis(Path inputPath, Path outputFolderPath, List<String> warnings)
+            throws IOException, CoreException
+    {
         Files.createDirectories(outputFolderPath);
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
 
@@ -274,12 +276,11 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
-        Path nonAtomicsRewrittenOutputPath = outputFolderPath
-                .resolve(filePrefix + ".17.nonatomicsrewritten.uml");
+        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".17.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX);
+                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
         FileHelper.storeModel(activity.getModel(), nonAtomicsRewrittenOutputPath.toString());
 
         // Post-process the activity to simplify it.

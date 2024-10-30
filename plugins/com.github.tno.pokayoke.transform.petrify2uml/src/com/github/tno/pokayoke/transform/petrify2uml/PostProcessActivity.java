@@ -177,9 +177,11 @@ public class PostProcessActivity {
      * @param endEventMap The mapping from the names of end events to their corresponding non-atomic opaque behaviors,
      *     and the index of the corresponding effect.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
+     * @param warnings Any warnings to show to the users, which is modified in-place in case warnings show up.
      */
     public static void rewriteLeftoverNonAtomicActions(Activity activity, Set<Action> rewrittenActions,
-            Map<String, Pair<OpaqueBehavior, Integer>> endEventMap, String nonAtomicOutcomeSuffix)
+            Map<String, Pair<OpaqueBehavior, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
+            List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
@@ -192,7 +194,7 @@ public class PostProcessActivity {
                     // If so, we replace the action by an opaque action that keeps the guard of the original action.
                     OpaqueAction replacementAction = UMLFactory.eINSTANCE.createOpaqueAction();
                     replacementAction.setActivity(activity);
-                    replacementAction.setName(behavior.getName() + "_nonatomic_start");
+                    replacementAction.setName(behavior.getName() + "_start");
                     PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
                     PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
 
@@ -206,6 +208,11 @@ public class PostProcessActivity {
                     }
 
                     action.destroy();
+
+                    // Notify the user that the current non-atomic action has not been fully merged, by a warning.
+                    warnings.add(String.format(
+                            "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                            behavior.getName(), replacementAction.getName()));
                 }
 
                 // Check whether the current action is an opaque action that ends a non-atomic action.
@@ -219,12 +226,17 @@ public class PostProcessActivity {
                                 "Expected every non-atomic CIF end event to map to a non-atomic UML opaque behavior.");
 
                         // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
-                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_nonatomic_end_"));
+                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end_"));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(opaqueBehavior.left)
                                 .get(opaqueBehavior.right);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
+
+                        // Notify the user that the current non-atomic action has not been fully merged, by a warning.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
+                                opaqueBehavior.left.getName(), action.getName()));
                     }
                 }
             }
