@@ -13,7 +13,7 @@ public class BiMapUtils {
      *
      * @param <K> The type of keys.
      * @param <V> The type of values.
-     * @param map The map to inverse.
+     * @param map The map to invert.
      * @return The inverse map with the iteration order preserved.
      */
     public static <K, V> BiMap<V, K> orderPreservingInverse(BiMap<K, V> map) {
