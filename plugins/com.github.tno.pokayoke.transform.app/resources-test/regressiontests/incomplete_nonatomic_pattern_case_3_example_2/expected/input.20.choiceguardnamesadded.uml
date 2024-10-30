@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="17" isActive="true">
+      <nameExpression xmi:id="3" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="4" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="5" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="6" name="done_a" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="9" name="done_b" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="12" name="done_c" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="13" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="15" name="do_a"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="16" name="do_b"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="17" name="main" postcondition="20" precondition="18" node="41 42 43 44 45 46 47 48 49 50 51 52 53">
+        <ownedRule xmi:id="18" name="pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="19" name="">
+            <body>not done_a and not done_b and not done_c</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="20" name="post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="21" name="">
+            <body>done_c</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="22" name="occurrences" constrainedElement="15 16 54">
+          <specification xmi:type="uml:Interval" xmi:id="23" name="" max="5" min="4"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="true" target="42" source="46">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="true" target="53" source="46">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" target="47" source="50">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" target="47" source="43">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" target="52" source="47">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" target="48" source="50">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="48" source="41">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="52" source="48">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="41" source="51">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" target="43" source="51">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" target="50" source="42">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" target="51" source="53">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="44" source="52">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="49" source="44">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="46" source="45">
+          <name xsi:nil="true"/>
+        </edge>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="41" name="do_a" incoming="34" outgoing="32" behavior="15"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="42" name="do_a" incoming="24" outgoing="36" behavior="15"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="43" name="do_b_end_1" incoming="35" outgoing="29"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="do_c" incoming="38" outgoing="39" behavior="54"/>
+        <node xmi:type="uml:InitialNode" xmi:id="45" outgoing="40">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="46" incoming="40" outgoing="24 26">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="47" incoming="28 29" outgoing="30">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="48" incoming="31 32" outgoing="33">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="49" incoming="39">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="50" incoming="36" outgoing="28 31">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="51" incoming="37" outgoing="34 35">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:JoinNode" xmi:id="52" incoming="30 33" outgoing="38">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="53" name="do_b_start" incoming="26" outgoing="37"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="54" name="do_c"/>
+    </packagedElement>
+    <profileApplication xmi:id="55">
+      <eAnnotations xmi:id="56" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+    <profileApplication xmi:id="57">
+      <eAnnotations xmi:id="58" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="59" guard="not done_a" base_RedefinableElement="15" atomic="true">
+    <effects>done_a := true&#xD;
+</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="60" guard="not done_a and not done_b" base_RedefinableElement="16">
+    <effects>done_b := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="61" guard="true" base_RedefinableElement="43" atomic="true">
+    <effects>done_b := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="62" guard="not done_a and not done_b" base_RedefinableElement="53" atomic="true"/>
+  <PokaYoke:FormalElement xmi:id="63" guard="done_a and not done_c" base_RedefinableElement="54" atomic="true">
+    <effects>done_c := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

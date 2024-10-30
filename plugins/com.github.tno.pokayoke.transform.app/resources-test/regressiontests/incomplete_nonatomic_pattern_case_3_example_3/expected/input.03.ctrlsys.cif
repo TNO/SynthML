@@ -1,0 +1,53 @@
+controllable do_a;
+controllable do_b;
+uncontrollable do_b__na_result_1;
+controllable reset;
+plant automaton Context:
+  disc bool done_a in any;
+  disc bool done_b in any;
+  disc bool flag in any;
+  disc bool __nonAtomicActive__do_b;
+  alg bool $pre = not done_a and not done_b and not flag;
+  alg bool __precondition = $pre;
+  alg bool $post = done_a and done_b;
+  alg bool __postcondition = $post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge do_a when not done_a do done_a := true, flag := true;
+    edge do_b when not flag and not done_b, not __nonAtomicActive__do_b do __nonAtomicActive__do_b := true;
+    edge do_b__na_result_1 when __nonAtomicActive__do_b do done_b := true, __nonAtomicActive__do_b := false;
+    edge reset when flag do flag := false;
+end
+supervisor automaton occurrences__do_a:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__do_b:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__reset:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge reset when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet do_a, do_b, reset;
+  location:
+    initial;
+    marked;
+    edge do_a when not Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 0 and not Context.done_a) and (not Context.done_b and (occurrences__do_a.__occurrences = 0 and occurrences__reset.__occurrences = 0)) or (not Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 1 and not Context.done_a) and (Context.done_b and (occurrences__do_a.__occurrences = 0 and occurrences__reset.__occurrences = 0)) or Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 1 and not Context.done_a) and (not Context.done_b and (occurrences__do_a.__occurrences = 0 and occurrences__reset.__occurrences = 0)));
+    edge do_b when not Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 0 and not Context.done_a) and (not Context.done_b and not Context.flag and (occurrences__do_a.__occurrences = 0 and occurrences__reset.__occurrences = 0)) or not Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 0 and Context.done_a) and (not Context.done_b and not Context.flag and (occurrences__do_a.__occurrences = 1 and occurrences__reset.__occurrences = 1));
+    edge reset when not Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 0 and Context.done_a) and (not Context.done_b and Context.flag and (occurrences__do_a.__occurrences = 1 and occurrences__reset.__occurrences = 0)) or Context.__nonAtomicActive__do_b and (occurrences__do_b.__occurrences = 1 and Context.done_a) and (not Context.done_b and Context.flag and (occurrences__do_a.__occurrences = 1 and occurrences__reset.__occurrences = 0));
+end

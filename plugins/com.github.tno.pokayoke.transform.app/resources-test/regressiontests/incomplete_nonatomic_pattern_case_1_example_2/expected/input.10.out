@@ -1,0 +1,21 @@
+.model minimal
+.dummy  do_a do_b do_b__na_result_1 __start __end __loop
+.graph
+__end p7
+__loop p7
+__start p2
+do_a p3
+do_a/1 p5
+do_b p5
+do_b/1 p4
+do_b__na_result_1 p6
+do_b__na_result_1/1 p6
+p1 __start
+p2 do_a do_b/1
+p3 do_b
+p4 do_a/1 do_b__na_result_1/1
+p5 do_b__na_result_1
+p6 __end
+p7 __loop
+.marking { p1 }
+.end

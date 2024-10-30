@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_jQATgJFIEe-UOLvXYrTP9Q" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_mxoAIJFIEe-UOLvXYrTP9Q" name="Context" visibility="public" classifierBehavior="_9NyrMJFIEe-UOLvXYrTP9Q" isActive="true">
+      <nameExpression xmi:id="_IStKIJFJEe-UOLvXYrTP9Q" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="_OTtqUJFJEe-UOLvXYrTP9Q" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="_P82yYJFJEe-UOLvXYrTP9Q" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="_qxQecJFIEe-UOLvXYrTP9Q" name="done_a" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_qxV-AJFIEe-UOLvXYrTP9Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_qxWlEJFIEe-UOLvXYrTP9Q" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_tONpEJFIEe-UOLvXYrTP9Q" name="done_b" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_tONpEZFIEe-UOLvXYrTP9Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_tONpEpFIEe-UOLvXYrTP9Q" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_wW4DIJFIEe-UOLvXYrTP9Q" name="do_a"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_3Xu2wJFIEe-UOLvXYrTP9Q" name="do_b"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_9NyrMJFIEe-UOLvXYrTP9Q" name="main" isAbstract="true" postcondition="_ED3yMJFJEe-UOLvXYrTP9Q" precondition="__DAgYJFIEe-UOLvXYrTP9Q">
+        <ownedRule xmi:id="__DAgYJFIEe-UOLvXYrTP9Q" name="pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_BRoUEJFJEe-UOLvXYrTP9Q" name="">
+            <body>not done_a and not done_b</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_ED3yMJFJEe-UOLvXYrTP9Q" name="post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_FcACwJFJEe-UOLvXYrTP9Q" name="">
+            <body>done_b</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_KEROYJFJEe-UOLvXYrTP9Q" name="occurrences" constrainedElement="_wW4DIJFIEe-UOLvXYrTP9Q _3Xu2wJFIEe-UOLvXYrTP9Q">
+          <specification xmi:type="uml:Interval" xmi:id="_L963oJFJEe-UOLvXYrTP9Q" name="" max="_P82yYJFJEe-UOLvXYrTP9Q" min="_OTtqUJFJEe-UOLvXYrTP9Q"/>
+        </ownedRule>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="_sebx8JFIEe-UOLvXYrTP9Q">
+      <eAnnotations xmi:id="_sefcUJFIEe-UOLvXYrTP9Q" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_w9bFwJFIEe-UOLvXYrTP9Q" guard="not done_a" base_RedefinableElement="_wW4DIJFIEe-UOLvXYrTP9Q" atomic="true">
+    <effects>done_a := true&#xD;
+</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_5SKjIJFIEe-UOLvXYrTP9Q" guard="not done_b" base_RedefinableElement="_3Xu2wJFIEe-UOLvXYrTP9Q">
+    <effects>done_b := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>
