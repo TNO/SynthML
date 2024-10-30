@@ -231,7 +231,9 @@ public class PostProcessActivity {
                         // Find the corresponding non-atomic opaque behavior, and the index to the relevant effect.
                         Pair<OpaqueBehavior, Integer> opaqueBehavior = endEventMap.get(actionName);
                         Verify.verifyNotNull(opaqueBehavior,
-                                "Expected every non-atomic CIF end event to map to a non-atomic UML opaque behavior.");
+                                String.format(
+                                        "Expected the CIF end event '%s' to map to a non-atomic UML opaque behavior.",
+                                        actionName));
 
                         // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
                         action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end_"));
