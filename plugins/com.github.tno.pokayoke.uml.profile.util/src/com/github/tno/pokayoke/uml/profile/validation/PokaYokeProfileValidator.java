@@ -71,10 +71,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
          * required.
          */
         OPTIONAL,
+
         /**
          * Name should be set and not contain double underscores.
          */
         MANDATORY,
+
         /**
          * Name should be set, should not contain double underscores and should match
          * {@link PokaYokeProfileValidator#IDENTIFIER_PATTERN}.
