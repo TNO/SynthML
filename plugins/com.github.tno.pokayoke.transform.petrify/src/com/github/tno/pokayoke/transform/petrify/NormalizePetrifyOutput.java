@@ -86,16 +86,7 @@ public class NormalizePetrifyOutput {
             String source = entry.getKey();
 
             for (String target: entry.getValue()) {
-                List<String> sources = prevNodes.get(target);
-
-                if (sources == null) {
-                    sources = new ArrayList<>();
-                    prevNodes.put(target, sources);
-                }
-
-                if (!sources.contains(source)) {
-                    sources.add(source);
-                }
+                prevNodes.computeIfAbsent(target, t -> new ArrayList<>()).add(source);
             }
         }
 
