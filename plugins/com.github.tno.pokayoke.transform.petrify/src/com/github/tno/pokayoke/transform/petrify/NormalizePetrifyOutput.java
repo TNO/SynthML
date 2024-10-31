@@ -130,36 +130,33 @@ public class NormalizePetrifyOutput {
                 List<String> places = nextNodes.get(childTransition);
 
                 // Recall that earlier we assigned a unique index to every transition, resulting in 'transitionIndices'.
-                // Now, for every place we find the lowest index of all its incoming transitions, as well as the lowest
-                // index of all its outgoing transitions.
-                Map<String, Integer> placeToNextIndex = new LinkedHashMap<>();
-                Map<String, Integer> placeToPrevIndex = new LinkedHashMap<>();
+                // Now, for every place we find the indices of all its incoming transitions, as well as the indices of
+                // all its outgoing transitions.
+                Map<String, Set<Integer>> placeToNextIndices = new LinkedHashMap<>();
+                Map<String, Set<Integer>> placeToPrevIndices = new LinkedHashMap<>();
 
                 for (String place: places) {
-                    int minPrevIndex = prevNodes.get(place).stream().map(transitionIndices::get)
-                            .collect(Collectors.minBy(Comparator.naturalOrder())).get();
-                    int minNextIndex = nextNodes.get(place).stream().map(transitionIndices::get)
-                            .collect(Collectors.minBy(Comparator.naturalOrder())).get();
+                    Set<Integer> prevIndices = prevNodes.get(place).stream().map(transitionIndices::get)
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+                    Set<Integer> nextIndices = nextNodes.get(place).stream().map(transitionIndices::get)
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                    placeToPrevIndex.put(place, minPrevIndex);
-                    placeToNextIndex.put(place, minNextIndex);
+                    placeToPrevIndices.put(place, prevIndices);
+                    placeToNextIndices.put(place, nextIndices);
                 }
 
-                // Sort the places based on the lowest indices found above.
-                List<String> sortedPlaces = places.stream().sorted(Comparator.comparingInt(placeToNextIndex::get)
-                        .thenComparing(Comparator.comparingInt(placeToPrevIndex::get))).toList();
+                // Sort the places based on the lowest non-shared indices found above.
+                Comparator<String> comparator = compareToLowestNonShared(placeToNextIndices)
+                        .thenComparing(compareToLowestNonShared(placeToPrevIndices));
+                List<String> sortedPlaces = places.stream().sorted(comparator).toList();
 
                 // Make sure that there is no ambiguity in the order of places to consider next.
                 for (int i = 0; i < sortedPlaces.size() - 1; i++) {
                     String current = sortedPlaces.get(i);
                     String next = sortedPlaces.get(i + 1);
 
-                    Verify.verify(
-                            placeToNextIndex.get(current) != placeToNextIndex.get(next)
-                                    || placeToPrevIndex.get(current) != placeToPrevIndex.get(next),
-                            String.format(
-                                    "Places '%s' and '%s' have the same lowest prev index and the same lowest next index, leading to ambiguous results.",
-                                    current, next));
+                    Verify.verify(comparator.compare(current, next) != 0,
+                            String.format("Could not determine the order of the places '%s' and '%s'.", current, next));
                 }
 
                 // Enqueue the places.
@@ -208,5 +205,31 @@ public class NormalizePetrifyOutput {
         List<String> normalizedPetrifyOutput = petrifyOutput.stream().filter(line -> !line.startsWith("#")).toList();
 
         return normalizedPetrifyOutput;
+    }
+
+    /**
+     * Gives a comparator for comparing places based on their lowest non-shared index as specified by the given mapping.
+     *
+     * @param map The mapping from nodes to indices.
+     * @return A comparator for comparing places based on their lowest non-shared index.
+     */
+    private static Comparator<String> compareToLowestNonShared(Map<String, Set<Integer>> map) {
+        return (left, right) -> {
+            Set<Integer> leftSet = map.get(left);
+            Set<Integer> rightSet = map.get(right);
+
+            // If both elements have the same indices, then they are considered equal with respect to this comparison.
+            if (leftSet.equals(rightSet)) {
+                return 0;
+            }
+
+            // Otherwise, we find the lowest non-shared index, i.e., the lowest number in the symmetric difference of
+            // the two sets of indices.
+            int min = Collections.min(Sets.symmetricDifference(leftSet, rightSet));
+
+            // If the left set contains this number, then 'left' is considered smaller than 'right', or else the right
+            // set must contain this lowest number, in which case 'left' is considered larger than 'right'.
+            return leftSet.contains(min) ? -1 : 1;
+        };
     }
 }
