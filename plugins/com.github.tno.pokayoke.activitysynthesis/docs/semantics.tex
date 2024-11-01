@@ -1,0 +1,445 @@
+\documentclass{article}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage[colorlinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpar}
+\usepackage{mathtools}
+
+\addto\extrasenglish{
+  \renewcommand{\sectionautorefname}{Section}
+}
+\addto\extrasenglish{
+  \renewcommand{\subsectionautorefname}{Section}
+}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\newcommand{\abstredge}[0]{\varepsilon}
+\newcommand{\AbstrNode}[0]{\textsf{AbstrNode}}
+\newcommand{\AbstrNodeType}[0]{\textsf{AbstrNodeType}}
+\newcommand{\abstrnode}[0]{\eta}
+\newcommand{\act}[0]{\textsf{act}}
+\newcommand{\action}[0]{\textsf{action}}
+\newcommand{\Action}[0]{\textsf{Action}}
+\newcommand{\actlabel}[0]{\textsf{label}}
+\newcommand{\andlabel}[0]{\textsf{and}}
+\newcommand{\andnode}[1]{\andlabel\langle#1\rangle}
+\newcommand{\Bool}[0]{\mathbb{B}}
+\newcommand{\ConcrNode}[0]{\textsf{ConcrNode}}
+\newcommand{\ConcrNodeType}[0]{\textsf{ConcrNodeType}}
+\newcommand{\Config}[0]{\textsf{Config}}
+\newcommand{\decision}[0]{\textsf{decision}}
+\newcommand{\denot}[1]{[\![#1]\!]}
+\newcommand{\denote}[1]{\denot{#1}_\textsf{e}}
+\newcommand{\denotn}[1]{\denot{#1}_\textsf{n}}
+\newcommand{\enabled}[0]{\textsf{enabled}}
+\newcommand{\fork}[0]{\textsf{fork}}
+\newcommand{\final}[0]{\textsf{final}}
+\newcommand{\Guard}[0]{\textsf{Guard}}
+\newcommand{\guard}[0]{\textsf{guard}}
+\newcommand{\identity}[1]{\lambda{#1}.{#1}}
+\newcommand{\incoming}[0]{\textsf{in}}
+\newcommand{\init}[0]{\textsf{init}}
+\newcommand{\join}[0]{\textsf{join}}
+\newcommand{\Label}[0]{\textsf{Label}}
+\newcommand{\merge}[0]{\textsf{merge}}
+\newcommand{\NodeID}[0]{\textsf{NodeID}}
+\newcommand{\orlabel}[0]{\textsf{or}}
+\newcommand{\ornode}[1]{\orlabel\langle#1\rangle}
+\newcommand{\outgoing}[0]{\textsf{out}}
+\newcommand{\source}[0]{\textsf{source}}
+\newcommand{\State}[0]{\textsf{State}}
+\newcommand{\target}[0]{\textsf{target}}
+\newcommand{\traces}[0]{\textsf{traces}}
+\newcommand{\true}[0]{\textsf{true}}
+\newcommand{\Update}[0]{\textsf{Update}}
+\newcommand{\update}[0]{\textsf{update}}
+
+\title{Concise Semantics of Poka Yoke Activities}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+This document defines a concise token passing style operational semantics of (simple UML-like) activities.
+These activities and their semantics are slightly different from fUML activities.
+For example, actions are executed atomically and have guards and updates that specify how action execution influences state.
+
+The strategy for defining the operational semantics of activities is to first define a notion of \emph{abstract activities} (\autoref{sec:abstractivities}) with an intuitive and concise semantics, and then define the semantics of concrete UML-like activities by means of translating them to abstract activities (\autoref{sec:concractivities}).
+
+The reason for such a translation is two-fold.
+Firstly, even though activities have various sorts of nodes (`fork', `join', `decision', etc.), their semantics can fundamentally be divided into two categories: $\andlabel$-type nodes and $\orlabel$-type nodes, which are explained later.
+If one would specify separate execution rules for all the various sorts of UML activity nodes, then one would find out they are all much the same and fall into two groups, here called $\andlabel$-type and $\orlabel$-type nodes.
+
+Secondly, the semantics of $\andlabel$-type and $\orlabel$-type nodes is intuitive as well as easy to define.
+Instead of having to think about all kinds of corner cases with UML activities\footnote{For example: what would happen if an action node has multiple incoming/outgoing edges? What would happen if a fork node has a self-loop? What if a final node has an outgoing edge, or an initial node has an incoming edge? What if a merge node has no outgoing edges? What if the activity actually contains disjoint disconnected parts? What if there is a non-trivial guard on an edge not coming out of a decision node? Do I need a legion of well-formedness conditions in order to be able to still make sense of activity diagrams at all?}, the semantics of abstract activities requires no structural well-formedness conditions.
+When thinking of the semantics of some node, ideally one would only need to think about: is it an $\andlabel$-type or an $\orlabel$-type node?
+
+\section{Abstract Activities}
+\label{sec:abstractivities}
+
+This section defines the (static) structure and (dynamic) behavior of abstract activities, in \autoref{sec:abstrstatics} and \autoref{sec:abstrdynamics}, respectively.
+
+\subsection{Statics}
+\label{sec:abstrstatics}
+
+This section defines the static structure of abstract activities, consisting of nodes and (guarded) edges.
+Nodes contain an action to be executed, and describe how the action should be executed.
+Actions contain guards, which are predicates over a global state, as well as (non-deterministic) updates that determine potential successor states.
+The concept of state is left abstract in this document, and could later be instantiated in any way you like (e.g., by taking CIF expressions and updates).
+
+\paragraph{State.}
+Activities are defined in the presence of \emph{state}.
+Let $\State$ be the set of all states and $\sigma \in \State$ be a typical state.
+State is an abstract notion, which could for example be instantiated to be the valuation of some set of variables.
+
+\paragraph{Guards and updates.}
+Guards can be thought of as predicates over states, while updates are functions that map states to any number of (i.e., zero or more) `successor states', to be able to model non-deterministic action behavior.
+
+Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Update = \State \rightarrow 2^{\State}$ be the set of all \emph{updates} over states (with $2^{\State}$ the powerset of $\State$).
+We use $g \in \Guard$ and $u \in \Update$ to denote a typical guard and update, respectively.
+
+\paragraph{Actions.}
+The main building blocks of activities are the action nodes, which are nodes that carry out a certain \emph{action}.
+Any action consists of three parts: an action label to identify it, a guard that must hold in order for the action to be performed, and an update that determines possible successor states after having performed the action.
+For any action it holds that, if its guard does not hold, or if there is no successor state determined by the update (i.e., the update maps to an empty set), then the action cannot be performed.
+In case action execution leads to multiple possible successor states, one of them will be selected non-deterministically.
+(Further execution semantics details are given in \autoref{sec:abstrdynamics}.)
+
+More formally, let $\Action = \cramped{\Label \times \Guard \times \Update}$ be the set of all \emph{actions}, where $\Label$ is the set of all \emph{action labels}.
+We use $a \in \Label$ to denote a typical label, and $\alpha \in \Action$ to denote a typical action, such that $\alpha = (a, g, u)$.
+So actions are triples consisting of an action label $a$, a guard $g$, and update $u$.
+
+Let $\actlabel : \Action \rightarrow \Label$ and $\guard : \Action \rightarrow \Guard$, $\update : \Action \rightarrow \Update$ be projection functions that give the label, guard, and update of any action, respectively, so that:
+\begin{mathpar}
+	\actlabel((a, g, u)) = a
+	\and
+	\guard((a, g, u)) = g
+	\and
+	\update((a, g, u)) = u
+\end{mathpar}
+
+\paragraph{Abstract nodes.}
+Now that actions have been defined, we can define the \emph{nodes} of abstract activities, which carry out these actions during executions of the activity.
+Abstract activity nodes consist of three parts: a node identifier, a node type, and the action to perform.
+The node identifiers are used to give identity to nodes, which are needed to allow having multiple nodes in an activity that perform the same action.
+In abstract activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
+An $\andlabel$-style execution of an action node requires that \emph{all} its incoming edges must have a token, and after having performed the action, \emph{all} outgoing edges will get a token (under some additional conditions that are explained later).
+In contrast, an $\orlabel$-style execution of an action node requires just \emph{a single} incoming edge to have a token, and after having performed the action, \emph{a single} outgoing edge will receive a token (again, under some extra conditions).
+This distinction between $\andlabel$-type and $\orlabel$-type nodes is also made in~\cite{DawC2015} with respect to a token firing semantics, explaining that most UML node types can be divided into these two groups.
+For example, UML nodes like `fork' and `join' can be represented as $\andlabel$-nodes, while `decision' and `merge' can be represented in terms of $\orlabel$-nodes.
+\autoref{sec:concractivities} further details such representations of concrete UML nodes.
+
+More formally, let $\NodeID$ be a set of all \emph{node identifiers}, used to give identity to activity nodes, and let $\ell \in \NodeID$ be a typical node identifier.
+Then the set $\AbstrNode$ of all possible \emph{abstract activity nodes} is defined as follows:
+\begin{mathpar}
+	\AbstrNode = \NodeID \times \AbstrNodeType
+	\and
+	\AbstrNodeType ::= \andnode{\alpha} ~|~ \ornode{\alpha}
+\end{mathpar}
+
+Abstract activity nodes are pairs consisting of a node identifier $\ell$ and an action $\alpha$ to execute, either in $\andlabel$-style or in $\orlabel$-style.
+We write $\abstrnode \in \AbstrNode$ to denote a typical node.
+Let $\action : \AbstrNode \rightarrow \Action$ be a projection function for obtaining the actions of abstract nodes, so that:
+\begin{mathpar}
+	\action((\ell,\andnode{\alpha})) = \alpha
+	\and
+	\action((\ell,\ornode{\alpha})) = \alpha
+\end{mathpar}
+
+\paragraph{Abstract activities.} 
+Let us now define \emph{abstract activities}, which are essentially graphs consisting of abstract nodes, as defined in the previous paragraph, that are connected via guarded edges.
+The edge guards are (later) used to restrict when an edge can receive a token.
+During activity execution, any edge can only receive a token in a state where the edge guard holds.
+This is for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
+
+More formally, abstract activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \AbstrNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \mathcal{N}}$.
+Any edge $\abstredge = (\abstrnode,g,\abstrnode') \in \mathcal{E}$ consists of a \emph{source node} $\abstrnode \in \mathcal{N}$, a \emph{target node} $\abstrnode' \in \mathcal{N}$ and a \emph{guard} $g \in \Guard$.
+Let $\source : \mathcal{E} \rightarrow \mathcal{N}$, $\target : \mathcal{E} \rightarrow \mathcal{N}$ and $\guard : \mathcal{E} \rightarrow \Guard$ be projection functions to obtain the source, target and guard of any edge, respectively.
+(The definitions of these projection functions are likewise to the definitions of earlier defined projection functions, and are therefore omitted here.)
+
+We define the following shorthand notations for any $\abstrnode \in \mathcal{N}$ and $\sigma \in \State$:
+\begin{itemize}
+	\item $\incoming(\abstrnode) = \{ \abstredge \in \mathcal{E} ~|~ \target(\abstredge) = \abstrnode \}$ be the set of all incoming edges of $\abstrnode$.
+	\item $\outgoing(\abstrnode) = \{ \abstredge \in \mathcal{E} ~|~ \source(\abstredge) = \abstrnode \}$ be the set of all outgoing edges of $\abstrnode$.
+	\item $\incoming(\abstrnode,\sigma) = \{ \abstredge \in \incoming(\eta) ~|~ \guard(\abstredge)(\sigma) \}$ be all incoming edges of $\abstrnode$ whose guard holds with respect to $\sigma$.
+	\item $\outgoing(\abstrnode,\sigma) = \{ \abstredge \in \outgoing(\eta) ~|~ \guard(\abstredge)(\sigma) \}$ be all outgoing edges of $\abstrnode$ whose guard holds with respect to $\sigma$.
+\end{itemize}
+
+%This definition of activities does not (yet) include hierarchy (i.e., call behavior actions).
+%If hierarchy is added later, one should decide whether to include flow final nodes.
+%This can have a big impact on the formalization, as in that case we need to distinguish between words in the language and accepting words.
+
+\subsection{Dynamics}
+\label{sec:abstrdynamics}
+
+This section defines the dynamic behavior of abstract activities, by means of a token passing style operational semantics.
+Its reduction rules describe how to go from one configuration to another, where a configuration is essentially a set of edges containing a token together with a (current) state.
+There are two reduction rules, for $\andlabel$-style and $\orlabel$-style action execution, as explained earlier.
+Finally, we introduce initial configurations and execution traces.
+
+\paragraph{Configurations.}
+The semantics of abstract activities is essentially defined as a relation between \emph{configurations}, in the sense that an execution step in an activity gets you from one configuration to another configuration.
+A configuration describes which edges currently have a token, and what the current state is.
+
+More formally, let $\Config = \cramped{2^\mathcal{E} \times \State}$ be the set of all configurations.
+A configuration $(\Sigma, \sigma) \in \Config$ is a pair with $\Sigma \subseteq \mathcal{E}$ a set of edges---the ones currently holding a token---and $\sigma$ a state.
+We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sigma, \sigma)$.
+
+When some edge has a token with respect to some configuration $c$, we sometimes say it is \emph{enabled in $c$}, and when $c$ is clear from the context, we may just say it is \emph{enabled}.
+Note that an edge can be enabled, i.e., hold a token, even when its guards does not hold with respect to the current state.
+This is because an edge guard only restricts when the edge can receive a token (rather than when an edge can hold a token).
+
+\paragraph{Reductions.}
+Let us now define the operational semantics of abstract activities, in token passing style.
+The reduction rules of the operational semantics describe how edge tokens are distributed, and how state changes, while executing the nodes of the activity.
+There are two reduction rules: one for $\andlabel$-style execution and one for $\orlabel$-style execution of actions.
+As explained earlier already, these rules only differ in their requirement on, and distribution of, edge tokens.
+
+More formally, the operational semantics of abstract activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ is defined in terms of labeled reduction rules $\rightarrow~\subseteq \cramped{\Config \times \mathcal{N} \times \Config}$.
+The notation $c \xrightarrow{\abstrnode} c'$ is used as shorthand for $(c, \abstrnode, c') \in~\rightarrow$.
+The two rules are:
+\begin{mathpar}
+	\inferrule[And] { \incoming(\abstrnode) \subseteq \Sigma \and \outgoing(\abstrnode) \cap \Sigma = \emptyset \and \outgoing(\abstrnode) = \outgoing(\abstrnode, \sigma') \\\\ \guard(\alpha)(\sigma) \and \sigma' \in \update(\alpha)(\sigma) } { (\Sigma,\sigma) \xrightarrow{\abstrnode} ((\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode),\sigma') } { \text{ for } \abstrnode = (\ell, \andnode{\alpha}) }
+	
+	\inferrule[Or] { \abstredge \in \incoming(\abstrnode) \cap \Sigma \and \abstredge' \in \outgoing(\abstrnode, \sigma') \setminus \Sigma \\\\ \guard(\alpha)(\sigma) \and \sigma' \in \update(\alpha)(\sigma) } { (\Sigma,\sigma) \xrightarrow{\abstrnode} ((\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}, \sigma') } { \text{ for } \abstrnode = (\ell, \ornode{\alpha}) }
+\end{mathpar}
+
+The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \andnode{\alpha}$.
+\textsc{And} has five premises.
+Firstly, it requires all incoming edges into $\abstrnode$ to have a token.
+Secondly, it requires none of the outgoing edges $\outgoing(\abstrnode)$ to have a token (otherwise action execution might attempt to put more than one token on a single edge, which is not allowed since edges have at most one token).
+Thirdly, \textsc{And} requires that the guards of all outgoing edges hold with respect to the successor state $\sigma'$.
+Recall that edge guards are conditions for edges to receive tokens, and since \textsc{And} aims to put a token on all outgoing edges of $\abstrnode$, all their guards have to hold.
+Fourthly, it requires the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$.
+And finally, it requires a successor state $\sigma'$ to be available from the update $\update(\alpha)$ of $\alpha$.
+If all five conditions are met, \textsc{And} removes all tokens from $\incoming(\abstrnode)$ and puts tokens on $\outgoing(\abstrnode)$, so that the arrangement of edge tokens becomes $\cramped{(\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode)}$.
+
+The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \ornode{\alpha}$.
+\textsc{Or} has four premises which are much like the premises of $\textsc{And}$, except that they concern single incoming/outgoing edges of $\abstrnode$, rather than all of them.
+Firstly, \textsc{Or} requires the existance of a single incoming edge $\abstredge$ of $\abstrnode$ that holds a token.
+Secondly, a single outgoing edge $\abstredge'$ of $\abstrnode$ must exist that does not yet have a token (recall that edges cannot have more than one token) and is allowed to receive a token (i.e., its guard must hold with respect to the successor state).
+The third and fourth premise are the same as the last two premises of \textsc{And}.
+If all four conditions are met, \textsc{Or} removes the token from $\abstredge$ and puts it on $\abstredge'$, so that the arrangement of tokens becomes $\cramped{(\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}}$.
+
+Finally, as a shorthand notation, we may write $c \xrightarrow{\alpha} c'$ if there exists an $\abstrnode \in \mathcal{N}$ such that $c \xrightarrow{\abstrnode} c'$ and $\action(\abstrnode) = \alpha$.
+
+\paragraph{Traces.}
+\textsc{And} and \textsc{Or} describe single-step executions.
+However, when executing or simulating an activity, typically multiple steps are performed, perhaps even infinitely many, leading to the concept of traces, i.e., sequences of steps.
+
+Given any finite action sequence $\pi = \alpha_0 \alpha_1 \dots \alpha_m$ we write $c \xrightarrow{\pi}_{\ast} c'$ if there exists a reduction sequence $c_0 \xrightarrow{\alpha_0} c_1 \xrightarrow{\alpha_1} \dots \xrightarrow{\alpha_m} c_{m+1}$ such that $c = c_0$ and $c' = c_{m+1}$.
+Moreover, given any infinite action sequence $\pi = \alpha_0 \alpha_1 \dots$ we write $c \xrightarrow{\pi}_{\omega}$ if there exists a reduction sequence $c_0 \xrightarrow{\alpha_0} c_1 \xrightarrow{\alpha_1} \dots$ where $c = c_0$.
+
+\section{Concrete Activities}
+\label{sec:concractivities}
+
+This section defines concrete activities (\autoref{sec:concrstatics}) that more closely resemble UML activities than abstract activities, and defines their operational semantics in terms of translations to abstract activities (\autoref{sec:concrdynamics}).
+Some similarities and differences of concrete activities with respect to fUML semantics are highlighted (\autoref{sec:fuml}).
+Finally, known open issues are briefly discussed (\autoref{sec:issues}).
+
+\subsection{Statics}
+\label{sec:concrstatics}
+
+First we define concrete activities, which more closely resemble UML activities than the abstract activities defined earlier.
+
+\paragraph{Nodes.}
+In contrast to abstract nodes as defined earlier in \autoref{sec:abstrstatics}, which come only in two flavours ($\andlabel$ and $\orlabel$), UML activities have many more flavours of activity nodes, like initial nodes, fork nodes, etc.
+Let us now define a more concrete set of activity nodes that more closely resemble (f)UML activity nodes.
+While doing so, let us focus on a basic subset of UML, leaving out more advanced concepts like signals, object flows, exception handlers, interruptable regions, etc.
+
+Let $\ConcrNode = \cramped{\NodeID \times \ConcrNodeType}$ be the set of all \emph{concrete activity nodes}, consisting of an identifier and a (concrete) node type that is defined as:
+$$\ConcrNodeType ::= \init ~|~ \final ~|~ \fork ~|~ \join ~|~ \decision ~|~ \merge ~|~ \act(\alpha)$$
+
+We denote a typical activity node by $n \in \ConcrNode$.
+The node types are the typical types of UML activity nodes: initial and flow final nodes ($\init$ and $\final$), fork and join nodes ($\fork$ and $\join$), decision and merge nodes ($\decision$ and $\merge$), and action nodes ($\act$) which are closely related to opaque actions in UML.
+
+\paragraph{Activities.}
+Concrete activities $A = (N, E)$ are graphs with $N \subseteq \ConcrNode$ a set of concrete activity nodes and $E \subseteq N \times \Guard \times N$ a set of guarded edges.
+
+Any number of additional well-formedness conditions may be imposed on activities, e.g., action nodes having exactly one incoming and outgoing edge, or final nodes not being allowed to have outgoing edges.
+However, the semantics of activities, as defined in \autoref{sec:concrdynamics}, is not dependent on any such additional structural well-formedness conditions, making the semantics easier to define.
+
+Moreover, note that all edges have guards, rather than just the ones coming out of decision nodes.
+This is consistent with UML activities (except that, in UML, guards are ignored unless the edge comes out of a decision node).
+
+\subsection{Dynamics}
+\label{sec:concrdynamics}
+
+We now define the operational semantics of concrete activities, by translating concrete activities to abstract activities, and using the reduction rules defined earlier.
+The advantage is that the semantics of the various concrete activity nodes can be defined by means of just two reduction rules: \textsc{And} and \textsc{Or}.
+
+\paragraph{Node translation.}
+First we translate activity nodes.
+We do this by defining a translation function $\denotn{~\cdot~} : \ConcrNode \rightarrow \AbstrNode$ that translates concrete nodes to abstract nodes.
+To be able to define this translation function, we assume that the set $\Label$ of action labels is chosen in such a way to contain `reserved labels' for all concrete node types, so that $\ConcrNodeType \subseteq \Label$.
+
+Let $\denotn{~\cdot~}$ be defined as follows, where $\lambda\sigma.\true$ is the constant guard that is always $\true$, and $\identity{\sigma}$ is the identity update that does not change the state:
+\begin{mathpar}
+	\denotn{(\ell, \init)} = (\ell,\ornode{(\init, \lambda\sigma.\true, \identity{\sigma})})
+	\and
+	\denotn{(\ell, \final)} = (\ell,\ornode{(\final, \lambda\sigma.\true, \identity{\sigma})})
+	\and
+	\denotn{(\ell, \fork)} = (\ell, \andnode{(\fork, \lambda\sigma.\true, \identity{\sigma})})
+	\and
+	\denotn{(\ell, \join)} = (\ell, \andnode{(\join, \lambda\sigma.\true, \identity{\sigma})})
+	\and
+	\denotn{(\ell, \decision)} = (\ell, \ornode{(\decision, \lambda\sigma.\true, \identity{\sigma})})
+	\and
+	\denotn{(\ell, \merge)} = (\ell, \ornode{(\merge, \lambda\sigma.\true, \identity{\sigma})})
+	\\
+	\denotn{(\ell, \act(\alpha))} = (\ell, \andnode{\alpha})
+\end{mathpar}
+
+This translation function maps concrete nodes to either $\andlabel$-typed or $\orlabel$-typed abstract nodes, where the type determines the execution semantics.
+
+Initial nodes ($\init$) are translated as $\orlabel$-type nodes, since they typically do not have incoming edges, and in case they have multiple outgoing edges, one of them is followed.
+In fUML semantics, when firing an initial node, a single token is created and offered to all outgoing edges, and exactly one of those edges then gets this token (\cite{fUMLSemantics}, page 221).
+
+Flow final nodes ($\final$) are translated likewise to initial nodes: they typically do not have outgoing edges, and in case they have multiple incoming edges, it is sufficient that one of them is enabled.
+In fUML semantics, when firing a flow final node, all incoming tokens are consumed  (\cite{fUMLSemantics}, page 218).
+Note that executing a flow final node does not mean that all edge tokens in an activity will disappear.
+In case there are still tokens left, execution may resume.
+
+Fork nodes ($\fork$) are translated to $\andlabel$-typed nodes: their execution requires all incoming edges (usually just one) to be enabled, and puts a token on all outgoing edges (usually more than one).
+In fUML semantics, when firing a fork node, tokens are consumed from all incoming edges and offered to all outgoing edges (\cite{fUMLSemantics}, page 218--220).
+
+Join nodes ($\join$) are executed likewise to fork nodes: their executions requires all incoming edges (usually multiple) to be enabled and puts a token on all outgoing edges (usually just one).
+In fUML semantics, join nodes can only fire when all incoming edges have tokens (\cite{fUMLSemantics}, page 222).
+
+Decision nodes ($\decision$) are translated as $\orlabel$-typed nodes, as their execution requires a single incoming edge (usually there is only one) to be enabled and non-deterministically chooses a single outgoing edge whose guard holds to receive a token.
+In fUML semantics, when firing a decision node, a token is offered to all outgoing edges whose guard holds\footnote{The actual description as given in~\cite{fUMLSemantics} is slightly more complex, since it involves decision input flows that supply extra values to decision nodes (e.g., object flows), which somehow are used as tokens. However, this is the gist of it.} (\cite{fUMLSemantics}, page 213). 
+
+Merge nodes ($\merge$) are translated in a similar manner: their execution requires a single incoming edge (usually there are multiple) to be enabled, and puts a token on one outgoing edge (usually there is one).
+The description of the semantics of merge nodes in~\cite{fUMLSemantics} is not super clear.
+
+Finally, action nodes are translated as $\andlabel$-typed nodes.
+This is consistent with fUML semantics which describes that, once action execution has completed, “a control token is offered on all control flows outgoing from the action”~(\cite{fUMLSemantics}, page 267).
+Moreover, in case of fUML action nodes “the semantics of the offering of a token on control flows outgoing from an action are those of an implicit fork”~(\cite{fUMLSemantics}, page 267).
+
+\paragraph{Edge translation.}
+The translation of edges is straightforward, and simply amounts to translating the source and target node.
+Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \ConcrNode \rightarrow \AbstrNode \times \Guard \times \AbstrNode$ be the translation function for edges, defined such that:
+$$\denote{(n,g,n')} = (\denotn{n},g, \denotn{n'})$$
+
+\paragraph{Activity translation.}
+Now that we can translate the nodes and edges of abstract activities, let us combine these translations to translate activities.
+
+Let $\denot{A} = (\{ \denotn{n} ~|~ n \in N \}, \{ \denote{e} ~|~ e \in E \})$ be the translated abstract activity of any concrete activity $A = (N,E)$. 
+Then the semantics of $A$ is defined to be the semantics of $\denot{A}$.
+
+Appendix A of~\cite{DawC2015} additionally shows how more complex behavior of UML activities can be defined in terms of $\andlabel$ and $\orlabel$ nodes, covering also other types of nodes, like `send' and `accept' nodes.
+
+\paragraph{Initial configuration.}
+Obviously, any execution of an activity requires some starting point.
+In other words, since activity execution describes how to go from one configuration to another, there has to be a notion of an initial configuration.
+
+The starting point of executing concrete activities are their $\init$ nodes.
+Since initial nodes are translated to $\orlabel$-type nodes, the execution of an activity is started along exactly one outgoing edge of a (single) $\init$ node.
+In case an activity has multiple initial nodes, or in case there are initial nodes with multiple outgoing edges, the activity has multiple potential initial configurations.
+In esoteric cases, an activity might have no initial configurations, in case there are no initial nodes, or only initial nodes without outgoing edges.
+
+Let $A = (N,E)$ be an activity.
+Then $(\{\abstredge\}, \sigma_I) \in \Config$ is defined to be an \emph{initial configuration of $A$} for any choice of initial state $\sigma_I \in \State$, if there exists an initial node $(\ell, \init) \in N$ such that $\abstredge \in \outgoing(\denotn{(\ell, \init)},\sigma_I)$.
+In other words, any outgoing edge of any initial node can form an initial configuration together with some initial state $\sigma_I$, given that this edge is allowed by its guard to receive an (initial) token in the initial state $\sigma_I$.
+This initial state $\sigma_I$ could for example be chosen to be the initial valuation of all variables defined in the context of $A$.
+Recall that the current definitions abstract over details like variables and their concrete values\footnote{I am not going to define a custom expression/update language and its semantics. There are plenty of good existing languages that could be picked off-the-shelf, like for example CIF.}.
+The formalization could later be instantiated with such details.
+
+\subsection{Similarities and differerences with fUML}
+\label{sec:fuml}
+
+Below is a list of similarities and differences with respect to fUML semantics:
+\begin{itemize}
+	\item Nodes of type $\act(\alpha)$ roughly correspond to opaque actions in UML.
+	However, opaque actions in UML do not have guards.
+	This is something we added to $\alpha$ in this definition of activities.
+	\item This definition of activities imposes a \emph{waiting semantics}, meaning that execution of some action $\alpha$ `waits' until $\guard(\alpha)$ holds, and likewise for edge guards.
+	In fUML, action nodes are not guarded and do not have a waiting semantics.
+	Instead of waiting, in fUML, typically the activity terminates whenever a condition is encountered in which no immediate progress can be made, e.g., in case of decision nodes where none of the outgoing edges can be taken.
+	\item Nodes of type $\act(\alpha)$ execute \emph{atomically}.
+	In particular, this means that $\update(\alpha)$ is executed without interference from updates of other nodes.
+	In fUML atomicity is not guaranteed.
+	Instead, fUML semantics only guarantees that nodes in-between a fork and a join are executed after forking and before joining.
+	\item In fUML the edges out of decision nodes have a declaration order, and the first enabled edge in the declaration order is taken\footnote{I could not directly find this clearly stated in~\cite{fUMLSemantics}. However, this is how the Cameo simulator handles decision nodes, and it claims to implement fUML semantics. Therefore, I assume that this statement is true in fUML.}.
+	Moreover, if none of the edges can be taken, the activity terminates (or rather crashes).
+	Instead, in our version of activities, a non-deterministic choice is made among all enabled edges out of decision nodes.
+	In case none of the edges are enabled, a waiting semantics is imposed, as described earlier.
+	\item The execution of $\final$ nodes as defined in this document is different from fUML.
+	As explained in \autoref{sec:concrdynamics}, final nodes are translated to $\orlabel$-type activity nodes, which means that only a single incoming edge should be enabled for the node to fire, and when this happens, only a single token will be consumed.
+	In fUML however, all tokens on enabled incoming edges will be consumed.
+	The implication is that, in our semantics, $\final$ nodes may have to fire multiple times in case multiple incoming edges are enabled, to consume all their tokens.
+	One might consider whether it is not better to translate $\final$ nodes to $\andlabel$-type nodes instead.
+	However, such a translation would mean that all incoming edges into $\final$ must be enabled, which is in a way even more different from fUML semantics.
+\end{itemize}
+
+\subsection{Open issues}
+\label{sec:issues}
+
+Below is a list of open issues for which a solution is still needed:
+\begin{itemize}
+	\item In the semantics of Poka Yoke activities as presented in this document, actions are atomic, which may be problematic.
+	The consequence of actions being atomic is that nothing else can occur in parallel.
+	In practice, an action could be a movement of a robot, which might take a long time.
+	In that time, other things could happen.
+	Therefore, actions being strictly atomic will pose issues in practice.
+	Especially since implementing a code generator for this formalization as we have it now means that everything becomes single threaded, which will not fly.
+\end{itemize}
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\newpage
+
+\appendix
+
+\section*{Appendix A: List of Symbols}
+
+\begin{tabular}{cl}
+	$\mathcal{A}$ & An abstract activity \\
+	$A$ & A concrete (UML-like) activity \\
+	$a$ & An action label \\
+	$\alpha$ & An action, consisting of an action label, a guard and an update \\
+	$\andnode{\alpha}$ & An abstract node type describing an $\andlabel$-style execution of $\alpha$ \\
+	$c$ & A configuration, consisting of a set of edges holding a token, and a state \\
+	$\denote{~\cdot~}$ & Operation for translating concrete activity edges to abstract ones \\
+	$\denotn{~\cdot~}$ & Operation for translating concrete activity nodes to abstract ones \\
+	$\decision$ & The decision node type of concrete activities \\
+	$\mathcal{E}$ & A set of abstract edges of an abstract activity \\
+	$E$ & A set of concrete edges of a concrete (UML-like) activity \\
+	$\abstredge$ & An abstract edge of an abstract activity \\
+	$e$ & A concrete edge of a concrete activity \\
+	$\final$ & The final node type of concrete activities \\
+	$\fork$ & The fork node type of concrete activities \\
+	$g$ & A guard, which is a state predicate \\
+	$\ell$ & A node identifier, used to give identity to abstract and concrete activity nodes \\
+	$\init$ & The initial node type of concrete activities \\
+	$\join$ & The join node type of concrete activities \\
+	$\merge$ & The merge node type of concrete activities \\
+	$\mathcal{N}$ & A set of abstract nodes of an abstract activity \\
+	$N$ & A set of concrete nodes of a concrete (UML-like) activity \\
+	$\abstrnode$ & An abstract node of an abstract activity \\
+	$n$ & A concrete node of a concrete activity \\
+	$\ornode{\alpha}$ & An abstract node type describing an $\orlabel$-style execution of $\alpha$ \\
+	$\pi$ & A trace, i.e., a sequence of actions \\
+	$\Sigma$ & A set of abstract edges holding a token, as part of a configuration \\
+	$\sigma$ & An (execution) state, e.g., the valuation of some set of variables \\
+	$u$ & An update, mapping a state to zero or more successor states \\
+	$\rightarrow$ & Reduction relation defining the semantics of abstract activities \\
+	$\xrightarrow{\alpha}$ & Reduction relation for an abstract node with action $\alpha$ \\
+	$\xrightarrow{\abstrnode}$ & Reduction relation for an abstract node $\abstrnode$ \\
+	$\xrightarrow{\pi}_{\ast}$ & Multi-step reduction relation for the finite action sequence $\pi$ \\
+	$\xrightarrow{\pi}_{\omega}$ & Multi-step reduction relation for the infinite action sequence $\pi$
+\end{tabular}
+
+\end{document}
