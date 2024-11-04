@@ -21,7 +21,7 @@
         <body>not field2</body>
         <body>field2 := true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="11" name="main" postcondition="14" precondition="12" node="28 29 30 31 32 33 34 35 36">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="11" name="main" postcondition="14" precondition="12" node="27 28 29 30 31 32 33 34">
         <ownedRule xmi:id="12" name="precondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="13" name="">
             <body>not field1 and not field2</body>
@@ -32,47 +32,45 @@
             <body>field1 and field2</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Fork____start__to__action1/1" target="29" source="36"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Fork____start__to__action2" target="30" source="36"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="action1/1__to__Merge__p4" target="32" source="29"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" name="action1__to__Merge__p4" target="32" source="28"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="Decision__p4__to__Join____end" target="35" source="33">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Fork____start__to__action1/1" target="34" source="33"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Fork____start__to__action2" target="28" source="33"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p4__to__Join____end" target="32" source="30">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
             <body>field1</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Decision__p4__to__action1" target="28" source="33">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="23">
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="Decision__p4__to__action1" target="34" source="30">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Merge__p4__to__Decision__p4" target="33" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="action2__to__Join____end" target="35" source="30"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Join____end__to__FinalNode__p6" target="34" source="35"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to__Fork____start" target="36" source="31"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="action1" incoming="22" outgoing="19" behavior="9"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="29" name="action1" incoming="16" outgoing="18" behavior="9"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="30" name="action2" incoming="17" outgoing="25" behavior="10"/>
-        <node xmi:type="uml:InitialNode" xmi:id="31" name="InitialNode__p1" outgoing="27"/>
-        <node xmi:type="uml:MergeNode" xmi:id="32" name="Merge__p4" incoming="18 19" outgoing="24"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="33" name="Decision__p4" incoming="24" outgoing="20 22"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" name="FinalNode__p6" incoming="26"/>
-        <node xmi:type="uml:JoinNode" xmi:id="35" name="Join____end" incoming="20 25" outgoing="26"/>
-        <node xmi:type="uml:ForkNode" xmi:id="36" name="Fork____start" incoming="27" outgoing="16 17"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Merge__p4__to__Decision__p4" target="30" source="27"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="action2__to__Join____end" target="32" source="28"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Join____end__to__FinalNode__p6" target="31" source="32"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="InitialNode__p1__to__Fork____start" target="33" source="29"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="27" source="34"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="action1" incoming="26" outgoing="22" behavior="9"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="action2" incoming="17" outgoing="23" behavior="10"/>
+        <node xmi:type="uml:InitialNode" xmi:id="29" name="InitialNode__p1" outgoing="25"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="30" name="Decision__p4" incoming="22" outgoing="18 20"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="31" name="FinalNode__p6" incoming="24"/>
+        <node xmi:type="uml:JoinNode" xmi:id="32" name="Join____end" incoming="18 23" outgoing="24"/>
+        <node xmi:type="uml:ForkNode" xmi:id="33" name="Fork____start" incoming="25" outgoing="16 17"/>
+        <node xmi:type="uml:MergeNode" xmi:id="34" name="Merge__p4" incoming="16 20" outgoing="26"/>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="37">
-      <eAnnotations xmi:id="38" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="35">
+      <eAnnotations xmi:id="36" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="39" guard="not field1" base_RedefinableElement="9" atomic="true">
+  <PokaYoke:FormalElement xmi:id="37" guard="not field1" base_RedefinableElement="9" atomic="true">
     <effects>field1 := true</effects>
     <effects>field1 := false</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="40" guard="not field2" base_RedefinableElement="10" atomic="true">
+  <PokaYoke:FormalElement xmi:id="38" guard="not field2" base_RedefinableElement="10" atomic="true">
     <effects>field2 := true</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>
