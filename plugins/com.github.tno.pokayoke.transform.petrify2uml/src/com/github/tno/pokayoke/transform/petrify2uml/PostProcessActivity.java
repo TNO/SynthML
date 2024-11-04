@@ -25,6 +25,8 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
+import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
+import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -174,6 +176,8 @@ public class PostProcessActivity {
     public static void simplify(Activity activity) {
         RedundantDecisionMergePattern.findAndRewriteAll(activity);
         RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
+        EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
+        DoubleMergePattern.findAndRewriteAll(activity);
     }
 
     /**
