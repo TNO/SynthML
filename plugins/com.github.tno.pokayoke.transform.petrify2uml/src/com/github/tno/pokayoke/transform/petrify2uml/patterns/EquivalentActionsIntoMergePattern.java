@@ -9,7 +9,6 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -74,8 +73,8 @@ public class EquivalentActionsIntoMergePattern {
             List<Action> incomingActions = new ArrayList<>(node.getIncomings().size());
 
             for (ActivityEdge controlFlow: node.getIncomings()) {
-                if (controlFlow.getSource() instanceof Action action
-                        && (incomingActions.isEmpty() || areEquivalent(action, incomingActions.get(0))))
+                if (controlFlow.getSource() instanceof Action action && (incomingActions.isEmpty()
+                        || PokaYokeUmlProfileUtil.areEquivalent(action, incomingActions.get(0))))
                 {
                     incomingActions.add(action);
                 } else {
@@ -87,38 +86,6 @@ public class EquivalentActionsIntoMergePattern {
         } else {
             return Optional.empty();
         }
-    }
-
-    /**
-     * Determines whether two given action nodes are equivalent, which is the case when either:
-     * <ul>
-     * <li>Both action nodes are call behavior action nodes that call the same behavior, or</li>
-     * <li>Both action nodes are formal elements with the same guard, effects, and atomic property.</li>
-     * </ul>
-     *
-     * @param left The first action node.
-     * @param right The second action node.
-     * @return {@code true} if the given action nodes are equivalent, {@code false} otherwise.
-     */
-    private static boolean areEquivalent(Action left, Action right) {
-        // Two actions are not equivalent if they have different names.
-        if (!left.getName().equals(right.getName())) {
-            return false;
-        }
-
-        // Two actions are equivalent if they are both call behavior actions that call the same behavior.
-        if (left instanceof CallBehaviorAction cbLeft && right instanceof CallBehaviorAction cbRight
-                && cbLeft.getBehavior().equals(cbRight.getBehavior()))
-        {
-            return true;
-        }
-
-        // Otherwise they are equivalent only if they are both formal elements and have the same guard, effects, and
-        // atomic property.
-        return PokaYokeUmlProfileUtil.isFormalElement(left) && PokaYokeUmlProfileUtil.isFormalElement(right)
-                && PokaYokeUmlProfileUtil.getGuard(left).equals(PokaYokeUmlProfileUtil.getGuard(right))
-                && PokaYokeUmlProfileUtil.getEffects(left).equals(PokaYokeUmlProfileUtil.getEffects(right))
-                && PokaYokeUmlProfileUtil.isAtomic(left) == PokaYokeUmlProfileUtil.isAtomic(right);
     }
 
     /** Rewrites this double merge pattern. */
