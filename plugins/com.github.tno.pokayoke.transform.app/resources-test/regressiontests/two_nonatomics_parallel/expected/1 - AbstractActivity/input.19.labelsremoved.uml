@@ -12,75 +12,59 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="9" name="AbstractActivity" postcondition="15" precondition="13" node="27 28 29 30 31 32">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="9" name="AbstractActivity" node="19 20 21 22 23 24">
         <nameExpression xmi:id="10" name="StringExpression1">
           <operand xmi:type="uml:LiteralInteger" xmi:id="11" name="LiteralInteger1" value="1"/>
           <operand xmi:type="uml:LiteralInteger" xmi:id="12" name="LiteralInteger0"/>
         </nameExpression>
-        <ownedRule xmi:id="13" name="Precondition">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="14" name="">
-            <body>not a_executed and not b_executed</body>
-          </specification>
-        </ownedRule>
-        <ownedRule xmi:id="15" name="Postcondition">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="16" name="">
-            <body>a_executed = true and b_executed = true</body>
-          </specification>
-        </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="17" name="IntervalConstraintA" constrainedElement="33">
-          <specification xmi:type="uml:Interval" xmi:id="18" name="IntervalA" max="11" min="12"/>
-        </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="19" name="IntervalConstraintB" constrainedElement="34">
-          <specification xmi:type="uml:Interval" xmi:id="20" name="IntervalB" max="11" min="12"/>
-        </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="21" target="27" source="32">
+        <edge xmi:type="uml:ControlFlow" xmi:id="13" target="19" source="24">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" target="28" source="32">
+        <edge xmi:type="uml:ControlFlow" xmi:id="14" target="20" source="24">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="23" target="31" source="27">
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="23" source="19">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="31" source="28">
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" target="23" source="20">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" target="30" source="31">
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="22" source="23">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="32" source="29">
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="24" source="21">
           <name xsi:nil="true"/>
         </edge>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="NonAtomicA" incoming="21" outgoing="23" behavior="33"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="NonAtomicB" incoming="22" outgoing="24" behavior="34"/>
-        <node xmi:type="uml:InitialNode" xmi:id="29" outgoing="26">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="19" name="NonAtomicA" incoming="13" outgoing="15" behavior="25"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="20" name="NonAtomicB" incoming="14" outgoing="16" behavior="26"/>
+        <node xmi:type="uml:InitialNode" xmi:id="21" outgoing="18">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="30" incoming="25">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="22" incoming="17">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:JoinNode" xmi:id="31" incoming="23 24" outgoing="25">
+        <node xmi:type="uml:JoinNode" xmi:id="23" incoming="15 16" outgoing="17">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ForkNode" xmi:id="32" incoming="26" outgoing="21 22">
+        <node xmi:type="uml:ForkNode" xmi:id="24" incoming="18" outgoing="13 14">
           <name xsi:nil="true"/>
         </node>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="33" name="NonAtomicA"/>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="34" name="NonAtomicB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="25" name="NonAtomicA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="26" name="NonAtomicB"/>
     </packagedElement>
-    <profileApplication xmi:id="35">
-      <eAnnotations xmi:id="36" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="27">
+      <eAnnotations xmi:id="28" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="37" guard="true" base_RedefinableElement="33">
+  <PokaYoke:FormalElement xmi:id="29" guard="true" base_RedefinableElement="25">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="38" guard="true" base_RedefinableElement="34">
+  <PokaYoke:FormalElement xmi:id="30" guard="true" base_RedefinableElement="26">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </PokaYoke:FormalElement>

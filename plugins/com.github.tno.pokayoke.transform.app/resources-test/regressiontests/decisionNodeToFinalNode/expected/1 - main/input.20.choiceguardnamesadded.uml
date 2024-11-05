@@ -13,59 +13,49 @@
         <body>field := true</body>
         <body>field := false</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="8" name="main" postcondition="11" precondition="9" node="20 21 22 23 24">
-        <ownedRule xmi:id="9" name="precondition">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="10" name="">
-            <body>not field</body>
-          </specification>
-        </ownedRule>
-        <ownedRule xmi:id="11" name="postcondition">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="12" name="">
-            <body>field</body>
-          </specification>
-        </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="13" name="not field" target="24" source="22">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="14">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="8" name="main" node="16 17 18 19 20">
+        <edge xmi:type="uml:ControlFlow" xmi:id="9" name="not field" target="20" source="18">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="10">
             <body>not field</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="22" source="20">
+        <edge xmi:type="uml:ControlFlow" xmi:id="11" target="18" source="16">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="field" target="23" source="22">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
+        <edge xmi:type="uml:ControlFlow" xmi:id="12" name="field" target="19" source="18">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="13">
             <body>field</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="24" source="21">
+        <edge xmi:type="uml:ControlFlow" xmi:id="14" target="20" source="17">
           <name xsi:nil="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="20" source="24">
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="16" source="20">
           <name xsi:nil="true"/>
         </edge>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="20" name="action" incoming="19" outgoing="15" behavior="7"/>
-        <node xmi:type="uml:InitialNode" xmi:id="21" outgoing="18">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="16" name="action" incoming="15" outgoing="11" behavior="7"/>
+        <node xmi:type="uml:InitialNode" xmi:id="17" outgoing="14">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="22" incoming="15" outgoing="13 16">
+        <node xmi:type="uml:DecisionNode" xmi:id="18" incoming="11" outgoing="9 12">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="23" incoming="16">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="19" incoming="12">
           <name xsi:nil="true"/>
         </node>
-        <node xmi:type="uml:MergeNode" xmi:id="24" incoming="18 13" outgoing="19">
+        <node xmi:type="uml:MergeNode" xmi:id="20" incoming="14 9" outgoing="15">
           <name xsi:nil="true"/>
         </node>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="25">
-      <eAnnotations xmi:id="26" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="21">
+      <eAnnotations xmi:id="22" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="27" guard="true" base_RedefinableElement="7" atomic="true">
+  <PokaYoke:FormalElement xmi:id="23" guard="true" base_RedefinableElement="7" atomic="true">
     <effects>field := true</effects>
     <effects>field := false</effects>
   </PokaYoke:FormalElement>
