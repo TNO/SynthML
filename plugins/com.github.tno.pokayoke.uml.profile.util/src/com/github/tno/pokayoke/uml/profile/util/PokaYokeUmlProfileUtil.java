@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -149,6 +150,36 @@ public class PokaYokeUmlProfileUtil {
             return;
         }
         controlFlow.setGuard(createCifExpression(newValue));
+    }
+
+    /**
+     * Determines whether two given action nodes are equivalent, which is the case when either:
+     * <ul>
+     * <li>Both action nodes are call behavior action nodes that call the same behavior, or</li>
+     * <li>Both action nodes are formal elements with the same guard, effects, and atomic property.</li>
+     * </ul>
+     *
+     * @param left The first action node.
+     * @param right The second action node.
+     * @return {@code true} if the given action nodes are equivalent, {@code false} otherwise.
+     */
+    public static boolean areEquivalent(Action left, Action right) {
+        // Two actions are not equivalent if they have different names.
+        if (!left.getName().equals(right.getName())) {
+            return false;
+        }
+
+        // Two actions are equivalent if they are both call behavior actions that call the same behavior.
+        if (left instanceof CallBehaviorAction cbLeft && right instanceof CallBehaviorAction cbRight
+                && cbLeft.getBehavior().equals(cbRight.getBehavior()))
+        {
+            return true;
+        }
+
+        // Otherwise they are equivalent only if they are both formal elements and have the same guard, effects, and
+        // atomic property.
+        return isFormalElement(left) && isFormalElement(right) && getGuard(left).equals(getGuard(right))
+                && getEffects(left).equals(getEffects(right)) && isAtomic(left) == isAtomic(right);
     }
 
     public static boolean hasDefaultValue(Property property) {
