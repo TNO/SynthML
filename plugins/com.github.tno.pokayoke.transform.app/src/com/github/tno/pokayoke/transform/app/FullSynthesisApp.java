@@ -82,7 +82,7 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
-        // Translate all abstract activities in the loaded UML specification.
+        // Synthesize all abstract activities in the loaded UML specification.
         List<Activity> activities = new CifContext(umlSpec).getAllAbstractActivities();
 
         for (int i = 0; i < activities.size(); i++) {
