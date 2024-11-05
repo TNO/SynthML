@@ -41,7 +41,7 @@ public class DoubleMergePattern {
      * @return All <i>double merge</i> patterns in the given activity.
      */
     public static List<DoubleMergePattern> findAll(Activity activity) {
-        return activity.getEdges().stream().flatMap(node -> findAny(node).stream()).toList();
+        return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).toList();
     }
 
     /**

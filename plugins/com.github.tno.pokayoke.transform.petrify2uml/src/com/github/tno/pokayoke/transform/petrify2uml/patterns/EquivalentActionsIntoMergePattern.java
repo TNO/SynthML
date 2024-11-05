@@ -61,7 +61,7 @@ public class EquivalentActionsIntoMergePattern {
     }
 
     /**
-     * Tries finding a <i>equivalent actions into merge</i> pattern that involves the given activity node.
+     * Tries finding an <i>equivalent actions into merge</i> pattern that involves the given activity node.
      *
      * @param node The input activity node.
      * @return Some <i>equivalent actions into merge</i> pattern in case one was found, or an empty result otherwise.
