@@ -93,6 +93,11 @@ public class CifContext {
                 .toList();
     }
 
+    public List<Activity> getAllAbstractActivities() {
+        return getAllElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
+                .map(Activity.class::cast).toList();
+    }
+
     public boolean isEnumeration(String name) {
         return contextElements.get(name) instanceof Enumeration;
     }

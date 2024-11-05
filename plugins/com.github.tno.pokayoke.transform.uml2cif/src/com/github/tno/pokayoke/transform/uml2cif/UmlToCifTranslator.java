@@ -42,6 +42,7 @@ import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
@@ -51,7 +52,6 @@ import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.LiteralInteger;
-import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -83,10 +83,10 @@ public class UmlToCifTranslator {
     /** The suffix of a non-atomic action outcome. */
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
-    /** The UML model to translate. */
-    private final Model model;
+    /** The input UML activity to translate. */
+    private final Activity activity;
 
-    /** The context that allows querying the input UML model. */
+    /** The context that allows querying the UML model of the input UML activity to translate. */
     private final CifContext context;
 
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
@@ -107,9 +107,9 @@ public class UmlToCifTranslator {
     /** The mapping from non-atomic and non-deterministic CIF start events, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
 
-    public UmlToCifTranslator(Model model) {
-        this.model = model;
-        this.context = new CifContext(model);
+    public UmlToCifTranslator(Activity activity) {
+        this.activity = activity;
+        this.context = new CifContext(activity.getModel());
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
     }
 
@@ -183,7 +183,7 @@ public class UmlToCifTranslator {
      */
     public Specification translate() throws CoreException {
         // Validate the UML input model.
-        ValidationHelper.validateModel(model);
+        ValidationHelper.validateModel(activity.getModel());
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
@@ -210,8 +210,8 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all interval constraints of the classifier behavior of the UML class.
-        for (Constraint umlConstraint: umlClass.getClassifierBehavior().getOwnedRules()) {
+        // Translate all interval constraints of the input UML activity.
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
                 List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
                 cifSpec.getComponents().addAll(cifRequirements);
@@ -486,10 +486,8 @@ public class UmlToCifTranslator {
             }
         }
 
-        // Translate all preconditions of the classifier behavior of the UML class as an initial predicate in CIF.
-        Behavior umlClassifierBehavior = umlClass.getClassifierBehavior();
-
-        Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(umlClassifierBehavior.getPreconditions());
+        // Translate all preconditions of the input UML activity as an initial predicate in CIF.
+        Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(activity.getPreconditions());
 
         if (!cifPreconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPreconditionVars);
@@ -500,8 +498,8 @@ public class UmlToCifTranslator {
             cifPlant.getInitials().add(cifPrecondition);
         }
 
-        // Translate all postconditions of the classifier behavior of the UML class as a marked predicate in CIF.
-        Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(umlClassifierBehavior.getPostconditions());
+        // Translate all postconditions of the input UML activity as a marked predicate in CIF.
+        Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(activity.getPostconditions());
 
         AlgVariable cifPostconditionVar = null;
         if (!cifPostconditionVars.isEmpty()) {

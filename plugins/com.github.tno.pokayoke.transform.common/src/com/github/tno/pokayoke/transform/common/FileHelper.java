@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,14 +53,15 @@ public class FileHelper {
     }
 
     public static void storeModel(Model model, URI uri) throws IOException {
-        // Build the resource to store.
-        Resource resource = createModelResourceSet().createResource(uri);
-        resource.getContents().add(model);
+        // Collect all objects to store in the resource, including the UML profiles information.
+        List<EObject> objects = new ArrayList<>();
+        objects.add(model);
+        model.allOwnedElements().stream().flatMap(e -> e.getStereotypeApplications().stream())
+                .collect(Collectors.toCollection(() -> objects));
 
-        // Also add the UML profiles information to the resource
-        List<EObject> stereotypeApplications = model.allOwnedElements().stream()
-                .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
-        resource.getContents().addAll(stereotypeApplications);
+        // Build the resource to store, thereby making a copy of all objects to store.
+        Resource resource = createModelResourceSet().createResource(uri);
+        resource.getContents().addAll(EcoreUtil.copyAll(objects));
 
         // Store the model.
         EMFHelper.normalizeXmiIds((XMLResource)resource);

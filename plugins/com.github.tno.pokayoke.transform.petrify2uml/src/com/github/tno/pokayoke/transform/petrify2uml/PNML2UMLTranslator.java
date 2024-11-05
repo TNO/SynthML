@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
@@ -45,6 +46,9 @@ import fr.lip6.move.pnml.ptnet.Transition;
 public class PNML2UMLTranslator {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
+    /** The abstract UML activity to translate the Petri Net to. */
+    private final Activity activity;
+
     private final CifContext context;
 
     /** The mapping from Petri Net arcs to corresponding translated UML control flows. */
@@ -66,11 +70,16 @@ public class PNML2UMLTranslator {
         this(createEmptyUMLModel());
     }
 
-    public PNML2UMLTranslator(Model umlModel) {
-        this.context = new CifContext(umlModel);
+    public PNML2UMLTranslator(Activity activity) {
+        Preconditions.checkArgument(activity.isAbstract(), "Expected an abstract activity.");
+        Preconditions.checkArgument(activity.getNodes().isEmpty(), "Expected abstract activities to not have nodes.");
+        Preconditions.checkArgument(activity.getEdges().isEmpty(), "Expected abstract activities to not have edges.");
+
+        this.activity = activity;
+        this.context = new CifContext(activity.getModel());
     }
 
-    private static Model createEmptyUMLModel() {
+    private static Activity createEmptyUMLModel() {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
         model.setName("Model");
@@ -87,7 +96,7 @@ public class PNML2UMLTranslator {
         clazz.getOwnedBehaviors().add(activity);
         clazz.setClassifierBehavior(activity);
 
-        return model;
+        return activity;
     }
 
     public Map<Arc, ControlFlow> getArcMapping() {
@@ -113,7 +122,7 @@ public class PNML2UMLTranslator {
     public void translateFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
-        Activity activity = translate(petriNet);
+        translate(petriNet);
         PostProcessActivity.removeInternalActions(activity);
 
         // Write the UML activity to the output file.
@@ -122,51 +131,40 @@ public class PNML2UMLTranslator {
         FileHelper.storeModel(activity.getModel(), umlOutputFilePath.toString());
     }
 
-    public Activity translate(PetriNet petriNet) {
+    public void translate(PetriNet petriNet) {
         // According to PNML documents, each Petri Net needs to contain at least one page. Users can add multiple pages
         // to structure their Petri Net in various ways. In our transformation, we add only one page that is mandatory.
         // See more info in: https://dev.lip6.fr/trac/research/ISOIEC15909/wiki/English/User/Structure.
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected the Petri Net to have exactly one page.");
 
-        return translate(petriNet.getPages().get(0));
+        translate(petriNet.getPages().get(0));
     }
 
-    public Activity translate(Page page) {
-        // Find the UML activity to translate to.
-        List<Class> activities = context.getAllClasses(c -> c instanceof Activity a && a.isAbstract());
-        Preconditions.checkArgument(activities.size() == 1,
-                "Expected to find exactly one abstract activity, but found " + activities.size());
-
-        Activity activity = (Activity)activities.get(0);
-        Preconditions.checkArgument(activity.isAbstract(), "Expected to find an abstract activity.");
-        Preconditions.checkArgument(activity.getNodes().isEmpty(), "Expected abstract activities to not have nodes.");
-        Preconditions.checkArgument(activity.getEdges().isEmpty(), "Expected abstract activities to not have edges.");
-
-        // Translate the Petri Net to the activity.
-        translate(page, activity);
-        activity.setIsAbstract(false);
-        return activity;
-    }
-
-    private void translate(Page page, Activity activity) {
+    private void translate(Page page) {
         // Transform all Petri Net transitions.
         List<Transition> transitions = sorted(
                 page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast));
-        transitions.forEach(transition -> translate(transition, activity));
+        transitions.forEach(this::translate);
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
-        places.forEach(place -> translate(place, activity));
+        places.forEach(this::translate);
 
         // Post-process the UML activity to introduce forks and joins where needed.
-        introduceForksAndJoins(activity);
+        introduceForksAndJoins();
 
         // Rename any duplication markers by means of action renaming.
         transitionMapping.values().forEach(act -> act.setName(getNameWithoutDuplicationPostfix(act.getName())));
+
+        // Remove all preconditions, postconditions, and occurrences/optimality constraints from the activity.
+        List.copyOf(activity.getOwnedRules()).forEach(Element::destroy);
+
+        // Indicate that the activity is no longer abstract.
+        activity.setIsAbstract(false);
     }
 
-    private void translate(Transition transition, Activity activity) {
+    private void translate(Transition transition) {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
@@ -194,7 +192,7 @@ public class PNML2UMLTranslator {
         transitionMapping.put(transition, action);
     }
 
-    private void translate(Place place, Activity activity) {
+    private void translate(Place place) {
         Preconditions.checkArgument(!placeMapping.containsKey(place),
                 "Expected the given place to have not yet been translated.");
 
@@ -266,7 +264,7 @@ public class PNML2UMLTranslator {
         }
     }
 
-    private void introduceForksAndJoins(Activity activity) {
+    private void introduceForksAndJoins() {
         // Collect all action nodes in the given UML activity.
         List<Action> actions = activity.getNodes().stream().filter(Action.class::isInstance).map(Action.class::cast)
                 .toList();
