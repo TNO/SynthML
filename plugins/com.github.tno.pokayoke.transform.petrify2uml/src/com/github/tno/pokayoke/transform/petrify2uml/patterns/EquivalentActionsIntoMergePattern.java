@@ -44,10 +44,13 @@ public class EquivalentActionsIntoMergePattern {
     /**
      * Finds and rewrites all <i>equivalent actions into merge</i> patterns in the given activity.
      *
-     * @param activity The input activity.
+     * @param activity The input activity, which is modified in-place.
+     * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static void findAndRewriteAll(Activity activity) {
-        findAll(activity).forEach(EquivalentActionsIntoMergePattern::rewrite);
+    public static boolean findAndRewriteAll(Activity activity) {
+        List<EquivalentActionsIntoMergePattern> patterns = findAll(activity);
+        patterns.forEach(EquivalentActionsIntoMergePattern::rewrite);
+        return patterns.size() > 0;
     }
 
     /**

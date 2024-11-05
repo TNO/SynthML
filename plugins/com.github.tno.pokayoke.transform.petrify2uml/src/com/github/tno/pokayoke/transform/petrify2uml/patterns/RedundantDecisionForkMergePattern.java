@@ -46,10 +46,13 @@ public class RedundantDecisionForkMergePattern {
     /**
      * Finds and rewrites all redundant decision-fork-merge patterns in the given activity.
      *
-     * @param activity The input activity.
+     * @param activity The input activity, which is modified in-place.
+     * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static void findAndRewriteAll(Activity activity) {
-        findAll(activity).forEach(RedundantDecisionForkMergePattern::rewrite);
+    public static boolean findAndRewriteAll(Activity activity) {
+        List<RedundantDecisionForkMergePattern> patterns = findAll(activity);
+        patterns.forEach(RedundantDecisionForkMergePattern::rewrite);
+        return patterns.size() > 0;
     }
 
     /**

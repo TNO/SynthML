@@ -28,10 +28,13 @@ public class DoubleMergePattern {
     /**
      * Finds and rewrites all <i>double merge</i> patterns in the given activity.
      *
-     * @param activity The input activity.
+     * @param activity The input activity, which is modified in-place.
+     * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static void findAndRewriteAll(Activity activity) {
-        findAll(activity).forEach(DoubleMergePattern::rewrite);
+    public static boolean findAndRewriteAll(Activity activity) {
+        List<DoubleMergePattern> patterns = findAll(activity);
+        patterns.forEach(DoubleMergePattern::rewrite);
+        return patterns.size() > 0;
     }
 
     /**

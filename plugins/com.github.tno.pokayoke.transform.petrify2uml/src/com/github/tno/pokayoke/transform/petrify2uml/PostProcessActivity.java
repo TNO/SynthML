@@ -174,10 +174,18 @@ public class PostProcessActivity {
      * @param activity The activity to simplify, which is modified in-place.
      */
     public static void simplify(Activity activity) {
-        RedundantDecisionMergePattern.findAndRewriteAll(activity);
-        RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
-        EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
-        DoubleMergePattern.findAndRewriteAll(activity);
+        while (true) {
+            boolean changed = false;
+
+            changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity);
+            changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
+            changed |= EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
+            changed |= DoubleMergePattern.findAndRewriteAll(activity);
+
+            if (!changed) {
+                break;
+            }
+        }
     }
 
     /**
