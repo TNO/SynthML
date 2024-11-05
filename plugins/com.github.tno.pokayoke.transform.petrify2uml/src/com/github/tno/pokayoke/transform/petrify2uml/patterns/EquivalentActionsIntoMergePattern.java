@@ -70,7 +70,7 @@ public class EquivalentActionsIntoMergePattern {
      * @return Some <i>equivalent actions into merge</i> pattern in case one was found, or an empty result otherwise.
      */
     private static Optional<EquivalentActionsIntoMergePattern> findAny(ActivityNode node) {
-        if (node instanceof MergeNode mergeNode) {
+        if (node instanceof MergeNode mergeNode && mergeNode.getIncomings().size() > 1) {
             List<Action> incomingActions = new ArrayList<>(node.getIncomings().size());
 
             for (ActivityEdge controlFlow: node.getIncomings()) {
