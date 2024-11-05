@@ -105,7 +105,7 @@ Users of this semantics could later instantiate $\State$ as desired, e.g., as va
 Let $\sigma \in \State$ be a typical state.
 
 \paragraph{Guards and effects.}
-Guards are defined to be state predicates, while effects defined to be state transformers, i.e., functions that map states to any number of `successor states', to be able to model nondeterministic action behavior.
+Guards are defined to be state predicates, while effects are defined to be state transformers, i.e., functions that map states to any number of `successor states', to be able to model nondeterministic action behavior.
 
 Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Effect = \State \rightarrow 2^{\State}$ be the set of all \emph{effects} over states, with $2^{\State}$ the powerset of $\State$.
 We use $g \in \Guard$ and $u \in \Effect$ to denote a typical guard and effect, respectively.
@@ -131,7 +131,7 @@ Let $\actlabel : \Action \rightarrow \Label$, $\guard : \Action \rightarrow \Gua
 
 \paragraph{Abstract nodes.}
 Now that actions have been defined, we can define the \emph{nodes} of abstract activities, which carry out these actions during executions of the activity.
-Abstract activity nodes consist of three parts: a node identifier, a node type, and the action to perform.
+Abstract activity nodes consist of two parts: a node identifier, and a node type that also contains (wraps) the action to perform.
 The node identifiers are used to give identity to nodes, which are needed to allow having multiple nodes in an activity that perform the same action.
 In abstract activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
 An $\andlabel$-style execution of an action node requires that \emph{all} its incoming edges must have a token, and after having performed the action, \emph{all} outgoing edges will get a token (under some additional conditions that are explained later).
@@ -160,7 +160,7 @@ Let $\action : \AbstrNode \rightarrow \Action$ be a projection function for obta
 \paragraph{Abstract activities.} 
 Let us now define \emph{abstract activities}, which are essentially graphs consisting of abstract nodes, as defined in the previous paragraph, that are connected via guarded edges.
 The edge guards are (later) used to restrict when an edge can \emph{receive} a token.
-During activity execution, any edge can only receive a token in a state where the edge guard holds.
+During activity execution, any edge can only receive a token while the activity is in a state where the edge guard holds.
 This is for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
 
 More formally, abstract activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \AbstrNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \mathcal{N}}$.
@@ -193,8 +193,7 @@ We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sig
 
 Any edge $\abstredge$ is said to be \emph{enabled in $c$} if it has a token in $c$, i.e., if $\abstredge \in \Sigma$.
 If $c$ is clear from the context, we may just say that $\abstredge$ is \emph{enabled}.
-Note that the edge guards do not influence whether an edge is enabled or not.
-Instead, edge guards restrict when an edge can \emph{receive} a token (as opposed to whether they can hold a token).
+Note that edge guards control/restrict/regulate when an edge can \emph{receive} a token, as opposed to whether they can hold a token.
 
 \paragraph{Reductions.}
 Let us now define the operational semantics of abstract activities, in token passing style.
@@ -242,7 +241,7 @@ The two rules are:
 The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \andnode{\alpha}$.
 \textsc{And} has five premises.
 It requires: (1) all incoming edges into $\abstrnode$ to have a token; (2) none of the outgoing edges of $\abstrnode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effect $\effect(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
-If all five premises are met, \textsc{And} removes all tokens from $\incoming(\abstrnode)$ and puts tokens on $\outgoing(\abstrnode)$, making $\cramped{(\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode)}$ the new tokken arrangement.
+If all five premises are met, \textsc{And} removes all tokens from $\incoming(\abstrnode)$ and puts tokens on $\outgoing(\abstrnode)$, making $\cramped{(\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode)}$ the new token arrangement.
 
 
 The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \ornode{\alpha}$.
@@ -328,6 +327,9 @@ In fUML semantics, when firing an initial node, a single token is created and of
 Final nodes ($\final$) are translated likewise to initial nodes: they typically do not have outgoing edges, and in case they have multiple incoming edges, it is sufficient that one of them is enabled.
 In fUML semantics, when firing a final node, all incoming tokens are consumed  (\cite{fUMLSemantics}, page 218).
 Note that executing a final node does not mean that all edge tokens in an activity will disappear.
+For example, it may be possible that a final node is being executed while there are still tokens at other (forked) parts of the activity.
+In such cases, the execution of the final node will not mean that these other tokens dissapear.
+In other words, the execution of a final node does not necessarily mean that the activity is done executing.
 In case there are still tokens left, execution may resume.
 
 Fork nodes ($\fork$) are translated to $\andlabel$-typed nodes: their execution requires all incoming edges (usually just one) to be enabled, and puts a token on all outgoing edges (usually more than one).
@@ -344,6 +346,8 @@ Finally, action nodes are translated as $\andlabel$-typed nodes.
 This is consistent with fUML semantics which describes that, once action execution has completed, “a control token is offered on all control flows outgoing from the action”~(\cite{fUMLSemantics}, page 267).
 Moreover, in case of fUML action nodes “the semantics of the offering of a token on control flows outgoing from an action are those of an implicit fork”~(\cite{fUMLSemantics}, page 267).
 
+Appendix A of~\cite{DawC2015} shows how more complex behavior of UML activities can be defined in terms of $\andlabel$ and $\orlabel$ nodes, covering also other node types like `send' and `accept' nodes, which are out of scope for the purpose of this document.
+
 \paragraph{Edge translation.}
 The translation of edges is straightforward, and simply amounts to translating the source and target node.
 Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \ConcrNode \rightarrow \AbstrNode \times \Guard \times \AbstrNode$ be the translation function for edges, defined such that
@@ -353,8 +357,6 @@ $\denote{(n,g,n')} = (\denotn{n},g, \denotn{n'})$.
 Now that we can translate the nodes and edges of concrete activities, let us combine these translations.
 Let the translation of any concrete activity $A = (N,E)$ be defined as $\denot{A} = (\{ \denotn{n} ~|~ n \in N \}, \{ \denote{e} ~|~ e \in E \})$.
 Then the semantics of $A$ is defined to be the semantics of $\denot{A}$.
-
-Appendix A of~\cite{DawC2015} shows how more complex behavior of UML activities can be defined in terms of $\andlabel$ and $\orlabel$ nodes, covering also other node types like `send' and `accept' nodes, which are out of scope for the purpose of this document.
 
 \paragraph{Initial configuration.}
 Obviously, any execution of an activity requires some starting point.
@@ -390,8 +392,12 @@ The semantics of these extended hierarhical activities is then defined to be the
 
 \paragraph{Nonatomic actions.}
 The execution semantics of activities is defined as a single-step reduction relation, meaning that actions are executed atomically.
-We can support \emph{nonatomic actions} by splitting them into two actions which are atomic: one for starting the nonatomic action and one for ending it.
+Nevertheless, in reality, actions may not always be atomic.
+For example, an action could be the movement of a robot.
+The implication of considering this to be an atomic action, is that nothing can happen while the robot is moving.
+Hence, considering actions to always be atomic may sometimes be too strict.
 
+We can support \emph{nonatomic actions} by splitting them into two actions which are atomic: one for starting the nonatomic action and one for ending it.
 Elaborating further on that, let $\alpha \in \Action$ be an action that we want to execute nonatomically, so that $\alpha = (a, g, u)$.
 Then we can `split' $\alpha$ and $a$ into two actions: $\alpha_{\mathit{start}} = (a_{\mathit{start}}, g, \identity{\sigma})$ and $\alpha_{\mathit{end}} = (a_{\mathit{end}}, \lambda\sigma.\true, u)$.
 Finally, any activity node for executing $\alpha$ can be replaced by a node that executes $\alpha_{\mathit{start}}$, followed by a node that executes $\alpha_{\mathit{end}}$ with an edge between them.
