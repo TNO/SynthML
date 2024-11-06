@@ -72,10 +72,16 @@ public class FileHelper {
         resource.save(Collections.EMPTY_MAP);
 
         // Put the model and stereotype applications back to their original resources.
-        originalModelResource.getContents().add(model);
+        if (originalModelResource != null) {
+            originalModelResource.getContents().add(model);
+        }
 
         for (Entry<EObject, Resource> entry: originalApplicationResources.entrySet()) {
-            entry.getValue().getContents().add(entry.getKey());
+            Resource originalApplicationResource = entry.getValue();
+
+            if (originalApplicationResource != null) {
+                originalApplicationResource.getContents().add(entry.getKey());
+            }
         }
     }
 
