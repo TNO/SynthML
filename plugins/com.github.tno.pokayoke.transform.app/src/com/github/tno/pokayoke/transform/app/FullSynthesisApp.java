@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -82,8 +83,15 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
-        // Synthesize all abstract activities in the loaded UML specification.
-        List<Activity> activities = new CifContext(umlSpec).getAllAbstractActivities();
+        // Synthesize all abstract activities in the loaded UML specification in the proper order.
+        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer();
+        List<Activity> activities = orderer.computeOrder(new CifContext(umlSpec).getAllAbstractActivities(), true);
+
+        if (activities == null) {
+            String cycle = orderer.getCycle().stream().map(Activity::getName).collect(Collectors.joining(" -> "));
+            throw new RuntimeException(String.format(
+                    "Expected to find no cyclic dependencies in the activities to synthesize, but found '%s'.", cycle));
+        }
 
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
