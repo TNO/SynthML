@@ -650,7 +650,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior behavior) {
-                    if (!context.hasOpaqueBehavior(behavior)) {
+                    if (!context.hasElement(behavior)) {
                         error("Expected the constrained opaque behavior to be in scope.",
                                 UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                     }

@@ -135,8 +135,14 @@ public class CifContext {
         return null;
     }
 
-    public boolean hasOpaqueBehavior(OpaqueBehavior behavior) {
-        return getAllElements().contains(behavior);
+    /**
+     * Checks whether the context contains the given element.
+     *
+     * @param element The input element.
+     * @return {@code true} if the given element is in this context, {@code false} otherwise.
+     */
+    public boolean hasElement(Element element) {
+        return getAllElements().contains(element);
     }
 
     public boolean hasOpaqueBehaviors() {
