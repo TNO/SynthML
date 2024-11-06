@@ -649,13 +649,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             CifContext context = new CifContext(constraint);
 
             for (Element element: constraint.getConstrainedElements()) {
-                if (element instanceof OpaqueBehavior behavior) {
-                    if (!context.hasElement(behavior)) {
-                        error("Expected the constrained opaque behavior to be in scope.",
+                if (element instanceof OpaqueBehavior || element instanceof Activity) {
+                    if (!context.hasElement(element)) {
+                        error("Expected the constrained behavior to be in scope.",
                                 UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                     }
                 } else {
-                    error("Expected interval constraints to constrain only opaque behaviors.",
+                    error("Expected interval constraints to constrain only opaque behaviors or activities.",
                             UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                 }
             }
