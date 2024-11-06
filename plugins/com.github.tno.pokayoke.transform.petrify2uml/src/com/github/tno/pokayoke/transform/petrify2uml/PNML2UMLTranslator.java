@@ -67,7 +67,7 @@ public class PNML2UMLTranslator {
     private final Map<ControlFlow, PnObject> controlFlowMapping = new LinkedHashMap<>();
 
     public PNML2UMLTranslator() {
-        this(createEmptyUMLModel());
+        this(createEmptyUMLModelWithActivity());
     }
 
     public PNML2UMLTranslator(Activity activity) {
@@ -79,7 +79,7 @@ public class PNML2UMLTranslator {
         this.context = new CifContext(activity.getModel());
     }
 
-    private static Activity createEmptyUMLModel() {
+    private static Activity createEmptyUMLModelWithActivity() {
         // Create a UML model and initialize it.
         Model model = UML_FACTORY.createModel();
         model.setName("Model");
