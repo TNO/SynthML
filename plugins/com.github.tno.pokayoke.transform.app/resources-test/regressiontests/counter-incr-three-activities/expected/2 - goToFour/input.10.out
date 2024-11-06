@@ -1,0 +1,26 @@
+.model minimal
+.dummy  initialize initialize__na_result_1 initialize__na_result_2 incr1 incr2 __start __end __loop
+.graph
+__end p9
+__loop p9
+__start p2
+incr1 p8
+incr1/1 p7
+incr1/2 p6
+incr2 p8
+incr2/1 p8
+incr2/2 p7
+initialize p3
+initialize__na_result_1 p4
+initialize__na_result_2 p5
+p1 __start
+p2 initialize
+p3 initialize__na_result_1 initialize__na_result_2
+p4 incr1/2 incr2/2
+p5 incr1/1 incr2/1
+p6 incr2
+p7 incr1
+p8 __end
+p9 __loop
+.marking { p1 }
+.end

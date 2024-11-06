@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="14" isActive="true">
+      <nameExpression xmi:id="3" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="4" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="5" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="6" name="done_a" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="9" name="done_b" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="main" node="34 35 36 37 38 39 40 41 42 43 44 45 46 47">
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="InitialNode__p1__to____start" target="35" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Decision__p2__to__do_a" target="36" source="43">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="17" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p2__to__do_b/1" target="39" source="43">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="19" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="__start__to__Decision__p2" target="43" source="35"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="do_a__to__do_b" target="38" source="36"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Decision__p4__to__do_a/1" target="37" source="44">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="23" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p4__to__do_b__na_result_1/1" target="41" source="44">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="25" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="do_b/1__to__Decision__p4" target="44" source="39"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="do_a/1__to__Merge__p5" target="45" source="37"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="do_b__to__Merge__p5" target="45" source="38"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Merge__p5__to__do_b__na_result_1" target="40" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" name="do_b__na_result_1/1__to__Merge__p6" target="46" source="41"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="do_b__na_result_1__to__Merge__p6" target="46" source="40"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Merge__p6__to____end" target="34" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="__end__to__FinalNode__p7" target="47" source="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="34" name="__end" incoming="32" outgoing="33"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="35" name="__start" incoming="15" outgoing="20"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="36" name="do_a" incoming="16" outgoing="21" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="37" name="do_a" incoming="22" outgoing="27" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="38" name="do_b" incoming="21" outgoing="28" behavior="13"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="39" name="do_b" incoming="18" outgoing="26" behavior="13"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="do_b__na_result_1" incoming="29" outgoing="31"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="41" name="do_b__na_result_1" incoming="24" outgoing="30"/>
+        <node xmi:type="uml:InitialNode" xmi:id="42" name="InitialNode__p1" outgoing="15"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="43" name="Decision__p2" incoming="20" outgoing="16 18"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="44" name="Decision__p4" incoming="26" outgoing="22 24"/>
+        <node xmi:type="uml:MergeNode" xmi:id="45" name="Merge__p5" incoming="27 28" outgoing="29"/>
+        <node xmi:type="uml:MergeNode" xmi:id="46" name="Merge__p6" incoming="30 31" outgoing="32"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="47" name="FinalNode__p7" incoming="33"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="48">
+      <eAnnotations xmi:id="49" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="50" guard="not done_a and not done_b" base_RedefinableElement="12" atomic="true">
+    <effects>done_a := true&#xD;
+</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="51" guard="not done_b" base_RedefinableElement="13">
+    <effects>done_b := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

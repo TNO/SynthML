@@ -3,7 +3,10 @@ package com.github.tno.pokayoke.transform.common;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFile;
@@ -53,17 +56,33 @@ public class FileHelper {
 
     public static void storeModel(Model model, URI uri) throws IOException {
         // Build the resource to store.
+        Resource originalModelResource = model.eResource();
         Resource resource = createModelResourceSet().createResource(uri);
         resource.getContents().add(model);
 
-        // Also add the UML profiles information to the resource
+        // Also add the UML profiles information to the resource.
         List<EObject> stereotypeApplications = model.allOwnedElements().stream()
                 .flatMap(e -> e.getStereotypeApplications().stream()).collect(Collectors.toList());
+        Map<EObject, Resource> originalApplicationResources = new LinkedHashMap<>();
+        stereotypeApplications.forEach(e -> originalApplicationResources.put(e, e.eResource()));
         resource.getContents().addAll(stereotypeApplications);
 
         // Store the model.
         EMFHelper.normalizeXmiIds((XMLResource)resource);
         resource.save(Collections.EMPTY_MAP);
+
+        // Put the model and stereotype applications back to their original resources.
+        if (originalModelResource != null) {
+            originalModelResource.getContents().add(model);
+        }
+
+        for (Entry<EObject, Resource> entry: originalApplicationResources.entrySet()) {
+            Resource originalApplicationResource = entry.getValue();
+
+            if (originalApplicationResource != null) {
+                originalApplicationResource.getContents().add(entry.getKey());
+            }
+        }
     }
 
     public static ResourceSet createModelResourceSet() {

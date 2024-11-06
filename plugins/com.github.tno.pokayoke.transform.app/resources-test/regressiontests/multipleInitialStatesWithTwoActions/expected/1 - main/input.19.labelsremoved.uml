@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="11" isActive="true">
+      <ownedAttribute xmi:id="3" name="field1" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="6" name="field2" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="9">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="10" name="left">
+        <body>not field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="11" name="main" node="20 21 22 23 24 25">
+        <edge xmi:type="uml:ControlFlow" xmi:id="12" target="20" source="23">
+          <name xsi:nil="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="13">
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="14" target="21" source="23">
+          <name xsi:nil="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="15">
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" target="24" source="20">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="24" source="21">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="25" source="24">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="23" source="22">
+          <name xsi:nil="true"/>
+        </edge>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="20" name="left" incoming="12" outgoing="16" behavior="10"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="21" name="right" incoming="14" outgoing="17" behavior="26"/>
+        <node xmi:type="uml:InitialNode" xmi:id="22" outgoing="19">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="23" incoming="19" outgoing="12 14">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="24" incoming="16 17" outgoing="18">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="25" incoming="18">
+          <name xsi:nil="true"/>
+        </node>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="26" name="right">
+        <body>field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="27">
+      <eAnnotations xmi:id="28" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="29" guard="not field1" base_RedefinableElement="10" atomic="true">
+    <effects>field2 := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="30" guard="field1" base_RedefinableElement="26" atomic="true">
+    <effects>field2 := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

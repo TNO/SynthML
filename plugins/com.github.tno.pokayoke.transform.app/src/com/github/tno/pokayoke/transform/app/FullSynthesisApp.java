@@ -60,6 +60,9 @@ import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -79,8 +82,23 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
+        // Synthesize all abstract activities in the loaded UML specification.
+        List<Activity> activities = new CifContext(umlSpec).getAllAbstractActivities();
+
+        for (int i = 0; i < activities.size(); i++) {
+            Activity activity = activities.get(i);
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
+            Path localOutputPath = outputFolderPath.resolve(String.format("%d - %s", i + 1, activity.getName()));
+            Files.createDirectories(localOutputPath);
+            performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
+        }
+    }
+
+    public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
+            List<String> warnings) throws IOException, CoreException
+    {
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(umlSpec);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -250,8 +268,8 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
-        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(umlSpec);
-        Activity activity = petriNet2Activity.translate(petriNet);
+        PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
+        petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Get a map from UML control flows to the choice guards that have been computed for them.

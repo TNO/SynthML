@@ -1,0 +1,44 @@
+controllable initialize;
+uncontrollable initialize__na_result_1;
+uncontrollable initialize__na_result_2;
+controllable incr1;
+controllable incr2;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __start, __end;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected = "s2")
+  location s2:
+    edge initialize goto s4;
+  @state(projected = "s12")
+  location s3:
+    marked;
+  @state(projected = "s3")
+  location s4:
+    edge initialize__na_result_2 goto s5;
+    edge initialize__na_result_1 goto s6;
+  @state(projected = "s4")
+  location s5:
+    edge incr2 goto s9;
+    edge incr1 goto s7;
+  @state(projected = "s5")
+  location s6:
+    edge incr2 goto s7;
+    edge incr1 goto s8;
+  @state(projected = "s6")
+  @state(projected = "s9")
+  location s7:
+    edge incr1 goto s9;
+  @state(projected = "s7")
+  location s8:
+    edge incr2 goto s9;
+  @state(projected = "s8")
+  @state(projected = "s10")
+  @state(projected = "s11")
+  location s9:
+    edge __end goto s3;
+end
