@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 
-import com.github.tno.pokayoke.transform.uml.UMLTransformer;
+import com.github.tno.pokayoke.transform.uml2cameo.UMLTransformer;
 
 public class Uml2CameoTranslationApp {
     private Uml2CameoTranslationApp() {

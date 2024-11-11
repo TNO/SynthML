@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.uml;
+package com.github.tno.pokayoke.transform.uml2cameo;
 
 import java.util.List;
 import java.util.Optional;
