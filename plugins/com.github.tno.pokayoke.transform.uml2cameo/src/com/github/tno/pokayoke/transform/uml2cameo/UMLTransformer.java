@@ -57,8 +57,8 @@ import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 /**
- * Transforms UML models that are annotated with guards, effects, preconditions, etc., to valid and executable UML, in
- * the sense that all such annotations are translated to valid UML. The annotation language is assumed to be CIF.
+ * Transforms UML models that are annotated with guards, effects, preconditions, etc., to UML models that can be
+ * simulated using Cameo. The annotation language is assumed to be CIF.
  */
 public class UMLTransformer {
     /** Name for the lock class. */
