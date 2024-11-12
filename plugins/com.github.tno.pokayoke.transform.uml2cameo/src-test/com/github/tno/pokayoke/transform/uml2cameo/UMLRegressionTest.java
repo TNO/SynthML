@@ -31,6 +31,6 @@ class UMLRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        UMLTransformer.transformFile(inputPath, outputPath);
+        UMLToCameoTransformer.transformFile(inputPath, outputPath);
     }
 }

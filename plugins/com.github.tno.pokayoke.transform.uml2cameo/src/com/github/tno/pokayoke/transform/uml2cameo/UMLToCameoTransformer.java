@@ -60,7 +60,7 @@ import com.google.common.base.Preconditions;
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to UML models that can be
  * simulated using Cameo. The annotation language is assumed to be CIF.
  */
-public class UMLTransformer {
+public class UMLToCameoTransformer {
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
@@ -72,7 +72,7 @@ public class UMLTransformer {
 
     private final Map<String, Range<Integer>> propertyBounds;
 
-    public UMLTransformer(Model model) {
+    public UMLToCameoTransformer(Model model) {
         this.model = model;
         this.cifContext = new CifContext(this.model);
         this.translator = new CifToPythonTranslator(this.cifContext);
@@ -91,7 +91,7 @@ public class UMLTransformer {
         String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
         Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
         Model model = FileHelper.loadModel(sourcePath.toString());
-        new UMLTransformer(model).transformModel();
+        new UMLToCameoTransformer(model).transformModel();
         FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
