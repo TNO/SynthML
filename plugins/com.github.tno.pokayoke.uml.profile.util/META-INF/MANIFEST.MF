@@ -7,6 +7,8 @@ Export-Package: com.github.tno.pokayoke.uml.profile.cif,
  com.github.tno.pokayoke.uml.profile.transform;x-friends:="com.github.tno.pokayoke.transform.app.ui",
  com.github.tno.pokayoke.uml.profile.util,
  com.github.tno.pokayoke.uml.profile.validation;x-internal:=true
+Import-Package: org.junit;version="4.13.2",
+ org.junit.jupiter.api;version="5.9.3"
 Require-Bundle: com.github.tno.pokayoke.uml.profile.plugin;bundle-version="0.0.1";visibility:=reexport,
  com.github.tno.pokayoke.cif.parser;bundle-version="0.0.0";visibility:=reexport,
  org.eclipse.escet.setext.runtime;bundle-version="3.0.0";visibility:=reexport,
