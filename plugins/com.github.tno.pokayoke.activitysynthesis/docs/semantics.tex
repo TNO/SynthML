@@ -236,8 +236,6 @@ The two rules are:
 	}
 \end{mathpar}
 
-%new
-
 The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \andnode{\alpha}$.
 \textsc{And} has five premises.
 It requires: (1) all incoming edges into $\abstrnode$ to have a token; (2) none of the outgoing edges of $\abstrnode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effect $\effect(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
