@@ -39,8 +39,8 @@
 \newcommand{\denot}[1]{[\![#1]\!]}
 \newcommand{\denote}[1]{\denot{#1}_\textsf{e}}
 \newcommand{\denotn}[1]{\denot{#1}_\textsf{n}}
-\newcommand{\Effect}[0]{\textsf{Effect}}
-\newcommand{\effect}[0]{\textsf{effect}}
+\newcommand{\Effects}[0]{\textsf{Effects}}
+\newcommand{\effects}[0]{\textsf{effects}}
 \newcommand{\enabled}[0]{\textsf{enabled}}
 \newcommand{\fork}[0]{\textsf{fork}}
 \newcommand{\final}[0]{\textsf{final}}
@@ -73,7 +73,7 @@
 
 This document defines a concise token passing style operational semantics of (simple UML-like) activities.
 These activities and their semantics are slightly different from fUML activities.
-For example, every action has an associated guard and effect that specify how action execution influences the system state.
+For example, every action has an associated guard and effects that specify how action execution influences the system state.
 
 The strategy for defining the operational semantics of activities is to first define a notion of \emph{abstract activities} (\autoref{sec:abstractivities}) with an intuitive and concise semantics, and then define the semantics of concrete UML activities by means of translating them to abstract activities (\autoref{sec:concractivities}).
 
@@ -107,26 +107,27 @@ Let $\sigma \in \State$ be a typical state.
 \paragraph{Guards and effects.}
 Guards are defined to be state predicates, while effects are defined to be state transformers, i.e., functions that map states to any number of `successor states', to be able to model nondeterministic action behavior.
 
-Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Effect = \State \rightarrow 2^{\State}$ be the set of all \emph{effects} over states, with $2^{\State}$ the powerset of $\State$.
-We use $g \in \Guard$ and $u \in \Effect$ to denote a typical guard and effect, respectively.
+Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Effects = \State \rightarrow 2^{\State}$ be the set of all \emph{effects functions} over states, with $2^{\State}$ the powerset of $\State$.
+We use $g \in \Guard$ and $u \in \Effects$ to denote a typical guard and effects function, respectively.
 
 \paragraph{Actions.}
 The main building blocks of activities are the action nodes, which are nodes that carry out a certain \emph{action}.
-Any action consists of three parts: an action label to identify it, a guard that must hold in order for the action to be performed, and an effect that determines possible successor states after having performed the action.
-For any action it holds that, if its guard does not hold, or if there is no successor state determined by the effect (i.e., the effect maps to an empty set), then the action cannot be performed.
+Any action consists of three parts: an action label to identify it, a guard that must hold in order for the action to be performed, and an effects function that determines possible successor states after having performed the action.
+For any action it holds that, if its guard does not hold, or if there is no successor state determined by the effects (i.e., the effects function maps to an empty set), then the action cannot be performed.
 In case action execution leads to multiple possible successor states, one of them will be selected nondeterministically, which is further explained in \autoref{sec:abstrdynamics}.
 
-More formally, let $\Action = \cramped{\Label \times \Guard \times \Effect}$ be the set of all \emph{actions}, where $\Label$ is the set of all \emph{action labels}.
+More formally, let $\Action = \cramped{\Label \times \Guard \times \Effects}$ be the set of all \emph{actions}, where $\Label$ is the set of all \emph{action labels}.
 We use $a \in \Label$ to denote a typical label, and $\alpha \in \Action$ to denote a typical action, such that $\alpha = (a, g, u)$.
-So actions are triples consisting of an action label $a$, a guard $g$, and effect $u$.
+So actions are triples consisting of an action label $a$, a guard $g$, and effects function $u$.
+Instead of effects function, we may say that $u$ are the \emph{effects of $\alpha$}.
 
-Let $\actlabel : \Action \rightarrow \Label$, $\guard : \Action \rightarrow \Guard$, and $\effect : \Action \rightarrow \Effect$ be projection functions that give the label, guard, and effect of any action, respectively, so that:
+Let $\actlabel : \Action \rightarrow \Label$, $\guard : \Action \rightarrow \Guard$, and $\effects : \Action \rightarrow \Effects$ be projection functions that give the label, guard, and effects function of any action, respectively, so that:
 \begin{mathpar}
 	\actlabel((a, g, u)) = a
 	\and
 	\guard((a, g, u)) = g
 	\and
-	\effect((a, g, u)) = u
+	\effects((a, g, u)) = u
 \end{mathpar}
 
 \paragraph{Abstract nodes.}
@@ -212,7 +213,7 @@ The two rules are:
 		\\
 		\guard(\alpha)(\sigma)
 		\\
-		\sigma' \in \effect(\alpha)(\sigma)
+		\sigma' \in \effects(\alpha)(\sigma)
 		\\
 		\outgoing(\abstrnode) = \outgoing(\abstrnode, \sigma')
 	} {
@@ -228,7 +229,7 @@ The two rules are:
 		\\
 		\guard(\alpha)(\sigma)
 		\\
-		\sigma' \in \effect(\alpha)(\sigma)
+		\sigma' \in \effects(\alpha)(\sigma)
 	} {
 		(\Sigma,\sigma) \xrightarrow{\abstrnode} ((\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}, \sigma')
 	} { 
@@ -238,13 +239,13 @@ The two rules are:
 
 The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \andnode{\alpha}$.
 \textsc{And} has five premises.
-It requires: (1) all incoming edges into $\abstrnode$ to have a token; (2) none of the outgoing edges of $\abstrnode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effect $\effect(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
+It requires: (1) all incoming edges into $\abstrnode$ to have a token; (2) none of the outgoing edges of $\abstrnode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
 If all five premises are met, \textsc{And} removes all tokens from $\incoming(\abstrnode)$ and puts tokens on $\outgoing(\abstrnode)$, making $\cramped{(\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode)}$ the new token arrangement.
 
 
 The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \ornode{\alpha}$.
 \textsc{Or} has four premises.
-It requires: (1) the existence of an incoming edge $\abstredge$ of $\abstrnode$ that is enabled; (2) the existence of an outgoing edge $\abstredge'$ of $\abstrnode$ that is not enabled unless it equals $\abstredge$, and whose guard holds with respect to $\sigma'$; (3) the guard of $\alpha$ to hold with respect to the current state $\sigma$; and (4) a successor state $\sigma'$ to be available from $\alpha$'s effect.
+It requires: (1) the existence of an incoming edge $\abstredge$ of $\abstrnode$ that is enabled; (2) the existence of an outgoing edge $\abstredge'$ of $\abstrnode$ that is not enabled unless it equals $\abstredge$, and whose guard holds with respect to $\sigma'$; (3) the guard of $\alpha$ to hold with respect to the current state $\sigma$; and (4) a successor state $\sigma'$ to be available from $\alpha$'s effects.
 The \textsc{Or} rule allows multiple input edges to be enabled, but only one of them will participate per application of the \textsc{Or} rule.
 Similarly, if multiple outgoing edges could potentially participate, one of them actually participates.
 If all five premises are met, \textsc{Or} removes the token from $\abstredge$ and puts it on $\abstredge'$, making $\cramped{(\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}}$ the new arrangement of tokens.
@@ -278,7 +279,7 @@ Let $\ConcrNode = \cramped{\NodeID \times \ConcrNodeType}$ be the set of all \em
 $$\ConcrNodeType ::= \init ~|~ \final ~|~ \fork ~|~ \join ~|~ \decision ~|~ \merge ~|~ \act(\alpha)$$
 
 We denote a typical activity node by $n \in \ConcrNode$.
-Action-typed nodes $\act(\alpha)$ closely relate to opaque actions in UML in the sense that their execution updates the current state according to $\alpha$ (possibly nondeterministically so in case $\alpha$'s effect has multiple successor states to choose from).
+Action-typed nodes $\act(\alpha)$ closely relate to opaque actions in UML in the sense that their execution updates the current state according to $\alpha$ (possibly nondeterministically so in case $\alpha$'s effects has multiple successor states to choose from).
 The other node types are standard in UML: initial and final nodes ($\init$ and $\final$), fork and join nodes ($\fork$ and $\join$), and decision and merge nodes ($\decision$ and $\merge$)
 
 \paragraph{Activities.}
@@ -301,7 +302,7 @@ First we translate activity nodes.
 We do this by defining a translation function $\denotn{~\cdot~} : \ConcrNode \rightarrow \AbstrNode$ that translates concrete nodes to abstract nodes.
 To be able to define this translation function, we assume that the set $\Label$ of action labels is chosen in such a way to contain `reserved labels' for all concrete node types, so that $\ConcrNodeType \subseteq \Label$.
 
-Let $\denotn{~\cdot~}$ be defined as follows, where $\lambda\sigma.\true$ is the constant guard that is always $\true$, and $\identity{\sigma}$ is the identity effect that does not change the state:
+Let $\denotn{~\cdot~}$ be defined as follows, where $\lambda\sigma.\true$ is the constant guard that is always $\true$, and $\identity{\sigma}$ is the identity effects function that does not change the state:
 \begin{mathpar}
 	\denotn{(\ell, \init)} = (\ell,\ornode{(\init, \lambda\sigma.\true, \identity{\sigma})})
 	\and
@@ -369,7 +370,7 @@ Let $A = (N,E)$ be an activity.
 Then $(\{\abstredge\}, \sigma_I) \in \Config$ is defined to be an \emph{initial configuration of $A$} for any choice of initial state $\sigma_I \in \State$, if there exists an initial node $(\ell, \init) \in N$ such that $\abstredge \in \outgoing(\denotn{(\ell, \init)},\sigma_I)$.
 In other words, any outgoing edge of any initial node can form an initial configuration together with some initial state $\sigma_I$, given that this edge is allowed by its guard to receive an (initial) token in the initial state $\sigma_I$.
 This initial state $\sigma_I$ could for example be chosen to be the initial valuation of all variables defined in the context of $A$.
-Recall that the current definitions abstract over details like variables and their values\footnote{We are not going to define a custom expression/effect language and its semantics. There are plenty of good existing languages that could be picked off-the-shelf, like for example CIF.}.
+Recall that the current definitions abstract over details like variables and their values\footnote{We are not going to define a custom expression/effects language and its semantics. There are plenty of good existing languages that could be picked off-the-shelf, like for example CIF.}.
 The formalization could later be instantiated with such details.
 
 \subsection{Extensions}
@@ -415,7 +416,7 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	In fUML, action nodes are not guarded and do not have a waiting semantics.
 	Instead of waiting, in fUML, the activity typically terminates whenever a state is encountered in which no immediate progress can be made, e.g., in case of decision nodes where none of the outgoing edges can be taken.
 	\item Nodes of type $\act(\alpha)$ execute \emph{atomically}.
-	In particular, this means that $\effect(\alpha)$ is executed without interference from effects of other nodes.
+	In particular, this means that $\effects(\alpha)$ is executed without interference from effects of other nodes.
 	In fUML atomicity is not guaranteed.
 	Instead, fUML semantics only guarantees that nodes in-between a fork and a join are executed after forking and before joining.
 	\item In fUML the edges out of decision nodes have a declaration order, and the first enabled edge in the declaration order is taken\footnote{We could not directly find this clearly stated in~\cite{fUMLSemantics}. However, this is how the Cameo simulator handles decision nodes, and it claims to implement fUML semantics. Therefore, we assume that this statement is true in fUML.}.
@@ -446,7 +447,7 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\mathcal{A}$ & An abstract activity \\
 	$A$ & A concrete (UML-like) activity \\
 	$a$ & An action label \\
-	$\alpha$ & An action, consisting of an action label, a guard and an effect \\
+	$\alpha$ & An action, consisting of an action label, a guard and an effects function \\
 	$\andnode{\alpha}$ & An abstract node type describing an $\andlabel$-style execution of $\alpha$ \\
 	$\textsf{call}$ & A call action node (extension) \\
 	$\Config$ & The set of all configurations \\
@@ -456,8 +457,8 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\denote{~\cdot~}$ & Operation for translating concrete activity edges to abstract ones \\
 	$\denotn{~\cdot~}$ & Operation for translating concrete activity nodes to abstract ones \\
 	$\decision$ & The decision node type of concrete activities \\
-	$\Effect$ & The set of all effects \\
-	$\effect$ & Projection function for obtaining the effect of an action \\
+	$\Effects$ & The set of all effects functions \\
+	$\effects$ & Projection function for obtaining the effects of an action \\
 	$\mathcal{E}$ & A set of abstract edges of an abstract activity \\
 	$E$ & A set of concrete edges of a concrete (UML-like) activity \\
 	$\abstredge$ & An abstract edge of an abstract activity \\
@@ -490,7 +491,7 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\State$ & The set of all states \\
 	$\target$ & Projection function for getting the target node of an edge \\
 	$\outgoing$ & Function for getting all outgoing edges of a node \\
-	$u$ & An effect, mapping a state to zero or more successor states \\
+	$u$ & An effects function, mapping a state to zero or more successor states \\
 	$\rightarrow$ & Reduction relation defining the semantics of abstract activities \\
 	$\xrightarrow{\alpha}$ & Reduction relation for an abstract node with action $\alpha$ \\
 	$\xrightarrow{\abstrnode}$ & Reduction relation for an abstract node $\abstrnode$ \\
