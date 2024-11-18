@@ -28,7 +28,7 @@
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dAXzwYVbEe-gYdJCmVBD_w" value="1"/>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_w8FHgIVLEe-HIdCvg2MCoQ" name="operation"/>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_14G8oIVLEe-HIdCvg2MCoQ" name="main" node="_4Id1sIVLEe-HIdCvg2MCoQ _5peVcIVLEe-HIdCvg2MCoQ _6ZonEIVLEe-HIdCvg2MCoQ">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_14G8oIVLEe-HIdCvg2MCoQ" name="Main" node="_4Id1sIVLEe-HIdCvg2MCoQ _5peVcIVLEe-HIdCvg2MCoQ _6ZonEIVLEe-HIdCvg2MCoQ">
         <edge xmi:type="uml:ControlFlow" xmi:id="_8TZlEIVLEe-HIdCvg2MCoQ" target="_5peVcIVLEe-HIdCvg2MCoQ" source="_4Id1sIVLEe-HIdCvg2MCoQ">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_8TaMIIVLEe-HIdCvg2MCoQ" name="_To__guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_8TazMIVLEe-HIdCvg2MCoQ" name="_To__weight"/>

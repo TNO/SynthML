@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.escet.cif.parser.CifScanner;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
@@ -52,6 +50,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
@@ -690,43 +689,25 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         return PokaYokeUmlProfileUtil.getAppliedProfile(element, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isPresent();
     }
 
-    // check if UML model names are not reserved keywords in CIF or GAL
+    /**
+     * Checks if the names that are being used in the given UML model are not reserved keywords in CIF, GAL, or Petrify.
+     *
+     * @param model The UML model to check.
+     */
     @Check
     private void checkReservedKeywords(Model model) {
         QueryableIterable<NamedElement> elements = CifContext.queryContextElements(model);
 
         for (NamedElement element: elements) {
-            if (isReservedKeyword(element.getName())) {
-                // Throw validation error
-                error("Name matching keyword " + element.getName(), element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+            // Primitives (integers) are bounded between a min and a max value. These automatically generate a
+            // constraint named "min" and "max", which clash with the reserved keywords. Skip the check for these.
+            if (element instanceof Constraint constraint && constraint.getContext() instanceof PrimitiveType) {
+                continue;
+            }
+            if (NameHelper.isReservedKeyword(element.getName())) {
+                error("Name matching keyword \"" + element.getName() + "\"", element,
+                        UMLPackage.Literals.NAMED_ELEMENT__NAME);
             }
         }
-    }
-
-    public static boolean isReservedKeyword(String name) {
-        // get CIF Keywords
-        String[] cifReservedKeywords = CifScanner.getKeywords("Keywords");
-        // get GAL keywords
-        /*
-         * could not find a scanner nor parser for GAL reserved keywords. however, the keywords can be found at
-         * https://github.com/lip6/ITSTools/blob/ed8570b7c72125043c86f1bfc0e46e580e14ec8c/fr.lip6.move.gal.web/WebRoot/
-         * xtext-resources/generated/gal-syntax.js#L2
-         *
-         */
-        String[] galReservedKeywords = new String[] {"A", "AF", "AG", "AX", "E", "EF", "EG", "EX", "F", "G", "GAL", "M",
-                "R", "TRANSIENT", "U", "W", "X", "abort", "alias", "array", "atom", "bounds", "composite", "ctl",
-                "else", "extends", "false", "fixpoint", "for", "gal", "hotbit", "if", "import", "int", "interface",
-                "invariant", "label", "ltl", "main", "never", "predicate", "property", "reachable", "self",
-                "synchronization", "transition", "true", "typedef"};
-
-        // Petrify uses . (dot) before its keywords. So check if name start with .
-        // if name is contained in the keywords, return true
-        if (ArrayUtils.contains(cifReservedKeywords, name) || ArrayUtils.contains(galReservedKeywords, name)
-                || name.startsWith("."))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

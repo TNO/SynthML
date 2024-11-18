@@ -10,7 +10,7 @@
       <ownedAttribute xmi:id="_4VtE0PyxEe6PXdoEuB4CNA" name="myEnum" visibility="public" type="_ymv98PyxEe6PXdoEuB4CNA">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4VtE0fyxEe6PXdoEuB4CNA" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4VtE0vyxEe6PXdoEuB4CNA" value="1"/>
-        <defaultValue xmi:type="uml:LiteralString" xmi:id="_-svfYPyxEe6PXdoEuB4CNA" value="A"/>
+        <defaultValue xmi:type="uml:LiteralString" xmi:id="_K0TOMKNSEe-x3qa8fYldpg" name="Left"/>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_aLnRgPzBEe6_EqZz5uEyNA" name="Expressions" node="_g1JKQPzBEe6_EqZz5uEyNA _i_p6APzBEe6_EqZz5uEyNA _jx_V4PzBEe6_EqZz5uEyNA">
         <edge xmi:type="uml:ControlFlow" xmi:id="_P37lwPzCEe6_EqZz5uEyNA" target="_jx_V4PzBEe6_EqZz5uEyNA" source="_g1JKQPzBEe6_EqZz5uEyNA">
@@ -29,8 +29,8 @@
       </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_ymv98PyxEe6PXdoEuB4CNA" name="Location" visibility="public">
-      <ownedLiteral xmi:id="_zaCcEPyxEe6PXdoEuB4CNA" name="A"/>
-      <ownedLiteral xmi:id="_zouYUPyxEe6PXdoEuB4CNA" name="B"/>
+      <ownedLiteral xmi:id="_zaCcEPyxEe6PXdoEuB4CNA" name="Left"/>
+      <ownedLiteral xmi:id="_zouYUPyxEe6PXdoEuB4CNA" name="Right"/>
     </packagedElement>
     <profileApplication xmi:id="_JgrIwPzCEe6_EqZz5uEyNA">
       <eAnnotations xmi:id="_JgtlAPzCEe6_EqZz5uEyNA" source="http://www.eclipse.org/uml2/2.0.0/UML">
@@ -39,9 +39,9 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = A" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA" atomic="true">
-    <effects>myEnum := B,&#xD;
-myBool := (true != not true) and (myEnum = B or myBool = (false and false))&#xD;
+  <PokaYoke:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = Left" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA" atomic="true">
+    <effects>myEnum := Right,&#xD;
+myBool := (true != not true) and (myEnum = Right or myBool = (false and false))&#xD;
 </effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

@@ -13,10 +13,10 @@ gal MyModel__Context{
     __init = 1    ;
     intA1 = $intA1    ;
   }
-  transition __ActivityFinalNode_main__ActivityFinalNode__1 [ __init == 1 && 1 <= intA1 && intA1 <= 10 && 1 <= intA2 && intA2 <= 10 && 11 <= intB1 && intB1 <= 21 && __edge__1 == 1 ] {
+  transition __ActivityFinalNode_Main__ActivityFinalNode__1 [ __init == 1 && 1 <= intA1 && intA1 <= 10 && 1 <= intA2 && intA2 <= 10 && 11 <= intB1 && intB1 <= 21 && __edge__1 == 1 ] {
     __edge__1 = 0    ;
   }
-  transition __OpaqueAction_main__MyAction__2 [ __init == 1 && intA2 < 8 && 1 <= intA1 && intA1 <= 10 && 1 <= intA2 && intA2 <= 10 && 11 <= intB1 && intB1 <= 21 && __edge__0 == 1 && __edge__1 == 0 ] {
+  transition __OpaqueAction_Main__MyAction__2 [ __init == 1 && intA2 < 8 && 1 <= intA1 && intA1 <= 10 && 1 <= intA2 && intA2 <= 10 && 11 <= intB1 && intB1 <= 21 && __edge__0 == 1 && __edge__1 == 0 ] {
     intA1 = ( intA1 + 1 )    ;
     intB1 = 16    ;
     __edge__0 = 0    ;

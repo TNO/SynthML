@@ -19,7 +19,7 @@
           <body>0</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_5meBgIYLEe-MaK7xt-_c5w" name="main" node="_9Qv64IYLEe-MaK7xt-_c5w _9_hscIYLEe-MaK7xt-_c5w _F1BCAIYMEe-MaK7xt-_c5w _HJGgEIYMEe-MaK7xt-_c5w _TqEUAIYREe-MaK7xt-_c5w _Wqn68IYREe-MaK7xt-_c5w">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_5meBgIYLEe-MaK7xt-_c5w" name="Main" node="_9Qv64IYLEe-MaK7xt-_c5w _9_hscIYLEe-MaK7xt-_c5w _F1BCAIYMEe-MaK7xt-_c5w _HJGgEIYMEe-MaK7xt-_c5w _TqEUAIYREe-MaK7xt-_c5w _Wqn68IYREe-MaK7xt-_c5w">
         <edge xmi:type="uml:ControlFlow" xmi:id="_IySrcIYMEe-MaK7xt-_c5w" target="_HJGgEIYMEe-MaK7xt-_c5w" source="_9Qv64IYLEe-MaK7xt-_c5w">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_IyTSgIYMEe-MaK7xt-_c5w" name="_To__guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_IyUgoIYMEe-MaK7xt-_c5w" name="_To__weight"/>
