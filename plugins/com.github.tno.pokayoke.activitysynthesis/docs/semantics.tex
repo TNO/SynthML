@@ -21,10 +21,6 @@
 \newtheorem{example}{Example}[section]
 \newtheorem{lemma}{Lemma}[section]
 
-\newcommand{\abstredge}[0]{\varepsilon}
-\newcommand{\AbstrNode}[0]{\textsf{AbstrNode}}
-\newcommand{\AbstrNodeType}[0]{\textsf{AbstrNodeType}}
-\newcommand{\abstrnode}[0]{\eta}
 \newcommand{\act}[0]{\textsf{act}}
 \newcommand{\action}[0]{\textsf{action}}
 \newcommand{\Action}[0]{\textsf{Action}}
@@ -56,6 +52,10 @@
 \newcommand{\orlabel}[0]{\textsf{or}}
 \newcommand{\ornode}[1]{\orlabel\langle#1\rangle}
 \newcommand{\outgoing}[0]{\textsf{out}}
+\newcommand{\simpleedge}[0]{\varepsilon}
+\newcommand{\SimpleNode}[0]{\textsf{SimpleNode}}
+\newcommand{\SimpleNodeType}[0]{\textsf{SimpleNodeType}}
+\newcommand{\simplenode}[0]{\eta}
 \newcommand{\source}[0]{\textsf{source}}
 \newcommand{\State}[0]{\textsf{State}}
 \newcommand{\target}[0]{\textsf{target}}
@@ -75,25 +75,25 @@ This document defines a concise token passing style operational semantics of (si
 These activities and their semantics are slightly different from fUML activities.
 For example, every action has an associated guard and effects that specify how action execution influences the system state.
 
-The strategy for defining the operational semantics of activities is to first define a notion of \emph{abstract activities} (\autoref{sec:abstractivities}) with an intuitive and concise semantics, and then define the semantics of concrete UML activities by means of translating them to abstract activities (\autoref{sec:concractivities}).
+The strategy for defining the operational semantics of activities is to first define a notion of \emph{simple activities} (\autoref{sec:simpleactivities}) with an intuitive and concise semantics, and then define the semantics of concrete UML activities by means of translating them to simple activities (\autoref{sec:concractivities}).
 
 The reason for such a translation is two-fold.
 Firstly, even though UML activities have various sorts of nodes (`fork', `join', `decision', etc.), their semantics can fundamentally be divided into two categories: $\andlabel$-type nodes and $\orlabel$-type nodes, which are explained later.
 If one would specify separate execution rules for all the various sorts of UML activity nodes, then one would find out they are all much the same and would fall into these two categories.
 
 Secondly, the semantics of $\andlabel$-type and $\orlabel$-type nodes is intuitive as well as easy to define.
-Instead of having to think about all kinds of corner cases with UML activities\footnote{For example: what would happen if an action node has multiple incoming/outgoing edges? What would happen if a fork node has a self-loop? What if a final node has an outgoing edge, or an initial node has an incoming edge? What if a merge node has no outgoing edges? What if the activity actually contains disjoint disconnected parts? What if there is a non-trivial guard on an edge not coming out of a decision node? Do I need a legion of well-formedness conditions in order to be able to still make sense of activity diagrams at all?}, the semantics of abstract activities requires no structural well-formedness conditions.
+Instead of having to think about all kinds of corner cases with UML activities\footnote{For example: what would happen if an action node has multiple incoming/outgoing edges? What would happen if a fork node has a self-loop? What if a final node has an outgoing edge, or an initial node has an incoming edge? What if a merge node has no outgoing edges? What if the activity actually contains disjoint disconnected parts? What if there is a non-trivial guard on an edge not coming out of a decision node? Do I need a legion of well-formedness conditions in order to be able to still make sense of activity diagrams at all?}, the semantics of simple activities requires no structural well-formedness conditions.
 When thinking of the semantics of some node, ideally one would only need to think about: is it an $\andlabel$-type or an $\orlabel$-type node?
 
-\section{Abstract Activities}
-\label{sec:abstractivities}
+\section{Simple Activities}
+\label{sec:simpleactivities}
 
-This section defines the (static) structure and (dynamic) behavior of abstract activities, in \autoref{sec:abstrstatics} and \autoref{sec:abstrdynamics}, respectively.
+This section defines the (static) structure and (dynamic) behavior of simple activities, in \autoref{sec:simplestatics} and \autoref{sec:simpledynamics}, respectively.
 
 \subsection{Statics}
-\label{sec:abstrstatics}
+\label{sec:simplestatics}
 
-This section defines the static structure of abstract activities, consisting of nodes and (guarded) edges.
+This section defines the static structure of simple activities, consisting of nodes and (guarded) edges.
 Nodes contain an action to be executed, and describe how the action should be executed.
 Actions contain guards, which are predicates over a global state, as well as (nondeterministic) effects that determine potential successor states.
 The concept of state is left abstract in this document, and could later be instantiated in any way you like (e.g., by taking CIF expressions and updates).
@@ -114,7 +114,7 @@ We use $g \in \Guard$ and $u \in \Effects$ to denote a typical guard and effects
 The main building blocks of activities are the action nodes, which are nodes that carry out a certain \emph{action}.
 Any action consists of three parts: an action label to identify it, a guard that must hold in order for the action to be performed, and an effects function that determines possible successor states after having performed the action.
 For any action it holds that, if its guard does not hold, or if there is no successor state determined by the effects (i.e., the effects function maps to an empty set), then the action cannot be performed.
-In case action execution leads to multiple possible successor states, one of them will be selected nondeterministically, which is further explained in \autoref{sec:abstrdynamics}.
+In case action execution leads to multiple possible successor states, one of them will be selected nondeterministically, which is further explained in \autoref{sec:simpledynamics}.
 
 More formally, let $\Action = \cramped{\Label \times \Guard \times \Effects}$ be the set of all \emph{actions}, where $\Label$ is the set of all \emph{action labels}.
 We use $a \in \Label$ to denote a typical label, and $\alpha \in \Action$ to denote a typical action, such that $\alpha = (a, g, u)$.
@@ -130,11 +130,11 @@ Let $\actlabel : \Action \rightarrow \Label$, $\guard : \Action \rightarrow \Gua
 	\effects((a, g, u)) = u
 \end{mathpar}
 
-\paragraph{Abstract nodes.}
-Now that actions have been defined, we can define the \emph{nodes} of abstract activities, which carry out these actions during executions of the activity.
-Abstract activity nodes consist of two parts: a node identifier, and a node type that also contains (wraps) the action to perform.
+\paragraph{Simple nodes.}
+Now that actions have been defined, we can define the \emph{nodes} of simple activities, which carry out these actions during executions of the activity.
+Simple activity nodes consist of two parts: a node identifier, and a node type that also contains (wraps) the action to perform.
 The node identifiers are used to give identity to nodes, which are needed to allow having multiple nodes in an activity that perform the same action.
-In abstract activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
+In simple activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
 An $\andlabel$-style execution of an action node requires that \emph{all} its incoming edges must have a token, and after having performed the action, \emph{all} outgoing edges will get a token (under some additional conditions that are explained later).
 In contrast, an $\orlabel$-style execution of an action node requires just \emph{a single} incoming edge to have a token, and after having performed the action, \emph{a single} outgoing edge will receive a token (again, under some extra conditions).
 This distinction between $\andlabel$-type and $\orlabel$-type nodes is also made in~\cite{DawC2015} with respect to a token firing semantics, explaining that most UML node types can be divided into these two groups.
@@ -142,115 +142,115 @@ For example, UML nodes like `fork' and `join' can be represented as $\andlabel$-
 \autoref{sec:concractivities} further details such representations of concrete UML nodes.
 
 More formally, let $\NodeID$ be a set of all \emph{node identifiers}, used to give identity to activity nodes, and let $\ell \in \NodeID$ be a typical node identifier.
-Then the set $\AbstrNode$ of all possible \emph{abstract activity nodes} is defined as follows:
+Then the set $\SimpleNode$ of all possible \emph{simple activity nodes} is defined as follows:
 \begin{mathpar}
-	\AbstrNode = \NodeID \times \AbstrNodeType
+	\SimpleNode = \NodeID \times \SimpleNodeType
 	\and
-	\AbstrNodeType ::= \andnode{\alpha} ~|~ \ornode{\alpha}
+	\SimpleNodeType ::= \andnode{\alpha} ~|~ \ornode{\alpha}
 \end{mathpar}
 
-Abstract activity nodes are pairs consisting of a node identifier $\ell$ and an action $\alpha$ to execute, either in $\andlabel$-style or in $\orlabel$-style.
-We write $\abstrnode \in \AbstrNode$ to denote a typical node.
-Let $\action : \AbstrNode \rightarrow \Action$ be a projection function for obtaining the actions of abstract nodes, so that:
+Simple activity nodes are pairs consisting of a node identifier $\ell$ and an action $\alpha$ to execute, either in $\andlabel$-style or in $\orlabel$-style.
+We write $\simplenode \in \SimpleNode$ to denote a typical node.
+Let $\action : \SimpleNode \rightarrow \Action$ be a projection function for obtaining the actions of simple nodes, so that:
 \begin{mathpar}
 	\action((\ell,\andnode{\alpha})) = \alpha
 	\and
 	\action((\ell,\ornode{\alpha})) = \alpha
 \end{mathpar}
 
-\paragraph{Abstract activities.} 
-Let us now define \emph{abstract activities}, which are essentially graphs consisting of abstract nodes, as defined in the previous paragraph, that are connected via guarded edges.
+\paragraph{Simple activities.} 
+Let us now define \emph{simple activities}, which are essentially graphs consisting of simple nodes, as defined in the previous paragraph, that are connected via guarded edges.
 The edge guards are (later) used to restrict when an edge can \emph{receive} a token.
 During activity execution, any edge can only receive a token while the activity is in a state where the edge guard holds.
 This is for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
 
-More formally, abstract activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \AbstrNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \mathcal{N}}$.
-Any edge $\abstredge \in \mathcal{E}$ so that $\abstredge = (\abstrnode,g,\abstrnode')$ consists of a \emph{source node} $\abstrnode \in \mathcal{N}$, a \emph{target node} $\abstrnode' \in \mathcal{N}$ and a \emph{guard} $g \in \Guard$.
+More formally, simple activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \SimpleNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \mathcal{N}}$.
+Any edge $\simpleedge \in \mathcal{E}$ so that $\simpleedge = (\simplenode,g,\simplenode')$ consists of a \emph{source node} $\simplenode \in \mathcal{N}$, a \emph{target node} $\simplenode' \in \mathcal{N}$ and a \emph{guard} $g \in \Guard$.
 Let $\source : \mathcal{E} \rightarrow \mathcal{N}$, $\target : \mathcal{E} \rightarrow \mathcal{N}$ and $\guard : \mathcal{E} \rightarrow \Guard$ be projection functions to obtain the source, target, and guard of any edge, respectively.
 
-We define the following shorthand notations for any $\abstrnode \in \mathcal{N}$ and $\sigma \in \State$:
+We define the following shorthand notations for any $\simplenode \in \mathcal{N}$ and $\sigma \in \State$:
 \begin{itemize}
-	\item $\incoming(\abstrnode) = \{ \abstredge \in \mathcal{E} ~|~ \target(\abstredge) = \abstrnode \}$ be the set of all incoming edges of $\abstrnode$.
-	\item $\outgoing(\abstrnode) = \{ \abstredge \in \mathcal{E} ~|~ \source(\abstredge) = \abstrnode \}$ be the set of all outgoing edges of $\abstrnode$.
-	\item $\incoming(\abstrnode,\sigma) = \{ \abstredge \in \incoming(\eta) ~|~ \guard(\abstredge)(\sigma) \}$ be all incoming edges of $\abstrnode$ whose guard holds with respect to $\sigma$.
-	\item $\outgoing(\abstrnode,\sigma) = \{ \abstredge \in \outgoing(\eta) ~|~ \guard(\abstredge)(\sigma) \}$ be all outgoing edges of $\abstrnode$ whose guard holds with respect to $\sigma$.
+	\item $\incoming(\simplenode) = \{ \simpleedge \in \mathcal{E} ~|~ \target(\simpleedge) = \simplenode \}$ be the set of all incoming edges of $\simplenode$.
+	\item $\outgoing(\simplenode) = \{ \simpleedge \in \mathcal{E} ~|~ \source(\simpleedge) = \simplenode \}$ be the set of all outgoing edges of $\simplenode$.
+	\item $\incoming(\simplenode,\sigma) = \{ \simpleedge \in \incoming(\eta) ~|~ \guard(\simpleedge)(\sigma) \}$ be all incoming edges of $\simplenode$ whose guard holds with respect to $\sigma$.
+	\item $\outgoing(\simplenode,\sigma) = \{ \simpleedge \in \outgoing(\eta) ~|~ \guard(\simpleedge)(\sigma) \}$ be all outgoing edges of $\simplenode$ whose guard holds with respect to $\sigma$.
 \end{itemize}
 
 \subsection{Dynamics}
-\label{sec:abstrdynamics}
+\label{sec:simpledynamics}
 
-This section defines the dynamic behavior of abstract activities, by means of a token passing style operational semantics.
+This section defines the dynamic behavior of simple activities, by means of a token passing style operational semantics.
 Its reduction rules describe how to go from one configuration to another, where a configuration is essentially a set of edges holding a token together with a `current' state.
 There are two reduction rules: one for $\andlabel$-style and one for $\orlabel$-style action execution, as explained earlier.
 Finally, we introduce initial configurations and execution traces.
 
 \paragraph{Configurations.}
-The semantics of abstract activities is essentially defined as a relation between \emph{configurations}, in the sense that an execution step in an activity gets you from one configuration to another configuration.
+The semantics of simple activities is essentially defined as a relation between \emph{configurations}, in the sense that an execution step in an activity gets you from one configuration to another configuration.
 A configuration describes which edges currently hold a token, and what the current state is.
 
 More formally, let $\Config = \cramped{2^\mathcal{E} \times \State}$ be the set of all configurations.
 A configuration $(\Sigma, \sigma) \in \Config$ is a pair with $\Sigma \subseteq \mathcal{E}$ a set of edges---the ones currently holding a token---and $\sigma$ a `current' state.
 We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sigma, \sigma)$.
 
-Any edge $\abstredge$ is said to be \emph{enabled in $c$} if it has a token in $c$, i.e., if $\abstredge \in \Sigma$.
-If $c$ is clear from the context, we may just say that $\abstredge$ is \emph{enabled}.
+Any edge $\simpleedge$ is said to be \emph{enabled in $c$} if it has a token in $c$, i.e., if $\simpleedge \in \Sigma$.
+If $c$ is clear from the context, we may just say that $\simpleedge$ is \emph{enabled}.
 Note that edge guards control/restrict/regulate when an edge can \emph{receive} a token, as opposed to whether they can hold a token.
 
 \paragraph{Reductions.}
-Let us now define the operational semantics of abstract activities, in token passing style.
+Let us now define the operational semantics of simple activities, in token passing style.
 The reduction rules of the operational semantics describe how edge tokens are distributed, and how state changes, while executing the nodes of the activity.
 There are two reduction rules: one for $\andlabel$-style execution and one for $\orlabel$-style execution of actions.
 As explained earlier, these rules only differ in their requirement on, and distribution of, edge tokens.
 
-More formally, the operational semantics of abstract activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ is defined in terms of labeled reduction rules $\rightarrow~\subseteq \cramped{\Config \times \mathcal{N} \times \Config}$.
-The notation $c \xrightarrow{\abstrnode} c'$ is used as shorthand for $(c, \abstrnode, c') \in~\rightarrow$.
+More formally, the operational semantics of simple activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ is defined in terms of labeled reduction rules $\rightarrow~\subseteq \cramped{\Config \times \mathcal{N} \times \Config}$.
+The notation $c \xrightarrow{\simplenode} c'$ is used as shorthand for $(c, \simplenode, c') \in~\rightarrow$.
 The two rules are:
 \begin{mathpar}
 	\inferrule[And] {
-		\incoming(\abstrnode) \subseteq \Sigma
+		\incoming(\simplenode) \subseteq \Sigma
 		\\
-		(\outgoing(\abstrnode) \setminus \incoming(\abstrnode)) \cap \Sigma = \emptyset
+		(\outgoing(\simplenode) \setminus \incoming(\simplenode)) \cap \Sigma = \emptyset
 		\\
 		\guard(\alpha)(\sigma)
 		\\
 		\sigma' \in \effects(\alpha)(\sigma)
 		\\
-		\outgoing(\abstrnode) = \outgoing(\abstrnode, \sigma')
+		\outgoing(\simplenode) = \outgoing(\simplenode, \sigma')
 	} {
-		(\Sigma,\sigma) \xrightarrow{\abstrnode} ((\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode),\sigma')
+		(\Sigma,\sigma) \xrightarrow{\simplenode} ((\Sigma \setminus \incoming(\simplenode)) \cup \outgoing(\simplenode),\sigma')
 	} { 
-		\text{ for } \abstrnode = (\ell, \andnode{\alpha})
+		\text{ for } \simplenode = (\ell, \andnode{\alpha})
 	}
 	
 	\inferrule[Or] {
-		\abstredge \in \incoming(\abstrnode) \cap \Sigma
+		\simpleedge \in \incoming(\simplenode) \cap \Sigma
 		\\
-		\abstredge' \in \outgoing(\abstrnode, \sigma') \setminus (\Sigma \! \setminus \! \{\abstredge\})
+		\simpleedge' \in \outgoing(\simplenode, \sigma') \setminus (\Sigma \! \setminus \! \{\simpleedge\})
 		\\
 		\guard(\alpha)(\sigma)
 		\\
 		\sigma' \in \effects(\alpha)(\sigma)
 	} {
-		(\Sigma,\sigma) \xrightarrow{\abstrnode} ((\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}, \sigma')
+		(\Sigma,\sigma) \xrightarrow{\simplenode} ((\Sigma \setminus \{\simpleedge\}) \cup \{\simpleedge'\}, \sigma')
 	} { 
-		\text{ for } \abstrnode = (\ell, \ornode{\alpha})
+		\text{ for } \simplenode = (\ell, \ornode{\alpha})
 	}
 \end{mathpar}
 
-The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \andnode{\alpha}$.
+The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\simplenode$, for which $\action(\simplenode) = \andnode{\alpha}$.
 \textsc{And} has five premises.
-It requires: (1) all incoming edges into $\abstrnode$ to have a token; (2) none of the outgoing edges of $\abstrnode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
-If all five premises are met, \textsc{And} removes all tokens from $\incoming(\abstrnode)$ and puts tokens on $\outgoing(\abstrnode)$, making $\cramped{(\Sigma \setminus \incoming(\abstrnode)) \cup \outgoing(\abstrnode)}$ the new token arrangement.
+It requires: (1) all incoming edges into $\simplenode$ to have a token; (2) none of the outgoing edges of $\simplenode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
+If all five premises are met, \textsc{And} removes all tokens from $\incoming(\simplenode)$ and puts tokens on $\outgoing(\simplenode)$, making $\cramped{(\Sigma \setminus \incoming(\simplenode)) \cup \outgoing(\simplenode)}$ the new token arrangement.
 
 
-The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\abstrnode$, for which $\action(\abstrnode) = \ornode{\alpha}$.
+The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\simplenode$, for which $\action(\simplenode) = \ornode{\alpha}$.
 \textsc{Or} has four premises.
-It requires: (1) the existence of an incoming edge $\abstredge$ of $\abstrnode$ that is enabled; (2) the existence of an outgoing edge $\abstredge'$ of $\abstrnode$ that is not enabled unless it equals $\abstredge$, and whose guard holds with respect to $\sigma'$; (3) the guard of $\alpha$ to hold with respect to the current state $\sigma$; and (4) a successor state $\sigma'$ to be available from $\alpha$'s effects.
+It requires: (1) the existence of an incoming edge $\simpleedge$ of $\simplenode$ that is enabled; (2) the existence of an outgoing edge $\simpleedge'$ of $\simplenode$ that is not enabled unless it equals $\simpleedge$, and whose guard holds with respect to $\sigma'$; (3) the guard of $\alpha$ to hold with respect to the current state $\sigma$; and (4) a successor state $\sigma'$ to be available from $\alpha$'s effects.
 The \textsc{Or} rule allows multiple input edges to be enabled, but only one of them will participate per application of the \textsc{Or} rule.
 Similarly, if multiple outgoing edges could potentially participate, one of them actually participates.
-If all five premises are met, \textsc{Or} removes the token from $\abstredge$ and puts it on $\abstredge'$, making $\cramped{(\Sigma \setminus \{\abstredge\}) \cup \{\abstredge'\}}$ the new arrangement of tokens.
+If all five premises are met, \textsc{Or} removes the token from $\simpleedge$ and puts it on $\simpleedge'$, making $\cramped{(\Sigma \setminus \{\simpleedge\}) \cup \{\simpleedge'\}}$ the new arrangement of tokens.
 
-Finally, as a shorthand notation, we may write $c \xrightarrow{\alpha} c'$ if there exists an $\abstrnode \in \mathcal{N}$ such that $c \xrightarrow{\abstrnode} c'$ and $\action(\abstrnode) = \alpha$.
+Finally, as a shorthand notation, we may write $c \xrightarrow{\alpha} c'$ if there exists an $\simplenode \in \mathcal{N}$ such that $c \xrightarrow{\simplenode} c'$ and $\action(\simplenode) = \alpha$.
 
 \paragraph{Traces.}
 \textsc{And} and \textsc{Or} describe single-step executions.
@@ -262,7 +262,7 @@ Moreover, given any infinite action sequence $\pi = \alpha_0 \alpha_1 \dots$ we 
 \section{Concrete Activities}
 \label{sec:concractivities}
 
-This section defines concrete activities (\autoref{sec:concrstatics}) that more closely resemble UML activities than abstract activities, and defines their operational semantics in terms of translations to abstract activities (\autoref{sec:concrdynamics}).
+This section defines concrete activities (\autoref{sec:concrstatics}) that more closely resemble UML activities than simple activities, and defines their operational semantics in terms of translations to simple activities (\autoref{sec:concrdynamics}).
 \autoref{sec:concractivities:extensions} discusses how to deal with several extensions to concrete activities, like hierarchy and nonatomic actions.
 Finally, some similarities and differences of concrete activities with respect to fUML semantics are highlighted (\autoref{sec:fuml}).
 
@@ -272,7 +272,7 @@ Finally, some similarities and differences of concrete activities with respect t
 First we define concrete activities, as a subset of UML activities.
 
 \paragraph{Nodes.}
-In contrast to abstract nodes as defined earlier in \autoref{sec:abstrstatics}, which come only in two flavours ($\andlabel$ and $\orlabel$), UML activities have many more flavours of activity nodes, like initial nodes, fork nodes, etc.
+In contrast to simple nodes as defined earlier in \autoref{sec:simplestatics}, which come only in two flavours ($\andlabel$ and $\orlabel$), UML activities have many more flavours of activity nodes, like initial nodes, fork nodes, etc.
 We focus on a basic subset of UML, leaving out more advanced concepts like signals, object flows, exception handlers, interruptible regions, etc.
 
 Let $\ConcrNode = \cramped{\NodeID \times \ConcrNodeType}$ be the set of all \emph{concrete activity nodes}, consisting of an identifier and a (concrete) node type that is defined as:
@@ -294,12 +294,12 @@ This is consistent with UML activities (except that, in UML, guards are ignored 
 \subsection{Dynamics}
 \label{sec:concrdynamics}
 
-We now define the operational semantics of concrete activities, by translating concrete activities to abstract activities, and using the reduction rules defined earlier.
+We now define the operational semantics of concrete activities, by translating concrete activities to simple activities, and using the reduction rules defined earlier.
 The advantage is that the semantics of the various concrete activity nodes can be defined by means of just two reduction rules: \textsc{And} and \textsc{Or}.
 
 \paragraph{Node translation.}
 First we translate activity nodes.
-We do this by defining a translation function $\denotn{~\cdot~} : \ConcrNode \rightarrow \AbstrNode$ that translates concrete nodes to abstract nodes.
+We do this by defining a translation function $\denotn{~\cdot~} : \ConcrNode \rightarrow \SimpleNode$ that translates concrete nodes to simple nodes.
 To be able to define this translation function, we assume that the set $\Label$ of action labels is chosen in such a way to contain `reserved labels' for all concrete node types, so that $\ConcrNodeType \subseteq \Label$.
 
 Let $\denotn{~\cdot~}$ be defined as follows, where $\lambda\sigma.\true$ is the constant guard that is always $\true$, and $\identity{\sigma}$ is the identity effects function that does not change the state:
@@ -319,7 +319,7 @@ Let $\denotn{~\cdot~}$ be defined as follows, where $\lambda\sigma.\true$ is the
 	\denotn{(\ell, \act(\alpha))} = (\ell, \andnode{\alpha})
 \end{mathpar}
 
-This translation function maps concrete nodes to either $\andlabel$-typed or $\orlabel$-typed abstract nodes, where the type determines the execution semantics.
+This translation function maps concrete nodes to either $\andlabel$-typed or $\orlabel$-typed simple nodes, where the type determines the execution semantics.
 
 Initial nodes ($\init$) are translated as $\orlabel$-type nodes, since they typically do not have incoming edges, and in case they have multiple outgoing edges, one of them is followed.
 In fUML semantics, when firing an initial node, a single token is created and offered to all outgoing edges, and exactly one of those edges then gets this token (\cite{fUMLSemantics}, page 221).
@@ -349,7 +349,7 @@ Appendix A of~\cite{DawC2015} shows how more complex behavior of UML activities 
 
 \paragraph{Edge translation.}
 The translation of edges is straightforward, and simply amounts to translating the source and target node.
-Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \ConcrNode \rightarrow \AbstrNode \times \Guard \times \AbstrNode$ be the translation function for edges, defined such that
+Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \ConcrNode \rightarrow \SimpleNode \times \Guard \times \SimpleNode$ be the translation function for edges, defined such that
 $\denote{(n,g,n')} = (\denotn{n},g, \denotn{n'})$.
 
 \paragraph{Activity semantics.}
@@ -367,7 +367,7 @@ In case an activity has multiple initial nodes, or in case there are initial nod
 In esoteric cases, an activity might have no initial configurations in case there are no initial nodes, or in case there are only initial nodes without outgoing edges.
 
 Let $A = (N,E)$ be an activity.
-Then $(\{\abstredge\}, \sigma_I) \in \Config$ is defined to be an \emph{initial configuration of $A$} for any choice of initial state $\sigma_I \in \State$, if there exists an initial node $(\ell, \init) \in N$ such that $\abstredge \in \outgoing(\denotn{(\ell, \init)},\sigma_I)$.
+Then $(\{\simpleedge\}, \sigma_I) \in \Config$ is defined to be an \emph{initial configuration of $A$} for any choice of initial state $\sigma_I \in \State$, if there exists an initial node $(\ell, \init) \in N$ such that $\simpleedge \in \outgoing(\denotn{(\ell, \init)},\sigma_I)$.
 In other words, any outgoing edge of any initial node can form an initial configuration together with some initial state $\sigma_I$, given that this edge is allowed by its guard to receive an (initial) token in the initial state $\sigma_I$.
 This initial state $\sigma_I$ could for example be chosen to be the initial valuation of all variables defined in the context of $A$.
 Recall that the current definitions abstract over details like variables and their values\footnote{We are not going to define a custom expression/effects language and its semantics. There are plenty of good existing languages that could be picked off-the-shelf, like for example CIF.}.
@@ -441,34 +441,32 @@ Below is a list of similarities and differences with respect to fUML semantics:
 \section*{Appendix A: List of Symbols}
 
 \begin{tabular}{cl}
-	$\AbstrNode$ & The set of all abstract activity nodes \\
-	$\AbstrNodeType$ & The set of all abstract activity node types \\
 	$\action$ & projection function for getting the action of an activity node \\
-	$\mathcal{A}$ & An abstract activity \\
+	$\mathcal{A}$ & A simple activity \\
 	$A$ & A concrete (UML-like) activity \\
 	$a$ & An action label \\
 	$\alpha$ & An action, consisting of an action label, a guard and an effects function \\
-	$\andnode{\alpha}$ & An abstract node type describing an $\andlabel$-style execution of $\alpha$ \\
+	$\andnode{\alpha}$ & A simple node type describing an $\andlabel$-style execution of $\alpha$ \\
 	$\textsf{call}$ & A call action node (extension) \\
 	$\Config$ & The set of all configurations \\
 	$\ConcrNode$ & The set of all concrete activity nodes \\
 	$\ConcrNodeType$ & The set of all concrete activity node types \\
 	$c$ & A configuration, consisting of a set of edges holding a token, and a state \\
-	$\denote{~\cdot~}$ & Operation for translating concrete activity edges to abstract ones \\
-	$\denotn{~\cdot~}$ & Operation for translating concrete activity nodes to abstract ones \\
+	$\denote{~\cdot~}$ & Operation for translating concrete activity edges to simple ones \\
+	$\denotn{~\cdot~}$ & Operation for translating concrete activity nodes to simple ones \\
 	$\decision$ & The decision node type of concrete activities \\
 	$\Effects$ & The set of all effects functions \\
 	$\effects$ & Projection function for obtaining the effects of an action \\
-	$\mathcal{E}$ & A set of abstract edges of an abstract activity \\
+	$\mathcal{E}$ & A set of simple edges of a simple activity \\
 	$E$ & A set of concrete edges of a concrete (UML-like) activity \\
-	$\abstredge$ & An abstract edge of an abstract activity \\
+	$\simpleedge$ & A simple edge of a simple activity \\
 	$e$ & A concrete edge of a concrete activity \\
 	$\final$ & The final node type of concrete activities \\
 	$\fork$ & The fork node type of concrete activities \\
 	$\Guard$ & The set of all guards \\
 	$\guard$ & Projection function for obtaining the guard of an action \\
 	$g$ & A guard, which is a state predicate \\
-	$\ell$ & A node identifier, used to give identity to abstract and concrete activity nodes \\
+	$\ell$ & A node identifier, used to give identity to simple and concrete activity nodes \\
 	$\incoming$ & Function for getting all incoming edges of a node \\
 	$\init$ & The initial node type of concrete activities \\
 	$\Label$ & The set of all action labels \\
@@ -476,25 +474,27 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\join$ & The join node type of concrete activities \\
 	$\merge$ & The merge node type of concrete activities \\
 	$\NodeID$ & The set of all node identifiers \\
-	$\mathcal{N}$ & A set of abstract nodes of an abstract activity \\
+	$\mathcal{N}$ & A set of simple nodes of a simple activity \\
 	$N$ & A set of concrete nodes of a concrete (UML-like) activity \\
-	$\abstrnode$ & An abstract node of an abstract activity \\
+	$\simplenode$ & A simple node of a simple activity \\
 	$n$ & A concrete node of a concrete activity
 \end{tabular}
 
 \begin{tabular}{cl}
-	$\ornode{\alpha}$ & An abstract node type describing an $\orlabel$-style execution of $\alpha$ \\
+	$\ornode{\alpha}$ & A simple node type describing an $\orlabel$-style execution of $\alpha$ \\
 	$\pi$ & A trace, i.e., a sequence of actions \\
-	$\source$ & Projection function for getting the source node of an edge \\
-	$\Sigma$ & A set of abstract edges holding a token, as part of a configuration \\
+	$\SimpleNode$ & The set of all simple activity nodes \\
+	$\SimpleNodeType$ & The set of all simple activity node types \\
+	$\Sigma$ & A set of simple edges holding a token, as part of a configuration \\
 	$\sigma$ & An (execution) state, e.g., the valuation of some set of variables \\
+	$\source$ & Projection function for getting the source node of an edge \\
 	$\State$ & The set of all states \\
 	$\target$ & Projection function for getting the target node of an edge \\
 	$\outgoing$ & Function for getting all outgoing edges of a node \\
 	$u$ & An effects function, mapping a state to zero or more successor states \\
-	$\rightarrow$ & Reduction relation defining the semantics of abstract activities \\
-	$\xrightarrow{\alpha}$ & Reduction relation for an abstract node with action $\alpha$ \\
-	$\xrightarrow{\abstrnode}$ & Reduction relation for an abstract node $\abstrnode$ \\
+	$\rightarrow$ & Reduction relation defining the semantics of simple activities \\
+	$\xrightarrow{\alpha}$ & Reduction relation for a simple node with action $\alpha$ \\
+	$\xrightarrow{\simplenode}$ & Reduction relation for a simple node $\simplenode$ \\
 	$\xrightarrow{\pi}_{\ast}$ & Multi-step reduction relation for the finite action sequence $\pi$ \\
 	$\xrightarrow{\pi}_{\omega}$ & Multi-step reduction relation for the infinite action sequence $\pi$
 \end{tabular}
