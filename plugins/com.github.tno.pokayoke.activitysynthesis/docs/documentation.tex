@@ -772,6 +772,9 @@ We define $\mathit{uncontrolled}(N)$ to be the uncontrolled guard predicate for 
 	That is, $N$ is only executed in states where the activity postcondition holds.
 	\item In case $N$ is an internal \tauLabel{} action node, $\mathit{uncontrolled}(N)$ is the conjunction of the state info predicates of all outgoing control flows of the \tauLabel{} node.
 	That is, $N$ is only executed from system states where the corresponding effect of the nonatomic action has applied.
+	With \emph{state info predicates} we mean the predicates from the state information mapping, in this case for all outgoing control flows of the \tauLabel{} node.
+	We compute the \emph{conjunction} of all these state info predicates, since that predicate describes all states the system can be in right after the corresponding effect has been executed.
+	Especially in case the activity forks after the \tauLabel{} action node, computing the conjunction ensures that we get the state info predicate that applies right after the \tauLabel{} node and right before the fork node.
 	This computation of $\mathit{uncontrolled}(N)$ is needed since we've rewritten the nonatomic pattern in the previous step, meaning that we have to calculate the new uncontrolled guards of the \tauLabel{}-s for the new situation.
 	\item In all other cases, $\mathit{uncontrolled}(N)$ is the predicate \texttt{true}.
 	That is, the execution of $N$ is not restricted by any guard predicate, which may happen, e.g., if $N$ is an nonatomic end event that's not reduced earlier.
