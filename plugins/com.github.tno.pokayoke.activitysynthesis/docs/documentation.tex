@@ -471,6 +471,7 @@ To clarify this further, recall that the goal of Petri Net synthesis is to find 
 While doing so, Petri Net synthesis aims to reduce diamond patterns in the state space to fork/join constructs in Petri Nets as much as possible.
 However, due to the atomicity constraint, the uncontrollable events of atomic nondeterministic actions do not give perfect diamond patterns, since whenever some atomic nondeterministic action is being executed, the atomicity constraint enforces that no other action can be performed, thus impacting interleaving.
 Therefore, we perform event-based projection on the CIF state space, to restore the diamond patterns that got disrupted by the atomicity constraint, before performing Petri Net synthesis.
+We do not eliminate the uncontrollable end events of nonatomic actions since no atomicity constraints are imposed on such actions, i.e., their diamond patterns are still intact.
 
 Note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--hide} to hide a list of given events.
 We used this option in earlier versions of our implementation instead of doing event-based projection on the level of CIF.
@@ -780,7 +781,7 @@ Let us define $\mathit{controlled}(N)$ to be the controlled guard predicate for 
 	\item In case $N$ is a call behavior action node, $\mathit{controlled}(N)$ is the controlled system guard for that action.
 	That is, $\mathit{controlled}(N)$ is the controlled-system condition resulting from synthesis, for the action called by $N$.
 	\item In all other cases, $\mathit{controlled}(N)$ is undefined.
-	That is, no extra conditions were synthesized that further restrict $N$ in the controlled system.
+	That is, no conditions were synthesized that further restrict $N$ in the controlled system.
 \end{itemize}
 Next we define $\mathit{extra}(N)$ as a predicate describing the extra synthesized condition for executing $N$, such that:
 \begin{itemize}
