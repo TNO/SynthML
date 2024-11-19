@@ -695,7 +695,7 @@ However, we cannot directly merge this pattern here since that would complicate 
 If we would merge the pattern here, then we would have to push down the decision node to below the merged `call $\textsf{A}$' action.
 By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level. On Petri Net level, there are only places and transitions, in contrast to the various different types of nodes that UML has for forking, joining, branching, merging, etc., which might also be composed in arbitrary ways.
 Nevertheless, the high-level synthesis algorithm is easier to explain on UML activity level, since then the explanation doesn't have to rely on details such as the connection/relation between the Petri Net and the translated UML activity.}.
-These constructions make it more difficult (though  not impossible) to gather all necessary state information for the guard computation.
+These constructions make it more difficult (though not impossible) to gather all necessary state information for the guard computation.
 
 Therefore, instead of directly merging the nonatomic pattern, we replace the $\textsf{A}_{\textsf{start}}$ node by a `call $\textsf{A}$' node, and replace the end nodes by internal `tau' nodes, which are later eliminated (in \autoref{sec:activity-post-processing}).
 The result is shown on the right in \autoref{fig:non-atomic-pattern}.
@@ -778,7 +778,7 @@ We define $\mathit{uncontrolled}(N)$ to be the uncontrolled guard predicate for 
 Let us define $\mathit{controlled}(N)$ to be the controlled guard predicate for $N$ such that:
 \begin{itemize}
 	\item In case $N$ is a call behavior action node, $\mathit{controlled}(N)$ is the controlled system guard for that action.
-	That is, $\mathit{controlled}(N)$ is the extra synthesized condition for the action called by $N$.
+	That is, $\mathit{controlled}(N)$ is the controlled-system condition resulting from synthesis, for the action called by $N$.
 	\item In all other cases, $\mathit{controlled}(N)$ is undefined.
 	That is, no extra conditions were synthesized that further restrict $N$ in the controlled system.
 \end{itemize}
