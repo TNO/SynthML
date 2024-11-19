@@ -1,13 +1,11 @@
 
 package com.github.tno.pokayoke.transform.common;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -227,13 +225,12 @@ public class NameHelper {
      * @return List containing all CIF keywords.
      */
     private static Set<String> getAllCifKeywords() {
-        List<String> keywords = new ArrayList<>();
+        Set<String> keywords = new LinkedHashSet<>();
         Collections.addAll(keywords, CifScanner.getKeywords("Keywords"));
         Collections.addAll(keywords, CifScanner.getKeywords("SupKind"));
         Collections.addAll(keywords, CifScanner.getKeywords("StdLibFunction"));
         Collections.addAll(keywords, CifScanner.getKeywords("Operator"));
-        Set<String> setKeywords = Collections.unmodifiableSet(new LinkedHashSet<>(keywords));
-        return setKeywords;
+        return Collections.unmodifiableSet(keywords);
     }
 
     private static final Set<String> CIF_RESERVED_KEYWORDS = getAllCifKeywords();
@@ -241,9 +238,8 @@ public class NameHelper {
     /**
      * Get all GAL reserved keywords. Could not find a scanner nor parser for GAL reserved keywords; however, the
      * keywords can be found at <a href=
-     * "https://github.com/lip6/ITSTools/blob/ed8570b7c72125043c86f1bfc0e46e580e14ec8c/fr.lip6.move.gal.web/WebRoot/
-     * xtext-resources/generated/gal-syntax.js#L2">GAL Keywords</a>.
-     *
+     * "https://github.com/lip6/ITSTools/blob/ed8570b7c72125043c86f1bfc0e46e580e14ec8c/fr.lip6.move.gal.web/WebRoot/xtext-resources/generated/gal-syntax.js#L2">GAL
+     * Keywords</a>.
      */
     private static final Set<String> GAL_RESERVED_KEYWORDS = Collections
             .unmodifiableSet(new LinkedHashSet<>(Arrays.asList("A", "AF", "AG", "AX", "E", "EF", "EG", "EX", "F", "G",
