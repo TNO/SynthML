@@ -5,7 +5,7 @@ typedef Boolean= 0..1 ;
 typedef Location= 0..1 ;
 gal Expressions__Context{
   int myBool = 0;
-  int myEnum = 0;
+  int myEnum = $Left;
   int __init = 0;
   int __edge__0 = 1;
   int __edge__1 = 0;

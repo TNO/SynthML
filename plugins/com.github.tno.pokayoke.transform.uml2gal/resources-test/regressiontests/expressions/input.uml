@@ -10,7 +10,7 @@
       <ownedAttribute xmi:id="_4VtE0PyxEe6PXdoEuB4CNA" name="myEnum" visibility="public" type="_ymv98PyxEe6PXdoEuB4CNA">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4VtE0fyxEe6PXdoEuB4CNA" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4VtE0vyxEe6PXdoEuB4CNA" value="1"/>
-        <defaultValue xmi:type="uml:LiteralString" xmi:id="_K0TOMKNSEe-x3qa8fYldpg" name="Left"/>
+        <defaultValue xmi:type="uml:LiteralString" xmi:id="_-svfYPyxEe6PXdoEuB4CNA" value="Left"/>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_aLnRgPzBEe6_EqZz5uEyNA" name="Expressions" node="_g1JKQPzBEe6_EqZz5uEyNA _i_p6APzBEe6_EqZz5uEyNA _jx_V4PzBEe6_EqZz5uEyNA">
         <edge xmi:type="uml:ControlFlow" xmi:id="_P37lwPzCEe6_EqZz5uEyNA" target="_jx_V4PzBEe6_EqZz5uEyNA" source="_g1JKQPzBEe6_EqZz5uEyNA">

@@ -699,8 +699,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         QueryableIterable<NamedElement> elements = CifContext.queryContextElements(model);
 
         for (NamedElement element: elements) {
-            // Primitives (integers) are bounded between a min and a max value. These automatically generate a
-            // constraint named "min" and "max", which clash with the reserved keywords. Skip the check for these.
+            // Primitive integer types are bounded between a min and a max value. These automatically generate
+            // constraints named 'min' and 'max', which clash with the reserved keywords. Skip the check for these.
             if (element instanceof Constraint constraint && constraint.getContext() instanceof PrimitiveType) {
                 continue;
             }

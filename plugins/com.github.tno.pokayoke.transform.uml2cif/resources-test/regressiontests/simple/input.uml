@@ -52,7 +52,7 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yEggcBd0Ee-SDZ3U5sFKhw" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yEggcRd0Ee-SDZ3U5sFKhw" value="1"/>
         <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_zt_mwBd0Ee-SDZ3U5sFKhw">
-          <language>CIF</language>s
+          <language>CIF</language>
           <body>true</body>
         </defaultValue>
       </ownedAttribute>
