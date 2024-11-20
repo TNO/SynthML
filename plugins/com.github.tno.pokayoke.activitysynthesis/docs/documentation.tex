@@ -145,10 +145,14 @@ A high-level overview is presented below.
 		A UML constraint can also be an action exclusion invariant, which indicates that the execution of some action requires the system to be in a certain state as expressed by a state invariant.
 		\item Any number of UML activities, which can either be \emph{abstract} or \emph{concrete}.
 		\begin{itemize}
-			\item An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
+			\item Abstract UML activities are `empty' in the sense that they contain no nodes nor control flow.
+			An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
 			The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
-			Occurrence constraints\footnote{Note that occurrence constraints are temporary, and intended to be removed later.} are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times' and thus limit the number of occurrences of some action in a to-be-synthesized activity.
-			Abstract UML activities are `empty' in the sense that they contain no nodes nor control flow.
+			Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an activity or an action.
+			Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
+			At the moment, the implementation of the synthesis algorithm does not yet support synthesis of activities that can call other activities.
+			Nevertheless, the UML models that we consider may already have occurrence constraints over activities.
+			Occurrence constraints are temporary constructs, and intended to be removed later, which is also future work.
 			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
 			A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action.
 			So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
@@ -284,6 +288,7 @@ These plant and requirement constructs are translated one-to-one to CIF, to enab
 
 \paragraph{Preconditions.}
 This operation requires the UML model of the abstract input activity to be valid.
+Moreover, all occurrence constraints of \var{umlActivity_{abstr}} must be expressed over actions, i.e., they may not (yet) be expressed over activities.
 
 \paragraph{Postconditions.}
 This operation produces a CIF specification that:
@@ -352,6 +357,7 @@ This operation produces a CIF specification that:
 	They are turned into conditional expressions, which are supported by data-based synthesis.
 	\item Contains requirement automata for the occurrence constraints defined for \var{umlActivity_{abstr}}.
 	Occurrence constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
+	(Note that $A$ must be an action since we don't yet allow occurrence constraints to be expressed over activities.)
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
 	This variable can then be incremented every time the action occurs.
 	The occurrence requirement can then be expressed over this requirement (using edge guards and marked predicates).
