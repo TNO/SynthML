@@ -877,7 +877,7 @@ The operation \postprocessActivity{\var{umlActivity_{guards}}} post-processes th
 \paragraph{Motivation.}
 
 The \postprocessActivityLabel{} operation first rewrites any leftover nonatomic actions that were not merged earlier.
-Recall from \autoref{sec:reducing-non-atomic-patterns} that not all occurrences of nonatomic actions can be reduced as part of a nonatomc pattern.
+Recall from \autoref{sec:reducing-non-atomic-patterns} that not all occurrences of nonatomic actions can be reduced as part of a nonatomic pattern.
 This means that the activity might still contain separate actions for the starts and ends of nonreduced nonatomic actions.
 We rewrite these to ensure that the synthesized activity is valid.
 We do this by turning all such starts to opaque actions that have the original action guard and no effects, and turning all ends to opaque actions that have guard \texttt{true} and the corresponding effect of the nonatomic action as their (single) effect.
