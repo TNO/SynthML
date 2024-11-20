@@ -11,7 +11,7 @@
           <body>false</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_HzZ8sPGgEe6w6rfsvEI-Kw" name="main" node="_caq7oPGgEe6w6rfsvEI-Kw _deYbYPGgEe6w6rfsvEI-Kw _ercrcPGgEe6w6rfsvEI-Kw _gPScwPGgEe6w6rfsvEI-Kw">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_HzZ8sPGgEe6w6rfsvEI-Kw" name="Main" node="_caq7oPGgEe6w6rfsvEI-Kw _deYbYPGgEe6w6rfsvEI-Kw _ercrcPGgEe6w6rfsvEI-Kw _gPScwPGgEe6w6rfsvEI-Kw">
         <edge xmi:type="uml:ControlFlow" xmi:id="_kWrI4PGgEe6w6rfsvEI-Kw" target="_ercrcPGgEe6w6rfsvEI-Kw" source="_caq7oPGgEe6w6rfsvEI-Kw">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_kWrv8PGgEe6w6rfsvEI-Kw" name="_To_OpaqueAction1_guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_kWtlIPGgEe6w6rfsvEI-Kw" name="_To_OpaqueAction1_weight"/>

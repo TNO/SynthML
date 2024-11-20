@@ -8,10 +8,10 @@ plant automaton Context:
   disc bool done_b in any;
   disc int[0..1] __activeAction;
   disc bool __nonAtomicActive__do_b;
-  alg bool $pre = not done_a and not done_b;
-  alg bool __precondition = $pre;
-  alg bool $post = done_a;
-  alg bool __postcondition = $post;
+  alg bool precond = not done_a and not done_b;
+  alg bool __precondition = precond;
+  alg bool postcond = done_a;
+  alg bool __postcondition = postcond;
   initial __precondition;
   marked __postcondition;
   location:

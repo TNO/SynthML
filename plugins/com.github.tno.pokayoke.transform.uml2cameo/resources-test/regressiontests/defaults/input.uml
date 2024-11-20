@@ -40,10 +40,10 @@
       </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_OH4X0AxBEe-xDvtDM-gL4Q" name="Choice" visibility="public">
-      <ownedLiteral xmi:id="_3yhp8AxBEe-xDvtDM-gL4Q" name="A">
+      <ownedLiteral xmi:id="_3yhp8AxBEe-xDvtDM-gL4Q" name="A_">
         <specification xmi:type="uml:LiteralInteger" xmi:id="_3yhp8QxBEe-xDvtDM-gL4Q"/>
       </ownedLiteral>
-      <ownedLiteral xmi:id="_4qJ1gAxBEe-xDvtDM-gL4Q" name="B">
+      <ownedLiteral xmi:id="_4qJ1gAxBEe-xDvtDM-gL4Q" name="B_">
         <specification xmi:type="uml:LiteralInteger" xmi:id="_4qKckAxBEe-xDvtDM-gL4Q" value="1"/>
       </ownedLiteral>
     </packagedElement>
@@ -89,7 +89,7 @@
   </uml:Model>
   <PokaYoke:FormalElement xmi:id="_X398YAxCEe-xDvtDM-gL4Q" guard="myBool" base_RedefinableElement="_S4OE4AxCEe-xDvtDM-gL4Q" atomic="true">
     <effects>myBool := false,&#xD;
-myChoice := A,&#xD;
+myChoice := A_,&#xD;
 myPercentage := 50</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

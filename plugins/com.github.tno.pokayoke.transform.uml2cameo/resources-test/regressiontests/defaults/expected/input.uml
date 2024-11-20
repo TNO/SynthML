@@ -118,7 +118,7 @@
           <body>guard = myBool
 if guard:
 	myBool = False
-	myChoice = 'A'
+	myChoice = 'A_'
 	myPercentage = 50
 if guard:
 	if not (0 &lt;= myPercentage &lt;= 100):
@@ -145,10 +145,10 @@ isSuccessful = guard</body>
     </ownedBehavior>
   </packagedElement>
   <packagedElement xmi:type="uml:Enumeration" xmi:id="77" name="Choice" visibility="public">
-    <ownedLiteral xmi:id="78" name="A">
+    <ownedLiteral xmi:id="78" name="A_">
       <specification xmi:type="uml:LiteralInteger" xmi:id="79"/>
     </ownedLiteral>
-    <ownedLiteral xmi:id="80" name="B">
+    <ownedLiteral xmi:id="80" name="B_">
       <specification xmi:type="uml:LiteralInteger" xmi:id="81" value="1"/>
     </ownedLiteral>
   </packagedElement>

@@ -1,6 +1,6 @@
 
-$A=0 ;
-$B=1 ;
+$Left=0 ;
+$Right=1 ;
 typedef Boolean= 0..1 ;
 typedef InputLocation= 0..1 ;
 gal ExampleModel__ExampleClass{
@@ -43,21 +43,21 @@ gal ExampleModel__ExampleClass{
     __edge__4 = 0    ;
     __edge__5 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__DecisionNode__5 [ __init == 1 && inputLocation == $A && __edge__5 == 1 && __edge__6 == 0 ] {
+  transition __DecisionNode_ExampleActivity__DecisionNode__5 [ __init == 1 && inputLocation == $Left && __edge__5 == 1 && __edge__6 == 0 ] {
     __edge__5 = 0    ;
     __edge__6 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__DecisionNode__6 [ __init == 1 && inputLocation == $B && __edge__5 == 1 && __edge__7 == 0 ] {
+  transition __DecisionNode_ExampleActivity__DecisionNode__6 [ __init == 1 && inputLocation == $Right && __edge__5 == 1 && __edge__7 == 0 ] {
     __edge__5 = 0    ;
     __edge__7 = 1    ;
   }
-  transition __OpaqueAction_ExampleActivity__process_A__7 [ __init == 1 && true && __edge__6 == 1 && __edge__9 == 0 ] {
+  transition __OpaqueAction_ExampleActivity__process_L__7 [ __init == 1 && true && __edge__6 == 1 && __edge__9 == 0 ] {
     robot1_claimed = 0    ;
     robot2_claimed = 0    ;
     __edge__6 = 0    ;
     __edge__9 = 1    ;
   }
-  transition __OpaqueAction_ExampleActivity__process_B__8 [ __init == 1 && true && __edge__7 == 1 && __edge__8 == 0 ] {
+  transition __OpaqueAction_ExampleActivity__process_R__8 [ __init == 1 && true && __edge__7 == 1 && __edge__8 == 0 ] {
     robot1_claimed = 0    ;
     robot2_claimed = 0    ;
     __edge__7 = 0    ;

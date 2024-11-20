@@ -1,13 +1,18 @@
 
 package com.github.tno.pokayoke.transform.common;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.escet.cif.parser.CifScanner;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -212,5 +217,45 @@ public class NameHelper {
         } else if (element instanceof Model modelElement) {
             modelElement.getOwnedMembers().forEach(NameHelper::prependOuterActivityNameToNodesAndEdgesInActivities);
         }
+    }
+
+    /**
+     * Get all CIF reserved keywords.
+     *
+     * @return List containing all CIF keywords.
+     */
+    private static Set<String> getAllCifKeywords() {
+        Set<String> keywords = new LinkedHashSet<>();
+        Collections.addAll(keywords, CifScanner.getKeywords("Keywords"));
+        Collections.addAll(keywords, CifScanner.getKeywords("SupKind"));
+        Collections.addAll(keywords, CifScanner.getKeywords("StdLibFunction"));
+        Collections.addAll(keywords, CifScanner.getKeywords("Operator"));
+        return Collections.unmodifiableSet(keywords);
+    }
+
+    private static final Set<String> CIF_RESERVED_KEYWORDS = getAllCifKeywords();
+
+    /**
+     * Get all GAL reserved keywords. Could not find a scanner nor parser for GAL reserved keywords; however, the
+     * keywords can be found at <a href=
+     * "https://github.com/lip6/ITSTools/blob/ed8570b7c72125043c86f1bfc0e46e580e14ec8c/fr.lip6.move.gal.web/WebRoot/xtext-resources/generated/gal-syntax.js#L2">GAL
+     * Keywords</a>.
+     */
+    private static final Set<String> GAL_RESERVED_KEYWORDS = Collections
+            .unmodifiableSet(new LinkedHashSet<>(Arrays.asList("A", "AF", "AG", "AX", "E", "EF", "EG", "EX", "F", "G",
+                    "GAL", "M", "R", "TRANSIENT", "U", "W", "X", "abort", "alias", "array", "atom", "bounds",
+                    "composite", "ctl", "else", "extends", "false", "fixpoint", "for", "gal", "hotbit", "if", "import",
+                    "int", "interface", "invariant", "label", "ltl", "main", "never", "predicate", "property",
+                    "reachable", "self", "synchronization", "transition", "true", "typedef")));
+
+    /**
+     * Checks whether a name belongs to the set of reserved keywords of CIF, GAL, or Petrify.
+     *
+     * @param name The string to be checked.
+     * @return {@code true} if the string is reserved, {@code false} otherwise.
+     */
+    public static boolean isReservedKeyword(String name) {
+        // Note that Petrify uses the . (dot) before its keywords.
+        return CIF_RESERVED_KEYWORDS.contains(name) || GAL_RESERVED_KEYWORDS.contains(name) || name.startsWith(".");
     }
 }
