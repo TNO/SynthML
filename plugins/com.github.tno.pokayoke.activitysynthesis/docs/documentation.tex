@@ -238,7 +238,8 @@ The entry point is \synthAll, which iterates over all abstract UML activities in
 The operation \getOrderedAbstrActivitiesLabel{} gives the list of all abstract activities in the input UML model, in the order in which they are to be synthesized.
 Such an ordering is needed to enable synthesizing activities that can call other activities, i.e., to support synthesis of hierarchical specifications.
 If some activity depends on some other activity with respect to the hierarchy, we should synthesize the other activity first.
-In case there are cycles in the underlying dependency graph, then the synthesis algorithm will terminate and an error will be reported.
+An abstract activity can depend on other (abstract or concrete) activities via its occurrence constraints: if there is an occurrence constraint expressing that some activity may be called at least once, then the abstract activity depends on that activity.
+In case any cycles are detected in these dependencies, then the synthesis algorithm will terminate and an error will be reported.
 
 \begin{algorithm}[t!]
 	\tcp{Synthesizes a concrete activity for every abstract one in the model.}
