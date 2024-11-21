@@ -237,8 +237,8 @@ More information on these types of syntheses can be found on the webpages of Ecl
 The entry point is \synthAll, which iterates over all abstract UML activities in the given input UML model, synthesizes a concrete UML activity for them, and replaces the abstract activity by the concrete synthesized one.
 The operation \getOrderedAbstrActivitiesLabel{} gives the list of all abstract activities in the input UML model, in the order in which they are to be synthesized.
 Such an ordering is needed to enable synthesizing activities that can call other activities, i.e., to support synthesis of hierarchical specifications.
-If some activity depends on some other activity with respect to the hierarchy, we should synthesize it first.
-In case there are cycles in the underlying dependency graph for activities, then the synthesis algorithm will terminate and an error will be reported.
+If some activity depends on some other activity with respect to the hierarchy, we should synthesize the other activity first.
+In case there are cycles in the underlying dependency graph, then the synthesis algorithm will terminate and an error will be reported.
 
 \begin{algorithm}[t!]
 	\tcp{Synthesizes a concrete activity for every abstract one in the model.}
