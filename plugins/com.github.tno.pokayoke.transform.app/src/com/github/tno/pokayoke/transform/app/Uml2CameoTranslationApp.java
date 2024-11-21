@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
 
-import com.github.tno.pokayoke.transform.uml.UMLTransformer;
+import com.github.tno.pokayoke.transform.uml2cameo.UMLToCameoTransformer;
 
 public class Uml2CameoTranslationApp {
     private Uml2CameoTranslationApp() {
@@ -22,6 +22,6 @@ public class Uml2CameoTranslationApp {
         Path outputFilePath = outputFolderPath.resolve(filePrefix + ".uml");
 
         // Translate the UML model at the input path, and write the resulting fUML specification to the output path.
-        UMLTransformer.transformFile(inputPath, outputFilePath);
+        UMLToCameoTransformer.transformFile(inputPath, outputFilePath);
     }
 }
