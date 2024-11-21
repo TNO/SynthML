@@ -11,7 +11,7 @@ import org.eclipse.uml2.uml.Activity;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 
 /**
- * A dependency orderer for abstract activities, which determine the order in which a given collection of abstract
+ * A dependency orderer for abstract activities, which determines the order in which a given collection of abstract
  * activities should be synthesized.
  */
 public class AbstractActivityDependencyOrderer extends DependencyOrderer<Activity> {
