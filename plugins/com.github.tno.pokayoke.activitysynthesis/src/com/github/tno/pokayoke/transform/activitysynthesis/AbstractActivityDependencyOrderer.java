@@ -18,11 +18,11 @@ public class AbstractActivityDependencyOrderer extends DependencyOrderer<Activit
     @Override
     protected Set<Activity> findDirectDependencies(Activity activity) {
         return activity.getOwnedRules().stream()
-                // Filter out all occurrence constraints of the current activity.
+                // Get all occurrence constraints of the current activity.
                 .filter(CifContext::isOptimalityConstraint)
                 // Get all the elements that are constrained by these occurrence constraints.
                 .flatMap(constraint -> constraint.getConstrainedElements().stream())
-                // Filter out all abstract activities from these elements.
+                // Get all abstract activities from these elements.
                 .filter(element -> element instanceof Activity act && act.isAbstract())
                 // Collect all these abstract activities.
                 .map(Activity.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
