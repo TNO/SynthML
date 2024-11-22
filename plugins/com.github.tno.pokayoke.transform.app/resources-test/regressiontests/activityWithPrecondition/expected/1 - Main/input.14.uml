@@ -14,7 +14,7 @@
         <body>element != Third</body>
         <body>element := Second</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="10" name="main" node="15 16 17 18 19">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="10" name="Main" node="15 16 17 18 19">
         <edge xmi:type="uml:ControlFlow" xmi:id="11" name="InitialNode__p1__to____start" target="16" source="18"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="12" name="__start__to__change" target="17" source="16"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="13" name="change__to____end" target="15" source="17"/>
