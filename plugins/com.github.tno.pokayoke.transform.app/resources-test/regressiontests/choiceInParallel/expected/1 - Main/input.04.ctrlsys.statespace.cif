@@ -1,0 +1,62 @@
+controllable Turn_Computer_On;
+controllable Starting_Computer;
+controllable Drink_Coffee;
+controllable Drink_Tea;
+controllable Start_Working;
+controllable Flip_A_Coin;
+uncontrollable Flip_A_Coin__result_1;
+uncontrollable Flip_A_Coin__result_2;
+automaton statespace:
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = false, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 0, sup = "*")
+  location loc1:
+    initial;
+    edge Turn_Computer_On goto loc2;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc2:
+    edge Starting_Computer goto loc3;
+    edge Flip_A_Coin goto loc4;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc3:
+    edge Flip_A_Coin goto loc5;
+  @state(Context = "*", Context.__activeAction = 1, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc4:
+    edge Flip_A_Coin__result_1 goto loc6;
+    edge Flip_A_Coin__result_2 goto loc7;
+  @state(Context = "*", Context.__activeAction = 1, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc5:
+    edge Flip_A_Coin__result_1 goto loc8;
+    edge Flip_A_Coin__result_2 goto loc9;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Coffee", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc6:
+    edge Starting_Computer goto loc8;
+    edge Drink_Coffee goto loc10;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Tea", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc7:
+    edge Starting_Computer goto loc9;
+    edge Drink_Tea goto loc11;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Coffee", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc8:
+    edge Drink_Coffee goto loc12;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Tea", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc9:
+    edge Drink_Tea goto loc13;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 1, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc10:
+    edge Starting_Computer goto loc12;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 1, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc11:
+    edge Starting_Computer goto loc13;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 1, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc12:
+    edge Start_Working goto loc14;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 1, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc13:
+    edge Start_Working goto loc15;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = true, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 1, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 1, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc14:
+    marked;
+  @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = true, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = true, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 1, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 1, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
+  location loc15:
+    marked;
+end

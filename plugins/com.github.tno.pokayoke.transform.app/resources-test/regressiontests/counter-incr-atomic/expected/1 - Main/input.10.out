@@ -1,0 +1,16 @@
+.model minimal
+.dummy  initialize incr1 incr2 __start __end __loop
+.graph
+__end p5
+__loop p5
+__start p2
+incr1 p4
+incr2 p4
+initialize p3
+p1 __start
+p2 initialize
+p3 incr1 incr2
+p4 __end
+p5 __loop
+.marking { p1 }
+.end

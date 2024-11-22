@@ -1,0 +1,24 @@
+controllable action;
+uncontrollable action__result_1;
+uncontrollable action__result_2;
+controllable __start;
+controllable __end;
+automaton statespace:
+  alphabet action, action__result_1, action__result_2, __start, __end;
+  @state(Context = "*", Context.__activeAction = 0, Context.field = false, sup = "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+  @state(Context = "*", Context.__activeAction = 0, Context.field = false, sup = "*")
+  location loc1:
+    edge action goto loc2;
+  location loc2:
+    edge action__result_1 goto loc3;
+    edge action__result_2 goto loc1;
+  @state(Context = "*", Context.__activeAction = 0, Context.field = true, sup = "*")
+  location loc3:
+    edge __end goto __done;
+  @state(Context = "*", Context.__activeAction = 0, Context.field = true, sup = "*")
+  location __done:
+    marked;
+end
