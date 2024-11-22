@@ -18,7 +18,7 @@
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="main" node="27 28 29 30 31 32 33 34 35 36">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" node="27 28 29 30 31 32 33 34 35 36">
         <edge xmi:type="uml:ControlFlow" xmi:id="15" name="InitialNode__p1__to____start" target="28" source="33"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Decision__p2__to__do_a/1" target="31" source="34">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="17" value="true"/>

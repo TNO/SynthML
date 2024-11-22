@@ -18,7 +18,7 @@
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="main" node="24 25 26 27 28 29 30">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" node="24 25 26 27 28 29 30">
         <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p2__to__do_a/1" target="25" source="28">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
             <body>true</body>

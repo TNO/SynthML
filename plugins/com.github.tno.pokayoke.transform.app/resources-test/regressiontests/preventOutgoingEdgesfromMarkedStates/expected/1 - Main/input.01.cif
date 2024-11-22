@@ -2,10 +2,10 @@ enum Number = First, Second, Third;
 controllable change;
 plant automaton Class:
   disc Number element in any;
-  alg bool $pre = element = First;
-  alg bool __precondition = $pre;
-  alg bool $post = element = Second;
-  alg bool __postcondition = $post;
+  alg bool Pre = element = First;
+  alg bool __precondition = Pre;
+  alg bool Post = element = Second;
+  alg bool __postcondition = Post;
   initial __precondition;
   marked __postcondition;
   location:

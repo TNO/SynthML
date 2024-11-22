@@ -73,7 +73,7 @@
           <body>Unknown</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="main" node="55 56 57 58 59 60 61 62 63 64 65 66 67 68 69">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="Main" node="55 56 57 58 59 60 61 62 63 64 65 66 67 68 69">
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="InitialNode__p1__to____start" target="56" source="64"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="38" name="__end__to__FinalNode__p10" target="65" source="55"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="39" name="Fork____start__to__prepare_location2" target="58" source="68"/>

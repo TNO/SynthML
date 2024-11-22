@@ -10,7 +10,7 @@
         <body>element != Third</body>
         <body>element := Second</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="7" name="main" node="10 11 12">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="7" name="Main" node="10 11 12">
         <edge xmi:type="uml:ControlFlow" xmi:id="8" name="change__to__FinalNode__p4" target="12" source="10"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="9" name="InitialNode__p1__to__change" target="10" source="11"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="10" name="change" incoming="9" outgoing="8" behavior="6"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="Model">
     <nameExpression xmi:id="2" name="literals">
       <operand xmi:type="uml:LiteralInteger" xmi:id="3" name=""/>
@@ -73,29 +73,55 @@
           <body>Unknown</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="main" node="53 54 55 56 57 58 59 60 61 62 63 64 65">
-        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Fork____start__to__prepare_location2" target="54" source="64"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Fork____start__to__prepare_robot" target="55" source="64"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="prepare_location2__to__Join__robot_move_to_location2" target="65" source="54"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="prepare_robot__to__Join__robot_move_to_location2" target="65" source="55"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="robot_move_to_location2__to__robot_release_product_at_location2" target="59" source="58"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="robot_adjust_product__to__Merge__p7" target="62" source="56"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="robot_release_product_at_location2__to__Merge__p7" target="62" source="59"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="44" name="Merge__p7__to__measure_product_position" target="53" source="62"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="45" name="Decision__p8__to__robot_adjust_product" target="56" source="63">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="Main" node="53 54 55 56 57 58 59 60 61 62 63 64 65">
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" target="54" source="64">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="55" source="64">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="65" source="54">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="65" source="55">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="59" source="58">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" target="62" source="56">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="62" source="59">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="53" source="62">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="56" source="63">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="46">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="47" name="Decision__p8__to__robot_move_to_location1" target="57" source="63">
+        <edge xmi:type="uml:ControlFlow" xmi:id="47" target="57" source="63">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="48">
             <body>productCorrectlyPlaced != False</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="49" name="measure_product_position__to__Decision__p8" target="63" source="53"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="50" name="Join__robot_move_to_location2__to__robot_move_to_location2" target="58" source="65"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="51" name="robot_move_to_location1__to__FinalNode__p10" target="61" source="57"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="52" name="InitialNode__p1__to__Fork____start" target="64" source="60"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="49" target="63" source="53">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="50" target="58" source="65">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="51" target="61" source="57">
+          <name xsi:nil="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="52" target="64" source="60">
+          <name xsi:nil="true"/>
+        </edge>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="53" name="measure_product_position" incoming="44" outgoing="49" behavior="72"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="54" name="prepare_location2" incoming="37" outgoing="39" behavior="71"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="55" name="prepare_robot" incoming="38" outgoing="40" behavior="66"/>
@@ -103,12 +129,24 @@
         <node xmi:type="uml:CallBehaviorAction" xmi:id="57" name="robot_move_to_location1" incoming="47" outgoing="51" behavior="67"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="58" name="robot_move_to_location2" incoming="50" outgoing="41" behavior="68"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="59" name="robot_release_product_at_location2" incoming="41" outgoing="43" behavior="70"/>
-        <node xmi:type="uml:InitialNode" xmi:id="60" name="InitialNode__p1" outgoing="52"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="61" name="FinalNode__p10" incoming="51"/>
-        <node xmi:type="uml:MergeNode" xmi:id="62" name="Merge__p7" incoming="42 43" outgoing="44"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="63" name="Decision__p8" incoming="49" outgoing="45 47"/>
-        <node xmi:type="uml:ForkNode" xmi:id="64" name="Fork____start" incoming="52" outgoing="37 38"/>
-        <node xmi:type="uml:JoinNode" xmi:id="65" name="Join__robot_move_to_location2" incoming="39 40" outgoing="50"/>
+        <node xmi:type="uml:InitialNode" xmi:id="60" outgoing="52">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="61" incoming="51">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="62" incoming="42 43" outgoing="44">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="63" incoming="49" outgoing="45 47">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="64" incoming="52" outgoing="37 38">
+          <name xsi:nil="true"/>
+        </node>
+        <node xmi:type="uml:JoinNode" xmi:id="65" incoming="39 40" outgoing="50">
+          <name xsi:nil="true"/>
+        </node>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="66" name="prepare_robot">
         <body>not robotPrepared</body>

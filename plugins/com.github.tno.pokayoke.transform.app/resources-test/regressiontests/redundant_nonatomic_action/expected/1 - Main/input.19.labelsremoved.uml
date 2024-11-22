@@ -18,13 +18,15 @@
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="main" node="23 24 25 26 27 28">
-        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="true" target="28" source="26">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" node="23 24 25 26 27 28">
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="28" source="26">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="true" target="24" source="26">
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="24" source="26">
+          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="18">
             <body>true</body>
           </guard>
