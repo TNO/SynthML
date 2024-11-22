@@ -50,7 +50,7 @@
           <body>false</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_7lUj0Bd-Ee-TFtQPmfUP2A" name="main" isAbstract="true" postcondition="_fV2n8Bd_Ee-TFtQPmfUP2A">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_7lUj0Bd-Ee-TFtQPmfUP2A" name="Main" isAbstract="true" postcondition="_fV2n8Bd_Ee-TFtQPmfUP2A">
         <ownedRule xmi:id="_fV2n8Bd_Ee-TFtQPmfUP2A" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_g9tWkBd_Ee-TFtQPmfUP2A" name="">
             <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
