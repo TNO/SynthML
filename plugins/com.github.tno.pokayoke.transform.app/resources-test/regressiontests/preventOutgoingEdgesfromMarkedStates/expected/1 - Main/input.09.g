@@ -1,5 +1,5 @@
 .model minimal
-.dummy change __start __end __loop
+.dummy __start change __end __loop
 .state graph
 s1 __start s2
 s2 change s4

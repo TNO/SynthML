@@ -1,5 +1,5 @@
 .model minimal
-.dummy  action1 action2 __start __end __loop
+.dummy  __start action2 action1 __end __loop
 .graph
 __end p6
 __loop p6

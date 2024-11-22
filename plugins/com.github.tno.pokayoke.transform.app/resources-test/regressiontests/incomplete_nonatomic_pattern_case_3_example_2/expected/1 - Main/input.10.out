@@ -1,5 +1,5 @@
 .model minimal
-.dummy  do_a do_b do_b__na_result_1 do_c __start __end __loop
+.dummy  __start do_b do_a do_b__na_result_1 do_c __end __loop
 .graph
 __end p8
 __loop p8

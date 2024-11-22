@@ -1,19 +1,9 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="NonAtomicA">
+      <transition id="__start">
         <name>
-          <text>NonAtomicA</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicA__na_result_1">
-        <name>
-          <text>NonAtomicA__na_result_1</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicA__na_result_2">
-        <name>
-          <text>NonAtomicA__na_result_2</text>
+          <text>__start</text>
         </name>
       </transition>
       <transition id="NonAtomicB">
@@ -21,9 +11,9 @@
           <text>NonAtomicB</text>
         </name>
       </transition>
-      <transition id="NonAtomicB__na_result_1">
+      <transition id="NonAtomicA">
         <name>
-          <text>NonAtomicB__na_result_1</text>
+          <text>NonAtomicA</text>
         </name>
       </transition>
       <transition id="NonAtomicB__na_result_2">
@@ -31,9 +21,19 @@
           <text>NonAtomicB__na_result_2</text>
         </name>
       </transition>
-      <transition id="__start">
+      <transition id="NonAtomicB__na_result_1">
         <name>
-          <text>__start</text>
+          <text>NonAtomicB__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicA__na_result_2">
+        <name>
+          <text>NonAtomicA__na_result_2</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicA__na_result_1">
+        <name>
+          <text>NonAtomicA__na_result_1</text>
         </name>
       </transition>
       <transition id="__end">

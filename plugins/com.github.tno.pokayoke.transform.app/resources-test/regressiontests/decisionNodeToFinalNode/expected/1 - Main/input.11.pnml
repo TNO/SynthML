@@ -1,14 +1,14 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="action">
-        <name>
-          <text>action</text>
-        </name>
-      </transition>
       <transition id="__start">
         <name>
           <text>__start</text>
+        </name>
+      </transition>
+      <transition id="action">
+        <name>
+          <text>action</text>
         </name>
       </transition>
       <transition id="__end">

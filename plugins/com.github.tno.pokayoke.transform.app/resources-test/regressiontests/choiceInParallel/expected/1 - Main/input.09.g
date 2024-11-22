@@ -1,5 +1,5 @@
 .model minimal
-.dummy Turn_Computer_On Starting_Computer Drink_Coffee Drink_Tea Start_Working Flip_A_Coin __start __end __loop
+.dummy __start Turn_Computer_On Flip_A_Coin Starting_Computer Drink_Tea Drink_Coffee Start_Working __end __loop
 .state graph
 s1 __start s2
 s2 Turn_Computer_On s4

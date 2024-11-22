@@ -1,5 +1,5 @@
 .model minimal
-.dummy NonAtomicA NonAtomicA__na_result_1 NonAtomicA__na_result_2 NonAtomicB NonAtomicB__na_result_1 NonAtomicB__na_result_2 NonAtomicC NonAtomicC__na_result_1 NonAtomicC__na_result_2 NonAtomicD NonAtomicD__na_result_1 NonAtomicD__na_result_2 __start __end __loop
+.dummy __start NonAtomicC NonAtomicA NonAtomicC__na_result_2 NonAtomicC__na_result_1 NonAtomicA__na_result_2 NonAtomicA__na_result_1 NonAtomicB NonAtomicD NonAtomicB__na_result_2 NonAtomicB__na_result_1 NonAtomicD__na_result_2 NonAtomicD__na_result_1 __end __loop
 .state graph
 s1 __start s2
 s2 NonAtomicC s4

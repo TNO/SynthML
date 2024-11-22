@@ -1,5 +1,5 @@
 .model minimal
-.dummy  initialize incr1 incr2 __start __end __loop
+.dummy  __start initialize incr2 incr1 __end __loop
 .graph
 __end p5
 __loop p5

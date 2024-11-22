@@ -1,5 +1,5 @@
 .model minimal
-.dummy prepare_robot robot_move_to_location1 robot_move_to_location2 robot_adjust_product robot_release_product_at_location2 prepare_location2 measure_product_position __start __end __loop
+.dummy __start prepare_location2 prepare_robot robot_adjust_product robot_move_to_location1 measure_product_position __end robot_move_to_location2 robot_release_product_at_location2 __loop
 .state graph
 s1 __start s2
 s2 prepare_location2 s4

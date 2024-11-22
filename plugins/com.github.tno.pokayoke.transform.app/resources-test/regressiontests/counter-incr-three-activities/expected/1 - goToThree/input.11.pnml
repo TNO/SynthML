@@ -1,19 +1,24 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
       <transition id="initialize">
         <name>
           <text>initialize</text>
         </name>
       </transition>
-      <transition id="initialize__na_result_1">
-        <name>
-          <text>initialize__na_result_1</text>
-        </name>
-      </transition>
       <transition id="initialize__na_result_2">
         <name>
           <text>initialize__na_result_2</text>
+        </name>
+      </transition>
+      <transition id="initialize__na_result_1">
+        <name>
+          <text>initialize__na_result_1</text>
         </name>
       </transition>
       <transition id="incr1">
@@ -24,11 +29,6 @@
       <transition id="incr2">
         <name>
           <text>incr2</text>
-        </name>
-      </transition>
-      <transition id="__start">
-        <name>
-          <text>__start</text>
         </name>
       </transition>
       <transition id="__end">

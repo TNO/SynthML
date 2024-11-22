@@ -1,34 +1,9 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="NonAtomicA">
+      <transition id="__start">
         <name>
-          <text>NonAtomicA</text>
-        </name>
-      </transition>
-      <transition id="__tau_0">
-        <name>
-          <text>__tau_0</text>
-        </name>
-      </transition>
-      <transition id="__tau_1">
-        <name>
-          <text>__tau_1</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicB">
-        <name>
-          <text>NonAtomicB</text>
-        </name>
-      </transition>
-      <transition id="__tau_2">
-        <name>
-          <text>__tau_2</text>
-        </name>
-      </transition>
-      <transition id="__tau_3">
-        <name>
-          <text>__tau_3</text>
+          <text>__start</text>
         </name>
       </transition>
       <transition id="NonAtomicC">
@@ -36,9 +11,9 @@
           <text>NonAtomicC</text>
         </name>
       </transition>
-      <transition id="__tau_4">
+      <transition id="NonAtomicA">
         <name>
-          <text>__tau_4</text>
+          <text>NonAtomicA</text>
         </name>
       </transition>
       <transition id="__tau_5">
@@ -46,14 +21,39 @@
           <text>__tau_5</text>
         </name>
       </transition>
+      <transition id="__tau_4">
+        <name>
+          <text>__tau_4</text>
+        </name>
+      </transition>
+      <transition id="__tau_1">
+        <name>
+          <text>__tau_1</text>
+        </name>
+      </transition>
+      <transition id="__tau_0">
+        <name>
+          <text>__tau_0</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicB">
+        <name>
+          <text>NonAtomicB</text>
+        </name>
+      </transition>
       <transition id="NonAtomicD">
         <name>
           <text>NonAtomicD</text>
         </name>
       </transition>
-      <transition id="__tau_6">
+      <transition id="__tau_3">
         <name>
-          <text>__tau_6</text>
+          <text>__tau_3</text>
+        </name>
+      </transition>
+      <transition id="__tau_2">
+        <name>
+          <text>__tau_2</text>
         </name>
       </transition>
       <transition id="__tau_7">
@@ -61,9 +61,9 @@
           <text>__tau_7</text>
         </name>
       </transition>
-      <transition id="__start">
+      <transition id="__tau_6">
         <name>
-          <text>__start</text>
+          <text>__tau_6</text>
         </name>
       </transition>
       <transition id="__end">

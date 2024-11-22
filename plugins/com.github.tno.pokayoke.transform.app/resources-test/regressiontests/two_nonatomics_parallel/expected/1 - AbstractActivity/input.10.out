@@ -1,5 +1,5 @@
 .model minimal
-.dummy  NonAtomicA NonAtomicA__na_result_1 NonAtomicA__na_result_2 NonAtomicB NonAtomicB__na_result_1 NonAtomicB__na_result_2 __start __end __loop
+.dummy  __start NonAtomicB NonAtomicA NonAtomicB__na_result_2 NonAtomicB__na_result_1 NonAtomicA__na_result_2 NonAtomicA__na_result_1 __end __loop
 .graph
 NonAtomicA p4
 NonAtomicA__na_result_1 p6
