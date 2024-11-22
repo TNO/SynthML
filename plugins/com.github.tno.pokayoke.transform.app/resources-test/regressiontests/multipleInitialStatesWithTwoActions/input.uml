@@ -20,7 +20,7 @@
         <body>not field1</body>
         <body>field2 := true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_KTlU0CfiEe-Yd-UzBcvFKg" name="main" isAbstract="true" postcondition="_MTy5ECfiEe-Yd-UzBcvFKg">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_KTlU0CfiEe-Yd-UzBcvFKg" name="Main" isAbstract="true" postcondition="_MTy5ECfiEe-Yd-UzBcvFKg">
         <ownedRule xmi:id="_MTy5ECfiEe-Yd-UzBcvFKg" name="postcondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_NpikACfiEe-Yd-UzBcvFKg" name="">
             <body>field2</body>
