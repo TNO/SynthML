@@ -1,0 +1,46 @@
+controllable do_a;
+uncontrollable do_a__result_1;
+uncontrollable do_a__result_2;
+controllable do_b;
+uncontrollable do_b__na_result_1;
+plant automaton Context:
+  disc bool done_a in any;
+  disc bool done_b in any;
+  disc int[0..1] __activeAction;
+  disc bool __nonAtomicActive__do_b;
+  alg bool Pre = not done_a and not done_b;
+  alg bool __precondition = Pre;
+  alg bool Post = done_a;
+  alg bool __postcondition = Post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge do_a when not done_a, __activeAction = 0 do __activeAction := 1;
+    edge do_a__result_1 when __activeAction = 1 do done_a := true, __activeAction := 0;
+    edge do_a__result_2 when __activeAction = 1 do done_a := true, __activeAction := 0;
+    edge do_b when not done_b, __activeAction = 0, not __nonAtomicActive__do_b do __nonAtomicActive__do_b := true;
+    edge do_b__na_result_1 when __activeAction = 0, __nonAtomicActive__do_b do done_b := true, __nonAtomicActive__do_b := false;
+end
+requirement automaton occurrences__do_a:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences__do_b:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition disables do_a;
+requirement invariant Context.__postcondition disables do_a__result_1;
+requirement invariant Context.__postcondition disables do_a__result_2;
+requirement invariant Context.__postcondition disables do_b;
+requirement invariant Context.__postcondition disables do_b__na_result_1;
+requirement invariant Context.__postcondition => not Context.__nonAtomicActive__do_b;
+requirement invariant Context.__postcondition => Context.__activeAction = 0;

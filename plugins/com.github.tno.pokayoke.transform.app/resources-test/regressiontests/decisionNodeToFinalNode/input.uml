@@ -13,7 +13,7 @@
         <body>field := true</body>
         <body>field := false</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_lvHXcCiTEe-7ULz3tevy1w" name="main" isAbstract="true" postcondition="_tqUTcCiTEe-7ULz3tevy1w" precondition="_oFXdICiTEe-7ULz3tevy1w">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_lvHXcCiTEe-7ULz3tevy1w" name="Main" isAbstract="true" postcondition="_tqUTcCiTEe-7ULz3tevy1w" precondition="_oFXdICiTEe-7ULz3tevy1w">
         <ownedRule xmi:id="_oFXdICiTEe-7ULz3tevy1w" name="precondition">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_rJwbMCiTEe-7ULz3tevy1w" name="">
             <body>not field</body>

@@ -1,0 +1,54 @@
+controllable initialize;
+uncontrollable initialize__result_1;
+uncontrollable initialize__result_2;
+controllable incr1;
+controllable incr2;
+plant automaton Context:
+  disc bool init in any;
+  disc int[0..3] count in any;
+  disc int[0..1] __activeAction;
+  alg bool Pre = not init and count = 0;
+  alg bool __precondition = Pre;
+  alg bool Post = count = 3;
+  alg bool __postcondition = Post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge initialize when not init, __activeAction = 0 do __activeAction := 1;
+    edge initialize__result_1 when __activeAction = 1 do init := true, count := 1, __activeAction := 0;
+    edge initialize__result_2 when __activeAction = 1 do init := true, count := 2, __activeAction := 0;
+    edge incr1 when init, __activeAction = 0 do count := count + 1;
+    edge incr2 when init, __activeAction = 0 do count := count + 2;
+end
+supervisor automaton occurrences__initialize:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge initialize when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__incr1:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge incr1 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__incr2:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge incr2 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet initialize, incr1, incr2;
+  location:
+    initial;
+    marked;
+    edge incr1 when occurrences__incr1.__occurrences = 0 and (Context.count = 2 and Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 1));
+    edge incr2 when occurrences__incr1.__occurrences = 0 and (Context.count = 1 and Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 1));
+    edge initialize when occurrences__incr1.__occurrences = 0 and (Context.count = 0 and not Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 0));
+end
