@@ -16,7 +16,6 @@ import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
 
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * A dependency orderer for abstract activities, which determines the order in which abstract activities should be
@@ -76,9 +75,10 @@ public class AbstractActivityDependencyOrderer {
                         .collect(Collectors.toCollection(LinkedHashSet::new));
 
                 // The activity depends on all activities except itself and those that are blocked explicitly.
-                return Sets.difference(activities, ImmutableSet.of(activity), blockedActivities);
+                return Sets.difference(activities, Set.of(activity), blockedActivities);
             } else {
-                // Find all activities that are called by the current activity.
+                // Find all activities that are called by the current activity. We ignore any occurrence constraints
+                // that the current activity may have since these are irrelevant: the activity is already concrete.
                 return activity.getNodes().stream()
                         // Get all call behavior nodes of the current activity.
                         .filter(CallBehaviorAction.class::isInstance).map(CallBehaviorAction.class::cast)
