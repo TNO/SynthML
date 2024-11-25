@@ -60,6 +60,9 @@ public class Cif2Petrify {
         // remove the explict automaton alphabet, to ensure that 'CifEventUtils.getAlphabet' will give the implicit one.
         // This is needed, since Petrify will give warnings in case the explicit alphabet contains events that are not
         // actually used. And simply considering the derived alphabet here is easier than parsing Petrify's warnings.
+        // Moreover, it is valid to reduce the alphabet here, since we use the result of the CIF explorer, which gives
+        // us a single state space automaton. If some event is not used in this state space automaton, then it's never
+        // enabled and can thus be removed from the alphabet.
         automaton.setAlphabet(null);
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
 
