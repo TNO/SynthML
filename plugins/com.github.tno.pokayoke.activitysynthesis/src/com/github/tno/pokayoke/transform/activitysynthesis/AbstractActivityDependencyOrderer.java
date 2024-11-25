@@ -30,7 +30,7 @@ public class AbstractActivityDependencyOrderer {
     private final ActivityOrderer orderer;
 
     /**
-     * Constructs a new dependency orderer that considers the given collection of (abstract and concrete) activities.
+     * Constructs a new dependency orderer that considers the given collection of abstract and concrete activities.
      *
      * @param activities All abstract and concrete activities in the input model to consider.
      */
@@ -75,7 +75,7 @@ public class AbstractActivityDependencyOrderer {
                         // Collect all these activities.
                         .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                // The activity depends on all abstract activities except itself and those that are blocked explicitly.
+                // The activity depends on all activities except itself and those that are blocked explicitly.
                 return Sets.difference(activities, ImmutableSet.of(activity), blockedActivities);
             } else {
                 // Find all activities that are called by the current activity.
