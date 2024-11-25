@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
@@ -274,39 +275,39 @@ public class PostProcessActivity {
     }
 
     /**
-     * Checks all the nodes of an activity for nondeterministic transitions, and raises a warning if found.
+     * Checks the decision nodes of an activity for non-deterministic transitions, and registers a warning if found.
      *
      * @param activity The activity to check.
-     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the CIF
      *     specification.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      * @param bddSpec The CIF/BDD specification.
      */
-    public static void checkNondeterministicActions(Activity activity, UmlToCifTranslator translator,
+    public static void checkNonDeterministicDecisionNodes(Activity activity, UmlToCifTranslator translator,
             List<String> warnings, CifBddSpec bddSpec)
     {
-        for (ActivityNode node: List.copyOf(activity.getNodes())) {
-            // If node has multiple outgoing edges, check for nondeterminism.
+        for (ActivityNode node: activity.getNodes()) {
+            // If the current node is a decision node with multiple outgoing edges, then check for non-determinism.
             if (node instanceof DecisionNode decisionNode && decisionNode.getOutgoings().size() > 1) {
                 // Check if (at least) two edges can be fired at the same time.
-                nondeterministicEdgeChecker(decisionNode, translator, warnings, bddSpec);
+                nonDeterministicEdgeChecker(decisionNode, translator, warnings, bddSpec);
             }
         }
     }
 
     /**
-     * Checks a single node for nondeterministic transitions, and raises a warning if found.
+     * Checks a single node for non-deterministic transitions, and registers a warning if found.
      *
-     * @param node The activity node to check for nondeterministic transitions.
-     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     * @param node The activity node to check for non-deterministic transitions.
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the CIF
      *     specification.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      * @param bddSpec The CIF/BDD specification.
      */
-    private static void nondeterministicEdgeChecker(ActivityNode node, UmlToCifTranslator translator,
+    private static void nonDeterministicEdgeChecker(ActivityNode node, UmlToCifTranslator translator,
             List<String> warnings, CifBddSpec bddSpec)
     {
-        Map<ActivityEdge, BDD> edgesBDDGuards = new LinkedHashMap<>();
+        Map<ActivityEdge, BDD> edgeGuardMap = new LinkedHashMap<>();
 
         // For every edge, transform its guard to CIF and then to BDD.
         for (ActivityEdge edge: node.getOutgoings()) {
@@ -317,48 +318,52 @@ public class PostProcessActivity {
                 bddGuard = CifToBddConverter.convertPred(cifGuard, false, bddSpec);
             } catch (UnsupportedPredicateException e) {
                 throw new RuntimeException(
-                        String.format("Failed to convert CIF expression into BDD, with predicate %s.", cifGuard), e);
+                        String.format("Failed to convert CIF expression into BDD, with predicate %s.",
+                                CifTextUtils.exprToStr(cifGuard)),
+                        e);
             }
 
-            if (edgesBDDGuards.size() > 0) {
-                // Compute the logical And for every couple of guards.
-                for (var entry: edgesBDDGuards.entrySet()) {
-                    BDD bddLogicalAnd = (entry.getValue()).and(bddGuard);
+            // Compute the logical conjunction of the current guard and the previously computed ones.
+            for (var entry: edgeGuardMap.entrySet()) {
+                BDD guardOverlap = (entry.getValue()).and(bddGuard);
 
-                    // If there is a satisfying assignment, write the warning and exit.
-                    if (!bddLogicalAnd.isZero()) {
-                        // Add a warning that the nondeterministic transition has not been fully merged.
-                        String message = String.format(
-                                "Non-deterministic choice was not fully reduced, "
-                                        + "leading to %s (guard: %s) and to %s (guard: %s).",
-                                "\'" + (edge.getTarget().getName() == null ? "control node"
-                                        : edge.getTarget().getName()) + "\'",
-                                "\'" + (edge.getName() == null ? "true" : edge.getName()) + "\'",
-                                "\'" + (entry.getKey().getTarget().getName() == null ? "control node"
-                                        : entry.getKey().getTarget().getName()) + "\'",
-                                "\'" + (entry.getKey().getName() == null ? "true" : entry.getKey().getName()) + "\'");
-                        warnings.add(message);
+                // If the overlap between the two guards is not empty, then write the warning and exit.
+                if (!guardOverlap.isZero()) {
+                    // Add a warning that a non-deterministic node has been found.
+                    String currentEdgeTargetName = edge.getTarget().getName();
+                    String currentEdgeGuardName = edge.getName();
+                    String entryTargetName = entry.getKey().getTarget().getName();
+                    String entryGuardName = entry.getKey().getName();
+                    String message = String.format(
+                            "Non-deterministic node found, "
+                                    + "leading to %s (guard: %s) and to %s (guard: %s).",
+                            "\'" + (currentEdgeTargetName == null ? "control node" : currentEdgeTargetName)
+                                    + "\'",
+                            "\'" + (currentEdgeGuardName == null ? "true" : currentEdgeGuardName) + "\'",
+                            "\'" + (entryTargetName == null ? "control node"
+                                    : entryTargetName) + "\'",
+                            "\'" + (entryGuardName == null ? "true" : entryGuardName) + "\'");
+                    warnings.add(message);
 
-                        // Free all the BDDs before breaking.
-                        for (var edgeGuard: edgesBDDGuards.entrySet()) {
-                            edgeGuard.getValue().free();
-                        }
-                        bddGuard.free();
-                        bddLogicalAnd.free();
-                        return;
+                    // Free all the BDDs before returning.
+                    for (var edgeGuard: edgeGuardMap.entrySet()) {
+                        edgeGuard.getValue().free();
                     }
-
-                    // Free the BDD representing the logical And.
-                    bddLogicalAnd.free();
+                    bddGuard.free();
+                    guardOverlap.free();
+                    return;
                 }
+
+                // Free the BDD representing the logical conjunction.
+                guardOverlap.free();
             }
 
-            // Add the current edge and BDD guard to the Map.
-            edgesBDDGuards.put(edge, bddGuard);
+            // Add the current edge and BDD guard to the map.
+            edgeGuardMap.put(edge, bddGuard);
         }
 
-        // Free all the BDDs in the Map.
-        for (var entry: edgesBDDGuards.entrySet()) {
+        // Free all the BDDs in the map.
+        for (var entry: edgeGuardMap.entrySet()) {
             entry.getValue().free();
         }
     }
