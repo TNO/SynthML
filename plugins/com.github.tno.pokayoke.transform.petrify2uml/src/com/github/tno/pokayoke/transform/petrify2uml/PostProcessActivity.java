@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
+import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -16,6 +21,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -24,11 +30,13 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
@@ -262,6 +270,96 @@ public class PostProcessActivity {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Checks all the nodes of an activity for nondeterministic transitions, and raises a warning if found.
+     *
+     * @param activity The activity to check.
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     *     specification.
+     * @param warnings Any warnings to notify the user of, which is modified in-place.
+     * @param bddSpec The CIF/BDD specification.
+     */
+    public static void checkNondeterministicActions(Activity activity, UmlToCifTranslator translator,
+            List<String> warnings, CifBddSpec bddSpec)
+    {
+        for (ActivityNode node: List.copyOf(activity.getNodes())) {
+            // If node has multiple outgoing edges, check for nondeterminism.
+            if (node instanceof DecisionNode decisionNode && decisionNode.getOutgoings().size() > 1) {
+                // Check if (at least) two edges can be fired at the same time.
+                nondeterministicEdgeChecker(decisionNode, translator, warnings, bddSpec);
+            }
+        }
+    }
+
+    /**
+     * Checks a single node for nondeterministic transitions, and raises a warning if found.
+     *
+     * @param node The activity node to check for nondeterministic transitions.
+     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
+     *     specification.
+     * @param warnings Any warnings to notify the user of, which is modified in-place.
+     * @param bddSpec The CIF/BDD specification.
+     */
+    private static void nondeterministicEdgeChecker(ActivityNode node, UmlToCifTranslator translator,
+            List<String> warnings, CifBddSpec bddSpec)
+    {
+        Map<ActivityEdge, BDD> edgesBDDGuards = new LinkedHashMap<>();
+
+        // For every edge, transform its guard to CIF and then to BDD.
+        for (ActivityEdge edge: node.getOutgoings()) {
+            Expression cifGuard = translator.getGuard(edge);
+
+            BDD bddGuard = null;
+            try {
+                bddGuard = CifToBddConverter.convertPred(cifGuard, false, bddSpec);
+            } catch (UnsupportedPredicateException e) {
+                throw new RuntimeException(
+                        String.format("Failed to convert CIF expression into BDD, with predicate %s.", cifGuard), e);
+            }
+
+            if (edgesBDDGuards.size() > 0) {
+                // Compute the logical And for every couple of guards.
+                for (var entry: edgesBDDGuards.entrySet()) {
+                    BDD bddLogicalAnd = (entry.getValue()).and(bddGuard);
+
+                    // If there is a satisfying assignment, write the warning and exit.
+                    if (!bddLogicalAnd.isZero()) {
+                        // Add a warning that the nondeterministic transition has not been fully merged.
+                        String message = String.format(
+                                "Non-deterministic choice was not fully reduced, "
+                                        + "leading to %s (guard: %s) and to %s (guard: %s).",
+                                "\'" + (edge.getTarget().getName() == null ? "control node"
+                                        : edge.getTarget().getName()) + "\'",
+                                "\'" + (edge.getName() == null ? "true" : edge.getName()) + "\'",
+                                "\'" + (entry.getKey().getTarget().getName() == null ? "control node"
+                                        : entry.getKey().getTarget().getName()) + "\'",
+                                "\'" + (entry.getKey().getName() == null ? "true" : entry.getKey().getName()) + "\'");
+                        warnings.add(message);
+
+                        // Free all the BDDs before breaking.
+                        for (var edgeGuard: edgesBDDGuards.entrySet()) {
+                            edgeGuard.getValue().free();
+                        }
+                        bddGuard.free();
+                        bddLogicalAnd.free();
+                        return;
+                    }
+
+                    // Free the BDD representing the logical And.
+                    bddLogicalAnd.free();
+                }
+            }
+
+            // Add the current edge and BDD guard to the Map.
+            edgesBDDGuards.put(edge, bddGuard);
+        }
+
+        // Free all the BDDs in the Map.
+        for (var entry: edgesBDDGuards.entrySet()) {
+            entry.getValue().free();
         }
     }
 }
