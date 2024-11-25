@@ -40,31 +40,31 @@
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_idWG0I-XEe6xDuEp1zNm9g" name="DoOperation" node="_koqu4I-XEe6xDuEp1zNm9g _l-w_II-XEe6xDuEp1zNm9g _sJCJAI-XEe6xDuEp1zNm9g _sJCJAY-XEe6xDuEp1zNm9g _sJCJAo-XEe6xDuEp1zNm9g _sJCJA4-XEe6xDuEp1zNm9g">
         <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBI-XEe6xDuEp1zNm9g" target="_sJCJAo-XEe6xDuEp1zNm9g" source="_sJCJAI-XEe6xDuEp1zNm9g"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBY-XEe6xDuEp1zNm9g" target="_sJCJAo-XEe6xDuEp1zNm9g" source="_sJCJA4-XEe6xDuEp1zNm9g"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBo-XEe6xDuEp1zNm9g" name="inputLocation = B" target="_sJCJA4-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBo-XEe6xDuEp1zNm9g" name="inputLocation = Right" target="_sJCJA4-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="_sJCJB4-XEe6xDuEp1zNm9g" name="">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-            <body>inputLocation = B</body>
+            <body>inputLocation = Right</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJCI-XEe6xDuEp1zNm9g" name="inputLocation = A" target="_sJCJAI-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJCI-XEe6xDuEp1zNm9g" name="inputLocation = Left" target="_sJCJAI-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="_sJCJCY-XEe6xDuEp1zNm9g" name="">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-            <body>inputLocation = A</body>
+            <body>inputLocation = Left</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="_vowYMI-XEe6xDuEp1zNm9g" target="_sJCJAY-XEe6xDuEp1zNm9g" source="_koqu4I-XEe6xDuEp1zNm9g"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="_wGQMgI-XEe6xDuEp1zNm9g" target="_l-w_II-XEe6xDuEp1zNm9g" source="_sJCJAo-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:InitialNode" xmi:id="_koqu4I-XEe6xDuEp1zNm9g" name="" outgoing="_vowYMI-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="_l-w_II-XEe6xDuEp1zNm9g" name="" incoming="_wGQMgI-XEe6xDuEp1zNm9g"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJAI-XEe6xDuEp1zNm9g" name="process_A" incoming="_sJCJCI-XEe6xDuEp1zNm9g" outgoing="_sJCJBI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJAI-XEe6xDuEp1zNm9g" name="process_Left" incoming="_sJCJCI-XEe6xDuEp1zNm9g" outgoing="_sJCJBI-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:DecisionNode" xmi:id="_sJCJAY-XEe6xDuEp1zNm9g" name="" incoming="_vowYMI-XEe6xDuEp1zNm9g" outgoing="_sJCJCI-XEe6xDuEp1zNm9g _sJCJBo-XEe6xDuEp1zNm9g"/>
         <node xmi:type="uml:MergeNode" xmi:id="_sJCJAo-XEe6xDuEp1zNm9g" name="" incoming="_sJCJBY-XEe6xDuEp1zNm9g _sJCJBI-XEe6xDuEp1zNm9g" outgoing="_wGQMgI-XEe6xDuEp1zNm9g"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJA4-XEe6xDuEp1zNm9g" name="process_B" incoming="_sJCJBo-XEe6xDuEp1zNm9g" outgoing="_sJCJBY-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJA4-XEe6xDuEp1zNm9g" name="process_Right" incoming="_sJCJBo-XEe6xDuEp1zNm9g" outgoing="_sJCJBY-XEe6xDuEp1zNm9g"/>
       </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_iJrxcI3KEe6_8e6M7syDNw" name="InputLocation">
-      <ownedLiteral xmi:id="_jw4_0I3KEe6_8e6M7syDNw" name="A"/>
-      <ownedLiteral xmi:id="_mXZIAI3KEe6_8e6M7syDNw" name="B"/>
+      <ownedLiteral xmi:id="_jw4_0I3KEe6_8e6M7syDNw" name="Left"/>
+      <ownedLiteral xmi:id="_mXZIAI3KEe6_8e6M7syDNw" name="Right"/>
     </packagedElement>
     <profileApplication xmi:id="_IKL68PyWEe6JbLeUfj0rXg">
       <eAnnotations xmi:id="_IKPlUPyWEe6JbLeUfj0rXg" source="http://www.eclipse.org/uml2/2.0.0/UML">

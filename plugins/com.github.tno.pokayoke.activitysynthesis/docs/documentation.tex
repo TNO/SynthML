@@ -16,6 +16,15 @@
 \newcommand{\commfont}[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
 \SetCommentSty{commfont}
 
+% Keywords in algorithms.
+\SetKwFunction{synthAll}{synthesize-all}
+\SetKwFunction{synthSingle}{synthesize-single}
+\SetKwProg{procedure}{procedure}{}{}
+\SetKw{KwEveryAbstrActivity}{every abstract activity}
+\SetKw{KwReplace}{replace}
+\SetKw{KwBy}{by}
+\SetKw{KwIn}{in}
+
 % Redefine reference names for \autoref.
 \addto\extrasenglish{\renewcommand{\algorithmautorefname}{Algorithm}}
 \addto\extrasenglish{\renewcommand{\sectionautorefname}{Section}}
@@ -131,15 +140,19 @@ A high-level overview is presented below.
 			If an action is indicated to be \emph{nonatomic}, then other actions may be performed in-between the start and end of the nonatomic action.
 			A nonatomic action can only be started when its guard holds, and the effects of a nondeterministic action are applied when the action ends.
 		\end{itemize}
-		\item A number of UML constraints that model the requirements for synthesis.
+		\item Any number of UML constraints that model the requirements for synthesis.
 		A UML constraint can be a state invariant that is expressed over the UML properties in the UML model.
 		A UML constraint can also be an action exclusion invariant, which indicates that the execution of some action requires the system to be in a certain state as expressed by a state invariant.
-		\item A single UML activity, which can either be \emph{abstract} or \emph{concrete}.
+		\item Any number of UML activities, which can either be \emph{abstract} or \emph{concrete}.
 		\begin{itemize}
-			\item An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
+			\item Abstract UML activities are `empty' in the sense that they contain no nodes nor control flows.
+			An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
 			The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
-			Occurrence constraints\footnote{Note that occurrence constraints are temporary, and intended to be removed later.} are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times' and thus limit the number of occurrences of some action in a to-be-synthesized activity.
-			Abstract UML activities are `empty' in the sense that they contain no nodes nor control flow.
+			Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
+			Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
+			At the moment, the synthesis algorithm does not yet support synthesis of activities that can call other activities.
+			Nevertheless, the UML models that we consider may already have occurrence constraints over activities.
+			Occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
 			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
 			A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action.
 			So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
@@ -147,8 +160,8 @@ A high-level overview is presented below.
 		\end{itemize}
 	\end{itemize}
 	
-	The activity synthesis algorithm takes UML models with an abstract UML activity as input.
-	The goal of activity synthesis is then to synthesize a concrete UML activity for the specified abstract UML activity, and updating the UML model by replacing the abstract UML activity by the concrete synthesized ones.
+	The activity synthesis algorithm takes UML models as input, containing any number of abstract UML activities.
+	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
 	
 	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
 	For example, UML models should not contain abstract UML activities that have nodes or control flows, and should not use double underscores `\_\_' in any names of UML elements.
@@ -219,16 +232,25 @@ More information on these types of syntheses can be found on the webpages of Ecl
 \label{sec:algorithm}
 
 \autoref{alg:activity-synthesis} shows the high-level activity synthesis algorithm.
-The algorithm is a sequence of operations performed on some input UML model, \var{umlModel}, that contains an abstract UML activity.
-The algorithm produces a UML model where the abstract UML activity is replaced by the synthesized concrete activity.
+The entry point is \synthAll, which iterates over all abstract UML activities in the given input UML model, synthesizes a concrete UML activity for them, and replaces the abstract activity by the concrete synthesized one.
+The algorithm for synthesizing a single UML activity, \synthSingle, is a sequence of operations performed on the input UML abstract activity.
 
 \begin{algorithm}[t!]
-	\SetKwFunction{synth}{activity-synthesis}
-	\SetKwProg{procedure}{procedure}{}{}
+	\tcp{Synthesizes a concrete activity for every abstract one in the model.}
+	\procedure{\synthAll{\var{umlModel}}}{
+		\For{\KwEveryAbstrActivity \var{umlActivity_{abstr}} \KwIn \var{umlModel}}{
+			\var{umlActivity_{concr}} := \synthSingle{\var{umlActivity_{abstr}}}\;
+			\KwReplace \var{umlActivity_{abstr}} \KwBy \var{umlActivity_{concr}} \KwIn \var{umlModel}\;
+		}
+	}
 	
-	\procedure{\synth{\var{umlModel}}}{
+	\BlankLine
+	\BlankLine
+	
+	\tcp{Synthesizes a concrete activity for the given abstract activity.}
+	\procedure{\synthSingle{\var{umlActivity_{abstr}}}}{
 		\tcp{Synthesize a CIF supervisor using data-based synthesis.}
-		\var{cifSpec} := \transformUmlToCif{\var{umlModel}}\;
+		\var{cifSpec} := \transformUmlToCif{\var{umlActivity_{abstr}}}\;
 		\var{cifSupervisor} := \dataBasedSynthesis{\var{cifSpec}}\;
 		\tcp{Generate the CIF state space as a minimal DFA.}
 		\var{cifStatespace} := \generateStatespace{\var{cifSupervisor}}\;
@@ -238,39 +260,40 @@ The algorithm produces a UML model where the abstract UML activity is replaced b
 		\tcp{Synthesize a minimal Petri Net.}
 		$(\var{petriNet}, \var{regionMapping})$ := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
 		\tcp{Transform the Petri Net to an activity without control flow guards.}
-		\var{umlModel_{concr}} := \transformToActivity{\var{petriNet}, \var{umlModel}}\;
-		\var{umlModel_{red}} := \reduceNonAtomicPatterns{\var{umlModel}_{concr}}\;
+		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet}}\;
+		\var{umlActivity_{red}} := \reduceNonAtomicPatterns{\var{umlActivity}_{concr}}\;
 		\tcp{Compute the control flow guards for the UML decision nodes.}
-		\var{umlModel_{guards}} := \computeEdgeGuards{\var{umlModel_{red}}, \, \dots}\;
+		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots}\;
 		\tcp{Post-process the synthesized UML activity.}
-		\var{umlModel_{post}} := \postprocessActivity{\var{umlModel_{guards}}}\;
-		\Return \var{umlModel_{post}}\;
+		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
+		\Return \var{umlActivity_{post}}\;
 	} 
 
 	\caption{Synthesis of Poka Yoke activity diagrams}
 	\label{alg:activity-synthesis}
 \end{algorithm}
 
-The remainder of this section explains all operations in \autoref{alg:activity-synthesis}.
+The remainder of this section explains all operations in \synthSingle.
 A short explanation is given for every operation, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
-\subsection{Transforming the UML model to CIF}
+\subsection{Transforming the abstract UML activity to CIF}
 \label{sec:transform-uml-to-cif}
 
-The \transformUmlToCif{\var{umlModel}} operation translates a given UML model, \var{umlModel}, to a CIF specification to be used for supervisory controller synthesis.
+The \transformUmlToCif{\var{umlActivity_{abstr}}} operation translates a given abstract UML activity, \var{umlActivity_{abstr}}, together with all relevant context from the UML model (e.g., UML class properties, constraints, opaque behaviors, etc.) to a CIF specification to be used for supervisory controller synthesis.
 
 \paragraph{Motivation.}
-With respect to supervisory controller synthesis, the input UML model specifies the plant and requirements, i.e., the UML opaque behaviors and UML (occurrence) constraints.
+With respect to supervisory controller synthesis, the UML model of the abstract input activity \var{umlActivity_{abstr}} specifies the plant and requirements, i.e., the UML opaque behaviors and UML constraints.
+Moreover, the abstract activity itself contains the name of the to-be-synthesized activity as well as its preconditions, postconditions, and occurrence constraints.
 These plant and requirement constructs are translated one-to-one to CIF, to enable running its data-based synthesis tool.
 
 \paragraph{Preconditions.}
-This operation requires the input UML model to be valid and have an abstract UML activity (see also \autoref{sec:prelims:formalisms}).
-The abstract UML activity is specified up front since it contains, e.g., the name of the to-be-synthesized activity, as well as its preconditions and postconditions.
+This operation requires the UML model of the abstract input activity to be valid.
+Moreover, all occurrence constraints of \var{umlActivity_{abstr}} must be expressed over actions, i.e., they may not (yet) be expressed over activities.
 
 \paragraph{Postconditions.}
 This operation produces a CIF specification that:
 \begin{itemize}
-	\item For every UML enum declaration, contains a corresponding CIF enum declaration.
+	\item For every UML enum declaration in the UML model, contains a corresponding CIF enum declaration.
 	\item Contains a CIF plant for the single UML class.
 	This plant is a flower automaton, containing one location that is initial and marked, and only self-loops.
 	\item Contains a discrete variable for every UML class property.
@@ -332,8 +355,9 @@ This operation produces a CIF specification that:
 	Furthermore, edges are guaranteed not to contain conditional `if'-updates, since these are not supported by data-based synthesis.
 	Any conditional updates have been eliminated from the CIF specification.
 	They are turned into conditional expressions, which are supported by data-based synthesis.
-	\item Contains requirement automata for the occurrence constraints defined in the UML model.
+	\item Contains requirement automata for the occurrence constraints defined for \var{umlActivity_{abstr}}.
 	Occurrence constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
+	(Note that $A$ must be an action since we don't yet allow occurrence constraints to be expressed over activities.)
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
 	This variable can then be incremented every time the action occurs.
 	The occurrence requirement can then be expressed over this requirement (using edge guards and marked predicates).
@@ -380,7 +404,7 @@ The reason is that Petrify does not have symbolic Petri Net synthesis algorithms
 As input Petrify requires a DFA or NFA (i.e., a traditional supervisor in the form of a single DFA/NFA), rather than an EFA.
 Petrify does not support variables.
 
-The state space that is generated by $\generateStatespaceLabel$ from the synthesized supervisor expresses all possible orderings of events, taking into account the extra synthesized guards and the original action guards as specified in the UML model.
+The state space that is generated by $\generateStatespaceLabel$ from the synthesized supervisor expresses all possible orderings of events, taking into account the extra synthesized guards and the original action guards as specified in the original input UML model.
 The goal of Petri Net synthesis is then to find a compact Petri Net representation of all these possible orderings, whose structure can then be translated to a concrete UML activity.
 
 As a side remark; state space generation could later become a performance bottleneck, e.g., in case there are many initial states or large diamond patterns.
@@ -616,24 +640,20 @@ This region mapping is thus a mapping from Petri Net places to sets of automaton
 \subsection{Transforming the Petri Net to an activity}
 \label{sec:transform-petrinet-to-activity}
 
-The operation \transformToActivity{\var{petriNet}, \var{umlModel}} transforms the given (possibly free-choice) Petri Net \var{petriNet} in PNML format to a concrete UML activity, which replaces the abstract UML activity in \var{umlModel}, which is the original UML model that was given as input to the activity synthesis algorithm.
+The operation \transformToActivity{\var{petriNet}} transforms the given (possibly free-choice) Petri Net \var{petriNet} in PNML format to a concrete UML activity.
 
 \paragraph{Motivation.}
 The overall aim of the activity synthesis chain is to synthesize concrete UML activities.
-Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a UML activity using \transformToActivityLabel{}.
+Since activities are reasonably close to Petri Nets, we do this by first synthesizing a Petri Net using known techniques, and transforming this Petri Net to a concrete UML activity using \transformToActivityLabel{}.
 
 \paragraph{Preconditions.}
 The input \var{petriNet} must be in PNML format.
 It must have exactly one place that has an initial token, which must additionally have no incoming arcs and exactly one outgoing arc to a transition named \startLabel{}.
 It must have exactly one (sink) place that does not have any outgoing arcs, which must additionally have at least one incoming arc from a transition named \stopLabel{}.
 
-The input \var{umlModel} must be the original UML model that was given as input to the activity synthesis algorithm.
-See also the preconditions described in \autoref{sec:transform-uml-to-cif}.
-Notably, it must have a single abstract UML activity.
-
 \paragraph{Postconditions.}
-The output is a UML model in which the abstract UML activity is replaced by a concrete one, which has been translated from \var{petriNet}.
-The concrete UML activity contains:
+The output is a concrete UML activity which has been translated from \var{petriNet}.
+The returned concrete UML activity contains:
 \begin{itemize}
 	\item Exactly one initial node and exactly one final node, which have been translated from the two places described above in the preconditions paragraph.
 	\item One auxiliary opaque action named \startLabel{}, which has been created for the start event introduced earlier, as explained in \autoref{sec:single-source-and-sink}.
@@ -645,7 +665,7 @@ The concrete UML activity contains:
 	For example, a Petri Net place with multiple incoming arcs and one outgoing arc is translated to a UML merge node.
 	The only control nodes that have multiple incoming control flows are join and merge nodes.
 	The only control nodes that have multiple outgoing control flows are fork and decision nodes.
-	\item Call behavior nodes for all transitions in \var{petriNet} that perform an action.
+	\item Call behavior nodes for every transition in \var{petriNet} that performs an action.
 	These nodes then call the appropriate UML opaque behavior of the action.
 	Any duplication that was introduced by label splitting (recall from \autoref{sec:petrinet-synthesis}) has been removed during the process of finding the right UML opaque behavior corresponding to a Petri Net transition.
 	\item No guards on any control flows.
@@ -659,7 +679,7 @@ To give another example of a pattern that cannot occur: it is not possible for t
 \subsection{Reducing nonatomic patterns}
 \label{sec:reducing-non-atomic-patterns}
 
-The operation $\reduceNonAtomicPatterns{\var{umlModel}_{concr}}$ merges any nonatomic patterns in the input UML model $\var{\var{umlModel}_{concr}}$ that can be merged.
+The operation \reduceNonAtomicPatternsLabel{} merges any nonatomic patterns in the input concrete UML activity that can be merged.
 
 Note that, in the code implementation, this reduction step is actually done on the Petri Net level rather than the UML level, as well as the next step of computing control flow guards, described in \autoref{sec:compute-control-flow-guards}.
 This is done for technical reasons that for now are too detailed for the purpose of this document, which is why we chose to explain this (and the next) step on the UML level instead.
@@ -715,17 +735,17 @@ In such cases, we do not merge the starts and ends of nonatomic actions, but kee
 These cases are further handled during activity post-processing (\autoref{sec:activity-post-processing}).
 
 \paragraph{Preconditions.}
-This operation requires a UML model $\var{umlModel}_{concr}$ resulting from the previous step (the code implementation actually requires its earlier Petri Net representation).
+This operation requires a concrete UML activity resulting from the previous step (the code implementation actually requires its earlier Petri Net representation).
 This model should not use the string \tauLabel{} in any of its identifiers, as \reduceNonAtomicPatternsLabel{} will use it to represent rewritten end points of nonatomic patterns.
 
 \paragraph{Postconditions.}
-This operation returns the input model, where all nonatomic patterns have been rewritten as shown on the right in \autoref{fig:non-atomic-pattern}.
+This operation returns the input activity, where all nonatomic patterns have been rewritten as shown on the right in \autoref{fig:non-atomic-pattern}.
 Any starts and ends of nonatomic actions whose occurrences do not fit the nonatomic pattern will not have been rewritten, and are handled during activity post-processing.
 
 \subsection{Computing control flow guards in the activity}
 \label{sec:compute-control-flow-guards}
 
-The operation \computeEdgeGuards{\var{umlModel_{red}}, \, \dots} computes guards for every control flow in the single concretized UML activity in \var{umlModel_{red}} that goes out of a decision node.
+The operation \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots} computes guards for every control flow in the single concretized UML activity \var{umlActivity_{red}} that goes out of a decision node.
 These guards are computed by using intermediate results from earlier steps in the activity synthesis algorithm, notably the extra conditions that have been synthesized earlier by data-based synthesis, the CIF state annotations in the generated/projected/minimized CIF state space, the region mapping, the tracing information from the earlier steps in the synthesis chain, etc.
 Rather than listing all items explicitly, we abbreviate them as `$\dots$'.
 
@@ -739,7 +759,7 @@ So we need to compute them separately, and add them to the concrete UML activity
 
 The three essential ingredients for computing control flow guards are:
 \begin{itemize}
-	\item The \emph{uncontrolled system guards}, as a mapping from actions to their corresponding guards as defined in the input UML model.
+	\item The \emph{uncontrolled system guards}, as a mapping from actions to their corresponding guards as defined in the original input UML model.
 	These guards can thus be obtained by querying the original UML input model.
 	\item The \emph{controlled system guards}, as a mapping from actions that were controllable on the CIF level, to their corresponding synthesized guards.
 	The synthesized guards thus are the full conditions computed by data-based synthesis, under which the action is enabled in the controlled system.
@@ -824,8 +844,8 @@ With these simplifications we can hopefully also eliminate any parts of the cont
 We are not sure though whether such parts can always be eliminated.
 
 \paragraph{Preconditions.}
-The input UML model \var{umlModel_{red}} should be the original UML model that was used as input to the activity synthesis algorithm, with its single abstract UML activity replaced by a concrete synthesized one (as result of \autoref{sec:transform-petrinet-to-activity}), and with its nonatomic patterns reduced wherever possible (as result of \autoref{sec:reducing-non-atomic-patterns}).
-Moreover, all intermediate information from earlier steps of the activity synthesis algorithm must be available, like the synthesized Petri Net, the region mapping, the state annotations of the generated/projected/minimized CIF state space, the CIF supervisor, etc.
+The input UML activity \var{umlActivity_{red}} should be a synthesized concrete UML activity, with its nonatomic patterns reduced wherever possible (as result of \autoref{sec:reducing-non-atomic-patterns}).
+Moreover, all intermediate information from earlier steps of the activity synthesis algorithm must be available, like the original UML input model, the synthesized Petri Net, the region mapping, the state annotations of the generated/projected/minimized CIF state space, the CIF supervisor, etc.
 
 As indicated earlier in \autoref{sec:data-based-synthesis}, the CIF data-based synthesis tool should have been configured to disable all BDD simplification.
 This is needed for computing choice guards, since if synthesized conditions were simplified, they may no longer capture restrictions that are imposed by CIF requirements as those would have been simplified away.
@@ -834,7 +854,7 @@ Instead, we want the synthesized conditions to completely capture all imposed re
 Moreover, all nonatomic patterns must have been reduced, since their reduction has an impact on the computation of choice guards, as motivated earlier.
 
 \paragraph{Postconditions.}
-The output is a UML model that is equal to \var{umlModel_{red}}, but with proper choice guards added to all control flows that go out of decision nodes.
+The output is a UML activity that is equal to \var{umlActivity_{red}}, but with proper choice guards added to all control flows that go out of decision nodes.
 These added choice guards are Boolean predicates that express extra guard conditions for taking the control flow, that are not yet captured by the original action guards nor other known system state information.
 
 Moreover, the added choice guards do (hopefully) not use internal variables, like the atomicity variable.
@@ -846,7 +866,7 @@ So if the operation terminates, then the choice guards do not use internal varia
 \subsection{Post-processing of the activity}
 \label{sec:activity-post-processing}
 
-The operation \postprocessActivity{\var{umlModel_{guards}}} post-processes the synthesized activity in \var{umlModel_{guards}}, to:
+The operation \postprocessActivity{\var{umlActivity_{guards}}} post-processes the synthesized activity \var{umlActivity_{guards}}, to:
 \begin{itemize}
 	\item Rewrite any leftover nonatomic actions that were not merged earlier by \reduceNonAtomicPatternsLabel{}.
 	\item Remove any internal actions have been introduced in earlier steps, like the opaque \startLabel{}, \stopLabel{}, and \tauLabel{} actions.
@@ -857,7 +877,7 @@ The operation \postprocessActivity{\var{umlModel_{guards}}} post-processes the s
 \paragraph{Motivation.}
 
 The \postprocessActivityLabel{} operation first rewrites any leftover nonatomic actions that were not merged earlier.
-Recall from \autoref{sec:reducing-non-atomic-patterns} that not all occurrences of nonatomic actions can be reduced as part of a nonatomc pattern.
+Recall from \autoref{sec:reducing-non-atomic-patterns} that not all occurrences of nonatomic actions can be reduced as part of a nonatomic pattern.
 This means that the activity might still contain separate actions for the starts and ends of nonreduced nonatomic actions.
 We rewrite these to ensure that the synthesized activity is valid.
 We do this by turning all such starts to opaque actions that have the original action guard and no effects, and turning all ends to opaque actions that have guard \texttt{true} and the corresponding effect of the nonatomic action as their (single) effect.
@@ -867,13 +887,13 @@ Next, we remove any internal actions.
 Any auxiliary actions that were not part of the original input UML model should be removed from the synthesized result, as these should not be visible to the user.
 
 After that, we further simplify the synthesized activity.
-This is done for two reasons: (1) we know that translating a minimal Petri Net to an UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the UML activity that may further be reduced.
+This is done for two reasons: (1) we know that translating a minimal Petri Net to a UML activity does not imply that the translated activity is minimal, and (2) the removal of internal actions may lead to patterns in the UML activity that may further be reduced.
 This simplification step searches for several predefined patterns in the UML activity, and rewrites any found instances of these patterns.
 
 Finally, activity post-processing gives the opportunity to do some other minor improvements, e.g., to improve readability a bit by removing some names.
 
 \paragraph{Preconditions.}
-This operation requires a UML model \var{umlModel_{guards}} with a concrete synthesized UML activity, resulting from the earlier steps.
+This operation requires a concrete synthesized UML activity \var{umlActivity_{guards}} resulting from the earlier steps.
 
 \paragraph{Postconditions.}
 This operation ensures that the synthesized UML activity no longer contains internal actions, is simplified, and has any leftover nonatomic starts and ends rewritten in order to get a valid activity.

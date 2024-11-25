@@ -140,7 +140,7 @@ isSuccessful = guard</body>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="67" incoming="46"/>
       </ownedBehavior>
     </ownedBehavior>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="68" name="main" node="73 74 75 76 77">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="68" name="Main" node="73 74 75 76 77">
       <edge xmi:type="uml:ControlFlow" xmi:id="69" target="74" source="76"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="70" target="75" source="74"/>
       <edge xmi:type="uml:ControlFlow" xmi:id="71" target="76" source="73"/>

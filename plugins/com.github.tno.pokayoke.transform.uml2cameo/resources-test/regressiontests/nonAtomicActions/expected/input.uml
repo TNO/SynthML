@@ -22,7 +22,7 @@
       <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
       <defaultValue xmi:type="uml:LiteralString" xmi:id="12" value=""/>
     </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="13" name="main" node="114 115 116 117 119 120 121 122">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="13" name="Main" node="114 115 116 117 119 120 121 122">
       <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="do1" node="102 103 104 105">
         <ownedBehavior xmi:type="uml:Activity" xmi:id="15" name="do1__start" node="39 40 41 43 44 46 49 50 52 53 55 56">
           <edge xmi:type="uml:ControlFlow" xmi:id="16" target="40" source="39"/>

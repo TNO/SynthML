@@ -7,10 +7,10 @@ plant automaton Context:
   disc bool init in any;
   disc int[0..3] count in any;
   disc int[0..1] __activeAction;
-  alg bool $pre = not init and count = 0;
-  alg bool __precondition = $pre;
-  alg bool $post = count = 3;
-  alg bool __postcondition = $post;
+  alg bool precond = not init and count = 0;
+  alg bool __precondition = precond;
+  alg bool postcond = count = 3;
+  alg bool __postcondition = postcond;
   initial __precondition;
   marked __postcondition;
   location:
