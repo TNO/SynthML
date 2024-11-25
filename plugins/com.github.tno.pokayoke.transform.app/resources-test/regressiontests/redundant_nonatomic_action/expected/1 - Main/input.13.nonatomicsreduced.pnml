@@ -1,9 +1,9 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="do_a">
+      <transition id="__start">
         <name>
-          <text>do_a</text>
+          <text>__start</text>
         </name>
       </transition>
       <transition id="do_b">
@@ -11,14 +11,14 @@
           <text>do_b</text>
         </name>
       </transition>
+      <transition id="do_a">
+        <name>
+          <text>do_a</text>
+        </name>
+      </transition>
       <transition id="__tau_0">
         <name>
           <text>__tau_0</text>
-        </name>
-      </transition>
-      <transition id="__start">
-        <name>
-          <text>__start</text>
         </name>
       </transition>
       <transition id="__end">

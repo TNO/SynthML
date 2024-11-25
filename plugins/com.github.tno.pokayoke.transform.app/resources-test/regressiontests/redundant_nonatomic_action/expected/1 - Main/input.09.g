@@ -1,5 +1,5 @@
 .model minimal
-.dummy do_a do_b do_b__na_result_1 __start __end __loop
+.dummy __start do_b do_a do_b__na_result_1 __end __loop
 .state graph
 s1 __start s2
 s2 do_b s4

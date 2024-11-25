@@ -1,29 +1,9 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="prepare_robot">
+      <transition id="__start">
         <name>
-          <text>prepare_robot</text>
-        </name>
-      </transition>
-      <transition id="robot_move_to_location1">
-        <name>
-          <text>robot_move_to_location1</text>
-        </name>
-      </transition>
-      <transition id="robot_move_to_location2">
-        <name>
-          <text>robot_move_to_location2</text>
-        </name>
-      </transition>
-      <transition id="robot_adjust_product">
-        <name>
-          <text>robot_adjust_product</text>
-        </name>
-      </transition>
-      <transition id="robot_release_product_at_location2">
-        <name>
-          <text>robot_release_product_at_location2</text>
+          <text>__start</text>
         </name>
       </transition>
       <transition id="prepare_location2">
@@ -31,19 +11,39 @@
           <text>prepare_location2</text>
         </name>
       </transition>
+      <transition id="prepare_robot">
+        <name>
+          <text>prepare_robot</text>
+        </name>
+      </transition>
+      <transition id="robot_adjust_product">
+        <name>
+          <text>robot_adjust_product</text>
+        </name>
+      </transition>
+      <transition id="robot_move_to_location1">
+        <name>
+          <text>robot_move_to_location1</text>
+        </name>
+      </transition>
       <transition id="measure_product_position">
         <name>
           <text>measure_product_position</text>
         </name>
       </transition>
-      <transition id="__start">
-        <name>
-          <text>__start</text>
-        </name>
-      </transition>
       <transition id="__end">
         <name>
           <text>__end</text>
+        </name>
+      </transition>
+      <transition id="robot_move_to_location2">
+        <name>
+          <text>robot_move_to_location2</text>
+        </name>
+      </transition>
+      <transition id="robot_release_product_at_location2">
+        <name>
+          <text>robot_release_product_at_location2</text>
         </name>
       </transition>
       <place id="p10">

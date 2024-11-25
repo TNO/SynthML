@@ -1,0 +1,46 @@
+controllable left;
+controllable right;
+controllable flip;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  alg bool postcondition = field2;
+  alg bool __postcondition = postcondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge left when not field1 do field2 := true;
+    edge right when field1 do field2 := true;
+    edge flip when true do field1 := not field1;
+end
+supervisor automaton at_most_once__left:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge left when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton at_most_once__right:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge right when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton blocking__flip:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge flip when __occurrences < 0 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet left, right, flip;
+  location:
+    initial;
+    marked;
+    edge flip when false;
+    edge left when at_most_once__left.__occurrences = 0 and not Context.field2 and (not Context.field1 and (at_most_once__right.__occurrences = 0 and blocking__flip.__occurrences = 0));
+    edge right when at_most_once__left.__occurrences = 0 and not Context.field2 and (Context.field1 and (at_most_once__right.__occurrences = 0 and blocking__flip.__occurrences = 0));
+end

@@ -1,5 +1,5 @@
 .model statespace
-.dummy c_act1 c_act2 c_act3 c_act4 c_act5 c_act6 c_act7 c_act8 c_act9 u_act10 c_act11 c_act12 c_act13 c_act14 c_satisfied __loop
+.dummy c_act1 c_act8 c_act6 c_act14 c_act11 c_act2 c_act7 u_act10 c_act3 c_act5 c_act9 c_act4 c_act12 c_act13 c_satisfied __loop
 .state graph
 loc1 c_act1 loc2
 loc1 c_act8 loc3

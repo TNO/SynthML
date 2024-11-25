@@ -1,5 +1,5 @@
 .model minimal
-.dummy  initialize initialize__na_result_1 initialize__na_result_2 incr1 incr2 __start __end __loop
+.dummy  __start initialize initialize__na_result_2 initialize__na_result_1 incr2 incr1 __end __loop
 .graph
 __end p9
 __loop p9
