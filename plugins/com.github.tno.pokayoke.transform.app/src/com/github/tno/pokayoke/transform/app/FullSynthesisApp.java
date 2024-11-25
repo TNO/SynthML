@@ -40,6 +40,7 @@ import org.eclipse.uml2.uml.Model;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
@@ -318,7 +319,7 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
 
         // Post-process the activity to check for nondeterministic choices.
-        PostProcessActivity.checkNonDeterministicDecisionNodes(activity, umlToCifTranslator, warnings, cifBddSpec);
+        CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
     }
 
     private static String getPreservedEvents(Specification spec) {
