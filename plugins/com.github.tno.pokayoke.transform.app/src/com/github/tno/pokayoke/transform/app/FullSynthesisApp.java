@@ -85,7 +85,7 @@ public class FullSynthesisApp {
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
-                new CifContext(umlSpec).getAllAbstractActivities());
+                new CifContext(umlSpec).getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {

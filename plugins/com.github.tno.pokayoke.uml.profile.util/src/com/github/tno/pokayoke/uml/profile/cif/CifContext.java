@@ -93,6 +93,10 @@ public class CifContext {
                 .toList();
     }
 
+    public List<Activity> getAllActivities() {
+        return getAllElements().stream().filter(Activity.class::isInstance).map(Activity.class::cast).toList();
+    }
+
     public List<Activity> getAllAbstractActivities() {
         return getAllElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
                 .map(Activity.class::cast).toList();
