@@ -579,8 +579,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkValidActivityPrePostconditionConstraint(constraint);
         } else if (CifContext.isClassConstraint(constraint)) {
             checkValidClassConstraint(constraint);
-        } else if (CifContext.isOptimalityConstraint(constraint)) {
-            checkValidOptimalityConstraint((IntervalConstraint)constraint);
+        } else if (CifContext.isOccurrenceConstraint(constraint)) {
+            checkValidOccurrenceConstraint((IntervalConstraint)constraint);
         } else if (CifContext.isPrimitiveTypeConstraint(constraint)) {
             // The constraints for primitive types are validated in #checkValidPrimitiveType(PrimitiveType)
         } else {
@@ -612,7 +612,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidOptimalityConstraint(IntervalConstraint constraint) {
+    private void checkValidOccurrenceConstraint(IntervalConstraint constraint) {
         if (constraint.getSpecification() instanceof Interval interval) {
             int min;
             int max;
