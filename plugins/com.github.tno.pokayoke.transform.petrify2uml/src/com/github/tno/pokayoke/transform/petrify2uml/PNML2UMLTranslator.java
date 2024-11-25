@@ -157,7 +157,7 @@ public class PNML2UMLTranslator {
         // Rename any duplication markers by means of action renaming.
         transitionMapping.values().forEach(act -> act.setName(getNameWithoutDuplicationPostfix(act.getName())));
 
-        // Remove all preconditions, postconditions, and occurrences/optimality constraints from the activity.
+        // Remove all preconditions, postconditions, and occurrence constraints from the activity.
         List.copyOf(activity.getOwnedRules()).forEach(Element::destroy);
 
         // Indicate that the activity is no longer abstract.

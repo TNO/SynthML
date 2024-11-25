@@ -174,7 +174,7 @@ public class CifContext {
         return constraint.getContext() instanceof Class clazz && !(clazz instanceof Behavior);
     }
 
-    public static boolean isOptimalityConstraint(Constraint constraint) {
+    public static boolean isOccurrenceConstraint(Constraint constraint) {
         return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
     }
 
