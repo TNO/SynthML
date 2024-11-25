@@ -760,7 +760,11 @@ public class UmlToCifTranslator {
         automaton.setKind(SupKind.REQUIREMENT);
         automaton.setName(name);
 
-        // Create the discrete variable that tracks the number of occurrences of the specified event.
+        // Create the discrete variable that tracks the number of occurrences of the specified event. We ensure that the
+        // upper bound of the range integer type is at least 1, since otherwise the type might become 'int[0..0]', which
+        // would make the CIF specification invalid in combination with the CIF assignment on the edge update generated
+        // below. The marked predicate of this automaton, together with the edge guard, ensure that the occurrence
+        // constraint is properly encoded.
         DiscVariable variable = CifConstructors.newDiscVariable();
         CifType variableType = CifConstructors.newIntType(0, null, Math.max(max, 1));
         variable.setName("__occurrences");
