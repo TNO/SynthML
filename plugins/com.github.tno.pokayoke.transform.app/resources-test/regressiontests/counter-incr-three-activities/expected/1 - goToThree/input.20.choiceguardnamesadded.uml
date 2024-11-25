@@ -13,7 +13,7 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="9" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="10" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="11" name="count" visibility="public" type="48">
+      <ownedAttribute xmi:id="11" name="count" visibility="public" type="52">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="13" value="1"/>
       </ownedAttribute>
@@ -73,54 +73,60 @@
             <body>count = 4</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="39" name="occurrences_goToFour" constrainedElement="14 15 16">
-          <specification xmi:type="uml:Interval" xmi:id="40" name="Interval1" max="6" min="4"/>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="39" name="occurrences_goToFour_twice" constrainedElement="14 15 16">
+          <specification xmi:type="uml:Interval" xmi:id="40" name="" max="6" min="4"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="41" name="occurrences_goToFour_none" constrainedElement="17 43">
+          <specification xmi:type="uml:Interval" xmi:id="42" name="" max="4" min="4"/>
         </ownedRule>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="41" name="goToFive" isAbstract="true" postcondition="44" precondition="42">
-        <ownedRule xmi:id="42" name="pre_goToFive">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="43" name="">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="43" name="goToFive" isAbstract="true" postcondition="46" precondition="44">
+        <ownedRule xmi:id="44" name="pre_goToFive">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="45" name="">
             <body>not init and count = 0</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:id="44" name="post_goToFive">
-          <specification xmi:type="uml:OpaqueExpression" xmi:id="45" name="">
+        <ownedRule xmi:id="46" name="post_goToFive">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="47" name="">
             <body>count = 5</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="46" name="occurrences_goToFive" constrainedElement="14 15 16">
-          <specification xmi:type="uml:Interval" xmi:id="47" name="" max="7" min="4"/>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="48" name="occurrences_goToFive_thrice" constrainedElement="14 15 16">
+          <specification xmi:type="uml:Interval" xmi:id="49" name="" max="7" min="4"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="50" name="occurrences_goToFive_none" constrainedElement="34 17">
+          <specification xmi:type="uml:Interval" xmi:id="51" name="" max="4" min="4"/>
         </ownedRule>
       </ownedBehavior>
     </packagedElement>
-    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="48" name="Number" visibility="public">
-      <ownedRule xmi:id="49" name="min">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="50"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="52" name="Number" visibility="public">
+      <ownedRule xmi:id="53" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="54"/>
       </ownedRule>
-      <ownedRule xmi:id="51" name="max">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="52" value="5"/>
+      <ownedRule xmi:id="55" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="56" value="5"/>
       </ownedRule>
-      <generalization xmi:id="53">
+      <generalization xmi:id="57">
         <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
       </generalization>
     </packagedElement>
-    <profileApplication xmi:id="54">
-      <eAnnotations xmi:id="55" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="58">
+      <eAnnotations xmi:id="59" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="56" guard="not init" base_RedefinableElement="14">
+  <PokaYoke:FormalElement xmi:id="60" guard="not init" base_RedefinableElement="14">
     <effects>init := true,&#xD;
 count := 1</effects>
     <effects>init := true,&#xD;
 count := 2</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="57" guard="init" base_RedefinableElement="15" atomic="true">
+  <PokaYoke:FormalElement xmi:id="61" guard="init" base_RedefinableElement="15" atomic="true">
     <effects>count := count + 1</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="58" guard="init" base_RedefinableElement="16" atomic="true">
+  <PokaYoke:FormalElement xmi:id="62" guard="init" base_RedefinableElement="16" atomic="true">
     <effects>count := count + 2</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>
