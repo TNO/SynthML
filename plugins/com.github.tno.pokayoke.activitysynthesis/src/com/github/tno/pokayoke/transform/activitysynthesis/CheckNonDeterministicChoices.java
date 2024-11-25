@@ -38,7 +38,7 @@ public class CheckNonDeterministicChoices {
             // If the current node is a decision node with multiple outgoing edges, then check for non-determinism.
             if (node instanceof DecisionNode decisionNode && decisionNode.getOutgoings().size() > 1) {
                 // Check if (at least) two edges can be fired at the same time.
-                nonDeterministicEdgeChecker(decisionNode, translator, warnings, bddSpec);
+                check(decisionNode, translator, warnings, bddSpec);
             }
         }
     }
@@ -52,27 +52,29 @@ public class CheckNonDeterministicChoices {
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      * @param bddSpec The CIF/BDD specification.
      */
-    private static void nonDeterministicEdgeChecker(ActivityNode node, UmlToCifTranslator translator,
-            List<String> warnings, CifBddSpec bddSpec)
+    private static void check(ActivityNode node, UmlToCifTranslator translator, List<String> warnings,
+            CifBddSpec bddSpec)
     {
         Map<ActivityEdge, BDD> edgeGuardMap = new LinkedHashMap<>();
 
-        // For every edge, transform its guard to CIF and then to BDD.
+        // Loops over every edge, transforms its guard into a BDD, checks whether the overlap between two guards is not
+        // empty, and registers a warning.
         for (ActivityEdge edge: node.getOutgoings()) {
+            // For every edge, transform its guard to CIF and then to BDD.
             Expression cifGuard = translator.getGuard(edge);
-
-            BDD bddGuard = null;
+            BDD bddGuard;
             try {
                 bddGuard = CifToBddConverter.convertPred(cifGuard, false, bddSpec);
             } catch (UnsupportedPredicateException e) {
                 throw new RuntimeException(
-                        String.format("Failed to convert CIF expression into BDD, with predicate %s.",
+                        String.format("Failed to convert CIF expression into BDD, with predicate \"%s\".",
                                 CifTextUtils.exprToStr(cifGuard)),
                         e);
             }
 
-            // Compute the logical conjunction of the current guard and the previously computed ones.
+            // Check the overlap between the current BDD and the previous ones, registers a warning if not empty.
             for (var entry: edgeGuardMap.entrySet()) {
+                // Compute the logical conjunction of the current guard and the previously computed ones.
                 BDD guardOverlap = (entry.getValue()).and(bddGuard);
 
                 // If the overlap between the two guards is not empty, then write the warning and exit.
@@ -83,7 +85,7 @@ public class CheckNonDeterministicChoices {
                     String entryTargetName = entry.getKey().getTarget().getName();
                     String entryGuardName = entry.getKey().getName();
                     String message = String.format(
-                            "Non-deterministic node found, " + "leading to %s (guard: %s) and to %s (guard: %s).",
+                            "Non-deterministic decision node found, leading to %s (guard: %s) and to %s (guard: %s).",
                             "\'" + (currentEdgeTargetName == null ? "control node" : currentEdgeTargetName) + "\'",
                             "\'" + (currentEdgeGuardName == null ? "true" : currentEdgeGuardName) + "\'",
                             "\'" + (entryTargetName == null ? "control node" : entryTargetName) + "\'",

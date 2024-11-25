@@ -318,7 +318,7 @@ public class FullSynthesisApp {
         PostProcessActivity.addGuardsToControlFlowNames(activity);
         FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
 
-        // Post-process the activity to check for nondeterministic choices.
+        // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
     }
 
