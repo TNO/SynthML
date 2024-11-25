@@ -14,13 +14,13 @@
         <body>element != Third</body>
         <body>element := Second</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_baPdcCP1Ee-FSYGmPhs3xA" name="main" isAbstract="true" postcondition="_gKRd8CP1Ee-FSYGmPhs3xA" precondition="_xYW6kCP1Ee-FSYGmPhs3xA">
-        <ownedRule xmi:id="_gKRd8CP1Ee-FSYGmPhs3xA" name="post">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_baPdcCP1Ee-FSYGmPhs3xA" name="Main" isAbstract="true" postcondition="_gKRd8CP1Ee-FSYGmPhs3xA" precondition="_xYW6kCP1Ee-FSYGmPhs3xA">
+        <ownedRule xmi:id="_gKRd8CP1Ee-FSYGmPhs3xA" name="postcond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_iMaU0CP1Ee-FSYGmPhs3xA" name="">
             <body>element = Second</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:id="_xYW6kCP1Ee-FSYGmPhs3xA" name="pre">
+        <ownedRule xmi:id="_xYW6kCP1Ee-FSYGmPhs3xA" name="precond">
           <specification xmi:type="uml:OpaqueExpression" xmi:id="_1OyZkCP1Ee-FSYGmPhs3xA" name="">
             <body>element = First</body>
           </specification>

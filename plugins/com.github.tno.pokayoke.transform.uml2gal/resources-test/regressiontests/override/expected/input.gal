@@ -1,6 +1,6 @@
 
-$A=0 ;
-$B=1 ;
+$Left=0 ;
+$Right=1 ;
 typedef Boolean= 0..1 ;
 typedef InputLocation= 0..1 ;
 gal ExampleModel__ExampleClass{
@@ -42,7 +42,7 @@ gal ExampleModel__ExampleClass{
   transition __ActivityFinalNode_ExampleActivity__ActivityFinalNode__5 [ __init == 1 && __edge__6 == 1 ] {
     __edge__6 = 0    ;
   }
-  transition __CallBehaviorAction_ExampleActivity__process_AorB__6 [ __init == 1 && true && __edge__5 == 1 && __edge__6 == 0 ] {
+  transition __CallBehaviorAction_ExampleActivity__process_LorR__6 [ __init == 1 && true && __edge__5 == 1 && __edge__6 == 0 ] {
     robot1_claimed = 0    ;
     robot2_claimed = 0    ;
     __edge__5 = 0    ;

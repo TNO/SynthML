@@ -1,0 +1,42 @@
+controllable do_a;
+controllable do_b;
+uncontrollable do_b__na_result_1;
+plant automaton Context:
+  disc bool done_a in any;
+  disc bool done_b in any;
+  disc bool __nonAtomicActive__do_b;
+  alg bool Pre = not done_a and not done_b;
+  alg bool __precondition = Pre;
+  alg bool Post = done_b;
+  alg bool __postcondition = Post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge do_a when not done_a and not done_b do done_a := true;
+    edge do_b when not done_b, not __nonAtomicActive__do_b do __nonAtomicActive__do_b := true;
+    edge do_b__na_result_1 when __nonAtomicActive__do_b do done_b := true, __nonAtomicActive__do_b := false;
+end
+supervisor automaton occurrences__do_a:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__do_b:
+  disc int[0..1] __occurrences;
+  location:
+    initial;
+    marked __occurrences >= 0;
+    edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton sup:
+  alphabet do_a, do_b;
+  location:
+    initial;
+    marked;
+    edge do_a when not Context.__nonAtomicActive__do_b and not Context.done_b and (occurrences__do_b.__occurrences = 0 and (not Context.done_a and occurrences__do_a.__occurrences = 0)) or Context.__nonAtomicActive__do_b and not Context.done_b and (occurrences__do_b.__occurrences = 1 and (not Context.done_a and occurrences__do_a.__occurrences = 0));
+    edge do_b when not Context.__nonAtomicActive__do_b and not Context.done_b and (occurrences__do_b.__occurrences = 0 and (not Context.done_a and occurrences__do_a.__occurrences = 0)) or not Context.__nonAtomicActive__do_b and not Context.done_b and (occurrences__do_b.__occurrences = 0 and (Context.done_a and occurrences__do_a.__occurrences = 1));
+end

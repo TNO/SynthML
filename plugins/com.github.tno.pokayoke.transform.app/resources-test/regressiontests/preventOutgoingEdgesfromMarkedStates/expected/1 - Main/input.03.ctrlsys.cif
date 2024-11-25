@@ -1,0 +1,22 @@
+enum Number = First, Second, Third;
+controllable change;
+plant automaton Class:
+  disc Number element in any;
+  alg bool Pre = element = First;
+  alg bool __precondition = Pre;
+  alg bool Post = element = Second;
+  alg bool __postcondition = Post;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge change when element != Third do element := Second;
+end
+supervisor automaton sup:
+  alphabet change;
+  location:
+    initial;
+    marked;
+    edge change when Class.element = First;
+end

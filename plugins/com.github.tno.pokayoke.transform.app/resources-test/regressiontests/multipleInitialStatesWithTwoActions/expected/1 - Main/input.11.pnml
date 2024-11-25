@@ -1,0 +1,74 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="right">
+        <name>
+          <text>right</text>
+        </name>
+      </transition>
+      <transition id="left">
+        <name>
+          <text>left</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__loop">
+        <name>
+          <text>__loop</text>
+        </name>
+      </transition>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__end__to__p4" source="__end" target="p4">
+      </arc>
+      <arc id="__loop__to__p4" source="__loop" target="p4">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="left__to__p3" source="left" target="p3">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p2__to__left" source="p2" target="left">
+      </arc>
+      <arc id="p2__to__right" source="p2" target="right">
+      </arc>
+      <arc id="p3__to____end" source="p3" target="__end">
+      </arc>
+      <arc id="p4__to____loop" source="p4" target="__loop">
+      </arc>
+      <arc id="right__to__p3" source="right" target="p3">
+      </arc>
+    </page>
+  </net>
+</pnml>

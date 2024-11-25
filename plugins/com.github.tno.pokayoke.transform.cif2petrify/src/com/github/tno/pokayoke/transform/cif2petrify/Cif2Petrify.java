@@ -56,7 +56,14 @@ public class Cif2Petrify {
         // Declare the header of the Petrify model.
         petrifyInput.add(".model " + automaton.getName());
 
-        // Obtain the list of names from the events in the alphabet of the CIF state space automaton.
+        // Obtain the list of names from the events in the implicit alphabet of the CIF state space automaton. We first
+        // remove the explict automaton alphabet, to ensure that 'CifEventUtils.getAlphabet' will give the implicit one.
+        // This is needed, since Petrify will give warnings in case the explicit alphabet contains events that are not
+        // actually used. And simply considering the derived alphabet here is easier than parsing Petrify's warnings.
+        // Moreover, it is valid to reduce the alphabet here, since we use the result of the CIF explorer, which gives
+        // us a single state space automaton. If some event is not used in this state space automaton, then it's never
+        // enabled and can thus be removed from the alphabet.
+        automaton.setAlphabet(null);
         List<String> eventNames = CifEventUtils.getAlphabet(automaton).stream().map(Event::getName).toList();
 
         Preconditions.checkArgument(eventNames.stream().distinct().count() == eventNames.size(),

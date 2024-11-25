@@ -1,0 +1,20 @@
+controllable left;
+controllable right;
+controllable flip;
+automaton statespace:
+  alphabet left, right, flip;
+  @state(at_most_once__left = "*", at_most_once__left.__occurrences = 0, at_most_once__right = "*", at_most_once__right.__occurrences = 0, blocking__flip = "*", blocking__flip.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  location loc1:
+    initial;
+    edge left goto loc3;
+  @state(at_most_once__left = "*", at_most_once__left.__occurrences = 0, at_most_once__right = "*", at_most_once__right.__occurrences = 0, blocking__flip = "*", blocking__flip.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  location loc2:
+    initial;
+    edge right goto loc4;
+  @state(at_most_once__left = "*", at_most_once__left.__occurrences = 1, at_most_once__right = "*", at_most_once__right.__occurrences = 0, blocking__flip = "*", blocking__flip.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  location loc3:
+    marked;
+  @state(at_most_once__left = "*", at_most_once__left.__occurrences = 0, at_most_once__right = "*", at_most_once__right.__occurrences = 1, blocking__flip = "*", blocking__flip.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  location loc4:
+    marked;
+end

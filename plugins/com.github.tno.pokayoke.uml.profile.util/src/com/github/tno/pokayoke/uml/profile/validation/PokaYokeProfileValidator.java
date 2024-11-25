@@ -50,6 +50,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
 import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifTypeChecker;
@@ -686,5 +687,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private boolean isPokaYokaUmlProfileApplied(Element element) {
         return PokaYokeUmlProfileUtil.getAppliedProfile(element, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isPresent();
+    }
+
+    /**
+     * Checks if the names that are being used in the given UML model are not reserved keywords in CIF, GAL, or Petrify.
+     *
+     * @param model The UML model to check.
+     */
+    @Check
+    private void checkReservedKeywords(Model model) {
+        QueryableIterable<NamedElement> elements = CifContext.queryContextElements(model);
+
+        for (NamedElement element: elements) {
+            // Primitive integer types are bounded between a min and a max value. These automatically generate
+            // constraints named 'min' and 'max', which clash with the reserved keywords. Skip the check for these.
+            if (element instanceof Constraint constraint && constraint.getContext() instanceof PrimitiveType) {
+                continue;
+            }
+            if (NameHelper.isReservedKeyword(element.getName())) {
+                error("Name matching keyword \"" + element.getName() + "\"", element,
+                        UMLPackage.Literals.NAMED_ELEMENT__NAME);
+            }
+        }
     }
 }

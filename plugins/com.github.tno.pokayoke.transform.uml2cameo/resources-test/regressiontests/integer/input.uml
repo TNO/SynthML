@@ -22,7 +22,7 @@
           <body>15</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_15g14PGSEe6asLMew-pIxQ" name="main" node="_AMpSkPGTEe6asLMew-pIxQ _BbHQ0PGTEe6asLMew-pIxQ _CVWrgPGTEe6asLMew-pIxQ">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_15g14PGSEe6asLMew-pIxQ" name="Main" node="_AMpSkPGTEe6asLMew-pIxQ _BbHQ0PGTEe6asLMew-pIxQ _CVWrgPGTEe6asLMew-pIxQ">
         <edge xmi:type="uml:ControlFlow" xmi:id="_GhHhUPGTEe6asLMew-pIxQ" target="_CVWrgPGTEe6asLMew-pIxQ" source="_AMpSkPGTEe6asLMew-pIxQ">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_GhIIYPGTEe6asLMew-pIxQ" name="_To_MyAction_guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_GhIvcPGTEe6asLMew-pIxQ" name="_To_MyAction_weight"/>

@@ -1,11 +1,11 @@
 
-$A=0 ;
-$B=1 ;
+$Left=0 ;
+$Right=1 ;
 typedef Boolean= 0..1 ;
 typedef Location= 0..1 ;
 gal Expressions__Context{
   int myBool = 0;
-  int myEnum = $A;
+  int myEnum = $Left;
   int __init = 0;
   int __edge__0 = 1;
   int __edge__1 = 0;
@@ -16,9 +16,9 @@ gal Expressions__Context{
   transition __ActivityFinalNode_Expressions__ActivityFinalNode__1 [ __init == 1 && __edge__1 == 1 ] {
     __edge__1 = 0    ;
   }
-  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == 1 && !myBool == 1 && myBool == 0 && myEnum == $A && __edge__0 == 1 && __edge__1 == 0 ] {
-    myEnum = $B    ;
-    myBool = (!( true && !( true)  || !( true)  && true)  && ( myEnum == $B || myBool == (false && false) ))    ;
+  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == 1 && !myBool == 1 && myBool == 0 && myEnum == $Left && __edge__0 == 1 && __edge__1 == 0 ] {
+    myEnum = $Right    ;
+    myBool = (!( true && !( true)  || !( true)  && true)  && ( myEnum == $Right || myBool == (false && false) ))    ;
     __edge__0 = 0    ;
     __edge__1 = 1    ;
   }

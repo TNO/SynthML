@@ -1,24 +1,9 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
   <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <page id="minimal">
-      <transition id="NonAtomicA">
+      <transition id="__start">
         <name>
-          <text>NonAtomicA</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicA__na_result_1">
-        <name>
-          <text>NonAtomicA__na_result_1</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicA__na_result_2">
-        <name>
-          <text>NonAtomicA__na_result_2</text>
-        </name>
-      </transition>
-      <transition id="AtomicB">
-        <name>
-          <text>AtomicB</text>
+          <text>__start</text>
         </name>
       </transition>
       <transition id="NonAtomicC">
@@ -26,9 +11,9 @@
           <text>NonAtomicC</text>
         </name>
       </transition>
-      <transition id="NonAtomicC__na_result_1">
+      <transition id="NonAtomicA">
         <name>
-          <text>NonAtomicC__na_result_1</text>
+          <text>NonAtomicA</text>
         </name>
       </transition>
       <transition id="NonAtomicC__na_result_2">
@@ -36,14 +21,29 @@
           <text>NonAtomicC__na_result_2</text>
         </name>
       </transition>
+      <transition id="NonAtomicC__na_result_1">
+        <name>
+          <text>NonAtomicC__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicA__na_result_2">
+        <name>
+          <text>NonAtomicA__na_result_2</text>
+        </name>
+      </transition>
+      <transition id="NonAtomicA__na_result_1">
+        <name>
+          <text>NonAtomicA__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="AtomicB">
+        <name>
+          <text>AtomicB</text>
+        </name>
+      </transition>
       <transition id="AtomicD">
         <name>
           <text>AtomicD</text>
-        </name>
-      </transition>
-      <transition id="__start">
-        <name>
-          <text>__start</text>
         </name>
       </transition>
       <transition id="__end">

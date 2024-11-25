@@ -6,7 +6,7 @@
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_IT7UwCfjEe-Yd-UzBcvFKg" value="1"/>
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_IT7UwSfjEe-Yd-UzBcvFKg" value="1"/>
     </ownedAttribute>
-    <ownedBehavior xmi:type="uml:Activity" xmi:id="_BgJT0CfjEe-Yd-UzBcvFKg" name="main" isAbstract="true"/>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_BgJT0CfjEe-Yd-UzBcvFKg" name="Main" isAbstract="true"/>
   </packagedElement>
   <profileApplication xmi:id="_JgE-0CfjEe-Yd-UzBcvFKg">
     <eAnnotations xmi:id="_JgE-0SfjEe-Yd-UzBcvFKg" source="http://www.eclipse.org/uml2/2.0.0/UML">

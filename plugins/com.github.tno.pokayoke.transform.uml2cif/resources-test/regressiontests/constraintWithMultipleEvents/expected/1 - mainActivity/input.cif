@@ -1,0 +1,11 @@
+controllable act1;
+controllable act2;
+plant automaton Context:
+  requirement invariant Requirement__1: act1 needs true;
+  requirement invariant Requirement__2: act2 needs true;
+  location:
+    initial;
+    marked;
+    edge act1 when true;
+    edge act2 when true;
+end

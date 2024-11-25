@@ -1,0 +1,23 @@
+.model minimal
+.dummy  __start Turn_Computer_On Flip_A_Coin Starting_Computer Drink_Tea Drink_Coffee Start_Working __end __loop
+.graph
+Drink_Coffee p7
+Drink_Tea p7
+Flip_A_Coin p5
+Start_Working p8
+Starting_Computer p6
+Turn_Computer_On p3 p4
+__end p9
+__loop p9
+__start p2
+p1 __start
+p2 Turn_Computer_On
+p3 Flip_A_Coin
+p4 Starting_Computer
+p5 Drink_Coffee Drink_Tea
+p6 Start_Working
+p7 Start_Working
+p8 __end
+p9 __loop
+.marking { p1 }
+.end
