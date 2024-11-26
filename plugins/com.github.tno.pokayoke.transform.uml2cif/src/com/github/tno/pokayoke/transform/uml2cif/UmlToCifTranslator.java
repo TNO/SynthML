@@ -54,6 +54,7 @@ import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.BiMapUtils;
@@ -601,13 +602,13 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives the guard of the given behavior.
+     * Gives the guard of the given element.
      *
-     * @param behavior The opaque behavior.
-     * @return The guard of the given opaque behavior.
+     * @param element The element.
+     * @return The guard of the given element.
      */
-    private Expression getGuard(OpaqueBehavior behavior) {
-        AExpression guard = CifParserHelper.parseGuard(behavior);
+    public Expression getGuard(RedefinableElement element) {
+        AExpression guard = CifParserHelper.parseGuard(element);
         if (guard == null) {
             return CifValueUtils.makeTrue();
         }
