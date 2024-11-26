@@ -329,22 +329,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
+        Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
+
+        Set<Constraint> preAndPostconditions = new LinkedHashSet<>();
+        preAndPostconditions.addAll(activity.getPreconditions());
+        preAndPostconditions.addAll(activity.getPostconditions());
+
+        Set<IntervalConstraint> intervalConstraints = activity.getOwnedRules().stream()
+                .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
+            error("Expected activity to contain only precondition, postcondition, and interval constraint members.",
+                    UMLPackage.Literals.NAMESPACE__MEMBER);
+        }
+
         if (activity.isAbstract()) {
-            Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
-
-            Set<Constraint> preAndPostconditions = new LinkedHashSet<>();
-            preAndPostconditions.addAll(activity.getPreconditions());
-            preAndPostconditions.addAll(activity.getPostconditions());
-
-            Set<IntervalConstraint> intervalConstraints = activity.getOwnedRules().stream()
-                    .filter(IntervalConstraint.class::isInstance).map(IntervalConstraint.class::cast)
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-
-            if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
-                error("Expected abstract activity to contain only precondition, postcondition, and interval constraint members.",
-                        UMLPackage.Literals.NAMESPACE__MEMBER);
-            }
-
             if (!activity.getNodes().isEmpty()) {
                 error("Expected abstract activity to not have any nodes.", UMLPackage.Literals.ACTIVITY__NODE);
             }
@@ -353,10 +353,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 error("Expected abstract activity to not have any edges.", UMLPackage.Literals.ACTIVITY__EDGE);
             }
         } else {
-            if (!activity.getMembers().isEmpty()) {
-                error("Expected activity to not have any members.", UMLPackage.Literals.NAMESPACE__MEMBER);
-            }
-
             QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
             if (initialNodes.size() != 1) {
                 error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
