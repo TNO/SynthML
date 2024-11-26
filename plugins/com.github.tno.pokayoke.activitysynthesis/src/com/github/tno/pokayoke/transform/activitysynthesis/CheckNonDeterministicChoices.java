@@ -57,10 +57,10 @@ public class CheckNonDeterministicChoices {
     {
         Map<ActivityEdge, BDD> edgeGuardMap = new LinkedHashMap<>();
 
-        // Loops over every edge, transforms its guard into a BDD, checks whether the overlap between two guards is not
-        // empty, and registers a warning.
+        // Check every edge against every other edge. An edge is not checked against itself. A warning is printed for
+        // each pair only once, so not for commuted pairs.
         for (ActivityEdge edge: node.getOutgoings()) {
-            // For every edge, transform its guard to CIF and then to BDD.
+            // Get the guard of the edge as a BDD.
             Expression cifGuard = translator.getGuard(edge);
             BDD bddGuard;
             try {
@@ -72,12 +72,12 @@ public class CheckNonDeterministicChoices {
                         e);
             }
 
-            // Check the overlap between the current BDD and the previous ones, registers a warning if not empty.
+            // Check the current edge against the previous ones, registering a warning in case of guard overlap.
             for (var entry: edgeGuardMap.entrySet()) {
-                // Compute the logical conjunction of the current guard and the previously computed ones.
-                BDD guardOverlap = (entry.getValue()).and(bddGuard);
+                // Compute the logical conjunction of the current guard and the previously computed one.
+                BDD guardOverlap = entry.getValue().and(bddGuard);
 
-                // If the overlap between the two guards is not empty, then write the warning and exit.
+                // If the overlap between the two guards is not empty, write the warning.
                 if (!guardOverlap.isZero()) {
                     // Add a warning that a non-deterministic node has been found.
                     String currentEdgeTargetName = edge.getTarget().getName();
@@ -91,14 +91,6 @@ public class CheckNonDeterministicChoices {
                             "\'" + (entryTargetName == null ? "control node" : entryTargetName) + "\'",
                             "\'" + (entryGuardName == null ? "true" : entryGuardName) + "\'");
                     warnings.add(message);
-
-                    // Free all the BDDs before returning.
-                    for (var edgeGuard: edgeGuardMap.entrySet()) {
-                        edgeGuard.getValue().free();
-                    }
-                    bddGuard.free();
-                    guardOverlap.free();
-                    return;
                 }
 
                 // Free the BDD representing the logical conjunction.
