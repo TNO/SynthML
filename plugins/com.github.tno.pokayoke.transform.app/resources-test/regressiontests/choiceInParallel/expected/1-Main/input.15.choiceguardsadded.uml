@@ -24,7 +24,7 @@
           <body>false</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedAttribute xmi:id="14" name="Coffee_or_Tea" visibility="public" type="64">
+      <ownedAttribute xmi:id="14" name="Coffee_or_Tea" visibility="public" type="68">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="15" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="16" value="1"/>
         <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="17">
@@ -50,105 +50,113 @@
           <body>false</body>
         </defaultValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="26" name="Main" node="44 45 46 47 48 49 50 51 52 53 54 55 56 57">
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to____start" target="51" source="52"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="__start__to__Turn_Computer_On" target="49" source="51"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Fork__Turn_Computer_On__to__Flip_A_Coin" target="46" source="57"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Fork__Turn_Computer_On__to__Starting_Computer" target="48" source="57"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Decision__p5__to__Drink_Coffee" target="44" source="53">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="32">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="26" name="Main" postcondition="27" node="48 49 50 51 52 53 54 55 56 57 58 59 60 61">
+        <ownedRule xmi:id="27" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
+            <body>Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="29" name="happens_at_most_once" constrainedElement="62 64 65 66 63">
+          <specification xmi:type="uml:Interval" xmi:id="30" name="" max="4" min="3"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="InitialNode__p1__to____start" target="55" source="56"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" name="__start__to__Turn_Computer_On" target="53" source="55"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Fork__Turn_Computer_On__to__Flip_A_Coin" target="50" source="61"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="Fork__Turn_Computer_On__to__Starting_Computer" target="52" source="61"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p5__to__Drink_Coffee" target="48" source="57">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Decision__p5__to__Drink_Tea" target="45" source="53">
-          <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Decision__p5__to__Drink_Tea" target="49" source="57">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="38">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Flip_A_Coin__to__Decision__p5" target="53" source="46"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="36" name="Starting_Computer__to__Join__Start_Working" target="56" source="48"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Drink_Coffee__to__Merge__p7" target="54" source="44"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Drink_Tea__to__Merge__p7" target="54" source="45"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="Merge__p7__to__Join__Start_Working" target="56" source="54"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Start_Working__to____end" target="50" source="47"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="__end__to__FinalNode__p9" target="55" source="50"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Join__Start_Working__to__Start_Working" target="47" source="56"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Turn_Computer_On__to__Fork__Turn_Computer_On" target="57" source="49"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="Drink_Coffee" incoming="31" outgoing="37" behavior="60"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="45" name="Drink_Tea" incoming="33" outgoing="38" behavior="61"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="46" name="Flip_A_Coin" incoming="29" outgoing="35" behavior="63"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="Start_Working" incoming="42" outgoing="40" behavior="62"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Starting_Computer" incoming="30" outgoing="36" behavior="59"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Turn_Computer_On" incoming="28" outgoing="43" behavior="58"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="50" name="__end" incoming="40" outgoing="41"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="51" name="__start" incoming="27" outgoing="28"/>
-        <node xmi:type="uml:InitialNode" xmi:id="52" name="InitialNode__p1" outgoing="27"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="53" name="Decision__p5" incoming="35" outgoing="31 33"/>
-        <node xmi:type="uml:MergeNode" xmi:id="54" name="Merge__p7" incoming="37 38" outgoing="39"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="55" name="FinalNode__p9" incoming="41"/>
-        <node xmi:type="uml:JoinNode" xmi:id="56" name="Join__Start_Working" incoming="36 39" outgoing="42"/>
-        <node xmi:type="uml:ForkNode" xmi:id="57" name="Fork__Turn_Computer_On" incoming="43" outgoing="29 30"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="Flip_A_Coin__to__Decision__p5" target="57" source="50"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Starting_Computer__to__Join__Start_Working" target="60" source="52"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Drink_Coffee__to__Merge__p7" target="58" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="Drink_Tea__to__Merge__p7" target="58" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Merge__p7__to__Join__Start_Working" target="60" source="58"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" name="Start_Working__to____end" target="54" source="51"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" name="__end__to__FinalNode__p9" target="59" source="54"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" name="Join__Start_Working__to__Start_Working" target="51" source="60"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="47" name="Turn_Computer_On__to__Fork__Turn_Computer_On" target="61" source="53"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="Drink_Coffee" incoming="35" outgoing="41" behavior="64"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="Drink_Tea" incoming="37" outgoing="42" behavior="65"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="Flip_A_Coin" incoming="33" outgoing="39" behavior="67"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="Start_Working" incoming="46" outgoing="44" behavior="66"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="52" name="Starting_Computer" incoming="34" outgoing="40" behavior="63"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="53" name="Turn_Computer_On" incoming="32" outgoing="47" behavior="62"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="54" name="__end" incoming="44" outgoing="45"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="55" name="__start" incoming="31" outgoing="32"/>
+        <node xmi:type="uml:InitialNode" xmi:id="56" name="InitialNode__p1" outgoing="31"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="57" name="Decision__p5" incoming="39" outgoing="35 37"/>
+        <node xmi:type="uml:MergeNode" xmi:id="58" name="Merge__p7" incoming="41 42" outgoing="43"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="59" name="FinalNode__p9" incoming="45"/>
+        <node xmi:type="uml:JoinNode" xmi:id="60" name="Join__Start_Working" incoming="40 43" outgoing="46"/>
+        <node xmi:type="uml:ForkNode" xmi:id="61" name="Fork__Turn_Computer_On" incoming="47" outgoing="33 34"/>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="58" name="Turn_Computer_On">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="62" name="Turn_Computer_On">
         <body>not Is_Computer_Ready and not Is_Computer_On</body>
         <body>Is_Computer_On := true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="59" name="Starting_Computer">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="63" name="Starting_Computer">
         <body>not Is_Computer_Ready and Is_Computer_On</body>
         <body>Is_Computer_Ready := true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="60" name="Drink_Coffee">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="64" name="Drink_Coffee">
         <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee</body>
         <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="61" name="Drink_Tea">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="65" name="Drink_Tea">
         <body>not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea</body>
         <body>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="62" name="Start_Working">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="66" name="Start_Working">
         <body>Has_Drank_Coffee_or_Tea and Is_Computer_Ready</body>
         <body>Is_Ready_to_Work:= true</body>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="63" name="Flip_A_Coin">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="67" name="Flip_A_Coin">
         <body>Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown</body>
         <body>Coffee_or_Tea:= Coffee</body>
         <body>Coffee_or_Tea:= Tea</body>
       </ownedBehavior>
     </packagedElement>
-    <packagedElement xmi:type="uml:Enumeration" xmi:id="64" name="UnknownDrink" visibility="public">
-      <ownedLiteral xmi:id="65" name="Coffee">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="66"/>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="68" name="UnknownDrink" visibility="public">
+      <ownedLiteral xmi:id="69" name="Coffee">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="70"/>
       </ownedLiteral>
-      <ownedLiteral xmi:id="67" name="Tea">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="68" value="1"/>
+      <ownedLiteral xmi:id="71" name="Tea">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="72" value="1"/>
       </ownedLiteral>
-      <ownedLiteral xmi:id="69" name="Unknown">
-        <specification xmi:type="uml:LiteralInteger" xmi:id="70" value="2"/>
+      <ownedLiteral xmi:id="73" name="Unknown">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="74" value="2"/>
       </ownedLiteral>
     </packagedElement>
-    <profileApplication xmi:id="71">
-      <eAnnotations xmi:id="72" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="75">
+      <eAnnotations xmi:id="76" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="73" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="58" atomic="true">
+  <PokaYoke:FormalElement xmi:id="77" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="62" atomic="true">
     <effects>Is_Computer_On := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="74" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="59" atomic="true">
+  <PokaYoke:FormalElement xmi:id="78" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="63" atomic="true">
     <effects>Is_Computer_Ready := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="75" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="60" atomic="true">
+  <PokaYoke:FormalElement xmi:id="79" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="64" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="76" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="61" atomic="true">
+  <PokaYoke:FormalElement xmi:id="80" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="65" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="77" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="62" atomic="true">
+  <PokaYoke:FormalElement xmi:id="81" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="66" atomic="true">
     <effects>Is_Ready_to_Work:= true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="78" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="63" atomic="true">
+  <PokaYoke:FormalElement xmi:id="82" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="67" atomic="true">
     <effects>Coffee_or_Tea:= Coffee</effects>
     <effects>Coffee_or_Tea:= Tea</effects>
   </PokaYoke:FormalElement>
