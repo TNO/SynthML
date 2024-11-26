@@ -21,7 +21,6 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
@@ -156,9 +155,6 @@ public class PNML2UMLTranslator {
 
         // Rename any duplication markers by means of action renaming.
         transitionMapping.values().forEach(act -> act.setName(getNameWithoutDuplicationPostfix(act.getName())));
-
-        // Remove all preconditions, postconditions, and occurrence constraints from the activity.
-        List.copyOf(activity.getOwnedRules()).forEach(Element::destroy);
 
         // Indicate that the activity is no longer abstract.
         activity.setIsAbstract(false);
