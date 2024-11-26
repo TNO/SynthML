@@ -97,7 +97,7 @@ public class FullSynthesisApp {
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
-            Path localOutputPath = outputFolderPath.resolve(String.format("%d - %s", i + 1, activity.getName()));
+            Path localOutputPath = outputFolderPath.resolve(String.format("%d-%s", i + 1, activity.getName()));
             Files.createDirectories(localOutputPath);
             performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
         }

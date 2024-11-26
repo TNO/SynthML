@@ -98,7 +98,7 @@ public class AbstractActivityDependencyOrderer {
          *     otherwise.
          */
         private boolean isBlockingOccurrenceConstraint(Constraint constraint) {
-            if (CifContext.isOptimalityConstraint(constraint)) {
+            if (CifContext.isOccurrenceConstraint(constraint)) {
                 IntervalConstraint intervalConstraint = (IntervalConstraint)constraint;
                 Interval interval = (Interval)intervalConstraint.getSpecification();
                 return interval.getMax().integerValue() <= 0;
