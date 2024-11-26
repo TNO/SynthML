@@ -12,69 +12,85 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="9" name="AbstractActivity" node="35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="9" name="AbstractActivity" postcondition="15" precondition="13" node="43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58">
         <nameExpression xmi:id="10" name="StringExpression1">
           <operand xmi:type="uml:LiteralInteger" xmi:id="11" name="LiteralInteger1" value="1"/>
           <operand xmi:type="uml:LiteralInteger" xmi:id="12" name="LiteralInteger0"/>
         </nameExpression>
-        <edge xmi:type="uml:ControlFlow" xmi:id="13" name="InitialNode__p1__to____start" target="38" source="43"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="14" name="Fork____start__to__NonAtomicA" target="35" source="50"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Fork____start__to__NonAtomicB" target="36" source="50"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Decision__p4__to____tau_0" target="39" source="44">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="17" value="true"/>
+        <ownedRule xmi:id="13" name="Precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="14" name="">
+            <body>not a_executed and not b_executed</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="15" name="Postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="16" name="">
+            <body>a_executed = true and b_executed = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="17" name="IntervalConstraintA" constrainedElement="59">
+          <specification xmi:type="uml:Interval" xmi:id="18" name="IntervalA" max="11" min="12"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="19" name="IntervalConstraintB" constrainedElement="60">
+          <specification xmi:type="uml:Interval" xmi:id="20" name="IntervalB" max="11" min="12"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="InitialNode__p1__to____start" target="46" source="51"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Fork____start__to__NonAtomicA" target="43" source="58"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Fork____start__to__NonAtomicB" target="44" source="58"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p4__to____tau_0" target="47" source="52">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="25" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p4__to____tau_1" target="40" source="44">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="19" value="true"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p4__to____tau_1" target="48" source="52">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="27" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="NonAtomicA__to__Decision__p4" target="44" source="35"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="Decision__p5__to____tau_2" target="41" source="45">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="22" value="true"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="NonAtomicA__to__Decision__p4" target="52" source="43"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Decision__p5__to____tau_2" target="49" source="53">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="30" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Decision__p5__to____tau_3" target="42" source="45">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="24" value="true"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Decision__p5__to____tau_3" target="50" source="53">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="32" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="NonAtomicB__to__Decision__p5" target="45" source="36"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="__tau_0__to__Merge__p6" target="46" source="39"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="__tau_1__to__Merge__p6" target="46" source="40"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Merge__p6__to__Join____end" target="49" source="46"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="__tau_2__to__Merge__p7" target="47" source="41"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="30" name="__tau_3__to__Merge__p7" target="47" source="42"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Merge__p7__to__Join____end" target="49" source="47"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="32" name="__end__to__FinalNode__p8" target="48" source="37"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="Join____end__to____end" target="37" source="49"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="__start__to__Fork____start" target="50" source="38"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="35" name="NonAtomicA" incoming="14" outgoing="20" behavior="51"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="36" name="NonAtomicB" incoming="15" outgoing="25" behavior="52"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="37" name="__end" incoming="33" outgoing="32"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="38" name="__start" incoming="13" outgoing="34"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="39" name="__tau_0" incoming="16" outgoing="26"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="__tau_1" incoming="18" outgoing="27"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="41" name="__tau_2" incoming="21" outgoing="29"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="42" name="__tau_3" incoming="23" outgoing="30"/>
-        <node xmi:type="uml:InitialNode" xmi:id="43" name="InitialNode__p1" outgoing="13"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="44" name="Decision__p4" incoming="20" outgoing="16 18"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="45" name="Decision__p5" incoming="25" outgoing="21 23"/>
-        <node xmi:type="uml:MergeNode" xmi:id="46" name="Merge__p6" incoming="26 27" outgoing="28"/>
-        <node xmi:type="uml:MergeNode" xmi:id="47" name="Merge__p7" incoming="29 30" outgoing="31"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="48" name="FinalNode__p8" incoming="32"/>
-        <node xmi:type="uml:JoinNode" xmi:id="49" name="Join____end" incoming="28 31" outgoing="33"/>
-        <node xmi:type="uml:ForkNode" xmi:id="50" name="Fork____start" incoming="34" outgoing="14 15"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="NonAtomicB__to__Decision__p5" target="53" source="44"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="__tau_0__to__Merge__p6" target="54" source="47"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="__tau_1__to__Merge__p6" target="54" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" name="Merge__p6__to__Join____end" target="57" source="54"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="__tau_2__to__Merge__p7" target="55" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" name="__tau_3__to__Merge__p7" target="55" source="50"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" name="Merge__p7__to__Join____end" target="57" source="55"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" name="__end__to__FinalNode__p8" target="56" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Join____end__to____end" target="45" source="57"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="__start__to__Fork____start" target="58" source="46"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="43" name="NonAtomicA" incoming="22" outgoing="28" behavior="59"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="44" name="NonAtomicB" incoming="23" outgoing="33" behavior="60"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="45" name="__end" incoming="41" outgoing="40"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="46" name="__start" incoming="21" outgoing="42"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="47" name="__tau_0" incoming="24" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="48" name="__tau_1" incoming="26" outgoing="35"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="49" name="__tau_2" incoming="29" outgoing="37"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="50" name="__tau_3" incoming="31" outgoing="38"/>
+        <node xmi:type="uml:InitialNode" xmi:id="51" name="InitialNode__p1" outgoing="21"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="52" name="Decision__p4" incoming="28" outgoing="24 26"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="53" name="Decision__p5" incoming="33" outgoing="29 31"/>
+        <node xmi:type="uml:MergeNode" xmi:id="54" name="Merge__p6" incoming="34 35" outgoing="36"/>
+        <node xmi:type="uml:MergeNode" xmi:id="55" name="Merge__p7" incoming="37 38" outgoing="39"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="56" name="FinalNode__p8" incoming="40"/>
+        <node xmi:type="uml:JoinNode" xmi:id="57" name="Join____end" incoming="36 39" outgoing="41"/>
+        <node xmi:type="uml:ForkNode" xmi:id="58" name="Fork____start" incoming="42" outgoing="22 23"/>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="51" name="NonAtomicA"/>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="52" name="NonAtomicB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="59" name="NonAtomicA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="60" name="NonAtomicB"/>
     </packagedElement>
-    <profileApplication xmi:id="53">
-      <eAnnotations xmi:id="54" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="61">
+      <eAnnotations xmi:id="62" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="55" guard="true" base_RedefinableElement="51">
+  <PokaYoke:FormalElement xmi:id="63" guard="true" base_RedefinableElement="59">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="56" guard="true" base_RedefinableElement="52">
+  <PokaYoke:FormalElement xmi:id="64" guard="true" base_RedefinableElement="60">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </PokaYoke:FormalElement>
