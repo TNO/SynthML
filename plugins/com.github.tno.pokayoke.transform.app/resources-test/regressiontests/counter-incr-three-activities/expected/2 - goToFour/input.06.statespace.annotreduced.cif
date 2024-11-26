@@ -7,46 +7,46 @@ controllable __start;
 controllable __end;
 automaton statespace:
   alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __start, __end;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 0, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 0, sup = "*")
   location __init:
     initial;
     edge __start goto loc1;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 0, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 0, sup = "*")
   location loc1:
     edge initialize goto loc2;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = true, Context.count = 0, Context.init = false, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = true, Context.count = 0, Context.init = false, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc2:
     edge initialize__na_result_1 goto loc3;
     edge initialize__na_result_2 goto loc4;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 1, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 1, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc3:
     edge incr1 goto loc5;
     edge incr2 goto loc6;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 2, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 2, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc4:
     edge incr1 goto loc7;
     edge incr2 goto loc8;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 2, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 1, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 2, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 1, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc5:
     edge incr2 goto loc9;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 3, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 1, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 3, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 1, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc6:
     edge incr1 goto loc9;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 3, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 1, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 3, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 1, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc7:
     edge incr1 goto loc10;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 1, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 1, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc8:
     edge __end goto __done;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 1, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 1, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 1, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 1, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc9:
     edge __end goto __done;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 2, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 2, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location loc10:
     edge __end goto __done;
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 0, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 1, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 1, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 1, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
-  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour__incr1 = "*", occurrences_goToFour__incr1.__occurrences = 2, occurrences_goToFour__incr2 = "*", occurrences_goToFour__incr2.__occurrences = 0, occurrences_goToFour__initialize = "*", occurrences_goToFour__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 1, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 1, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 1, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
+  @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 4, Context.init = true, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 2, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 1, sup = "*")
   location __done:
     marked;
 end

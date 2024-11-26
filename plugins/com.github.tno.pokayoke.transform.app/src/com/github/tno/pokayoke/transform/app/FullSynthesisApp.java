@@ -39,6 +39,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
 import com.github.javabdd.BDD;
+import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
@@ -82,8 +83,16 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
-        // Synthesize all abstract activities in the loaded UML specification.
-        List<Activity> activities = new CifContext(umlSpec).getAllAbstractActivities();
+        // Synthesize all abstract activities in the loaded UML specification in the proper order.
+        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
+                new CifContext(umlSpec).getAllActivities());
+        List<Activity> activities = orderer.computeOrder();
+
+        if (activities == null) {
+            throw new RuntimeException(String.format(
+                    "Expected to find no cyclic dependencies in the activities to synthesize, but found '%s'.",
+                    orderer.getCycleDescription()));
+        }
 
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);

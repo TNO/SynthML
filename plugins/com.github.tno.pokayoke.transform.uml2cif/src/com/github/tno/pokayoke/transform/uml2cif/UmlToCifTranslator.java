@@ -730,8 +730,6 @@ public class UmlToCifTranslator {
                 if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
                     String name = umlConstraint.getName() + "__" + umlOpaqueBehavior.getName();
                     cifAutomata.add(createIntervalAutomaton(name, eventMap.get(umlOpaqueBehavior), min, max));
-                } else {
-                    throw new RuntimeException("Unsupported element: " + umlElement);
                 }
             }
 

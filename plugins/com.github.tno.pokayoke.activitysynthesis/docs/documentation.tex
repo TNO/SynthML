@@ -20,7 +20,7 @@
 \SetKwFunction{synthAll}{synthesize-all}
 \SetKwFunction{synthSingle}{synthesize-single}
 \SetKwProg{procedure}{procedure}{}{}
-\SetKw{KwEveryAbstrActivity}{every abstract activity}
+\SetKw{KwEveryActivity}{every activity}
 \SetKw{KwReplace}{replace}
 \SetKw{KwBy}{by}
 \SetKw{KwIn}{in}
@@ -36,6 +36,7 @@
 \newcommand{\var}[1]{\ensuremath{\mathit{#1}}}
 
 % Activity synthesis steps.
+\newcommand{\getOrderedAbstrActivitiesLabel}[0]{\keyw{get-ordered-abstr-activities}}
 \newcommand{\transformUmlToCifLabel}[0]{\keyw{transform-uml-to-cif}}
 \newcommand{\dataBasedSynthesisLabel}[0]{\keyw{data-based-synthesis}}
 \newcommand{\generateStatespaceLabel}[0]{\keyw{generate-statespace}}
@@ -48,6 +49,7 @@
 \newcommand{\computeEdgeGuardsLabel}[0]{\keyw{compute-edge-guards}}
 \newcommand{\postprocessActivityLabel}[0]{\keyw{postprocess-activity}}
 
+\newcommand{\getOrderedAbstrActivities}[1]{\getOrderedAbstrActivitiesLabel(\ensuremath{#1})}
 \newcommand{\transformUmlToCif}[1]{\transformUmlToCifLabel(\ensuremath{#1})}
 \newcommand{\dataBasedSynthesis}[1]{\dataBasedSynthesisLabel(\ensuremath{#1})}
 \newcommand{\generateStatespace}[1]{\generateStatespaceLabel(\ensuremath{#1})}
@@ -233,12 +235,18 @@ More information on these types of syntheses can be found on the webpages of Ecl
 
 \autoref{alg:activity-synthesis} shows the high-level activity synthesis algorithm.
 The entry point is \synthAll, which iterates over all abstract UML activities in the given input UML model, synthesizes a concrete UML activity for them, and replaces the abstract activity by the concrete synthesized one.
-The algorithm for synthesizing a single UML activity, \synthSingle, is a sequence of operations performed on the input UML abstract activity.
+The operation \getOrderedAbstrActivitiesLabel{} gives the list of all abstract activities in the input UML model, in the order in which they are to be synthesized.
+Such an ordering is needed to enable synthesizing activities that can call other activities, i.e., to support synthesis of hierarchical specifications.
+If some activity depends on some other activity with respect to the hierarchy, we should synthesize the other activity first.
+An abstract activity depends on all abstract and concrete activities in scope, unless expressed otherwise via occurrence constraints.
+In particular, if there is an occurrence constraint expressing that some activity may not be called (i.e., called at most zero times), then the abstract activity will not depend on that activity.
+In case any cycles are detected in these dependencies, then the synthesis algorithm will terminate and an error will be reported.
 
 \begin{algorithm}[t!]
 	\tcp{Synthesizes a concrete activity for every abstract one in the model.}
 	\procedure{\synthAll{\var{umlModel}}}{
-		\For{\KwEveryAbstrActivity \var{umlActivity_{abstr}} \KwIn \var{umlModel}}{
+		\var{umlActivities_{abstr}} := \getOrderedAbstrActivities{\var{umlModel}}\;
+		\For{\KwEveryActivity \var{umlActivity_{abstr}} \KwIn \var{umlActivities_{abstr}}}{
 			\var{umlActivity_{concr}} := \synthSingle{\var{umlActivity_{abstr}}}\;
 			\KwReplace \var{umlActivity_{abstr}} \KwBy \var{umlActivity_{concr}} \KwIn \var{umlModel}\;
 		}
@@ -273,6 +281,7 @@ The algorithm for synthesizing a single UML activity, \synthSingle, is a sequenc
 	\label{alg:activity-synthesis}
 \end{algorithm}
 
+The algorithm for synthesizing a single UML activity, \synthSingle, is a sequence of operations performed on the input UML abstract activity.
 The remainder of this section explains all operations in \synthSingle.
 A short explanation is given for every operation, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 

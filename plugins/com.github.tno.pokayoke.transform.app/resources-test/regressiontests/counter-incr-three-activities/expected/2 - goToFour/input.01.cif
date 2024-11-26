@@ -22,21 +22,21 @@ plant automaton Context:
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
 end
-requirement automaton occurrences_goToFour__initialize:
+requirement automaton occurrences_goToFour_twice__initialize:
   disc int[0..2] __occurrences;
   location:
     initial;
     marked __occurrences >= 0;
     edge initialize when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFour__incr1:
+requirement automaton occurrences_goToFour_twice__incr1:
   disc int[0..2] __occurrences;
   location:
     initial;
     marked __occurrences >= 0;
     edge incr1 when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFour__incr2:
+requirement automaton occurrences_goToFour_twice__incr2:
   disc int[0..2] __occurrences;
   location:
     initial;

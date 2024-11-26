@@ -31,8 +31,11 @@
             <body>count = 3</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_uDhbIIuPEe-jPL7JYLd1IA" name="occurrences_goToThree" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_uDhbIIuPEe-jPL7JYLd1IA" name="occurrences_goToThree_once" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
           <specification xmi:type="uml:Interval" xmi:id="_xMglUIuPEe-jPL7JYLd1IA" name="" max="_qzhC8IuPEe-jPL7JYLd1IA" min="_puFE4IuPEe-jPL7JYLd1IA"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_tWurkKsVEe-1AMILd4w9Iw" name="occurrences_goToThree_none" constrainedElement="_wy6wMJtfEe-inb9VFxRZkw _TigLUJt5Ee-1YIC4EDSKZg">
+          <specification xmi:type="uml:Interval" xmi:id="_u4jqsKsVEe-1AMILd4w9Iw" name="" max="_puFE4IuPEe-jPL7JYLd1IA" min="_puFE4IuPEe-jPL7JYLd1IA"/>
         </ownedRule>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_wy6wMJtfEe-inb9VFxRZkw" name="goToFour" isAbstract="true" postcondition="_7K-JIJtfEe-inb9VFxRZkw" precondition="_0TabcJtfEe-inb9VFxRZkw">
@@ -46,8 +49,11 @@
             <body>count = 4</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_AesskJtgEe-inb9VFxRZkw" name="occurrences_goToFour" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
-          <specification xmi:type="uml:Interval" xmi:id="_N8j_4JtgEe-inb9VFxRZkw" name="Interval1" max="_MWqZEJtgEe-inb9VFxRZkw" min="_puFE4IuPEe-jPL7JYLd1IA"/>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_AesskJtgEe-inb9VFxRZkw" name="occurrences_goToFour_twice" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
+          <specification xmi:type="uml:Interval" xmi:id="_N8j_4JtgEe-inb9VFxRZkw" name="" max="_MWqZEJtgEe-inb9VFxRZkw" min="_puFE4IuPEe-jPL7JYLd1IA"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_8JLMMKsVEe-1AMILd4w9Iw" name="occurrences_goToFour_none" constrainedElement="_YhKF4IuPEe-jPL7JYLd1IA _TigLUJt5Ee-1YIC4EDSKZg">
+          <specification xmi:type="uml:Interval" xmi:id="_-ZMHAKsVEe-1AMILd4w9Iw" name="" max="_puFE4IuPEe-jPL7JYLd1IA" min="_puFE4IuPEe-jPL7JYLd1IA"/>
         </ownedRule>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_TigLUJt5Ee-1YIC4EDSKZg" name="goToFive" isAbstract="true" postcondition="_ZWRgwJt5Ee-1YIC4EDSKZg" precondition="_WNH-gJt5Ee-1YIC4EDSKZg">
@@ -61,8 +67,11 @@
             <body>count = 5</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_i_L7wJt5Ee-1YIC4EDSKZg" name="occurrences_goToFive" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_i_L7wJt5Ee-1YIC4EDSKZg" name="occurrences_goToFive_thrice" constrainedElement="_G6g_UIuPEe-jPL7JYLd1IA _MXvdAIuPEe-jPL7JYLd1IA _UhP6wIuPEe-jPL7JYLd1IA">
           <specification xmi:type="uml:Interval" xmi:id="_kfURwJt5Ee-1YIC4EDSKZg" name="" max="_ltmp0Jt5Ee-1YIC4EDSKZg" min="_puFE4IuPEe-jPL7JYLd1IA"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_PJ98kKsWEe-1AMILd4w9Iw" name="occurrences_goToFive_none" constrainedElement="_wy6wMJtfEe-inb9VFxRZkw _YhKF4IuPEe-jPL7JYLd1IA">
+          <specification xmi:type="uml:Interval" xmi:id="_Qk1YEKsWEe-1AMILd4w9Iw" name="" max="_puFE4IuPEe-jPL7JYLd1IA" min="_puFE4IuPEe-jPL7JYLd1IA"/>
         </ownedRule>
       </ownedBehavior>
     </packagedElement>
