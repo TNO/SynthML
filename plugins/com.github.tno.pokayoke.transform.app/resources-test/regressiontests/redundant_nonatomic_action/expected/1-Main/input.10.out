@@ -1,18 +1,19 @@
 .model minimal
 .dummy  __start do_b do_a do_b__na_result_1 __end __loop
 .graph
-__end p5
-__loop p5
+__end p7
+__loop p7
 __start p2
 do_a p3
-do_a/1 p3
-do_b p4
-do_b__na_result_1 p6
+do_a/1 p3 p4
+do_b p5 p6
+do_b__na_result_1 p4
 p1 __start
 p2 do_a/1 do_b
 p3 __end
-p4 do_b__na_result_1
-p5 __loop
-p6 do_a
+p4 __end
+p5 do_a
+p6 do_b__na_result_1
+p7 __loop
 .marking { p1 }
 .end

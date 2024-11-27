@@ -10,7 +10,8 @@ plant automaton Context:
   alg bool Pre = not init and count = 0;
   alg bool __precondition = Pre;
   alg bool Post = count = 3;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = Post and __postcondition__activeAction;
   initial __precondition;
   marked __postcondition;
   location:
@@ -48,7 +49,7 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge incr1 when occurrences__incr1.__occurrences = 0 and (Context.count = 2 and Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 1));
-    edge incr2 when occurrences__incr1.__occurrences = 0 and (Context.count = 1 and Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 1));
-    edge initialize when occurrences__incr1.__occurrences = 0 and (Context.count = 0 and not Context.init) and (Context.__activeAction = 0 and (occurrences__incr2.__occurrences = 0 and occurrences__initialize.__occurrences = 0));
+    edge incr1 when occurrences__initialize.__occurrences = 1 and (Context.__activeAction = 0 and Context.init) and (Context.count = 2 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
+    edge incr2 when occurrences__initialize.__occurrences = 1 and (Context.__activeAction = 0 and Context.init) and (Context.count = 1 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
+    edge initialize when occurrences__initialize.__occurrences = 0 and (Context.__activeAction = 0 and not Context.init) and (Context.count = 0 and (occurrences__incr1.__occurrences = 0 and occurrences__incr2.__occurrences = 0));
 end

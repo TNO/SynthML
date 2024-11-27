@@ -10,7 +10,8 @@ plant automaton Context:
   alg bool Pre = not init and count = 0;
   alg bool __precondition = Pre;
   alg bool Post = count = 3;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition = Post and __postcondition__nonAtomicActive__initialize;
   initial __precondition;
   marked __postcondition;
   location:

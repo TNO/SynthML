@@ -18,7 +18,8 @@ plant automaton Context:
   disc UnknownBool productCorrectlyPlaced = Unknown;
   disc int[0..1] __activeAction;
   alg bool postcondition = not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = postcondition and __postcondition__activeAction;
   marked __postcondition;
   location:
     initial;
