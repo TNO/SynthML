@@ -10,7 +10,8 @@ plant automaton Context:
   alg bool pre_goToFour = not init and count = 0;
   alg bool __precondition = pre_goToFour;
   alg bool post_goToFour = count = 4;
-  alg bool __postcondition = post_goToFour;
+  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize;
   initial __precondition;
   marked __postcondition;
   location:
@@ -48,4 +49,3 @@ requirement invariant Context.__postcondition disables initialize__na_result_1;
 requirement invariant Context.__postcondition disables initialize__na_result_2;
 requirement invariant Context.__postcondition disables incr1;
 requirement invariant Context.__postcondition disables incr2;
-requirement invariant Context.__postcondition => not Context.__nonAtomicActive__initialize;
