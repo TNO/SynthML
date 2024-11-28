@@ -342,19 +342,16 @@ This operation produces a CIF specification that:
 	The conjunction of all these Boolean algebraic variables then forms the activity precondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `initial' predicate, which limits the number of initial states to only the ones satisfying the precondition.
 	\item Contains a `marked' predicate from the conjunction of all translated postconditions of the abstract UML activity.
-	There may be multiple postconditions defined for this activity.
+	There may be multiple user-defined postconditions defined for this activity.
+	In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `marked' predicate.
-	Thus, a marked state is a state where the (combined) activity postcondition is satisfied.
+	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, and were no nonatomic and nondeterministic actions are active.
 	\item Contains requirement invariants stating that the postcondition disables any CIF event.
 	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
-	\item In case any internal active variables or atomicity variable were declared as described earlier, extra requirement invariants are generated which express that, whenever the activity postcondition holds, no nonatomic and/or nondeterministic actions can be active.
-	These requirements are expressed by means of logical implication: the activity postcondition implies that no nonatomic/nondeterministic action are active.
-	By generating such requirements, we can ask data-based synthesis to synthesize a supervisor that prevents taking a step to satisfy the postcondition whenever some action is still being executed.
-	As a result, no nonatomic/nondeterministic action is active in any marked state in the controlled system.
 	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
 	An edge is defined for every declared CIF event, both controllable and uncontrollable ones.
 	Every controllable CIF event corresponds one-to-one to a UML opaque behavior definition, and thus their edge guards are the translated action guards.
