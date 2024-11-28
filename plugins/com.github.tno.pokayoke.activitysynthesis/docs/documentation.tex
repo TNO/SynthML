@@ -344,10 +344,11 @@ This operation produces a CIF specification that:
 	\item Contains a `marked' predicate from the conjunction of all translated postconditions of the abstract UML activity.
 	There may be multiple user-defined postconditions defined for this activity.
 	In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
+	Moreover, in case the abstract activity has occurrence constraints, extra postconditions are generated which express that that occurrence constraints must be satisfied, i.e., the actions/activities that are subject to occurrence constraints must have happened the specified number of times.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `marked' predicate.
-	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, and were no nonatomic and nondeterministic actions are active.
+	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, and where no nonatomic and nondeterministic actions are active.
 	\item Contains requirement invariants stating that the postcondition disables any CIF event.
 	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
