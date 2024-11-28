@@ -8,7 +8,8 @@ plant automaton Context:
   alg bool Pre = not done_a and not done_b;
   alg bool __precondition = Pre;
   alg bool Post = done_a and done_b;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b;
   initial __precondition;
   marked __postcondition;
   location:

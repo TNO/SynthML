@@ -10,7 +10,8 @@ plant automaton Context:
   alg bool Pre = not init and count = 0;
   alg bool __precondition = Pre;
   alg bool Post = count = 3;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = Post and __postcondition__activeAction;
   initial __precondition;
   marked __postcondition;
   location:
@@ -48,4 +49,3 @@ requirement invariant Context.__postcondition disables initialize__result_1;
 requirement invariant Context.__postcondition disables initialize__result_2;
 requirement invariant Context.__postcondition disables incr1;
 requirement invariant Context.__postcondition disables incr2;
-requirement invariant Context.__postcondition => Context.__activeAction = 0;

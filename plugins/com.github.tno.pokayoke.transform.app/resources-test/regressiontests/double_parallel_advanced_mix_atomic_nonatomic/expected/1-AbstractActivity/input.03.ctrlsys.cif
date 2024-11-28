@@ -21,7 +21,10 @@ plant automaton Machine:
   alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
   alg bool __precondition = Precondition;
   alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
-  alg bool __postcondition = Postcondition;
+  alg bool __postcondition__nonAtomicActive__NonAtomicA = not __nonAtomicActive__NonAtomicA;
+  alg bool __postcondition__nonAtomicActive__NonAtomicC = not __nonAtomicActive__NonAtomicC;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = Postcondition and __postcondition__nonAtomicActive__NonAtomicA and (__postcondition__nonAtomicActive__NonAtomicC and __postcondition__activeAction);
   initial __precondition;
   marked __postcondition;
   location:

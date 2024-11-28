@@ -11,7 +11,9 @@ plant automaton Context:
   alg bool precond = not done_a and not done_b;
   alg bool __precondition = precond;
   alg bool postcond = done_a;
-  alg bool __postcondition = postcond;
+  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = postcond and (__postcondition__nonAtomicActive__do_b and __postcondition__activeAction);
   initial __precondition;
   marked __postcondition;
   location:
@@ -42,5 +44,3 @@ requirement invariant Context.__postcondition disables do_a__result_1;
 requirement invariant Context.__postcondition disables do_a__result_2;
 requirement invariant Context.__postcondition disables do_b;
 requirement invariant Context.__postcondition disables do_b__na_result_1;
-requirement invariant Context.__postcondition => not Context.__nonAtomicActive__do_b;
-requirement invariant Context.__postcondition => Context.__activeAction = 0;

@@ -7,7 +7,8 @@ plant automaton Context:
   alg bool precondition = not field;
   alg bool __precondition = precondition;
   alg bool postcondition = field;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = postcondition and __postcondition__activeAction;
   initial __precondition;
   marked __postcondition;
   location:

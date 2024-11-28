@@ -16,6 +16,7 @@ automaton projected:
   @state(statespace = "loc3")
   location s3:
     edge do_b__na_result_1 goto s6;
+    edge do_a goto s7;
   @state(statespace = "loc2")
   @state(statespace = "loc4")
   location s4:
@@ -23,11 +24,18 @@ automaton projected:
   @state(statespace = "__done")
   location s5:
     marked;
-  @state(statespace = "loc5")
-  location s6:
-    edge do_a goto s7;
   @state(statespace = "loc6")
+  location s6:
+    edge do_a goto s9;
+  @state(statespace = "loc5")
   @state(statespace = "loc7")
   location s7:
+    edge do_b__na_result_1 goto s8;
+  @state(statespace = "loc9")
+  location s8:
+    edge __end goto s5;
+  @state(statespace = "loc8")
+  @state(statespace = "loc9")
+  location s9:
     edge __end goto s5;
 end

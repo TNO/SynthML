@@ -502,6 +502,39 @@ public class UmlToCifTranslator {
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
         Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(activity.getPostconditions());
 
+        // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
+        // action must not be active.
+        for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
+            // First define the postcondition expression.
+            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+            cifExtraPostcondition.setChild(
+                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifNonAtomicVar));
+            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+            // Then define an extra CIF algebraic variable for the extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, "__postcondition" + cifNonAtomicVar.getName(),
+                    null, CifConstructors.newBoolType(), cifExtraPostcondition);
+            cifPostconditionVars.add(cifAlgVar);
+        }
+
+        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+        // atomic non-deterministic action must be active.
+        if (cifAtomicityVar != null) {
+            // First define the postcondition expression.
+            BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
+            cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+            cifExtraPostcondition.setOperator(BinaryOperator.EQUAL);
+            cifExtraPostcondition.setRight(CifValueUtils.makeInt(0));
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+            // Then define an extra CIF algebraic variable for this extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, "__postcondition" + cifAtomicityVar.getName(),
+                    null, CifConstructors.newBoolType(), cifExtraPostcondition);
+            cifPostconditionVars.add(cifAlgVar);
+        }
+
         AlgVariable cifPostconditionVar = null;
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
@@ -521,56 +554,6 @@ public class UmlToCifTranslator {
                 cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
                 cifInvariant.setPredicate(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                         cifPostconditionVar));
-                cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                cifSpec.getInvariants().add(cifInvariant);
-            }
-
-            // Add extra requirements stating that no non-atomic/non-deterministic actions must be active whenever the
-            // activity postcondition holds. By doing so, we can ask data-based synthesis to figure out the extra
-            // conditions needed to prevent performing actions that would cause the activity postcondition to be
-            // satisfied, whenever other non-atomic/deterministic actions are still being executed. This helps for
-            // example to keep non-atomic patterns intact.
-            for (DiscVariable cifInternalVar: cifNonAtomicVars) {
-                // Construct the invariant predicate.
-                BinaryExpression cifInvariantPredicate = CifConstructors.newBinaryExpression();
-                cifInvariantPredicate.setLeft(CifConstructors.newAlgVariableExpression(null,
-                        CifConstructors.newBoolType(), cifPostconditionVar));
-                cifInvariantPredicate.setOperator(BinaryOperator.IMPLICATION);
-                UnaryExpression cifRightOperand = CifConstructors.newUnaryExpression();
-                cifRightOperand.setChild(
-                        CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifInternalVar));
-                cifRightOperand.setOperator(UnaryOperator.INVERSE);
-                cifRightOperand.setType(CifConstructors.newBoolType());
-                cifInvariantPredicate.setRight(cifRightOperand);
-                cifInvariantPredicate.setType(CifConstructors.newBoolType());
-
-                // Construct the invariant.
-                Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant.setInvKind(InvKind.STATE);
-                cifInvariant.setPredicate(cifInvariantPredicate);
-                cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                cifSpec.getInvariants().add(cifInvariant);
-            }
-
-            if (cifAtomicityVar != null) {
-                // Construct the invariant predicate.
-                BinaryExpression cifInvariantPredicate = CifConstructors.newBinaryExpression();
-                cifInvariantPredicate.setLeft(CifConstructors.newAlgVariableExpression(null,
-                        CifConstructors.newBoolType(), cifPostconditionVar));
-                cifInvariantPredicate.setOperator(BinaryOperator.IMPLICATION);
-                BinaryExpression cifRightOperand = CifConstructors.newBinaryExpression();
-                cifRightOperand.setLeft(CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                cifRightOperand.setOperator(BinaryOperator.EQUAL);
-                cifRightOperand.setRight(CifValueUtils.makeInt(0));
-                cifRightOperand.setType(CifConstructors.newBoolType());
-                cifInvariantPredicate.setRight(cifRightOperand);
-                cifInvariantPredicate.setType(CifConstructors.newBoolType());
-
-                // Construct the invariant.
-                Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant.setInvKind(InvKind.STATE);
-                cifInvariant.setPredicate(cifInvariantPredicate);
                 cifInvariant.setSupKind(SupKind.REQUIREMENT);
                 cifSpec.getInvariants().add(cifInvariant);
             }

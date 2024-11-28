@@ -12,7 +12,9 @@ plant automaton Machine:
   alg bool Precondition = not a_executed and not b_executed;
   alg bool __precondition = Precondition;
   alg bool Postcondition = a_executed = true and b_executed = true;
-  alg bool __postcondition = Postcondition;
+  alg bool __postcondition__nonAtomicActive__NonAtomicA = not __nonAtomicActive__NonAtomicA;
+  alg bool __postcondition__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
+  alg bool __postcondition = Postcondition and (__postcondition__nonAtomicActive__NonAtomicA and __postcondition__nonAtomicActive__NonAtomicB);
   initial __precondition;
   marked __postcondition;
   location:
@@ -45,5 +47,3 @@ requirement invariant Machine.__postcondition disables NonAtomicA__na_result_2;
 requirement invariant Machine.__postcondition disables NonAtomicB;
 requirement invariant Machine.__postcondition disables NonAtomicB__na_result_1;
 requirement invariant Machine.__postcondition disables NonAtomicB__na_result_2;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicA;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicB;

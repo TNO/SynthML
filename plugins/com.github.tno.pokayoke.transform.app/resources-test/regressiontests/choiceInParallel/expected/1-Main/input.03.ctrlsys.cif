@@ -15,7 +15,8 @@ plant automaton Context:
   disc bool Is_Ready_to_Work = false;
   disc int[0..1] __activeAction;
   alg bool postcondition = Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work;
-  alg bool __postcondition = postcondition;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = postcondition and __postcondition__activeAction;
   marked __postcondition;
   location:
     initial;

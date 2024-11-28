@@ -11,7 +11,9 @@ plant automaton Context:
   alg bool Pre = not done_a and not done_b;
   alg bool __precondition = Pre;
   alg bool Post = done_a;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = Post and (__postcondition__nonAtomicActive__do_b and __postcondition__activeAction);
   initial __precondition;
   marked __postcondition;
   location:
@@ -42,6 +44,6 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge do_a when occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (not Context.__nonAtomicActive__do_b and (not Context.done_b and occurrences__do_b.__occurrences = 0)) or occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (not Context.__nonAtomicActive__do_b and (Context.done_b and occurrences__do_b.__occurrences = 1));
+    edge do_a when occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (not Context.__nonAtomicActive__do_b and (not Context.done_b and occurrences__do_b.__occurrences = 0)) or (occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (not Context.__nonAtomicActive__do_b and (Context.done_b and occurrences__do_b.__occurrences = 1)) or occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (Context.__nonAtomicActive__do_b and (not Context.done_b and occurrences__do_b.__occurrences = 1)));
     edge do_b when occurrences__do_a.__occurrences = 0 and (not Context.done_a and Context.__activeAction = 0) and (not Context.__nonAtomicActive__do_b and (not Context.done_b and occurrences__do_b.__occurrences = 0));
 end
