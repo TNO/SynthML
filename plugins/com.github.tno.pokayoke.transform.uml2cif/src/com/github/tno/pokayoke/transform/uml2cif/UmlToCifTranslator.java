@@ -105,6 +105,9 @@ public class UmlToCifTranslator {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
+    /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
+    private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
+
     /** The mapping from non-atomic and non-deterministic CIF start events, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
 
@@ -211,13 +214,8 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all interval constraints of the input UML activity.
-        for (Constraint umlConstraint: activity.getOwnedRules()) {
-            if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
-                List<Automaton> cifRequirements = translateOccurrenceConstraint(umlIntervalConstraint);
-                cifSpec.getComponents().addAll(cifRequirements);
-            }
-        }
+        // Translate all occurrence constraints of the input UML activity.
+        translateOccurrenceConstraints(cifSpec);
 
         return cifSpec;
     }
@@ -692,11 +690,25 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a given occurrence constraint to a list of CIF requirement automata. This translation could result in
-     * multiple automata in case the occurrence constraint constraints more than one UML element.
+     * Translates all occurrence constraints of the input UML activity, to CIF requirement automata.
+     *
+     * @param cifSpec The CIF specification to which the translated CIF requirement automata are to be added.
+     */
+    private void translateOccurrenceConstraints(Specification cifSpec) {
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
+                List<Automaton> automata = translateOccurrenceConstraint(umlIntervalConstraint);
+                cifSpec.getComponents().addAll(automata);
+            }
+        }
+    }
+
+    /**
+     * Translates a given occurrence constraint to CIF requirement automata. This translation could result in multiple
+     * automata in case the occurrence constraint constraints more than one UML element.
      *
      * @param umlConstraint The occurrence constraint to translate.
-     * @return The translated list of CIF automata.
+     * @return The translated CIF requirement automata.
      */
     private List<Automaton> translateOccurrenceConstraint(IntervalConstraint umlConstraint) {
         ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
@@ -716,6 +728,8 @@ public class UmlToCifTranslator {
                     cifAutomata.add(createIntervalAutomaton(name, eventMap.get(umlOpaqueBehavior), min, max));
                 }
             }
+
+            occurrenceConstraintMap.put(umlConstraint, cifAutomata);
 
             return cifAutomata;
         } else {
