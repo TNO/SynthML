@@ -6,7 +6,7 @@ controllable incr2;
 controllable __start;
 controllable __end;
 automaton statespace:
-  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __start, __end;
+  alphabet initialize, incr1, incr2, initialize__na_result_1, initialize__na_result_2, __start, __end;
   @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences_goToFour_twice__incr1 = "*", occurrences_goToFour_twice__incr1.__occurrences = 0, occurrences_goToFour_twice__incr2 = "*", occurrences_goToFour_twice__incr2.__occurrences = 0, occurrences_goToFour_twice__initialize = "*", occurrences_goToFour_twice__initialize.__occurrences = 0, sup = "*")
   location __init:
     initial;

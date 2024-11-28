@@ -32,13 +32,13 @@ automaton projected:
     edge NonAtomicC goto s5;
     edge NonAtomicA__na_result_2 goto s6;
     edge NonAtomicA__na_result_1 goto s6;
-  @state(statespace = "loc5")
+  @state(statespace = "loc4")
   location s5:
     edge NonAtomicC__na_result_2 goto s10;
     edge NonAtomicC__na_result_1 goto s10;
     edge NonAtomicA__na_result_2 goto s8;
     edge NonAtomicA__na_result_1 goto s8;
-  @state(statespace = "loc4")
+  @state(statespace = "loc5")
   location s6:
     edge NonAtomicC goto s8;
     edge NonAtomicB goto s9;
@@ -46,17 +46,17 @@ automaton projected:
   location s7:
     edge NonAtomicD goto s11;
     edge NonAtomicA goto s10;
-  @state(statespace = "loc8")
+  @state(statespace = "loc7")
   location s8:
     edge NonAtomicC__na_result_2 goto s14;
     edge NonAtomicC__na_result_1 goto s14;
     edge NonAtomicB goto s12;
-  @state(statespace = "loc7")
+  @state(statespace = "loc9")
   location s9:
     edge NonAtomicC goto s12;
     edge NonAtomicB__na_result_2 goto s13;
     edge NonAtomicB__na_result_1 goto s13;
-  @state(statespace = "loc9")
+  @state(statespace = "loc8")
   location s10:
     edge NonAtomicD goto s15;
     edge NonAtomicA__na_result_2 goto s14;
@@ -66,20 +66,20 @@ automaton projected:
     edge NonAtomicD__na_result_2 goto s16;
     edge NonAtomicD__na_result_1 goto s16;
     edge NonAtomicA goto s15;
-  @state(statespace = "loc12")
+  @state(statespace = "loc11")
   location s12:
     edge NonAtomicC__na_result_2 goto s18;
     edge NonAtomicC__na_result_1 goto s18;
     edge NonAtomicB__na_result_2 goto s17;
     edge NonAtomicB__na_result_1 goto s17;
-  @state(statespace = "loc11")
+  @state(statespace = "loc14")
   location s13:
     edge NonAtomicC goto s17;
-  @state(statespace = "loc13")
+  @state(statespace = "loc12")
   location s14:
     edge NonAtomicD goto s19;
     edge NonAtomicB goto s18;
-  @state(statespace = "loc14")
+  @state(statespace = "loc13")
   location s15:
     edge NonAtomicD__na_result_2 goto s20;
     edge NonAtomicD__na_result_1 goto s20;
