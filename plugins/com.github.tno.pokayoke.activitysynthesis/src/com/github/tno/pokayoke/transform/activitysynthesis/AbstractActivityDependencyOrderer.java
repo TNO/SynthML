@@ -47,7 +47,13 @@ public class AbstractActivityDependencyOrderer {
      *     the dependencies is detected.
      */
     public List<Activity> computeOrder() {
-        return orderer.computeOrder().stream().filter(Activity::isAbstract).toList();
+        List<Activity> result = orderer.computeOrder();
+
+        if (result != null) {
+            result = result.stream().filter(Activity::isAbstract).toList();
+        }
+
+        return result;
     }
 
     /**
