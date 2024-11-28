@@ -533,6 +533,22 @@ public class UmlToCifTranslator {
             cifPostconditionVars.add(cifAlgVar);
         }
 
+        // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
+        // predicate of the corresponding CIF requirement automata must hold.
+        for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
+            for (Automaton cifRequirement: entry.getValue()) {
+                // First define the postcondition expression.
+                Expression cifExtraPostcondition = CifValueUtils
+                        .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
+
+                // Then define an extra CIF algebraic variable for this extra postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                        "__postcondition__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                        cifExtraPostcondition);
+                cifPostconditionVars.add(cifAlgVar);
+            }
+        }
+
         AlgVariable cifPostconditionVar = null;
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
