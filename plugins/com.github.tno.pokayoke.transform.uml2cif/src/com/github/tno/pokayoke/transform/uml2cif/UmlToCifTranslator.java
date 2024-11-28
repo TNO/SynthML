@@ -767,19 +767,20 @@ public class UmlToCifTranslator {
         variable.setType(variableType);
         automaton.getDeclarations().add(variable);
 
-        // Create the single location of the automaton.
-        Location location = CifConstructors.newLocation();
-        location.getInitials().add(createBoolExpression(true));
-        automaton.getLocations().add(location);
-
-        // Define the marked predicate for the single location.
+        // Define the marked predicate for the automaton.
         Expression varExpr = CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(variableType), variable);
         BinaryExpression markedExpr = CifConstructors.newBinaryExpression();
         markedExpr.setLeft(varExpr);
         markedExpr.setOperator(BinaryOperator.GREATER_EQUAL);
         markedExpr.setRight(CifValueUtils.makeInt(min));
         markedExpr.setType(CifConstructors.newBoolType());
-        location.getMarkeds().add(markedExpr);
+        automaton.getMarkeds().add(markedExpr);
+
+        // Create the single location of the automaton.
+        Location location = CifConstructors.newLocation();
+        location.getInitials().add(createBoolExpression(true));
+        location.getMarkeds().add(createBoolExpression(true));
+        automaton.getLocations().add(location);
 
         // Create the single edge in the automaton.
         EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
