@@ -26,13 +26,13 @@ automaton projected:
     edge NonAtomicB goto s5;
     edge NonAtomicA__na_result_2 goto s6;
     edge NonAtomicA__na_result_1 goto s6;
-  @state(statespace = "loc5")
+  @state(statespace = "loc4")
   location s5:
     edge NonAtomicB__na_result_2 goto s9;
     edge NonAtomicB__na_result_1 goto s9;
     edge NonAtomicA__na_result_2 goto s8;
     edge NonAtomicA__na_result_1 goto s8;
-  @state(statespace = "loc4")
+  @state(statespace = "loc5")
   location s6:
     edge NonAtomicB goto s8;
   @state(statespace = "loc6")

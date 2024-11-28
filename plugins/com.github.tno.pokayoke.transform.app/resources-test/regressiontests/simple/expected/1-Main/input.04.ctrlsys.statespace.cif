@@ -8,7 +8,7 @@ controllable measure_product_position;
 uncontrollable measure_product_position__result_1;
 uncontrollable measure_product_position__result_2;
 automaton statespace:
-  alphabet prepare_robot, robot_move_to_location1, robot_move_to_location2, robot_adjust_product, robot_release_product_at_location2, prepare_location2, measure_product_position, measure_product_position__result_1, measure_product_position__result_2;
+  alphabet prepare_robot, robot_move_to_location2, robot_release_product_at_location2, prepare_location2, robot_move_to_location1, robot_adjust_product, measure_product_position, measure_product_position__result_1, measure_product_position__result_2;
   @state(Context = "*", Context.__activeAction = 0, Context.location2HasProduct = false, Context.location2Prepared = false, Context.productCorrectlyPlaced = "Unknown", Context.robotHasProduct = true, Context.robotLocation = "Location1", Context.robotPrepared = false, happen_at_most_once__prepare_location2 = "*", happen_at_most_once__prepare_location2.__occurrences = 0, happen_at_most_once__prepare_robot = "*", happen_at_most_once__prepare_robot.__occurrences = 0, happen_at_most_once__robot_move_to_location2 = "*", happen_at_most_once__robot_move_to_location2.__occurrences = 0, happen_at_most_once__robot_release_product_at_location2 = "*", happen_at_most_once__robot_release_product_at_location2.__occurrences = 0, sup = "*")
   location loc1:
     initial;

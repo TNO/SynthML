@@ -105,6 +105,9 @@ public class UmlToCifTranslator {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
+    /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
+    private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
+
     /** The mapping from non-atomic and non-deterministic CIF start events, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> startEndEventMap = new LinkedHashMap<>();
 
@@ -210,14 +213,6 @@ public class UmlToCifTranslator {
         // Translate the UML class.
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
-
-        // Translate all interval constraints of the input UML activity.
-        for (Constraint umlConstraint: activity.getOwnedRules()) {
-            if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
-                List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
-                cifSpec.getComponents().addAll(cifRequirements);
-            }
-        }
 
         return cifSpec;
     }
@@ -487,6 +482,9 @@ public class UmlToCifTranslator {
             }
         }
 
+        // Translate all occurrence constraints of the input UML activity.
+        translateOccurrenceConstraints(cifSpec);
+
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(activity.getPreconditions());
 
@@ -533,6 +531,22 @@ public class UmlToCifTranslator {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, "__postcondition" + cifAtomicityVar.getName(),
                     null, CifConstructors.newBoolType(), cifExtraPostcondition);
             cifPostconditionVars.add(cifAlgVar);
+        }
+
+        // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
+        // predicate of the corresponding CIF requirement automata must hold.
+        for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
+            for (Automaton cifRequirement: entry.getValue()) {
+                // First define the postcondition expression.
+                Expression cifExtraPostcondition = CifValueUtils
+                        .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
+
+                // Then define an extra CIF algebraic variable for this extra postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                        "__postcondition__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                        cifExtraPostcondition);
+                cifPostconditionVars.add(cifAlgVar);
+            }
         }
 
         AlgVariable cifPostconditionVar = null;
@@ -692,13 +706,27 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a UML interval constraint to a list of CIF requirement automata. This translation could result in
-     * multiple automata in case the interval constraint constraints more than one UML element.
+     * Translates all occurrence constraints of the input UML activity, to CIF requirement automata.
      *
-     * @param umlConstraint The UML interval constraint to translate.
-     * @return The translated list of CIF automata.
+     * @param cifSpec The CIF specification to which the translated CIF requirement automata are to be added.
      */
-    private List<Automaton> translateIntervalConstraint(IntervalConstraint umlConstraint) {
+    private void translateOccurrenceConstraints(Specification cifSpec) {
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
+                List<Automaton> automata = translateOccurrenceConstraint(umlIntervalConstraint);
+                cifSpec.getComponents().addAll(automata);
+            }
+        }
+    }
+
+    /**
+     * Translates a given occurrence constraint to CIF requirement automata. This translation could result in multiple
+     * automata in case the occurrence constraint constraints more than one UML element.
+     *
+     * @param umlConstraint The occurrence constraint to translate.
+     * @return The translated CIF requirement automata.
+     */
+    private List<Automaton> translateOccurrenceConstraint(IntervalConstraint umlConstraint) {
         ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
 
         if (umlConstraintValue instanceof Interval umlInterval) {
@@ -716,6 +744,8 @@ public class UmlToCifTranslator {
                     cifAutomata.add(createIntervalAutomaton(name, eventMap.get(umlOpaqueBehavior), min, max));
                 }
             }
+
+            occurrenceConstraintMap.put(umlConstraint, cifAutomata);
 
             return cifAutomata;
         } else {
@@ -753,19 +783,20 @@ public class UmlToCifTranslator {
         variable.setType(variableType);
         automaton.getDeclarations().add(variable);
 
-        // Create the single location of the automaton.
-        Location location = CifConstructors.newLocation();
-        location.getInitials().add(createBoolExpression(true));
-        automaton.getLocations().add(location);
-
-        // Define the marked predicate for the single location.
+        // Define the marked predicate for the automaton.
         Expression varExpr = CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(variableType), variable);
         BinaryExpression markedExpr = CifConstructors.newBinaryExpression();
         markedExpr.setLeft(varExpr);
         markedExpr.setOperator(BinaryOperator.GREATER_EQUAL);
         markedExpr.setRight(CifValueUtils.makeInt(min));
         markedExpr.setType(CifConstructors.newBoolType());
-        location.getMarkeds().add(markedExpr);
+        automaton.getMarkeds().add(markedExpr);
+
+        // Create the single location of the automaton.
+        Location location = CifConstructors.newLocation();
+        location.getInitials().add(createBoolExpression(true));
+        location.getMarkeds().add(createBoolExpression(true));
+        automaton.getLocations().add(location);
 
         // Create the single edge in the automaton.
         EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();

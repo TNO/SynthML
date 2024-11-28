@@ -2,6 +2,30 @@ controllable do_a;
 controllable do_b;
 uncontrollable do_b__na_result_1;
 controllable do_c;
+supervisor automaton occurrences__do_a:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__do_b:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton occurrences__do_c:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge do_c when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
 plant automaton Context:
   disc bool done_a in any;
   disc bool done_b in any;
@@ -11,7 +35,10 @@ plant automaton Context:
   alg bool __precondition = Pre;
   alg bool Post = done_c;
   alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
-  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b;
+  alg bool __postcondition__occurrences__do_a = occurrences__do_a.__occurrences >= 0;
+  alg bool __postcondition__occurrences__do_b = occurrences__do_b.__occurrences >= 0;
+  alg bool __postcondition__occurrences__do_c = occurrences__do_c.__occurrences >= 0;
+  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__occurrences__do_a and (__postcondition__occurrences__do_b and __postcondition__occurrences__do_c));
   initial __precondition;
   marked __postcondition;
   location:
@@ -22,33 +49,12 @@ plant automaton Context:
     edge do_b__na_result_1 when __nonAtomicActive__do_b do done_b := true, __nonAtomicActive__do_b := false;
     edge do_c when done_a and not done_c do done_c := true;
 end
-supervisor automaton occurrences__do_a:
-  disc int[0..1] __occurrences;
-  location:
-    initial;
-    marked __occurrences >= 0;
-    edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton occurrences__do_b:
-  disc int[0..1] __occurrences;
-  location:
-    initial;
-    marked __occurrences >= 0;
-    edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton occurrences__do_c:
-  disc int[0..1] __occurrences;
-  location:
-    initial;
-    marked __occurrences >= 0;
-    edge do_c when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
 supervisor automaton sup:
   alphabet do_a, do_b, do_c;
   location:
     initial;
     marked;
-    edge do_a when occurrences__do_b.__occurrences = 0 and (not Context.done_b and not Context.__nonAtomicActive__do_b) and (not Context.done_c and not Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 0)) or occurrences__do_b.__occurrences = 1 and (not Context.done_b and Context.__nonAtomicActive__do_b) and (not Context.done_c and not Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 0)) or (occurrences__do_b.__occurrences = 1 and (not Context.done_b and Context.__nonAtomicActive__do_b) and (Context.done_c and not Context.done_a and (occurrences__do_c.__occurrences = 1 and occurrences__do_a.__occurrences = 0)) or occurrences__do_b.__occurrences = 1 and (Context.done_b and not Context.__nonAtomicActive__do_b) and (not Context.done_c and not Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 0)));
-    edge do_b when occurrences__do_b.__occurrences = 0 and (not Context.done_b and not Context.__nonAtomicActive__do_b) and (not Context.done_c and not Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 0));
-    edge do_c when occurrences__do_b.__occurrences = 0 and (not Context.done_b and not Context.__nonAtomicActive__do_b) and (not Context.done_c and Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 1)) or (occurrences__do_b.__occurrences = 1 and (not Context.done_b and Context.__nonAtomicActive__do_b) and (not Context.done_c and Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 1)) or occurrences__do_b.__occurrences = 1 and (Context.done_b and not Context.__nonAtomicActive__do_b) and (not Context.done_c and Context.done_a and (occurrences__do_c.__occurrences = 0 and occurrences__do_a.__occurrences = 1)));
+    edge do_a when not Context.done_a and (not Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 0 and occurrences__do_b.__occurrences = 0 and (occurrences__do_c.__occurrences = 0 and not Context.done_b)) or not Context.done_a and (not Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 0 and occurrences__do_b.__occurrences = 1 and (occurrences__do_c.__occurrences = 0 and Context.done_b)) or (not Context.done_a and (Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 0 and occurrences__do_b.__occurrences = 1 and (occurrences__do_c.__occurrences = 0 and not Context.done_b)) or not Context.done_a and (Context.__nonAtomicActive__do_b and Context.done_c) and (occurrences__do_a.__occurrences = 0 and occurrences__do_b.__occurrences = 1 and (occurrences__do_c.__occurrences = 1 and not Context.done_b)));
+    edge do_b when not Context.done_a and (not Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 0 and occurrences__do_b.__occurrences = 0 and (occurrences__do_c.__occurrences = 0 and not Context.done_b));
+    edge do_c when Context.done_a and (not Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 1 and occurrences__do_b.__occurrences = 0 and (occurrences__do_c.__occurrences = 0 and not Context.done_b)) or (Context.done_a and (not Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 1 and occurrences__do_b.__occurrences = 1 and (occurrences__do_c.__occurrences = 0 and Context.done_b)) or Context.done_a and (Context.__nonAtomicActive__do_b and not Context.done_c) and (occurrences__do_a.__occurrences = 1 and occurrences__do_b.__occurrences = 1 and (occurrences__do_c.__occurrences = 0 and not Context.done_b)));
 end
