@@ -214,9 +214,6 @@ public class UmlToCifTranslator {
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all occurrence constraints of the input UML activity.
-        translateOccurrenceConstraints(cifSpec);
-
         return cifSpec;
     }
 
@@ -484,6 +481,9 @@ public class UmlToCifTranslator {
                 eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
             }
         }
+
+        // Translate all occurrence constraints of the input UML activity.
+        translateOccurrenceConstraints(cifSpec);
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(activity.getPreconditions());
