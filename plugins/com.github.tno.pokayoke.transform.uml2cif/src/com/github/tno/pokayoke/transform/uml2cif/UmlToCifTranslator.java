@@ -214,7 +214,7 @@ public class UmlToCifTranslator {
         // Translate all interval constraints of the input UML activity.
         for (Constraint umlConstraint: activity.getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
-                List<Automaton> cifRequirements = translateIntervalConstraint(umlIntervalConstraint);
+                List<Automaton> cifRequirements = translateOccurrenceConstraint(umlIntervalConstraint);
                 cifSpec.getComponents().addAll(cifRequirements);
             }
         }
@@ -692,13 +692,13 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a UML interval constraint to a list of CIF requirement automata. This translation could result in
-     * multiple automata in case the interval constraint constraints more than one UML element.
+     * Translates a given occurrence constraint to a list of CIF requirement automata. This translation could result in
+     * multiple automata in case the occurrence constraint constraints more than one UML element.
      *
-     * @param umlConstraint The UML interval constraint to translate.
+     * @param umlConstraint The occurrence constraint to translate.
      * @return The translated list of CIF automata.
      */
-    private List<Automaton> translateIntervalConstraint(IntervalConstraint umlConstraint) {
+    private List<Automaton> translateOccurrenceConstraint(IntervalConstraint umlConstraint) {
         ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
 
         if (umlConstraintValue instanceof Interval umlInterval) {
