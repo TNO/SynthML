@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.lsat.common.util.IterableUtil;
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -41,12 +42,26 @@ public class PokaYokeTypeUtil {
      */
     public static List<Type> getSupportedTypes(Element context) {
         QueryableIterable<Type> supportedTypes = QueryableIterable.from(context.getModel().getOwnedTypes())
-                .select(PokaYokeTypeUtil::isSupportedType).union(UmlPrimitiveType.BOOLEAN.load(context));
+                .select(PokaYokeTypeUtil::isSupportedOrPassiveClassType).union(UmlPrimitiveType.BOOLEAN.load(context));
+
         return IterableUtil.sortedBy(supportedTypes, Type::getName);
+    }
+
+    public static boolean isSupportedOrPassiveClassType(Type type) {
+        return isSupportedType(type) || isPassiveClassType(type);
     }
 
     public static boolean isSupportedType(Type type) {
         return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type);
+    }
+
+    public static boolean isPassiveClassType(Type type) {
+        // If type is a Class, check if it is active. Need the cast to Class to use the method isActive().
+        return (isClassType(type)) ? !((Class)type).isActive() : false;
+    }
+
+    public static boolean isClassType(Type type) {
+        return type instanceof Class;
     }
 
     public static boolean isEnumerationType(Type type) {
