@@ -118,6 +118,15 @@ public class UmlToCifTranslator {
     }
 
     /**
+     * Gives the UML activity to translate.
+     *
+     * @return The UML activity to translate.
+     */
+    public Activity getActivity() {
+        return activity;
+    }
+
+    /**
      * Gives all CIF events related to non-atomic actions, as a mapping from non-atomic CIF start events to their
      * corresponding CIF end events.
      *
@@ -208,24 +217,13 @@ public class UmlToCifTranslator {
         }
 
         // Find the single UML class to translate.
-        Class umlClass = getSingleClass();
+        Class umlClass = (Class)activity.getContext();
 
         // Translate the UML class.
         Automaton cifPlant = translateClass(umlClass, cifSpec);
         cifSpec.getComponents().add(cifPlant);
 
         return cifSpec;
-    }
-
-    /**
-     * Gives the single UML class within the input UML model.
-     *
-     * @return The single UML class within the input UML model.
-     */
-    public Class getSingleClass() {
-        List<Class> umlClasses = context.getAllClasses(c -> !(c instanceof Behavior));
-        Preconditions.checkArgument(umlClasses.size() == 1, "Expected exactly one class, but got " + umlClasses.size());
-        return umlClasses.get(0);
     }
 
     /**
