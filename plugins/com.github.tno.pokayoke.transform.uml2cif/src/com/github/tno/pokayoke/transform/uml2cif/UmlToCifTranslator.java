@@ -219,21 +219,6 @@ public class UmlToCifTranslator {
         // Find the single UML class to translate.
         Class umlClass = (Class)activity.getContext();
 
-        // Translate the UML class.
-        Automaton cifPlant = translateClass(umlClass, cifSpec);
-        cifSpec.getComponents().add(cifPlant);
-
-        return cifSpec;
-    }
-
-    /**
-     * Translates a UML class to a CIF plant automaton.
-     *
-     * @param umlClass The UML class to translate.
-     * @param cifSpec The CIF specification of which the translated CIF plant will be part.
-     * @return The translated CIF plant automaton.
-     */
-    private Automaton translateClass(Class umlClass, Specification cifSpec) {
         // Create a CIF plant for the UML class.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
@@ -593,7 +578,9 @@ public class UmlToCifTranslator {
             cifPlant.getInvariants().addAll(cifInvariants);
         }
 
-        return cifPlant;
+        cifSpec.getComponents().add(cifPlant);
+
+        return cifSpec;
     }
 
     /**
