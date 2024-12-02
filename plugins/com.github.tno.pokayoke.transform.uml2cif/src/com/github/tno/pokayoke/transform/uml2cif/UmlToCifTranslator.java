@@ -44,7 +44,6 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
-import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -216,16 +215,13 @@ public class UmlToCifTranslator {
             enumLiteralMap.put(umlLiteral, cifLiteral);
         }
 
-        // Find the single UML class to translate.
-        Class umlClass = (Class)activity.getContext();
-
-        // Create a CIF plant for the UML class.
+        // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
-        cifPlant.setName(umlClass.getName());
+        cifPlant.setName(activity.getContext().getName());
 
         // Translate all UML class properties to CIF discrete variables.
-        for (Property umlProperty: umlClass.getOwnedAttributes()) {
+        for (Property umlProperty: context.getAllProperties()) {
             DiscVariable cifVariable = CifConstructors.newDiscVariable();
             cifVariable.setName(umlProperty.getName());
             cifVariable.setType(translator.translateType(umlProperty.getType()));
@@ -262,7 +258,7 @@ public class UmlToCifTranslator {
         Set<Event> nonDeterministicStartEvents = new LinkedHashSet<>();
         Set<Event> nonDeterministicEndEvents = new LinkedHashSet<>();
 
-        for (Behavior umlBehavior: umlClass.getOwnedBehaviors()) {
+        for (Behavior umlBehavior: context.getAllOpaqueBehaviors()) {
             if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
                 // Obtain the guard and effects of the current action. Ensure that there is at least one effect.
                 Expression guard = getGuard(umlOpaqueBehavior);
@@ -557,7 +553,7 @@ public class UmlToCifTranslator {
         }
 
         // Translate all UML class constraints as CIF invariants.
-        for (Constraint umlConstraint: umlClass.getOwnedRules()) {
+        for (Constraint umlConstraint: activity.getContext().getOwnedRules()) {
             String constraintName = umlConstraint.getName();
 
             List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
