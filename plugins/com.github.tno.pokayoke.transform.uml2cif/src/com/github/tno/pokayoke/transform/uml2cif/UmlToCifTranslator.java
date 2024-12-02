@@ -220,24 +220,9 @@ public class UmlToCifTranslator {
         cifPlant.setKind(SupKind.PLANT);
         cifPlant.setName(activity.getContext().getName());
 
-        // Translate all UML class properties to CIF discrete variables.
+        // Translate all UML properties that are in context.
         for (Property umlProperty: context.getAllProperties()) {
-            DiscVariable cifVariable = CifConstructors.newDiscVariable();
-            cifVariable.setName(umlProperty.getName());
-            cifVariable.setType(translator.translateType(umlProperty.getType()));
-            cifPlant.getDeclarations().add(cifVariable);
-            variableMap.put(umlProperty, cifVariable);
-
-            // Determine the default value(s) of the CIF variable.
-            if (PokaYokeUmlProfileUtil.hasDefaultValue(umlProperty)) {
-                // Translate the UML default property value.
-                ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
-                Expression cifDefaultValueExpr = translator.translate(CifParserHelper.parseExpression(umlDefaultValue));
-                cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
-            } else {
-                // Indicate that the CIF variable can have any value by default.
-                cifVariable.setValue(CifConstructors.newVariableValue());
-            }
+            cifPlant.getDeclarations().add(translateProperty(umlProperty));
         }
 
         // Create the single location within the CIF plant, which is a flower automaton.
@@ -577,6 +562,32 @@ public class UmlToCifTranslator {
         cifSpec.getComponents().add(cifPlant);
 
         return cifSpec;
+    }
+
+    /**
+     * Translates a given UML property to a CIF discrete variable.
+     *
+     * @param umlProperty The UML property to translate.
+     * @return The translated CIF discrete variable.
+     */
+    private DiscVariable translateProperty(Property umlProperty) {
+        DiscVariable cifVariable = CifConstructors.newDiscVariable();
+        cifVariable.setName(umlProperty.getName());
+        cifVariable.setType(translator.translateType(umlProperty.getType()));
+        variableMap.put(umlProperty, cifVariable);
+
+        // Determine the default value(s) of the CIF variable.
+        if (PokaYokeUmlProfileUtil.hasDefaultValue(umlProperty)) {
+            // Translate the UML default property value.
+            ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
+            Expression cifDefaultValueExpr = translator.translate(CifParserHelper.parseExpression(umlDefaultValue));
+            cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
+        } else {
+            // Indicate that the CIF variable can have any value by default.
+            cifVariable.setValue(CifConstructors.newVariableValue());
+        }
+
+        return cifVariable;
     }
 
     /**
