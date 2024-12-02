@@ -279,15 +279,15 @@ public class UmlToCifTranslator {
                 }
 
                 // Create a CIF event for starting the action that is represented by the current opaque behavior.
-                Event cifEvent = CifConstructors.newEvent();
-                cifEvent.setControllable(true);
-                cifEvent.setName(umlOpaqueBehavior.getName());
-                cifSpec.getDeclarations().add(cifEvent);
-                eventMap.put(umlOpaqueBehavior, cifEvent);
+                Event cifStartEvent = CifConstructors.newEvent();
+                cifStartEvent.setControllable(true);
+                cifStartEvent.setName(umlOpaqueBehavior.getName());
+                cifSpec.getDeclarations().add(cifStartEvent);
+                eventMap.put(umlOpaqueBehavior, cifStartEvent);
 
                 // Create a CIF edge for this start event.
                 EventExpression cifEventExpr = CifConstructors.newEventExpression();
-                cifEventExpr.setEvent(cifEvent);
+                cifEventExpr.setEvent(cifStartEvent);
                 cifEventExpr.setType(CifConstructors.newBoolType());
                 EdgeEvent cifEdgeEvent = CifConstructors.newEdgeEvent();
                 cifEdgeEvent.setEvent(cifEventExpr);
@@ -295,7 +295,7 @@ public class UmlToCifTranslator {
                 cifEdge.getEvents().add(cifEdgeEvent);
                 cifEdge.getGuards().add(guard);
                 cifLocation.getEdges().add(cifEdge);
-                eventEdgeMap.put(cifEvent, cifEdge);
+                eventEdgeMap.put(cifStartEvent, cifEdge);
 
                 // Determine whether the action is atomic and/or deterministic.
                 boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior);
@@ -335,10 +335,10 @@ public class UmlToCifTranslator {
 
                     // Remember which start and end events belong together.
                     if (!isAtomic) {
-                        nonAtomicEventMap.put(cifEvent, cifEndEvents);
+                        nonAtomicEventMap.put(cifStartEvent, cifEndEvents);
                     }
                     if (!isDeterministic) {
-                        nonDeterministicEventMap.put(cifEvent, cifEndEvents);
+                        nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
                     }
                 }
             }
@@ -347,7 +347,7 @@ public class UmlToCifTranslator {
         // In case atomic non-deterministic actions were encountered, encode the necessary atomicity constraints.
         DiscVariable cifAtomicityVar = null;
 
-     // Find all the start and end events of atomic non-deterministic actions.
+        // Find all the start and end events of atomic non-deterministic actions.
         Map<Event, List<Event>> atomicNonDeterministicEvents = getAtomicNonDeterministicEvents();
 
         Set<Event> atomicNonDeterministicStartEvents = new LinkedHashSet<>();
