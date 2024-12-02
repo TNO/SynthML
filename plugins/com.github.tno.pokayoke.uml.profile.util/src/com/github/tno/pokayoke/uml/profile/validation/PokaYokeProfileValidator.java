@@ -149,18 +149,18 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
-        if (!clazz.getNestedClassifiers().isEmpty()) {
-            error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
-        }
-
         if (clazz instanceof Behavior) {
             // Activities are also a Class in UML. Skip the next validations for all behaviors.
             return;
         }
-        if (clazz.getClassifierBehavior() == null) {
+        // Check that only active classes have behaviors, and passive classes do not.
+        if (clazz.isActive() && clazz.getClassifierBehavior() == null) {
             error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-        } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
+        } else if (!clazz.isActive() && clazz.getClassifierBehavior() != null) {
+            error("Passive classes should not own any behavior.",
+                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+        } else if (clazz.isActive() && !clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
             error("Expected class to own its classifier behavior.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
@@ -199,7 +199,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (propType == null) {
             error("Property type not set", UMLPackage.Literals.TYPED_ELEMENT__TYPE);
             return;
-        } else if (!PokaYokeTypeUtil.isSupportedType(propType)) {
+        } else if (!PokaYokeTypeUtil.isSupportedOrPassiveClassType(propType)) {
             error("Unsupported property type: " + propType.getName(), UMLPackage.Literals.TYPED_ELEMENT__TYPE);
             return;
         }
