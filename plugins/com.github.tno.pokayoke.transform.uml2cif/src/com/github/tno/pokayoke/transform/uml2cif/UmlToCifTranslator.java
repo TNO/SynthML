@@ -44,7 +44,6 @@ import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -263,85 +262,16 @@ public class UmlToCifTranslator {
         cifLocation.getMarkeds().add(createBoolExpression(true));
         cifPlant.getLocations().add(cifLocation);
 
-        // Translate all opaque behaviors as CIF event declarations and CIF edges. While doing so, maintain the
-        // one-to-one relation between events and flower automaton edges in a mapping. Opaque behaviors that represent
-        // non-deterministic or non-atomic actions are translated as multiple CIF start and end events.
+        // Translate all UML opaque behaviors that are in context.
         Map<Event, Edge> eventEdgeMap = new LinkedHashMap<>();
 
-        for (Behavior umlBehavior: context.getAllOpaqueBehaviors()) {
-            if (umlBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                // Obtain the guard and effects of the current action. Ensure that there is at least one effect.
-                Expression guard = getGuard(umlOpaqueBehavior);
-                List<List<Update>> effects = getEffects(umlOpaqueBehavior);
+        for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
+            eventEdgeMap.putAll(translateAction(umlOpaqueBehavior));
+        }
 
-                if (effects.isEmpty()) {
-                    effects = List.of(List.of());
-                }
-
-                // Create a CIF event for starting the action that is represented by the current opaque behavior.
-                Event cifStartEvent = CifConstructors.newEvent();
-                cifStartEvent.setControllable(true);
-                cifStartEvent.setName(umlOpaqueBehavior.getName());
-                cifSpec.getDeclarations().add(cifStartEvent);
-                eventMap.put(umlOpaqueBehavior, cifStartEvent);
-
-                // Create a CIF edge for this start event.
-                EventExpression cifEventExpr = CifConstructors.newEventExpression();
-                cifEventExpr.setEvent(cifStartEvent);
-                cifEventExpr.setType(CifConstructors.newBoolType());
-                EdgeEvent cifEdgeEvent = CifConstructors.newEdgeEvent();
-                cifEdgeEvent.setEvent(cifEventExpr);
-                Edge cifEdge = CifConstructors.newEdge();
-                cifEdge.getEvents().add(cifEdgeEvent);
-                cifEdge.getGuards().add(guard);
-                cifLocation.getEdges().add(cifEdge);
-                eventEdgeMap.put(cifStartEvent, cifEdge);
-
-                // Determine whether the action is atomic and/or deterministic.
-                boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlOpaqueBehavior);
-                boolean isDeterministic = effects.size() == 1;
-
-                if (isAtomic && isDeterministic) {
-                    // In case the action is both deterministic and atomic, then the start event also ends the action.
-                    // Add its effect as an edge update. (Remember that we ensured that there is at least one effect.)
-                    cifEdge.getUpdates().addAll(effects.get(0));
-                } else {
-                    // In all other cases, add uncontrollable events and edges to end the action.
-                    List<Event> cifEndEvents = new ArrayList<>();
-
-                    // Make an uncontrollable event and corresponding edge for every effect (there is at least one).
-                    for (int i = 0; i < effects.size(); i++) {
-                        // Declare the CIF uncontrollable event.
-                        Event cifEndEvent = CifConstructors.newEvent();
-                        cifEndEvent.setControllable(false);
-                        String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
-                                : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
-                        cifEndEvent.setName(umlOpaqueBehavior.getName() + outcomeSuffix + (i + 1));
-                        cifSpec.getDeclarations().add(cifEndEvent);
-                        cifEndEvents.add(cifEndEvent);
-
-                        // Make the CIF edge for the uncontrollable event.
-                        EventExpression cifEndEventExpr = CifConstructors.newEventExpression();
-                        cifEndEventExpr.setEvent(cifEndEvent);
-                        cifEndEventExpr.setType(CifConstructors.newBoolType());
-                        EdgeEvent cifEdgeEndEvent = CifConstructors.newEdgeEvent();
-                        cifEdgeEndEvent.setEvent(cifEndEventExpr);
-                        Edge cifEndEdge = CifConstructors.newEdge();
-                        cifEndEdge.getEvents().add(cifEdgeEndEvent);
-                        cifEndEdge.getUpdates().addAll(effects.get(i));
-                        cifLocation.getEdges().add(cifEndEdge);
-                        eventEdgeMap.put(cifEndEvent, cifEndEdge);
-                    }
-
-                    // Remember which start and end events belong together.
-                    if (!isAtomic) {
-                        nonAtomicEventMap.put(cifStartEvent, cifEndEvents);
-                    }
-                    if (!isDeterministic) {
-                        nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
-                    }
-                }
-            }
+        for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
+            cifSpec.getDeclarations().add(entry.getKey());
+            cifLocation.getEdges().add(entry.getValue());
         }
 
         // In case atomic non-deterministic actions were encountered, encode the necessary atomicity constraints.
@@ -621,6 +551,96 @@ public class UmlToCifTranslator {
     }
 
     /**
+     * Translates a given UML opaque behavior as an action, to CIF events and corresponding CIF edges.
+     * <p>
+     * If the action to translate is an atomic deterministic action, then a single controllable CIF event is created for
+     * starting and ending the action, together with a corresponding edge for that event. The guard of that edge is the
+     * translated action guard, and the updates of that edge are the translated action effect.
+     * </p>
+     * <p>
+     * If the action to translate is an non-atomic and/or non-deterministic action, then multiple CIF events are
+     * created: one controllable event for starting the action, and uncontrollable events for each of the action
+     * effects, for ending the action. At least one end event is always created, even if the action has no defined
+     * effects. There is a corresponding edge for every created event. The start edge has the translated action guard as
+     * its guard, and has no updates. Any end edge has 'true' as its guard, and the translated action effect as its
+     * updates.
+     * </p>
+     *
+     * @param umlAction The UML opaque behavior to translate as an action.
+     * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
+     */
+    private BiMap<Event, Edge> translateAction(OpaqueBehavior umlAction) {
+        BiMap<Event, Edge> eventEdges = HashBiMap.create();
+
+        // Obtain the guard and effects of the current action.
+        Expression guard = getGuard(umlAction);
+        List<List<Update>> effects = getEffects(umlAction);
+        Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
+
+        // Create a CIF start event for the action that is represented by the current UML action.
+        Event cifStartEvent = CifConstructors.newEvent();
+        cifStartEvent.setControllable(true);
+        cifStartEvent.setName(umlAction.getName());
+        eventMap.put(umlAction, cifStartEvent);
+
+        // Create a CIF edge for this start event.
+        EventExpression cifEventExpr = CifConstructors.newEventExpression();
+        cifEventExpr.setEvent(cifStartEvent);
+        cifEventExpr.setType(CifConstructors.newBoolType());
+        EdgeEvent cifEdgeEvent = CifConstructors.newEdgeEvent();
+        cifEdgeEvent.setEvent(cifEventExpr);
+        Edge cifStartEdge = CifConstructors.newEdge();
+        cifStartEdge.getEvents().add(cifEdgeEvent);
+        cifStartEdge.getGuards().add(guard);
+        eventEdges.put(cifStartEvent, cifStartEdge);
+
+        // Create any CIF end events and corresponding end edges.
+        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction);
+        boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
+
+        if (isAtomic && isDeterministic) {
+            // In case the action is both deterministic and atomic, then the start event also ends the action.
+            // Add its effect as an edge update.
+            cifStartEdge.getUpdates().addAll(effects.get(0));
+        } else {
+            // In all other cases, add uncontrollable events and edges to end the action.
+            List<Event> cifEndEvents = new ArrayList<>(effects.size());
+
+            // Make an uncontrollable event and corresponding edge for every effect (there is at least one).
+            for (int i = 0; i < effects.size(); i++) {
+                // Declare the CIF uncontrollable end event.
+                Event cifEndEvent = CifConstructors.newEvent();
+                cifEndEvent.setControllable(false);
+                String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
+                        : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
+                cifEndEvent.setName(umlAction.getName() + outcomeSuffix + (i + 1));
+                cifEndEvents.add(cifEndEvent);
+
+                // Make the CIF edge for the uncontrollable end event.
+                EventExpression cifEndEventExpr = CifConstructors.newEventExpression();
+                cifEndEventExpr.setEvent(cifEndEvent);
+                cifEndEventExpr.setType(CifConstructors.newBoolType());
+                EdgeEvent cifEdgeEndEvent = CifConstructors.newEdgeEvent();
+                cifEdgeEndEvent.setEvent(cifEndEventExpr);
+                Edge cifEndEdge = CifConstructors.newEdge();
+                cifEndEdge.getEvents().add(cifEdgeEndEvent);
+                cifEndEdge.getUpdates().addAll(effects.get(i));
+                eventEdges.put(cifEndEvent, cifEndEdge);
+            }
+
+            // Remember which start and end events belong together.
+            if (!isAtomic) {
+                nonAtomicEventMap.put(cifStartEvent, cifEndEvents);
+            }
+            if (!isDeterministic) {
+                nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
+            }
+        }
+
+        return eventEdges;
+    }
+
+    /**
      * Gives the guard of the given element.
      *
      * @param element The element.
@@ -649,14 +669,19 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives all effects of the given behavior. Every effect consists of a list of updates. If there are multiple
-     * effects, then the given opaque behavior represents a non-deterministic action.
+     * Gives all effects of the given UML action. Every effect consists of a list of updates.
      *
-     * @param behavior The opaque behavior.
-     * @return All effects of the given opaque behavior.
+     * @param action The UML action.
+     * @return All effects of the given UML action.
      */
-    private List<List<Update>> getEffects(OpaqueBehavior behavior) {
-        return CifParserHelper.parseEffects(behavior).stream().map(translator::translate).toList();
+    private List<List<Update>> getEffects(RedefinableElement action) {
+        List<List<Update>> effects = CifParserHelper.parseEffects(action).stream().map(translator::translate).toList();
+
+        if (effects.isEmpty()) {
+            effects = List.of(List.of());
+        }
+
+        return effects;
     }
 
     /**
