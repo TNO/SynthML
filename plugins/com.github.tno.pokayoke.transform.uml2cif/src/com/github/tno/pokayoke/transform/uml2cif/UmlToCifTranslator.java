@@ -275,90 +275,10 @@ public class UmlToCifTranslator {
             }
         }
 
-        // In case atomic non-deterministic actions were encountered, encode the necessary atomicity constraints.
-        DiscVariable cifAtomicityVar = null;
-
-        // Find all the start and end events of atomic non-deterministic actions.
-        Map<Event, List<Event>> atomicNonDeterministicEvents = getAtomicNonDeterministicEvents();
-
-        Set<Event> atomicNonDeterministicStartEvents = new LinkedHashSet<>();
-        Set<Event> atomicNonDeterministicEndEvents = new LinkedHashSet<>();
-
-        for (Entry<Event, List<Event>> entry: atomicNonDeterministicEvents.entrySet()) {
-            atomicNonDeterministicStartEvents.add(entry.getKey());
-            atomicNonDeterministicEndEvents.addAll(entry.getValue());
-        }
-
-        // If there are atomic non-deterministic actions, then constraints must be added to the corresponding CIF edges.
-        if (atomicNonDeterministicStartEvents.size() > 0) {
-            // Declare a variable that indicates which atomic non-deterministic action is currently active. The value 0
-            // then indicates that no non-deterministic action is currently active.
-            cifAtomicityVar = CifConstructors.newDiscVariable();
-            cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
-            cifAtomicityVar.setType(CifConstructors.newIntType(0, null, atomicNonDeterministicStartEvents.size()));
+        // Encode constraints to ensure that atomic non-deterministic actions are executed atomically.
+        DiscVariable cifAtomicityVar = encodeAtomicNonDeterministicActionConstraints();
+        if (cifAtomicityVar != null) {
             cifPlant.getDeclarations().add(cifAtomicityVar);
-
-            // Define a mapping from (start and end) events that are related to atomic non-deterministic actions, to the
-            // index of the atomic non-deterministic action, starting with index 1. So all CIF events related to the
-            // first such action get index 1, all events related to the second such action get index 2, etc.
-            Map<Event, Integer> eventIndex = new LinkedHashMap<>();
-            int index = 1;
-
-            for (Event cifStartEvent: atomicNonDeterministicStartEvents) {
-                eventIndex.put(cifStartEvent, index);
-
-                for (Event cifEndEvent: nonDeterministicEventMap.get(cifStartEvent)) {
-                    eventIndex.put(cifEndEvent, index);
-                }
-
-                index++;
-            }
-
-            // Add guards and updates to every edge to ensure that atomic actions are indeed atomically executed.
-            for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
-                Event cifEvent = entry.getKey();
-                Edge cifEdge = entry.getValue();
-
-                // Add guard '__activeAction = 0' for every event except the ends of atomic non-deterministic actions.
-                if (!atomicNonDeterministicEndEvents.contains(cifEvent)) {
-                    BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
-                    cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
-                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                    cifGuard.setOperator(BinaryOperator.EQUAL);
-                    cifGuard.setRight(CifValueUtils.makeInt(0));
-                    cifGuard.setType(CifConstructors.newBoolType());
-                    cifEdge.getGuards().add(cifGuard);
-                }
-
-                // Add update '__activeAction := i' for every start event of an atomic non-deterministic action.
-                if (atomicNonDeterministicStartEvents.contains(cifEvent)) {
-                    Assignment cifUpdate = CifConstructors.newAssignment();
-                    cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                    cifUpdate.setValue(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
-                    cifEdge.getUpdates().add(cifUpdate);
-                }
-
-                // Add guard '__activeAction = i' for every end event of an atomic non-deterministic action.
-                if (atomicNonDeterministicEndEvents.contains(cifEvent)) {
-                    BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
-                    cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
-                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                    cifGuard.setOperator(BinaryOperator.EQUAL);
-                    cifGuard.setRight(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
-                    cifGuard.setType(CifConstructors.newBoolType());
-                    cifEdge.getGuards().add(cifGuard);
-                }
-
-                // Add update '__activeAction := 0' for every end event of an atomic non-deterministic action.
-                if (atomicNonDeterministicEndEvents.contains(cifEvent)) {
-                    Assignment cifUpdate = CifConstructors.newAssignment();
-                    cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                    cifUpdate.setValue(CifValueUtils.makeInt(0));
-                    cifEdge.getUpdates().add(cifUpdate);
-                }
-            }
         }
 
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
@@ -641,6 +561,102 @@ public class UmlToCifTranslator {
         eventEdgeMap.putAll(newEventEdges);
 
         return newEventEdges;
+    }
+
+    /**
+     * Encodes constraints to ensure that atomic non-deterministic actions are indeed atomically executed. The
+     * constraints are encoded as extra edge guards and updates, which are expressed over an <i>atomicity variable</i>
+     * that indicates whether an atomic non-deterministic action is being executed, and if so, which one. If there are
+     * no atomic non-determinstic actions, then no atomicity variable and no extra edge guards and updates are created.
+     *
+     * @return The created atomicity variable, or {@code null} in case there were no atomic non-determinstic actions.
+     */
+    private DiscVariable encodeAtomicNonDeterministicActionConstraints() {
+        DiscVariable cifAtomicityVar = null;
+
+        // Find all the start and end events of atomic non-deterministic actions.
+        Map<Event, List<Event>> atomicNonDeterministicEvents = getAtomicNonDeterministicEvents();
+
+        Set<Event> atomicNonDeterministicStartEvents = new LinkedHashSet<>();
+        Set<Event> atomicNonDeterministicEndEvents = new LinkedHashSet<>();
+
+        for (Entry<Event, List<Event>> entry: atomicNonDeterministicEvents.entrySet()) {
+            atomicNonDeterministicStartEvents.add(entry.getKey());
+            atomicNonDeterministicEndEvents.addAll(entry.getValue());
+        }
+
+        // If there are atomic non-deterministic actions, then constraints must be added to the corresponding CIF edges.
+        if (atomicNonDeterministicStartEvents.size() > 0) {
+            // Declare a variable that indicates which atomic non-deterministic action is currently active. The value 0
+            // then indicates that no non-deterministic action is currently active.
+            cifAtomicityVar = CifConstructors.newDiscVariable();
+            cifAtomicityVar.setName(ATOMICITY_VARIABLE_NAME);
+            cifAtomicityVar.setType(CifConstructors.newIntType(0, null, atomicNonDeterministicStartEvents.size()));
+
+            // Define a mapping from (start and end) events that are related to atomic non-deterministic actions, to the
+            // index of the atomic non-deterministic action, starting with index 1. So all CIF events related to the
+            // first such action get index 1, all events related to the second such action get index 2, etc.
+            Map<Event, Integer> eventIndex = new LinkedHashMap<>();
+            int index = 1;
+
+            for (Event cifStartEvent: atomicNonDeterministicStartEvents) {
+                eventIndex.put(cifStartEvent, index);
+
+                for (Event cifEndEvent: nonDeterministicEventMap.get(cifStartEvent)) {
+                    eventIndex.put(cifEndEvent, index);
+                }
+
+                index++;
+            }
+
+            // Add guards and updates to every edge to ensure that atomic actions are indeed atomically executed.
+            for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
+                Event cifEvent = entry.getKey();
+                Edge cifEdge = entry.getValue();
+
+                // Add guard '__activeAction = 0' for every event except the ends of atomic non-deterministic actions.
+                if (!atomicNonDeterministicEndEvents.contains(cifEvent)) {
+                    BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
+                    cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                    cifGuard.setOperator(BinaryOperator.EQUAL);
+                    cifGuard.setRight(CifValueUtils.makeInt(0));
+                    cifGuard.setType(CifConstructors.newBoolType());
+                    cifEdge.getGuards().add(cifGuard);
+                }
+
+                // Add update '__activeAction := i' for every start event of an atomic non-deterministic action.
+                if (atomicNonDeterministicStartEvents.contains(cifEvent)) {
+                    Assignment cifUpdate = CifConstructors.newAssignment();
+                    cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                    cifUpdate.setValue(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
+                    cifEdge.getUpdates().add(cifUpdate);
+                }
+
+                // Add guard '__activeAction = i' for every end event of an atomic non-deterministic action.
+                if (atomicNonDeterministicEndEvents.contains(cifEvent)) {
+                    BinaryExpression cifGuard = CifConstructors.newBinaryExpression();
+                    cifGuard.setLeft(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                    cifGuard.setOperator(BinaryOperator.EQUAL);
+                    cifGuard.setRight(CifValueUtils.makeInt(eventIndex.get(cifEvent)));
+                    cifGuard.setType(CifConstructors.newBoolType());
+                    cifEdge.getGuards().add(cifGuard);
+                }
+
+                // Add update '__activeAction := 0' for every end event of an atomic non-deterministic action.
+                if (atomicNonDeterministicEndEvents.contains(cifEvent)) {
+                    Assignment cifUpdate = CifConstructors.newAssignment();
+                    cifUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+                    cifUpdate.setValue(CifValueUtils.makeInt(0));
+                    cifEdge.getUpdates().add(cifUpdate);
+                }
+            }
+        }
+
+        return cifAtomicityVar;
     }
 
     /**
