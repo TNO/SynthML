@@ -286,7 +286,8 @@ public class UmlToCifTranslator {
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
-        translateOccurrenceConstraints(cifSpec);
+        Set<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
+        cifSpec.getComponents().addAll(cifRequirementAutomata);
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(activity.getPreconditions());
@@ -790,15 +791,18 @@ public class UmlToCifTranslator {
     /**
      * Translates all occurrence constraints of the input UML activity, to CIF requirement automata.
      *
-     * @param cifSpec The CIF specification to which the translated CIF requirement automata are to be added.
+     * @return The translated CIF requirement automata.
      */
-    private void translateOccurrenceConstraints(Specification cifSpec) {
+    private Set<Automaton> translateOccurrenceConstraints() {
+        Set<Automaton> cifAutomata = new LinkedHashSet<>();
+
         for (Constraint umlConstraint: activity.getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
-                List<Automaton> automata = translateOccurrenceConstraint(umlIntervalConstraint);
-                cifSpec.getComponents().addAll(automata);
+                cifAutomata.addAll(translateOccurrenceConstraint(umlIntervalConstraint));
             }
         }
+
+        return cifAutomata;
     }
 
     /**
