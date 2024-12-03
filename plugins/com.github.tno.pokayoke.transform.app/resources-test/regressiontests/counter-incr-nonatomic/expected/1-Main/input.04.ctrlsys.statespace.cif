@@ -4,7 +4,7 @@ uncontrollable initialize__na_result_2;
 controllable incr1;
 controllable incr2;
 automaton statespace:
-  alphabet initialize, incr1, incr2, initialize__na_result_1, initialize__na_result_2;
+  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2;
   @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences__incr1 = "*", occurrences__incr1.__occurrences = 0, occurrences__incr2 = "*", occurrences__incr2.__occurrences = 0, occurrences__initialize = "*", occurrences__initialize.__occurrences = 0, sup = "*")
   location loc1:
     initial;

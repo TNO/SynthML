@@ -1,13 +1,5 @@
 enum Number = First, Second, Third;
 controllable change;
-requirement automaton happens_at_most_once__change:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge change when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
 plant automaton Class:
   disc Number element in any;
   alg bool precond = element = First;
@@ -21,5 +13,13 @@ plant automaton Class:
     initial;
     marked;
     edge change when element != Third do element := Second;
+end
+requirement automaton happens_at_most_once__change:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge change when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Class.__postcondition disables change;

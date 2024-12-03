@@ -34,10 +34,10 @@ automaton projected:
   @state(statespace = "__done")
   location s8:
     marked;
-  @state(statespace = "loc7")
+  @state(statespace = "loc8")
   location s9:
     edge do_b__na_result_1 goto s11;
-  @state(statespace = "loc8")
+  @state(statespace = "loc7")
   location s10:
     edge do_c goto s11;
   @state(statespace = "loc9")

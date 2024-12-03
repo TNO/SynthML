@@ -7,7 +7,7 @@ controllable Flip_A_Coin;
 uncontrollable Flip_A_Coin__result_1;
 uncontrollable Flip_A_Coin__result_2;
 automaton statespace:
-  alphabet Turn_Computer_On, Drink_Coffee, Drink_Tea, Start_Working, Starting_Computer, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2;
+  alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2;
   @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = false, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 0, sup = "*")
   location loc1:
     initial;
@@ -29,12 +29,12 @@ automaton statespace:
     edge Flip_A_Coin__result_2 goto loc9;
   @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Coffee", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
   location loc6:
-    edge Drink_Coffee goto loc10;
     edge Starting_Computer goto loc8;
+    edge Drink_Coffee goto loc10;
   @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Tea", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 0, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
   location loc7:
-    edge Drink_Tea goto loc11;
     edge Starting_Computer goto loc9;
+    edge Drink_Tea goto loc11;
   @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Coffee", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = true, Context.Is_Computer_Ready = true, Context.Is_Ready_to_Work = false, happens_at_most_once__Drink_Coffee = "*", happens_at_most_once__Drink_Coffee.__occurrences = 0, happens_at_most_once__Drink_Tea = "*", happens_at_most_once__Drink_Tea.__occurrences = 0, happens_at_most_once__Start_Working = "*", happens_at_most_once__Start_Working.__occurrences = 0, happens_at_most_once__Starting_Computer = "*", happens_at_most_once__Starting_Computer.__occurrences = 1, happens_at_most_once__Turn_Computer_On = "*", happens_at_most_once__Turn_Computer_On.__occurrences = 1, sup = "*")
   location loc8:
     edge Drink_Coffee goto loc12;

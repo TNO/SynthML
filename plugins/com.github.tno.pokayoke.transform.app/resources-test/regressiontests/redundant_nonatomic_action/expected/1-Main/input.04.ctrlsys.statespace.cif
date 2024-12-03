@@ -4,7 +4,7 @@ uncontrollable do_a__result_2;
 controllable do_b;
 uncontrollable do_b__na_result_1;
 automaton statespace:
-  alphabet do_a, do_b, do_a__result_1, do_a__result_2, do_b__na_result_1;
+  alphabet do_a, do_a__result_1, do_a__result_2, do_b, do_b__na_result_1;
   @state(Context = "*", Context.__activeAction = 0, Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 0, sup = "*")
   location loc1:
     initial;

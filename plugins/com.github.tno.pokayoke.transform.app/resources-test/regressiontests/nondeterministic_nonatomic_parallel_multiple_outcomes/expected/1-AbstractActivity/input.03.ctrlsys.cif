@@ -4,22 +4,6 @@ uncontrollable AtomicA__result_2;
 controllable NonAtomicB;
 uncontrollable NonAtomicB__na_result_1;
 uncontrollable NonAtomicB__na_result_2;
-supervisor automaton IntervalConstraintA__AtomicA:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton IntervalConstraintB__NonAtomicB:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
 plant automaton Machine:
   disc bool a_executed in any;
   disc bool b_executed in any;
@@ -44,6 +28,22 @@ plant automaton Machine:
     edge NonAtomicB when true, __activeAction = 0, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
     edge NonAtomicB__na_result_1 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
     edge NonAtomicB__na_result_2 when __activeAction = 0, __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+end
+supervisor automaton IntervalConstraintA__AtomicA:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintB__NonAtomicB:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 supervisor automaton sup:
   alphabet AtomicA, NonAtomicB;

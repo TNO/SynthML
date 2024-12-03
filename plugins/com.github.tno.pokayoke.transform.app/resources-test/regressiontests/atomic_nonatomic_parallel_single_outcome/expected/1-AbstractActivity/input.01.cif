@@ -1,22 +1,6 @@
 controllable AtomicA;
 controllable NonAtomicB;
 uncontrollable NonAtomicB__na_result_1;
-requirement automaton IntervalConstraintA__AtomicA:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-requirement automaton IntervalConstraintB__NonAtomicB:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
 plant automaton Machine:
   disc bool a_executed in any;
   disc bool b_executed in any;
@@ -36,6 +20,22 @@ plant automaton Machine:
     edge AtomicA when true do a_executed := true;
     edge NonAtomicB when true, not __nonAtomicActive__NonAtomicB do __nonAtomicActive__NonAtomicB := true;
     edge NonAtomicB__na_result_1 when __nonAtomicActive__NonAtomicB do b_executed := true, __nonAtomicActive__NonAtomicB := false;
+end
+requirement automaton IntervalConstraintA__AtomicA:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge AtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton IntervalConstraintB__NonAtomicB:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Machine.__postcondition disables AtomicA;
 requirement invariant Machine.__postcondition disables NonAtomicB;
