@@ -108,10 +108,10 @@ public class UmlToCifTranslator {
     /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
     private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
 
-    /** The mapping from non-atomic CIF start events, to their corresponding CIF end events. */
+    /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
 
-    /** The mapping from non-deterministic CIF start events, to their corresponding CIF end events. */
+    /** The mapping from CIF start events of non-deterministic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonDeterministicEventMap = new LinkedHashMap<>();
 
     /** The one-to-one mapping from CIF events to CIF edges. */
@@ -219,7 +219,7 @@ public class UmlToCifTranslator {
 
         BiMap<String, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
 
-        for (Entry<Event, Pair<OpaqueBehavior, Integer>> entry: endEventMap.entrySet()) {
+        for (var entry: endEventMap.entrySet()) {
             result.put(entry.getKey().getName(), entry.getValue());
         }
 
@@ -257,7 +257,7 @@ public class UmlToCifTranslator {
         List<DiscVariable> cifPropertyVars = translateProperties();
         cifPlant.getDeclarations().addAll(cifPropertyVars);
 
-        // Create the single location within the CIF plant, which is a flower automaton.
+        // Create the single location within the CIF plant, which will become a flower automaton.
         Location cifLocation = CifConstructors.newLocation();
         cifLocation.getInitials().add(CifValueUtils.makeTrue());
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
@@ -433,7 +433,7 @@ public class UmlToCifTranslator {
         List<List<Update>> effects = getEffects(umlAction);
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
 
-        // Create a CIF start event for the action that is represented by the current UML action.
+        // Create a CIF start event for the action.
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(true);
         cifStartEvent.setName(umlAction.getName());
@@ -499,10 +499,10 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives the guard of the given element.
+     * Gives the guard of the given UML element.
      *
-     * @param element The element.
-     * @return The guard of the given element.
+     * @param element The UML element.
+     * @return The guard of the given UML element.
      */
     public Expression getGuard(RedefinableElement element) {
         AExpression guard = CifParserHelper.parseGuard(element);
@@ -527,10 +527,10 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives all effects of the given UML action. Every effect consists of a list of updates.
+     * Gives all effects of the given UML element. Every effect consists of a list of updates.
      *
-     * @param action The UML action.
-     * @return All effects of the given UML action.
+     * @param action The UML element.
+     * @return All effects of the given UML element.
      */
     private List<List<Update>> getEffects(RedefinableElement action) {
         List<List<Update>> effects = CifParserHelper.parseEffects(action).stream().map(translator::translate).toList();
@@ -945,6 +945,7 @@ public class UmlToCifTranslator {
         }
 
         AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
+
         return Pair.pair(postconditionVars, postconditionVar);
     }
 
