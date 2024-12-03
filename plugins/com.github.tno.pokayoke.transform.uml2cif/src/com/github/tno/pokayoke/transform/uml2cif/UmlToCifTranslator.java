@@ -254,7 +254,7 @@ public class UmlToCifTranslator {
         cifPlant.setName(activity.getContext().getName());
         cifSpec.getComponents().add(cifPlant);
 
-        // Translate all UML properties that are in context.
+        // Translate all UML properties.
         List<DiscVariable> cifPropertyVars = translateProperties();
         cifPlant.getDeclarations().addAll(cifPropertyVars);
 
