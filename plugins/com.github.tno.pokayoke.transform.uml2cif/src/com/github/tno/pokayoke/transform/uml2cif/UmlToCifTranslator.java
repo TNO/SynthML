@@ -316,26 +316,8 @@ public class UmlToCifTranslator {
         cifSpec.getInvariants().addAll(cifDisableConstraints);
 
         // Translate all UML class constraints as CIF invariants.
-        for (Constraint umlConstraint: activity.getContext().getOwnedRules()) {
-            String constraintName = umlConstraint.getName();
-
-            List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
-            Verify.verify(!cifInvariants.isEmpty(),
-                    "Expected at least one translated invariant but got " + cifInvariants.size());
-
-            // Determine the names of the translated CIF invariants, if any name is set.
-            if (!Strings.isNullOrEmpty(constraintName)) {
-                if (cifInvariants.size() == 1) {
-                    cifInvariants.get(0).setName(constraintName);
-                } else {
-                    for (int i = 0; i < cifInvariants.size(); i++) {
-                        cifInvariants.get(i).setName(constraintName + "__" + (i + 1));
-                    }
-                }
-            }
-
-            cifPlant.getInvariants().addAll(cifInvariants);
-        }
+        List<Invariant> cifRequirementInvariants = translateRequirements();
+        cifPlant.getInvariants().addAll(cifRequirementInvariants);
 
         cifSpec.getComponents().add(cifPlant);
 
@@ -694,6 +676,47 @@ public class UmlToCifTranslator {
 
         AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
         return Pair.pair(postconditionVars, postconditionVar);
+    }
+
+    /**
+     * Translates all UML class constraints that are in context to CIF requirement invariants.
+     *
+     * @return The translated CIF requirement invariants.
+     */
+    private List<Invariant> translateRequirements() {
+        List<Invariant> cifInvariants = new ArrayList<>();
+
+        for (Constraint umlConstraint: activity.getContext().getOwnedRules()) {
+            cifInvariants.addAll(translateRequirement(umlConstraint));
+        }
+
+        return cifInvariants;
+    }
+
+    /**
+     * Translates a given UML constraint to CIF requirement invariants.
+     *
+     * @param umlConstraint The UML constraint to translate.
+     * @return The translated CIF requirement invariants.
+     */
+    private List<Invariant> translateRequirement(Constraint umlConstraint) {
+        String constraintName = umlConstraint.getName();
+
+        List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
+        Verify.verify(!cifInvariants.isEmpty(), "Expected at least one translated invariant but got none.");
+
+        // Determine the names of the translated CIF invariants, if any name is set.
+        if (!Strings.isNullOrEmpty(constraintName)) {
+            if (cifInvariants.size() == 1) {
+                cifInvariants.get(0).setName(constraintName);
+            } else {
+                for (int i = 0; i < cifInvariants.size(); i++) {
+                    cifInvariants.get(i).setName(constraintName + "__" + (i + 1));
+                }
+            }
+        }
+
+        return cifInvariants;
     }
 
     /**
