@@ -31,7 +31,6 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
-import org.eclipse.escet.cif.metamodel.cif.expressions.BoolExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.DiscVariableExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
@@ -260,8 +259,8 @@ public class UmlToCifTranslator {
 
         // Create the single location within the CIF plant, which is a flower automaton.
         Location cifLocation = CifConstructors.newLocation();
-        cifLocation.getInitials().add(createBoolExpression(true));
-        cifLocation.getMarkeds().add(createBoolExpression(true));
+        cifLocation.getInitials().add(CifValueUtils.makeTrue());
+        cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
         // Translate all UML opaque behaviors.
@@ -789,8 +788,8 @@ public class UmlToCifTranslator {
 
         // Create the single location of the automaton.
         Location location = CifConstructors.newLocation();
-        location.getInitials().add(createBoolExpression(true));
-        location.getMarkeds().add(createBoolExpression(true));
+        location.getInitials().add(CifValueUtils.makeTrue());
+        location.getMarkeds().add(CifValueUtils.makeTrue());
         automaton.getLocations().add(location);
 
         // Create the single edge in the automaton.
@@ -1038,15 +1037,5 @@ public class UmlToCifTranslator {
     public Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
         List<Expression> cifConstraints = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
         return CifValueUtils.createConjunction(cifConstraints);
-    }
-
-    /**
-     * Creates a CIF Boolean expression with the indicated value.
-     *
-     * @param value The value of the CIF Boolean expression.
-     * @return The created CIF Boolean expression.
-     */
-    private static BoolExpression createBoolExpression(boolean value) {
-        return CifConstructors.newBoolExpression(null, CifConstructors.newBoolType(), value);
     }
 }
