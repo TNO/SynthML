@@ -311,19 +311,9 @@ public class UmlToCifTranslator {
         cifPlant.getMarkeds().add(
                 CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPostconditionVar));
 
-        if (cifPostconditionVar != null) {
-            // Add state/event exclusion invariants to prevent further steps from states satisfying the postcondition.
-            for (Event cifEvent: eventEdgeMap.keySet()) {
-                Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant
-                        .setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
-                cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
-                cifInvariant.setPredicate(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
-                        cifPostconditionVar));
-                cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                cifSpec.getInvariants().add(cifInvariant);
-            }
-        }
+        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
+        List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(cifPostconditionVar);
+        cifSpec.getInvariants().addAll(cifDisableConstraints);
 
         // Translate all UML class constraints as CIF invariants.
         for (Constraint umlConstraint: activity.getContext().getOwnedRules()) {
@@ -704,6 +694,31 @@ public class UmlToCifTranslator {
 
         AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
         return Pair.pair(postconditionVars, postconditionVar);
+    }
+
+    /**
+     * Creates CIF state/event exclusion invariant requirements to disable all events whenever the activity
+     * postcondition holds.
+     *
+     * @param cifPostconditionVar The CIF postcondition variable, which must be non-{@code null}.
+     * @return The created CIF requirement invariants.
+     */
+    private List<Invariant> createDisableEventsWhenDoneRequirements(AlgVariable cifPostconditionVar) {
+        Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
+
+        List<Invariant> cifInvariants = new ArrayList<>(eventEdgeMap.size());
+
+        for (Event cifEvent: eventEdgeMap.keySet()) {
+            Invariant cifInvariant = CifConstructors.newInvariant();
+            cifInvariant.setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
+            cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
+            cifInvariant.setPredicate(
+                    CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPostconditionVar));
+            cifInvariant.setSupKind(SupKind.REQUIREMENT);
+            cifInvariants.add(cifInvariant);
+        }
+
+        return cifInvariants;
     }
 
     /**
