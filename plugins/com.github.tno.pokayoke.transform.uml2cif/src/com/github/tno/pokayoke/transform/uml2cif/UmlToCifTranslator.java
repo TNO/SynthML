@@ -296,16 +296,11 @@ public class UmlToCifTranslator {
         cifSpec.getComponents().addAll(cifRequirementAutomata);
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
-        Set<AlgVariable> cifPreconditionVars = translatePrePostconditions(activity.getPreconditions());
-
-        if (!cifPreconditionVars.isEmpty()) {
-            cifPlant.getDeclarations().addAll(cifPreconditionVars);
-            AlgVariable cifPreconditionVar = combinePrePostconditionVariables(cifPreconditionVars, PRECONDITION_PREFIX);
-            cifPlant.getDeclarations().add(cifPreconditionVar);
-            Expression cifPrecondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
-                    cifPreconditionVar);
-            cifPlant.getInitials().add(cifPrecondition);
-        }
+        Pair<Set<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
+        cifPlant.getDeclarations().addAll(preconditions.left);
+        cifPlant.getDeclarations().add(preconditions.right);
+        cifPlant.getInitials().add(
+                CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), preconditions.right));
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
         Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(activity.getPostconditions());
@@ -682,6 +677,18 @@ public class UmlToCifTranslator {
         }
 
         return cifNonAtomicVars;
+    }
+
+    /**
+     * Translates the UML activity preconditions to a CIF algebraic variable.
+     *
+     * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
+     *     with the CIF algebraic variable that encodes the entire precondition.
+     */
+    private Pair<Set<AlgVariable>, AlgVariable> translatePreconditions() {
+        Set<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
+        AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
+        return Pair.pair(preconditionVars, preconditionVar);
     }
 
     /**
