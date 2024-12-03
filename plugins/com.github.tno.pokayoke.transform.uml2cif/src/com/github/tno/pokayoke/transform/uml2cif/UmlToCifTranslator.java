@@ -109,6 +109,9 @@ public class UmlToCifTranslator {
     /** The mapping from non-deterministic CIF start events, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonDeterministicEventMap = new LinkedHashMap<>();
 
+    /** The one-to-one mapping from CIF events to CIF edges. */
+    private final BiMap<Event, Edge> eventEdgeMap = HashBiMap.create();
+
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
@@ -263,15 +266,13 @@ public class UmlToCifTranslator {
         cifPlant.getLocations().add(cifLocation);
 
         // Translate all UML opaque behaviors that are in context.
-        Map<Event, Edge> eventEdgeMap = new LinkedHashMap<>();
-
         for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
-            eventEdgeMap.putAll(translateAction(umlOpaqueBehavior));
-        }
+            BiMap<Event, Edge> newEventEdges = translateAction(umlOpaqueBehavior);
 
-        for (Entry<Event, Edge> entry: eventEdgeMap.entrySet()) {
-            cifSpec.getDeclarations().add(entry.getKey());
-            cifLocation.getEdges().add(entry.getValue());
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                cifSpec.getDeclarations().add(entry.getKey());
+                cifLocation.getEdges().add(entry.getValue());
+            }
         }
 
         // In case atomic non-deterministic actions were encountered, encode the necessary atomicity constraints.
@@ -570,7 +571,7 @@ public class UmlToCifTranslator {
      * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
      */
     private BiMap<Event, Edge> translateAction(OpaqueBehavior umlAction) {
-        BiMap<Event, Edge> eventEdges = HashBiMap.create();
+        BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
         // Obtain the guard and effects of the current action.
         Expression guard = getGuard(umlAction);
@@ -592,7 +593,7 @@ public class UmlToCifTranslator {
         Edge cifStartEdge = CifConstructors.newEdge();
         cifStartEdge.getEvents().add(cifEdgeEvent);
         cifStartEdge.getGuards().add(guard);
-        eventEdges.put(cifStartEvent, cifStartEdge);
+        newEventEdges.put(cifStartEvent, cifStartEdge);
 
         // Create any CIF end events and corresponding end edges.
         boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction);
@@ -625,7 +626,7 @@ public class UmlToCifTranslator {
                 Edge cifEndEdge = CifConstructors.newEdge();
                 cifEndEdge.getEvents().add(cifEdgeEndEvent);
                 cifEndEdge.getUpdates().addAll(effects.get(i));
-                eventEdges.put(cifEndEvent, cifEndEdge);
+                newEventEdges.put(cifEndEvent, cifEndEdge);
             }
 
             // Remember which start and end events belong together.
@@ -637,7 +638,9 @@ public class UmlToCifTranslator {
             }
         }
 
-        return eventEdges;
+        eventEdgeMap.putAll(newEventEdges);
+
+        return newEventEdges;
     }
 
     /**
