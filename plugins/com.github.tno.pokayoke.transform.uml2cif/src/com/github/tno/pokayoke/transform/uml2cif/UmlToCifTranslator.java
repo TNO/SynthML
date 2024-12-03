@@ -259,6 +259,7 @@ public class UmlToCifTranslator {
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
         cifPlant.setName(activity.getContext().getName());
+        cifSpec.getComponents().add(cifPlant);
 
         // Translate all UML properties that are in context.
         for (Property umlProperty: context.getAllProperties()) {
@@ -318,8 +319,6 @@ public class UmlToCifTranslator {
         // Translate all UML class constraints as CIF invariants.
         List<Invariant> cifRequirementInvariants = translateRequirements();
         cifPlant.getInvariants().addAll(cifRequirementInvariants);
-
-        cifSpec.getComponents().add(cifPlant);
 
         return cifSpec;
     }
