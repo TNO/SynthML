@@ -264,14 +264,11 @@ public class UmlToCifTranslator {
         cifLocation.getMarkeds().add(createBoolExpression(true));
         cifPlant.getLocations().add(cifLocation);
 
-        // Translate all UML opaque behaviors that are in context.
-        for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
-            BiMap<Event, Edge> newEventEdges = translateAction(umlOpaqueBehavior);
-
-            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
-                cifSpec.getDeclarations().add(entry.getKey());
-                cifLocation.getEdges().add(entry.getValue());
-            }
+        // Translate all UML opaque behaviors.
+        BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
+        for (var entry: cifEventEdges.entrySet()) {
+            cifSpec.getDeclarations().add(entry.getKey());
+            cifLocation.getEdges().add(entry.getValue());
         }
 
         // Encode constraints to ensure that atomic non-deterministic actions are executed atomically.
@@ -393,6 +390,21 @@ public class UmlToCifTranslator {
         }
 
         return cifVariable;
+    }
+
+    /**
+     * Translates all UML opaque behaviors that are in context as actions, to CIF events and corresponding CIF edges.
+     *
+     * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
+     */
+    private BiMap<Event, Edge> translateOpaqueBehaviors() {
+        BiMap<Event, Edge> eventEdges = HashBiMap.create();
+
+        for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
+            eventEdges.putAll(translateAction(umlOpaqueBehavior));
+        }
+
+        return eventEdges;
     }
 
     /**
