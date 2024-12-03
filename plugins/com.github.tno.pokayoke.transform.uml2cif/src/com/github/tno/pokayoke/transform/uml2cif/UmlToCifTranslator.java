@@ -281,51 +281,9 @@ public class UmlToCifTranslator {
             cifPlant.getDeclarations().add(cifAtomicityVar);
         }
 
-        // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
-        // to constrain their start and end events accordingly.
-        Set<DiscVariable> cifNonAtomicVars = new LinkedHashSet<>();
-
-        for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
-            Event cifStartEvent = entry.getKey();
-            List<Event> cifEndEvents = entry.getValue();
-
-            // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
-            // Value 'false' indicates inactive, and 'true' indicates active.
-            DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
-            cifNonAtomicVars.add(cifNonAtomicVar);
-            cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
-            cifNonAtomicVar.setType(CifConstructors.newBoolType());
-            cifPlant.getDeclarations().add(cifNonAtomicVar);
-
-            // Add guard 'not __nonAtomicActive__{startEvent}' for the start event of this non-atomic action.
-            UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
-            cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-            cifStartGuard.setOperator(UnaryOperator.INVERSE);
-            cifStartGuard.setType(CifConstructors.newBoolType());
-            eventEdgeMap.get(cifStartEvent).getGuards().add(cifStartGuard);
-
-            // Add update '__nonAtomicActive__{startEvent} := true' for the start event of this non-atomic action.
-            Assignment cifStartUpdate = CifConstructors.newAssignment();
-            cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-            cifStartUpdate.setValue(CifValueUtils.makeTrue());
-            eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
-
-            for (Event cifEndEvent: cifEndEvents) {
-                // Add guard '__nonAtomicActive__{startEvent}' for every end event of this non-atomic action.
-                DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
-                eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
-
-                // Add update '__nonAtomicActive__{startEvent} := false' for every end event of this non-atomic action.
-                Assignment cifEndUpdate = CifConstructors.newAssignment();
-                cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
-                cifEndUpdate.setValue(CifValueUtils.makeFalse());
-                eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
-            }
-        }
+        // Encode constraints to ensure that the start and end events of non-atomic actions are executed in order.
+        Set<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
+        cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
         translateOccurrenceConstraints(cifSpec);
@@ -657,6 +615,64 @@ public class UmlToCifTranslator {
         }
 
         return cifAtomicityVar;
+    }
+
+    /**
+     * Encodes constraints to ensure that the start and end events of non-atomic actions are executed in order. For
+     * every non-atomic action, an <i>active variable</i> is created in CIF that indicates whether the non-atomic action
+     * is active, i.e., is being executed. Then the constraints are encoded as extra guards and updates to the edges of
+     * non-atomic actions, ensuring that start events can only be performed when the non-atomic action is inactive, and
+     * the end events can only be performed when the action is active.
+     *
+     * @return The set of created active variables.
+     */
+    private Set<DiscVariable> encodeNonAtomicActionConstraints() {
+        // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
+        // to constrain their start and end events accordingly.
+        Set<DiscVariable> cifNonAtomicVars = new LinkedHashSet<>();
+
+        for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
+            Event cifStartEvent = entry.getKey();
+            List<Event> cifEndEvents = entry.getValue();
+
+            // Declare a Boolean variable that indicates whether the non-atomic action is currently active.
+            // Value 'false' indicates inactive, and 'true' indicates active.
+            DiscVariable cifNonAtomicVar = CifConstructors.newDiscVariable();
+            cifNonAtomicVars.add(cifNonAtomicVar);
+            cifNonAtomicVar.setName(NONATOMIC_PREFIX + "__" + cifStartEvent.getName());
+            cifNonAtomicVar.setType(CifConstructors.newBoolType());
+
+            // Add guard 'not __nonAtomicActive__{startEvent}' for the start event of this non-atomic action.
+            UnaryExpression cifStartGuard = CifConstructors.newUnaryExpression();
+            cifStartGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+            cifStartGuard.setOperator(UnaryOperator.INVERSE);
+            cifStartGuard.setType(CifConstructors.newBoolType());
+            eventEdgeMap.get(cifStartEvent).getGuards().add(cifStartGuard);
+
+            // Add update '__nonAtomicActive__{startEvent} := true' for the start event of this non-atomic action.
+            Assignment cifStartUpdate = CifConstructors.newAssignment();
+            cifStartUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+            cifStartUpdate.setValue(CifValueUtils.makeTrue());
+            eventEdgeMap.get(cifStartEvent).getUpdates().add(cifStartUpdate);
+
+            for (Event cifEndEvent: cifEndEvents) {
+                // Add guard '__nonAtomicActive__{startEvent}' for every end event of this non-atomic action.
+                DiscVariableExpression cifEndGuard = CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar);
+                eventEdgeMap.get(cifEndEvent).getGuards().add(cifEndGuard);
+
+                // Add update '__nonAtomicActive__{startEvent} := false' for every end event of this non-atomic action.
+                Assignment cifEndUpdate = CifConstructors.newAssignment();
+                cifEndUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(cifNonAtomicVar.getType()), cifNonAtomicVar));
+                cifEndUpdate.setValue(CifValueUtils.makeFalse());
+                eventEdgeMap.get(cifEndEvent).getUpdates().add(cifEndUpdate);
+            }
+        }
+
+        return cifNonAtomicVars;
     }
 
     /**
