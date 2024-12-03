@@ -289,15 +289,15 @@ public class UmlToCifTranslator {
         }
 
         // Encode constraints to ensure that the start and end events of non-atomic actions are executed in order.
-        Set<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
+        List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
-        Set<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
+        List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
         cifSpec.getComponents().addAll(cifRequirementAutomata);
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
-        Pair<Set<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
+        Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
         cifPlant.getDeclarations().addAll(preconditions.left);
         AlgVariable cifPreconditionVar = preconditions.right;
         cifPlant.getDeclarations().add(cifPreconditionVar);
@@ -305,7 +305,8 @@ public class UmlToCifTranslator {
                 .add(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPreconditionVar));
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        Pair<Set<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars, cifAtomicityVar);
+        Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
+                cifAtomicityVar);
         cifPlant.getDeclarations().addAll(postconditions.left);
         AlgVariable cifPostconditionVar = postconditions.right;
         cifPlant.getDeclarations().add(cifPostconditionVar);
@@ -544,12 +545,12 @@ public class UmlToCifTranslator {
      * non-atomic actions, ensuring that start events can only be performed when the non-atomic action is inactive, and
      * the end events can only be performed when the action is active.
      *
-     * @return The set of created active variables.
+     * @return The created active variables.
      */
-    private Set<DiscVariable> encodeNonAtomicActionConstraints() {
+    private List<DiscVariable> encodeNonAtomicActionConstraints() {
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
-        Set<DiscVariable> cifNonAtomicVars = new LinkedHashSet<>();
+        List<DiscVariable> cifNonAtomicVars = new ArrayList<>(nonAtomicEventMap.size());
 
         for (Entry<Event, List<Event>> entry: nonAtomicEventMap.entrySet()) {
             Event cifStartEvent = entry.getKey();
@@ -601,8 +602,8 @@ public class UmlToCifTranslator {
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
-    private Pair<Set<AlgVariable>, AlgVariable> translatePreconditions() {
-        Set<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
+    private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
+        List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
         return Pair.pair(preconditionVars, preconditionVar);
     }
@@ -617,10 +618,10 @@ public class UmlToCifTranslator {
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
-    private Pair<Set<AlgVariable>, AlgVariable> translatePostconditions(Set<DiscVariable> cifNonAtomicVars,
+    private Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
             DiscVariable cifAtomicityVar)
     {
-        Set<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
+        List<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
 
         // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
         // action must not be active.
@@ -792,11 +793,11 @@ public class UmlToCifTranslator {
      * every pre/postcondition, whose values are the state invariant predicates of the corresponding pre/postcondition.
      *
      * @param umlConstraints The collection of UML pre/postconditions to translate.
-     * @return The translated set of Boolean-typed CIF algebraic variables.
+     * @return The translated Boolean-typed CIF algebraic variables.
      */
-    private Set<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
+    private List<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
         // Define an algebraic CIF variable for every UML constraint, whose value is the state invariant predicate.
-        Set<AlgVariable> cifConstraintVars = new LinkedHashSet<>();
+        List<AlgVariable> cifConstraintVars = new ArrayList<>(umlConstraints.size());
 
         for (Constraint umlConstraint: umlConstraints) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
@@ -860,8 +861,8 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF requirement automata.
      */
-    private Set<Automaton> translateOccurrenceConstraints() {
-        Set<Automaton> cifAutomata = new LinkedHashSet<>();
+    private List<Automaton> translateOccurrenceConstraints() {
+        List<Automaton> cifAutomata = new ArrayList<>();
 
         for (Constraint umlConstraint: activity.getOwnedRules()) {
             if (umlConstraint instanceof IntervalConstraint umlIntervalConstraint) {
