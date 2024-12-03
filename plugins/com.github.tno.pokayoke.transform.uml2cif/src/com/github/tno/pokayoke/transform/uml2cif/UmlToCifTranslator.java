@@ -82,6 +82,12 @@ public class UmlToCifTranslator {
     /** The suffix of a non-atomic action outcome. */
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
+    /** The prefix of a CIF variable that encodes (part of) the activity precondition. */
+    public static final String PRECONDITION_PREFIX = "__precondition";
+
+    /** The prefix of a CIF variable that encodes (part of) the activity postcondition. */
+    public static final String POSTCONDITION_PREFIX = "__postcondition";
+
     /** The input UML activity to translate. */
     private final Activity activity;
 
@@ -294,7 +300,7 @@ public class UmlToCifTranslator {
 
         if (!cifPreconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPreconditionVars);
-            AlgVariable cifPreconditionVar = combinePrePostconditionVariables(cifPreconditionVars, "__precondition");
+            AlgVariable cifPreconditionVar = combinePrePostconditionVariables(cifPreconditionVars, PRECONDITION_PREFIX);
             cifPlant.getDeclarations().add(cifPreconditionVar);
             Expression cifPrecondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                     cifPreconditionVar);
@@ -315,8 +321,9 @@ public class UmlToCifTranslator {
             cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
             // Then define an extra CIF algebraic variable for the extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, "__postcondition" + cifNonAtomicVar.getName(),
-                    null, CifConstructors.newBoolType(), cifExtraPostcondition);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifNonAtomicVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
             cifPostconditionVars.add(cifAlgVar);
         }
 
@@ -332,8 +339,9 @@ public class UmlToCifTranslator {
             cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
             // Then define an extra CIF algebraic variable for this extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, "__postcondition" + cifAtomicityVar.getName(),
-                    null, CifConstructors.newBoolType(), cifExtraPostcondition);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
             cifPostconditionVars.add(cifAlgVar);
         }
 
@@ -347,7 +355,7 @@ public class UmlToCifTranslator {
 
                 // Then define an extra CIF algebraic variable for this extra postcondition.
                 AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        "__postcondition__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                        POSTCONDITION_PREFIX + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
                         cifExtraPostcondition);
                 cifPostconditionVars.add(cifAlgVar);
             }
@@ -356,7 +364,7 @@ public class UmlToCifTranslator {
         AlgVariable cifPostconditionVar = null;
         if (!cifPostconditionVars.isEmpty()) {
             cifPlant.getDeclarations().addAll(cifPostconditionVars);
-            cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, "__postcondition");
+            cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, POSTCONDITION_PREFIX);
             cifPlant.getDeclarations().add(cifPostconditionVar);
             Expression cifPostcondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
                     cifPostconditionVar);
