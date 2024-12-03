@@ -3,6 +3,29 @@ uncontrollable initialize__na_result_1;
 uncontrollable initialize__na_result_2;
 controllable incr1;
 controllable incr2;
+plant automaton Context:
+  disc bool init in any;
+  disc int[0..5] count in any;
+  disc bool __nonAtomicActive__initialize;
+  alg bool pre_goToFour = not init and count = 0;
+  alg bool __precondition = pre_goToFour;
+  alg bool post_goToFour = count = 4;
+  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
+  alg bool __postcondition__occurrences_goToFour__initialize = occurrences_goToFour__initialize.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour__incr1 = occurrences_goToFour__incr1.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour__incr2 = occurrences_goToFour__incr2.__occurrences >= 0;
+  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFour__initialize and (__postcondition__occurrences_goToFour__incr1 and __postcondition__occurrences_goToFour__incr2));
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge initialize when not init, not __nonAtomicActive__initialize do __nonAtomicActive__initialize := true;
+    edge initialize__na_result_1 when __nonAtomicActive__initialize do init := true, count := 1, __nonAtomicActive__initialize := false;
+    edge initialize__na_result_2 when __nonAtomicActive__initialize do init := true, count := 2, __nonAtomicActive__initialize := false;
+    edge incr1 when init do count := count + 1;
+    edge incr2 when init do count := count + 2;
+end
 requirement automaton occurrences_goToFour__initialize:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
@@ -26,29 +49,6 @@ requirement automaton occurrences_goToFour__incr2:
     initial;
     marked;
     edge incr2 when __occurrences < 2 do __occurrences := __occurrences + 1;
-end
-plant automaton Context:
-  disc bool init in any;
-  disc int[0..5] count in any;
-  disc bool __nonAtomicActive__initialize;
-  alg bool pre_goToFour = not init and count = 0;
-  alg bool __precondition = pre_goToFour;
-  alg bool post_goToFour = count = 4;
-  alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToFour__initialize = occurrences_goToFour__initialize.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__incr1 = occurrences_goToFour__incr1.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__incr2 = occurrences_goToFour__incr2.__occurrences >= 0;
-  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFour__initialize and (__postcondition__occurrences_goToFour__incr1 and __postcondition__occurrences_goToFour__incr2));
-  initial __precondition;
-  marked __postcondition;
-  location:
-    initial;
-    marked;
-    edge initialize when not init, not __nonAtomicActive__initialize do __nonAtomicActive__initialize := true;
-    edge initialize__na_result_1 when __nonAtomicActive__initialize do init := true, count := 1, __nonAtomicActive__initialize := false;
-    edge initialize__na_result_2 when __nonAtomicActive__initialize do init := true, count := 2, __nonAtomicActive__initialize := false;
-    edge incr1 when init do count := count + 1;
-    edge incr2 when init do count := count + 2;
 end
 requirement invariant Context.__postcondition disables initialize;
 requirement invariant Context.__postcondition disables initialize__na_result_1;
