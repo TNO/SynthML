@@ -298,73 +298,18 @@ public class UmlToCifTranslator {
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Pair<Set<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
         cifPlant.getDeclarations().addAll(preconditions.left);
-        cifPlant.getDeclarations().add(preconditions.right);
-        cifPlant.getInitials().add(
-                CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), preconditions.right));
+        AlgVariable cifPreconditionVar = preconditions.right;
+        cifPlant.getDeclarations().add(cifPreconditionVar);
+        cifPlant.getInitials()
+                .add(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPreconditionVar));
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        Set<AlgVariable> cifPostconditionVars = translatePrePostconditions(activity.getPostconditions());
-
-        // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
-        // action must not be active.
-        for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
-            // First define the postcondition expression.
-            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
-            cifExtraPostcondition.setChild(
-                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifNonAtomicVar));
-            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
-            cifExtraPostcondition.setType(CifConstructors.newBoolType());
-
-            // Then define an extra CIF algebraic variable for the extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifNonAtomicVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
-            cifPostconditionVars.add(cifAlgVar);
-        }
-
-        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
-        // atomic non-deterministic action must be active.
-        if (cifAtomicityVar != null) {
-            // First define the postcondition expression.
-            BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
-            cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-            cifExtraPostcondition.setOperator(BinaryOperator.EQUAL);
-            cifExtraPostcondition.setRight(CifValueUtils.makeInt(0));
-            cifExtraPostcondition.setType(CifConstructors.newBoolType());
-
-            // Then define an extra CIF algebraic variable for this extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
-            cifPostconditionVars.add(cifAlgVar);
-        }
-
-        // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
-        // predicate of the corresponding CIF requirement automata must hold.
-        for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
-            for (Automaton cifRequirement: entry.getValue()) {
-                // First define the postcondition expression.
-                Expression cifExtraPostcondition = CifValueUtils
-                        .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
-
-                // Then define an extra CIF algebraic variable for this extra postcondition.
-                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        POSTCONDITION_PREFIX + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
-                        cifExtraPostcondition);
-                cifPostconditionVars.add(cifAlgVar);
-            }
-        }
-
-        AlgVariable cifPostconditionVar = null;
-        if (!cifPostconditionVars.isEmpty()) {
-            cifPlant.getDeclarations().addAll(cifPostconditionVars);
-            cifPostconditionVar = combinePrePostconditionVariables(cifPostconditionVars, POSTCONDITION_PREFIX);
-            cifPlant.getDeclarations().add(cifPostconditionVar);
-            Expression cifPostcondition = CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(),
-                    cifPostconditionVar);
-            cifPlant.getMarkeds().add(cifPostcondition);
-        }
+        Pair<Set<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars, cifAtomicityVar);
+        cifPlant.getDeclarations().addAll(postconditions.left);
+        AlgVariable cifPostconditionVar = postconditions.right;
+        cifPlant.getDeclarations().add(cifPostconditionVar);
+        cifPlant.getMarkeds().add(
+                CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPostconditionVar));
 
         if (cifPostconditionVar != null) {
             // Add state/event exclusion invariants to prevent further steps from states satisfying the postcondition.
@@ -689,6 +634,76 @@ public class UmlToCifTranslator {
         Set<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
         return Pair.pair(preconditionVars, preconditionVar);
+    }
+
+    /**
+     * Translates the UML activity postconditions to a CIF algebraic variable. Extra postconditions are added expressing
+     * that no non-atomic and atomic non-deterministic actions may be active, and that all occurrence constraints must
+     * be satisfied.
+     *
+     * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
+     * @param cifAtomicityVar The internal CIF variables created for atomic non-deterministic actions.
+     * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
+     *     with the CIF algebraic variable that encodes the entire postcondition.
+     */
+    private Pair<Set<AlgVariable>, AlgVariable> translatePostconditions(Set<DiscVariable> cifNonAtomicVars,
+            DiscVariable cifAtomicityVar)
+    {
+        Set<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
+
+        // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
+        // action must not be active.
+        for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
+            // First define the postcondition expression.
+            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+            cifExtraPostcondition.setChild(
+                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifNonAtomicVar));
+            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+            // Then define an extra CIF algebraic variable for the extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifNonAtomicVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
+            postconditionVars.add(cifAlgVar);
+        }
+
+        // If the atomicity variable has been added, then define an extra postcondition that expresses that no
+        // atomic non-deterministic action must be active.
+        if (cifAtomicityVar != null) {
+            // First define the postcondition expression.
+            BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
+            cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+            cifExtraPostcondition.setOperator(BinaryOperator.EQUAL);
+            cifExtraPostcondition.setRight(CifValueUtils.makeInt(0));
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+            // Then define an extra CIF algebraic variable for this extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
+            postconditionVars.add(cifAlgVar);
+        }
+
+        // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
+        // predicate of the corresponding CIF requirement automata must hold.
+        for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
+            for (Automaton cifRequirement: entry.getValue()) {
+                // First define the postcondition expression.
+                Expression cifExtraPostcondition = CifValueUtils
+                        .createConjunction(List.copyOf(EcoreUtil.copyAll(cifRequirement.getMarkeds())));
+
+                // Then define an extra CIF algebraic variable for this extra postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                        POSTCONDITION_PREFIX + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                        cifExtraPostcondition);
+                postconditionVars.add(cifAlgVar);
+            }
+        }
+
+        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
+        return Pair.pair(postconditionVars, postconditionVar);
     }
 
     /**
