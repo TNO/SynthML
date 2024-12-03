@@ -1,5 +1,7 @@
 plant automaton Context:
   disc bool field in any;
+  alg bool __precondition = true;
+  initial __precondition;
   location:
     initial;
     marked;

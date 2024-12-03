@@ -49,6 +49,7 @@ plant automaton Context:
   disc bool location2HasProduct = false;
   disc UnknownBool productCorrectlyPlaced = Unknown;
   disc int[0..1] __activeAction;
+  alg bool __precondition = true;
   alg bool postcondition = not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True;
   alg bool __postcondition__activeAction = __activeAction = 0;
   alg bool __postcondition__happen_at_most_once__prepare_robot = happen_at_most_once__prepare_robot.__occurrences >= 0;
@@ -56,6 +57,7 @@ plant automaton Context:
   alg bool __postcondition__happen_at_most_once__robot_release_product_at_location2 = happen_at_most_once__robot_release_product_at_location2.__occurrences >= 0;
   alg bool __postcondition__happen_at_most_once__prepare_location2 = happen_at_most_once__prepare_location2.__occurrences >= 0;
   alg bool __postcondition = postcondition and (__postcondition__activeAction and __postcondition__happen_at_most_once__prepare_robot) and (__postcondition__happen_at_most_once__robot_move_to_location2 and (__postcondition__happen_at_most_once__robot_release_product_at_location2 and __postcondition__happen_at_most_once__prepare_location2));
+  initial __precondition;
   marked __postcondition;
   requirement invariant Req1: robot_move_to_location2 needs robotLocation = Location1 and location2Prepared;
   requirement invariant Req2: robot_move_to_location1 needs robotLocation = Location2;

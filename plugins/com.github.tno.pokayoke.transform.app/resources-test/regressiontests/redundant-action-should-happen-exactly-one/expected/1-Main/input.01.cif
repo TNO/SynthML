@@ -28,11 +28,13 @@ end
 plant automaton Context:
   disc bool field1 in any;
   disc bool field2 = false;
+  alg bool __precondition = true;
   alg bool postcondition = field2;
   alg bool __postcondition__at_most_once__left = at_most_once__left.__occurrences >= 0;
   alg bool __postcondition__at_most_once__right = at_most_once__right.__occurrences >= 0;
   alg bool __postcondition__exactly_once__flip = exactly_once__flip.__occurrences >= 1;
   alg bool __postcondition = postcondition and __postcondition__at_most_once__left and (__postcondition__at_most_once__right and __postcondition__exactly_once__flip);
+  initial __precondition;
   marked __postcondition;
   location:
     initial;

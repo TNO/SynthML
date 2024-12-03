@@ -54,6 +54,7 @@ plant automaton Context:
   disc bool Has_Drank_Coffee_or_Tea = false;
   disc bool Is_Ready_to_Work = false;
   disc int[0..1] __activeAction;
+  alg bool __precondition = true;
   alg bool postcondition = Is_Computer_On and Is_Computer_Ready and Has_Drank_Coffee_or_Tea and Is_Ready_to_Work;
   alg bool __postcondition__activeAction = __activeAction = 0;
   alg bool __postcondition__happens_at_most_once__Turn_Computer_On = happens_at_most_once__Turn_Computer_On.__occurrences >= 0;
@@ -62,6 +63,7 @@ plant automaton Context:
   alg bool __postcondition__happens_at_most_once__Start_Working = happens_at_most_once__Start_Working.__occurrences >= 0;
   alg bool __postcondition__happens_at_most_once__Starting_Computer = happens_at_most_once__Starting_Computer.__occurrences >= 0;
   alg bool __postcondition = postcondition and (__postcondition__activeAction and __postcondition__happens_at_most_once__Turn_Computer_On) and (__postcondition__happens_at_most_once__Drink_Coffee and __postcondition__happens_at_most_once__Drink_Tea and (__postcondition__happens_at_most_once__Start_Working and __postcondition__happens_at_most_once__Starting_Computer));
+  initial __precondition;
   marked __postcondition;
   location:
     initial;
