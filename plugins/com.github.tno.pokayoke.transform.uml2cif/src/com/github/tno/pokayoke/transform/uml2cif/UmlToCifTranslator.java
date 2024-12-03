@@ -242,18 +242,11 @@ public class UmlToCifTranslator {
         cifSpec.setName("specification");
 
         // Translate all UML enumerations.
-        for (Enumeration umlEnum: context.getAllEnumerations()) {
-            EnumDecl cifEnum = CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null);
-            cifSpec.getDeclarations().add(cifEnum);
-            enumMap.put(umlEnum, cifEnum);
-        }
+        List<EnumDecl> cifEnums = translateEnumerations();
+        cifSpec.getDeclarations().addAll(cifEnums);
 
         // Translate all UML enumeration literals.
-        for (EnumerationLiteral umlLiteral: context.getAllEnumerationLiterals()) {
-            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
-            enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
-            enumLiteralMap.put(umlLiteral, cifLiteral);
-        }
+        translateEnumerationLiterals();
 
         // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
@@ -262,9 +255,8 @@ public class UmlToCifTranslator {
         cifSpec.getComponents().add(cifPlant);
 
         // Translate all UML properties that are in context.
-        for (Property umlProperty: context.getAllProperties()) {
-            cifPlant.getDeclarations().add(translateProperty(umlProperty));
-        }
+        List<DiscVariable> cifPropertyVars = translateProperties();
+        cifPlant.getDeclarations().addAll(cifPropertyVars);
 
         // Create the single location within the CIF plant, which is a flower automaton.
         Location cifLocation = CifConstructors.newLocation();
@@ -322,6 +314,59 @@ public class UmlToCifTranslator {
         cifPlant.getInvariants().addAll(cifRequirementInvariants);
 
         return cifSpec;
+    }
+
+    /**
+     * Translates all UML enumerations that are in context to CIF enumeration declarations.
+     *
+     * @return The translated CIF enumeration declarations.
+     */
+    private List<EnumDecl> translateEnumerations() {
+        List<Enumeration> umlEnums = context.getAllEnumerations();
+        List<EnumDecl> cifEnums = new ArrayList<>(umlEnums.size());
+
+        for (Enumeration umlEnum: umlEnums) {
+            EnumDecl cifEnum = CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null);
+            cifEnums.add(cifEnum);
+            enumMap.put(umlEnum, cifEnum);
+        }
+
+        return cifEnums;
+    }
+
+    /**
+     * Translates all UML enumeration literals that are in context to CIF enumeration literals.
+     *
+     * @return The translated CIF enumeration literals.
+     */
+    private List<EnumLiteral> translateEnumerationLiterals() {
+        List<EnumerationLiteral> umlLiterals = context.getAllEnumerationLiterals();
+        List<EnumLiteral> cifLiterals = new ArrayList<>(umlLiterals.size());
+
+        for (EnumerationLiteral umlLiteral: umlLiterals) {
+            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
+            cifLiterals.add(cifLiteral);
+            enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
+            enumLiteralMap.put(umlLiteral, cifLiteral);
+        }
+
+        return cifLiterals;
+    }
+
+    /**
+     * Translates all UML properties that are in context to CIF discrete variables.
+     *
+     * @return The translated CIF discrete variables.
+     */
+    private List<DiscVariable> translateProperties() {
+        List<Property> umlProperties = context.getAllProperties();
+        List<DiscVariable> cifVariables = new ArrayList<>(umlProperties.size());
+
+        for (Property umlProperty: umlProperties) {
+            cifVariables.add(translateProperty(umlProperty));
+        }
+
+        return cifVariables;
     }
 
     /**
