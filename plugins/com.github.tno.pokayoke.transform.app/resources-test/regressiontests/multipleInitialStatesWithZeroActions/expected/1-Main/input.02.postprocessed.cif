@@ -1,5 +1,9 @@
 plant automaton Context:
   disc bool field in any;
+  alg bool __precondition = true;
+  alg bool __postcondition = true;
+  initial __precondition;
+  marked __postcondition;
   location:
     initial;
     marked;

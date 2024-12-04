@@ -10,38 +10,6 @@ uncontrollable NonAtomicC__na_result_2;
 controllable AtomicD;
 uncontrollable AtomicD__result_1;
 uncontrollable AtomicD__result_2;
-supervisor automaton IntervalConstraintA__NonAtomicA:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton IntervalConstraintB__AtomicB:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge AtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton IntervalConstraintC__NonAtomicC:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge NonAtomicC when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-supervisor automaton IntervalConstraintD__AtomicD:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-    edge AtomicD when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
 plant automaton Machine:
   disc bool a_executed in any;
   disc bool b_executed in any;
@@ -78,6 +46,38 @@ plant automaton Machine:
     edge AtomicD when c_executed = true, __activeAction = 0 do __activeAction := 2;
     edge AtomicD__result_1 when __activeAction = 2 do d_executed := true, __activeAction := 0;
     edge AtomicD__result_2 when __activeAction = 2 do d_executed := true, __activeAction := 0;
+end
+supervisor automaton IntervalConstraintA__NonAtomicA:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintB__AtomicB:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge AtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintC__NonAtomicC:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge NonAtomicC when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+supervisor automaton IntervalConstraintD__AtomicD:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge AtomicD when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 supervisor automaton sup:
   alphabet NonAtomicA, AtomicB, NonAtomicC, AtomicD;

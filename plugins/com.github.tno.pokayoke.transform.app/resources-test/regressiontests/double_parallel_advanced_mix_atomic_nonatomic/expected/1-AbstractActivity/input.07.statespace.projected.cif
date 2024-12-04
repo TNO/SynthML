@@ -28,13 +28,13 @@ automaton projected:
     edge NonAtomicC goto s5;
     edge NonAtomicA__na_result_2 goto s6;
     edge NonAtomicA__na_result_1 goto s6;
-  @state(statespace = "loc4")
+  @state(statespace = "loc5")
   location s5:
     edge NonAtomicC__na_result_2 goto s11;
     edge NonAtomicC__na_result_1 goto s11;
     edge NonAtomicA__na_result_2 goto s9;
     edge NonAtomicA__na_result_1 goto s9;
-  @state(statespace = "loc5")
+  @state(statespace = "loc4")
   location s6:
     edge AtomicD goto s8;
     edge NonAtomicC goto s9;
@@ -42,28 +42,28 @@ automaton projected:
   @state(statespace = "loc6")
   location s7:
     edge NonAtomicA goto s11;
-  @state(statespace = "loc10")
+  @state(statespace = "loc9")
   @state(statespace = "loc15")
   location s8:
     edge NonAtomicC goto s17;
     edge AtomicB goto s18;
-  @state(statespace = "loc7")
+  @state(statespace = "loc8")
   location s9:
     edge AtomicD goto s14;
     edge NonAtomicC__na_result_2 goto s15;
     edge NonAtomicC__na_result_1 goto s15;
     edge AtomicB goto s16;
-  @state(statespace = "loc9")
-  @state(statespace = "loc14")
+  @state(statespace = "loc7")
+  @state(statespace = "loc11")
   location s10:
     edge AtomicD goto s12;
     edge NonAtomicC goto s13;
-  @state(statespace = "loc8")
+  @state(statespace = "loc10")
   location s11:
     edge NonAtomicA__na_result_2 goto s15;
     edge NonAtomicA__na_result_1 goto s15;
-  @state(statespace = "loc20")
-  @state(statespace = "loc26")
+  @state(statespace = "loc17")
+  @state(statespace = "loc24")
   location s12:
     edge NonAtomicC goto s21;
   @state(statespace = "loc16")
@@ -71,8 +71,8 @@ automaton projected:
     edge AtomicD goto s19;
     edge NonAtomicC__na_result_2 goto s20;
     edge NonAtomicC__na_result_1 goto s20;
-  @state(statespace = "loc12")
-  @state(statespace = "loc17")
+  @state(statespace = "loc14")
+  @state(statespace = "loc20")
   location s14:
     edge NonAtomicC__na_result_2 goto s24;
     edge NonAtomicC__na_result_1 goto s24;
@@ -81,30 +81,30 @@ automaton projected:
   location s15:
     edge AtomicD goto s22;
     edge AtomicB goto s23;
-  @state(statespace = "loc11")
+  @state(statespace = "loc12")
   @state(statespace = "loc16")
   location s16:
     edge AtomicD goto s19;
     edge NonAtomicC__na_result_2 goto s20;
     edge NonAtomicC__na_result_1 goto s20;
-  @state(statespace = "loc17")
+  @state(statespace = "loc20")
   location s17:
     edge NonAtomicC__na_result_2 goto s24;
     edge NonAtomicC__na_result_1 goto s24;
     edge AtomicB goto s25;
   @state(statespace = "loc21")
-  @state(statespace = "loc26")
+  @state(statespace = "loc24")
   location s18:
     edge NonAtomicC goto s21;
-  @state(statespace = "loc22")
-  @state(statespace = "loc27")
+  @state(statespace = "loc23")
+  @state(statespace = "loc28")
   location s19:
     edge NonAtomicC__na_result_2 goto s27;
     edge NonAtomicC__na_result_1 goto s27;
-  @state(statespace = "loc23")
+  @state(statespace = "loc22")
   location s20:
     edge AtomicD goto s26;
-  @state(statespace = "loc27")
+  @state(statespace = "loc28")
   location s21:
     edge NonAtomicC__na_result_2 goto s27;
     edge NonAtomicC__na_result_1 goto s27;
@@ -113,18 +113,18 @@ automaton projected:
   location s22:
     edge AtomicB goto s28;
   @state(statespace = "loc18")
-  @state(statespace = "loc23")
+  @state(statespace = "loc22")
   location s23:
     edge AtomicD goto s26;
   @state(statespace = "loc25")
   location s24:
     edge AtomicB goto s28;
-  @state(statespace = "loc24")
-  @state(statespace = "loc27")
+  @state(statespace = "loc26")
+  @state(statespace = "loc28")
   location s25:
     edge NonAtomicC__na_result_2 goto s27;
     edge NonAtomicC__na_result_1 goto s27;
-  @state(statespace = "loc28")
+  @state(statespace = "loc27")
   @state(statespace = "loc30")
   location s26:
     edge __end goto s29;

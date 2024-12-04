@@ -5,7 +5,7 @@ controllable reset;
 controllable __start;
 controllable __end;
 automaton statespace:
-  alphabet do_a, do_b, reset, do_b__na_result_1, __start, __end;
+  alphabet do_a, do_b, do_b__na_result_1, reset, __start, __end;
   @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = false, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 0, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
   location __init:
     initial;
@@ -26,8 +26,8 @@ automaton statespace:
     edge do_b goto loc7;
   @state(Context = "*", Context.__nonAtomicActive__do_b = true, Context.done_a = true, Context.done_b = false, Context.flag = true, occurrences__do_a = "*", occurrences__do_a.__occurrences = 1, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
   location loc5:
-    edge reset goto loc7;
     edge do_b__na_result_1 goto loc8;
+    edge reset goto loc7;
   @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = true, Context.flag = false, occurrences__do_a = "*", occurrences__do_a.__occurrences = 0, occurrences__do_b = "*", occurrences__do_b.__occurrences = 1, occurrences__reset = "*", occurrences__reset.__occurrences = 0, sup = "*")
   location loc6:
     edge do_a goto loc8;

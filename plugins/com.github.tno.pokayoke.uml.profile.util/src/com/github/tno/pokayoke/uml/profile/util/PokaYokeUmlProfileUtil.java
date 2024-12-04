@@ -133,6 +133,10 @@ public class PokaYokeUmlProfileUtil {
         element.setValue(st, PROP_FORMAL_ELEMENT_ATOMIC, newValue);
     }
 
+    public static boolean isDeterministic(RedefinableElement element) {
+        return getEffects(element).size() <= 1;
+    }
+
     /**
      * Applies the Poka Yoke UML Profile and sets the
      * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code controlFlow}.
