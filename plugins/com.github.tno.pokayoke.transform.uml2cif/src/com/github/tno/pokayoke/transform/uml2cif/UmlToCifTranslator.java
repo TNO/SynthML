@@ -884,7 +884,7 @@ public class UmlToCifTranslator {
      * be satisfied.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
-     * @param cifAtomicityVar The internal CIF variables created for atomic non-deterministic actions.
+     * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if no atomic non-deterministic actions are present.
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
