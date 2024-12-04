@@ -43,14 +43,23 @@ import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.FinalNode;
+import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
+import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralInteger;
+import org.eclipse.uml2.uml.MergeNode;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -87,6 +96,9 @@ public class UmlToCifTranslator {
     /** The prefix of a CIF variable that encodes (part of) the activity postcondition. */
     public static final String POSTCONDITION_PREFIX = "__postcondition";
 
+    /** The prefix of a CIF variable indicating that a translated UML control flow holds a token. */
+    public static final String CONTROLFLOW_PREFIX = "__edge";
+
     /** The input UML activity to translate. */
     private final Activity activity;
 
@@ -107,6 +119,9 @@ public class UmlToCifTranslator {
 
     /** The mapping from translated CIF start events to their corresponding UML actions. */
     private final Map<Event, RedefinableElement> eventMap = new LinkedHashMap<>();
+
+    /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
+    private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
 
     /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
@@ -268,6 +283,29 @@ public class UmlToCifTranslator {
         for (var entry: cifEventEdges.entrySet()) {
             cifSpec.getDeclarations().add(entry.getKey());
             cifLocation.getEdges().add(entry.getValue());
+        }
+
+        // Translate all UML concrete activities.
+        Pair<Set<DiscVariable>, BiMap<Event, Edge>> translatedActivities = translateActivities();
+
+        cifPlant.getDeclarations().addAll(translatedActivities.left);
+
+        for (var entry: translatedActivities.right.entrySet()) {
+            cifSpec.getDeclarations().add(entry.getKey());
+            cifLocation.getEdges().add(entry.getValue());
+        }
+
+        for (Activity concreteActivity: context.getAllConcreteActivities()) {
+            Pair<Set<DiscVariable>, BiMap<Event, Edge>> newVarsAndEventEdges = translateActivity(concreteActivity);
+            Set<DiscVariable> newVars = newVarsAndEventEdges.left;
+            BiMap<Event, Edge> newEventEdges = newVarsAndEventEdges.right;
+
+            cifPlant.getDeclarations().addAll(newVars);
+
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                cifSpec.getDeclarations().add(entry.getKey());
+                cifLocation.getEdges().add(entry.getValue());
+            }
         }
 
         // Encode constraints to ensure that atomic non-deterministic actions are executed atomically.
@@ -514,6 +552,327 @@ public class UmlToCifTranslator {
         eventEdgeMap.putAll(newEventEdges);
 
         return newEventEdges;
+    }
+
+    /**
+     * Translates all concrete UML activities that are in context to CIF variables, and CIF events with their
+     * corresponding CIF edges.
+     *
+     * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
+     */
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivities() {
+        Set<DiscVariable> newVariables = new LinkedHashSet<>();
+        BiMap<Event, Edge> newEventEdges = HashBiMap.create();
+
+        // Translate all concrete activities that are in context.
+        for (Activity activity: context.getAllConcreteActivities()) {
+            Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateActivity(activity);
+            newVariables.addAll(result.left);
+            newEventEdges.putAll(result.right);
+        }
+
+        return Pair.pair(newVariables, newEventEdges);
+    }
+
+    /**
+     * Translates a given UML activity to CIF variables, and CIF events with their corresponding CIF edges.
+     *
+     * @param activity The UML activity to translate.
+     * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
+     */
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivity(Activity activity) {
+        Preconditions.checkArgument(!activity.isActive(), "Expected a concrete activity.");
+
+        // Translate all activity control flows.
+        Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
+        for (ActivityEdge controlFlow: activity.getEdges()) {
+            newVariables.add(translateActivityControlFlow(controlFlow));
+        }
+
+        // Translate all activity nodes.
+        BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
+        for (ActivityNode node: activity.getNodes()) {
+            newEventEdges.putAll(translateActivityNode(node));
+        }
+
+        return Pair.pair(newVariables, newEventEdges);
+    }
+
+    /**
+     * Translates a UML control flow to a CIF variable.
+     *
+     * @param controlFlow The UML control flow to translate.
+     * @return The translated CIF variable.
+     */
+    private DiscVariable translateActivityControlFlow(ActivityEdge controlFlow) {
+        String controlFlowName = controlFlow.getName();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(controlFlowName),
+                "Expected control flows to have a non-empty name.");
+
+        // Create a Boolean CIF variable for the UML control flow.
+        DiscVariable cifVariable = CifConstructors.newDiscVariable();
+        cifVariable.setName(CONTROLFLOW_PREFIX + "__" + controlFlowName);
+        cifVariable.setType(CifConstructors.newBoolType());
+        controlFlowMap.put(controlFlow, cifVariable);
+
+        return cifVariable;
+    }
+
+    /**
+     * Translates a UML activity node to CIF events and corresponding CIF edges.
+     *
+     * @param node The UML activity node to translate.
+     * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
+     */
+    private BiMap<Event, Edge> translateActivityNode(ActivityNode node) {
+        // Translate the UML activity node as an action. The CIF start event for this action should only be controllable
+        // in case the given node is an initial node.
+        BiMap<Event, Edge> newEventEdges;
+
+        if (node instanceof InitialNode) {
+            newEventEdges = translateActivityOrNode(node, true);
+        } else if (node instanceof FinalNode || node instanceof DecisionNode || node instanceof MergeNode) {
+            newEventEdges = translateActivityOrNode(node, false);
+        } else if (node instanceof ForkNode || node instanceof JoinNode || node instanceof CallBehaviorAction
+                || node instanceof OpaqueAction)
+        {
+            newEventEdges = translateActivityAndNode(node, false);
+        } else {
+            throw new RuntimeException("Unsupported activity node: " + node);
+        }
+
+        // If the UML activity node is initial, then add the activity preconditions as extra guards for performing the
+        // translated CIF start events for the initial node.
+        if (node instanceof InitialNode) {
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                Event cifEvent = entry.getKey();
+                Edge cifEdge = entry.getValue();
+
+                // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
+                if (eventMap.containsKey(cifEvent)) {
+                    for (Constraint precondition: node.getActivity().getPreconditions()) {
+                        cifEdge.getGuards().add(translateStateInvariantConstraint(precondition));
+                    }
+                }
+            }
+        }
+
+        // If the UML activity node is final, then add the activity postconditions as extra guards for performing the
+        // translated CIF start events for the final node
+        if (node instanceof FinalNode) {
+            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
+                Event cifEvent = entry.getKey();
+                Edge cifEdge = entry.getValue();
+
+                // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
+                if (eventMap.containsKey(cifEvent)) {
+                    for (Constraint postcondition: node.getActivity().getPostconditions()) {
+                        cifEdge.getGuards().add(translateStateInvariantConstraint(postcondition));
+                    }
+                }
+            }
+        }
+
+        return newEventEdges;
+    }
+
+    /**
+     * Translates the given UML activity node as an AND-type node.
+     *
+     * @param node The UML activity node to translate.
+     * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
+     * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
+     */
+    private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean controllableStartEvents) {
+        String nodeName = node.getName();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(nodeName),
+                "Expected activity nodes to have a non-empty name.");
+
+        // Translate the UML activity node as an action.
+        BiMap<Event, Edge> newEventEdges = translateAction(node, nodeName, controllableStartEvents);
+
+        // Collect the CIF start and end events of the translated UML activity node.
+        List<Event> startEvents = new ArrayList<>();
+        List<Event> endEvents = new ArrayList<>();
+
+        for (Event event: newEventEdges.keySet()) {
+            if (eventMap.containsKey(event)) {
+                startEvents.add(event);
+            } else {
+                endEvents.add(event);
+            }
+        }
+
+        Verify.verify(startEvents.size() == 1,
+                "Expected a single start event to have been created, but got: " + startEvents.size());
+        Event startEvent = startEvents.get(0);
+
+        // If no explicit end events were created during the translation, then the start event also ends the action.
+        if (endEvents.isEmpty()) {
+            endEvents.add(startEvent);
+        }
+
+        // For every incoming UML control flow, add appropriate guards and updates to the newly created CIF edges.
+        for (ActivityEdge incoming: node.getIncomings()) {
+            Edge startEdge = newEventEdges.get(startEvent);
+            addGuardsAndUpdatesToIncomingControlFlow(incoming, startEdge);
+        }
+
+        // For every outgoing UML control flow, add appropriate guards and updates to the newly created CIF edges.
+        for (ActivityEdge outgoing: node.getOutgoings()) {
+            List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
+            addGuardsAndUpdatesToOutgoingControlFlow(outgoing, endEdges);
+        }
+
+        return newEventEdges;
+    }
+
+    /**
+     * Translates the given UML activity node as an OR-type node.
+     *
+     * @param node The UML activity node to translate.
+     * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
+     * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
+     */
+    private BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean controllableStartEvents) {
+        String nodeName = node.getName();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(nodeName),
+                "Expected activity nodes to have a non-empty name.");
+
+        // Find all combinations of incoming and outgoing UML control flows to translate CIF events/edges for, as pairs.
+        // If the activity node has no incoming control flows, then collect all outgoing control flows instead, to
+        // translate. And likewise, if there are no outgoing control flows, collect all incoming control flows instead.
+        Set<Pair<ActivityEdge, ActivityEdge>> controlFlowPairs = new LinkedHashSet<>();
+
+        if (node.getOutgoings().isEmpty()) {
+            for (ActivityEdge incoming: node.getIncomings()) {
+                controlFlowPairs.add(Pair.pair(incoming, null));
+            }
+        } else if (node.getIncomings().isEmpty()) {
+            for (ActivityEdge outgoing: node.getOutgoings()) {
+                controlFlowPairs.add(Pair.pair(null, outgoing));
+            }
+        } else {
+            for (ActivityEdge incoming: node.getIncomings()) {
+                for (ActivityEdge outgoing: node.getOutgoings()) {
+                    controlFlowPairs.add(Pair.pair(incoming, outgoing));
+                }
+            }
+        }
+
+        // For every collected pair of control flows, translate the UML activity node.
+        BiMap<Event, Edge> result = HashBiMap.create();
+        int count = 0;
+
+        for (Pair<ActivityEdge, ActivityEdge> pair: controlFlowPairs) {
+            ActivityEdge incoming = pair.left;
+            ActivityEdge outgoing = pair.right;
+
+            // Translate the UML activity node for the current control flow pair, as an action.
+            BiMap<Event, Edge> newEventEdges = translateAction(node, nodeName + "__" + count, controllableStartEvents);
+            count++;
+
+            // Collect the CIF start and end events of the translated UML activity node.
+            List<Event> startEvents = new ArrayList<>();
+            List<Event> endEvents = new ArrayList<>();
+
+            for (Event event: newEventEdges.keySet()) {
+                if (eventMap.containsKey(event)) {
+                    startEvents.add(event);
+                } else {
+                    endEvents.add(event);
+                }
+            }
+
+            Verify.verify(startEvents.size() == 1,
+                    "Expected a single start event to have been created, but got: " + startEvents.size());
+            Event startEvent = startEvents.get(0);
+
+            // If no explicit end events were created during the translation, then the start event also ends the action.
+            if (endEvents.isEmpty()) {
+                endEvents.add(startEvent);
+            }
+
+            // Add appropriate guards and updates to the possibly newly created CIF edge for the incoming control flow.
+            if (incoming != null) {
+                Edge startEdge = newEventEdges.get(startEvent);
+                addGuardsAndUpdatesToIncomingControlFlow(incoming, startEdge);
+            }
+
+            // Add appropriate guards and updates to the possibly newly created CIF edge for the outgoing control flow.
+            if (outgoing != null) {
+                List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
+                addGuardsAndUpdatesToOutgoingControlFlow(outgoing, endEdges);
+            }
+
+            result.putAll(newEventEdges);
+        }
+
+        return result;
+    }
+
+    /**
+     * Helper method for translating UML activity nodes. This method adds appropriate CIF guards and updates for the
+     * given incoming UML control flow of a translated activity node: the control flow must have a token, and after
+     * performing (one of the translated CIF start events of) the node, the token will be removed.
+     *
+     * @param controlFlow The incoming UML control flow.
+     * @param startEdge The CIF edge that has been created to start executing the UML activity node.
+     */
+    private void addGuardsAndUpdatesToIncomingControlFlow(ActivityEdge controlFlow, Edge startEdge) {
+        DiscVariable incomingVariable = controlFlowMap.get(controlFlow);
+
+        // Add a guard expressing that, to start executing the node, the UML control flow must have a token.
+        DiscVariableExpression incomingGuard = CifConstructors.newDiscVariableExpression(null,
+                EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
+        startEdge.getGuards().add(incomingGuard);
+
+        // Add an update that removes the token from the UML control flow when starting to execute the node.
+        Assignment incomingUpdate = CifConstructors.newAssignment();
+        incomingUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                EcoreUtil.copy(incomingVariable.getType()), incomingVariable));
+        incomingUpdate.setValue(CifValueUtils.makeFalse());
+        startEdge.getUpdates().add(incomingUpdate);
+    }
+
+    /**
+     * Helper method for translating UML activity nodes. This method adds appropriate CIF guards and updates for the
+     * given outgoing UML control flow of a translated activity node: the control flow must not have a token, and after
+     * performing (one of the translated CIF end events of) the node, it will receive a token. Moreover, if the outgoing
+     * control flow has a guard, then this guard is added as an extra guard for performing the end event.
+     *
+     * @param controlFlow The outgoing UML control flow.
+     * @param endEdges The CIF edges that have been created to end executing the UML activity node.
+     */
+    private void addGuardsAndUpdatesToOutgoingControlFlow(ActivityEdge controlFlow, List<Edge> endEdges) {
+        DiscVariable outgoingVariable = controlFlowMap.get(controlFlow);
+
+        for (Edge endEdge: endEdges) {
+            // Add a guard expressing that, to end executing the node, the UML control flow must not have a token.
+            UnaryExpression outgoingGuard = CifConstructors.newUnaryExpression();
+            outgoingGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
+            outgoingGuard.setOperator(UnaryOperator.INVERSE);
+            outgoingGuard.setType(CifConstructors.newBoolType());
+            endEdge.getGuards().add(outgoingGuard);
+
+            // Add an update that adds a token to the UML control flow when ending the execution of the node.
+            Assignment outgoingUpdate = CifConstructors.newAssignment();
+            outgoingUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
+            outgoingUpdate.setValue(CifValueUtils.makeTrue());
+            endEdge.getUpdates().add(outgoingUpdate);
+
+            // If the UML control flow has a guard, then add it as an extra guard for ending the node execution.
+            // Moreover, in that case, we require that the UML activity node has no defined effects, which is
+            // needed to adhere to the execution semantics of activities. In practice, the UML activity node
+            // is likely a UML decision node and thus have no effects.
+            if (controlFlow.getGuard() != null) {
+                Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource()),
+                        "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
+                endEdge.getGuards().add(translator.translate(CifParserHelper.parseExpression(controlFlow.getGuard())));
+            }
+        }
     }
 
     /**
