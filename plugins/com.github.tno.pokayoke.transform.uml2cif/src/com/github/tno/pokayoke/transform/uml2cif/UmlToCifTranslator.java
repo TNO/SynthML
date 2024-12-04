@@ -945,6 +945,8 @@ public class UmlToCifTranslator {
             }
         }
 
+        // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is the
+        // conjunction of all these defined postcondition variables (which are all Boolean typed).
         AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
 
         return Pair.pair(postconditionVars, postconditionVar);
