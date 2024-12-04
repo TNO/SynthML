@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import org.eclipse.uml2.uml.Property;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 /** Application that performs full synthesis. */
@@ -30,6 +30,7 @@ public class ClassesInliner {
 
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
+        List<Class> passiveClasses = getAllPassiveClasses(context);
 
         Map<String, Pair<String, Property>> flattenedNamesMap = new LinkedHashMap<>();
 
@@ -50,9 +51,41 @@ public class ClassesInliner {
             Property rewrittenProperty = FileHelper.FACTORY.createProperty();
             rewrittenProperty.setIsStatic(true);
             rewrittenProperty.setName(flattenedName);
-            rewrittenProperty.setType(UmlPrimitiveType.STRING.load(originalProperty.getType()));
+            rewrittenProperty.setType(originalProperty.getType());
             rewrittenProperty.setDefaultValue(originalProperty.getDefaultValue());
             activeClass.getOwnedAttributes().add(rewrittenProperty);
+        }
+
+        // Destroy the properties of the main class that are of type Class.
+        ArrayList<Property> propertiesToBeRemoved = new ArrayList<>();
+        for (Property umlProperty: activeClass.getOwnedAttributes()) {
+            if (passiveClasses.contains(umlProperty.getType())) {
+                propertiesToBeRemoved.add(umlProperty);
+            }
+        }
+        activeClass.getOwnedAttributes().removeAll(propertiesToBeRemoved);
+
+        // Destroy passive classes inside the active class.
+        for (Class passiveClass: passiveClasses) {
+            if (activeClass.getNestedClassifiers().contains(passiveClass)) {
+                activeClass.getNestedClassifiers().remove(passiveClass);
+            }
+        }
+
+        // Destroy the passive classes at the same level of the active class.
+        ArrayList<Class> passiveClassesToBeRemoved = new ArrayList<>();
+        for (Class passiveClass: passiveClasses) {
+            if (model.getOwnedElements().contains(passiveClass)) {
+                passiveClassesToBeRemoved.add(passiveClass);
+            }
+        }
+
+        // model.getOwnedElements().removeAll(passiveClassesToBeRemoved);
+        // cannot be done because getOwnedElements is final
+        // container.eUnset remove ALL dependencies
+        // model.getPackagedElements()
+        for (Class passiveClass: passiveClassesToBeRemoved) {
+            model.getPackagedElements().remove(passiveClass);
         }
     }
 
