@@ -530,7 +530,7 @@ public class UmlToCifTranslator {
      * Gives all effects of the given UML element. Every effect consists of a list of updates.
      *
      * @param action The UML element.
-     * @return All effects of the given UML element. There ia always at least one effect.
+     * @return All effects of the given UML element. There is always at least one effect.
      */
     private List<List<Update>> getEffects(RedefinableElement action) {
         List<List<Update>> effects = CifParserHelper.parseEffects(action).stream().map(translator::translate).toList();
@@ -884,7 +884,8 @@ public class UmlToCifTranslator {
      * be satisfied.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
-     * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if no atomic non-deterministic actions are present.
+     * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
+     *     no atomic non-deterministic actions are present.
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
