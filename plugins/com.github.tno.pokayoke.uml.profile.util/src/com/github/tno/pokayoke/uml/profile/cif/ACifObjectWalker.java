@@ -130,8 +130,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         String[] classesAttributesSplit = name.split("\\.");
 
         for (int idx = 1; idx < classesAttributesSplit.length; idx++) {
-            // Check that the current substring represents a property of a class corresponding to the previous
-            // substring.
+            // Get the parent and child classes.
             NamedElement parentElement = ctx.getElement(classesAttributesSplit[idx - 1]);
             NamedElement childrenElement = ctx.getElement(classesAttributesSplit[idx]);
             // Check if the Class of the parent is indeed the correct parent class. Note that this assumes that Class
