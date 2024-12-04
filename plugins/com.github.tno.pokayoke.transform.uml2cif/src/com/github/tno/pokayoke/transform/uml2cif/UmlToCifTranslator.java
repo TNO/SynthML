@@ -55,7 +55,6 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.transform.common.BiMapUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
@@ -105,8 +104,8 @@ public class UmlToCifTranslator {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
-    /** The mapping from UML elements to corresponding translated CIF (controllable start) events. */
-    private final BiMap<RedefinableElement, Event> eventMap = HashBiMap.create();
+    /** The mapping from translated CIF start events to their corresponding UML actions. */
+    private final Map<Event, RedefinableElement> eventMap = new LinkedHashMap<>();
 
     /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
@@ -187,8 +186,8 @@ public class UmlToCifTranslator {
         BiMap<Event, Pair<RedefinableElement, Integer>> result = HashBiMap.create();
 
         for (var entry: eventMap.entrySet()) {
-            RedefinableElement action = entry.getKey();
-            Event startEvent = entry.getValue();
+            Event startEvent = entry.getKey();
+            RedefinableElement action = entry.getValue();
 
             // Find all CIF end events for the current action.
             List<Event> endEvents = List.of();
@@ -437,7 +436,7 @@ public class UmlToCifTranslator {
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(true);
         cifStartEvent.setName(umlElement.getName());
-        eventMap.put(umlElement, cifStartEvent);
+        eventMap.put(cifStartEvent, umlElement);
 
         // Create a CIF edge for this start event.
         EventExpression cifEventExpr = CifConstructors.newEventExpression();
@@ -520,10 +519,10 @@ public class UmlToCifTranslator {
      * @return The original guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        Map<Event, RedefinableElement> inverseEventMap = BiMapUtils.orderPreservingInverse(eventMap);
-        Preconditions.checkArgument(inverseEventMap.containsKey(event),
+        RedefinableElement element = eventMap.get(event);
+        Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
-        return getGuard(inverseEventMap.get(event));
+        return getGuard(element);
     }
 
     /**
@@ -734,8 +733,11 @@ public class UmlToCifTranslator {
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
+                    List<Event> cifStartEvents = eventMap.entrySet().stream()
+                            .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
+
                     String name = umlConstraint.getName() + "__" + umlOpaqueBehavior.getName();
-                    cifAutomata.add(createIntervalAutomaton(name, eventMap.get(umlOpaqueBehavior), min, max));
+                    cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                 }
             }
 
@@ -752,12 +754,12 @@ public class UmlToCifTranslator {
      * a specified interval.
      *
      * @param name The name of the CIF requirement automaton.
-     * @param event The event to express the requirement over.
+     * @param events The events to express the requirement over.
      * @param min The minimum number of event occurrences.
      * @param max The maximum number of event occurrences.
      * @return The CIF requirement automaton.
      */
-    private Automaton createIntervalAutomaton(String name, Event event, int min, int max) {
+    private Automaton createIntervalAutomaton(String name, List<Event> events, int min, int max) {
         Preconditions.checkArgument(0 <= min, "Expected the min value to be at least 0.");
         Preconditions.checkArgument(min <= max, "Expected the max value to be at least the min value.");
 
@@ -792,33 +794,36 @@ public class UmlToCifTranslator {
         location.getMarkeds().add(CifValueUtils.makeTrue());
         automaton.getLocations().add(location);
 
-        // Create the single edge in the automaton.
-        EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
-        edgeEvent.setEvent(CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType()));
-        Edge edge = CifConstructors.newEdge();
-        edge.getEvents().add(edgeEvent);
-        location.getEdges().add(edge);
+        // Create the edges in the automaton.
+        for (Event event: events) {
+            // Create an edge for the current event in the automaton.
+            EdgeEvent edgeEvent = CifConstructors.newEdgeEvent();
+            edgeEvent.setEvent(CifConstructors.newEventExpression(event, null, CifConstructors.newBoolType()));
+            Edge edge = CifConstructors.newEdge();
+            edge.getEvents().add(edgeEvent);
+            location.getEdges().add(edge);
 
-        // Define the edge guard.
-        BinaryExpression edgeGuard = CifConstructors.newBinaryExpression();
-        edgeGuard.setLeft(EcoreUtil.copy(varExpr));
-        edgeGuard.setOperator(BinaryOperator.LESS_THAN);
-        edgeGuard.setRight(CifValueUtils.makeInt(max));
-        edgeGuard.setType(CifConstructors.newBoolType());
-        edge.getGuards().add(edgeGuard);
+            // Define the edge guard.
+            BinaryExpression edgeGuard = CifConstructors.newBinaryExpression();
+            edgeGuard.setLeft(EcoreUtil.copy(varExpr));
+            edgeGuard.setOperator(BinaryOperator.LESS_THAN);
+            edgeGuard.setRight(CifValueUtils.makeInt(max));
+            edgeGuard.setType(CifConstructors.newBoolType());
+            edge.getGuards().add(edgeGuard);
 
-        // Define the edge update.
-        Assignment update = CifConstructors.newAssignment();
-        update.setAddressable(EcoreUtil.copy(varExpr));
-        BinaryExpression updateExpr = CifConstructors.newBinaryExpression();
-        updateExpr.setLeft(EcoreUtil.copy(varExpr));
-        updateExpr.setOperator(BinaryOperator.ADDITION);
-        Expression updateValue = CifValueUtils.makeInt(1);
-        updateExpr.setRight(updateValue);
-        updateExpr.setType(UmlAnnotationsToCif.typeForBinaryPlus((IntType)updateExpr.getLeft().getType(),
-                (IntType)updateExpr.getRight().getType()));
-        update.setValue(updateExpr);
-        edge.getUpdates().add(update);
+            // Define the edge update.
+            Assignment update = CifConstructors.newAssignment();
+            update.setAddressable(EcoreUtil.copy(varExpr));
+            BinaryExpression updateExpr = CifConstructors.newBinaryExpression();
+            updateExpr.setLeft(EcoreUtil.copy(varExpr));
+            updateExpr.setOperator(BinaryOperator.ADDITION);
+            Expression updateValue = CifValueUtils.makeInt(1);
+            updateExpr.setRight(updateValue);
+            updateExpr.setType(UmlAnnotationsToCif.typeForBinaryPlus((IntType)updateExpr.getLeft().getType(),
+                    (IntType)updateExpr.getRight().getType()));
+            update.setValue(updateExpr);
+            edge.getUpdates().add(update);
+        }
 
         return automaton;
     }

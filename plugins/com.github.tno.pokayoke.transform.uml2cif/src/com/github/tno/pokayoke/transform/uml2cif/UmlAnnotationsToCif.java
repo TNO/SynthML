@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -57,11 +56,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     private final Map<Property, DiscVariable> variableMap;
 
     /** The mapping from UML elements to corresponding translated CIF (controllable start) events. */
-    private final Map<RedefinableElement, Event> eventMap;
+    private final Map<Event, RedefinableElement> eventMap;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<RedefinableElement, Event> eventMap)
+            Map<Event, RedefinableElement> eventMap)
     {
         this.context = context;
         this.enumMap = enumMap;
@@ -223,17 +222,23 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant.setInvKind(cifInvKind);
-                cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
-                cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                cifInvariants.add(cifInvariant);
+                for (var entry: eventMap.entrySet()) {
+                    RedefinableElement umlElement = entry.getValue();
 
-                Event cifEvent = eventMap.entrySet().stream().filter(e -> e.getKey().getName().equals(event))
-                        .map(Entry::getValue).findFirst().get();
-                EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
-                        CifConstructors.newBoolType());
-                cifInvariant.setEvent(cifEventExpr);
+                    if (umlElement.getName().equals(event)) {
+                        Event cifEvent = entry.getKey();
+
+                        Invariant cifInvariant = CifConstructors.newInvariant();
+                        cifInvariant.setInvKind(cifInvKind);
+                        cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
+                        cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                        cifInvariants.add(cifInvariant);
+
+                        EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
+                                CifConstructors.newBoolType());
+                        cifInvariant.setEvent(cifEventExpr);
+                    }
+                }
             }
         }
 
