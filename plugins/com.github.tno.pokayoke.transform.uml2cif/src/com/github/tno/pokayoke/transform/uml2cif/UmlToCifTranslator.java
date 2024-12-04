@@ -565,7 +565,7 @@ public class UmlToCifTranslator {
         }
 
         // If there are atomic non-deterministic actions, then constraints must be added to the corresponding CIF edges.
-        if (atomicNonDeterministicStartEvents.size() > 0) {
+        if (!atomicNonDeterministicStartEvents.isEmpty()) {
             // Declare a variable that indicates which atomic non-deterministic action is currently active. The value 0
             // then indicates that no non-deterministic action is currently active.
             cifAtomicityVar = CifConstructors.newDiscVariable();
