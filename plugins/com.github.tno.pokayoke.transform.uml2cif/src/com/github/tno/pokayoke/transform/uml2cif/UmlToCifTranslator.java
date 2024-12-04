@@ -530,7 +530,7 @@ public class UmlToCifTranslator {
      * Gives all effects of the given UML element. Every effect consists of a list of updates.
      *
      * @param action The UML element.
-     * @return All effects of the given UML element.
+     * @return All effects of the given UML element. There ia always at least one effect.
      */
     private List<List<Update>> getEffects(RedefinableElement action) {
         List<List<Update>> effects = CifParserHelper.parseEffects(action).stream().map(translator::translate).toList();
