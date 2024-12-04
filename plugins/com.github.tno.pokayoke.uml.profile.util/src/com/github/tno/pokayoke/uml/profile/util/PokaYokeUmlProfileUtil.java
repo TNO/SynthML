@@ -134,7 +134,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static boolean isDeterministic(RedefinableElement element) {
-        return getEffects(element).size() < 2;
+        return getEffects(element).size() <= 1;
     }
 
     /**
