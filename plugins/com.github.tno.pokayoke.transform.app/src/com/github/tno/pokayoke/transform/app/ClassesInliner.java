@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.app;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,8 +14,10 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Property;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 
 /** Application that performs full synthesis. */
@@ -30,12 +33,26 @@ public class ClassesInliner {
 
         Map<String, Pair<String, Property>> flattenedNamesMap = new LinkedHashMap<>();
 
-        // Find all properties of the main class that are instances of a data class.
+        // Find all properties of the main class that are instances of a data class, store them into a map with a unique
+        // flattened name and the original reference name (e.g. robot.arm.position).
         for (Property umlProperty: activeClass.getOwnedAttributes()) {
             if (!PokaYokeTypeUtil.isSupportedType(umlProperty.getType())) {
                 flattenedNamesMap = getLeafPrimitiveType((Class)umlProperty.getType(), umlProperty.getName(),
                         umlProperty.getName(), flattenedNamesMap);
             }
+        }
+
+        // Create a new static property with a flattened name, and add them to the active class.
+        for (Entry<String, Pair<String, Property>> entry: flattenedNamesMap.entrySet()) {
+            String flattenedName = entry.getKey();
+            Property originalProperty = entry.getValue().getRight();
+
+            Property rewrittenProperty = FileHelper.FACTORY.createProperty();
+            rewrittenProperty.setIsStatic(true);
+            rewrittenProperty.setName(flattenedName);
+            rewrittenProperty.setType(UmlPrimitiveType.STRING.load(originalProperty.getType()));
+            rewrittenProperty.setDefaultValue(originalProperty.getDefaultValue());
+            activeClass.getOwnedAttributes().add(rewrittenProperty);
         }
     }
 
@@ -70,7 +87,7 @@ public class ClassesInliner {
             // Add the item to the map.
             flattenedNamesMap.put(name, positionAndObject);
         } else {
-            // Find how many entries keys start with name and add a number at the end.
+            // Find how many keys start with 'name' and add a number at the end.
             Set<String> allKeys = flattenedNamesMap.keySet();
             int count = 0;
             for (String k: allKeys) {
