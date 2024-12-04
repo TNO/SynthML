@@ -548,7 +548,7 @@ public class UmlToCifTranslator {
      * that indicates whether an atomic non-deterministic action is being executed, and if so, which one. If there are
      * no atomic non-determinstic actions, then no atomicity variable and no extra edge guards and updates are created.
      *
-     * @return The created atomicity variable, or {@code null} in case there were no atomic non-determinstic actions.
+     * @return The created atomicity variable, or {@code null} in case there are no atomic non-deterministic actions.
      */
     private DiscVariable encodeAtomicNonDeterministicActionConstraints() {
         DiscVariable cifAtomicityVar = null;
