@@ -33,8 +33,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
@@ -56,12 +56,12 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap;
+    /** The mapping from UML elements to corresponding translated CIF (controllable start) events. */
+    private final Map<RedefinableElement, Event> eventMap;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<OpaqueBehavior, Event> eventMap)
+            Map<RedefinableElement, Event> eventMap)
     {
         this.context = context;
         this.enumMap = enumMap;

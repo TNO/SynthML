@@ -105,8 +105,8 @@ public class UmlToCifTranslator {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final BiMap<OpaqueBehavior, Event> eventMap = HashBiMap.create();
+    /** The mapping from UML elements to corresponding translated CIF (controllable start) events. */
+    private final BiMap<RedefinableElement, Event> eventMap = HashBiMap.create();
 
     /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
@@ -177,17 +177,17 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic end events to their corresponding opaque behaviors and the
-     * index of the corresponding effect of the end event.
+     * Gives a mapping from non-atomic/non-deterministic CIF end events to their corresponding UML elements for which
+     * they were created, as well as the index of the corresponding effect of the end event.
      *
-     * @return The mapping from non-atomic/non-deterministic end events to their corresponding opaque behaviors and the
+     * @return The mapping from non-atomic/non-deterministic CIF end events to their corresponding UML elements and the
      *     index of the corresponding effect of the end event.
      */
-    public BiMap<Event, Pair<OpaqueBehavior, Integer>> getEndEventMap() {
-        BiMap<Event, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
+    public BiMap<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
+        BiMap<Event, Pair<RedefinableElement, Integer>> result = HashBiMap.create();
 
         for (var entry: eventMap.entrySet()) {
-            OpaqueBehavior action = entry.getKey();
+            RedefinableElement action = entry.getKey();
             Event startEvent = entry.getValue();
 
             // Find all CIF end events for the current action.
@@ -208,16 +208,16 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic end event names to their corresponding opaque behaviors and the
-     * index of the corresponding effect of the end event.
+     * Gives a mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements for
+     * which they were created, as well as the index of the corresponding effect of the end event.
      *
-     * @return The mapping from non-atomic/non-deterministic end event names to their corresponding opaque behaviors and
+     * @return The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements and
      *     the index of the corresponding effect of the end event.
      */
-    public BiMap<String, Pair<OpaqueBehavior, Integer>> getEndEventNameMap() {
-        BiMap<Event, Pair<OpaqueBehavior, Integer>> endEventMap = getEndEventMap();
+    public BiMap<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
+        BiMap<Event, Pair<RedefinableElement, Integer>> endEventMap = getEndEventMap();
 
-        BiMap<String, Pair<OpaqueBehavior, Integer>> result = HashBiMap.create();
+        BiMap<String, Pair<RedefinableElement, Integer>> result = HashBiMap.create();
 
         for (var entry: endEventMap.entrySet()) {
             result.put(entry.getKey().getName(), entry.getValue());
@@ -407,7 +407,7 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a given UML opaque behavior as an action, to CIF events and corresponding CIF edges.
+     * Translates a given UML element as an action, to CIF events and corresponding CIF edges.
      * <p>
      * If the action to translate is an atomic deterministic action, then a single controllable CIF event is created for
      * starting and ending the action, together with a corresponding edge for that event. The guard of that edge is the
@@ -422,22 +422,22 @@ public class UmlToCifTranslator {
      * updates.
      * </p>
      *
-     * @param umlAction The UML opaque behavior to translate as an action.
+     * @param umlElement The UML element to translate as an action.
      * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateAction(OpaqueBehavior umlAction) {
+    private BiMap<Event, Edge> translateAction(RedefinableElement umlElement) {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
         // Obtain the guard and effects of the current action.
-        Expression guard = getGuard(umlAction);
-        List<List<Update>> effects = getEffects(umlAction);
+        Expression guard = getGuard(umlElement);
+        List<List<Update>> effects = getEffects(umlElement);
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
 
         // Create a CIF start event for the action.
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(true);
-        cifStartEvent.setName(umlAction.getName());
-        eventMap.put(umlAction, cifStartEvent);
+        cifStartEvent.setName(umlElement.getName());
+        eventMap.put(umlElement, cifStartEvent);
 
         // Create a CIF edge for this start event.
         EventExpression cifEventExpr = CifConstructors.newEventExpression();
@@ -451,8 +451,8 @@ public class UmlToCifTranslator {
         newEventEdges.put(cifStartEvent, cifStartEdge);
 
         // Create any CIF end events and corresponding end edges.
-        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction);
-        boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
+        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlElement);
+        boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlElement);
 
         if (isAtomic && isDeterministic) {
             // In case the action is both deterministic and atomic, then the start event also ends the action.
@@ -469,7 +469,7 @@ public class UmlToCifTranslator {
                 cifEndEvent.setControllable(false);
                 String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
                         : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
-                cifEndEvent.setName(umlAction.getName() + outcomeSuffix + (i + 1));
+                cifEndEvent.setName(umlElement.getName() + outcomeSuffix + (i + 1));
                 cifEndEvents.add(cifEndEvent);
 
                 // Make the CIF edge for the uncontrollable end event.
@@ -516,13 +516,13 @@ public class UmlToCifTranslator {
      * Gives the original guard corresponding to the given CIF event, where original means: as specified in the UML
      * model (e.g., without atomicity variables and other auxiliary constructs that the transformation may have added).
      *
-     * @param event The CIF event, which must have been translated for some opaque behavior in the input UML model.
+     * @param event The CIF event, which must have been translated for some UML element in the input UML model.
      * @return The original guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        Map<Event, OpaqueBehavior> inverseEventMap = BiMapUtils.orderPreservingInverse(eventMap);
+        Map<Event, RedefinableElement> inverseEventMap = BiMapUtils.orderPreservingInverse(eventMap);
         Preconditions.checkArgument(inverseEventMap.containsKey(event),
-                "Expected a CIF event that has been translated for some opaque behavior in the input UML model.");
+                "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(inverseEventMap.get(event));
     }
 
