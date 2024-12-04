@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -1110,12 +1111,24 @@ public class UmlToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
-                if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
+                if (umlElement instanceof Activity umlActivity) {
+                    Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
+                            .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+                    List<Event> cifStartEvents = eventMap.entrySet().stream()
+                            .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
+
+                    String name = umlConstraint.getName() + "__" + umlActivity.getName();
+                    cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
+                } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
                     List<Event> cifStartEvents = eventMap.entrySet().stream()
                             .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
 
                     String name = umlConstraint.getName() + "__" + umlOpaqueBehavior.getName();
                     cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
+                } else {
+                    throw new RuntimeException("Unsupported element: " + umlElement);
                 }
             }
 
