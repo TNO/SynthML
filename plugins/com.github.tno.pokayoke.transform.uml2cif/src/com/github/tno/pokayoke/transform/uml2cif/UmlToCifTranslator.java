@@ -546,7 +546,7 @@ public class UmlToCifTranslator {
      * Encodes constraints to ensure that atomic non-deterministic actions are indeed atomically executed. The
      * constraints are encoded as extra edge guards and updates, which are expressed over an <i>atomicity variable</i>
      * that indicates whether an atomic non-deterministic action is being executed, and if so, which one. If there are
-     * no atomic non-determinstic actions, then no atomicity variable and no extra edge guards and updates are created.
+     * no atomic non-deterministic actions, then no atomicity variable and no extra edge guards and updates are created.
      *
      * @return The created atomicity variable, or {@code null} in case there are no atomic non-deterministic actions.
      */
