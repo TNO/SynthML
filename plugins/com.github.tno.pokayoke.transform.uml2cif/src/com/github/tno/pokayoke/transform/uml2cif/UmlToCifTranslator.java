@@ -43,6 +43,7 @@ import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -399,7 +400,7 @@ public class UmlToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
-            eventEdges.putAll(translateAction(umlOpaqueBehavior));
+            eventEdges.putAll(translateAction(umlOpaqueBehavior, umlOpaqueBehavior.getName(), true));
         }
 
         return eventEdges;
@@ -422,20 +423,38 @@ public class UmlToCifTranslator {
      * </p>
      *
      * @param umlElement The UML element to translate as an action.
+     * @param name The name of the action to create.
+     * @param controllableStartEvent Whether the CIF start event should be controllable.
      * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateAction(RedefinableElement umlElement) {
+    private BiMap<Event, Edge> translateAction(RedefinableElement umlElement, String name,
+            boolean controllableStartEvent)
+    {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
+        // Find the action to translate. If the UML element is a call behavior action that is not shadowed (i.e., has no
+        // guards and effects), then the called action is translated, otherwise the UML element itself is translated.
+        RedefinableElement umlAction;
+
+        if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
+            umlAction = umlElement;
+        } else if (umlElement instanceof CallBehaviorAction cbAction) {
+            umlAction = cbAction.getBehavior();
+        } else {
+            umlAction = umlElement;
+        }
+
+        Preconditions.checkArgument(!(umlAction instanceof Activity), "Expected not to find an activity.");
+
         // Obtain the guard and effects of the current action.
-        Expression guard = getGuard(umlElement);
-        List<List<Update>> effects = getEffects(umlElement);
+        Expression guard = getGuard(umlAction);
+        List<List<Update>> effects = getEffects(umlAction);
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
 
         // Create a CIF start event for the action.
         Event cifStartEvent = CifConstructors.newEvent();
-        cifStartEvent.setControllable(true);
-        cifStartEvent.setName(umlElement.getName());
+        cifStartEvent.setControllable(controllableStartEvent);
+        cifStartEvent.setName(name);
         eventMap.put(cifStartEvent, umlElement);
 
         // Create a CIF edge for this start event.
@@ -450,8 +469,8 @@ public class UmlToCifTranslator {
         newEventEdges.put(cifStartEvent, cifStartEdge);
 
         // Create any CIF end events and corresponding end edges.
-        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlElement);
-        boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlElement);
+        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction);
+        boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
 
         if (isAtomic && isDeterministic) {
             // In case the action is both deterministic and atomic, then the start event also ends the action.
@@ -468,7 +487,7 @@ public class UmlToCifTranslator {
                 cifEndEvent.setControllable(false);
                 String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
                         : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
-                cifEndEvent.setName(umlElement.getName() + outcomeSuffix + (i + 1));
+                cifEndEvent.setName(name + outcomeSuffix + (i + 1));
                 cifEndEvents.add(cifEndEvent);
 
                 // Make the CIF edge for the uncontrollable end event.
