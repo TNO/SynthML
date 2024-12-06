@@ -14,12 +14,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
@@ -47,7 +54,7 @@ public class ClassesInliner {
                         umlProperty.getName(), flattenedNamesMap);
             }
         }
-        // Sort entries in flattenedNameMap by length of their keys.
+        // Sort entries in the flattened names map by the length of their keys.
         Map<String, Pair<String, Property>> orderedFlattenedNames = orderMapByKeyLength(flattenedNamesMap);
 
         // Create a new static property with a flattened name, and add them to the active class.
@@ -56,15 +63,23 @@ public class ClassesInliner {
         // Delete the data-only classes and related properties.
         deletePassiveClasses(activeClass, passiveClasses, model);
 
-        // Updates the main class with the flattened names.
+        // Updates the opaque behaviors and abstract activities of the main class with the flattened names.
         for (Behavior classBehavior: activeClass.getOwnedBehaviors()) {
             for (Entry<String, Pair<String, Property>> entry: orderedFlattenedNames.entrySet()) {
                 if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    rewriteOpaqueBehavior(umlOpaqueBehavior, entry);
+                    rewriteGuardAndEffects(umlOpaqueBehavior, entry);
                 } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
                     rewriteAbstractActivity(activity, entry);
-                } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                    // TODO: check all named elements, edges, etc.
+                }
+                // TODO: add an error if case not considered.
+            }
+        }
+
+        // Updates the concrete activities with the flattened names.
+        for (Classifier classifier: activeClass.getNestedClassifiers()) {
+            if (classifier instanceof Activity activity && !activity.isAbstract()) {
+                for (Entry<String, Pair<String, Property>> entry: orderedFlattenedNames.entrySet()) {
+                    rewriteConcreteActivity(activity, entry);
                 }
             }
         }
@@ -172,7 +187,7 @@ public class ClassesInliner {
         for (Entry<String, Pair<String, Property>> entry: newNamesMap.entrySet()) {
             String flattenedName = entry.getKey();
             Property originalProperty = entry.getValue().getRight();
-
+            // Create a new property and populate the relevant fields.
             Property rewrittenProperty = FileHelper.FACTORY.createProperty();
             rewrittenProperty.setIsStatic(true);
             rewrittenProperty.setName(flattenedName);
@@ -182,6 +197,14 @@ public class ClassesInliner {
         }
     }
 
+    /**
+     * Deletes properties of the model in three scenarios: 1) properties of the active class that are of type class; 2)
+     * properties of the active class that are classes; 3) passive classes located outside the active class.
+     *
+     * @param activeClass The main active class.
+     * @param passiveClasses List of passive (data) classes.
+     * @param model The UML model.
+     */
     public static void deletePassiveClasses(Class activeClass, List<Class> passiveClasses, Model model) {
         // Delete the properties of the main class that are of type Class.
         ArrayList<Property> propertiesToBeRemoved = new ArrayList<>();
@@ -207,24 +230,25 @@ public class ClassesInliner {
         }
     }
 
-    public static void rewriteOpaqueBehavior(OpaqueBehavior umlOpaqueBehavior,
+    public static void rewriteGuardAndEffects(RedefinableElement element,
             Entry<String, Pair<String, Property>> rewriteEntry)
     {
-        String guard = PokaYokeUmlProfileUtil.getGuard(umlOpaqueBehavior);
+        String guard = PokaYokeUmlProfileUtil.getGuard(element);
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
 
-        List<String> effects = PokaYokeUmlProfileUtil.getEffects(umlOpaqueBehavior);
-        // For all flattened names, rewrite the guard and effects.
-        if (guard.contains(rewriteEntry.getValue().getLeft())) {
+        // Update the guard if it is not null and contains the old name.
+        if (guard != null && guard.contains(rewriteEntry.getValue().getLeft())) {
             guard = guard.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
         }
-        PokaYokeUmlProfileUtil.setGuard(umlOpaqueBehavior, guard);
+        PokaYokeUmlProfileUtil.setGuard(element, guard);
 
+        // Update the effects if they contain the old name.
         ArrayList<String> renamedEffects = new ArrayList<>();
         for (String effect: effects) {
             if (effect.contains(rewriteEntry.getValue().getLeft())) {
                 effect = effect.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
                 renamedEffects.add(effect);
-                PokaYokeUmlProfileUtil.setEffects(umlOpaqueBehavior, renamedEffects);
+                PokaYokeUmlProfileUtil.setEffects(element, renamedEffects);
             }
         }
     }
@@ -233,22 +257,59 @@ public class ClassesInliner {
         EList<Constraint> preconditions = activity.getPreconditions();
         EList<Constraint> postconditions = activity.getPostconditions();
 
-        for (Constraint precondition: preconditions) {
-            EList<String> preconditionConstraints = ((OpaqueExpression)precondition.getSpecification()).getBodies();
-            for (String constraint: preconditionConstraints) {
-                // replace names
-                if (constraint.contains(rewriteEntry.getValue().getLeft())) {
-                    constraint.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
+        rewritePrePostConditions(preconditions, rewriteEntry);
+        rewritePrePostConditions(postconditions, rewriteEntry);
+    }
+
+    public static void rewritePrePostConditions(EList<Constraint> umlConstraints,
+            Entry<String, Pair<String, Property>> rewriteEntry)
+    {
+        for (Constraint constraint: umlConstraints) {
+            EList<String> constraintBodies = ((OpaqueExpression)constraint.getSpecification()).getBodies();
+            for (int i = 0; i < constraintBodies.size(); i++) {
+                // Get the current body and substitute the expression if needed.
+                String currentConstraint = constraintBodies.get(i);
+                if (currentConstraint.contains(rewriteEntry.getValue().getLeft())) {
+                    String newConstraint = currentConstraint.replaceAll(rewriteEntry.getValue().getLeft(),
+                            rewriteEntry.getKey());
+                    constraintBodies.set(i, newConstraint);
                 }
             }
         }
-        for (Constraint postcondition: postconditions) {
-            EList<String> postconditionConstraints = ((OpaqueExpression)postcondition.getSpecification()).getBodies();
-            for (String constraint: postconditionConstraints) {
-                // replace names
-                if (constraint.contains(rewriteEntry.getValue().getLeft())) {
-                    constraint.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
+    }
+
+    public static void rewriteConcreteActivity(Activity activity, Entry<String, Pair<String, Property>> rewriteEntry) {
+        // Update the flattened names of every control flow, call behavior, and opaque action.
+        for (Element ownedElement: activity.getOwnedElements()) {
+            if (ownedElement instanceof ControlFlow controlEdge) {
+                ValueSpecification guard = controlEdge.getGuard();
+                // If null, avoids entering in this loop.
+                if (guard instanceof OpaqueExpression opaqueGuard) {
+                    EList<String> guardBodies = opaqueGuard.getBodies();
+                    rewriteOpaqueGuards(guardBodies, rewriteEntry);
                 }
+            } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
+                // Get guards and respective bodies, updates with the flattened names.
+                Behavior guard = callBehavior.getBehavior();
+                EList<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
+                rewriteOpaqueGuards(guardBodies, rewriteEntry);
+            } else if (ownedElement instanceof OpaqueAction internalAction) {
+                rewriteGuardAndEffects(internalAction, rewriteEntry);
+            }
+            // TODO: add pre post conditions rewriting
+            // TODO: add an error if case not considered.
+        }
+    }
+
+    public static void rewriteOpaqueGuards(EList<String> guardBodies,
+            Entry<String, Pair<String, Property>> rewriteEntry)
+    {
+        for (int i = 0; i < guardBodies.size(); i++) {
+            // Get the current body and substitute its expression if needed.
+            String currentBody = guardBodies.get(i);
+            if (currentBody.contains(rewriteEntry.getValue().getLeft())) {
+                String newBodyString = currentBody.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
+                guardBodies.set(i, newBodyString);
             }
         }
     }
