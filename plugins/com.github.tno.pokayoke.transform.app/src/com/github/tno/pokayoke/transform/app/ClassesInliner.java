@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
@@ -44,10 +45,28 @@ public class ClassesInliner {
         Class activeClass = getSingleActiveClass(context);
         List<Class> passiveClasses = getAllPassiveClasses(context);
 
+        // Find all properties of the main class that are instances of a data class, store them into a map with a unique
+        // flattened name, the original reference name, and the property itself.
+        Map<String, Pair<String, Property>> orderedFlattenedNames = getOrderedFlattenednames(activeClass);
+
+        // Create a new static property with a flattened name, and add them to the active class.
+        rewriteProperties(activeClass, orderedFlattenedNames);
+
+        // Delete the data-only classes and related properties.
+        deletePassiveClasses(activeClass, passiveClasses, model);
+
+        // Updates the opaque behaviors and abstract activities of the main class with the flattened names.
+        rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
+
+        // Updates the concrete activities with the flattened names.
+        rewriteNestedClassifiers(activeClass, orderedFlattenedNames);
+    }
+
+    public static Map<String, Pair<String, Property>> getOrderedFlattenednames(Class activeClass) {
         Map<String, Pair<String, Property>> flattenedNamesMap = new LinkedHashMap<>();
 
-        // Find all properties of the main class that are instances of a data class, store them into a map with a unique
-        // flattened name and the original reference name (e.g. robot.arm.position).
+        // Loop over all properties. If they are of type class, store them into a map composed of a unique
+        // flattened name, the original reference name, and the corresponding property.
         for (Property umlProperty: activeClass.getOwnedAttributes()) {
             if (!PokaYokeTypeUtil.isSupportedType(umlProperty.getType())) {
                 flattenedNamesMap = getLeafPrimitiveType((Class)umlProperty.getType(), umlProperty.getName(),
@@ -57,32 +76,7 @@ public class ClassesInliner {
         // Sort entries in the flattened names map by the length of their keys.
         Map<String, Pair<String, Property>> orderedFlattenedNames = orderMapByKeyLength(flattenedNamesMap);
 
-        // Create a new static property with a flattened name, and add them to the active class.
-        writeRenamedProperties(flattenedNamesMap, activeClass);
-
-        // Delete the data-only classes and related properties.
-        deletePassiveClasses(activeClass, passiveClasses, model);
-
-        // Updates the opaque behaviors and abstract activities of the main class with the flattened names.
-        for (Behavior classBehavior: activeClass.getOwnedBehaviors()) {
-            for (Entry<String, Pair<String, Property>> entry: orderedFlattenedNames.entrySet()) {
-                if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    rewriteGuardAndEffects(umlOpaqueBehavior, entry);
-                } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                    rewriteAbstractActivity(activity, entry);
-                }
-                // TODO: add an error if case not considered.
-            }
-        }
-
-        // Updates the concrete activities with the flattened names.
-        for (Classifier classifier: activeClass.getNestedClassifiers()) {
-            if (classifier instanceof Activity activity && !activity.isAbstract()) {
-                for (Entry<String, Pair<String, Property>> entry: orderedFlattenedNames.entrySet()) {
-                    rewriteConcreteActivity(activity, entry);
-                }
-            }
-        }
+        return orderedFlattenedNames;
     }
 
     /**
@@ -107,9 +101,6 @@ public class ClassesInliner {
                 // If we find a property that is supported, add it to the map.
                 flattenedNamesMap = addFlattenedNameToMap(umlProperty, newNameString, newPosiString, flattenedNamesMap);
             } else {
-                // Add the intermediate product of these. For example, if we have robot1.arm.position, we should
-                // add also robot1.arm as a property, together with robot1.arm.position.
-                flattenedNamesMap = addFlattenedNameToMap(umlProperty, newNameString, newPosiString, flattenedNamesMap);
                 // Recursive call.
                 getLeafPrimitiveType((Class)umlProperty.getType(), newNameString, newPosiString, flattenedNamesMap);
             }
@@ -134,7 +125,7 @@ public class ClassesInliner {
         Pair<String, Property> positionAndObject = Pair.of(position, umlProperty);
 
         if (flattenedNamesMap.get(name) == null) {
-            // Add the item to the map.
+            // Add the item to the map if name is unused.
             flattenedNamesMap.put(name, positionAndObject);
         } else {
             // Find how many keys start with 'name' and add a number at the end.
@@ -183,7 +174,7 @@ public class ClassesInliner {
         return orderedMap;
     }
 
-    public static void writeRenamedProperties(Map<String, Pair<String, Property>> newNamesMap, Class activeClass) {
+    public static void rewriteProperties(Class activeClass, Map<String, Pair<String, Property>> newNamesMap) {
         for (Entry<String, Pair<String, Property>> entry: newNamesMap.entrySet()) {
             String flattenedName = entry.getKey();
             Property originalProperty = entry.getValue().getRight();
@@ -206,7 +197,7 @@ public class ClassesInliner {
      * @param model The UML model.
      */
     public static void deletePassiveClasses(Class activeClass, List<Class> passiveClasses, Model model) {
-        // Delete the properties of the main class that are of type Class.
+        // Delete the properties of the active class that are of type Class.
         ArrayList<Property> propertiesToBeRemoved = new ArrayList<>();
         for (Property umlProperty: activeClass.getOwnedAttributes()) {
             if (passiveClasses.contains(umlProperty.getType())) {
@@ -253,6 +244,21 @@ public class ClassesInliner {
         }
     }
 
+    public static void rewriteOwnedBehaviors(Class clazz, Map<String, Pair<String, Property>> namesMap) {
+        for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
+            for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
+                if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
+                    rewriteGuardAndEffects(umlOpaqueBehavior, entry);
+                } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
+                    rewriteAbstractActivity(activity, entry);
+                } else {
+                    throw new RuntimeException(
+                            String.format("\"Renaming of class \'%s\' not supported.\"", classBehavior.getClass()));
+                }
+            }
+        }
+    }
+
     public static void rewriteAbstractActivity(Activity activity, Entry<String, Pair<String, Property>> rewriteEntry) {
         EList<Constraint> preconditions = activity.getPreconditions();
         EList<Constraint> postconditions = activity.getPostconditions();
@@ -278,6 +284,19 @@ public class ClassesInliner {
         }
     }
 
+    public static void rewriteNestedClassifiers(Class clazz, Map<String, Pair<String, Property>> namesMap) {
+        for (Classifier classifier: clazz.getNestedClassifiers()) {
+            if (classifier instanceof Activity activity && !activity.isAbstract()) {
+                for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
+                    rewriteConcreteActivity(activity, entry);
+                }
+            } else {
+                throw new RuntimeException(String.format("Nested classifier \'%s\' are not supported after flattening.",
+                        classifier.getName()));
+            }
+        }
+    }
+
     public static void rewriteConcreteActivity(Activity activity, Entry<String, Pair<String, Property>> rewriteEntry) {
         // Update the flattened names of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
@@ -295,10 +314,20 @@ public class ClassesInliner {
                 rewriteOpaqueGuards(guardBodies, rewriteEntry);
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 rewriteGuardAndEffects(internalAction, rewriteEntry);
+            } else if (ownedElement instanceof ActivityNode) {
+                continue;
+            } else {
+                throw new RuntimeException(
+                        String.format("Renaming of class \'%s\' not supported.", ownedElement.getClass()));
             }
-            // TODO: add pre post conditions rewriting
-            // TODO: add an error if case not considered.
         }
+
+        // Rewrite pre- and post-conditions.
+        EList<Constraint> preconditions = activity.getPreconditions();
+        EList<Constraint> postconditions = activity.getPostconditions();
+
+        rewritePrePostConditions(preconditions, rewriteEntry);
+        rewritePrePostConditions(postconditions, rewriteEntry);
     }
 
     public static void rewriteOpaqueGuards(EList<String> guardBodies,
