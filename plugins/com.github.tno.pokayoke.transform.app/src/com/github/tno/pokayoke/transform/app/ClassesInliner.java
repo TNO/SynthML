@@ -35,7 +35,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
-/** Application that flattens all passive classes and rewrites all named elements with the flattened names. */
+/** Application that flattens all properties that are instantiations of a data class, and deletes all data classes. */
 public class ClassesInliner {
     private ClassesInliner() {
     }
@@ -49,16 +49,16 @@ public class ClassesInliner {
         // flattened name, the original reference name, and the property itself.
         Map<String, Pair<String, Property>> orderedFlattenedNames = getOrderedFlattenednames(activeClass);
 
-        // Create a new static property with a flattened name, and add them to the active class.
+        // Create new static properties with flattened names, and add them to the active class.
         rewriteProperties(activeClass, orderedFlattenedNames);
 
         // Delete the data-only classes and related properties.
         deletePassiveClasses(activeClass, passiveClasses, model);
 
-        // Updates the opaque behaviors and abstract activities of the main class with the flattened names.
+        // Updates the opaque behaviors and abstract activities of the active class with the flattened names.
         rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
 
-        // Updates the concrete activities with the flattened names.
+        // Updates the concrete and other abstract activities with the flattened names.
         rewriteNestedClassifiers(activeClass, orderedFlattenedNames);
     }
 
@@ -83,26 +83,26 @@ public class ClassesInliner {
      * Implements a DFS to find the primitive type of every attribute of a class.
      *
      * @param clazz The class containing the properties.
-     * @param name The string representing the new, flattened name of a property.
-     * @param position The string representing the old name of a property, including the dots.
+     * @param flatName The string representing the new, flattened name of a property.
+     * @param dotName The string representing the old name of a property, including the dots.
      * @param flattenedNamesMap The map containing the old and new names, along with the property they refer to.
      * @return A map containing the old and new names, along with the property they refer to.
      */
-    public static Map<String, Pair<String, Property>> getLeafPrimitiveType(Class clazz, String name, String position,
+    public static Map<String, Pair<String, Property>> getLeafPrimitiveType(Class clazz, String flatName, String dotName,
             Map<String, Pair<String, Property>> flattenedNamesMap)
     {
         // Loop over a class' attributes. If they are boolean, Enum, Integer, add them to the main class; otherwise,
         // recursively call on the children object.
         for (Property umlProperty: clazz.getOwnedAttributes()) {
-            String newNameString = name + "_" + umlProperty.getName();
-            String newPosiString = position + "." + umlProperty.getName();
+            String newFlatName = flatName + "_" + umlProperty.getName();
+            String newDotName = dotName + "." + umlProperty.getName();
 
             if (PokaYokeTypeUtil.isSupportedType(umlProperty.getType())) {
                 // If we find a property that is supported, add it to the map.
-                flattenedNamesMap = addFlattenedNameToMap(umlProperty, newNameString, newPosiString, flattenedNamesMap);
+                flattenedNamesMap = addFlattenedNameToMap(umlProperty, newFlatName, newDotName, flattenedNamesMap);
             } else {
                 // Recursive call.
-                getLeafPrimitiveType((Class)umlProperty.getType(), newNameString, newPosiString, flattenedNamesMap);
+                getLeafPrimitiveType((Class)umlProperty.getType(), newFlatName, newDotName, flattenedNamesMap);
             }
         }
 
@@ -114,29 +114,29 @@ public class ClassesInliner {
      * Ensures that the new names are unique.
      *
      * @param umlProperty The property to be inserted.
-     * @param name The new name.
-     * @param position The old name.
+     * @param newName The new name.
+     * @param oldName The old name.
      * @param flattenedNamesMap The map containing the old and new names, along with the property.
      * @return The updated map.
      */
-    public static Map<String, Pair<String, Property>> addFlattenedNameToMap(Property umlProperty, String name,
-            String position, Map<String, Pair<String, Property>> flattenedNamesMap)
+    public static Map<String, Pair<String, Property>> addFlattenedNameToMap(Property umlProperty, String newName,
+            String oldName, Map<String, Pair<String, Property>> flattenedNamesMap)
     {
-        Pair<String, Property> positionAndObject = Pair.of(position, umlProperty);
+        Pair<String, Property> positionAndObject = Pair.of(oldName, umlProperty);
 
-        if (flattenedNamesMap.get(name) == null) {
+        if (flattenedNamesMap.get(newName) == null) {
             // Add the item to the map if name is unused.
-            flattenedNamesMap.put(name, positionAndObject);
+            flattenedNamesMap.put(newName, positionAndObject);
         } else {
             // Find how many keys start with 'name' and add a number at the end.
             Set<String> allKeys = flattenedNamesMap.keySet();
             int count = 0;
             for (String k: allKeys) {
-                if (k.startsWith(name)) {
+                if (k.startsWith(newName)) {
                     count += 1;
                 }
             }
-            flattenedNamesMap.put(name + String.valueOf(count), positionAndObject);
+            flattenedNamesMap.put(newName + String.valueOf(count), positionAndObject);
         }
 
         return flattenedNamesMap;
@@ -244,6 +244,13 @@ public class ClassesInliner {
         }
     }
 
+    /**
+     * Rewrites the abstract activity and the opaque behaviors of the active class with the update names map. Throw a
+     * RuntimeException is any other element is detected.
+     *
+     * @param clazz The class considered.
+     * @param namesMap The map containing the old and new names.
+     */
     public static void rewriteOwnedBehaviors(Class clazz, Map<String, Pair<String, Property>> namesMap) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
@@ -252,8 +259,8 @@ public class ClassesInliner {
                 } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
                     rewriteAbstractActivity(activity, entry);
                 } else {
-                    throw new RuntimeException(
-                            String.format("\"Renaming of class \'%s\' not supported.\"", classBehavior.getClass()));
+                    throw new RuntimeException(String.format(
+                            "Renaming flattened properties of class '%s' not supported.", classBehavior.getClass()));
                 }
             }
         }
@@ -290,9 +297,13 @@ public class ClassesInliner {
                 for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
                     rewriteConcreteActivity(activity, entry);
                 }
+            } else if (classifier instanceof Activity activity && activity.isAbstract()) {
+                for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
+                    rewriteAbstractActivity(activity, entry);
+                }
             } else {
-                throw new RuntimeException(String.format("Nested classifier \'%s\' are not supported after flattening.",
-                        classifier.getName()));
+                throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
+                        classifier.getClass()));
             }
         }
     }
@@ -317,8 +328,8 @@ public class ClassesInliner {
             } else if (ownedElement instanceof ActivityNode) {
                 continue;
             } else {
-                throw new RuntimeException(
-                        String.format("Renaming of class \'%s\' not supported.", ownedElement.getClass()));
+                throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
+                        ownedElement.getClass()));
             }
         }
 

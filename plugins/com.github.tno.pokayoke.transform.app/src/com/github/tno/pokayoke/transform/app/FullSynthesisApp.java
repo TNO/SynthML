@@ -83,6 +83,9 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
+        // Flatten the properties that are objects of a data class and removes the data classes.
+        ClassesInliner.inlineClasses(umlSpec);
+
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
                 new CifContext(umlSpec).getAllActivities());
