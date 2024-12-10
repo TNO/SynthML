@@ -151,7 +151,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         // Nested classifiers should not contain activities, only data classes.
         if (clazz.getNestedClassifiers().stream().filter(o -> o instanceof Activity).findFirst().isPresent()) {
-            error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
+            error("Activities as nested classifiers are not supported. Please define activity as owned behavior.",
+                    UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
         }
 
         if (clazz instanceof Behavior) {
