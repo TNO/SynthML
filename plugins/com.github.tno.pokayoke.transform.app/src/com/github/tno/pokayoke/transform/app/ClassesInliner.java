@@ -17,7 +17,6 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -55,11 +54,8 @@ public class ClassesInliner {
         // Delete the data-only classes and related properties.
         deletePassiveClasses(activeClass, passiveClasses, model);
 
-        // Updates the opaque behaviors and abstract activities of the active class with the flattened names.
+        // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
         rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
-
-        // Updates the concrete and other abstract activities with the flattened names.
-        rewriteNestedClassifiers(activeClass, orderedFlattenedNames);
     }
 
     public static Map<String, Pair<String, Property>> getOrderedFlattenednames(Class activeClass) {
@@ -245,8 +241,8 @@ public class ClassesInliner {
     }
 
     /**
-     * Rewrites the abstract activity and the opaque behaviors of the active class with the update names map. Throw a
-     * RuntimeException is any other element is detected.
+     * Rewrites the abstract and concrete activities, and the opaque behaviors of the active class with the update names
+     * map. Throw a RuntimeException is any other element is detected.
      *
      * @param clazz The class considered.
      * @param namesMap The map containing the old and new names.
@@ -258,6 +254,8 @@ public class ClassesInliner {
                     rewriteGuardAndEffects(umlOpaqueBehavior, entry);
                 } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
                     rewriteAbstractActivity(activity, entry);
+                } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
+                    rewriteConcreteActivity(activity, entry);
                 } else {
                     throw new RuntimeException(String.format(
                             "Renaming flattened properties of class '%s' not supported.", classBehavior.getClass()));
@@ -287,23 +285,6 @@ public class ClassesInliner {
                             rewriteEntry.getKey());
                     constraintBodies.set(i, newConstraint);
                 }
-            }
-        }
-    }
-
-    public static void rewriteNestedClassifiers(Class clazz, Map<String, Pair<String, Property>> namesMap) {
-        for (Classifier classifier: clazz.getNestedClassifiers()) {
-            if (classifier instanceof Activity activity && !activity.isAbstract()) {
-                for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
-                    rewriteConcreteActivity(activity, entry);
-                }
-            } else if (classifier instanceof Activity activity && activity.isAbstract()) {
-                for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
-                    rewriteAbstractActivity(activity, entry);
-                }
-            } else {
-                throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
-                        classifier.getClass()));
             }
         }
     }
