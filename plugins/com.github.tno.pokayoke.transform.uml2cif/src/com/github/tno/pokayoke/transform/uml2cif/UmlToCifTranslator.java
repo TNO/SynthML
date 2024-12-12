@@ -296,19 +296,6 @@ public class UmlToCifTranslator {
             cifLocation.getEdges().add(entry.getValue());
         }
 
-        for (Activity concreteActivity: context.getAllConcreteActivities()) {
-            Pair<Set<DiscVariable>, BiMap<Event, Edge>> newVarsAndEventEdges = translateActivity(concreteActivity);
-            Set<DiscVariable> newVars = newVarsAndEventEdges.left;
-            BiMap<Event, Edge> newEventEdges = newVarsAndEventEdges.right;
-
-            cifPlant.getDeclarations().addAll(newVars);
-
-            for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
-                cifSpec.getDeclarations().add(entry.getKey());
-                cifLocation.getEdges().add(entry.getValue());
-            }
-        }
-
         // Encode constraints to ensure that atomic non-deterministic actions are executed atomically.
         DiscVariable cifAtomicityVar = encodeAtomicNonDeterministicActionConstraints();
         if (cifAtomicityVar != null) {
@@ -582,7 +569,7 @@ public class UmlToCifTranslator {
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivity(Activity activity) {
-        Preconditions.checkArgument(!activity.isActive(), "Expected a concrete activity.");
+        Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
         // Translate all activity control flows.
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
