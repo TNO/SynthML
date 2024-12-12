@@ -498,8 +498,11 @@ public class UmlToCifTranslator {
         cifStartEdge.getGuards().add(guard);
         newEventEdges.put(cifStartEvent, cifStartEdge);
 
-        // Create any CIF end events and corresponding end edges.
-        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction);
+        // Create any CIF end events and corresponding end edges. We thereby assume that, if the given UML action is not
+        // a formal element, then it's also not atomic. This extra check is there since, by default, all elements are
+        // considered to be non-atomic. And we don't want, e.g., fork or join nodes to be non-atomic.
+        boolean isAtomic = !PokaYokeUmlProfileUtil.isFormalElement(umlAction)
+                || PokaYokeUmlProfileUtil.isAtomic(umlAction);
         boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
 
         if (isAtomic && isDeterministic) {
