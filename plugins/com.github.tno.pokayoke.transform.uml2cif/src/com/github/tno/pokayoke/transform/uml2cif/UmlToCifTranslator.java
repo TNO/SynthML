@@ -1267,8 +1267,8 @@ public class UmlToCifTranslator {
 
     /**
      * Translates the UML activity postconditions to a CIF algebraic variable. Extra postconditions are added expressing
-     * that no non-atomic and atomic non-deterministic actions may be active, and that all occurrence constraints must
-     * be satisfied.
+     * that no non-atomic and atomic non-deterministic actions may be active, that all occurrence constraints must be
+     * satisfied, and that no control flow of any translated concrete activity holds a token.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
      * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
@@ -1330,6 +1330,25 @@ public class UmlToCifTranslator {
                         cifExtraPostcondition);
                 postconditionVars.add(cifAlgVar);
             }
+        }
+
+        // For every control flow of a translated concrete activity, define an extra postcondition that expresses that
+        // the control flow must not hold a token.
+        for (var entry: controlFlowMap.entrySet()) {
+            DiscVariable cifControlFlowVar = entry.getValue();
+
+            // First define the postcondition expression.
+            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+            cifExtraPostcondition.setChild(
+                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifControlFlowVar));
+            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+            // Then define an extra CIF algebraic variable for the extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
+            postconditionVars.add(cifAlgVar);
         }
 
         // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is the
