@@ -14,6 +14,7 @@ import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
 import org.eclipse.escet.cif.datasynth.conversion.SynthesisToCifConverter;
 import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
+import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.common.app.framework.AppEnv;
@@ -28,6 +29,7 @@ public class CIFDataSynthesisHelper {
     public static CifDataSynthesisSettings getSynthesisSettings() {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
+        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
         settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
         return settings;
     }
