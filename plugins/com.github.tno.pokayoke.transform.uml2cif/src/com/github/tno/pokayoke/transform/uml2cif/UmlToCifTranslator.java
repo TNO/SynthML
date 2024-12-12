@@ -203,8 +203,8 @@ public class UmlToCifTranslator {
      * @return The mapping from non-atomic/non-deterministic CIF end events to their corresponding UML elements and the
      *     index of the corresponding effect of the end event.
      */
-    public BiMap<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        BiMap<Event, Pair<RedefinableElement, Integer>> result = HashBiMap.create();
+    public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
+        Map<Event, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
 
         for (var entry: eventMap.entrySet()) {
             Event startEvent = entry.getKey();
@@ -234,10 +234,10 @@ public class UmlToCifTranslator {
      * @return The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements and
      *     the index of the corresponding effect of the end event.
      */
-    public BiMap<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
-        BiMap<Event, Pair<RedefinableElement, Integer>> endEventMap = getEndEventMap();
+    public Map<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
+        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = getEndEventMap();
 
-        BiMap<String, Pair<RedefinableElement, Integer>> result = HashBiMap.create();
+        Map<String, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
 
         for (var entry: endEventMap.entrySet()) {
             result.put(entry.getKey().getName(), entry.getValue());
