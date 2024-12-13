@@ -242,23 +242,28 @@ public class PostProcessActivity {
 
                     if (actionName.contains(nonAtomicOutcomeSuffix)) {
                         // Find the UML element for the non-atomic action, and the index to the relevant effect.
-                        Pair<RedefinableElement, Integer> actionElement = endEventMap.get(actionName);
-                        Verify.verifyNotNull(actionElement,
-                                String.format(
-                                        "Expected the CIF end event '%s' to map to a non-atomic UML element.",
-                                        actionName));
+                        Pair<RedefinableElement, Integer> actionAndEffectIndex = endEventMap.get(actionName);
+                        Verify.verifyNotNull(actionAndEffectIndex, String.format(
+                                "Expected the CIF end event '%s' to map to a non-atomic UML element.", actionName));
+
+                        // Determine the UML element that has the guard and effects of the current action.
+                        RedefinableElement actionElement = actionAndEffectIndex.left;
+                        if (actionElement instanceof CallBehaviorAction cbAction) {
+                            actionElement = cbAction.getBehavior();
+                        }
 
                         // Rename the current action, set its guard to 'true', and retain the original relevant effect.
                         action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end"));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
-                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement.left).get(actionElement.right);
+                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement)
+                                .get(actionAndEffectIndex.right);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
                         // Add a warning that the current non-atomic end action has not been fully merged.
                         warnings.add(String.format(
                                 "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
-                                actionElement.left.getName(), action.getName()));
+                                actionElement.getName(), action.getName()));
                     }
                 }
             }
