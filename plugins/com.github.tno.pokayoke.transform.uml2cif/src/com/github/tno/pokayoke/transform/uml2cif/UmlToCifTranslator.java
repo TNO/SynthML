@@ -744,6 +744,13 @@ public class UmlToCifTranslator {
             }
         }
 
+        // If there is at most one control flow pair, then we can translate the node as an AND-type node (which is
+        // slightly simpler and gives slightly nicer event names), since that's semantically equivalent to translating
+        // it as an OR-type node.
+        if (controlFlowPairs.size() <= 1) {
+            return translateActivityAndNode(node, controllableStartEvents);
+        }
+
         // For every collected pair of control flows, translate the UML activity node.
         BiMap<Event, Edge> result = HashBiMap.create();
         int count = 0;
