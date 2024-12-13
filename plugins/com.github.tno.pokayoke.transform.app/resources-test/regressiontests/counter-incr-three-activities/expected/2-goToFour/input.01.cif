@@ -8,12 +8,12 @@ uncontrollable __node__CallBehaviorAction__36;
 uncontrollable __node__CallBehaviorAction__37;
 uncontrollable __node__CallBehaviorAction__37__na_result_1;
 uncontrollable __node__CallBehaviorAction__37__na_result_2;
-controllable __node__InitialNode__38__0;
+controllable __node__InitialNode__38;
 uncontrollable __node__DecisionNode__39__0;
 uncontrollable __node__DecisionNode__39__1;
 uncontrollable __node__MergeNode__40__0;
 uncontrollable __node__MergeNode__40__1;
-uncontrollable __node__ActivityFinalNode__41__0;
+uncontrollable __node__ActivityFinalNode__41;
 plant automaton Context:
   disc bool init in any;
   disc int[0..5] count in any;
@@ -59,12 +59,12 @@ plant automaton Context:
     edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
     edge __node__CallBehaviorAction__37__na_result_1 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 1, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
     edge __node__CallBehaviorAction__37__na_result_2 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 2, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
-    edge __node__InitialNode__38__0 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
+    edge __node__InitialNode__38 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
     edge __node__DecisionNode__39__0 when true, __controlflow__26, not __controlflow__31, count = 1 or (count = 3 or count = 5) do __controlflow__26 := false, __controlflow__31 := true;
     edge __node__DecisionNode__39__1 when true, __controlflow__26, not __controlflow__33, count = 0 or (count = 2 or count = 4) do __controlflow__26 := false, __controlflow__33 := true;
     edge __node__MergeNode__40__0 when true, __controlflow__27, not __controlflow__29 do __controlflow__27 := false, __controlflow__29 := true;
     edge __node__MergeNode__40__1 when true, __controlflow__28, not __controlflow__29 do __controlflow__28 := false, __controlflow__29 := true;
-    edge __node__ActivityFinalNode__41__0 when true, __controlflow__29, count = 3 do __controlflow__29 := false;
+    edge __node__ActivityFinalNode__41 when true, __controlflow__29, count = 3 do __controlflow__29 := false;
 end
 requirement automaton occurrences_goToFour_twice__initialize:
   disc int[0..2] __occurrences;
@@ -96,7 +96,7 @@ requirement automaton occurrences_goToFour_none__goToThree:
   location:
     initial;
     marked;
-    edge __node__InitialNode__38__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
+    edge __node__InitialNode__38 when __occurrences < 0 do __occurrences := __occurrences + 1;
 end
 requirement automaton occurrences_goToFour_none__goToFive:
   disc int[0..1] __occurrences;
@@ -115,9 +115,9 @@ requirement invariant Context.__postcondition disables __node__CallBehaviorActio
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37__na_result_1;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37__na_result_2;
-requirement invariant Context.__postcondition disables __node__InitialNode__38__0;
+requirement invariant Context.__postcondition disables __node__InitialNode__38;
 requirement invariant Context.__postcondition disables __node__DecisionNode__39__0;
 requirement invariant Context.__postcondition disables __node__DecisionNode__39__1;
 requirement invariant Context.__postcondition disables __node__MergeNode__40__0;
 requirement invariant Context.__postcondition disables __node__MergeNode__40__1;
-requirement invariant Context.__postcondition disables __node__ActivityFinalNode__41__0;
+requirement invariant Context.__postcondition disables __node__ActivityFinalNode__41;

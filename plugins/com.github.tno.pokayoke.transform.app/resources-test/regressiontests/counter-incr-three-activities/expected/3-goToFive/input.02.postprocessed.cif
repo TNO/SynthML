@@ -8,12 +8,12 @@ uncontrollable __node__CallBehaviorAction__36;
 uncontrollable __node__CallBehaviorAction__37;
 uncontrollable __node__CallBehaviorAction__37__na_result_1;
 uncontrollable __node__CallBehaviorAction__37__na_result_2;
-controllable __node__InitialNode__38__0;
+controllable __node__InitialNode__38;
 uncontrollable __node__DecisionNode__39__0;
 uncontrollable __node__DecisionNode__39__1;
 uncontrollable __node__MergeNode__40__0;
 uncontrollable __node__MergeNode__40__1;
-uncontrollable __node__ActivityFinalNode__41__0;
+uncontrollable __node__ActivityFinalNode__41;
 uncontrollable __node__CallBehaviorAction__73;
 uncontrollable __node__CallBehaviorAction__74;
 uncontrollable __node__CallBehaviorAction__75;
@@ -23,7 +23,7 @@ uncontrollable __node__CallBehaviorAction__78;
 uncontrollable __node__CallBehaviorAction__79;
 uncontrollable __node__CallBehaviorAction__79__na_result_1;
 uncontrollable __node__CallBehaviorAction__79__na_result_2;
-controllable __node__InitialNode__80__0;
+controllable __node__InitialNode__80;
 uncontrollable __node__DecisionNode__81__0;
 uncontrollable __node__DecisionNode__81__1;
 uncontrollable __node__DecisionNode__82__0;
@@ -35,7 +35,7 @@ uncontrollable __node__MergeNode__84__1;
 uncontrollable __node__MergeNode__85__0;
 uncontrollable __node__MergeNode__85__1;
 uncontrollable __node__MergeNode__85__2;
-uncontrollable __node__ActivityFinalNode__86__0;
+uncontrollable __node__ActivityFinalNode__86;
 plant automaton Context:
   disc bool init in any;
   disc int[0..5] count in any;
@@ -115,12 +115,12 @@ plant automaton Context:
     edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
     edge __node__CallBehaviorAction__37__na_result_1 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 1, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
     edge __node__CallBehaviorAction__37__na_result_2 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 2, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
-    edge __node__InitialNode__38__0 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
+    edge __node__InitialNode__38 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
     edge __node__DecisionNode__39__0 when true, __controlflow__26, not __controlflow__31, count = 1 or (count = 3 or count = 5) do __controlflow__26 := false, __controlflow__31 := true;
     edge __node__DecisionNode__39__1 when true, __controlflow__26, not __controlflow__33, count = 0 or (count = 2 or count = 4) do __controlflow__26 := false, __controlflow__33 := true;
     edge __node__MergeNode__40__0 when true, __controlflow__27, not __controlflow__29 do __controlflow__27 := false, __controlflow__29 := true;
     edge __node__MergeNode__40__1 when true, __controlflow__28, not __controlflow__29 do __controlflow__28 := false, __controlflow__29 := true;
-    edge __node__ActivityFinalNode__41__0 when true, __controlflow__29, count = 3 do __controlflow__29 := false;
+    edge __node__ActivityFinalNode__41 when true, __controlflow__29, count = 3 do __controlflow__29 := false;
     edge __node__CallBehaviorAction__73 when init, __controlflow__63, not __controlflow__64 do count := count + 1, __controlflow__63 := false, __controlflow__64 := true;
     edge __node__CallBehaviorAction__74 when init, __controlflow__56, not __controlflow__61 do count := count + 1, __controlflow__56 := false, __controlflow__61 := true;
     edge __node__CallBehaviorAction__75 when init, __controlflow__52, not __controlflow__60 do count := count + 1, __controlflow__52 := false, __controlflow__60 := true;
@@ -130,7 +130,7 @@ plant automaton Context:
     edge __node__CallBehaviorAction__79 when not init, __controlflow__68, not __nonAtomicActive____node__CallBehaviorAction__79 do __controlflow__68 := false, __nonAtomicActive____node__CallBehaviorAction__79 := true;
     edge __node__CallBehaviorAction__79__na_result_1 when not __controlflow__51, __nonAtomicActive____node__CallBehaviorAction__79 do init := true, count := 1, __controlflow__51 := true, __nonAtomicActive____node__CallBehaviorAction__79 := false;
     edge __node__CallBehaviorAction__79__na_result_2 when not __controlflow__51, __nonAtomicActive____node__CallBehaviorAction__79 do init := true, count := 2, __controlflow__51 := true, __nonAtomicActive____node__CallBehaviorAction__79 := false;
-    edge __node__InitialNode__80__0 when true, not __controlflow__68, not init and count = 0 do __controlflow__68 := true;
+    edge __node__InitialNode__80 when true, not __controlflow__68, not init and count = 0 do __controlflow__68 := true;
     edge __node__DecisionNode__81__0 when true, __controlflow__51, not __controlflow__69, count = 1 or (count = 3 or count = 5) do __controlflow__51 := false, __controlflow__69 := true;
     edge __node__DecisionNode__81__1 when true, __controlflow__51, not __controlflow__71, count = 0 or (count = 2 or count = 4) do __controlflow__51 := false, __controlflow__71 := true;
     edge __node__DecisionNode__82__0 when true, __controlflow__69, not __controlflow__52, true do __controlflow__69 := false, __controlflow__52 := true;
@@ -142,7 +142,7 @@ plant automaton Context:
     edge __node__MergeNode__85__0 when true, __controlflow__64, not __controlflow__67 do __controlflow__64 := false, __controlflow__67 := true;
     edge __node__MergeNode__85__1 when true, __controlflow__65, not __controlflow__67 do __controlflow__65 := false, __controlflow__67 := true;
     edge __node__MergeNode__85__2 when true, __controlflow__66, not __controlflow__67 do __controlflow__66 := false, __controlflow__67 := true;
-    edge __node__ActivityFinalNode__86__0 when true, __controlflow__67, count = 4 do __controlflow__67 := false;
+    edge __node__ActivityFinalNode__86 when true, __controlflow__67, count = 4 do __controlflow__67 := false;
 end
 requirement automaton occurrences_goToFive_thrice__initialize:
   disc int[0..3] __occurrences;
@@ -174,7 +174,7 @@ requirement automaton occurrences_goToFive_none__goToFour:
   location:
     initial;
     marked;
-    edge __node__InitialNode__80__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
+    edge __node__InitialNode__80 when __occurrences < 0 do __occurrences := __occurrences + 1;
 end
 requirement automaton occurrences_goToFive_none__goToThree:
   disc int[0..1] __occurrences;
@@ -182,7 +182,7 @@ requirement automaton occurrences_goToFive_none__goToThree:
   location:
     initial;
     marked;
-    edge __node__InitialNode__38__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
+    edge __node__InitialNode__38 when __occurrences < 0 do __occurrences := __occurrences + 1;
 end
 requirement invariant Context.__postcondition disables initialize;
 requirement invariant Context.__postcondition disables initialize__na_result_1;
@@ -194,12 +194,12 @@ requirement invariant Context.__postcondition disables __node__CallBehaviorActio
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37__na_result_1;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__37__na_result_2;
-requirement invariant Context.__postcondition disables __node__InitialNode__38__0;
+requirement invariant Context.__postcondition disables __node__InitialNode__38;
 requirement invariant Context.__postcondition disables __node__DecisionNode__39__0;
 requirement invariant Context.__postcondition disables __node__DecisionNode__39__1;
 requirement invariant Context.__postcondition disables __node__MergeNode__40__0;
 requirement invariant Context.__postcondition disables __node__MergeNode__40__1;
-requirement invariant Context.__postcondition disables __node__ActivityFinalNode__41__0;
+requirement invariant Context.__postcondition disables __node__ActivityFinalNode__41;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__73;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__74;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__75;
@@ -209,7 +209,7 @@ requirement invariant Context.__postcondition disables __node__CallBehaviorActio
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__79;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__79__na_result_1;
 requirement invariant Context.__postcondition disables __node__CallBehaviorAction__79__na_result_2;
-requirement invariant Context.__postcondition disables __node__InitialNode__80__0;
+requirement invariant Context.__postcondition disables __node__InitialNode__80;
 requirement invariant Context.__postcondition disables __node__DecisionNode__81__0;
 requirement invariant Context.__postcondition disables __node__DecisionNode__81__1;
 requirement invariant Context.__postcondition disables __node__DecisionNode__82__0;
@@ -221,4 +221,4 @@ requirement invariant Context.__postcondition disables __node__MergeNode__84__1;
 requirement invariant Context.__postcondition disables __node__MergeNode__85__0;
 requirement invariant Context.__postcondition disables __node__MergeNode__85__1;
 requirement invariant Context.__postcondition disables __node__MergeNode__85__2;
-requirement invariant Context.__postcondition disables __node__ActivityFinalNode__86__0;
+requirement invariant Context.__postcondition disables __node__ActivityFinalNode__86;

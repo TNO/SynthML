@@ -5,11 +5,11 @@ controllable incr1;
 controllable incr2;
 uncontrollable __node__CallBehaviorAction__37__na_result_1;
 uncontrollable __node__CallBehaviorAction__37__na_result_2;
-controllable __node__InitialNode__38__0;
+controllable __node__InitialNode__38;
 controllable __start;
 controllable __end;
 automaton minimal:
-  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__CallBehaviorAction__37__na_result_1, __node__CallBehaviorAction__37__na_result_2, __node__InitialNode__38__0, __start, __end;
+  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__CallBehaviorAction__37__na_result_1, __node__CallBehaviorAction__37__na_result_2, __node__InitialNode__38, __start, __end;
   @state(projected = "s1")
   location s1:
     initial;
