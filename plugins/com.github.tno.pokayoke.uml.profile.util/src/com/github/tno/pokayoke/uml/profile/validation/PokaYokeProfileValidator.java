@@ -141,11 +141,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         checkNamingConventions(model, NamingConvention.MANDATORY);
-        // Valid models should have one active class.
-        long count = model.getPackagedElements().stream()
-                .filter(pack -> pack instanceof Class clazz && clazz.isActive()).count();
+
+        // Valid models should have one class.
+        long count = model.getPackagedElements().stream().filter(pack -> pack instanceof Class).count();
         if (count != 1) {
-            error("Expected exactly one active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+            error("Expected exactly one class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
     }
 
@@ -156,22 +156,30 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
+        if (!clazz.getNestedClassifiers().isEmpty()) {
+            error("Nested classifiers are not supported.", UMLPackage.Literals.CLASS__NESTED_CLASSIFIER);
+        }
+
         if (clazz instanceof Behavior) {
             // Activities are also a Class in UML. Skip the next validations for all behaviors.
             return;
         }
 
-        if (clazz.isActive() && clazz.getClassifierBehavior() == null) {
+        if (!clazz.isActive()) {
+            error("Active class expected.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+        }
+
+        if (clazz.getClassifierBehavior() == null) {
             error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-        } else if (clazz.isActive() && !clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
+        } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
             error("Expected class to own its classifier behavior.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
 
-        // Active classes must be defined directly within the model itself.
+        // Classes must be defined directly within the model itself.
         if (!(clazz.getOwner() instanceof Model)) {
-            error("Active classes must be defined at the top level of the UML Model.",
+            error("Classes must be defined at the top level of the UML Model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
@@ -183,7 +191,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidDataType(DataType dataType) {
         if (!(dataType.getOwner() instanceof Model)) {
-            error("DataTypes must be defined at the top level of the UML Model.",
+            error("Data type must be defined at the top level of the UML Model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
     }
@@ -194,9 +202,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!(behave.getOwner() instanceof Class) || !((Class)behave.getOwner()).isActive()) {
             error("Behaviors must be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
-        // Check if behaviors are defined as ownedBehavior.
+
+        // Check if behaviors are defined as owned behavior.
         if (!((Class)behave.getOwner()).getOwnedBehaviors().contains(behave)) {
-            error("Behaviors must be defined as ownedBehaviors.",
+            error("Behaviors must be defined as owned behaviors of a class.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
     }
