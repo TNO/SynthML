@@ -140,6 +140,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         checkNamingConventions(model, NamingConvention.MANDATORY);
+        // Valid model should have one active class.
+        long count = model.getPackagedElements().stream()
+                .filter(pack -> pack instanceof Class clazz && clazz.isActive()).count();
+        if (count != 1) {
+            error("Expected exactly one active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+        }
     }
 
     @Check
@@ -156,15 +162,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (clazz instanceof Behavior) {
-            // Check if behaviors are defined within an active class.
-            if (!(clazz.getOwner() instanceof Class) || !((Class)clazz.getOwner()).isActive()) {
-                error("Behaviors must be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
-            }
-            // Check if behaviors are defined as ownedBehavior.
-            if (!((Class)clazz.getOwner()).getOwnedBehaviors().contains(clazz)) {
-                error("Behaviors must be defined as ownedBehaviors.",
-                        UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
-            }
             // Activities are also a Class in UML. Skip the next validations for all behaviors.
             return;
         }
@@ -177,22 +174,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
 
-        // Passive classes must be child of another class (not behavior) or the model itself.
-        if (!clazz.isActive() && !((clazz.getOwner() instanceof Class && !(clazz.getOwner() instanceof Behavior))
-                || clazz.getOwner() instanceof Model))
-        {
-            error("Passive classes must be nested within classes or defined in the model itself.",
-                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
-        }
-
-        // Active classes must be defined directly within the model itself.
-        if (clazz.isActive() && !(clazz.getOwner() instanceof Model)) {
+        // Active and passive classes must be defined directly within the model itself.
+        if (!(clazz.getOwner() instanceof Model)) {
             error("Active classes must be defined at the top level of the UML Model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
         if (clazz.getOwnedRules().stream().anyMatch(IntervalConstraint.class::isInstance)) {
             error("Expected no interval constraints to be defined in classes.", UMLPackage.Literals.NAMESPACE__MEMBER);
+        }
+    }
+
+    @Check
+    private void checkValidBehavior(Behavior behave) {
+        // Check if behaviors are defined within an active class.
+        if (!(behave.getOwner() instanceof Class) || !((Class)behave.getOwner()).isActive()) {
+            error("Behaviors must be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+        }
+        // Check if behaviors are defined as ownedBehavior.
+        if (!((Class)behave.getOwner()).getOwnedBehaviors().contains(behave)) {
+            error("Behaviors must be defined as ownedBehaviors.",
+                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
     }
 
