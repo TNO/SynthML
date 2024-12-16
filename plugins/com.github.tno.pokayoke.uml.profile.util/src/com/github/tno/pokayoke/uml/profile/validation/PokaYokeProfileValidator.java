@@ -145,7 +145,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         // Valid models should have one class.
         long count = model.getPackagedElements().stream().filter(pack -> pack instanceof Class).count();
         if (count != 1) {
-            error("Expected exactly one class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+            error("Expected exactly one class.", UMLPackage.Literals.PACKAGE__PACKAGED_ELEMENT);
+        }
+
+        if (model.getPackagedElements().stream().filter(pack -> pack instanceof Model).findAny().isPresent()) {
+            error("Nested models are not supported.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
         }
     }
 
@@ -166,7 +170,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (!clazz.isActive()) {
-            error("Active class expected.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+            error("Expected active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
 
         if (clazz.getClassifierBehavior() == null) {
@@ -179,7 +183,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         // Classes must be defined directly within the model itself.
         if (!(clazz.getOwner() instanceof Model)) {
-            error("Classes must be defined at the top level of the UML Model.",
+            error("Expected class to be defined at the top level of the UML model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
@@ -191,21 +195,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidDataType(DataType dataType) {
         if (!(dataType.getOwner() instanceof Model)) {
-            error("Data type must be defined at the top level of the UML Model.",
+            error("Expected data type to be defined at the top level of the UML model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
+        }
+
+        if (!dataType.getOwnedElements().stream().filter(element -> !(element instanceof Property)).findAny()
+                .isPresent())
+        {
+            error("Expected data type to own only properties.", UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
         }
     }
 
     @Check
-    private void checkValidBehavior(Behavior behave) {
+    private void checkValidBehavior(Behavior behavior) {
         // Check if behaviors are defined within an active class.
-        if (!(behave.getOwner() instanceof Class) || !((Class)behave.getOwner()).isActive()) {
-            error("Behaviors must be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+        if (!(behavior.getOwner() instanceof Class)) {
+            error("Expected behavior to be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
 
         // Check if behaviors are defined as owned behavior.
-        if (!((Class)behave.getOwner()).getOwnedBehaviors().contains(behave)) {
-            error("Behaviors must be defined as owned behaviors of a class.",
+        if (!((Class)behavior.getOwner()).getOwnedBehaviors().contains(behavior)) {
+            error("Expected behavior to be defined as owned behaviors of a class.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
     }
