@@ -30,6 +30,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -140,7 +141,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         checkNamingConventions(model, NamingConvention.MANDATORY);
-        // Valid model should have one active class.
+        // Valid models should have one active class.
         long count = model.getPackagedElements().stream()
                 .filter(pack -> pack instanceof Class clazz && clazz.isActive()).count();
         if (count != 1) {
@@ -155,12 +156,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
-        // Passive classes (including behaviors) cannot have behaviors, only nested classifiers.
-        if (!clazz.isActive() && !clazz.getOwnedBehaviors().isEmpty()) {
-            error("Passive classes cannot own behaviors, just other classifiers.",
-                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
-        }
-
         if (clazz instanceof Behavior) {
             // Activities are also a Class in UML. Skip the next validations for all behaviors.
             return;
@@ -174,7 +169,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
 
-        // Active and passive classes must be defined directly within the model itself.
+        // Active classes must be defined directly within the model itself.
         if (!(clazz.getOwner() instanceof Model)) {
             error("Active classes must be defined at the top level of the UML Model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
@@ -182,6 +177,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (clazz.getOwnedRules().stream().anyMatch(IntervalConstraint.class::isInstance)) {
             error("Expected no interval constraints to be defined in classes.", UMLPackage.Literals.NAMESPACE__MEMBER);
+        }
+    }
+
+    @Check
+    private void checkValidDataType(DataType dataType) {
+        if (!(dataType.getOwner() instanceof Model)) {
+            error("DataTypes must be defined at the top level of the UML Model.",
+                    UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
     }
 
