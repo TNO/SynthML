@@ -120,7 +120,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkGlobalUniqueNames(Model model) {
-        if (!isPokaYokaUmlProfileApplied(model)) {
+        if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
         Map<String, List<NamedElement>> contextElements = CifContext.queryUniqueNameElements(model)
@@ -137,7 +137,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidModel(Model model) {
-        if (!isPokaYokaUmlProfileApplied(model)) {
+        // Check the ownership of the model regardless of the PokaYoke UML profile application.
+        if (model.getOwner() != null) {
+            error("Model is nested in another model.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
+        }
+
+        if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
         checkNamingConventions(model, NamingConvention.MANDATORY);
@@ -145,17 +150,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         // Valid models should have one class.
         long count = model.getPackagedElements().stream().filter(pack -> pack instanceof Class).count();
         if (count != 1) {
-            error("Expected exactly one class.", UMLPackage.Literals.PACKAGE__PACKAGED_ELEMENT);
-        }
-
-        if (model.getPackagedElements().stream().filter(pack -> pack instanceof Model).findAny().isPresent()) {
-            error("Nested models are not supported.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
+            error(String.format("The model should contain one class, found %s.", count),
+                    UMLPackage.Literals.PACKAGE__PACKAGED_ELEMENT);
         }
     }
 
     @Check
     private void checkValidClass(Class clazz) {
-        if (!isPokaYokaUmlProfileApplied(clazz)) {
+        if (!isPokaYokeUmlProfileApplied(clazz)) {
             return;
         }
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
@@ -170,7 +172,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (!clazz.isActive()) {
-            error("Expected active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+            error("Class must be active, not passive.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
 
         if (clazz.getClassifierBehavior() == null) {
@@ -183,7 +185,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         // Classes must be defined directly within the model itself.
         if (!(clazz.getOwner() instanceof Model)) {
-            error("Expected class to be defined at the top level of the UML model.",
+            error("Class is not defined at the top level of the UML model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
@@ -194,15 +196,20 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidDataType(DataType dataType) {
+        checkNamingConventions(dataType, NamingConvention.IDENTIFIER);
+
         if (!(dataType.getOwner() instanceof Model)) {
-            error("Expected data type to be defined at the top level of the UML model.",
+            error("Data type is not defined at the top level of the UML model.",
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
-        if (!dataType.getOwnedElements().stream().filter(element -> !(element instanceof Property)).findAny()
-                .isPresent())
-        {
-            error("Expected data type to own only properties.", UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
+        // Enumeration, Primitive types are also DataTypes, so skip the following validation.
+        if (PokaYokeTypeUtil.isSupportedType(dataType)) {
+            return;
+        }
+
+        if (!dataType.getOwnedElements().stream().allMatch(Property.class::isInstance)) {
+            error("Data type owns elements that are not properties.", UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
         }
     }
 
@@ -210,12 +217,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidBehavior(Behavior behavior) {
         // Check if behaviors are defined within an active class.
         if (!(behavior.getOwner() instanceof Class)) {
-            error("Expected behavior to be defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
+            error("Behavior is not defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
 
         // Check if behaviors are defined as owned behavior.
         if (!((Class)behavior.getOwner()).getOwnedBehaviors().contains(behavior)) {
-            error("Expected behavior to be defined as owned behaviors of a class.",
+            error("Behavior is not defined as owned behaviors of a class.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
     }
@@ -232,7 +239,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidProperty(Property property) {
-        if (!isPokaYokaUmlProfileApplied(property)) {
+        if (!isPokaYokeUmlProfileApplied(property)) {
             return;
         }
         // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
@@ -281,7 +288,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidEnumeration(Enumeration enumeration) {
-        if (!isPokaYokaUmlProfileApplied(enumeration)) {
+        if (!isPokaYokeUmlProfileApplied(enumeration)) {
             return;
         }
         // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
@@ -302,7 +309,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidPrimitiveType(PrimitiveType primitiveType) {
-        if (!isPokaYokaUmlProfileApplied(primitiveType)) {
+        if (!isPokaYokeUmlProfileApplied(primitiveType)) {
             return;
         }
         // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
@@ -356,7 +363,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidOpaqueExpression(OpaqueExpression expression) {
-        if (!isPokaYokaUmlProfileApplied(expression)) {
+        if (!isPokaYokeUmlProfileApplied(expression)) {
             return;
         }
         checkNamingConventions(expression, NamingConvention.OPTIONAL);
@@ -369,7 +376,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidActivity(Activity activity) {
-        if (!isPokaYokaUmlProfileApplied(activity)) {
+        if (!isPokaYokeUmlProfileApplied(activity)) {
             return;
         }
         checkNamingConventions(activity, NamingConvention.MANDATORY);
@@ -412,7 +419,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidActivityEdge(ActivityEdge edge) {
-        if (!isPokaYokaUmlProfileApplied(edge)) {
+        if (!isPokaYokeUmlProfileApplied(edge)) {
             return;
         }
         if (edge instanceof ControlFlow controlFlow) {
@@ -436,7 +443,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidActivityNode(ActivityNode node) {
-        if (!isPokaYokaUmlProfileApplied(node)) {
+        if (!isPokaYokeUmlProfileApplied(node)) {
             return;
         }
         if (!(node instanceof ControlNode || node instanceof CallBehaviorAction || node instanceof OpaqueAction)) {
@@ -460,7 +467,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkShadowedFormalElement(CallBehaviorAction action) {
-        if (!isPokaYokaUmlProfileApplied(action)) {
+        if (!isPokaYokeUmlProfileApplied(action)) {
             return;
         }
         Behavior behavior = action.getBehavior();
@@ -731,7 +738,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private boolean isPokaYokaUmlProfileApplied(Element element) {
+    private boolean isPokaYokeUmlProfileApplied(Element element) {
         return PokaYokeUmlProfileUtil.getAppliedProfile(element, PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE).isPresent();
     }
 
