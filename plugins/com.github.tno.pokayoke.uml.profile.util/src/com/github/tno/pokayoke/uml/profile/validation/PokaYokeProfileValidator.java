@@ -137,7 +137,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidModel(Model model) {
-        // Check the ownership of the model regardless of the PokaYoke UML profile application.
+        // Check the ownership of the model regardless of whether the Poka Yoke UML profile is applied.
         if (model.getOwner() != null) {
             error("Model is nested in another model.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
         }
@@ -203,7 +203,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.CLASSIFIER__INHERITED_MEMBER);
         }
 
-        // Enumeration, Primitive types are also DataTypes, so skip the following validation.
+        // Skip the remaining checks for enumerations and primitive types, which are also data types.
         if (PokaYokeTypeUtil.isSupportedType(dataType)) {
             return;
         }
