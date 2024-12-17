@@ -356,7 +356,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
         {
             if (minValue.getValue() < 0) {
-                error("Integer type ranges include negative values.", minConstraint,
+                error("Integer type range includes negative values.", minConstraint,
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
             if (minValue.getValue() > maxValue.getValue()) {
@@ -709,7 +709,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
 
             if (constraint.getConstrainedElements().isEmpty()) {
-                error("Interval constraints do not constrain any element.",
+                error("Interval constraint does not constrain any element.",
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                 return;
             }
@@ -722,12 +722,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         error("Constrained behavior is not in scope.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                     }
                 } else {
-                    error("Interval constraints constrain an element that is not an opaque behavior or an activity.",
+                    error("Interval constraint constrains an element that is not an opaque behavior or an activity.",
                             UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                 }
             }
         } else {
-            error("Interval constraint specifications are not intervals.",
+            error("Interval constraint specification is not an interval.",
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
