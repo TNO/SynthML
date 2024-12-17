@@ -137,15 +137,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidModel(Model model) {
-        // Check the ownership of the model regardless of whether the Poka Yoke UML profile is applied.
-        if (model.getOwner() != null) {
-            error("Model is nested in another model.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
-        }
-
-        if (!isPokaYokeUmlProfileApplied(model)) {
+        // Skip the next validation steps if the Poka Yoke UML Profile is not applied to the model and all its
+        // ancestors.
+        if (!hasPokaYokeAncestor(model)) {
             return;
         }
         checkNamingConventions(model, NamingConvention.MANDATORY);
+
+        if (model.getOwner() != null) {
+            error("Model is nested in another model.", UMLPackage.Literals.PACKAGE__NESTED_PACKAGE);
+        }
 
         // Valid models should have one class.
         long count = model.getPackagedElements().stream().filter(pack -> pack instanceof Class).count();
@@ -160,6 +161,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(clazz)) {
             return;
         }
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
         checkNamingConventions(clazz, NamingConvention.IDENTIFIER);
 
         if (!clazz.getNestedClassifiers().isEmpty()) {
@@ -179,7 +181,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
-            error("Expected class to own its classifier behavior.",
+            error("Class should have its classifier behavior within its owner behaviors.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
         }
 
@@ -190,12 +192,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (clazz.getOwnedRules().stream().anyMatch(IntervalConstraint.class::isInstance)) {
-            error("Expected no interval constraints to be defined in classes.", UMLPackage.Literals.NAMESPACE__MEMBER);
+            error("Interval constraints should be not be defined in classes.", UMLPackage.Literals.NAMESPACE__MEMBER);
         }
     }
 
     @Check
     private void checkValidDataType(DataType dataType) {
+        if (!isPokaYokeUmlProfileApplied(dataType)) {
+            return;
+        }
+        // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
         checkNamingConventions(dataType, NamingConvention.IDENTIFIER);
 
         if (!(dataType.getOwner() instanceof Model)) {
@@ -215,6 +221,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     @Check
     private void checkValidBehavior(Behavior behavior) {
+        if (!isPokaYokeUmlProfileApplied(behavior)) {
+            return;
+        }
+
         // Check if behaviors are defined within an active class.
         if (!(behavior.getOwner() instanceof Class)) {
             error("Behavior is not defined within an active class.", UMLPackage.Literals.CLASS__IS_ACTIVE);
@@ -295,12 +305,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         checkNamingConventions(enumeration, NamingConvention.IDENTIFIER);
 
         if (!(enumeration.eContainer() instanceof Model)) {
-            error("Expected enumeration to be declared in model.", null);
+            error("Enumeration should be declared in model.", null);
         } else if (enumeration.eContainer().eContainer() != null) {
-            error("Expected enumeration to be declared on the outer-most level.", null);
+            error("Enumeration should be declared on the outer-most level.", null);
         }
         if (enumeration.getOwnedLiterals().isEmpty()) {
-            error("Expected enumeration to have at least one literal.", null);
+            error("Enumeration should own at least one literal.", null);
         } else {
             // Name uniqueness is checked by #checkGlobalUniqueNames(Model)
             enumeration.getOwnedLiterals().forEach(l -> checkNamingConventions(l, NamingConvention.IDENTIFIER));
@@ -316,9 +326,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         checkNamingConventions(primitiveType, NamingConvention.IDENTIFIER);
 
         if (!(primitiveType.eContainer() instanceof Model)) {
-            error("Expected primitive type to be declared in model.", null);
+            error("Primitive type should be declared in model.", null);
         } else if (primitiveType.eContainer().eContainer() != null) {
-            error("Expected primitive type to be declared on the outer-most level.", null);
+            error("Primitive type should be declared on the outer-most level.", null);
         }
 
         if (!PokaYokeTypeUtil.isIntegerType(primitiveType)) {
@@ -341,7 +351,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 && maxConstraint.getSpecification() instanceof LiteralInteger maxValue)
         {
             if (minValue.getValue() < 0) {
-                error("Expected integer type ranges to not include negative values.", minConstraint,
+                error("Integer type ranges should not include negative values.", minConstraint,
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
             if (minValue.getValue() > maxValue.getValue()) {
@@ -369,7 +379,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         checkNamingConventions(expression, NamingConvention.OPTIONAL);
 
         if (expression.getBodies().size() != 1) {
-            error("Expected opaque expression to have exactly one expression body.",
+            error("Opaque expression should have exactly one expression body.",
                     UMLPackage.Literals.OPAQUE_EXPRESSION__BODY);
         }
     }
@@ -382,7 +392,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         checkNamingConventions(activity, NamingConvention.MANDATORY);
 
         if (activity.getClassifierBehavior() != null) {
-            error("Expected activity to not have a classifier behavior.",
+            error("Activity should not have a classifier behavior.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
@@ -397,22 +407,23 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
-            error("Expected activity to contain only precondition, postcondition, and interval constraint members.",
+            error("Activity should contain only precondition, postcondition, and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
         }
 
         if (activity.isAbstract()) {
             if (!activity.getNodes().isEmpty()) {
-                error("Expected abstract activity to not have any nodes.", UMLPackage.Literals.ACTIVITY__NODE);
+                error("Abstract activity should not have any nodes.", UMLPackage.Literals.ACTIVITY__NODE);
             }
 
             if (!activity.getEdges().isEmpty()) {
-                error("Expected abstract activity to not have any edges.", UMLPackage.Literals.ACTIVITY__EDGE);
+                error("Abstract activity should not have any edges.", UMLPackage.Literals.ACTIVITY__EDGE);
             }
         } else {
             QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
             if (initialNodes.size() != 1) {
-                error("Expected exactly one initial node but got " + initialNodes.size(), activity, null);
+                error("Abstract activity should have exactly one initial node but got " + initialNodes.size(), activity,
+                        null);
             }
         }
     }
@@ -489,7 +500,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
         } else {
             // Added this validation here, as we're already checking the behavior type.
-            error("Expected the called behavior to be an activity or an opaque behavior",
+            error("Called behavior should be either an activity or an opaque behavior",
                     UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
         }
     }
@@ -649,7 +660,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
             if (invariant.invKind != null || invariant.events != null) {
-                error("Expected all activity preconditions and postconditions to be state predicates.",
+                error("All activity preconditions and postconditions should be state predicates.",
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
         } catch (RuntimeException e) {
@@ -685,17 +696,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
 
             if (min < 0) {
-                error("Expected the interval min value to be at least 0.",
-                        UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
+                error("The interval min value should be at least 0.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
 
             if (min > max) {
-                error("Expected the interval min value to not exceed the max value.",
+                error("The interval min value should not exceed the max value.",
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
             }
 
             if (constraint.getConstrainedElements().isEmpty()) {
-                error("Expected interval constraints to constrain at least one element.",
+                error("Interval constraints should constrain at least one element.",
                         UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                 return;
             }
@@ -705,16 +715,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {
                     if (!context.hasElement(element)) {
-                        error("Expected the constrained behavior to be in scope.",
+                        error("Constrained behavior should be in scope.",
                                 UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                     }
                 } else {
-                    error("Expected interval constraints to constrain only opaque behaviors or activities.",
+                    error("Interval constraints should constrain only opaque behaviors or activities.",
                             UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                 }
             }
         } else {
-            error("Expected interval constraint specifications to be intervals.",
+            error("Interval constraint specifications should be intervals.",
                     UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
@@ -733,7 +743,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (convention == NamingConvention.IDENTIFIER && !IDENTIFIER_PATTERN.matcher(name).matches()) {
-            error("Expected name to start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*", element,
+            error("Element name should start with [a-zA-Z_] and then be followed by [0-9a-zA-Z_]*", element,
                     UMLPackage.Literals.NAMED_ELEMENT__NAME);
         }
     }
@@ -762,5 +772,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.NAMED_ELEMENT__NAME);
             }
         }
+    }
+
+    public boolean hasPokaYokeAncestor(Element element) {
+        if (isPokaYokeUmlProfileApplied(element)) {
+            return true;
+        }
+
+        while (element.getOwner() != null) {
+            if (isPokaYokeUmlProfileApplied(element.getOwner())) {
+                return true;
+            }
+            element = element.getOwner();
+        }
+        return false;
     }
 }
