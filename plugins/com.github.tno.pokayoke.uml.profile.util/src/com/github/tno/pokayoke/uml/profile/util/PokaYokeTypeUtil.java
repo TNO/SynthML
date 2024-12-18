@@ -1,20 +1,16 @@
 
 package com.github.tno.pokayoke.uml.profile.util;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.lsat.common.util.IterableUtil;
-import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
-import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
@@ -45,40 +41,18 @@ public class PokaYokeTypeUtil {
      * @see #isSupportedType(Type)
      */
     public static List<Type> getSupportedTypes(Element context) {
-        // Gets the passive classes nested inside the active class.
-        Set<Type> nestedClasses = new HashSet<>();
-        for (PackageableElement pack: context.getModel().getPackagedElements()) {
-            if (pack instanceof Class) {
-                for (Classifier nestedClassifier: ((Class)pack).getNestedClassifiers()) {
-                    if (isPassiveClassType(nestedClassifier)) {
-                        nestedClasses.add(nestedClassifier);
-                    }
-                }
-            }
-        }
-
-        // Gets the supported types at the level of the active class.
         QueryableIterable<Type> supportedTypes = QueryableIterable.from(context.getModel().getOwnedTypes())
-                .select(PokaYokeTypeUtil::isSupportedOrPassiveClassType).union(UmlPrimitiveType.BOOLEAN.load(context));
+                .select(PokaYokeTypeUtil::isSupportedType).union(UmlPrimitiveType.BOOLEAN.load(context));
 
-        return IterableUtil.sortedBy(supportedTypes.union(nestedClasses), Type::getName);
-    }
-
-    public static boolean isSupportedOrPassiveClassType(Type type) {
-        return isSupportedType(type) || isPassiveClassType(type);
+        return IterableUtil.sortedBy(supportedTypes, Type::getName);
     }
 
     public static boolean isSupportedType(Type type) {
-        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type);
+        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isDataTypeType(type);
     }
 
-    public static boolean isPassiveClassType(Type type) {
-        // If type is a Class, check if it is active. Need the cast to Class to use the method isActive().
-        return (isClassType(type)) ? !((Class)type).isActive() : false;
-    }
-
-    public static boolean isClassType(Type type) {
-        return type instanceof Class;
+    public static boolean isDataTypeType(Type type) {
+        return type instanceof DataType;
     }
 
     public static boolean isEnumerationType(Type type) {
