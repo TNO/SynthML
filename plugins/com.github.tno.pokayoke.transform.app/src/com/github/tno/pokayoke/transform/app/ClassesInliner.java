@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,11 +18,14 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -32,125 +34,146 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.google.common.base.Preconditions;
 
-/** Application that flattens all properties that are instantiations of a data class, and deletes all data classes. */
+/**
+ * Flattens all properties that are instantiations of a data type, and deletes all data types. A data type property
+ * represents a canonical "object" class, e.g. a robot, may contain only properties and nothing else.
+ */
 public class ClassesInliner {
     private ClassesInliner() {
     }
 
-    public static void inlineClasses(Model model) {
+    public static void inlineClasses(Model model, List<String> warnings) {
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
-        List<Class> passiveClasses = getAllPassiveClasses(context);
+        List<DataType> dataTypes = getAllDataTypes(context);
 
         // Find all properties of the main class that are instances of a data class, store them into a map with a unique
         // flattened name, the original reference name, and the property itself.
-        Map<String, Pair<String, Property>> orderedFlattenedNames = getOrderedFlattenednames(activeClass);
+        Map<String, Pair<String, Property>> orderedFlattenedNames = getOrderedFlattenedNames(activeClass, warnings);
 
         // Create new static properties with flattened names, and add them to the active class.
         rewriteProperties(activeClass, orderedFlattenedNames);
 
         // Delete the data-only classes and related properties.
-        deletePassiveClasses(activeClass, passiveClasses, model);
+        deleteDataTypes(activeClass, dataTypes);
 
         // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
         rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
     }
 
-    public static Map<String, Pair<String, Property>> getOrderedFlattenednames(Class activeClass) {
-        Map<String, Pair<String, Property>> flattenedNamesMap = new LinkedHashMap<>();
-
-        // Loop over all properties. If they are of type class, store them into a map composed of a unique
-        // flattened name, the original reference name, and the corresponding property.
-        for (Property umlProperty: activeClass.getOwnedAttributes()) {
-            if (!PokaYokeTypeUtil.isSupportedType(umlProperty.getType())) {
-                flattenedNamesMap = getLeafPrimitiveType((Class)umlProperty.getType(), umlProperty.getName(),
-                        umlProperty.getName(), flattenedNamesMap);
-            }
-        }
-        // Sort entries in the flattened names map by the length of their keys.
-        Map<String, Pair<String, Property>> orderedFlattenedNames = orderMapByKeyLength(flattenedNamesMap);
-
-        return orderedFlattenedNames;
+    /**
+     * Gets the only active class of the UML model. The supported UML model contains a unique active class, which
+     * contain all the behaviors (activities and opaque behaviors) of the UML model. The uniqueness check is performed
+     * in PokaYokeProfileValidator.
+     *
+     * @param context The CIF context.
+     * @return A single active class.
+     */
+    private static Class getSingleActiveClass(CifContext context) {
+        return context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
     }
 
     /**
-     * Implements a DFS to find the primitive type of every attribute of a class.
+     * Gets all data type objects. A data type object may contain only properties either as a data type or as
+     * Enumeration, integer or boolean, and nothing else.
      *
-     * @param clazz The class containing the properties.
+     * @param context The CIF context.
+     * @return A list containing all data types contained in context.
+     */
+    private static List<DataType> getAllDataTypes(CifContext context) {
+        // Return only the objects belonging to DataType, not to the subclasses.
+        return context.getAllDataTypes(d -> !(d instanceof Enumeration || d instanceof PrimitiveType));
+    }
+
+    /**
+     * Recursively computes a map of the nested properties, where the keys are the new flattened names, and the values
+     * are a tuple of the old dotted name and the property itself. The map is order by key length, so that the name
+     * substitution avoids incomplete replacing.
+     *
+     * @param activeClass The main active class of the UML model.
+     * @param warnings A list of strings containing all the synthesis chain warnings.
+     * @return A map containing the old and new names, along with the property they refer to, with items sorted by key
+     *     length in descending order.
+     */
+    private static Map<String, Pair<String, Property>> getOrderedFlattenedNames(Class activeClass,
+            List<String> warnings)
+    {
+        // Creates a map where the keys are the new flattened name, and the values are a pair of the old reference name
+        // (with dots) and the property itself.
+        Map<String, Pair<String, Property>> flattenedNamesMap = new LinkedHashMap<>();
+
+        // Loop over all properties. If they are of type DataType, store them into a map composed of a unique
+        // flattened name, the original reference name, and the corresponding property.
+        for (Property umlProperty: activeClass.getOwnedAttributes()) {
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
+                getChildPropertyName((DataType)umlProperty.getType(), umlProperty.getName(), umlProperty.getName(),
+                        flattenedNamesMap, warnings);
+            }
+        }
+
+        // Sort entries in the flattened names map by the length of their keys.
+        return orderMapByKeyLength(flattenedNamesMap);
+    }
+
+    /**
+     * Performs a DFS to find the old and new names of every (in)direct data type attribute.
+     *
+     * @param datatype The data type containing the properties.
      * @param flatName The string representing the new, flattened name of a property.
      * @param dotName The string representing the old name of a property, including the dots.
-     * @param flattenedNamesMap The map containing the old and new names, along with the property they refer to.
-     * @return A map containing the old and new names, along with the property they refer to.
+     * @param flattenedNamesMap A mapping from new property names, to their old property names and the property itself.
+     * @param warnings A list of strings containing all the synthesis chain warnings.
      */
-    public static Map<String, Pair<String, Property>> getLeafPrimitiveType(Class clazz, String flatName, String dotName,
-            Map<String, Pair<String, Property>> flattenedNamesMap)
+    private static void getChildPropertyName(DataType datatype, String flatName, String dotName,
+            Map<String, Pair<String, Property>> flattenedNamesMap, List<String> warnings)
     {
-        // Loop over a class' attributes. If they are boolean, Enum, Integer, add them to the main class; otherwise,
-        // recursively call on the children object.
-        for (Property umlProperty: clazz.getOwnedAttributes()) {
+        // Loop over all data type's attributes. If they are boolean, Enum, Integer, add them to the map;
+        // otherwise, recursively call on the children object.
+        for (Property umlProperty: datatype.getOwnedAttributes()) {
             String newFlatName = flatName + "_" + umlProperty.getName();
             String newDotName = dotName + "." + umlProperty.getName();
 
-            if (PokaYokeTypeUtil.isSupportedType(umlProperty.getType())) {
-                // If we find a property that is supported, add it to the map.
-                flattenedNamesMap = addFlattenedNameToMap(umlProperty, newFlatName, newDotName, flattenedNamesMap);
-            } else {
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
                 // Recursive call.
-                getLeafPrimitiveType((Class)umlProperty.getType(), newFlatName, newDotName, flattenedNamesMap);
+                getChildPropertyName((DataType)umlProperty.getType(), newFlatName, newDotName, flattenedNamesMap,
+                        warnings);
+            } else {
+                // If we find a property that is supported, add it to the map.
+                addFlattenedNameToMap(umlProperty, newFlatName, newDotName, flattenedNamesMap, warnings);
+                System.out.println("Update names: " + newDotName + " into " + newFlatName);
             }
         }
-
-        return flattenedNamesMap;
     }
 
     /**
-     * Creates a new map entry containing the old and the new property name, along with the property they refer to.
-     * Ensures that the new names are unique.
+     * Creates a mapping from new property names, to their old property names and the property itself. Ensures that the
+     * new names are unique.
      *
      * @param umlProperty The property to be inserted.
      * @param newName The new name.
      * @param oldName The old name.
-     * @param flattenedNamesMap The map containing the old and new names, along with the property.
-     * @return The updated map.
+     * @param flattenedNamesMap A mapping from new property names, to their old property names and the property itself.
+     * @param warnings A list of strings containing all the synthesis chain warnings.
      */
-    public static Map<String, Pair<String, Property>> addFlattenedNameToMap(Property umlProperty, String newName,
-            String oldName, Map<String, Pair<String, Property>> flattenedNamesMap)
+    private static void addFlattenedNameToMap(Property umlProperty, String newName, String oldName,
+            Map<String, Pair<String, Property>> flattenedNamesMap, List<String> warnings)
     {
-        Pair<String, Property> positionAndObject = Pair.of(oldName, umlProperty);
+        Pair<String, Property> oldNameAndProperty = Pair.of(oldName, umlProperty);
 
-        if (flattenedNamesMap.get(newName) == null) {
-            // Add the item to the map if name is unused.
-            flattenedNamesMap.put(newName, positionAndObject);
+        if (flattenedNamesMap.containsKey(newName)) {
+            // Find how many keys start with 'name' and add a number at the end, and adds a warning.
+            long count = flattenedNamesMap.keySet().stream().filter(k -> k.startsWith(newName)).count();
+            flattenedNamesMap.put(newName + String.valueOf(count), oldNameAndProperty);
+            String messageString = "Found a property with a duplicate name: " + newName;
+            warnings.add(messageString);
         } else {
-            // Find how many keys start with 'name' and add a number at the end.
-            Set<String> allKeys = flattenedNamesMap.keySet();
-            int count = 0;
-            for (String k: allKeys) {
-                if (k.startsWith(newName)) {
-                    count += 1;
-                }
-            }
-            flattenedNamesMap.put(newName + String.valueOf(count), positionAndObject);
+            // Add the item to the map if name is unused.
+            flattenedNamesMap.put(newName, oldNameAndProperty);
         }
-
-        return flattenedNamesMap;
     }
 
-    public static List<Class> getAllPassiveClasses(CifContext context) {
-        List<Class> umlClasses = context.getAllClasses(c -> (!(c instanceof Behavior) && (!c.isActive())));
-        return umlClasses;
-    }
-
-    public static Class getSingleActiveClass(CifContext context) {
-        List<Class> umlClasses = context.getAllClasses(c -> (!(c instanceof Behavior) && (c.isActive())));
-        Preconditions.checkArgument(umlClasses.size() == 1,
-                "Expected exactly one active class, but got " + umlClasses.size());
-        return umlClasses.get(0);
-    }
-
-    public static Map<String, Pair<String, Property>>
+    private static Map<String, Pair<String, Property>>
             orderMapByKeyLength(Map<String, Pair<String, Property>> unorderedMap)
     {
         Map<String, Pair<String, Property>> orderedMap = new TreeMap<>(new Comparator<String>() {
@@ -165,15 +188,15 @@ public class ClassesInliner {
                 }
             }
         });
-
         orderedMap.putAll(unorderedMap);
         return orderedMap;
     }
 
-    public static void rewriteProperties(Class activeClass, Map<String, Pair<String, Property>> newNamesMap) {
+    private static void rewriteProperties(Class activeClass, Map<String, Pair<String, Property>> newNamesMap) {
         for (Entry<String, Pair<String, Property>> entry: newNamesMap.entrySet()) {
             String flattenedName = entry.getKey();
             Property originalProperty = entry.getValue().getRight();
+
             // Create a new property and populate the relevant fields.
             Property rewrittenProperty = FileHelper.FACTORY.createProperty();
             rewrittenProperty.setIsStatic(true);
@@ -185,77 +208,48 @@ public class ClassesInliner {
     }
 
     /**
-     * Deletes properties of the model in three scenarios: 1) properties of the active class that are of type class; 2)
-     * properties of the active class that are classes; 3) passive classes located outside the active class.
+     * Deletes properties of the model that are data types.
      *
      * @param activeClass The main active class.
-     * @param passiveClasses List of passive (data) classes.
-     * @param model The UML model.
+     * @param dataTypes List of data types.
      */
-    public static void deletePassiveClasses(Class activeClass, List<Class> passiveClasses, Model model) {
-        // Delete the properties of the active class that are of type Class.
-        ArrayList<Property> propertiesToBeRemoved = new ArrayList<>();
-        for (Property umlProperty: activeClass.getOwnedAttributes()) {
-            if (passiveClasses.contains(umlProperty.getType())) {
-                propertiesToBeRemoved.add(umlProperty);
-            }
-        }
-        activeClass.getOwnedAttributes().removeAll(propertiesToBeRemoved);
-
-        // Delete passive classes inside the active class.
-        for (Class passiveClass: passiveClasses) {
-            if (activeClass.getNestedClassifiers().contains(passiveClass)) {
-                activeClass.getNestedClassifiers().remove(passiveClass);
+    private static void deleteDataTypes(Class activeClass, List<DataType> dataTypes) {
+        // Delete the properties of the active class that are of type DataType.
+        for (Property umlProperty: new ArrayList<>(activeClass.getOwnedAttributes())) {
+            if (dataTypes.contains(umlProperty.getType())) {
+                activeClass.getOwnedAttributes().remove(umlProperty);
             }
         }
 
-        // Delete the passive classes at the same level of the active class.
-        for (Class passiveClass: passiveClasses) {
-            if (model.getPackagedElements().contains(passiveClass)) {
-                model.getPackagedElements().remove(passiveClass);
-            }
-        }
-    }
-
-    public static void rewriteGuardAndEffects(RedefinableElement element,
-            Entry<String, Pair<String, Property>> rewriteEntry)
-    {
-        String guard = PokaYokeUmlProfileUtil.getGuard(element);
-        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
-
-        // Update the guard if it is not null and contains the old name.
-        if (guard != null && guard.contains(rewriteEntry.getValue().getLeft())) {
-            guard = guard.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
-        }
-        PokaYokeUmlProfileUtil.setGuard(element, guard);
-
-        // Update the effects if they contain the old name.
-        ArrayList<String> renamedEffects = new ArrayList<>();
-        for (String effect: effects) {
-            if (effect.contains(rewriteEntry.getValue().getLeft())) {
-                effect = effect.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
-                renamedEffects.add(effect);
-                PokaYokeUmlProfileUtil.setEffects(element, renamedEffects);
+        // Delete the data types located at the same level of the active class.
+        Model model = activeClass.getModel();
+        for (DataType datatype: dataTypes) {
+            if (model.getPackagedElements().contains(datatype)) {
+                model.getPackagedElements().remove(datatype);
             }
         }
     }
 
     /**
-     * Rewrites the abstract and concrete activities, and the opaque behaviors of the active class with the update names
-     * map. Throw a RuntimeException is any other element is detected.
+     * Rewrites the abstract and concrete activities, and the opaque behaviors of the active class with the updated
+     * names map.
      *
      * @param clazz The class considered.
-     * @param namesMap The map containing the old and new names.
+     * @param namesMap The map containing the old and new property names.
+     * @throws RuntimeException If an element other than an activity or an opaque behavior is detected.
      */
-    public static void rewriteOwnedBehaviors(Class clazz, Map<String, Pair<String, Property>> namesMap) {
+    private static void rewriteOwnedBehaviors(Class clazz, Map<String, Pair<String, Property>> namesMap) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
+                String newName = entry.getKey();
+                String oldName = entry.getValue().getLeft();
+
                 if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    rewriteGuardAndEffects(umlOpaqueBehavior, entry);
+                    rewriteGuardAndEffects(umlOpaqueBehavior, newName, oldName);
                 } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                    rewriteAbstractActivity(activity, entry);
+                    rewriteAbstractActivity(activity, newName, oldName);
                 } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                    rewriteConcreteActivity(activity, entry);
+                    rewriteConcreteActivity(activity, newName, oldName);
                 } else {
                     throw new RuntimeException(String.format(
                             "Renaming flattened properties of class '%s' not supported.", classBehavior.getClass()));
@@ -264,49 +258,67 @@ public class ClassesInliner {
         }
     }
 
-    public static void rewriteAbstractActivity(Activity activity, Entry<String, Pair<String, Property>> rewriteEntry) {
-        EList<Constraint> preconditions = activity.getPreconditions();
-        EList<Constraint> postconditions = activity.getPostconditions();
+    private static void rewriteGuardAndEffects(RedefinableElement element, String newName, String oldName) {
+        String guard = PokaYokeUmlProfileUtil.getGuard(element);
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
 
-        rewritePrePostConditions(preconditions, rewriteEntry);
-        rewritePrePostConditions(postconditions, rewriteEntry);
+        // Update the guard if it is not null and contains the old name.
+        if (guard != null && guard.contains(oldName)) {
+            guard = guard.replaceAll(oldName, newName);
+            PokaYokeUmlProfileUtil.setGuard(element, guard);
+        }
+
+        // Update the effects if they contain the old name.
+        ArrayList<String> renamedEffects = new ArrayList<>();
+        for (String effect: effects) {
+            if (effect.contains(oldName)) {
+                effect = effect.replaceAll(oldName, newName);
+                renamedEffects.add(effect);
+            } else {
+                renamedEffects.add(effect);
+            }
+        }
+        PokaYokeUmlProfileUtil.setEffects(element, renamedEffects);
     }
 
-    public static void rewritePrePostConditions(EList<Constraint> umlConstraints,
-            Entry<String, Pair<String, Property>> rewriteEntry)
-    {
+    private static void rewriteAbstractActivity(Activity activity, String newName, String oldName) {
+        List<Constraint> preconditions = activity.getPreconditions();
+        List<Constraint> postconditions = activity.getPostconditions();
+
+        rewritePrePostConditions(preconditions, newName, oldName);
+        rewritePrePostConditions(postconditions, newName, oldName);
+    }
+
+    private static void rewritePrePostConditions(List<Constraint> umlConstraints, String newName, String oldName) {
         for (Constraint constraint: umlConstraints) {
-            EList<String> constraintBodies = ((OpaqueExpression)constraint.getSpecification()).getBodies();
-            for (int i = 0; i < constraintBodies.size(); i++) {
-                // Get the current body and substitute the expression if needed.
-                String currentConstraint = constraintBodies.get(i);
-                if (currentConstraint.contains(rewriteEntry.getValue().getLeft())) {
-                    String newConstraint = currentConstraint.replaceAll(rewriteEntry.getValue().getLeft(),
-                            rewriteEntry.getKey());
-                    constraintBodies.set(i, newConstraint);
-                }
+            if (constraint.getSpecification() instanceof OpaqueExpression) {
+                EList<String> constraintBodies = ((OpaqueExpression)constraint.getSpecification()).getBodies();
+                rewriteGuardBodies(constraintBodies, newName, oldName);
+            } else {
+                throw new RuntimeException(
+                        "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
             }
         }
     }
 
-    public static void rewriteConcreteActivity(Activity activity, Entry<String, Pair<String, Property>> rewriteEntry) {
+    private static void rewriteConcreteActivity(Activity activity, String newName, String oldName) {
         // Update the flattened names of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
-                // If null, avoids entering in this loop.
                 if (guard instanceof OpaqueExpression opaqueGuard) {
                     EList<String> guardBodies = opaqueGuard.getBodies();
-                    rewriteOpaqueGuards(guardBodies, rewriteEntry);
+                    rewriteGuardBodies(guardBodies, newName, oldName);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
-                // Get guards and respective bodies, updates with the flattened names.
+                // Get guards and respective bodies, and updates them with the flattened names.
                 Behavior guard = callBehavior.getBehavior();
                 EList<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
-                rewriteOpaqueGuards(guardBodies, rewriteEntry);
+                rewriteGuardBodies(guardBodies, newName, oldName);
             } else if (ownedElement instanceof OpaqueAction internalAction) {
-                rewriteGuardAndEffects(internalAction, rewriteEntry);
+                rewriteGuardAndEffects(internalAction, newName, oldName);
             } else if (ownedElement instanceof ActivityNode) {
+                // This assumes that nodes in activities have empty names and bodies.
                 continue;
             } else {
                 throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
@@ -314,22 +326,20 @@ public class ClassesInliner {
             }
         }
 
-        // Rewrite pre- and post-conditions.
-        EList<Constraint> preconditions = activity.getPreconditions();
-        EList<Constraint> postconditions = activity.getPostconditions();
+        // Rewrite pre and postconditions.
+        List<Constraint> preconditions = activity.getPreconditions();
+        List<Constraint> postconditions = activity.getPostconditions();
 
-        rewritePrePostConditions(preconditions, rewriteEntry);
-        rewritePrePostConditions(postconditions, rewriteEntry);
+        rewritePrePostConditions(preconditions, newName, oldName);
+        rewritePrePostConditions(postconditions, newName, oldName);
     }
 
-    public static void rewriteOpaqueGuards(EList<String> guardBodies,
-            Entry<String, Pair<String, Property>> rewriteEntry)
-    {
+    private static void rewriteGuardBodies(EList<String> guardBodies, String newName, String oldName) {
         for (int i = 0; i < guardBodies.size(); i++) {
             // Get the current body and substitute its expression if needed.
             String currentBody = guardBodies.get(i);
-            if (currentBody.contains(rewriteEntry.getValue().getLeft())) {
-                String newBodyString = currentBody.replaceAll(rewriteEntry.getValue().getLeft(), rewriteEntry.getKey());
+            if (currentBody.contains(oldName)) {
+                String newBodyString = currentBody.replaceAll(oldName, newName);
                 guardBodies.set(i, newBodyString);
             }
         }
