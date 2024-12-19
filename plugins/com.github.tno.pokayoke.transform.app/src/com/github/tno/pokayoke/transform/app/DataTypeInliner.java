@@ -39,11 +39,11 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
  * Flattens all properties that are instantiations of a data type, and deletes all data types. A data type property
  * represents a canonical "object" class, e.g. a robot, may contain only properties and nothing else.
  */
-public class ClassesInliner {
-    private ClassesInliner() {
+public class DataTypeInliner {
+    private DataTypeInliner() {
     }
 
-    public static void inlineClasses(Model model, List<String> warnings) {
+    public static void inlineDataTypes(Model model, List<String> warnings) {
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
         List<DataType> dataTypes = getAllDataTypes(context);
