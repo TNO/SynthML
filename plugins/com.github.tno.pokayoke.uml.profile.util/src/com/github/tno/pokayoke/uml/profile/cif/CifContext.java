@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
@@ -36,7 +37,7 @@ public class CifContext {
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.CLASS,
             UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL,
             UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY, UMLPackage.Literals.OPAQUE_BEHAVIOR,
-            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
+            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.DATA_TYPE);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -100,6 +101,11 @@ public class CifContext {
     public List<Activity> getAllAbstractActivities() {
         return getAllElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
                 .map(Activity.class::cast).toList();
+    }
+
+    public List<DataType> getAllDataTypes(Predicate<DataType> predicate) {
+        return getAllElements().stream().filter(e -> e instanceof DataType d && predicate.test(d))
+                .map(DataType.class::cast).toList();
     }
 
     public boolean isEnumeration(String name) {

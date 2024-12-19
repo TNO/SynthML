@@ -48,11 +48,11 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isSupportedType(Type type) {
-        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isDataTypeType(type);
+        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isDataTypeOnlyType(type);
     }
 
-    public static boolean isDataTypeType(Type type) {
-        return type instanceof DataType;
+    public static boolean isDataTypeOnlyType(Type type) {
+        return type instanceof DataType && !(type instanceof Enumeration || type instanceof PrimitiveType);
     }
 
     public static boolean isEnumerationType(Type type) {
