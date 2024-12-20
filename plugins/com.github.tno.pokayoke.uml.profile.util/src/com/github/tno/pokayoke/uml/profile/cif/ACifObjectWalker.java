@@ -62,7 +62,6 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     protected T visit(AAssignmentUpdate update, CifContext ctx) {
         if (update.addressable instanceof ANameExpression addressable) {
             TextPosition assignmentPos = update.value.position;
-            // If addressable is a reference to a class attribute, check only the last part of the name.
             String name = addressable.name.name;
             if (!ctx.isVariable(name)) {
                 throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
