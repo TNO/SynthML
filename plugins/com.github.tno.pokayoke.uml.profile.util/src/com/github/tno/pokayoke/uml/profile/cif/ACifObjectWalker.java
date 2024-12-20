@@ -63,11 +63,9 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         if (update.addressable instanceof ANameExpression addressable) {
             TextPosition assignmentPos = update.value.position;
             // If addressable is a reference to a class attribute, check only the last part of the name.
-            String[] addressableSplitNames = addressable.name.name.split("\\.");
-            String lastToken = addressableSplitNames[addressableSplitNames.length - 1];
-
-            if (!ctx.isVariable(lastToken)) {
-                throw new CustomSyntaxException(String.format("unresolved variable '%s'", lastToken), assignmentPos);
+            String name = addressable.name.name;
+            if (!ctx.isVariable(name)) {
+                throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
             }
             return visit(visit(addressable, ctx), assignmentPos, visit(update.value, ctx), ctx);
         }
@@ -125,35 +123,13 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
             throw new CustomSyntaxException("expected a non-derivative name", expr.position);
         }
 
-        // If name refers to an attribute of a data type, e.g. name=object.attribute, split the name into its
-        // constituent parts and check them separately.
-        String[] classesAttributesSplit = name.split("\\.");
-
-        for (int idx = 1; idx < classesAttributesSplit.length; idx++) {
-            // Get the parent and child data types.
-            NamedElement parentElement = ctx.getElement(classesAttributesSplit[idx - 1]);
-            NamedElement childrenElement = ctx.getElement(classesAttributesSplit[idx]);
-            // Check if the data type of the parent is indeed the correct parent data type. Note that this assumes that
-            // data type attributes are Properties; any other type is not allowed.
-            if (parentElement instanceof Property parentProperty) {
-                if (parentProperty.getType().equals(childrenElement.getOwner())) {
-                    throw new CustomSyntaxException(String.format("attribute '%s' does not belong to class '%s'",
-                            childrenElement.getName(), parentElement.getName()), expr.position);
-                }
-            } else {
-                throw new CustomSyntaxException(
-                        String.format("attribute '%s' is not a Property", parentElement.getName()), expr.position);
-            }
-        }
-
-        // Check the type of the last substring.
-        NamedElement element = ctx.getElement(classesAttributesSplit[classesAttributesSplit.length - 1]);
+        NamedElement element = ctx.getElement(name);
         if (element instanceof EnumerationLiteral literal) {
             return visit(literal, expr.position, ctx);
         } else if (element instanceof Property property) {
             return visit(property, expr.position, ctx);
         } else {
-            throw new CustomSyntaxException(String.format("unresolved name '%s'", element.getName()), expr.position);
+            throw new CustomSyntaxException(String.format("unresolved name '%s'", name), expr.position);
         }
     }
 
