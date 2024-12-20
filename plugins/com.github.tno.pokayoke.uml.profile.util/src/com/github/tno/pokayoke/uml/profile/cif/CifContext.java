@@ -178,6 +178,15 @@ public class CifContext {
                 .map(EnumerationLiteral.class::cast).toList();
     }
 
+    public List<Property> getAllProperties() {
+        return getAllElements().stream().filter(Property.class::isInstance).map(Property.class::cast).toList();
+    }
+
+    public List<OpaqueBehavior> getAllOpaqueBehaviors() {
+        return getAllElements().stream().filter(OpaqueBehavior.class::isInstance).map(OpaqueBehavior.class::cast)
+                .toList();
+    }
+
     public boolean isVariable(String name) {
         return contextElements.get(name) instanceof Property;
     }
