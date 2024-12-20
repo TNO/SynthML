@@ -3,8 +3,10 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -14,6 +16,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
@@ -25,6 +28,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.collect.Sets;
 
 /** Collects basic typing information from a model that can be queried. */
@@ -36,7 +40,7 @@ public class CifContext {
     private static final Set<EClass> CONTEXT_TYPES = Sets.newHashSet(UMLPackage.Literals.CLASS,
             UMLPackage.Literals.ENUMERATION, UMLPackage.Literals.ENUMERATION_LITERAL,
             UMLPackage.Literals.PRIMITIVE_TYPE, UMLPackage.Literals.PROPERTY, UMLPackage.Literals.OPAQUE_BEHAVIOR,
-            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY);
+            UMLPackage.Literals.CONSTRAINT, UMLPackage.Literals.ACTIVITY, UMLPackage.Literals.DATA_TYPE);
 
     static {
         for (EClass contextType: CONTEXT_TYPES) {
@@ -73,7 +77,43 @@ public class CifContext {
     public CifContext(Element element) {
         Model model = element.getModel();
         // Do not check duplicates here, as that is the responsibility of model validation
-        contextElements = queryContextElements(model).toMap(NamedElement::getName);
+        Map<String, NamedElement> namesAndElement = queryContextElements(model).toMap(NamedElement::getName);
+        Map<String, NamedElement> newNamesAndElements = new LinkedHashMap<>();
+
+        // Loop over all elements, find the leaf of the dependency tree, and add it to the new map.
+        for (Entry<String, NamedElement> entry: namesAndElement.entrySet()) {
+            String elementName = entry.getKey();
+            NamedElement elementObject = entry.getValue();
+
+            // If the element is a property and of type DataType, recursive call on its children.
+            if (elementObject instanceof Property property && PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
+                getChildPropertyName((DataType)property.getType(), elementName, newNamesAndElements);
+            } else {
+                NamedElement childElement = entry.getValue();
+                newNamesAndElements.put(elementName, childElement);
+            }
+        }
+
+        contextElements = newNamesAndElements;
+    }
+
+    private static void getChildPropertyName(DataType datatype, String name,
+            Map<String, NamedElement> namesAndElements)
+    {
+        // Loop over all data type's attributes. If they are not a data type, add them to the map;
+        // otherwise, recursively call on the children object. Note that this assumes that only Enum, integers and
+        // booleans (i.e. the basic suppported types) can be a leaf within a property.
+        for (Property umlProperty: datatype.getOwnedAttributes()) {
+            String newName = name + "." + umlProperty.getName();
+            NamedElement elementObject = umlProperty;
+
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
+                // Recursive call.
+                getChildPropertyName((DataType)umlProperty.getType(), newName, namesAndElements);
+            } else {
+                namesAndElements.put(newName, elementObject);
+            }
+        }
     }
 
     public boolean isDeclared(String name) {
@@ -100,6 +140,11 @@ public class CifContext {
     public List<Activity> getAllAbstractActivities() {
         return getAllElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
                 .map(Activity.class::cast).toList();
+    }
+
+    public List<DataType> getAllDataTypes(Predicate<DataType> predicate) {
+        return getAllElements().stream().filter(e -> e instanceof DataType d && predicate.test(d))
+                .map(DataType.class::cast).toList();
     }
 
     public boolean isEnumeration(String name) {
@@ -131,15 +176,6 @@ public class CifContext {
     public List<EnumerationLiteral> getAllEnumerationLiterals() {
         return getAllElements().stream().filter(EnumerationLiteral.class::isInstance)
                 .map(EnumerationLiteral.class::cast).toList();
-    }
-
-    public List<Property> getAllProperties() {
-        return getAllElements().stream().filter(Property.class::isInstance).map(Property.class::cast).toList();
-    }
-
-    public List<OpaqueBehavior> getAllOpaqueBehaviors() {
-        return getAllElements().stream().filter(OpaqueBehavior.class::isInstance).map(OpaqueBehavior.class::cast)
-                .toList();
     }
 
     public boolean isVariable(String name) {
