@@ -52,11 +52,15 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isDataTypeOnlyType(Type type) {
-        return type instanceof DataType && !(type instanceof Enumeration || type instanceof PrimitiveType);
+        return type instanceof DataType && !(isEnumerationType(type) || isPrimitiveType(type));
     }
 
     public static boolean isEnumerationType(Type type) {
         return type instanceof Enumeration;
+    }
+
+    public static boolean isPrimitiveType(Type type) {
+        return type instanceof PrimitiveType;
     }
 
     public static boolean isBooleanType(Type type) {

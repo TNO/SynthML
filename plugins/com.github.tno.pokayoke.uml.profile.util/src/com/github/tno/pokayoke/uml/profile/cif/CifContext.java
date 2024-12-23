@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -76,40 +77,62 @@ public class CifContext {
 
     public CifContext(Element element) {
         Model model = element.getModel();
-        // Do not check duplicates here, as that is the responsibility of model validation
-        Map<String, NamedElement> namesAndElement = queryContextElements(model).toMap(NamedElement::getName);
-        Map<String, NamedElement> newNamesAndElements = new LinkedHashMap<>();
 
-        // Loop over all elements, find the leaf of the dependency tree, and add it to the new map.
+        // Find the instances of data types defined in the active class. Assumes a single active class.
+        Class activeClass = (Class)model.getOwnedElements().stream().filter(e -> e instanceof Class d && d.isActive())
+                .toList().get(0);
+        Set<Property> instantiatedDataTypes = new LinkedHashSet<>();
+        for (Property umlProperty: activeClass.getOwnedAttributes()) {
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
+                instantiatedDataTypes.add(umlProperty);
+            }
+        }
+
+        // Do not check duplicates here, as that is the responsibility of model validation.
+        Map<String, NamedElement> namesAndElement = queryContextElements(model).toMap(NamedElement::getName);
+        Map<String, NamedElement> referenceNamesAndElements = new LinkedHashMap<>();
+
+        // Loop over all elements, find the leaf of the dependency tree, and add it to the new map. Adds only the
+        // instances of data types that are defined in the active class.
         for (Entry<String, NamedElement> entry: namesAndElement.entrySet()) {
             String elementName = entry.getKey();
             NamedElement elementObject = entry.getValue();
 
-            // If the element is a property and of type DataType, recursive call on its children.
-            if (elementObject instanceof Property property && PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
-                getChildPropertyName((DataType)property.getType(), elementName, newNamesAndElements);
-            } else {
-                NamedElement childElement = entry.getValue();
-                newNamesAndElements.put(elementName, childElement);
+            // If the element is not a property, nor a data type, add it to the context. If the element is a property of
+            // the active class and it is an instantiated data type, perform a recursive call on its children.
+            // Properties whose owner is a data type can only be added via the recursive call, not by looping over them.
+            if (!(elementObject instanceof Property prop
+                    && (PokaYokeTypeUtil.isDataTypeOnlyType(prop.getType()) || prop.getOwner() instanceof DataType)))
+            {
+                // Add the non property, non data type objects, or the properties who are not children of a data type.
+                referenceNamesAndElements.put(elementName, elementObject);
+            } else if (elementObject instanceof Property property) {
+                if (instantiatedDataTypes.contains(property)) {
+                    addChildPropertyName((DataType)property.getType(), elementName, referenceNamesAndElements);
+                } else {
+                    // Skip the non instantiated data types.
+                    continue;
+                }
             }
         }
 
-        contextElements = newNamesAndElements;
+        contextElements = referenceNamesAndElements;
     }
 
-    private static void getChildPropertyName(DataType datatype, String name,
+    private static void addChildPropertyName(DataType datatype, String name,
             Map<String, NamedElement> namesAndElements)
     {
         // Loop over all data type's attributes. If they are not a data type, add them to the map;
         // otherwise, recursively call on the children object. Note that this assumes that only Enum, integers and
-        // booleans (i.e. the basic suppported types) can be a leaf within a property.
+        // booleans (i.e. the basic supported types) can be a leaf within a property.
         for (Property umlProperty: datatype.getOwnedAttributes()) {
             String newName = name + "." + umlProperty.getName();
             NamedElement elementObject = umlProperty;
 
             if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
-                // Recursive call.
-                getChildPropertyName((DataType)umlProperty.getType(), newName, namesAndElements);
+                // Add the current intermediate object, and recursive call on its children.
+                namesAndElements.put(newName, elementObject);
+                addChildPropertyName((DataType)umlProperty.getType(), newName, namesAndElements);
             } else {
                 namesAndElements.put(newName, elementObject);
             }
@@ -145,6 +168,14 @@ public class CifContext {
     public List<DataType> getAllDataTypes(Predicate<DataType> predicate) {
         return getAllElements().stream().filter(e -> e instanceof DataType d && predicate.test(d))
                 .map(DataType.class::cast).toList();
+    }
+
+    public List<Property> getAllProperties() {
+        return getAllElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
+    }
+
+    public Map<String, NamedElement> getAllPropertiesWithKeys(Model model) {
+        return queryContextElements(model).select(e -> e instanceof Property).toMap(NamedElement::getName);
     }
 
     public boolean isEnumeration(String name) {
