@@ -33,7 +33,8 @@ public class PokaYokeTypeUtil {
      * Returns all Poka Yoke supported types for {@code context}.
      * <p>
      * The next types are supported: {@link Enumeration enumerations in the model}, {@link UmlPrimitiveType#INTEGER
-     * integers in the model} and {@link UmlPrimitiveType#BOOLEAN the primitive Boolean}.
+     * integers in the model}, {@link UmlPrimitiveType#BOOLEAN the primitive Boolean} and {@link DataType data types in
+     * the model}.
      * </p>
      *
      * @param context The context for which the supported types are queried.

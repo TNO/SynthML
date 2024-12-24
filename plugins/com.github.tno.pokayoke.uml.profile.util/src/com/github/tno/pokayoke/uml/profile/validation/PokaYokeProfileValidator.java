@@ -212,7 +212,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Skip the remaining checks for enumerations and primitive types, which are also data types.
-        if (PokaYokeTypeUtil.isSupportedType(dataType)) {
+        if (!PokaYokeTypeUtil.isDataTypeOnlyType(dataType)) {
             return;
         }
 

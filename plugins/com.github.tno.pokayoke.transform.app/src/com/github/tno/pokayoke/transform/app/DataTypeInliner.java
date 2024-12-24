@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
@@ -43,7 +44,14 @@ public class DataTypeInliner {
     private DataTypeInliner() {
     }
 
-    public static void inlineDataTypes(Model model, List<String> warnings) {
+    /**
+     * Finds the instantiations of (nested) data types, and inlines their properties with falttened names. Rewrites the
+     * properties and owned behaviors of the active class, and removes the data types.
+     *
+     * @param model The UML model.
+     * @param warnings A list of strings containing any warnings to notify the user of, which is modified in-place.
+     */
+    public static void inlineNestedDataTypes(Model model, List<String> warnings) {
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
         List<DataType> dataTypes = getAllDataTypes(context);
@@ -107,7 +115,7 @@ public class DataTypeInliner {
         // flattened name, the original reference name, and the corresponding property.
         for (Property umlProperty: activeClass.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
-                getChildPropertyName((DataType)umlProperty.getType(), umlProperty.getName(), umlProperty.getName(),
+                addChildPropertyName((DataType)umlProperty.getType(), umlProperty.getName(), umlProperty.getName(),
                         flattenedNamesMap, warnings);
             }
         }
@@ -125,7 +133,7 @@ public class DataTypeInliner {
      * @param flattenedNamesMap A mapping from new property names, to their old property names and the property itself.
      * @param warnings A list of strings containing all the synthesis chain warnings.
      */
-    private static void getChildPropertyName(DataType datatype, String flatName, String dotName,
+    private static void addChildPropertyName(DataType datatype, String flatName, String dotName,
             Map<String, Pair<String, Property>> flattenedNamesMap, List<String> warnings)
     {
         // Loop over all data type's attributes. If they are boolean, Enum, Integer, add them to the map;
@@ -136,12 +144,11 @@ public class DataTypeInliner {
 
             if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
                 // Recursive call.
-                getChildPropertyName((DataType)umlProperty.getType(), newFlatName, newDotName, flattenedNamesMap,
+                addChildPropertyName((DataType)umlProperty.getType(), newFlatName, newDotName, flattenedNamesMap,
                         warnings);
             } else {
                 // If we find a property that is supported, add it to the map.
                 addFlattenedNameToMap(umlProperty, newFlatName, newDotName, flattenedNamesMap, warnings);
-                System.out.println("Update names: " + newDotName + " into " + newFlatName);
             }
         }
     }
@@ -201,7 +208,7 @@ public class DataTypeInliner {
             Property rewrittenProperty = FileHelper.FACTORY.createProperty();
             rewrittenProperty.setIsStatic(true);
             rewrittenProperty.setName(flattenedName);
-            rewrittenProperty.setType(originalProperty.getType());
+            rewrittenProperty.setType(EcoreUtil.copy(originalProperty.getType()));
             rewrittenProperty.setDefaultValue(originalProperty.getDefaultValue());
             activeClass.getOwnedAttributes().add(rewrittenProperty);
         }

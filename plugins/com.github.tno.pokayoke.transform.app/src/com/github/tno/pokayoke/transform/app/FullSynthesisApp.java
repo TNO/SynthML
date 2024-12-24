@@ -84,7 +84,7 @@ public class FullSynthesisApp {
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
         // Eliminates all data classes and writes a new UML file.
-        DataTypeInliner.inlineDataTypes(umlSpec, warnings);
+        DataTypeInliner.inlineNestedDataTypes(umlSpec, warnings);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
