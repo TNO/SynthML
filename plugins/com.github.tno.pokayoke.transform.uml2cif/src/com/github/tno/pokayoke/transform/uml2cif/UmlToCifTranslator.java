@@ -430,8 +430,9 @@ public class UmlToCifTranslator {
     private BiMap<Event, Edge> translateOpaqueBehaviors() {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
-        for (OpaqueBehavior umlOpaqueBehavior: context.getAllOpaqueBehaviors()) {
-            eventEdges.putAll(translateAction(umlOpaqueBehavior, umlOpaqueBehavior.getName(), true));
+        for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
+            ActionTranslationResult translationResult = translateAction(umlBehavior, umlBehavior.getName(), true);
+            eventEdges.putAll(translationResult.eventEdges);
         }
 
         return eventEdges;
@@ -455,9 +456,9 @@ public class UmlToCifTranslator {
      * @param umlElement The UML element to translate as an action.
      * @param name The name of the action to create.
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
-     * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
+     * @return An action translation result.
      */
-    private BiMap<Event, Edge> translateAction(RedefinableElement umlElement, String name,
+    private ActionTranslationResult translateAction(RedefinableElement umlElement, String name,
             boolean controllableStartEvent)
     {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
@@ -505,15 +506,15 @@ public class UmlToCifTranslator {
         boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction) || umlElement instanceof ControlNode;
         boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
 
+        List<Event> cifEndEvents = new ArrayList<>(effects.size());
+
         if (isAtomic && isDeterministic) {
             // In case the action is both deterministic and atomic, then the start event also ends the action.
             // Add its effect as an edge update.
             cifStartEdge.getUpdates().addAll(effects.get(0));
         } else {
-            // In all other cases, add uncontrollable events and edges to end the action.
-            List<Event> cifEndEvents = new ArrayList<>(effects.size());
-
-            // Make an uncontrollable event and corresponding edge for every effect (there is at least one).
+            // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
+            // and corresponding edge for every effect (there is at least one).
             for (int i = 0; i < effects.size(); i++) {
                 // Declare the CIF uncontrollable end event.
                 Event cifEndEvent = CifConstructors.newEvent();
@@ -546,7 +547,18 @@ public class UmlToCifTranslator {
 
         eventEdgeMap.putAll(newEventEdges);
 
-        return newEventEdges;
+        return new ActionTranslationResult(cifStartEvent, cifEndEvents, newEventEdges);
+    }
+
+    /**
+     * The result of translating a UML element as an action.
+     *
+     * @param startEvent The CIF start event that has been created for the action.
+     * @param endEvents The CIF end events that have been created for the action. If the translated action was both
+     *     atomic and deterministic, then this list is empty, since then the created start event also ends the action.
+     * @param eventEdges The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
+     */
+    private record ActionTranslationResult(Event startEvent, List<Event> endEvents, BiMap<Event, Edge> eventEdges) {
     }
 
     /**
@@ -677,23 +689,12 @@ public class UmlToCifTranslator {
     private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean controllableStartEvents) {
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
-        BiMap<Event, Edge> newEventEdges = translateAction(node, actionName, controllableStartEvents);
+        ActionTranslationResult translationResult = translateAction(node, actionName, controllableStartEvents);
 
-        // Collect the CIF start and end events of the translated UML activity node.
-        List<Event> startEvents = new ArrayList<>();
-        List<Event> endEvents = new ArrayList<>();
-
-        for (Event event: newEventEdges.keySet()) {
-            if (eventMap.containsKey(event)) {
-                startEvents.add(event);
-            } else {
-                endEvents.add(event);
-            }
-        }
-
-        Verify.verify(startEvents.size() == 1,
-                "Expected a single start event to have been created, but got: " + startEvents.size());
-        Event startEvent = startEvents.get(0);
+        // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
+        Event startEvent = translationResult.startEvent;
+        List<Event> endEvents = translationResult.endEvents;
+        BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;
 
         // If no explicit end events were created during the translation, then the start event also ends the action.
         if (endEvents.isEmpty()) {
@@ -761,24 +762,13 @@ public class UmlToCifTranslator {
 
             // Translate the UML activity node for the current control flow pair, as an action.
             String actionName = String.format("%s__%d", getActionNameForActivityNode(node), count);
-            BiMap<Event, Edge> newEventEdges = translateAction(node, actionName, controllableStartEvents);
+            ActionTranslationResult translationResult = translateAction(node, actionName, controllableStartEvents);
             count++;
 
-            // Collect the CIF start and end events of the translated UML activity node.
-            List<Event> startEvents = new ArrayList<>();
-            List<Event> endEvents = new ArrayList<>();
-
-            for (Event event: newEventEdges.keySet()) {
-                if (eventMap.containsKey(event)) {
-                    startEvents.add(event);
-                } else {
-                    endEvents.add(event);
-                }
-            }
-
-            Verify.verify(startEvents.size() == 1,
-                    "Expected a single start event to have been created, but got: " + startEvents.size());
-            Event startEvent = startEvents.get(0);
+            // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
+            Event startEvent = translationResult.startEvent;
+            List<Event> endEvents = translationResult.endEvents;
+            BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;
 
             // If no explicit end events were created during the translation, then the start event also ends the action.
             if (endEvents.isEmpty()) {
