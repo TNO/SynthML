@@ -616,8 +616,8 @@ public class UmlToCifTranslator {
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
     private BiMap<Event, Edge> translateActivityNode(ActivityNode node) {
-        // Translate the UML activity node as an action. The CIF start event for this action should only be controllable
-        // in case the given node is an initial node.
+        // Translate the given activity node as either an AND or OR type node, depending on its type. The CIF start
+        // events that will be created for this node should only be controllable in case the node is an initial node.
         BiMap<Event, Edge> newEventEdges;
 
         if (node instanceof InitialNode) {
