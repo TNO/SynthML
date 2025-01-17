@@ -48,6 +48,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -498,11 +499,11 @@ public class UmlToCifTranslator {
         cifStartEdge.getGuards().add(guard);
         newEventEdges.put(cifStartEvent, cifStartEdge);
 
-        // Create any CIF end events and corresponding end edges. We thereby assume that, if the given UML action is not
-        // a formal element, then it's also not atomic. This extra check is there since, by default, all elements are
-        // considered to be non-atomic. And we don't want, e.g., fork or join nodes to be non-atomic.
-        boolean isAtomic = !PokaYokeUmlProfileUtil.isFormalElement(umlAction)
-                || PokaYokeUmlProfileUtil.isAtomic(umlAction);
+        // Create any CIF end events and corresponding end edges. While doing so, we consider all control nodes (i.e.,
+        // initial, final, decision, merge, fork, and join nodes) to be atomic. This extra check is needed since actions
+        // are considered to be non-atomic by default, and here we are translating the given UML element as an action.
+        // And we don't want control nodes like forks and joins to be executed non-atomically.
+        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction) || umlElement instanceof ControlNode;
         boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
 
         if (isAtomic && isDeterministic) {
