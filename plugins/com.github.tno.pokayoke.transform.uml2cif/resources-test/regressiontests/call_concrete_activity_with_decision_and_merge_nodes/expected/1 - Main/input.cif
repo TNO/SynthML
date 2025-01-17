@@ -1,0 +1,58 @@
+controllable __node__InitialNode__29;
+uncontrollable __node__ActivityFinalNode__30;
+uncontrollable __node__DecisionNode__31__0;
+uncontrollable __node__DecisionNode__31__1;
+uncontrollable __node__OpaqueAction__32;
+uncontrollable __node__OpaqueAction__33;
+uncontrollable __node__MergeNode__34__0;
+uncontrollable __node__MergeNode__34__1;
+plant automaton System:
+  disc bool field1 in any;
+  disc bool field2 in any;
+  disc bool __controlflow__21;
+  disc bool __controlflow__22;
+  disc bool __controlflow__24;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27;
+  disc bool __controlflow__28;
+  alg bool Pre = not field2;
+  alg bool __precondition = Pre;
+  alg bool Post = field2;
+  alg bool __postcondition__Occ__DoWork = Occ__DoWork.__occurrences >= 0;
+  alg bool __postcondition__controlflow__21 = not __controlflow__21;
+  alg bool __postcondition__controlflow__22 = not __controlflow__22;
+  alg bool __postcondition__controlflow__24 = not __controlflow__24;
+  alg bool __postcondition__controlflow__26 = not __controlflow__26;
+  alg bool __postcondition__controlflow__27 = not __controlflow__27;
+  alg bool __postcondition__controlflow__28 = not __controlflow__28;
+  alg bool __postcondition = Post and __postcondition__Occ__DoWork and (__postcondition__controlflow__21 and __postcondition__controlflow__22) and (__postcondition__controlflow__24 and __postcondition__controlflow__26 and (__postcondition__controlflow__27 and __postcondition__controlflow__28));
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__29 when true, not __controlflow__21 do __controlflow__21 := true;
+    edge __node__ActivityFinalNode__30 when true, __controlflow__28 do __controlflow__28 := false;
+    edge __node__DecisionNode__31__0 when true, __controlflow__21, not __controlflow__22, not field1 do __controlflow__21 := false, __controlflow__22 := true;
+    edge __node__DecisionNode__31__1 when true, __controlflow__21, not __controlflow__24, field1 do __controlflow__21 := false, __controlflow__24 := true;
+    edge __node__OpaqueAction__32 when not field1, __controlflow__22, not __controlflow__26 do field2 := true, __controlflow__22 := false, __controlflow__26 := true;
+    edge __node__OpaqueAction__33 when field1, __controlflow__24, not __controlflow__27 do field2 := true, __controlflow__24 := false, __controlflow__27 := true;
+    edge __node__MergeNode__34__0 when true, __controlflow__26, not __controlflow__28 do __controlflow__26 := false, __controlflow__28 := true;
+    edge __node__MergeNode__34__1 when true, __controlflow__27, not __controlflow__28 do __controlflow__27 := false, __controlflow__28 := true;
+end
+requirement automaton Occ__DoWork:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__InitialNode__29 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant System.__postcondition disables __node__InitialNode__29;
+requirement invariant System.__postcondition disables __node__ActivityFinalNode__30;
+requirement invariant System.__postcondition disables __node__DecisionNode__31__0;
+requirement invariant System.__postcondition disables __node__DecisionNode__31__1;
+requirement invariant System.__postcondition disables __node__OpaqueAction__32;
+requirement invariant System.__postcondition disables __node__OpaqueAction__33;
+requirement invariant System.__postcondition disables __node__MergeNode__34__0;
+requirement invariant System.__postcondition disables __node__MergeNode__34__1;
