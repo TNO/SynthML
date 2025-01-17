@@ -55,18 +55,18 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /** The mapping from UML elements to corresponding translated CIF (controllable start) events. */
-    private final Map<Event, RedefinableElement> eventMap;
+    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
+    private final Map<Event, RedefinableElement> startEventMap;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<Event, RedefinableElement> eventMap)
+            Map<Event, RedefinableElement> startEventMap)
     {
         this.context = context;
         this.enumMap = enumMap;
         this.enumLiteralMap = enumLiteralMap;
         this.variableMap = variableMap;
-        this.eventMap = eventMap;
+        this.startEventMap = startEventMap;
     }
 
     /**
@@ -222,7 +222,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                for (var entry: eventMap.entrySet()) {
+                for (var entry: startEventMap.entrySet()) {
                     RedefinableElement umlElement = entry.getValue();
 
                     if (umlElement.getName().equals(event)) {

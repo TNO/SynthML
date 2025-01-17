@@ -123,8 +123,8 @@ public class UmlToCifTranslator {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
 
-    /** The mapping from translated CIF start events to their corresponding UML actions. */
-    private final Map<Event, RedefinableElement> eventMap = new LinkedHashMap<>();
+    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
+    private final Map<Event, RedefinableElement> startEventMap = new LinkedHashMap<>();
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
@@ -144,7 +144,7 @@ public class UmlToCifTranslator {
     public UmlToCifTranslator(Activity activity) {
         this.activity = activity;
         this.context = new CifContext(activity.getModel());
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, eventMap);
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
     }
 
     /**
@@ -207,7 +207,7 @@ public class UmlToCifTranslator {
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         Map<Event, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
 
-        for (var entry: eventMap.entrySet()) {
+        for (var entry: startEventMap.entrySet()) {
             Event startEvent = entry.getKey();
             RedefinableElement action = entry.getValue();
 
@@ -486,7 +486,7 @@ public class UmlToCifTranslator {
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(controllableStartEvent);
         cifStartEvent.setName(name);
-        eventMap.put(cifStartEvent, umlElement);
+        startEventMap.put(cifStartEvent, umlElement);
 
         // Create a CIF edge for this start event.
         EventExpression cifEventExpr = CifConstructors.newEventExpression();
@@ -652,7 +652,7 @@ public class UmlToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (eventMap.containsKey(cifEvent)) {
+                if (startEventMap.containsKey(cifEvent)) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(translateStateInvariantConstraint(precondition));
                     }
@@ -668,7 +668,7 @@ public class UmlToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (eventMap.containsKey(cifEvent)) {
+                if (startEventMap.containsKey(cifEvent)) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(translateStateInvariantConstraint(postcondition));
                     }
@@ -889,7 +889,7 @@ public class UmlToCifTranslator {
      * @return The original guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = eventMap.get(event);
+        RedefinableElement element = startEventMap.get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);
@@ -1107,13 +1107,13 @@ public class UmlToCifTranslator {
                             .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                    List<Event> cifStartEvents = eventMap.entrySet().stream()
+                    List<Event> cifStartEvents = startEventMap.entrySet().stream()
                             .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
 
                     String name = umlConstraint.getName() + "__" + umlActivity.getName();
                     cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    List<Event> cifStartEvents = eventMap.entrySet().stream()
+                    List<Event> cifStartEvents = startEventMap.entrySet().stream()
                             .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
 
                     String name = umlConstraint.getName() + "__" + umlOpaqueBehavior.getName();
