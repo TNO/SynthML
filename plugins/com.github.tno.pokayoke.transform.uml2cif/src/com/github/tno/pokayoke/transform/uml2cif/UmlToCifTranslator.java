@@ -440,22 +440,21 @@ public class UmlToCifTranslator {
     /**
      * Translates a given UML element as an action, to CIF events and corresponding CIF edges.
      * <p>
-     * If the action to translate is an atomic deterministic action, then a single controllable CIF event is created for
-     * starting and ending the action, together with a corresponding edge for that event. The guard of that edge is the
-     * translated action guard, and the updates of that edge are the translated action effect.
+     * If the action to translate is an atomic deterministic action, then a single CIF event is created for starting and
+     * ending the action, together with a corresponding edge for that event. The guard of that edge is the translated
+     * action guard, and the updates of that edge are the translated action effect.
      * </p>
      * <p>
      * If the action to translate is an non-atomic and/or non-deterministic action, then multiple CIF events are
-     * created: one controllable event for starting the action, and uncontrollable events for each of the action
-     * effects, for ending the action. At least one end event is always created, even if the action has no defined
-     * effects. There is a corresponding edge for every created event. The start edge has the translated action guard as
-     * its guard, and has no updates. Any end edge has 'true' as its guard, and the translated action effect as its
-     * updates.
+     * created: one event for starting the action, and uncontrollable events for each of the action effects, for ending
+     * the action. At least one end event is always created, even if the action has no defined effects. There is a
+     * corresponding edge for every created event. The start edge has the translated action guard as its guard, and has
+     * no updates. Any end edge has 'true' as its guard, and the translated action effect as its updates.
      * </p>
      *
      * @param umlElement The UML element to translate as an action.
      * @param name The name of the action to create.
-     * @param controllableStartEvent Whether the CIF start event should be controllable.
+     * @param controllableStartEvent Whether the created CIF start event should be controllable.
      * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
      */
     private BiMap<Event, Edge> translateAction(RedefinableElement umlElement, String name,
