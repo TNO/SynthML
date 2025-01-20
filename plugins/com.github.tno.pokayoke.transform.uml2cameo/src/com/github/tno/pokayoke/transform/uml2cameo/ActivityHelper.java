@@ -80,6 +80,9 @@ public class ActivityHelper {
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
+
+        // The Python code generator uses patterns such as "active == '" + callerId + "'".
+        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in callerId.
         Preconditions.checkArgument(!callerId.contains("'"),
                 "Argument callerId contains quote character ('): " + callerId);
 
