@@ -219,6 +219,25 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!dataType.getOwnedElements().stream().allMatch(Property.class::isInstance)) {
             error("Data type owns elements that are not properties.", UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
         }
+
+        // Check if data type owns properties whose type leads to an instantiation cycle.
+        Set<DataType> propertyDataTypes = new LinkedHashSet<>();
+        propertyDataTypes.add(dataType);
+        checkDataTypeInstantiationCycle(dataType, propertyDataTypes);
+    }
+
+    private void checkDataTypeInstantiationCycle(DataType dataType, Set<DataType> usedDataTypes) {
+        for (Property umlProperty: dataType.getAllAttributes()) {
+            if (usedDataTypes.contains(umlProperty.getType())) {
+                error("Data type property generates an instantiation cycle.",
+                        UMLPackage.Literals.DATA_TYPE__OWNED_ATTRIBUTE);
+            }
+
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
+                usedDataTypes.add((DataType)umlProperty.getType());
+                checkDataTypeInstantiationCycle((DataType)umlProperty.getType(), usedDataTypes);
+            }
+        }
     }
 
     @Check
@@ -427,7 +446,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } else {
             QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
             if (initialNodes.size() != 1) {
-                error("Abstract activity should have exactly one initial node but got " + initialNodes.size(), activity,
+                error("Concrete activity should have exactly one initial node but got " + initialNodes.size(), activity,
                         null);
             }
         }
@@ -550,10 +569,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidEffects(RedefinableElement element) {
+        Map<String, NamedElement> ctxMap = new CifContext(element).getContextMap();
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
         for (int i = 0; i < effects.size(); i++) {
             try {
-                checkValidUpdates(CifParserHelper.parseUpdates(effects.get(i), element), element);
+                checkValidUpdates(CifParserHelper.parseUpdates(effects.get(i), element), element, ctxMap);
             } catch (RuntimeException re) {
                 String prefix = "Invalid effects: ";
                 if (effects.size() > 1) {
@@ -564,7 +584,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidUpdates(List<AUpdate> updates, Element element) {
+    private void checkValidUpdates(List<AUpdate> updates, Element element, Map<String, NamedElement> ctxMap) {
         // Type check all updates.
         CifTypeChecker typeChecker = new CifTypeChecker(element);
 
@@ -573,7 +593,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Ensure that no variable is assigned more than once by the given list of updates.
-        checkUniqueAddressables(updates, new LinkedHashSet<>());
+        checkUniqueAddressables(updates, new LinkedHashSet<>(), ctxMap);
     }
 
     /**
@@ -582,10 +602,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      *
      * @param updates The updates to check.
      * @param addrVars The set of assigned variables, which is modified in-place.
+     * @param ctxMap The context map containing variable names and the corresponding UML types.
      */
-    private void checkUniqueAddressables(List<AUpdate> updates, Set<String> addrVars) {
+    private void checkUniqueAddressables(List<AUpdate> updates, Set<String> addrVars,
+            Map<String, NamedElement> ctxMap)
+    {
         for (AUpdate update: updates) {
-            checkUniqueAddressables(update, addrVars);
+            checkUniqueAddressables(update, addrVars, ctxMap);
         }
     }
 
@@ -595,12 +618,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      *
      * @param update The update to check.
      * @param addrVars The set of assigned variables, which is modified in-place.
+     * @param ctxMap The context map containing variable names and the corresponding UML objects.
      */
-    private void checkUniqueAddressables(AUpdate update, Set<String> addrVars) {
+    private void checkUniqueAddressables(AUpdate update, Set<String> addrVars, Map<String, NamedElement> ctxMap) {
         if (update instanceof AAssignmentUpdate assignment) {
             ANameExpression varExpr = (ANameExpression)assignment.addressable;
             String varName = varExpr.name.name;
-            boolean added = addrVars.add(varName);
+            Set<String> childrenNames = unfoldAssignmentVariable(varName, ctxMap);
+            boolean added = true;
+            for (String childrenName: childrenNames) {
+                added = added && addrVars.add(childrenName);
+            }
 
             if (!added) {
                 throw new CustomSyntaxException(String.format("Variable '%s' is updated multiple times.", varName),
@@ -610,23 +638,38 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             Set<String> newAddrVars = new LinkedHashSet<>(addrVars);
 
             Set<String> addrVarsThens = new LinkedHashSet<>(addrVars);
-            checkUniqueAddressables(ifUpdate.thens, addrVarsThens);
+            checkUniqueAddressables(ifUpdate.thens, addrVarsThens, ctxMap);
             newAddrVars.addAll(addrVarsThens);
 
             for (AElifUpdate elifUpdate: ifUpdate.elifs) {
                 Set<String> addrVarsElifs = new LinkedHashSet<>(addrVars);
-                checkUniqueAddressables(elifUpdate.thens, addrVarsElifs);
+                checkUniqueAddressables(elifUpdate.thens, addrVarsElifs, ctxMap);
                 newAddrVars.addAll(addrVarsElifs);
             }
 
             Set<String> addrVarsElses = new LinkedHashSet<>(addrVars);
-            checkUniqueAddressables(ifUpdate.elses, addrVarsElses);
+            checkUniqueAddressables(ifUpdate.elses, addrVarsElses, ctxMap);
             newAddrVars.addAll(addrVarsElses);
 
             addrVars.addAll(newAddrVars);
         } else {
             error("Unsupported update: " + update, UMLPackage.Literals.TYPED_ELEMENT__TYPE);
         }
+    }
+
+    private static Set<String> unfoldAssignmentVariable(String varName, Map<String, NamedElement> ctx) {
+        Property assignmentProperty = (Property)ctx.get(varName);
+
+        // Find all leaves children of the corresponding data type.
+        Set<String> leaves = new LinkedHashSet<>();
+        PokaYokeTypeUtil.findAllLeavesProperty(assignmentProperty, varName, leaves);
+
+        // If the leaves set is empty, the expression refers to a leaf type, so there is no unfolding to be done.
+        if (leaves.isEmpty()) {
+            return new LinkedHashSet<>(Set.of(varName));
+        }
+
+        return leaves;
     }
 
     /**

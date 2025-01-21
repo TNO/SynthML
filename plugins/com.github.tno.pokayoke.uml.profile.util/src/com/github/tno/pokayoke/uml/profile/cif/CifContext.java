@@ -82,7 +82,8 @@ public class CifContext {
         List<Element> activeClasses = model.getOwnedElements().stream()
                 .filter(e -> e instanceof Class d && d.isActive()).toList();
 
-        // If there are no active classes, simply returns the model elements.
+        // If there are no active classes, simply returns the model elements. ProfileValidator check the number of
+        // classes.
         if (activeClasses.isEmpty()) {
             contextElements = queryContextElements(model).toMap(NamedElement::getName);
         } else {
@@ -106,10 +107,9 @@ public class CifContext {
                 NamedElement elementObject = entry.getValue();
 
                 // If the element is not a property, nor a data type, add it to the context. If the element is a
-                // property of
-                // the active class and it is an instantiated data type, perform a recursive call on its children.
-                // Properties whose owner is a data type can only be added via the recursive call, not by looping over
-                // them.
+                // property of the active class and it is an instantiated data type, perform a recursive call on its
+                // children. Properties whose owner is a data type can only be added via the recursive call, not by
+                // looping over them.
                 if (!(elementObject instanceof Property prop && (PokaYokeTypeUtil.isDataTypeOnlyType(prop.getType())
                         || prop.getOwner() instanceof DataType)))
                 {
@@ -118,6 +118,7 @@ public class CifContext {
                     referenceNamesAndElements.put(elementName, elementObject);
                 } else if (elementObject instanceof Property property) {
                     if (instantiatedDataTypes.contains(property)) {
+                        referenceNamesAndElements.put(elementName, property);
                         addChildPropertyName((DataType)property.getType(), elementName, referenceNamesAndElements);
                     } else {
                         // Skip the non instantiated data types.
@@ -133,9 +134,9 @@ public class CifContext {
     private static void addChildPropertyName(DataType datatype, String name,
             Map<String, NamedElement> namesAndElements)
     {
-        // Loop over all data type's attributes. If they are not a data type, add them to the map;
-        // otherwise, recursively call on the children object. Note that this assumes that only Enum, integers and
-        // booleans (i.e. the basic supported types) can be a leaf within a property.
+        // Loop over all data type's attributes. If they are not a data type, add them to the map; otherwise,
+        // recursively call on the children object. Note that this assumes that only Enum, integers and booleans (i.e.
+        // the basic supported types) can be a leaf within a property.
         for (Property umlProperty: datatype.getOwnedAttributes()) {
             String newName = name + "." + umlProperty.getName();
             NamedElement elementObject = umlProperty;
@@ -160,6 +161,10 @@ public class CifContext {
 
     protected Collection<NamedElement> getAllElements() {
         return Collections.unmodifiableCollection(contextElements.values());
+    }
+
+    public Map<String, NamedElement> getContextMap() {
+        return contextElements;
     }
 
     public List<Class> getAllClasses(Predicate<Class> predicate) {
