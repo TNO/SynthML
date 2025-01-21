@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.uml.profile.util;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -12,6 +13,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -33,7 +35,8 @@ public class PokaYokeTypeUtil {
      * Returns all Poka Yoke supported types for {@code context}.
      * <p>
      * The next types are supported: {@link Enumeration enumerations in the model}, {@link UmlPrimitiveType#INTEGER
-     * integers in the model} and {@link UmlPrimitiveType#BOOLEAN the primitive Boolean}.
+     * integers in the model}, {@link UmlPrimitiveType#BOOLEAN the primitive Boolean} and {@link DataType data types in
+     * the model}.
      * </p>
      *
      * @param context The context for which the supported types are queried.
@@ -52,11 +55,16 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isDataTypeOnlyType(Type type) {
-        return type instanceof DataType && !(type instanceof Enumeration || type instanceof PrimitiveType);
+        // Check the type is only a data type; DataType is the super interface of Enumeration and PrimitiveType.
+        return type instanceof DataType && !(isEnumerationType(type) || isPrimitiveType(type));
     }
 
     public static boolean isEnumerationType(Type type) {
         return type instanceof Enumeration;
+    }
+
+    public static boolean isPrimitiveType(Type type) {
+        return type instanceof PrimitiveType;
     }
 
     public static boolean isBooleanType(Type type) {
@@ -131,5 +139,25 @@ public class PokaYokeTypeUtil {
      */
     public static String getLabel(Type type) {
         return type == null ? "null" : type.getLabel(true);
+    }
+
+    /**
+     * Finds all children that are of supported leaf type (Enumeration, Boolean, Integer).
+     *
+     * @param parentProperty The parent UML property.
+     * @param partialName The string containing the names unfolded so far.
+     * @param childrenProperties The set containing all the unfolded properties of the parent.
+     */
+    public static void findAllLeavesProperty(Property parentProperty, String partialName,
+            Set<String> childrenProperties)
+    {
+        for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
+            String updatedPartialName = partialName + "." + property.getName();
+            if (PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
+                findAllLeavesProperty(property, updatedPartialName, childrenProperties);
+            } else {
+                childrenProperties.add(updatedPartialName);
+            }
+        }
     }
 }
