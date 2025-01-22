@@ -1,26 +1,11 @@
 = UML model requirements
 
-== Definitions
-[cols="1,1"]
-|===
-|Contextual element
-| class, property, and activity.
-
-| members
-| Specific for activity: owned attributes and owned behaviors.
-
-| UML model
-| ...
-|===
-
-== Requirements for Synthesis
-
-=== Name
-* A name of a contextual element, e.g., class, property, and activity, must be unique within the UML model.
+== Name
+* A name of a UML element, e.g., class, property, and activity, must be unique within the UML model.
 * A name cannot contain two (or more) consecutive underscores.
 * A name must start with either a letter or an underscore, and possibly followed by digits, letters and underscores, i.e., adhere to the regular expression `[a-zA-Z_][0-9a-zA-Z_]*`.
 
-=== Type
+== Type
 Poka Yoke supports only a subset of the UML types.
 In particular, Poka Yoke supports
 
@@ -30,39 +15,73 @@ In particular, Poka Yoke supports
 ** with at least one literal
 * Integer 
 ** with bounded range
+* DataType
+** declared in model at outer-most level
 
-=== Class
+== UML model
+* Models can either contain zero classes (for very simple examples) or one active class. 
+* The one active class must be defined at outer-most level, and contain all the model's behaviors.
+* Models cannot be nested. 
+
+== Class
 * The class may not contain nested classifiers.
 * The class must have a classifier behavior.
 * The class must own its classifier behavior.
+* The class cannot (directly) contain interval constraints. 
 
-=== Property
+== DataType
+* A data type must be defined at outer-most level of the UML model.
+* A data type cannot be nested (UML Designer does not support this). 
+* A data type can only contain properties. 
+* Data types should not generate an instantiation cycle. 
+
+== Property (Attribute)
 * The multiplicity interval of a property must be [1,1]. In other words,
-** The property must be single-valued.
-** The property must be mandatory.
+** The property must be single-valued (upper bound equal to 1).
+** The property must be mandatory (also denoted as required, lower bound equal to 1).
 * The <<type>> of a property must be supported.
 * A property may have a default value.
 ** The multiplicity interval of a default value of a property is [0,1].
 ** The type of the default value of a property must be an instance of the type of that property.
 ** The default value of a property is not allowed to refer to other properties.
 
-=== Activity
-* An activity must have exactly one initial node.
+== Enumeration 
+* Enumerations must be declared in the outer-most level of the model.
+* Enumerations must own at least one literal.
+
+== Primitive Type (Integer)
+* Primitive types must be declared in the outer-most level of the model.
+* Primitive types must be of integer super type. 
+* Integers must have a non-negative minimum value. 
+* Integers must have a maximum value greater or equal than the minimum value. 
+
+== Behavior
+* Behaviors must be defined directly within the active class.
+* Behaviors must appear as an owned behavior of the containing class. 
+* Behaviors must be either an activity or an opaque behavior. 
+
+== Activity
 * An activity may not have any owned attributes.
 * An activity may not have any owned behaviors.
 * An activity may not have a classifier behavior.
+* An activity must be defined as an owned behavior of the active class. 
+* An _abstract_ activity must contain only preconditions, postconditions, and occurrence constraints.
+* A _concrete_ activity is composed of nodes (see <<Activity Node>>)  and control flows (see <<Activity Edge (Control Flow)>>).  
+* A _concrete_ activity cannot contain preconditions, postconditions, occurrence constraints.
+* A _concrete_ activity must have exactly one initial node and one final node.
 
-=== Activity Edge
+
+== Activity Edge (Control Flow)
 * The type of an activity edge must be control flow.
-* The source of an actvity edge must be a decision node.
+* The source of an activity edge must be a decision node.
 * An activity edge may have a guard expression.
 ** The type of the guard expression must be Boolean.
 
-=== Activity Node
-Only, instances of the following types are supported
+== Activity Node
+Only instances of the following types are supported
 
-* Call Behavior Action,
-* Opaque Action, and
+* Call Behavior Action
+* Opaque Action
 * Control Node, which includes
 ** Decision Node
 ** Final Node
@@ -71,17 +90,27 @@ Only, instances of the following types are supported
 ** Join Node
 ** Merge Node
 
-=== Call Behavior Action
+== Call Behavior Action
 * The call graph of call behavior actions may not contain any cycle.
 * The behavior of a call behavior action must be an activity.
 * A call behavior action may have a guard expression.
 ** The type of the guard expression must be Boolean.
-* A call behavior action may have any number of non-determinitics effects.
+* A call behavior action may have any number of non-deterministic effects.
 ** An effect can update any number of variables, i.e., zero or more.
 ** An effect may update a particular variable at most once.
 ** The <<type>> of a particular variable and its update must be identical.
 
 Note that the guard and effects on a call behavior action hide all contained sub-activities, including their guards and effects.  
 
-=== Opaque Expression
+== Opaque Expression
 * An opaque expression must have exactly one expression body.
+
+== Opaque Behavior
+* An opaque behavior must have exactly one guard and zero or more effects. 
+
+== Occurrence Constraint
+* Occurrence constraints must have a minimum and maximum values.
+** The minimum value must be non-negative.
+** The maximum value must be greater or equal than the minimum value. 
+** The constraint must be an interval constraint. 
+* Occurrence constraints must constrain a supported behavior, namely either an activity or an opaque behavior. 
