@@ -112,7 +112,7 @@ plant automaton Context:
     edge incr2 when init do count := count + 2;
     edge __node__CallBehaviorAction__35 when init, __controlflow__33, not __controlflow__27 do count := count + 1, __controlflow__33 := false, __controlflow__27 := true;
     edge __node__CallBehaviorAction__36 when init, __controlflow__31, not __controlflow__28 do count := count + 2, __controlflow__31 := false, __controlflow__28 := true;
-    edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
+    edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __controlflow__26, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
     edge __node__CallBehaviorAction__37__na_result_1 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 1, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
     edge __node__CallBehaviorAction__37__na_result_2 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 2, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
     edge __node__InitialNode__38 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
@@ -127,7 +127,7 @@ plant automaton Context:
     edge __node__CallBehaviorAction__76 when init, __controlflow__60, not __controlflow__66 do count := count + 2, __controlflow__60 := false, __controlflow__66 := true;
     edge __node__CallBehaviorAction__77 when init, __controlflow__58, not __controlflow__65 do count := count + 2, __controlflow__58 := false, __controlflow__65 := true;
     edge __node__CallBehaviorAction__78 when init, __controlflow__54, not __controlflow__62 do count := count + 2, __controlflow__54 := false, __controlflow__62 := true;
-    edge __node__CallBehaviorAction__79 when not init, __controlflow__68, not __nonAtomicActive____node__CallBehaviorAction__79 do __controlflow__68 := false, __nonAtomicActive____node__CallBehaviorAction__79 := true;
+    edge __node__CallBehaviorAction__79 when not init, __controlflow__68, not __controlflow__51, not __nonAtomicActive____node__CallBehaviorAction__79 do __controlflow__68 := false, __nonAtomicActive____node__CallBehaviorAction__79 := true;
     edge __node__CallBehaviorAction__79__na_result_1 when not __controlflow__51, __nonAtomicActive____node__CallBehaviorAction__79 do init := true, count := 1, __controlflow__51 := true, __nonAtomicActive____node__CallBehaviorAction__79 := false;
     edge __node__CallBehaviorAction__79__na_result_2 when not __controlflow__51, __nonAtomicActive____node__CallBehaviorAction__79 do init := true, count := 2, __controlflow__51 := true, __nonAtomicActive____node__CallBehaviorAction__79 := false;
     edge __node__InitialNode__80 when true, not __controlflow__68, not init and count = 0 do __controlflow__68 := true;

@@ -45,10 +45,10 @@ plant automaton Context:
     edge initialize__na_result_1 when __activeAction = 0, __nonAtomicActive__initialize do init := true, count := 1, __nonAtomicActive__initialize := false;
     edge __node__InitialNode__31 when true, not __controlflow__25, init, __activeAction = 0 do __controlflow__25 := true;
     edge __node__ActivityFinalNode__32 when true, __controlflow__30, __activeAction = 0 do __controlflow__30 := false;
-    edge __node__OpaqueAction__33 when true, __controlflow__26, __activeAction = 0 do __controlflow__26 := false, __activeAction := 1;
+    edge __node__OpaqueAction__33 when true, __controlflow__26, not __controlflow__28, __activeAction = 0 do __controlflow__26 := false, __activeAction := 1;
     edge __node__OpaqueAction__33__result_1 when not __controlflow__28, __activeAction = 1 do count := count + 1, __controlflow__28 := true, __activeAction := 0;
     edge __node__OpaqueAction__33__result_2 when not __controlflow__28, __activeAction = 1 do count := count + 1, __controlflow__28 := true, __activeAction := 0;
-    edge __node__OpaqueAction__34 when true, __controlflow__27, __activeAction = 0, not __nonAtomicActive____node__OpaqueAction__34 do __controlflow__27 := false, __nonAtomicActive____node__OpaqueAction__34 := true;
+    edge __node__OpaqueAction__34 when true, __controlflow__27, not __controlflow__29, __activeAction = 0, not __nonAtomicActive____node__OpaqueAction__34 do __controlflow__27 := false, __nonAtomicActive____node__OpaqueAction__34 := true;
     edge __node__OpaqueAction__34__na_result_1 when not __controlflow__29, __activeAction = 0, __nonAtomicActive____node__OpaqueAction__34 do count := count + 1, __controlflow__29 := true, __nonAtomicActive____node__OpaqueAction__34 := false;
     edge __node__ForkNode__35 when true, __controlflow__25, not __controlflow__26, not __controlflow__27, __activeAction = 0 do __controlflow__25 := false, __controlflow__26 := true, __controlflow__27 := true;
     edge __node__JoinNode__36 when true, __controlflow__28, __controlflow__29, not __controlflow__30, __activeAction = 0 do __controlflow__28 := false, __controlflow__29 := false, __controlflow__30 := true;
