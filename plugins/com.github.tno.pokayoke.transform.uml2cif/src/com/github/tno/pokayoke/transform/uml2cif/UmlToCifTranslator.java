@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -709,27 +710,17 @@ public class UmlToCifTranslator {
         ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
                 controllableStartEvents);
 
-        // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
+        // Collect the CIF start and end events of the translated UML activity node.
         Event startEvent = translationResult.startEvent;
         List<Event> endEvents = translationResult.endEvents;
+
+        // Collect the newly created CIF edges of the translated UML activity node.
         BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;
+        Edge startEdge = newEventEdges.get(startEvent);
+        List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
 
-        // If no explicit end events were created during the translation, then the start event also ends the action.
-        if (endEvents.isEmpty()) {
-            endEvents.add(startEvent);
-        }
-
-        // For every incoming UML control flow, add appropriate guards and updates to the newly created CIF edges.
-        for (ActivityEdge incoming: node.getIncomings()) {
-            Edge startEdge = newEventEdges.get(startEvent);
-            addGuardsAndUpdatesToIncomingControlFlow(incoming, startEdge);
-        }
-
-        // For every outgoing UML control flow, add appropriate guards and updates to the newly created CIF edges.
-        for (ActivityEdge outgoing: node.getOutgoings()) {
-            List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
-            addGuardsAndUpdatesToOutgoingControlFlow(outgoing, endEdges);
-        }
+        // Add appropriate guards and updates to the newly created CIF edges.
+        addExtraGuardsAndUpdatesForControlFlows(node.getIncomings(), node.getOutgoings(), startEdge, endEdges);
 
         return newEventEdges;
     }
@@ -787,27 +778,18 @@ public class UmlToCifTranslator {
                     controllableStartEvents);
             count++;
 
-            // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
+            // Collect the CIF start and end events of the translated UML activity node.
             Event startEvent = translationResult.startEvent;
             List<Event> endEvents = translationResult.endEvents;
+
+            // Collect the newly created CIF edges of the translated UML activity node.
             BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;
+            Edge startEdge = newEventEdges.get(startEvent);
+            List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
 
-            // If no explicit end events were created during the translation, then the start event also ends the action.
-            if (endEvents.isEmpty()) {
-                endEvents.add(startEvent);
-            }
-
-            // Add appropriate guards and updates to the possibly newly created CIF edge for the incoming control flow.
-            if (incoming != null) {
-                Edge startEdge = newEventEdges.get(startEvent);
-                addGuardsAndUpdatesToIncomingControlFlow(incoming, startEdge);
-            }
-
-            // Add appropriate guards and updates to the possibly newly created CIF edge for the outgoing control flow.
-            if (outgoing != null) {
-                List<Edge> endEdges = endEvents.stream().map(newEventEdges::get).toList();
-                addGuardsAndUpdatesToOutgoingControlFlow(outgoing, endEdges);
-            }
+            // Add appropriate guards and updates to the newly created CIF edges.
+            addExtraGuardsAndUpdatesForControlFlows(Stream.ofNullable(incoming).toList(),
+                    Stream.ofNullable(outgoing).toList(), startEdge, endEdges);
 
             result.putAll(newEventEdges);
         }
@@ -827,64 +809,95 @@ public class UmlToCifTranslator {
 
     /**
      * Helper method for translating UML activity nodes. This method adds appropriate CIF guards and updates for the
-     * given incoming UML control flow of a translated activity node: the control flow must have a token, and after
-     * performing (one of the translated CIF start events of) the node, the token will be removed.
+     * given incoming and outgoing UML control flows of a translated activity node. The guards will express that, to
+     * start executing the activity node, every given incoming control flow must have a token, and none of the given
+     * outgoing control flows must have a token. The updates will consume the token from every given incoming control
+     * flow, and produce a token on every given outgoing control flow.
      *
-     * @param controlFlow The incoming UML control flow.
+     * @param incomingControlFlows The incoming UML control flows to consider. This list can be empty if no incoming
+     *     control flows should be considered (e.g., for initial nodes).
+     * @param outgoingControlFlows The outgoing UML control flows to consider. This list can be empty if no outgoing
+     *     control flows should be considered (e.g., for final nodes).
      * @param startEdge The CIF edge that has been created to start executing the UML activity node.
+     * @param endEdges The CIF edges that have been created to end executing the UML activity node. This list can be
+     *     empty in case there are no implicit end edges (e.g., for nodes that have been translated as atomic
+     *     deterministic actions).
      */
-    private void addGuardsAndUpdatesToIncomingControlFlow(ActivityEdge controlFlow, Edge startEdge) {
-        DiscVariable incomingVariable = controlFlowMap.get(controlFlow);
+    private void addExtraGuardsAndUpdatesForControlFlows(List<ActivityEdge> incomingControlFlows,
+            List<ActivityEdge> outgoingControlFlows, Edge startEdge, List<Edge> endEdges)
+    {
+        Preconditions.checkArgument(!endEdges.contains(startEdge),
+                "Expected the given CIF start and edges to be disjoint.");
 
-        // Add a guard expressing that, to start executing the node, the UML control flow must have a token.
-        DiscVariableExpression incomingGuard = CifConstructors.newDiscVariableExpression(null,
-                EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
-        startEdge.getGuards().add(incomingGuard);
+        // If there are no explicit end edges, then the start edge also ends node execution.
+        if (endEdges.isEmpty()) {
+            endEdges = List.of(startEdge);
+        }
 
-        // Add an update that removes the token from the UML control flow when starting to execute the node.
-        Assignment incomingUpdate = CifConstructors.newAssignment();
-        incomingUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                EcoreUtil.copy(incomingVariable.getType()), incomingVariable));
-        incomingUpdate.setValue(CifValueUtils.makeFalse());
-        startEdge.getUpdates().add(incomingUpdate);
-    }
+        // Add guards expressing that, to start executing the node, every incoming UML control flow must have a token.
+        // Also add updates that consume the token from every incoming UML control flow when starting node execution.
+        for (ActivityEdge incoming: incomingControlFlows) {
+            DiscVariable incomingVariable = controlFlowMap.get(incoming);
 
-    /**
-     * Helper method for translating UML activity nodes. This method adds appropriate CIF guards and updates for the
-     * given outgoing UML control flow of a translated activity node: the control flow must not have a token, and after
-     * performing (one of the translated CIF end events of) the node, it will receive a token. Moreover, if the outgoing
-     * control flow has a guard, then this guard is added as an extra guard for performing the end event.
-     *
-     * @param controlFlow The outgoing UML control flow.
-     * @param endEdges The CIF edges that have been created to end executing the UML activity node.
-     */
-    private void addGuardsAndUpdatesToOutgoingControlFlow(ActivityEdge controlFlow, List<Edge> endEdges) {
-        DiscVariable outgoingVariable = controlFlowMap.get(controlFlow);
+            // Add a guard expressing that the current incoming UML control flow must have a token.
+            DiscVariableExpression guard = CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
+            startEdge.getGuards().add(guard);
 
-        for (Edge endEdge: endEdges) {
-            // Add a guard expressing that, to end executing the node, the UML control flow must not have a token.
-            UnaryExpression outgoingGuard = CifConstructors.newUnaryExpression();
-            outgoingGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+            // Add an update that consumes the token on the current incoming UML control flow.
+            Assignment update = CifConstructors.newAssignment();
+            update.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(incomingVariable.getType()), incomingVariable));
+            update.setValue(CifValueUtils.makeFalse());
+            startEdge.getUpdates().add(update);
+        }
+
+        // Add guards expressing that, to start executing the node, no outgoing UML control flow must have a token. Also
+        // add guards expressing that, to end node execution, no outgoing UML control flow must have a token. And also
+        // add updates that produce a token on every outgoing UML control flow when ending the execution of the node.
+        for (ActivityEdge outgoing: outgoingControlFlows) {
+            DiscVariable outgoingVariable = controlFlowMap.get(outgoing);
+
+            // Add a guard expressing that, to start node execution, the current control flow must not have a token.
+            UnaryExpression startGuard = CifConstructors.newUnaryExpression();
+            startGuard.setChild(CifConstructors.newDiscVariableExpression(null,
                     EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
-            outgoingGuard.setOperator(UnaryOperator.INVERSE);
-            outgoingGuard.setType(CifConstructors.newBoolType());
-            endEdge.getGuards().add(outgoingGuard);
+            startGuard.setOperator(UnaryOperator.INVERSE);
+            startGuard.setType(CifConstructors.newBoolType());
+            startEdge.getGuards().add(startGuard);
 
-            // Add an update that adds a token to the UML control flow when ending the execution of the node.
-            Assignment outgoingUpdate = CifConstructors.newAssignment();
-            outgoingUpdate.setAddressable(CifConstructors.newDiscVariableExpression(null,
-                    EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
-            outgoingUpdate.setValue(CifValueUtils.makeTrue());
-            endEdge.getUpdates().add(outgoingUpdate);
+            for (Edge endEdge: endEdges) {
+                // Add a guard expressing that, to end node execution, the current control flow must not have a token.
+                // Note that such a guard has already been added to the start edge, so we may skip that one.
+                if (!endEdge.equals(startEdge)) {
+                    UnaryExpression endGuard = CifConstructors.newUnaryExpression();
+                    endGuard.setChild(CifConstructors.newDiscVariableExpression(null,
+                            EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
+                    endGuard.setOperator(UnaryOperator.INVERSE);
+                    endGuard.setType(CifConstructors.newBoolType());
+                    endEdge.getGuards().add(endGuard);
+                }
 
-            // If the UML control flow has a guard, then add it as an extra guard for ending the node execution.
-            // Moreover, in that case, we require that the UML activity node has no defined effects, which is
-            // needed to adhere to the execution semantics of activities. In practice, the UML activity node
-            // is likely a UML decision node and thus have no effects.
-            if (controlFlow.getGuard() != null) {
-                Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource()),
-                        "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
-                endEdge.getGuards().add(translator.translate(CifParserHelper.parseExpression(controlFlow.getGuard())));
+                // Add an update that produces a token on the current control flow.
+                Assignment update = CifConstructors.newAssignment();
+                update.setAddressable(CifConstructors.newDiscVariableExpression(null,
+                        EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable));
+                update.setValue(CifValueUtils.makeTrue());
+                endEdge.getUpdates().add(update);
+
+                // If the current control flow has a guard, then add it as an extra guard for ending node execution.
+                // Moreover, in that case, we require that the UML activity node has been translated as an atomic
+                // deterministic action and to has no defined effects, which is needed to adhere to the execution
+                // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
+                // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
+                if (outgoing.getGuard() != null) {
+                    Verify.verify(endEdge.equals(startEdge),
+                            "Expected the activity node to have been translated as an atomic deterministic action.");
+                    Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
+                            "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
+
+                    endEdge.getGuards().add(translator.translate(CifParserHelper.parseExpression(outgoing.getGuard())));
+                }
             }
         }
     }
