@@ -431,7 +431,7 @@ public class UmlToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
-            ActionTranslationResult translationResult = translateAction(umlBehavior, umlBehavior.getName(),
+            ActionTranslationResult translationResult = translateAsAction(umlBehavior, umlBehavior.getName(),
                     PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true);
             eventEdges.putAll(translationResult.eventEdges);
         }
@@ -460,7 +460,7 @@ public class UmlToCifTranslator {
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
      * @return An action translation result.
      */
-    private ActionTranslationResult translateAction(RedefinableElement umlElement, String name, boolean isAtomic,
+    private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent)
     {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
@@ -697,7 +697,7 @@ public class UmlToCifTranslator {
     {
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
-        ActionTranslationResult translationResult = translateAction(node, actionName, isAtomic,
+        ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
                 controllableStartEvents);
 
         // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
@@ -774,7 +774,7 @@ public class UmlToCifTranslator {
 
             // Translate the UML activity node for the current control flow pair, as an action.
             String actionName = String.format("%s__%d", getActionNameForActivityNode(node), count);
-            ActionTranslationResult translationResult = translateAction(node, actionName, isAtomic,
+            ActionTranslationResult translationResult = translateAsAction(node, actionName, isAtomic,
                     controllableStartEvents);
             count++;
 
