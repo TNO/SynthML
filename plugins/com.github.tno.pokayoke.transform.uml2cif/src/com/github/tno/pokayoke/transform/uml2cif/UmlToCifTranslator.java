@@ -661,7 +661,7 @@ public class UmlToCifTranslator {
         }
 
         // If the UML activity node is final, then add the activity postconditions as extra guards for performing the
-        // translated CIF start events for the final node
+        // translated CIF start events for the final node.
         if (node instanceof FinalNode) {
             for (Entry<Event, Edge> entry: newEventEdges.entrySet()) {
                 Event cifEvent = entry.getKey();
