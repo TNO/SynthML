@@ -237,6 +237,8 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                         EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
                                 CifConstructors.newBoolType());
                         cifInvariant.setEvent(cifEventExpr);
+
+                        break;
                     }
                 }
             }
