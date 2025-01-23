@@ -230,9 +230,9 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" lineCount="3" valueExpression="service:self.getGuard()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" lineCount="3" valueExpression="service:self.getControlFlowGuard()">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setControlFlowGuard(newValue)"/>
           </initialOperation>
         </controls>
       </groups>

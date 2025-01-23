@@ -209,7 +209,7 @@ public class PokaYokeProfileServices {
      * @param controlFlow The control-flow to interrogate.
      * @return The {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
      */
-    public String getGuard(ControlFlow controlFlow) {
+    public String getControlFlowGuard(ControlFlow controlFlow) {
         ValueSpecification guard = controlFlow.getGuard();
         return guard == null ? null : guard.stringValue();
     }
@@ -228,7 +228,7 @@ public class PokaYokeProfileServices {
      * @param controlFlow The control-flow to set the guard value on.
      * @param newValue The new guard value.
      */
-    public void setGuard(ControlFlow controlFlow, String newValue) {
+    public void setControlFlowGuard(ControlFlow controlFlow, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setGuard(controlFlow, newValue);
     }
