@@ -49,6 +49,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -442,16 +443,24 @@ public class UmlToCifTranslator {
     /**
      * Translates a given UML element as an action, to CIF events and corresponding CIF edges.
      * <p>
-     * If the action to translate is an atomic deterministic action, then a single CIF event is created for starting and
-     * ending the action, together with a corresponding edge for that event. The guard of that edge is the translated
-     * action guard, and the updates of that edge are the translated action effect.
+     * If the UML element is translated as an atomic deterministic action, then a single CIF event is created for
+     * starting and ending the action, together with a corresponding edge for that event. The guard of that edge is the
+     * translated action guard, and the updates of that edge are the translated action effect.
      * </p>
      * <p>
-     * If the action to translate is an non-atomic and/or non-deterministic action, then multiple CIF events are
+     * If the UML element is translated as an non-atomic and/or non-deterministic action, then multiple CIF events are
      * created: one event for starting the action, and uncontrollable events for each of the action effects, for ending
      * the action. At least one end event is always created, even if the action has no defined effects. There is a
      * corresponding edge for every created event. The start edge has the translated action guard as its guard, and has
      * no updates. Any end edge has 'true' as its guard, and the translated action effect as its updates.
+     * </p>
+     * <p>
+     * If the UML element is a {@link PokaYokeUmlProfileUtil#isFormalElement(RedefinableElement) formal element} (e.g.,
+     * an opaque behavior, an opaque action node, or a shadowed call behavior node), then its guard and effects are used
+     * for translating the action. If the UML element is a call behavior node that calls an opaque behavior, then the
+     * guard and effects of that opaque behavior are used. Otherwise, the UML element doesn't have guards nor effects,
+     * thus the translated action will have 'true' as its guard, and will have no effects. For example, this holds for
+     * {@link ControlNode control nodes}, e.g., initial, final, fork, join, decision, and merge nodes.
      * </p>
      *
      * @param umlElement The UML element to translate as an action.
