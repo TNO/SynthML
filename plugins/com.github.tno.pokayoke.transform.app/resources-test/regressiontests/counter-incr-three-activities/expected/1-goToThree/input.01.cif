@@ -14,9 +14,7 @@ plant automaton Context:
   alg bool __postcondition__occurrences_goToThree_once__initialize = occurrences_goToThree_once__initialize.__occurrences >= 0;
   alg bool __postcondition__occurrences_goToThree_once__incr1 = occurrences_goToThree_once__incr1.__occurrences >= 0;
   alg bool __postcondition__occurrences_goToThree_once__incr2 = occurrences_goToThree_once__incr2.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_none__goToFour = occurrences_goToThree_none__goToFour.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_none__goToFive = occurrences_goToThree_none__goToFive.__occurrences >= 0;
-  alg bool __postcondition = post_goToThree and (__postcondition__nonAtomicActive__initialize and __postcondition__occurrences_goToThree_once__initialize) and (__postcondition__occurrences_goToThree_once__incr1 and __postcondition__occurrences_goToThree_once__incr2 and (__postcondition__occurrences_goToThree_none__goToFour and __postcondition__occurrences_goToThree_none__goToFive));
+  alg bool __postcondition = post_goToThree and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToThree_once__initialize and (__postcondition__occurrences_goToThree_once__incr1 and __postcondition__occurrences_goToThree_once__incr2));
   initial __precondition;
   marked __postcondition;
   location:
@@ -51,20 +49,6 @@ requirement automaton occurrences_goToThree_once__incr2:
     initial;
     marked;
     edge incr2 when __occurrences < 1 do __occurrences := __occurrences + 1;
-end
-requirement automaton occurrences_goToThree_none__goToFour:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
-end
-requirement automaton occurrences_goToThree_none__goToFive:
-  disc int[0..1] __occurrences;
-  marked __occurrences >= 0;
-  location:
-    initial;
-    marked;
 end
 requirement invariant Context.__postcondition disables initialize;
 requirement invariant Context.__postcondition disables initialize__na_result_1;
