@@ -1116,15 +1116,17 @@ public class UmlToCifTranslator {
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof Activity umlActivity) {
-                    Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
-                            .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
+                    if (!umlActivity.isAbstract()) {
+                        Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
+                                .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
+                                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                    List<Event> cifStartEvents = startEventMap.entrySet().stream()
-                            .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
+                        List<Event> cifStartEvents = startEventMap.entrySet().stream()
+                                .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
 
-                    String name = umlConstraint.getName() + "__" + umlActivity.getName();
-                    cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
+                        String name = umlConstraint.getName() + "__" + umlActivity.getName();
+                        cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
+                    }
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
                     List<Event> cifStartEvents = startEventMap.entrySet().stream()
                             .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
