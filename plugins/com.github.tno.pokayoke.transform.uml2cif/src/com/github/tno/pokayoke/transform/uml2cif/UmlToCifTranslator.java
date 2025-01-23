@@ -46,9 +46,9 @@ import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
-import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -431,7 +431,8 @@ public class UmlToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
-            ActionTranslationResult translationResult = translateAction(umlBehavior, umlBehavior.getName(), true);
+            ActionTranslationResult translationResult = translateAction(umlBehavior, umlBehavior.getName(),
+                    PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true);
             eventEdges.putAll(translationResult.eventEdges);
         }
 
@@ -455,10 +456,11 @@ public class UmlToCifTranslator {
      *
      * @param umlElement The UML element to translate as an action.
      * @param name The name of the action to create.
+     * @param isAtomic Whether the UML element should be translated as an atomic action.
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
      * @return An action translation result.
      */
-    private ActionTranslationResult translateAction(RedefinableElement umlElement, String name,
+    private ActionTranslationResult translateAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent)
     {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
@@ -499,11 +501,7 @@ public class UmlToCifTranslator {
         cifStartEdge.getGuards().add(guard);
         newEventEdges.put(cifStartEvent, cifStartEdge);
 
-        // Create any CIF end events and corresponding end edges. While doing so, we consider all control nodes (i.e.,
-        // initial, final, decision, merge, fork, and join nodes) to be atomic. This extra check is needed since actions
-        // are considered to be non-atomic by default, and here we are translating the given UML element as an action.
-        // And we don't want control nodes like forks and joins to be executed non-atomically.
-        boolean isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlAction) || umlElement instanceof ControlNode;
+        // Create any CIF end events and corresponding end edges.
         boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlAction);
 
         List<Event> cifEndEvents = new ArrayList<>(effects.size());
@@ -633,13 +631,20 @@ public class UmlToCifTranslator {
         BiMap<Event, Edge> newEventEdges;
 
         if (node instanceof InitialNode) {
-            newEventEdges = translateActivityOrNode(node, true);
+            newEventEdges = translateActivityOrNode(node, true, true);
         } else if (node instanceof FinalNode || node instanceof DecisionNode || node instanceof MergeNode) {
-            newEventEdges = translateActivityOrNode(node, false);
-        } else if (node instanceof ForkNode || node instanceof JoinNode || node instanceof CallBehaviorAction
-                || node instanceof OpaqueAction)
-        {
-            newEventEdges = translateActivityAndNode(node, false);
+            newEventEdges = translateActivityOrNode(node, true, false);
+        } else if (node instanceof ForkNode || node instanceof JoinNode) {
+            newEventEdges = translateActivityAndNode(node, true, false);
+        } else if (node instanceof CallBehaviorAction callNode) {
+            if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+                newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
+            } else {
+                Behavior behavior = callNode.getBehavior();
+                newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(behavior), false);
+            }
+        } else if (node instanceof OpaqueAction) {
+            newEventEdges = translateActivityAndNode(node, PokaYokeUmlProfileUtil.isAtomic(node), false);
         } else {
             throw new RuntimeException("Unsupported activity node: " + node);
         }
@@ -683,13 +688,17 @@ public class UmlToCifTranslator {
      * Translates the given UML activity node as an AND-type node.
      *
      * @param node The UML activity node to translate.
+     * @param isAtomic Whether the UML activity node should be translated as an atomic action.
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean controllableStartEvents) {
+    private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
+            boolean controllableStartEvents)
+    {
         // Translate the UML activity node as an action.
         String actionName = getActionNameForActivityNode(node);
-        ActionTranslationResult translationResult = translateAction(node, actionName, controllableStartEvents);
+        ActionTranslationResult translationResult = translateAction(node, actionName, isAtomic,
+                controllableStartEvents);
 
         // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
         Event startEvent = translationResult.startEvent;
@@ -720,10 +729,13 @@ public class UmlToCifTranslator {
      * Translates the given UML activity node as an OR-type node.
      *
      * @param node The UML activity node to translate.
+     * @param isAtomic Whether the UML activity node should be translated as an atomic action.
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean controllableStartEvents) {
+    private BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean isAtomic,
+            boolean controllableStartEvents)
+    {
         // Find all combinations of incoming and outgoing UML control flows to translate CIF events/edges for, as pairs.
         // If the activity node has no incoming control flows, then collect all outgoing control flows instead, to
         // translate. And likewise, if there are no outgoing control flows, collect all incoming control flows instead.
@@ -749,7 +761,7 @@ public class UmlToCifTranslator {
         // slightly simpler and gives slightly nicer event names), since that's semantically equivalent to translating
         // it as an OR-type node.
         if (controlFlowPairs.size() <= 1) {
-            return translateActivityAndNode(node, controllableStartEvents);
+            return translateActivityAndNode(node, isAtomic, controllableStartEvents);
         }
 
         // For every collected pair of control flows, translate the UML activity node.
@@ -762,7 +774,8 @@ public class UmlToCifTranslator {
 
             // Translate the UML activity node for the current control flow pair, as an action.
             String actionName = String.format("%s__%d", getActionNameForActivityNode(node), count);
-            ActionTranslationResult translationResult = translateAction(node, actionName, controllableStartEvents);
+            ActionTranslationResult translationResult = translateAction(node, actionName, isAtomic,
+                    controllableStartEvents);
             count++;
 
             // Collect the CIF start events, end events, and newly created edges of the translated UML activity node.
