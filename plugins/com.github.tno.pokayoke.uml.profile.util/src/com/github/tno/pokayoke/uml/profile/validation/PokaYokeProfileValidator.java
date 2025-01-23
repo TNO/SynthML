@@ -212,7 +212,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Skip the remaining checks for enumerations and primitive types, which are also data types.
-        if (!PokaYokeTypeUtil.isDataTypeOnlyType(dataType)) {
+        if (!PokaYokeTypeUtil.isCompositeDataType(dataType)) {
             return;
         }
 
@@ -220,7 +220,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Data type owns elements that are not properties.", UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
         }
 
-        // Check if data type owns properties whose type leads to an instantiation cycle.
+        // Check if composite data type owns properties whose type leads to an instantiation cycle.
         Set<DataType> propertyDataTypes = new LinkedHashSet<>();
         propertyDataTypes.add(dataType);
         checkDataTypeInstantiationCycle(dataType, propertyDataTypes);
@@ -233,7 +233,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.DATA_TYPE__OWNED_ATTRIBUTE);
             }
 
-            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
+            if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
                 usedDataTypes.add((DataType)umlProperty.getType());
                 checkDataTypeInstantiationCycle((DataType)umlProperty.getType(), usedDataTypes);
             }
@@ -660,9 +660,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private static Set<String> unfoldAssignmentVariable(String varName, Map<String, NamedElement> ctx) {
         Property assignmentProperty = (Property)ctx.get(varName);
 
-        // Find all leaves children of the corresponding data type.
+        // Collect the names of all leaves children of the corresponding data type.
         Set<String> leaves = new LinkedHashSet<>();
-        PokaYokeTypeUtil.findAllLeavesProperty(assignmentProperty, varName, leaves);
+        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(assignmentProperty, varName, leaves);
 
         // If the leaves set is empty, the expression refers to a leaf type, so there is no unfolding to be done.
         if (leaves.isEmpty()) {

@@ -4,7 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,98 +73,112 @@ public class CifContext {
                 && !(element instanceof Constraint constraint && isPrimitiveTypeConstraint(constraint)));
     }
 
-    private final Map<String, NamedElement> contextElements;
+    // Contains queryContextElements as a set.
+    private final Set<NamedElement> declaredElements;
 
+    // All declared elements that are not properties + all recursive property instantiations from the active class as a
+    // root, including intermediate ones
+    private final Map<String, NamedElement> referenceableElements;
+
+    private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
+
+    /**
+     * Returns all contextual elements of the UML model. If there is no active class, returns only the elements defined
+     * only at the outer most level of the UML model. Otherwise, adds also all the leaves of composite data types.
+     *
+     * @param element The UML element.
+     */
     public CifContext(Element element) {
         Model model = element.getModel();
+
+        // Collect declared elements as set.
+        declaredElements = queryContextElements(model).asSet();
 
         // Find the the active classes in the model.
         List<Element> activeClasses = model.getOwnedElements().stream()
                 .filter(e -> e instanceof Class d && d.isActive()).toList();
 
-        // If there are no active classes, simply returns the model elements. ProfileValidator check the number of
+        // If there are no active classes, simply returns the model elements. ProfileValidator checks the number of
         // classes.
         if (activeClasses.isEmpty()) {
-            contextElements = queryContextElements(model).toMap(NamedElement::getName);
+            referenceableElements = queryContextElements(model).toMap(NamedElement::getName);
+            referenceableElementsInclDuplicates = CifContext.queryContextElements(model).groupBy(NamedElement::getName);
         } else {
+            // Get the active class and create the referenceable element maps.
             Class activeClass = (Class)activeClasses.get(0);
+            referenceableElements = new LinkedHashMap<>();
+            referenceableElementsInclDuplicates = new LinkedHashMap<>();
 
-            Set<Property> instantiatedDataTypes = new LinkedHashSet<>();
-            for (Property umlProperty: activeClass.getOwnedAttributes()) {
-                if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
-                    instantiatedDataTypes.add(umlProperty);
-                }
-            }
+            // Get context elements, including the ones with duplicate names.
+            Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
+                    .groupBy(NamedElement::getName);
 
-            // Do not check duplicates here, as that is the responsibility of model validation.
-            Map<String, NamedElement> namesAndElement = queryContextElements(model).toMap(NamedElement::getName);
-            Map<String, NamedElement> referenceNamesAndElements = new LinkedHashMap<>();
-
-            // Loop over all elements, find the leaf of the dependency tree, and add it to the new map. Adds only the
-            // instances of data types that are defined in the active class.
-            for (Entry<String, NamedElement> entry: namesAndElement.entrySet()) {
+            // Loop over every element and add it to the context if it is not a property. Properties are considered
+            // in the following, starting from the active class.
+            for (Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
                 String elementName = entry.getKey();
-                NamedElement elementObject = entry.getValue();
-
-                // If the element is not a property, nor a data type, add it to the context. If the element is a
-                // property of the active class and it is an instantiated data type, perform a recursive call on its
-                // children. Properties whose owner is a data type can only be added via the recursive call, not by
-                // looping over them.
-                if (!(elementObject instanceof Property prop && (PokaYokeTypeUtil.isDataTypeOnlyType(prop.getType())
-                        || prop.getOwner() instanceof DataType)))
-                {
-                    // Add the non property, non data type objects, or the properties who are not children of a data
-                    // type.
-                    referenceNamesAndElements.put(elementName, elementObject);
-                } else if (elementObject instanceof Property property) {
-                    if (instantiatedDataTypes.contains(property)) {
-                        referenceNamesAndElements.put(elementName, property);
-                        addChildPropertyName((DataType)property.getType(), elementName, referenceNamesAndElements);
-                    } else {
-                        // Skip the non instantiated data types.
-                        continue;
+                List<NamedElement> elementsWithSameName = entry.getValue();
+                for (NamedElement umlElement: elementsWithSameName) {
+                    if (!(umlElement instanceof Property property)) {
+                        referenceableElements.put(elementName, umlElement);
+                        referenceableElementsInclDuplicates.computeIfAbsent(elementName, k -> new LinkedList<>())
+                                .add(umlElement);
                     }
                 }
             }
 
-            contextElements = referenceNamesAndElements;
-        }
-    }
+            // For all properties of the active class, loop over the children (with and without duplicates).
+            for (Property property: activeClass.getOwnedAttributes()) {
+                // Add the current intermediate property, with and without duplicate names.
+                referenceableElements.put(property.getName(), property);
+                referenceableElementsInclDuplicates.computeIfAbsent(property.getName(), k -> new LinkedList<>())
+                        .add(property);
 
-    private static void addChildPropertyName(DataType datatype, String name,
-            Map<String, NamedElement> namesAndElements)
-    {
-        // Loop over all data type's attributes. If they are not a data type, add them to the map; otherwise,
-        // recursively call on the children object. Note that this assumes that only Enum, integers and booleans (i.e.
-        // the basic supported types) can be a leaf within a property.
-        for (Property umlProperty: datatype.getOwnedAttributes()) {
-            String newName = name + "." + umlProperty.getName();
-            NamedElement elementObject = umlProperty;
-
-            if (PokaYokeTypeUtil.isDataTypeOnlyType(umlProperty.getType())) {
-                // Add the current intermediate object, and recursive call on its children.
-                namesAndElements.put(newName, elementObject);
-                addChildPropertyName((DataType)umlProperty.getType(), newName, namesAndElements);
-            } else {
-                namesAndElements.put(newName, elementObject);
+                // Recursive call on the children.
+                addNestedProperties((DataType)property.getType(), property.getName(), referenceableElements,
+                        referenceableElementsInclDuplicates);
             }
         }
     }
 
-    public boolean isDeclared(String name) {
-        return contextElements.containsKey(name);
+    private static void addNestedProperties(DataType datatype, String name, Map<String, NamedElement> namesAndElements,
+            Map<String, List<NamedElement>> namesAndElementsWithDuplicates)
+    {
+        // Loop over all data type's attributes. If they are not a composite data type, add them to the map; otherwise,
+        // recursively call on the children objects.
+        for (Property umlProperty: datatype.getOwnedAttributes()) {
+            String newName = name + "." + umlProperty.getName();
+
+            // Add the current intermediate property.
+            namesAndElements.put(newName, umlProperty);
+            namesAndElementsWithDuplicates.computeIfAbsent(newName, k -> new LinkedList<>()).add(umlProperty);
+
+            if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
+                // Recursive call on its children.
+                addNestedProperties((DataType)umlProperty.getType(), newName, namesAndElements,
+                        namesAndElementsWithDuplicates);
+            }
+        }
+    }
+
+    public boolean isDeclared(NamedElement element) {
+        return declaredElements.contains(element);
     }
 
     protected NamedElement getElement(String name) {
-        return contextElements.get(name);
+        return referenceableElements.get(name);
     }
 
     protected Collection<NamedElement> getAllElements() {
-        return Collections.unmodifiableCollection(contextElements.values());
+        return Collections.unmodifiableCollection(referenceableElements.values());
+    }
+
+    public Map<String, List<NamedElement>> getAllElementsWithDuplicateNames() {
+        return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
 
     public Map<String, NamedElement> getContextMap() {
-        return contextElements;
+        return Collections.unmodifiableMap(referenceableElements);
     }
 
     public List<Class> getAllClasses(Predicate<Class> predicate) {
@@ -190,16 +204,12 @@ public class CifContext {
         return getAllElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
     }
 
-    public Map<String, NamedElement> getAllPropertiesWithKeys(Model model) {
-        return queryContextElements(model).select(e -> e instanceof Property).toMap(NamedElement::getName);
-    }
-
     public boolean isEnumeration(String name) {
-        return contextElements.get(name) instanceof Enumeration;
+        return referenceableElements.get(name) instanceof Enumeration;
     }
 
     public Enumeration getEnumeration(String name) {
-        if (contextElements.get(name) instanceof Enumeration enumeration) {
+        if (referenceableElements.get(name) instanceof Enumeration enumeration) {
             return enumeration;
         }
         return null;
@@ -210,11 +220,11 @@ public class CifContext {
     }
 
     public boolean isEnumerationLiteral(String name) {
-        return contextElements.get(name) instanceof EnumerationLiteral;
+        return referenceableElements.get(name) instanceof EnumerationLiteral;
     }
 
     public EnumerationLiteral getEnumerationLiteral(String name) {
-        if (contextElements.get(name) instanceof EnumerationLiteral literal) {
+        if (referenceableElements.get(name) instanceof EnumerationLiteral literal) {
             return literal;
         }
         return null;
@@ -226,11 +236,11 @@ public class CifContext {
     }
 
     public boolean isVariable(String name) {
-        return contextElements.get(name) instanceof Property;
+        return referenceableElements.get(name) instanceof Property;
     }
 
     public Property getVariable(String name) {
-        if (contextElements.get(name) instanceof Property property) {
+        if (referenceableElements.get(name) instanceof Property property) {
             return property;
         }
         return null;
@@ -251,7 +261,7 @@ public class CifContext {
     }
 
     public OpaqueBehavior getOpaqueBehavior(String name) {
-        if (contextElements.get(name) instanceof OpaqueBehavior behavior) {
+        if (referenceableElements.get(name) instanceof OpaqueBehavior behavior) {
             return behavior;
         }
         return null;

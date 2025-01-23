@@ -53,32 +53,33 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
- * Flattens all properties that are instantiations of a data type, and deletes all data types. A data type property
- * represents a canonical "object" class, e.g. a robot, may contain only properties and nothing else.
+ * Flattens all properties that are instantiations of a composite data type, and deletes all composite data types. A
+ * composite data type property represents a canonical "object" class, e.g. a robot, may contain only properties and
+ * nothing else.
  */
 public class DataTypeInliner {
     private DataTypeInliner() {
     }
 
     /**
-     * Finds the instantiations of (nested) data types, and inlines their properties with flattened names. Rewrites the
-     * properties and owned behaviors of the active class, and removes the data types.
+     * Finds the instantiations of (nested) composite data types, and inlines their properties with flattened names.
+     * Rewrites the properties and owned behaviors of the active class, and removes the composite data types.
      *
      * @param model The UML model.
      */
     public static void inlineNestedDataTypes(Model model) {
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
-        List<DataType> dataTypes = context.getAllDataTypes(d -> PokaYokeTypeUtil.isDataTypeOnlyType(d));
+        List<DataType> dataTypes = context.getAllDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
 
-        // Unfold all behaviors' elements that involve a data type assignment or comparison.
+        // Unfold all behaviors' elements that involve a composite data type assignment or comparison.
         unfoldBehaviors(activeClass, context.getContextMap());
 
-        // Find all properties of the main class that are instances of a data class, recursively rewrites them with a
-        // flattened name, and return a map linking to the original reference name.
+        // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
+        // with a flattened name, and return a map linking to the original reference name.
         Map<String, Pair<String, Property>> orderedFlattenedNames = renameAndFlattenProperties(activeClass);
 
-        // Delete the data types and related properties.
+        // Delete the composite data types and related properties.
         deleteDataTypes(activeClass, dataTypes);
 
         // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
@@ -96,7 +97,8 @@ public class DataTypeInliner {
     }
 
     /**
-     * Unfolds any behavior containing data type assignments or comparison with the corresponding leaf properties.
+     * Unfolds any behavior containing composite data type assignments or comparison with the corresponding leaf
+     * properties.
      *
      * @param clazz The active class that contains the behaviors.
      * @param ctx The Cif context.
@@ -164,7 +166,8 @@ public class DataTypeInliner {
     }
 
     /**
-     * Unfolds a Cif AExpression: substitutes the comparisons between data types with the respective leaf properties.
+     * Unfolds a Cif AExpression: substitutes the comparisons between composite data types with the respective leaf
+     * properties.
      *
      * @param expression A Cif AExpression to be unfolded.
      * @param ctx A Map containing the name and the UML NamedElement of every element of the UML model.
@@ -230,11 +233,11 @@ public class DataTypeInliner {
             return createABinaryExpression(lhsName, rhsName, operator, position);
         }
 
-        // Find all leaves children of left and right hand side data type.
+        // Collect the names of all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
-        PokaYokeTypeUtil.findAllLeavesProperty(lhsProperty, "", leavesLeft);
+        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
         Set<String> leavesRight = new LinkedHashSet<>();
-        PokaYokeTypeUtil.findAllLeavesProperty(rhsProperty, "", leavesRight);
+        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
 
         // Sanity check: leaves of the left and right expressions should be the same.
         if (!leavesLeft.equals(leavesRight)) {
@@ -300,9 +303,9 @@ public class DataTypeInliner {
 
         // Find all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
-        PokaYokeTypeUtil.findAllLeavesProperty(lhsProperty, "", leavesLeft);
+        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
         Set<String> leavesRight = new LinkedHashSet<>();
-        PokaYokeTypeUtil.findAllLeavesProperty(rhsProperty, "", leavesRight);
+        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
 
         // Sanity check: leaves of the left and right hand sides should be the same.
         if (!leavesLeft.equals(leavesRight)) {
@@ -487,7 +490,7 @@ public class DataTypeInliner {
         for (Property property: activeClass.getOwnedAttributes()) {
             // If property is of leaf type, add it to the renaming map.
             if (PokaYokeTypeUtil.isSupportedType(property.getType())
-                    && !PokaYokeTypeUtil.isDataTypeOnlyType(property.getType()))
+                    && !PokaYokeTypeUtil.isCompositeDataType(property.getType()))
             {
                 renamingMap.put(property.getName(), Pair.of(property.getName(), property));
             }
@@ -509,7 +512,7 @@ public class DataTypeInliner {
         List<Property> parentAttributes = clazz.getOwnedAttributes();
 
         // Get the renamed properties and add them to the class attributes. The children are not deleted from the data
-        // type attributes, as other instances of the same data type need to use the data type structure.
+        // type attributes, as other instances of the same composite data type need to use the type structure.
         boolean deleteChildren = false;
         Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, deleteChildren);
         clazz.getOwnedAttributes().addAll(propertiesToAdd);
@@ -518,7 +521,7 @@ public class DataTypeInliner {
 
     private static void flattenProperties(Property parentProperty, Map<String, Pair<String, Property>> renamingMap) {
         for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
-            if (PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 flattenProperties(property, renamingMap);
             }
         }
@@ -527,16 +530,17 @@ public class DataTypeInliner {
         List<Property> parentAttributes = ((DataType)parentProperty.getType()).getOwnedAttributes();
 
         // Get the renamed properties and add them to the class attributes. The children are deleted from the data
-        // type attributes, as other instances of the same data type use the structure established at the top level.
+        // type attributes, as other instances of the same composite data type use the structure established at the
+        // outer most level.
         boolean deleteChildren = true;
         Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, deleteChildren);
         ((DataType)parentProperty.getType()).getOwnedAttributes().addAll(propertiesToAdd);
     }
 
     /**
-     * Recursively finds every (in)direct data type attribute and renames them with a flattened name.
+     * Recursively finds every (in)direct composite data type attribute and renames them with a flattened name.
      *
-     * @param parentAttributes List of properties of the parent data type or class.
+     * @param parentAttributes List of properties of the parent composite data type or class.
      * @param renamingMap The map linking the new flattened names to the old dotted names.
      * @param deleteChildren If {@code true} removes the children properties from the dependency tree.
      * @return A set of renamed properties.
@@ -550,7 +554,7 @@ public class DataTypeInliner {
         // rename their children.
         Set<String> localNames = parentAttributes.stream().map(Property::getName).collect(Collectors.toSet());
         for (Property property: parentAttributes) {
-            if (PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 Set<Property> renamedProperties = renameChildProperties(property, renamingMap, localNames,
                         deleteChildren);
                 propertiesToAdd.addAll(renamedProperties);
@@ -633,10 +637,10 @@ public class DataTypeInliner {
     }
 
     /**
-     * Deletes properties of the model that are data types.
+     * Deletes properties of the model that are composite data types.
      *
      * @param activeClass The main active class.
-     * @param dataTypes List of data types.
+     * @param dataTypes List of composite data types.
      */
     private static void deleteDataTypes(Class activeClass, List<DataType> dataTypes) {
         // Delete the nested classifiers of the active class that are of type DataType.
@@ -653,7 +657,7 @@ public class DataTypeInliner {
             }
         }
 
-        // Delete the data types located at the same level of the active class.
+        // Delete the composite data types located at the same level of the active class.
         Model model = activeClass.getModel();
         for (DataType datatype: dataTypes) {
             if (model.getPackagedElements().contains(datatype)) {

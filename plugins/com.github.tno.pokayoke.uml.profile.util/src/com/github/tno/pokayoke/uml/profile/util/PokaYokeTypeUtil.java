@@ -51,10 +51,10 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isSupportedType(Type type) {
-        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isDataTypeOnlyType(type);
+        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isCompositeDataType(type);
     }
 
-    public static boolean isDataTypeOnlyType(Type type) {
+    public static boolean isCompositeDataType(Type type) {
         // Check the type is only a data type; DataType is the super interface of Enumeration and PrimitiveType.
         return type instanceof DataType && !(isEnumerationType(type) || isPrimitiveType(type));
     }
@@ -142,19 +142,25 @@ public class PokaYokeTypeUtil {
     }
 
     /**
-     * Finds all children that are of supported leaf type (Enumeration, Boolean, Integer).
+     * Collect all property names from the current property to the leaf property.
      *
      * @param parentProperty The parent UML property.
      * @param partialName The string containing the names unfolded so far.
-     * @param childrenProperties The set containing all the unfolded properties of the parent.
+     * @param childrenProperties The set containing all the unfolded properties of the parent, which will be modified
+     *     in-place.
      */
-    public static void findAllLeavesProperty(Property parentProperty, String partialName,
+    public static void collectPropertyNamesUntilLeaf(Property parentProperty, String partialName,
             Set<String> childrenProperties)
     {
+        // If parent property is a composite data type, add its name to the string, and perform a recursive call on its
+        // children until a leaf is reached.
+        if (!PokaYokeTypeUtil.isCompositeDataType(parentProperty.getType())) {
+            return;
+        }
         for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
             String updatedPartialName = partialName + "." + property.getName();
-            if (PokaYokeTypeUtil.isDataTypeOnlyType(property.getType())) {
-                findAllLeavesProperty(property, updatedPartialName, childrenProperties);
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
+                collectPropertyNamesUntilLeaf(property, updatedPartialName, childrenProperties);
             } else {
                 childrenProperties.add(updatedPartialName);
             }
