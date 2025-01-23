@@ -580,7 +580,7 @@ public class UmlToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
-            Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateActivity(activity);
+            Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
             newVariables.addAll(result.left);
             newEventEdges.putAll(result.right);
         }
@@ -589,12 +589,12 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates a given UML activity to CIF variables, and CIF events with their corresponding CIF edges.
+     * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
      *
-     * @param activity The UML activity to translate.
+     * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivity(Activity activity) {
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
         // Translate all activity control flows.
