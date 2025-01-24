@@ -129,7 +129,7 @@ public class CifContext {
                 }
             }
 
-            // For all properties of the active class, loop over the children (with and without duplicates).
+            // For all properties of the active class, loop over their children (with and without duplicate names).
             for (Property property: activeClass.getOwnedAttributes()) {
                 // Add the current intermediate property, with and without duplicate names.
                 referenceableElements.put(property.getName(), property);
@@ -175,7 +175,7 @@ public class CifContext {
         return Collections.unmodifiableCollection(referenceableElements.values());
     }
 
-    public Map<String, List<NamedElement>> getAllElementsWithDuplicateNames() {
+    public Map<String, List<NamedElement>> getAllElementsInclDuplicateNames() {
         return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
 
