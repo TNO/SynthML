@@ -126,6 +126,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         CifContext ctx = new CifContext(model);
         Map<String, List<NamedElement>> contextElements = ctx.getAllElementsInclDuplicateNames();
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
+            // Exception for 'min' and 'max' constraints: these are used to limit the range of integers, and their names
+            // are automatically generated.
+            if ((entry.getKey().equals("min") || entry.getKey().equals("max"))
+                    && entry.getValue().stream().allMatch(t -> t instanceof Constraint))
+            {
+                continue;
+            }
+
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
             if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {
                 for (NamedElement duplicate: entry.getValue()) {
