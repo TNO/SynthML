@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} 
 
-\title{UML designer instructions}
+\title{UML Designer instructions}
 \author{}
 \date{\today}
 
@@ -17,8 +17,8 @@ A snapshot of it is shown in Fig.~\ref{fig:PY-environment}, with the main compon
 In order to create a new UML model, 
 
 \begin{enumerate}
-    \item Right click in the `Model Explorer' View $\to$ New $\to$ UML project, and give it a name.    
-    \item Right click on the project $\to$ Viewpoint selection $\to$ Check `Poka Yoke' box.  
+    \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.    
+    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `PokaYoke' box.  
 \end{enumerate}
 
 The model will have a UML file by default, called \texttt{model.uml}. 
@@ -36,9 +36,9 @@ Within it, there is a model instance denoted \texttt{<Model> NewModel}.
 \subsection{Create a Class}
 \label{subsec:class}
 
-There are several ways of creating a class in UML designer. From the model explorer view, 
+There are several ways of creating a class in UML Designer. From the Model Explorer view, 
 \begin{enumerate}
-    \item  Right click on the model instance NewModel $\to$ New child $\to$ Packaged Element $\to$ Class. You may want to rename it with a meaningful name. 
+    \item  Right click on the model instance \texttt{<Model> NewModel} $\to$ New Child $\to$ Packaged Element $\to$ Class. You may want to rename it with a meaningful name. 
     \item If you need an active class, look in the properties view, `Advanced' tab, check the `Active' checkbox.
 \end{enumerate}
 
@@ -47,8 +47,8 @@ Alternatively, you may create a class from the Class Diagram view. To this end, 
 \begin{enumerate}
     \item Right click on the model instance \texttt{<Model> NewModel} $\to$ New Representation $\to$ \texttt{NewModel} Class Diagram. 
     \item A new empty class diagram opens, with some small text mentioning `Your diagram is empty. You can either [...]'. Double click on that text, and the Class Diagram now is blank. 
-    \item On the right hand side, the Palette view contains several folders: Existing elements, Types, Features, Relationships. 
-    \item To create a class, simply click on the Class element (within Types) and drag it to the blank diagram. 
+    \item On the right hand side, the Palette view contains several folders: Existing elements, Types, Features, and Relationships. 
+    \item To create a class, simply click on the Class element (within Types) and drag it to the diagram. 
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,26 +57,26 @@ Alternatively, you may create a class from the Class Diagram view. To this end, 
 \label{subsec:property}
 
 Properties represent the variables of a model. The supported types are boolean, enumeration and ranged integers (besides complex data types, see \ref{subsec:data-types}). 
-Only the boolean type is native, and easy to instantiate. 
+To create a boolean-typed property:
 \begin{enumerate} 
-\item Right click on the Class $\to$ New Child $\to$ Owned Attributes $\to$ Property
-\item In the properties view, `Poka Yoke' tab, select type you can select the type (e.g. boolean), and set it to a default value. 
+\item Right click on the Class $\to$ New Child $\to$ Owned Attribute $\to$ Property
+\item In the properties view, in the `Poka Yoke' tab, you can select Boolean as the type, and set a default value for the type. 
 \end{enumerate}
 
-To create an Enumeration property, first we need to set up the enumeration variables. To do so, 
+To create an enumeration-typed property, first we need to define the enumeration. To do so, 
 \begin{enumerate}
-    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Enumeration 
-    \item Right click on the enumeration $\to$ New Child $\to$ Owned Literal $\to$ Enumeration Literal
+    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Enumeration. 
+    \item Right click on the Enumeration $\to$ New Child $\to$ Owned Literal $\to$ Enumeration Literal.
 \end{enumerate}
 After the completion of these steps, we can create a new property of type Enumeration (with the given enumeration name).
 
-To create an Integer property, first we need to set up the ranged interval variable. To do so, 
+To create an integer-typed property, first we need to define the ranged integer type. To do so, 
 \begin{enumerate}
-    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Primitive Type
-    \item In the properties view, within the `Poka Yoke' tab, select Super type: Integer. Give it a name and write down the minimum and maximum values. 
+    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Primitive Type.
+    \item In the Properties view, within the `Poka Yoke' tab, select Super type: Integer. Give it a name and write down the minimum and maximum values. 
     Note that two constraints named min and max will appear in the model explorer view.     
 \end{enumerate} 
-After the completion of these steps, we can create a new property of type Primitive Type (with the given primitive name).
+After the completion of these steps, we can create a new property of this ranged integer type.
 
 \smallskip
 
@@ -96,14 +96,14 @@ Note that you still need to create an enumeration and integer variable via the s
 
 Data types represent more abstract types, e.g. a robot. 
 \begin{enumerate}
-    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Data Type
+    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Data Type.
 \end{enumerate}
 Note that data types can have properties (of type boolean, integer, enumeration, or of other data type).
 
 \paragraph*{Graphical Approach.} 
 Alternatively, you may create a data type from the Class Diagram view. To this end, you may
 \begin{enumerate}
-    \item To create a data type, go in the `Palette' view, and click on the tiny arrow located at the left of Enumeration. 
+    \item In the `Palette' view, click on the tiny arrow located at the left of Enumeration. 
     A drop down menu will open, revealing DataType. 
     \item Click on DataType, and drag it to the Class diagram. 
     A pop up window will appear, where you can change its name; finally, click OK.
@@ -114,12 +114,12 @@ Alternatively, you may create a data type from the Class Diagram view. To this e
 \subsection{Create an Abstract Activity}
 \label{subsec:abstract-activity}
 
-Activities can either be abstract (which will be synthesised by Poka Yoke) or concrete (a series of behaviors and actions created by the user). Let us consider abstract activities. 
+Activities can either be abstract (in order to be synthesized) or concrete (i.e., containing nodes and control flows created by the user). Let us consider abstract activities. 
 
 \begin{enumerate}
-\item Right click on the Class $\to$ New Child $\to$ Classifier Behaviors $\to$ Activity
-\item By default, the activity is concrete (containing user-defined opaque behaviors, control nodes, constraints).
-\item For synthesis purposes, an abstract activity is required: in the properties view, `General' tab, check the `Abstract' checkbox.
+\item Right click on the Class $\to$ New Child $\to$ Classifier Behaviors $\to$ Activity.
+\item By default, the activity is concrete (allowing it to contain, e.g., user-defined nodes and control flows).
+\item For synthesis purposes, an abstract activity is required: in the Properties view, `General' tab, check the `Abstract' checkbox.
 \end{enumerate}
 
 A graphical representation of the activity is usually an activity diagram, 
@@ -127,7 +127,7 @@ A graphical representation of the activity is usually an activity diagram,
     \item Right click on the activity $\to$ New Representation $\to$ Activity Diagram. 
 \end{enumerate}
 
-For abstract activities we need to add a precondition and a postcondition, defining respectively the necessary requirements at the beginning and the end of the the task execution. 
+For abstract activities we can define a precondition and a postcondition, defining respectively the necessary requirements at the beginning and the end of the the activity execution. 
 Note that there is no graphical way of creating an activity nor of adding pre and postconditions. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,7 +139,7 @@ Note that there is no graphical way of creating an activity nor of adding pre an
 \item Right click on the activity $\to$ New Child $\to$ Precondition.
 \item Right click on the Precondition $\to$ New Child $\to$ Constraint. 
 \item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
-\item Open the Opaque Expression. Delete the name, or leave it blank (this is optional, only for visualisation purposes). 
+\item Open the Opaque Expression. Delete the name, or leave it blank (this is optional, but may give nicer visualisations). 
 \item In the properties view, `Default' tab, double click on the `Body' field. 
 \item In the new window, write on the `Value' field your precondition constraint. Click Add, then OK.
 \end{enumerate}
@@ -156,7 +156,7 @@ We follow similar steps for the postcondition.
 \item Right click on the activity $\to$ New Child $\to$ Postcondition.
 \item Right click on the Postcondition $\to$ New Child $\to$ Constraint. 
 \item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
-\item Open the Opaque Expression. Delete the name, or leave it blank (this is optional, only for visualisation purposes). 
+\item Open the Opaque Expression. Delete the name, or leave it blank (this is optional, but may give nicer visualisations). 
 \item In the properties view, `Default' tab, double click on the `Body' field. 
 \item In the new window, write on the `Value' field the postcondition constraint. Click Add, then OK.
 \end{enumerate}
@@ -167,19 +167,19 @@ We follow similar steps for the postcondition.
 \subsection{Create a Concrete Activity}
 \label{subsec:concrete-activity}
 
-The creation of a concrete activity starts in a similarly to the abstract activity:
+The creation of a concrete activity starts similarly to the creation of an abstract activity:
 \begin{enumerate}
-    \item Right click on the Class $\to$ New Child $\to$ Classifier Behaviors $\to$ Activity
+    \item Right click on the Class $\to$ New Child $\to$ Classifier Behavior $\to$ Activity.
 \end{enumerate}
 Notice that you do not check the `Abstract' checkbox. 
 
-A concrete activity is a user-defined sequence of actions, and it can be seen as a finite directed graph consisting of nodes and control flows. 
+A concrete activity is a user-defined collection of nodes that are connected by control flows. It can thus be seen as a finite directed graph. 
 A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), 
-be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, 
+be an \emph{call behavior node} which either calls another activity of executes an action by calling an opaque behavior,
 or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action. 
 So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or non-deterministic, and either atomic or non-atomic. 
 Concrete UML activities cannot contain preconditions, postconditions, or occurrence constraints. 
-Similarly to abstract activities, also concrete activities can be represented via an activity diagram (see \ref{subsec:abstract-activity}). 
+Similarly to abstract activities, also concrete activities can be visualized via an Activity Diagram (see \ref{subsec:abstract-activity}). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -188,14 +188,14 @@ Similarly to abstract activities, also concrete activities can be represented vi
 
 After having created a concrete activity, adding a control node can be achieved by 
 \begin{enumerate}
-    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Initial/ Activity Final/ Fork/ Join/ Decision/ Merge node
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Initial / Activity Final / Fork / Join/ Decision / Merge node.
 \end{enumerate} 
 Note that the final node is denoted as `Activity Final node'.
 
 \paragraph*{Graphical Approach.}
-After having created the concrete activity, go to the activity diagram 
+After having created the concrete activity, go to the Activity Diagram 
 \begin{enumerate}
-    \item From the palette view of the activity diagram, you can find the nodes: clicking on the little arrow next to `Initial node' opens a drop-down menu with all types of nodes. 
+    \item From the Palette view of the Activity Diagram, you can find the control nodes: clicking on the little arrow next to `Initial node' opens a drop-down menu with all types of control nodes. 
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,15 +203,15 @@ After having created the concrete activity, go to the activity diagram
 \subsubsection{Create a call behavior node}
 \label{subsubsec:call-behave-node}
 
-After having created a concrete activity, adding a call behavior node can be achieved by 
+After having created a concrete activity, adding a Call Behavior node can be achieved by 
 \begin{enumerate}
-    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Call Behavior Action node
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Call Behavior Action node.
     \item In the properties view, `Poka Yoke' tab, you can add guards and effects for the call action.
-    \item Within the `Default' tab, the `Behavior' row allows you to select which behavior to call with a drop down menu.  
+    \item Within the `Default' tab, the `Behavior' row allows you to select which behavior to call with a drop down menu, after having pressed the `...' button. 
 \end{enumerate} 
 
 \paragraph*{Graphical Approach.}
-From the palette view of the activity diagram, you can find the Call Behavior node under the `Opaque Action' drop down menu. 
+From the Palette view of the Activity Diagram, you can find the Call Behavior node under the `Opaque Action' drop down menu. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -221,7 +221,7 @@ From the palette view of the activity diagram, you can find the Call Behavior no
 
 After having created a concrete activity, adding an opaque action node can be achieved by 
 \begin{enumerate}
-    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Opaque Action node
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Opaque Action node.
     \item In the properties view, `Poka Yoke' tab, you can add guards and effects for the call action.
 \end{enumerate} 
 
@@ -234,20 +234,20 @@ From the palette view of the activity diagram, you can directly find the Opaque 
 \subsection{Create an Opaque Behavior}
 \label{subsec:opaque-behavior}
 
-Opaque behaviors represents the action that an activity can perform. 
-Opaque behavior can be atomic (the system cannot have any other operation in parallel to an atomic action) or non-atomic, 
-and deterministic (only one effect) or non-deterministic (multiple effects, of which only one is chosen). 
-For synthesis purposes, the user needs to create a behavior to be used in the Activity synthesis.  
+Opaque behaviors represents actions that activities can perform. 
+Opaque behaviors can be atomic (the system cannot have any other operation in parallel to an atomic action) or non-atomic, 
+and deterministic (at most one effect) or non-deterministic (multiple effects, of which only one is chosen to be executed non-deterministically). 
+For activity synthesis purposes, the user needs to create the actions to be used by the to-be-synthesized activities, as Opaque Behaviors.  
 
 \begin{enumerate}
-\item Right click on the Class $\to$ New Child $\to$ Owned Behaviors $\to$ Opaque Behavior.
-\item For atomic actions, in the properties view, `Poka Yoke' tab, check the `Atomic' checkbox (optional step).
-\item In the properties view, `Poka Yoke' tab, in the `Guard' field, write the guard (the conditions under which this action can be performed) of choice.
-\item In the properties view, `Poka Yoke' tab, in the `Effects' field, write the effects (the new assignments that the action grants) of choice.
-\item Nondeterministic effects are separated by three tilde \~~ signs. For example, the effect 
+\item Right click on the Class $\to$ New Child $\to$ Owned Behavior $\to$ Opaque Behavior.
+\item For atomic actions, in the Properties view, `Poka Yoke' tab, check the `Atomic' checkbox (optional step).
+\item In the Properties view, `Poka Yoke' tab, in the `Guard' field, the action guards can be specified (i.e., the conditions under which this action can be performed).
+\item In the Properties view, `Poka Yoke' tab, in the `Effects' field, the action effects can be specified (i.e., the variable assignments that describe how performing the action changes the valuation of these variables).
+\item Non-deterministic effects are separated by three tilde \verb#~#  signs. For example, the effects 
 \verb#val:=true ~~~ val:=false# 
-means that the variable \texttt{val} will be non-deterministically assigned \emph{either} true \emph{or} false as a consequence of the current opaque behavior.
-Note that the user has no control over which effect is picked by the execution of the model. 
+means that the variable \texttt{val} will be non-deterministically assigned \emph{either} true \emph{or} false as a consequence of performing the action.
+Note that the user has no control over which effect is picked by execution of the action. 
 \end{enumerate}
 
 Note that there is no graphical way of adding an opaque behavior. 
@@ -267,23 +267,23 @@ To create general constraints, it is sufficient to follow similar steps to the o
 \subsection{Create Occurrence Constraints}
 \label{subsec:occurrence}
 
-Occurrence constraints define the amount of times a specific UML element (e.g. activity, opaque behavior) can be called during the execution. As such, these are modeled as \emph{interval} constraints in UML designer. 
-We might think of a specific action that we need to use (i.e. the minimum of the occurrence constraint is greater or equal than one) and we do not want to use it more than three times (i.e. the maximum of the occurrence constraint is set to three).
-Let us assume we want to add occurrence constraints to an activity. From the Model explorer view, 
+Occurrence constraints define the amount of times a specific UML element (e.g., activity or opaque behavior) can be called during the execution of an activity. As such, these are modeled as \emph{interval} constraints in UML Designer. 
+We might think of a specific action that we need to use (i.e., the minimum of the occurrence constraint is greater or equal than one) and we do not want to use it more than three times (i.e. the maximum of the occurrence constraint is set to three).
+Let us assume we want to add occurrence constraints to an activity. From the Model Explorer view, 
 \begin{enumerate}
     \item Right click on the abstract activity $\to$ New Child $\to$ Owned Rule $\to$ Interval Constraint. 
     You may want to change the name to something representative of the constraint.  In the properties view, click on the `Default' tab and add an element in the `Constrained Element' field. 
-    To do so,  just click in the empty field of the corresponding `Value' column, and a small icon with three dots appears. 
-    Click on that icon, and select the constrained element from the list; click Add, and then OK.
+    To do so, just click in the empty field of the corresponding `Value' column, and a small icon with three dots appears. 
+    Click on that icon, and select the constrained elements from the list; click Add, and then OK.
 
     \item We now need to define the minimum and maximum values for the occurrence constraint. 
     Right click on the interval constraint $\to$ New Child $\to$ Specification $\to$ Interval. Again, you may want to rename it in a meaningful way. 
     
     \item We now insert a minimum and maximum value for the occurrence limits. 
     To this end, we add a \texttt{Literal Integer} \emph{at the Model level}. 
-    Right click on the Model $\to$ New Child $\to$ Packaged Elements $\to$ Literal Integer.  
+    Right click on the Model $\to$ New Child $\to$ Packaged Element $\to$ Literal Integer.  
     For visualisation purposes, erase the name, and fill in the `Value' field the value you need. 
-    Notice that you need two Literals, one for the minimum and one for the maximum occurrence limit.   
+    Notice that you may need two Literal Integers, one for the minimum and one for the maximum occurrence limit.   
     
     \item Click on the Interval specification we have just defined. Within the Properties view, click on the `Advanced' tab, there are the Max and Min fields. 
     Click on the three-dots icon and select the maximum and minimum values represented by the two Literal Integers defined in the previous step. 
@@ -311,11 +311,11 @@ Let us assume we want to add occurrence constraints to an activity. From the Mod
 \label{subsec:simulation}
 
 Note that \emph{abstract} activities are not supported for the simulation part. 
-You can however perform the synthesis of an abstract activity, and then translate the synthesised model into a Cameo model.
+You can however synthesize a concrete activity for every abstract activity by means of activity synthesis (see \autoref{subsec:synthesis}), and then translate the outputted UML model into a model that Cameo can simulate.
 \begin{enumerate}
     \item Right click on the \texttt{model.uml} $\to$ Translate UML to Cameo. A new \texttt{output} folder is created. 
     \item Open the output folder, open the folder called \texttt{model.uml} (i.e. the name of the original UML file), and there you find a new UML file. 
-    \item Copy the file to Cameo, and simulate it. 
+    \item Open this UML file with the Cameo Systems Modeler, and simulate it. 
 \end{enumerate}
 
 
@@ -323,7 +323,7 @@ You can however perform the synthesis of an abstract activity, and then translat
 
 \section{Synthesis: Bit Flipper Example}
 
-Let us now create a bit flipper model. This model initialises a boolean bit non-deterministically, 
+To illustrate activity synthesis, let us now create a bit flipper model. This model initialises a boolean bit non-deterministically, 
 and it flips it if it is false; does not need to do anything otherwise. 
 We can use the following steps:
 \begin{enumerate}
@@ -333,14 +333,14 @@ We can use the following steps:
     The default value of \texttt{init} is false, none for \texttt{bit}.  
     \item Create an abstract activity, with precondition \verb#init = false#, 
     and postcondition \verb#bit = true#.
-    \item Create an initialisation opaque behavior, named \texttt{ND\_BitInit},  with guard \texttt{init = false} and nondeterministic effects:
+    \item Create an opaque behavior, named \texttt{ND\_BitInit}, that models an initialisation  action, with guard \texttt{init = false} and nondeterministic effects:
     \newline
     \verb#init := true, bit := true# \newline
     \verb#~~~# \newline
     \verb#init := true, bit:= false#. \newline
     This action flags the initialisation as done 
     (\texttt{init} is true after the action) and non-deterministically instantiates \texttt{bit}.
-    \item Create a bit flipper opaque behavior, with guard \verb#init = true# and effects \newline
+    \item Create a opaque behavior that models a bit flipper action, with guard \verb#init = true# and effects \newline
     \verb#bit := not bit#, named \texttt{Flipper}. 
     \item Perform the synthesis. Figure~\ref{fig:bitflipper-activity} shows the activity diagram of the synthesised activity. 
 \end{enumerate}
