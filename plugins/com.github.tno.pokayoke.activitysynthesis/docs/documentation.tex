@@ -11,6 +11,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{mathpar}
 \usepackage{mathtools}
+\usepackage{listings}
 
 % Color of comments in algorithms.
 \newcommand{\commfont}[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
@@ -69,6 +70,36 @@
 \newcommand{\stopLabel}[0]{\texttt{\_\_end}} % Note: the command name \endLabel cannot be used since \end seems reserved.
 \newcommand{\toLabel}[0]{\texttt{\_\_to\_\_}}
 \newcommand{\tauLabel}[0]{\texttt{\_\_tau}}
+
+% New example environment
+\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+\newtheorem*{example*}{Example}
+
+% Colored keywords for algorithm 
+\usepackage{xcolor}
+\definecolor{Turquoise}{RGB}{0, 206, 209}
+\definecolor{ForestGreen}{RGB}{34, 139, 34}
+\definecolor{Grey}{RGB}{105, 105, 105}
+\lstdefinelanguage{Cif}
+{
+    keywords=[1]{
+        controllable, uncontrollable, plant, automaton, disc, bool, any, true, false, int, alg, bool, initial, marked, location, initial, edge, when, do, end, requirement, invariant, disables
+    },
+    keywordstyle=[1]\color{blue},
+    keywords=[2]{in, not},
+    keywordstyle=[2]\color{Turquoise},
+    keywords=[3]{0, 1},
+    keywordstyle=[3]\color{ForestGreen},
+    keywords=[4]{@state},
+    keywordstyle=[4]\color{Grey},
+    sensitive=false,
+    morestring=[b]',
+    morecomment=[l]{--}, 
+    morecomment=[s][\color{red!50!brown}\ttfamily]{"}{"}, 
+}
+
+
 
 \title{Synthesis of Poka Yoke Activity Diagrams}
 
@@ -148,21 +179,19 @@ A high-level overview is presented below.
 		\item Any number of UML activities, which can either be \emph{abstract} or \emph{concrete}.
 		\begin{itemize}
 			\item Abstract UML activities are `empty' in the sense that they contain no nodes nor control flows.
+			An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
+			The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
+			Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
+			Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
+			At the moment, the synthesis algorithm does not yet support synthesis of activities that can call other activities.
+			Nevertheless, the UML models that we consider may already have occurrence constraints over activities.
+			Occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
 			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
 			A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action.
 			So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
+			Concrete UML activities cannot contain preconditions, postconditions, or occurrence constraints.
 		\end{itemize}
 	\end{itemize}
-	
-	Both abstract and concrete UML activities may contain preconditions, postconditions, and occurrence constraints.
-	In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
-	In the case of concrete activities, these constraints are added primarily as documentation, but they might later be used for, e.g., property checking or for synthesizing activities that can call other activities.
-	The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
-	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
-	Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
-	At the moment, the synthesis algorithm does not yet support synthesis of activities that can call other activities.
-	Nevertheless, the UML models that we consider may already have occurrence constraints over activities.
-	Occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
 	
 	The activity synthesis algorithm takes UML models as input, containing any number of abstract UML activities.
 	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
@@ -287,6 +316,27 @@ The algorithm for synthesizing a single UML activity, \synthSingle, is a sequenc
 The remainder of this section explains all operations in \synthSingle.
 A short explanation is given for every operation, followed by the motivation for having that operation, followed by its preconditions and postconditions.
 
+\begin{example*}[Running Example]
+Let us consider a simple UML model, where we aim at synthesising an activity that flips a single nondeterministically initialised boolean value.  
+The UML model is composed of a single class ActiveClass, which contains two properties: 
+a boolean named \texttt{init}, initialised as false, denoting whether the bit is initialised, and 
+a boolean named \texttt{bit}, not initialised.  
+The class also contains 
+an abstract activity called \texttt{ActivityMain}, and 
+two Opaque Behavior named \texttt{Flipper} and \texttt{ND\_BitInit}. 
+The activity has precondition constraint set as \texttt{bit=false} and a postcondition constraint set as \texttt{bit=true}. 
+The Flipper opaque behavior's scope is to flip the boolean bit after it is initialised: its guard is \texttt{init=true} , whilst its effects are composed of a single definition \texttt{bit:=not bit}. 
+The \texttt{ND\_BitInit} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
+The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
+\end{example*}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
+    \caption{The BitFlipper model visualised within the PokaYoke UML Designer environment.}
+    \label{fig:bitflipper-uml-designer}
+\end{figure}
+
 \subsection{Transforming the abstract UML activity to CIF}
 \label{sec:transform-uml-to-cif}
 
@@ -342,17 +392,19 @@ This operation produces a CIF specification that:
 	The conjunction of all these Boolean algebraic variables then forms the activity precondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `initial' predicate, which limits the number of initial states to only the ones satisfying the precondition.
 	\item Contains a `marked' predicate from the conjunction of all translated postconditions of the abstract UML activity.
-	There may be multiple user-defined postconditions defined for this activity.
-	In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
-	Moreover, in case the abstract activity has occurrence constraints, extra postconditions are generated which express that that occurrence constraints must be satisfied, i.e., the actions/activities that are subject to occurrence constraints must have happened the specified number of times.
+	There may be multiple postconditions defined for this activity.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `marked' predicate.
-	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, and where no nonatomic and nondeterministic actions are active.
+	Thus, a marked state is a state where the (combined) activity postcondition is satisfied.
 	\item Contains requirement invariants stating that the postcondition disables any CIF event.
 	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
+	\item In case any internal active variables or atomicity variable were declared as described earlier, extra requirement invariants are generated which express that, whenever the activity postcondition holds, no nonatomic and/or nondeterministic actions can be active.
+	These requirements are expressed by means of logical implication: the activity postcondition implies that no nonatomic/nondeterministic action are active.
+	By generating such requirements, we can ask data-based synthesis to synthesize a supervisor that prevents taking a step to satisfy the postcondition whenever some action is still being executed.
+	As a result, no nonatomic/nondeterministic action is active in any marked state in the controlled system.
 	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
 	An edge is defined for every declared CIF event, both controllable and uncontrollable ones.
 	Every controllable CIF event corresponds one-to-one to a UML opaque behavior definition, and thus their edge guards are the translated action guards.
@@ -371,6 +423,21 @@ This operation produces a CIF specification that:
 	This variable can then be incremented every time the action occurs.
 	The occurrence requirement can then be expressed over this requirement (using edge guards and marked predicates).
 \end{itemize}
+
+\begin{example*}[Running Example]
+The translation to CIF of the BitFlipper model is shown in Algorithm~\ref{alg:bitflipper-cif}. The CIF model first defines the events, either controllable (denoting a possible choice) or uncontrollable (usually describing a nondeterministic or external event).  
+The BitFlipper model  provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to the opaque behaviors defined in the UML model. 
+Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialisation. 
+The boolean property bit is transformed into a discrete boolean \texttt{disc bool} variable bit, which is not initialised explicitly, whereas init is initialised as true. 
+The activity precondition and postcondition are translated into algebraic boolean variables; the activity precondition is denoted as initial, while the postcondition is denoted as \texttt{marked} (identifying a final location).  
+The auxiliary variable \texttt{\_\_activeAction} is used to split the two nondetrministic results of the initialisation of \texttt{bit}. 
+Finally, 
+the CIF model denotes the flipper event as an edge with precondition \texttt{init=true} and \texttt{\_\_activeAction = 0}, and postcondition \texttt{bit:= not bit}.   
+\end{example*}
+
+\input{bitflipper-cif}
+
+
 
 \subsection{Data-based synthesis with CIF}
 \label{sec:data-based-synthesis}
@@ -555,6 +622,23 @@ Neither $m_1$ nor $m_2$ can have outgoing edges.
 But then there can be no word in the automaton language that would distinguish $m_1$ and $m_2$.
 Hence they must be the same location.
 
+
+
+\begin{example*}[Running Example]
+The minimised CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}.  Any PokaYoke CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} events, denoting the start and end of the activity to be synthesised. 
+The CIF automaton is composed of 5 states: 
+\begin{itemize}
+    \item state $s1$ is the initial state, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
+    \item state $s2$ has one outgoing edge towards $s4$, after event \texttt{ND\_BitInit}; 
+    \item state $s3$ is marked, namely is a final state, hence without outgoing edges; 
+    \item state $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialised as true), and towards $s5$ after event \texttt{Flipper} (otherwise); 
+    \item state $s5$ has one outgoing edge towards $s3$.
+\end{itemize}
+\end{example*}
+
+\input{bitflipper-synthesised-minimised}
+
+
 \subsection{Petri Net synthesis}
 \label{sec:petrinet-synthesis}
 
@@ -645,6 +729,19 @@ We therefore normalize synthesized Petri Nets, for example to allow proper regre
 
 Furthermore, a region mapping is computed that indicates how Petri Net places correspond to locations in the input CIF automaton.
 This region mapping is thus a mapping from Petri Net places to sets of automaton locations.
+
+\begin{example*}[Running example]
+    The petrify output is depicted in Fig.~\ref{fig:petrify-out}. 
+    Notice that the end event \texttt{\_\_end} has been split into two separate events that will be merged together (in fact, as a merge node) in a following step. Further, the final location \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps. 
+\end{example*}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/bitflipper.dot.png}
+    \caption{The Petrify output model.}
+    \label{fig:petrify-out}
+\end{figure}
+
 
 \subsection{Transforming the Petri Net to an activity}
 \label{sec:transform-petrinet-to-activity}
@@ -907,5 +1004,18 @@ This operation requires a concrete synthesized UML activity \var{umlActivity_{gu
 \paragraph{Postconditions.}
 This operation ensures that the synthesized UML activity no longer contains internal actions, is simplified, and has any leftover nonatomic starts and ends rewritten in order to get a valid activity.
 Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
+
+\begin{example*}[Running Example]
+    Finally, the activity synthesised is shown in Fig.~\ref{fig:synthesised-bitflipper}. The start node is marked in blue, 
+    Petrify's location \texttt{p3} has been turned into a decision node, and the two outgoing edges are equipped with the guards coming from an uncontrollable event, i.e. the nondeterministic initialisation of \texttt{bit}.  
+    If \texttt{bit} is true, the flow can go directly to the end node (shown with a blue border); otherwise, the flow goes through the flipper action. Petrify's two \texttt{\_\_end} transitions have been translated into a merge node, and finally location \texttt{p5} is transformed into the final node. 
+\end{example*}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/bitflipper_activitysynthesised.png}
+    \caption{The BitFlipper activity synthesised.}
+    \label{fig:synthesised-bitflipper}
+\end{figure}
 
 \end{document}
