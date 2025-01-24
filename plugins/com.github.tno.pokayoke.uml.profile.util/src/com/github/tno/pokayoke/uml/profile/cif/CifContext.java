@@ -76,10 +76,12 @@ public class CifContext {
     // Contains queryContextElements as a set.
     private final Set<NamedElement> declaredElements;
 
-    // All declared elements that are not properties + all recursive property instantiations from the active class as a
-    // root, including intermediate ones
+    // All declared elements that are not properties, together with all recursive property instantiations from the
+    // active class as a root, including intermediate ones. Name duplicates are overwritten.
     private final Map<String, NamedElement> referenceableElements;
 
+    // All declared elements that are not properties, together with all recursive property instantiations from the
+    // active class as a root, including intermediate ones. Name duplicates are stored in a list.
     private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
 
     /**
@@ -173,7 +175,7 @@ public class CifContext {
         return Collections.unmodifiableCollection(referenceableElements.values());
     }
 
-    public Map<String, List<NamedElement>> getAllElementsWithDuplicateNames() {
+    public Map<String, List<NamedElement>> getAllElementsInclDuplicateNames() {
         return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
 

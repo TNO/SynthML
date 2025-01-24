@@ -123,8 +123,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
-        Map<String, List<NamedElement>> contextElements = CifContext.queryUniqueNameElements(model)
-                .groupBy(NamedElement::getName);
+        CifContext ctx = new CifContext(model);
+        Map<String, List<NamedElement>> contextElements = ctx.getAllElementsInclDuplicateNames();
         for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
             if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {
