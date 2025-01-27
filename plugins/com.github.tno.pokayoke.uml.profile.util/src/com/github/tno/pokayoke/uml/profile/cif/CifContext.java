@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -52,151 +51,157 @@ public class CifContext {
     }
 
     /**
-     * Finds all contextual elements in the {@code model}.
+     * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
+     * that are declared in data types may be referenced in different way when they are instantiated multiple times.
+     */
+    private final Set<NamedElement> declaredElements;
+
+    /**
+     * Per absolute name of a referenceable element, the element that is referenced.
+     *
+     * <p>
+     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
+     * instantiated starting at the active class as a root, the names are absolute names.
+     * </p>
+     *
+     * <p>
+     * In case of duplicate names, entries are overwritten and thus only one referenced element with that absolute name
+     * is stored.
+     * </p>
+     *
+     * <p>
+     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
+     * their single identifier names. If the UML model has multiple active classes, only the first active class is
+     * considered.
+     * </p>
+     */
+    private final Map<String, NamedElement> referenceableElements;
+
+    /**
+     * Per absolute name of a referenceable element, the elements that are referenced.
+     *
+     * <p>
+     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
+     * instantiated starting at the active class as a root, the names are absolute names.
+     * </p>
+     *
+     * <p>
+     * All referenceable elements with the same name are stored in a list.
+     * </p>
+     *
+     * <p>
+     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
+     * their single identifier names. If the UML model has multiple active classes, only the first active class is
+     * considered.
+     * </p>
+     */
+    private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
+
+    /**
+     * Finds all declared elements in the {@code model}.
      *
      * @param model The search root.
-     * @return All contextual elements in the {@code model}.
+     * @return All declared elements in the {@code model}.
      */
-    public static QueryableIterable<NamedElement> queryContextElements(Model model) {
+    public static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
         return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
                 .asType(NamedElement.class);
     }
 
-    /**
-     * Finds all contextual elements in the {@code model} whose names should be globally unique.
-     *
-     * @param model The search root.
-     * @return All found contextual elements.
-     */
-    public static QueryableIterable<NamedElement> queryUniqueNameElements(Model model) {
-        return queryContextElements(model).select(element -> !(element instanceof Activity)
-                && !(element instanceof Constraint constraint && isPrimitiveTypeConstraint(constraint)));
-    }
-
-    // Contains all declared named elements of the model that are supported by our subset of UML. Note that properties that are declared in data types may be referenced in different way when they are instantiated multiple times.
-    private final Set<NamedElement> declaredElements;
-
-    // All declared elements that are not properties, together with all recursive property instantiations from the
-    // active class as a root, including intermediate ones. Name duplicates are overwritten.
-    private final Map<String, NamedElement> referenceableElements;
-
-    // All declared elements that are not properties, together with all recursive property instantiations from the
-    // active class as a root, including intermediate ones. Name duplicates are stored in a list.
-    private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
-
-    /**
-     * Returns all contextual elements of the UML model. If there is no active class, returns only the elements defined
-     * only at the outer most level of the UML model. Otherwise, adds also all the leaves of composite data types.
-     *
-     * @param element The UML element.
-     */
     public CifContext(Element element) {
         Model model = element.getModel();
 
         // Collect declared elements as set.
-        declaredElements = queryContextElements(model).asSet();
+        declaredElements = getDeclaredElements(model).asOrderedSet();
 
         // Find the active classes in the model.
-        List<Element> activeClasses = model.getOwnedElements().stream()
-                .filter(e -> e instanceof Class cls && cls.isActive()).toList();
+        List<Class> activeClasses = model.getOwnedElements().stream()
+                .filter(e -> e instanceof Class cls && cls.isActive()).map(cls -> (Class)cls).toList();
 
-        // Collect the referenceable elements that have a single identifier as their name. Elements that may have absolute names consisting of multiple identifiers collected separately later on.
+        // Collect the referenceable elements that have a single identifier as their name. Elements that may have
+        // absolute names consisting of multiple identifiers collected separately later on.
         if (activeClasses.isEmpty()) {
-            referenceableElements = queryContextElements(model).toMap(NamedElement::getName);
-            referenceableElementsInclDuplicates = CifContext.queryContextElements(model).groupBy(NamedElement::getName);
+            // No active class. The profile validator checks the number of classes. Here, consider all declared elements
+            // as referenceable elements based on their single identifier names, to be able to still do some type
+            // checking.
+            referenceableElements = getDeclaredElements(model).toMap(NamedElement::getName);
+            referenceableElementsInclDuplicates = getDeclaredElements(model).groupBy(NamedElement::getName);
         } else {
-            // Get the active class and create the referenceable element maps.
-            Class activeClass = (Class)activeClasses.get(0);
+            // Get the active class and create the referenceable element maps. In case there are multiple active
+            // classes, we ignore all but the first one. The profile validator checks the number of classes.
+            Class activeClass = activeClasses.get(0);
             referenceableElements = new LinkedHashMap<>();
             referenceableElementsInclDuplicates = new LinkedHashMap<>();
 
-            // Get context elements, including the ones with duplicate names.
-            Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
-                    .groupBy(NamedElement::getName);
-
             // Collect all referenceable elements that are always referred to by a single identifier.
-            for (Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
-                String elementName = entry.getKey();
-                List<NamedElement> elementsWithSameName = entry.getValue();
-                for (NamedElement umlElement: elementsWithSameName) {
-                    if (!(umlElement instanceof Property property)) {
-                        referenceableElements.put(elementName, umlElement);
-                        referenceableElementsInclDuplicates.computeIfAbsent(elementName, k -> new LinkedList<>())
-                                .add(umlElement);
-                    }
+            for (NamedElement declaredElement: declaredElements) {
+                String elementName = declaredElement.getName();
+                if (!(declaredElement instanceof Property property)) {
+                    referenceableElements.put(elementName, declaredElement);
+                    referenceableElementsInclDuplicates.computeIfAbsent(elementName, k -> new LinkedList<>())
+                            .add(declaredElement);
                 }
             }
 
-            // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple identifiers.
-            for (Property property: activeClass.getOwnedAttributes()) {
-                // Add the current intermediate property, with and without duplicate names.
-                referenceableElements.put(property.getName(), property);
-                referenceableElementsInclDuplicates.computeIfAbsent(property.getName(), k -> new LinkedList<>())
-                        .add(property);
-
-                // Recursive call on the children.
-                addNestedProperties((DataType)property.getType(), property.getName(), referenceableElements,
-                        referenceableElementsInclDuplicates);
-            }
+            // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
+            // identifiers.
+            addProperties(activeClass.getOwnedAttributes(), null);
         }
     }
 
-    private static void addNestedProperties(DataType datatype, String name, Map<String, NamedElement> namesAndElements,
-            Map<String, List<NamedElement>> namesAndElementsWithDuplicates)
-    {
-        // Loop over all data type's attributes. If they are not a composite data type, add them to the map; otherwise,
-        // recursively call on the children objects.
-        for (Property umlProperty: datatype.getOwnedAttributes()) {
-            String newName = name + "." + umlProperty.getName();
+    /**
+     * Add instantiated properties, recursively, to {@link #referenceableElements} and
+     * {@link #referenceableElementsInclDuplicates}.
+     *
+     * @param properties The properties to add.
+     * @param prefix The prefix of the properties, or {@code null} for root properties.
+     */
+    private void addProperties(Collection<Property> properties, String prefix) {
+        for (Property umlProperty: properties) {
+            String name = ((prefix == null) ? "" : prefix + ".") + umlProperty.getName();
+            // Add property.
+            referenceableElements.put(name, umlProperty);
+            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
 
-            // Add the current intermediate property.
-            namesAndElements.put(newName, umlProperty);
-            namesAndElementsWithDuplicates.computeIfAbsent(newName, k -> new LinkedList<>()).add(umlProperty);
-
+            // Add descendant, if property has them.
             if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
-                // Recursive call on its children.
-                addNestedProperties((DataType)umlProperty.getType(), newName, namesAndElements,
-                        namesAndElementsWithDuplicates);
+                addProperties(((DataType)umlProperty.getType()).getOwnedAttributes(), name);
             }
         }
     }
 
-    public boolean isDeclared(NamedElement element) {
-        return declaredElements.contains(element);
-    }
-
-    protected NamedElement getElement(String name) {
+    protected NamedElement getReferenceableElement(String name) {
         return referenceableElements.get(name);
     }
 
-    protected Collection<NamedElement> getAllElements() {
-        return Collections.unmodifiableCollection(referenceableElements.values());
+    protected Collection<NamedElement> getDeclaredElements() {
+        return Collections.unmodifiableCollection(declaredElements);
     }
 
-    public Map<String, List<NamedElement>> getAllElementsInclDuplicateNames() {
-        return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
-    }
-
-    public Map<String, NamedElement> getContextMap() {
+    public Map<String, NamedElement> getReferenceableElementsMap() {
         return Collections.unmodifiableMap(referenceableElements);
     }
 
+    public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
+        return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
+    }
+
     public List<Class> getAllClasses(Predicate<Class> predicate) {
-        return getAllElements().stream().filter(e -> e instanceof Class c && predicate.test(c)).map(Class.class::cast)
-                .toList();
+        return getDeclaredElements().stream().filter(e -> e instanceof Class c && predicate.test(c))
+                .map(Class.class::cast).toList();
     }
 
     public List<Activity> getAllActivities() {
-        return getAllElements().stream().filter(Activity.class::isInstance).map(Activity.class::cast).toList();
+        return getDeclaredElements().stream().filter(Activity.class::isInstance).map(Activity.class::cast).toList();
     }
 
     public List<Activity> getAllAbstractActivities() {
-        return getAllElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
+        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
                 .map(Activity.class::cast).toList();
     }
 
-    public List<Property> getAllProperties() {
-        return getAllElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
+    public List<Property> getAllDeclaredProperties() {
+        return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
     }
 
     public boolean isEnumeration(String name) {
@@ -211,7 +216,8 @@ public class CifContext {
     }
 
     public List<Enumeration> getAllEnumerations() {
-        return getAllElements().stream().filter(Enumeration.class::isInstance).map(Enumeration.class::cast).toList();
+        return getDeclaredElements().stream().filter(Enumeration.class::isInstance).map(Enumeration.class::cast)
+                .toList();
     }
 
     public boolean isEnumerationLiteral(String name) {
@@ -226,12 +232,12 @@ public class CifContext {
     }
 
     public List<EnumerationLiteral> getAllEnumerationLiterals() {
-        return getAllElements().stream().filter(EnumerationLiteral.class::isInstance)
+        return getDeclaredElements().stream().filter(EnumerationLiteral.class::isInstance)
                 .map(EnumerationLiteral.class::cast).toList();
     }
 
     public List<OpaqueBehavior> getAllOpaqueBehaviors() {
-        return getAllElements().stream().filter(OpaqueBehavior.class::isInstance).map(OpaqueBehavior.class::cast)
+        return getDeclaredElements().stream().filter(OpaqueBehavior.class::isInstance).map(OpaqueBehavior.class::cast)
                 .toList();
     }
 
@@ -247,17 +253,17 @@ public class CifContext {
     }
 
     /**
-     * Checks whether the context contains the given element.
+     * Checks whether the given element is declared in the UML model.
      *
-     * @param element The input element.
-     * @return {@code true} if the given element is in this context, {@code false} otherwise.
+     * @param element The element to check.
+     * @return {@code true} if the element is declared in the UML model, {@code false} otherwise.
      */
-    public boolean hasElement(Element element) {
-        return getAllElements().contains(element);
+    public boolean isDeclaredElement(Element element) {
+        return getDeclaredElements().contains(element);
     }
 
     public boolean hasOpaqueBehaviors() {
-        return getAllElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
+        return getDeclaredElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
     }
 
     public OpaqueBehavior getOpaqueBehavior(String name) {
@@ -268,7 +274,7 @@ public class CifContext {
     }
 
     public boolean hasConstraints(Predicate<Constraint> predicate) {
-        return getAllElements().stream().anyMatch(e -> e instanceof Constraint c && predicate.test(c));
+        return getDeclaredElements().stream().anyMatch(e -> e instanceof Constraint c && predicate.test(c));
     }
 
     public static boolean isActivityPrePostconditionConstraint(Constraint constraint) {
@@ -289,6 +295,6 @@ public class CifContext {
     }
 
     public boolean hasAbstractActivities() {
-        return getAllElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
+        return getDeclaredElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
     }
 }
