@@ -32,7 +32,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.collect.Sets;
 
-/** Collects basic typing information from a model that can be queried. */
+/** Symbol table of the UML model, with all its declared and referenceable named elements. */
 public class CifContext {
     /**
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
@@ -73,7 +73,7 @@ public class CifContext {
                 && !(element instanceof Constraint constraint && isPrimitiveTypeConstraint(constraint)));
     }
 
-    // Contains queryContextElements as a set.
+    // Contains all declared named elements of the model that are supported by our subset of UML. Note that properties that are declared in data types may be referenced in different way when they are instantiated multiple times.
     private final Set<NamedElement> declaredElements;
 
     // All declared elements that are not properties, together with all recursive property instantiations from the
@@ -96,12 +96,11 @@ public class CifContext {
         // Collect declared elements as set.
         declaredElements = queryContextElements(model).asSet();
 
-        // Find the the active classes in the model.
+        // Find the active classes in the model.
         List<Element> activeClasses = model.getOwnedElements().stream()
-                .filter(e -> e instanceof Class d && d.isActive()).toList();
+                .filter(e -> e instanceof Class cls && cls.isActive()).toList();
 
-        // If there are no active classes, simply returns the model elements. ProfileValidator checks the number of
-        // classes.
+        // Collect the referenceable elements that have a single identifier as their name. Elements that may have absolute names consisting of multiple identifiers collected separately later on.
         if (activeClasses.isEmpty()) {
             referenceableElements = queryContextElements(model).toMap(NamedElement::getName);
             referenceableElementsInclDuplicates = CifContext.queryContextElements(model).groupBy(NamedElement::getName);
@@ -115,8 +114,7 @@ public class CifContext {
             Map<String, List<NamedElement>> contextElements = CifContext.queryContextElements(model)
                     .groupBy(NamedElement::getName);
 
-            // Loop over every element and add it to the context if it is not a property. Properties are considered
-            // in the following, starting from the active class.
+            // Collect all referenceable elements that are always referred to by a single identifier.
             for (Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
                 String elementName = entry.getKey();
                 List<NamedElement> elementsWithSameName = entry.getValue();
@@ -129,7 +127,7 @@ public class CifContext {
                 }
             }
 
-            // For all properties of the active class, loop over their children (with and without duplicate names).
+            // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple identifiers.
             for (Property property: activeClass.getOwnedAttributes()) {
                 // Add the current intermediate property, with and without duplicate names.
                 referenceableElements.put(property.getName(), property);
