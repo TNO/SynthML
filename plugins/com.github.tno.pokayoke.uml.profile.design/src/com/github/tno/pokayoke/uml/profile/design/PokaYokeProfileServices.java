@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
@@ -21,6 +22,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.ValueSpecification;
+import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -42,6 +44,8 @@ public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
+
+    private static final Integer LABEL_GUARD_MAX_LENGTH = 30;
 
     /**
      * Returns <code>true</code> if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}
@@ -224,6 +228,35 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(property);
         property.setType(newValue);
         setPropertyBounds(property);
+    }
+
+    public String getControlFlowLabel(ControlFlow controlFlow) {
+        String label = controlFlow.getName();
+        String guard = getGuard(controlFlow);
+        if (!label.isEmpty() && !guard.isEmpty()) {
+            label += System.getProperty("line.separator");
+        }
+
+        if (guard.length() > LABEL_GUARD_MAX_LENGTH) {
+            guard = guard.substring(0, LABEL_GUARD_MAX_LENGTH);
+            guard += "...";
+        }
+
+        label += guard;
+        return label;
+    }
+
+    public Element editUmlLabel(Element context, String editedLabelContent) {
+        if (context instanceof ActivityEdge edge) {
+            // The implementation in UML designer uses doSwitch to change both the guard and the name of an
+            // {@link ActivityEdge}. This implementation only changes the name.
+            setName(edge, editedLabelContent);
+            return edge;
+        }
+
+        final EditLabelSwitch editLabel = new EditLabelSwitch();
+        editLabel.setEditedLabelContent(editedLabelContent);
+        return editLabel.doSwitch(context);
     }
 
     /**
