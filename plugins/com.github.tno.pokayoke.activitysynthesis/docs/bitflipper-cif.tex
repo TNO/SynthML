@@ -10,9 +10,9 @@ plant automaton ActiveClass:
   disc bool bit in any;
   disc bool init = false;
   disc int[0..1] __activeAction;
-  alg bool precondition = bit = false;
+  alg bool precondition = not bit;
   alg bool __precondition = precondition;
-  alg bool postcondition = bit = true;
+  alg bool postcondition = bit;
   alg bool __postcondition = postcondition;
   initial __precondition;
   marked __postcondition;
@@ -36,8 +36,6 @@ requirement invariant ActiveClass.__postcondition
     disables ND_BitInit__result_1;
 requirement invariant ActiveClass.__postcondition 
     disables ND_BitInit__result_2;
-requirement invariant ActiveClass.__postcondition => 
-    ActiveClass.__activeAction = 0;
 \end{lstlisting}
 	\caption{CIF translation of the BitFlipper UML model. }
 	\label{alg:bitflipper-cif}
