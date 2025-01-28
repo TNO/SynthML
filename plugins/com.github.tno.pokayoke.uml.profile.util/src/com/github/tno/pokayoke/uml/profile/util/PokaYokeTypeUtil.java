@@ -64,7 +64,7 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isPrimitiveType(Type type) {
-        return type instanceof PrimitiveType;
+        return isBooleanType(type) || isIntegerType(type);
     }
 
     public static boolean isBooleanType(Type type) {

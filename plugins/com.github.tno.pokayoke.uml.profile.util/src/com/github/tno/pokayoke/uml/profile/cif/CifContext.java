@@ -52,7 +52,7 @@ public class CifContext {
 
     /**
      * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
-     * that are declared in data types may be referenced in different way when they are instantiated multiple times.
+     * that are declared in composite data types may be referenced in different way when they are instantiated multiple times.
      */
     private final Set<NamedElement> declaredElements;
 

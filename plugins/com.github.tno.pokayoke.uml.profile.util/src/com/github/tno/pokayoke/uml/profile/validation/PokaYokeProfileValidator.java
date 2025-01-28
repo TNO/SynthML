@@ -112,7 +112,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates if the names of all {@link CifContext#getReferenceableElementsInclDuplicates() unique name elements}
+     * Validates if the names of all {@link CifContext#getReferenceableElementsInclDuplicates unique name elements}
      * are unique within the {@code model}.
      *
      * @param model The model to validate.
