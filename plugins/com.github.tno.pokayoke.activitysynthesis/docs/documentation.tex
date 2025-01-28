@@ -318,14 +318,14 @@ A short explanation is given for every operation, followed by the motivation for
 
 \begin{example*}[Running Example]
 Let us consider a simple UML model, where we aim at synthesising an activity that flips a single nondeterministically initialised boolean value.  
-The UML model is composed of a single class ActiveClass, which contains two properties: 
+The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: 
 a boolean named \texttt{init}, initialised as false, denoting whether the bit is initialised, and 
 a boolean named \texttt{bit}, not initialised.  
 The class also contains 
 an abstract activity called \texttt{ActivityMain}, and 
-two Opaque Behavior named \texttt{Flipper} and \texttt{ND\_BitInit}. 
-The activity has precondition constraint set as \texttt{bit=false} and a postcondition constraint set as \texttt{bit=true}. 
-The Flipper opaque behavior's scope is to flip the boolean bit after it is initialised: its guard is \texttt{init=true} , whilst its effects are composed of a single definition \texttt{bit:=not bit}. 
+two Opaque Behaviors named \texttt{Flipper} and \texttt{ND\_BitInit}. 
+The activity has precondition \texttt{not bit}, and postcondition \texttt{bit}. 
+The \texttt{Flipper} opaque behavior's scope is to flip the boolean \texttt{bit} after it is initialised: its guard is \texttt{init} , whilst its effects consist of a single assignment \texttt{bit:=not bit}. 
 The \texttt{ND\_BitInit} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
 The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
 \end{example*}
@@ -333,7 +333,7 @@ The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\
 \begin{figure}
     \centering
     \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
-    \caption{The BitFlipper model visualised within the PokaYoke UML Designer environment.}
+    \caption{The \texttt{BitFlipper} model visualised within the PokaYoke UML Designer environment.}
     \label{fig:bitflipper-uml-designer}
 \end{figure}
 
@@ -392,7 +392,7 @@ This operation produces a CIF specification that:
 	The conjunction of all these Boolean algebraic variables then forms the activity precondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `initial' predicate, which limits the number of initial states to only the ones satisfying the precondition.
 	\item Contains a `marked' predicate from the conjunction of all translated postconditions of the abstract UML activity.
-	There may be multiple postconditions defined for this activity.
+	There may be multiple user-defined postconditions defined for this activity.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `marked' predicate.
@@ -426,13 +426,13 @@ This operation produces a CIF specification that:
 
 \begin{example*}[Running Example]
 The translation to CIF of the BitFlipper model is shown in Algorithm~\ref{alg:bitflipper-cif}. The CIF model first defines the events, either controllable (denoting a possible choice) or uncontrollable (usually describing a nondeterministic or external event).  
-The BitFlipper model  provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to the opaque behaviors defined in the UML model. 
+The BitFlipper model provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialisation. 
-The boolean property bit is transformed into a discrete boolean \texttt{disc bool} variable bit, which is not initialised explicitly, whereas init is initialised as true. 
-The activity precondition and postcondition are translated into algebraic boolean variables; the activity precondition is denoted as initial, while the postcondition is denoted as \texttt{marked} (identifying a final location).  
+The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialised explicitly, whereas \texttt{init} is initialised as true. 
+The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{initial} to be the algebraic \texttt{precondition} variable, to indicate that this is the initial state for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to split the two nondetrministic results of the initialisation of \texttt{bit}. 
 Finally, 
-the CIF model denotes the flipper event as an edge with precondition \texttt{init=true} and \texttt{\_\_activeAction = 0}, and postcondition \texttt{bit:= not bit}.   
+the CIF model denotes the \texttt{Flipper} event as an edge with precondition \texttt{init=true} and \texttt{\_\_activeAction = 0}, and postcondition \texttt{bit := not bit}.   
 \end{example*}
 
 \input{bitflipper-cif}
@@ -625,7 +625,7 @@ Hence they must be the same location.
 
 
 \begin{example*}[Running Example]
-The minimised CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}.  Any PokaYoke CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} events, denoting the start and end of the activity to be synthesised. 
+The minimised CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}. The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesised. 
 The CIF automaton is composed of 5 states: 
 \begin{itemize}
     \item state $s1$ is the initial state, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
@@ -1007,8 +1007,8 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 
 \begin{example*}[Running Example]
     Finally, the activity synthesised is shown in Fig.~\ref{fig:synthesised-bitflipper}. The start node is marked in blue, 
-    Petrify's location \texttt{p3} has been turned into a decision node, and the two outgoing edges are equipped with the guards coming from an uncontrollable event, i.e. the nondeterministic initialisation of \texttt{bit}.  
-    If \texttt{bit} is true, the flow can go directly to the end node (shown with a blue border); otherwise, the flow goes through the flipper action. Petrify's two \texttt{\_\_end} transitions have been translated into a merge node, and finally location \texttt{p5} is transformed into the final node. 
+    Petrify's location \texttt{p3} has been turned into a decision node, and the two outgoing control flows are equipped with the guards coming from an uncontrollable event, i.e. the nondeterministic initialisation of \texttt{bit}.  
+    If \texttt{bit} is true, the flow can go directly to the end node (shown with a blue border); otherwise, the flow goes through the \texttt{Flipper} action. Petrify's two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
 \end{example*}
 
 \begin{figure}
