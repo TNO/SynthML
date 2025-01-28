@@ -67,9 +67,7 @@ In particular, Poka Yoke supports
 * An activity must be defined as an owned behavior of the active class. 
 * An _abstract_ activity must contain only preconditions, postconditions, and occurrence constraints.
 * A _concrete_ activity is composed of nodes (see <<Activity Node>>)  and control flows (see <<Activity Edge (Control Flow)>>).  
-* A _concrete_ activity cannot contain preconditions, postconditions, occurrence constraints.
 * A _concrete_ activity must have exactly one initial node and one final node.
-
 
 == Activity Edge (Control Flow)
 * The type of an activity edge must be control flow.

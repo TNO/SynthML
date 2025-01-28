@@ -3,7 +3,6 @@
 This documents describes the subset of UML used by Poka Yoke, with the semantics in the Poka Yoke workflows.
 In addition, it describes the stereotypes introduced by Poka Yoke, including their properties.
 
-
 == Type
 Types define the kind of elements that a Poka Yoke model supports. These are boolean, (ranged) integers, enumeration and user-defined data types. 
 
@@ -20,12 +19,10 @@ If two data types have the same attributes' values, they are considered identica
 == Property (Attribute)
 A property is a structural feature of its classifier, defined as an owned attribute. It relates an instance of the classifier to a set of values of the type of the attribute. It can only be of one of the supported types. 
 
-
 == Behavior
 A behavior is a specification of how its context (usually, a classifier) changes state over time. 
 They are executed either by invocation (see <<Call Behavior Action>>) or by the creation of an active object (e.g. an active class).
 A _classifier behavior_ represents the primary behavior of a classifier, describing the behavior of an instance of the owning classifier. 
-
 
 == Activity
 An activity is a behavior, defined as a sequence of subordinate units (actions, or calls to other behaviors). 
@@ -33,10 +30,8 @@ The flow of its execution is modeled as activity nodes connected through activit
 An _abstract_ activity identifies an activity to be synthesised, that contains preconditions, i.e. the conditions that must hold before the execution of the activity; postconditions, i.e. the effects that the activity will have on the model properties; and occurrence constraints, that limits the number of calls of a given opaque behavior. 
 A _concrete_ activity represents a series of activity nodes and activity edges designed by the user.
 
-
 == Activity Edge (Control Flow)
 An activity edge (also denoted control flow) connects two UML elements in the execution flow, and these represent the transitions (edges) of the activity. Edges can be taken if and only if their guards -- which are state predicates -- hold true. 
-
 
 == Activity Node
 Activity nodes define the locations of a series of actions, similarly to nodes in a graph. 
@@ -52,15 +47,12 @@ Activity nodes can be of three main kinds:
 ** Decision node: represents the beginning of a non-deterministic choice between two or more paths. Recall that the subsequent edges are equipped with guards, that allow or prevent certain paths from being taken;
 ** Merge node: represents the end of a non-deterministic choice between two or more paths.
 
-
 == Call Behavior Action
 A call behavior action effectively calls the execution of a given opaque behavior. It is equipped with guards and effects, to abstract the call to the behavior without entering the actual execution of it: this avoids a possibly recursive call to a series of sub-behaviors, and instead only the guards and effects of the call are considered. During a simulation run, when encountering a Call Behavior Action that has guards and effects, its activity, including any sub-activities, is ignored, but instead the action is treated as an Opaque Action with a guard and effect. 
 In short, guards and effects of a call behavior action shadow the call to the behavior by something more abstract. 
 
-
 == Opaque Expression 
 Opaque expressions constitute the body of a constraint, e.g. a precondition or a postcondition. These usually represent a state predicate over a subset of the model properties. 
-
 
 == Opaque Behavior
 Opaque behaviors model _actions_ to be performed in activities. Equipped with guards -- state predicates --  and effects -- state updates -- over the UML model properties. 
@@ -69,12 +61,9 @@ Actions can be
 * Deterministic, if it has at most one effect; nondeterministic otherwise. If nondeterministic, one of the possible outputs is chosen arbitrarily and executed.  
 * Atomic, if no other actions can be performed during its execution; non-atomic otherwise. If non-atomic, other actions can be performed between the start and the end of it -- the start and end events are modeled as atomic. The effects of a non-atomic action are applied when the action ends. 
 
-
-
 == Opaque Action
 An opaque action represents an ``inlined'' opaque behavior. 
 An opaque behavior can only be called, whereas opaque actions represent the actual action to be performed. Opaque behaviors can be called in multiple places, whilst opaque actions needs to be redefined for every single use.  
-
 
 == Constraint
 A constraint is an element which represents some condition, restriction or assertion related to its owning element. 
@@ -85,7 +74,6 @@ action exclusion invariant.
 
 == Occurrence Constraint
 An occurrence constraint limits the number of times a given element (denoted _constrained_ element) can be called by the constraint's owner. 
-
 
 == Poka Yoke stereotype
 Poka Yoke stereotypes are an extension to UML constructs, that equips UML elements with formal modeling components. In practical terms, it gives the possibility to specify guards and effects (when appropriate) and to define the atomicity of a UML element. We define four different stereotypes: 
