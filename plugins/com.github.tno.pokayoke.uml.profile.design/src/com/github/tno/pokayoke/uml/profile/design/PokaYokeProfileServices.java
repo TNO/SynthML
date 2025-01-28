@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.LiteralBoolean;
@@ -87,7 +88,7 @@ public class PokaYokeProfileServices {
      */
     public void setGuard(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (Strings.isNullOrEmpty(newValue)) {
+        if (Strings.isNullOrEmpty(newValue) && !(element instanceof ActivityEdge)) {
             String effects = getEffects(element);
             boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(effects) && !atomic) {
@@ -201,36 +202,6 @@ public class PokaYokeProfileServices {
             }
         }
         PokaYokeUmlProfileUtil.setAtomic(element, newValue);
-    }
-
-    /**
-     * Returns the {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
-     *
-     * @param controlFlow The control-flow to interrogate.
-     * @return The {@link ControlFlow#getGuard()} value as a {@link ValueSpecification#stringValue() String}.
-     */
-    public String getControlFlowGuard(ControlFlow controlFlow) {
-        ValueSpecification guard = controlFlow.getGuard();
-        return guard == null ? null : guard.stringValue();
-    }
-
-    /**
-     * Set the {@link ControlFlow#getGuard()} value to <code>newValue</code> where:
-     * <ul>
-     * <li><code>null</code></li>: <code>null</code> if guard is already <code>null</code>, {@link LiteralNull}
-     * otherwise.
-     * <li><code>true</code> or <code>false</code></li>: {@link LiteralBoolean} holding the
-     * {@link LiteralBoolean#setValue(boolean) value}
-     * <li>default: {@link OpaqueExpression} holding the value in its {@link OpaqueExpression#getBodies() first
-     * body}</li>
-     * </ul>
-     *
-     * @param controlFlow The control-flow to set the guard value on.
-     * @param newValue The new guard value.
-     */
-    public void setControlFlowGuard(ControlFlow controlFlow, String newValue) {
-        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
-        PokaYokeUmlProfileUtil.setGuard(controlFlow, newValue);
     }
 
     public void setPropertyName(Property property, String newValue) {
