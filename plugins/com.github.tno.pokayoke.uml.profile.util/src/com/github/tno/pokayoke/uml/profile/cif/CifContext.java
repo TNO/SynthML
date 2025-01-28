@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -52,7 +53,8 @@ public class CifContext {
 
     /**
      * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
-     * that are declared in composite data types may be referenced in different way when they are instantiated multiple times.
+     * that are declared in composite data types may be referenced in different way when they are instantiated multiple
+     * times.
      */
     private final Set<NamedElement> declaredElements;
 
@@ -124,8 +126,10 @@ public class CifContext {
             // No active class. The profile validator checks the number of classes. Here, consider all declared elements
             // as referenceable elements based on their single identifier names, to be able to still do some type
             // checking.
-            referenceableElements = getDeclaredElements(model).toMap(NamedElement::getName);
-            referenceableElementsInclDuplicates = getDeclaredElements(model).groupBy(NamedElement::getName);
+            referenceableElements = declaredElements.stream()
+                    .collect(Collectors.toMap(NamedElement::getName, e -> e, (oldValue, newValue) -> newValue));
+            referenceableElementsInclDuplicates = declaredElements.stream()
+                    .collect(Collectors.groupingBy(NamedElement::getName));
         } else {
             // Get the active class and create the referenceable element maps. In case there are multiple active
             // classes, we ignore all but the first one. The profile validator checks the number of classes.
@@ -159,6 +163,7 @@ public class CifContext {
     private void addProperties(Collection<Property> properties, String prefix) {
         for (Property umlProperty: properties) {
             String name = ((prefix == null) ? "" : prefix + ".") + umlProperty.getName();
+
             // Add property.
             referenceableElements.put(name, umlProperty);
             referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
@@ -170,16 +175,12 @@ public class CifContext {
         }
     }
 
-    protected NamedElement getReferenceableElement(String name) {
-        return referenceableElements.get(name);
-    }
-
     protected Collection<NamedElement> getDeclaredElements() {
         return Collections.unmodifiableCollection(declaredElements);
     }
 
-    public Map<String, NamedElement> getReferenceableElementsMap() {
-        return Collections.unmodifiableMap(referenceableElements);
+    protected NamedElement getReferenceableElement(String name) {
+        return referenceableElements.get(name);
     }
 
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
