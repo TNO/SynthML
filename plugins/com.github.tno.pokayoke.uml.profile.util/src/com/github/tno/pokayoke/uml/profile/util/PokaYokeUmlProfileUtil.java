@@ -154,7 +154,7 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code controlFlow}.
+     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code activityEdge}.
      *
      * @param activityEdge The control flow to set the guard value on.
      * @param newValue The new value of the guard.
