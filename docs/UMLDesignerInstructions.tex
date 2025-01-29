@@ -46,9 +46,10 @@ In the following, we refer to this model instance as the `model', unless otherwi
 A UML class represents a container of behaviors. An \emph{active} class starts its classifier behavior (\eg an activity) as a direct consequence of its creation.  
 There are several ways of creating a class in UML Designer. From the `Model Explorer' view, 
 \begin{enumerate}
-    \item Right click on the model $\to$ New Child $\to$ Packaged Element $\to$ Class. You may want to rename it with a meaningful name. 
+    \item Right click on the model $\to$ New Child $\to$ Packaged Element\footnotemark $\to$ Class. You may want to rename it with a meaningful name. 
     \item We only support active classes: to make a class active, look in the `Properties' view, `Advanced' tab, and check the `Active' checkbox.
 \end{enumerate}
+\footnotetext{A class can also be added as an `Owned Type' by right clinking on the model $\to$ Owned Type $\to$ Class. The UML metamodel treats both owned types and packaged elements as `packageable elements': it makes no practical difference for the creation of a Poka Yoke model. For consistency, it is advised to use the packaged element option.} 
 
 \paragraph*{Graphical Approach.}
 Alternatively, you may create a class from the `Class Diagram' view. To this end, you may
@@ -78,7 +79,6 @@ To create an enumeration-typed property, first we need to define the enumeration
     \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Enumeration. Alternatively, you could drag-and-drop an Enumeration from the `Palette' view on the right.
     \item Right click on the Enumeration $\to$ New Child $\to$ Owned Literal $\to$ Enumeration Literal. Alternatively, 
     you could hover over the Enumeration with your mouse in the Class Diagram, after which some options appear, from which you can select Literal.
-
 \end{enumerate}
 After the completion of these steps, we can create a new property of type Enumeration (with the given enumeration name). 
 
@@ -92,6 +92,8 @@ Similarly, to create an integer-typed property, first we need to define the rang
     Note that two constraints named `min' and `max' will appear in the `Model Explorer' view.     
 \end{enumerate} 
 After the completion of these steps, we can create a new property of this ranged integer type. 
+
+Both enumerations and primitive types can also be added as a `Packaged Element' by right clinking on the model $\to$ Packaged Element $\to$ Enumeration (or Primitive Type). The UML metamodel treats both owned types and packaged elements as `packageable elements', which are the elements considered by Poka Yoke, so it makes no practical difference for the creation of a Poka Yoke model. Since enumerations and primitive types are usually considered as types, it is advised to use the owned type option.
 
 \smallskip
 
@@ -111,9 +113,10 @@ Note that you still need to create an enumeration and integer variable via the s
 
 Data types represent more abstract types, \eg a robot. To create one such element, 
 \begin{enumerate}
-    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Data Type.
+    \item Right click on the model $\to$ New Child $\to$ Owned Type\footnotemark $\to$ Data Type.
 \end{enumerate}
 Note that data types can have properties (of type boolean, integer, enumeration, or of other data type).
+\footnotetext{A da atype can also be added as an `Packaged Element' by right clinking on the model $\to$ Packaged Element $\to$ Class. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier are valid. Since a data types is usually considered as a type, it is advised to use the owned type option.}
 
 \paragraph*{Graphical Approach.} 
 Alternatively, you may create a data type from the `Class Diagram' view. To this end, you may
@@ -143,6 +146,8 @@ defining respectively the necessary requirements at the beginning and the end of
 Optional components are the constraints (see \S\ref{subsec:constraints}), defining additional requirements, 
 and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to create an activity. 
+
+Note that in the UML designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -197,7 +202,7 @@ A node can be a \emph{control node} (initial, final, fork, join, decision, or me
 be an \emph{call behavior node} which either calls another activity of executes an action by calling an opaque behavior,
 or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action. 
 So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or non-deterministic, and either atomic or non-atomic. 
-Similarly to abstract activities, also concrete activities can be visualized via an Activity Diagram (see \S\ref{subsec:abstract-activity}). 
+Similarly to abstract activities, also concrete activities can be visualized via an Activity Diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
