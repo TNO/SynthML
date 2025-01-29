@@ -23,6 +23,7 @@ import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -441,7 +442,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } else {
             QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
             if (initialNodes.size() != 1) {
-                error("Abstract activity should have exactly one initial node but got " + initialNodes.size(), activity,
+                error("Concrete activity should have exactly one initial node but got " + initialNodes.size(), activity,
+                        null);
+            }
+
+            QueryableIterable<ActivityFinalNode> finalNodes = from(activity.getNodes())
+                    .objectsOfKind(ActivityFinalNode.class);
+            if (finalNodes.size() > 1) {
+                error("Concrete activity should have at most one final node but got " + finalNodes.size(), activity,
                         null);
             }
         }
