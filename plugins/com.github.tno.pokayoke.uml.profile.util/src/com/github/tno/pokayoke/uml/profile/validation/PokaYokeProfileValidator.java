@@ -112,10 +112,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates if the names of all {@link CifContext#queryUniqueNameElements(Model) unique name elements} are unique
-     * within the {@code model}.
+     * Validates if the names of all {@link CifContext#getReferenceableElementsInclDuplicates unique name elements} are
+     * unique within the {@code model}.
      *
-     * @param model The model to validate
+     * @param model The model to validate.
      * @see CifContext
      */
     @Check
@@ -123,13 +123,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
-        Map<String, List<NamedElement>> contextElements = CifContext.queryUniqueNameElements(model)
-                .groupBy(NamedElement::getName);
-        for (Map.Entry<String, List<NamedElement>> entry: contextElements.entrySet()) {
+        CifContext ctx = new CifContext(model);
+        Map<String, List<NamedElement>> referenceableElementsInclDuplicates = ctx
+                .getReferenceableElementsInclDuplicates();
+        for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
+            // Skip primitive type constraints, that always have the same fixed name.
+            if (entry.getValue().stream()
+                    .allMatch(t -> t instanceof Constraint constr && CifContext.isPrimitiveTypeConstraint(constr)))
+            {
+                continue;
+            }
+
+            // Skip activity name check: we may have multiple activities with the same name.
+            if (entry.getValue().stream().allMatch(t -> t instanceof Activity)) {
+                continue;
+            }
+
             // Null or empty strings are reported by #checkNamingConventions(NamedElement, boolean, boolean)
             if (!Strings.isNullOrEmpty(entry.getKey()) && entry.getValue().size() > 1) {
                 for (NamedElement duplicate: entry.getValue()) {
-                    error("Name should be unique within model.", duplicate, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+                    error("Name should be unique within model: " + entry.getKey(), duplicate,
+                            UMLPackage.Literals.NAMED_ELEMENT__NAME);
                 }
             }
         }
@@ -212,7 +226,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         // Skip the remaining checks for enumerations and primitive types, which are also data types.
-        if (PokaYokeTypeUtil.isSupportedType(dataType)) {
+        if (!PokaYokeTypeUtil.isCompositeDataType(dataType)) {
             return;
         }
 
@@ -718,7 +732,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {
-                    if (!context.hasElement(element)) {
+                    if (!context.isDeclaredElement(element)) {
                         error("Constrained behavior is not in scope.", UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
                     }
                 } else {
@@ -776,7 +790,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkReservedKeywords(Model model) {
-        QueryableIterable<NamedElement> elements = CifContext.queryContextElements(model);
+        QueryableIterable<NamedElement> elements = CifContext.getDeclaredElements(model);
 
         for (NamedElement element: elements) {
             // Primitive integer types are bounded between a min and a max value. These automatically generate
