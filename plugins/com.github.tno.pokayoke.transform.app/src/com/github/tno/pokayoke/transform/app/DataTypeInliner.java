@@ -70,10 +70,10 @@ public class DataTypeInliner {
     public static void inlineNestedDataTypes(Model model) {
         CifContext context = new CifContext(model);
         Class activeClass = getSingleActiveClass(context);
-        List<DataType> dataTypes = context.getAllDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
+        List<DataType> dataTypes = context.getAllDeclaredDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
 
         // Unfold all behaviors' elements that involve a composite data type assignment or comparison.
-        unfoldBehaviors(activeClass, context.getContextMap());
+        unfoldOwnedBehaviors(activeClass, context.getReferenceableElements());
 
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
@@ -97,13 +97,13 @@ public class DataTypeInliner {
     }
 
     /**
-     * Unfolds any behavior containing composite data type assignments or comparison with the corresponding leaf
+     * Unfolds any behavior containing composite data type assignments or comparison into the corresponding leaf
      * properties.
      *
      * @param clazz The active class that contains the behaviors.
      * @param ctx The Cif context.
      */
-    private static void unfoldBehaviors(Class clazz, Map<String, NamedElement> ctx) {
+    private static void unfoldOwnedBehaviors(Class clazz, Map<String, NamedElement> ctx) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior element) {
                 unfoldGuardAndEffects(element, ctx);
@@ -119,7 +119,7 @@ public class DataTypeInliner {
     }
 
     /**
-     * Unfolds guards and effects of an opaque behavior.
+     * Unfolds guards and effects of a redefinable element.
      *
      * @param element The opaque behavior.
      * @param ctx The Cif context.
@@ -224,18 +224,18 @@ public class DataTypeInliner {
             TextPosition position, Map<String, NamedElement> ctx)
     {
         Property lhsProperty = (Property)ctx.get(lhsName);
-        Property rhsProperty;
-        try {
-            rhsProperty = (Property)ctx.get(rhsName);
-        } catch (Exception e) {
+        if (!(ctx.get(rhsName) instanceof Property)) {
             // If right hand side is not a variable, then left hand side is of leaf type. Thus, there is no unfolding to
             // be done.
             return createABinaryExpression(lhsName, rhsName, operator, position);
         }
 
+        Property rhsProperty = (Property)ctx.get(rhsName);
+
         // Collect the names of all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
+
         Set<String> leavesRight = new LinkedHashSet<>();
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
 

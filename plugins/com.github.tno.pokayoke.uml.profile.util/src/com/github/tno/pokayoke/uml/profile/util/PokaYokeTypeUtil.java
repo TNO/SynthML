@@ -24,6 +24,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  * <li>Boolean</li>
  * <li>Integer</li>
  * <li>Enumeration</li>
+ * <li>Composite data type</li>
  * </ul>
  */
 public class PokaYokeTypeUtil {
@@ -35,8 +36,8 @@ public class PokaYokeTypeUtil {
      * Returns all Poka Yoke supported types for {@code context}.
      * <p>
      * The next types are supported: {@link Enumeration enumerations in the model}, {@link UmlPrimitiveType#INTEGER
-     * integers in the model}, {@link UmlPrimitiveType#BOOLEAN the primitive Boolean} and {@link DataType data types in
-     * the model}.
+     * integers in the model}, {@link UmlPrimitiveType#BOOLEAN the primitive Boolean} and {@link DataType composite data
+     * types in the model}.
      * </p>
      *
      * @param context The context for which the supported types are queried.
@@ -55,7 +56,8 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isCompositeDataType(Type type) {
-        // Check the type is only a data type; DataType is the super interface of Enumeration and PrimitiveType.
+        // Check the type is only a composite data type; UML DataType is the super interface of Enumeration and
+        // PrimitiveType.
         return type instanceof DataType && !(isEnumerationType(type) || isPrimitiveType(type));
     }
 
@@ -64,7 +66,7 @@ public class PokaYokeTypeUtil {
     }
 
     public static boolean isPrimitiveType(Type type) {
-        return type instanceof PrimitiveType;
+        return isBooleanType(type) || isIntegerType(type);
     }
 
     public static boolean isBooleanType(Type type) {
