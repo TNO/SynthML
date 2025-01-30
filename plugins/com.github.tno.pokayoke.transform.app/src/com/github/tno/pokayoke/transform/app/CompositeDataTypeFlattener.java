@@ -60,8 +60,8 @@ import com.google.common.base.Verify;
  * composite data type property represents a canonical "object" class, e.g. a robot, may contain only properties and
  * nothing else.
  */
-public class CompositeDataTypeInliner {
-    private CompositeDataTypeInliner() {
+public class CompositeDataTypeFlattener {
+    private CompositeDataTypeFlattener() {
     }
 
     /**
