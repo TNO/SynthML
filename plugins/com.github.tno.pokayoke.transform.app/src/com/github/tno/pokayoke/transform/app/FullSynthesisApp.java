@@ -84,7 +84,7 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
 
-        // Unfold all assignment, flatten all data class variables.
+        // Inline composite data types.
         CompositeDataTypeFlattener.inlineNestedDataTypes(umlSpec);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
