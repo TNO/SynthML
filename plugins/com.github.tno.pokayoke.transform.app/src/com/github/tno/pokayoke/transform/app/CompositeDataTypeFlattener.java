@@ -56,17 +56,17 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 
 /**
- * Flattens all properties that are instantiations of a composite data type, and deletes all composite data types. A
- * composite data type property represents a canonical "object" class, e.g. a robot, may contain only properties and
- * nothing else.
+ * Composite data type flattener.
  */
 public class CompositeDataTypeFlattener {
     private CompositeDataTypeFlattener() {
     }
 
     /**
-     * Finds the instantiations of (nested) composite data types, and inlines their properties with flattened names.
-     * Rewrites the properties and owned behaviors of the active class, and removes the composite data types.
+     * Finds all properties that are instantiations of a composite data type, inlines them with flattened names,
+     * rewrites the constraints and owned behaviors of the active class, and deletes all composite data types. A
+     * composite data type property represents a canonical "object" class, e.g. a robot, may contain only properties and
+     * nothing else.
      *
      * @param model The UML model.
      */
@@ -147,34 +147,32 @@ public class CompositeDataTypeFlattener {
 
         // Perform the unfolding for the effects (list of list of updates).
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
-        List<String> unfoldedEffects = new LinkedList<>();
+        List<String> newEffects = new LinkedList<>();
         for (String effect: effects) {
             List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
-            List<String> updateStrings = new LinkedList<>();
+            List<String> newUpdateStrings = new LinkedList<>();
             for (AUpdate update: updates) {
-                if (update instanceof AAssignmentUpdate assignExpr) {
-                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentExpression(assignExpr,
-                            referenceableElements);
-                    for (ACifObject unfoldedUpdate: newUpdates) {
-                        String unfoldedUpdateString = ACifObjectTranslator.toString(unfoldedUpdate);
-                        updateStrings.add(unfoldedUpdateString);
+                if (update instanceof AAssignmentUpdate assign) {
+                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentExpression(assign, referenceableElements);
+                    for (ACifObject newUpdate: newUpdates) {
+                        String newUpdateString = ACifObjectTranslator.toString(newUpdate);
+                        newUpdateStrings.add(newUpdateString);
                     }
-                } else if (update instanceof AIfUpdate ifUpdateExpr) {
-                    ACifObject unfoldedIfUpdate = unfoldACifIfUpdateExpression(ifUpdateExpr, referenceableElements);
-                    String unfoldedIfUpdateString = ACifObjectTranslator.toString(unfoldedIfUpdate);
-                    updateStrings.add(unfoldedIfUpdateString);
+                } else if (update instanceof AIfUpdate ifUpdate) {
+                    ACifObject newIfUpdate = unfoldACifIfUpdateExpression(ifUpdate, referenceableElements);
+                    String newIfUpdateString = ACifObjectTranslator.toString(newIfUpdate);
+                    newUpdateStrings.add(newIfUpdateString);
                 } else {
-                    String unfoldedUpdateString = ACifObjectTranslator.toString(update);
-                    updateStrings.add(unfoldedUpdateString);
+                    throw new RuntimeException(String.format("Unfolding unsupported update: %s.", update));
                 }
             }
 
             // Join the updates with a comma, and store them into the unfolded effects list.
-            String unfoldedEffect = String.join(", ", updateStrings);
-            unfoldedEffects.add(unfoldedEffect);
+            String newEffect = String.join(", ", newUpdateStrings);
+            newEffects.add(newEffect);
         }
 
-        PokaYokeUmlProfileUtil.setEffects(element, unfoldedEffects);
+        PokaYokeUmlProfileUtil.setEffects(element, newEffects);
     }
 
     /**
@@ -218,45 +216,45 @@ public class CompositeDataTypeFlattener {
     private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, String operator,
             TextPosition position, Map<String, NamedElement> referenceableElements)
     {
-        // If left hand side or right hand side are not a variable, there is no unfolding to be done.
-        if (!(referenceableElements.get(rhsName) instanceof Property)
-                || !(referenceableElements.get(lhsName) instanceof Property))
+        // Unfold if left hand side and right hand side are both composite data types.
+        NamedElement leftElement = referenceableElements.get(lhsName);
+        NamedElement rightElement = referenceableElements.get(rhsName);
+
+        if (leftElement instanceof Property leftProperty && PokaYokeTypeUtil.isCompositeDataType(leftProperty.getType())
+                && rightElement instanceof Property rightProperty
+                && PokaYokeTypeUtil.isCompositeDataType(rightProperty.getType()))
         {
-            return createABinaryExpression(lhsName, rhsName, operator, position);
-        }
-        Property lhsProperty = (Property)referenceableElements.get(lhsName);
-        Property rhsProperty = (Property)referenceableElements.get(rhsName);
+            // Sanity check: left and right composite data types should be the same.
+            Verify.verify(leftProperty.getType().equals(rightProperty.getType()), String
+                    .format("Trying to compare or assign two different data types: '%s' and '%s'.", lhsName, rhsName));
 
-        // Collect the names of all leaves children of left and right hand side composite data types.
-        Set<String> leavesLeft = new LinkedHashSet<>();
-        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
-        Set<String> leavesRight = new LinkedHashSet<>();
-        PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
+            // Collect the names of all leaves children of left (and right) hand side composite data types.
+            Set<String> leaves = new LinkedHashSet<>();
+            PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(leftProperty, "", leaves);
 
-        // Sanity check: leaves of the left and right expressions should be the same.
-        Verify.verify(leavesLeft.equals(leavesRight), String
-                .format("Trying to compare or assign two different data types: '%s' and '%s'.", lhsName, rhsName));
+            // Create the new binary expression of the unfolded properties for both left and right hand side.
+            ABinaryExpression unfoldedBinaryExpression = null;
+            for (String leaf: leaves) {
+                ABinaryExpression currentBinaryExpression = createABinaryExpression(lhsName + leaf, rhsName + leaf,
+                        operator, position);
 
-        // If the leaves set is empty, the expression refers to a leaf type; there is no unfolding to be done.
-        if (leavesLeft.isEmpty()) {
-            return createABinaryExpression(lhsName, rhsName, operator, position);
-        }
-
-        // Create the new binary expression of the unfolded properties for both left and right hand side.
-        ABinaryExpression unfoldedBinaryExpression = null;
-        for (String leaf: leavesLeft) {
-            ABinaryExpression currentBinaryExpression = createABinaryExpression(lhsName + leaf, rhsName + leaf,
-                    operator, position);
-
-            // Create a new binary expression as a conjunction of the expressions generated for every leaf.
-            if (unfoldedBinaryExpression == null) {
-                unfoldedBinaryExpression = currentBinaryExpression;
-            } else {
-                unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
-                        currentBinaryExpression, position);
+                // Create a new binary expression as a conjunction of the expressions generated for every leaf.
+                if (unfoldedBinaryExpression == null) {
+                    unfoldedBinaryExpression = currentBinaryExpression;
+                } else {
+                    unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
+                            currentBinaryExpression, position);
+                }
             }
+            return unfoldedBinaryExpression;
+        } else {
+            // If both are properties, check that both are not composite data types.
+            if (leftElement instanceof Property leftProperty && rightElement instanceof Property rightProperty) {
+                Verify.verify(!(PokaYokeTypeUtil.isCompositeDataType(leftProperty.getType()))
+                        && !(PokaYokeTypeUtil.isCompositeDataType(rightProperty.getType())));
+            }
+            return createABinaryExpression(lhsName, rhsName, operator, position);
         }
-        return unfoldedBinaryExpression;
     }
 
     private static ABinaryExpression createABinaryExpression(String lhsName, String rhsName, String operator,
