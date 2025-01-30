@@ -20,7 +20,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
 /**
- * Translates a Cif object expression into the corresponding string.
+ * Translates a CIF object expression into the corresponding string.
  */
 public class ACifObjectTranslator {
     private ACifObjectTranslator() {
@@ -34,6 +34,7 @@ public class ACifObjectTranslator {
         } else if (expression instanceof AElifUpdate elifExpr) {
             return aElifUpdateToString(elifExpr);
         } else {
+            // TODO: AInvariant
             throw new RuntimeException(String.format("Unupported Cif class: %s.", expression.getClass()));
         }
     }

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
+import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
@@ -25,6 +26,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.Activity;
@@ -32,11 +34,11 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -51,6 +53,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Verify;
 
 /**
  * Flattens all properties that are instantiations of a composite data type, and deletes all composite data types. A
@@ -72,16 +75,20 @@ public class DataTypeInliner {
         Class activeClass = getSingleActiveClass(context);
         List<DataType> dataTypes = context.getAllDeclaredDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
 
+        // Step 1: until line 480.
         // Unfold all behaviors' elements that involve a composite data type assignment or comparison.
-        unfoldOwnedBehaviors(activeClass, context.getReferenceableElements());
+        unfoldRulesAndBehaviors(activeClass, context.getReferenceableElements());
 
+        // Step 2:
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
         Map<String, Pair<String, Property>> orderedFlattenedNames = renameAndFlattenProperties(activeClass);
 
+        // Step 3:
         // Delete the composite data types and related properties.
         deleteDataTypes(activeClass, dataTypes);
 
+        // Step 4:
         // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
         rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
     }
@@ -101,9 +108,10 @@ public class DataTypeInliner {
      * properties.
      *
      * @param clazz The active class that contains the behaviors.
-     * @param ctx The Cif context.
+     * @param ctx The CIF context as a map.
      */
-    private static void unfoldOwnedBehaviors(Class clazz, Map<String, NamedElement> ctx) {
+    private static void unfoldRulesAndBehaviors(Class clazz, Map<String, NamedElement> ctx) {
+        // Unfold opaque behaviors and activities.
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior element) {
                 unfoldGuardAndEffects(element, ctx);
@@ -113,28 +121,28 @@ public class DataTypeInliner {
                 unfoldConcreteActivity(activity, ctx);
             } else {
                 throw new RuntimeException(
-                        String.format("Unfolding properties of class '%s' not supported.", classBehavior.getClass()));
+                        String.format("Unfolding behaviors of class '%s' not supported.", classBehavior.getClass()));
             }
         }
+
+        // Unfold constraints.
+        unfoldConstraints(clazz.getOwnedRules(), ctx);
     }
 
     /**
      * Unfolds guards and effects of a redefinable element.
      *
      * @param element The opaque behavior.
-     * @param ctx The Cif context.
+     * @param ctx The CIF context as a map.
      */
     private static void unfoldGuardAndEffects(RedefinableElement element, Map<String, NamedElement> ctx) {
-        // Perform the guard unfolding, assuming only guard of class ABinaryExpression are relevant. Skips other classes
-        // of guards.
+        // Perform the guard unfolding.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
-        if (guardExpr instanceof ABinaryExpression binExpr) {
-            AExpression newGuard = unfoldACifExpression(binExpr, ctx);
-            String newGuardString = ACifObjectTranslator.toString(newGuard);
-            PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
-        }
+        AExpression newGuard = unfoldACifExpression(guardExpr, ctx);
+        String newGuardString = ACifObjectTranslator.toString(newGuard);
+        PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
 
-        // Perform the name unfolding for the effects (list of list of updates).
+        // Perform the unfolding for the effects (list of list of updates).
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
         List<String> unfoldedEffects = new LinkedList<>();
         for (String effect: effects) {
@@ -166,26 +174,19 @@ public class DataTypeInliner {
     }
 
     /**
-     * Unfolds a Cif AExpression: substitutes the comparisons between composite data types with the respective leaf
-     * properties.
+     * Unfolds a CIF {@link AExpression}: substitutes the comparisons between composite data types with the respective
+     * leaf properties.
      *
-     * @param expression A Cif AExpression to be unfolded.
+     * @param expression A CIF {@link AExpression} to be unfolded.
      * @param ctx A Map containing the name and the UML NamedElement of every element of the UML model.
-     * @return The unfolded Cif AExpression.
+     * @return The unfolded CIF {@link AExpression}.
      */
     private static AExpression unfoldACifExpression(AExpression expression, Map<String, NamedElement> ctx) {
-        // If instance of binary expression, unfold left and right components and perform a recursive call; otherwise,
-        // return the expression as is.
+        // Name expressions, boolean expressions, integer expression cannot contain hierarchical assignments, so only
+        // considers binary and unary expressions.
         if (expression instanceof ABinaryExpression binExpr) {
-            AExpression unfoldedLeft = null;
-            AExpression unfoldedRight = null;
-
-            if (binExpr.left instanceof ABinaryExpression binaryLeft) {
-                unfoldedLeft = unfoldACifExpression(binaryLeft, ctx);
-            }
-            if (binExpr.right instanceof ABinaryExpression binaryRight) {
-                unfoldedRight = unfoldACifExpression(binaryRight, ctx);
-            }
+            AExpression unfoldedLeft = unfoldACifExpression(binExpr.left, ctx);
+            AExpression unfoldedRight = unfoldACifExpression(binExpr.right, ctx);
 
             // If both left and right attributes are ANameExpression, unfold. This assumes that only a ABinaryExpression
             // with ANameExpression as left and right attributes is the relevant one.
@@ -198,24 +199,15 @@ public class DataTypeInliner {
             }
 
             // Combine the unfolded left and right components to form a new binary expression.
-            if (unfoldedLeft != null && unfoldedRight != null) {
-                ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, unfoldedLeft,
-                        unfoldedRight, expression.position);
-                return unfoldedExpression;
-            } else if (unfoldedLeft == null && unfoldedRight != null) {
-                ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, binExpr.left,
-                        unfoldedRight, expression.position);
-                return unfoldedExpression;
-            } else if (unfoldedRight == null && unfoldedLeft != null) {
-                ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, unfoldedLeft,
-                        binExpr.right, expression.position);
-                return unfoldedExpression;
-            }
-            // If both unfolded expressions are null, neither of them is a binary expression, so there is no unfolding
-            // to be done. Return the expression as is.
-            return expression;
+            ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, unfoldedLeft, unfoldedRight,
+                    expression.position);
+            return unfoldedExpression;
+        } else if (expression instanceof AUnaryExpression unaryExpr) {
+            return new AUnaryExpression(unaryExpr.operator, unfoldACifExpression(unaryExpr.child, ctx),
+                    unaryExpr.position);
         } else {
-            // If not binary expression, there can not be a hierarchical assignment. Return the expression as is.
+            // If not binary or unary expression, there cannot be a hierarchical assignment. Return the expression as
+            // is.
             return expression;
         }
     }
@@ -223,26 +215,22 @@ public class DataTypeInliner {
     private static ABinaryExpression getUnfoldedBinaryExpression(String lhsName, String rhsName, String operator,
             TextPosition position, Map<String, NamedElement> ctx)
     {
-        Property lhsProperty = (Property)ctx.get(lhsName);
-        if (!(ctx.get(rhsName) instanceof Property)) {
-            // If right hand side is not a variable, then left hand side is of leaf type. Thus, there is no unfolding to
-            // be done.
+        // If left hand side or right hand side are not a variable, there is no unfolding to be done.
+        if (!(ctx.get(rhsName) instanceof Property) || !(ctx.get(lhsName) instanceof Property)) {
             return createABinaryExpression(lhsName, rhsName, operator, position);
         }
-
+        Property lhsProperty = (Property)ctx.get(lhsName);
         Property rhsProperty = (Property)ctx.get(rhsName);
 
         // Collect the names of all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
-
         Set<String> leavesRight = new LinkedHashSet<>();
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
 
         // Sanity check: leaves of the left and right expressions should be the same.
-        if (!leavesLeft.equals(leavesRight)) {
-            throw new RuntimeException("Trying to compare or assign two different data types.");
-        }
+        Verify.verify(leavesLeft.equals(leavesRight), String
+                .format("Trying to compare or assign two different data types: '%s' and '%s'.", lhsName, rhsName));
 
         // If the leaves set is empty, the expression refers to a leaf type; there is no unfolding to be done.
         if (leavesLeft.isEmpty()) {
@@ -254,6 +242,8 @@ public class DataTypeInliner {
         for (String leaf: leavesLeft) {
             ABinaryExpression currentBinaryExpression = createABinaryExpression(lhsName + leaf, rhsName + leaf,
                     operator, position);
+
+            // Create a new binary expression as a conjunction of the expressions generated for every leaf.
             if (unfoldedBinaryExpression == null) {
                 unfoldedBinaryExpression = currentBinaryExpression;
             } else {
@@ -261,7 +251,6 @@ public class DataTypeInliner {
                         currentBinaryExpression, position);
             }
         }
-
         return unfoldedBinaryExpression;
     }
 
@@ -292,14 +281,12 @@ public class DataTypeInliner {
     private static List<AAssignmentUpdate> getUnfoldedAssignmentExpression(String lhsName, String rhsName,
             TextPosition position, Map<String, NamedElement> ctx)
     {
-        Property lhsProperty = (Property)ctx.get(lhsName);
-        Property rhsProperty;
-        try {
-            rhsProperty = (Property)ctx.get(rhsName);
-        } catch (Exception e) {
-            // If right hand side is not a variable, then it is a leaf type. Thus, there is no unfolding to be done.
+        if (!(ctx.get(rhsName) instanceof Property) || !(ctx.get(lhsName) instanceof Property)) {
+            // If left hand side or right hand side are not a variable, there is no unfolding to be done.
             return new LinkedList<>(List.of(getNewAssignementUpdate(lhsName, rhsName, position)));
         }
+        Property lhsProperty = (Property)ctx.get(lhsName);
+        Property rhsProperty = (Property)ctx.get(rhsName);
 
         // Find all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
@@ -308,10 +295,8 @@ public class DataTypeInliner {
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(rhsProperty, "", leavesRight);
 
         // Sanity check: leaves of the left and right hand sides should be the same.
-        if (!leavesLeft.equals(leavesRight)) {
-            throw new RuntimeException(String
-                    .format("Trying to compare or assign two different data types: '%s' and '%s'.", lhsName, rhsName));
-        }
+        Verify.verify(leavesLeft.equals(leavesRight), String
+                .format("Trying to compare or assign two different data types: '%s' and '%s'.", lhsName, rhsName));
 
         // If the leaves set is empty, the expression refers to a leaf type; there is no unfolding to be done.
         if (leavesLeft.isEmpty()) {
@@ -338,13 +323,17 @@ public class DataTypeInliner {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
-        unfoldPrePostConditions(preconditions, ctx);
-        unfoldPrePostConditions(postconditions, ctx);
+        // Unfold the precondition and postcondition constraints.
+        unfoldConstraints(preconditions, ctx);
+        unfoldConstraints(postconditions, ctx);
     }
 
-    private static void unfoldPrePostConditions(List<Constraint> umlConstraints, Map<String, NamedElement> ctx) {
+    private static void unfoldConstraints(List<Constraint> umlConstraints, Map<String, NamedElement> ctx) {
         for (Constraint constraint: umlConstraints) {
-            if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
+            // Skip occurrence constraints.
+            if (constraint instanceof IntervalConstraint) {
+                continue;
+            } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
                 unfoldGuardBodies(opaqueSpec, ctx);
             } else {
                 throw new RuntimeException(
@@ -355,15 +344,28 @@ public class DataTypeInliner {
 
     private static void unfoldGuardBodies(OpaqueExpression constraintSpec, Map<String, NamedElement> ctx) {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
-        EList<String> constraintBodyStrings = constraintSpec.getBodies();
+        List<String> constraintBodyStrings = constraintSpec.getBodies();
 
         for (int i = 0; i < constraintBodyExpressions.size(); i++) {
             // Get the current body, unfold it, and substitute the corresponding string.
-            AExpression currentBody = constraintBodyExpressions.get(i);
-            AExpression unfoldedBody = unfoldACifExpression(currentBody, ctx);
+            ACifObject currentBody = constraintBodyExpressions.get(i);
+            ACifObject unfoldedBody;
+            if (currentBody instanceof AExpression bodyExpression) {
+                unfoldedBody = unfoldACifExpression(bodyExpression, ctx);
+            } else if (currentBody instanceof AInvariant bodyInvariant) {
+                unfoldedBody = unfoldACifInvariant(bodyInvariant, ctx);
+            } else {
+                throw new RuntimeException("Guard body is not an expression nor an invariant.");
+            }
             String newBodyString = ACifObjectTranslator.toString(unfoldedBody);
             constraintBodyStrings.set(i, newBodyString);
         }
+    }
+
+    private static AInvariant unfoldACifInvariant(AInvariant invariant, Map<String, NamedElement> ctx) {
+        return invariant;
+        // TODO: only considers predicate, the remaining fields can remain as they are.
+        // Call unfoldACifExpression on the predicate.
     }
 
     private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> ctx) {
@@ -397,8 +399,8 @@ public class DataTypeInliner {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
-        unfoldPrePostConditions(preconditions, ctx);
-        unfoldPrePostConditions(postconditions, ctx);
+        unfoldConstraints(preconditions, ctx);
+        unfoldConstraints(postconditions, ctx);
     }
 
     private static AUpdate unfoldACifIfUpdateExpression(AIfUpdate ifUpdateExpr, Map<String, NamedElement> ctx) {
@@ -418,7 +420,7 @@ public class DataTypeInliner {
             unfoldedElifs.add(unfoldedElifStatement);
         }
 
-        // Process the else statements as Cif AUpdates. Each element of the list represents a different assignment,
+        // Process the else statements as CIF AUpdates. Each element of the list represents a different assignment,
         // syntactically separated by a comma.
         List<AUpdate> elseStatements = ifUpdateExpr.elses;
         List<AUpdate> unfoldedElses = new LinkedList<>();
@@ -432,7 +434,7 @@ public class DataTypeInliner {
             }
         }
 
-        // Process the then statements as Cif AUpdates. Each element of the list represents a different assignment,
+        // Process the then statements as CIF AUpdates. Each element of the list represents a different assignment,
         // syntactically separated by a comma.
         List<AUpdate> thenStatements = ifUpdateExpr.thens;
         List<AUpdate> unfoldedThens = new LinkedList<>();
@@ -451,7 +453,7 @@ public class DataTypeInliner {
     private static AElifUpdate unfoldACifElifUpdateExpression(AElifUpdate elifUpdateExpr,
             Map<String, NamedElement> ctx)
     {
-        // Process the elif guards as Cif AExpressions.
+        // Process the elif guards as CIF AExpressions.
         List<AExpression> elifGuards = elifUpdateExpr.guards;
         List<AExpression> unfoldedElifGuards = new LinkedList<>();
         for (AExpression elifGuard: elifGuards) {
@@ -459,7 +461,7 @@ public class DataTypeInliner {
             unfoldedElifGuards.add(unfoldedElifGuard);
         }
 
-        // Process the elif thens as Cif AUpdates.
+        // Process the elif thens as CIF AUpdates.
         List<AUpdate> elifThens = elifUpdateExpr.thens;
         List<AUpdate> unfoldedElifThens = new LinkedList<>();
         for (AUpdate elifThen: elifThens) {
@@ -473,6 +475,8 @@ public class DataTypeInliner {
         }
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdateExpr.position);
     }
+
+    // STEP 2 METHODS START HERE.
 
     /**
      * Recursively computes a map of the nested properties, where the keys are the new flattened names, and the values
@@ -611,6 +615,7 @@ public class DataTypeInliner {
         return candidateName;
     }
 
+    // not needed?
     private static Map<String, Pair<String, Property>>
             orderMapByKeyLength(Map<String, Pair<String, Property>> renamingMap)
     {
@@ -636,6 +641,8 @@ public class DataTypeInliner {
         return rewrittenProperty;
     }
 
+    // STEP 3 STARTS HERE
+
     /**
      * Deletes properties of the model that are composite data types.
      *
@@ -643,14 +650,8 @@ public class DataTypeInliner {
      * @param dataTypes List of composite data types.
      */
     private static void deleteDataTypes(Class activeClass, List<DataType> dataTypes) {
-        // Delete the nested classifiers of the active class that are of type DataType.
-        for (Classifier classifier: new ArrayList<>(activeClass.getNestedClassifiers())) {
-            if (dataTypes.contains(classifier)) {
-                activeClass.getNestedClassifiers().remove(classifier);
-            }
-        }
-
         // Delete the properties of the active class that are of type DataType.
+        // This is needed because we do not delete the properties in the outer most layer.
         for (Property property: new ArrayList<>(activeClass.getOwnedAttributes())) {
             if (dataTypes.contains(property.getType())) {
                 activeClass.getOwnedAttributes().remove(property);
@@ -659,12 +660,10 @@ public class DataTypeInliner {
 
         // Delete the composite data types located at the same level of the active class.
         Model model = activeClass.getModel();
-        for (DataType datatype: dataTypes) {
-            if (model.getPackagedElements().contains(datatype)) {
-                model.getPackagedElements().remove(datatype);
-            }
-        }
+        model.getPackagedElements().removeAll(dataTypes);
     }
+
+    // STEP 4 STARTS HERE.
 
     /**
      * Rewrites the abstract and concrete activities, and the opaque behaviors of the active class with the updated
@@ -771,7 +770,7 @@ public class DataTypeInliner {
         rewritePrePostConditions(postconditions, newName, oldName);
     }
 
-    private static void rewriteGuardBodies(EList<String> guardBodies, String newName, String oldName) {
+    private static void rewriteGuardBodies(List<String> guardBodies, String newName, String oldName) {
         for (int i = 0; i < guardBodies.size(); i++) {
             // Get the current body and substitute its expression if needed.
             String currentBody = guardBodies.get(i);
