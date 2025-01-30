@@ -179,7 +179,7 @@ public class CifSourceSinkLocationTransformer {
             CifBddSpec bddSpec, UmlToCifTranslator translator)
     {
         // Obtain the original preconditions and postconditions in the UML input model.
-        Behavior behavior = translator.getSingleClass().getClassifierBehavior();
+        Behavior behavior = translator.getActivity();
         Expression precondition = translator.translateStateInvariantConstraints(behavior.getPreconditions());
         Expression postcondition = translator.translateStateInvariantConstraints(behavior.getPostconditions());
 

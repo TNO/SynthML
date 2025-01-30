@@ -11,7 +11,11 @@ plant automaton Context:
   alg bool Pre = not done_a and not done_b;
   alg bool __precondition = Pre;
   alg bool Post = done_a;
-  alg bool __postcondition = Post;
+  alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition__occurrences__do_a = occurrences__do_a.__occurrences >= 0;
+  alg bool __postcondition__occurrences__do_b = occurrences__do_b.__occurrences >= 0;
+  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__activeAction and (__postcondition__occurrences__do_a and __postcondition__occurrences__do_b));
   initial __precondition;
   marked __postcondition;
   location:
@@ -25,16 +29,18 @@ plant automaton Context:
 end
 requirement automaton occurrences__do_a:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton occurrences__do_b:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Context.__postcondition disables do_a;
@@ -42,5 +48,3 @@ requirement invariant Context.__postcondition disables do_a__result_1;
 requirement invariant Context.__postcondition disables do_a__result_2;
 requirement invariant Context.__postcondition disables do_b;
 requirement invariant Context.__postcondition disables do_b__na_result_1;
-requirement invariant Context.__postcondition => not Context.__nonAtomicActive__do_b;
-requirement invariant Context.__postcondition => Context.__activeAction = 0;

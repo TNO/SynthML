@@ -18,39 +18,52 @@
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" node="24 25 26 27 28 29 30 31 32">
-        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="InitialNode__p1__to____start" target="25" source="29"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="__start__to__do_b" target="27" source="25"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Fork__do_b__to__do_a" target="26" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Fork__do_b__to__do_b__na_result_1" target="28" source="32"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" name="do_a__to__Join____end" target="31" source="26"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" name="do_b__na_result_1__to__Join____end" target="31" source="28"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="__end__to__FinalNode__p7" target="30" source="24"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="Join____end__to____end" target="24" source="31"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="do_b__to__Fork__do_b" target="32" source="27"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="24" name="__end" incoming="22" outgoing="21"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="25" name="__start" incoming="15" outgoing="16"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="26" name="do_a" incoming="17" outgoing="19" behavior="12"/>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="do_b" incoming="16" outgoing="23" behavior="13"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="28" name="do_b__na_result_1" incoming="18" outgoing="20"/>
-        <node xmi:type="uml:InitialNode" xmi:id="29" name="InitialNode__p1" outgoing="15"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="30" name="FinalNode__p7" incoming="21"/>
-        <node xmi:type="uml:JoinNode" xmi:id="31" name="Join____end" incoming="19 20" outgoing="22"/>
-        <node xmi:type="uml:ForkNode" xmi:id="32" name="Fork__do_b" incoming="23" outgoing="17 18"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" postcondition="17" precondition="15" node="30 31 32 33 34 35 36 37 38">
+        <ownedRule xmi:id="15" name="Pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="16" name="">
+            <body>not done_a and not done_b</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="17" name="Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="18" name="">
+            <body>done_a and done_b</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="19" name="occurrences" constrainedElement="12 13">
+          <specification xmi:type="uml:Interval" xmi:id="20" name="" max="5" min="4"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="InitialNode__p1__to____start" target="31" source="35"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" name="__start__to__do_b" target="33" source="31"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Fork__do_b__to__do_a" target="32" source="38"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Fork__do_b__to__do_b__na_result_1" target="34" source="38"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="do_a__to__Join____end" target="37" source="32"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="do_b__na_result_1__to__Join____end" target="37" source="34"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="__end__to__FinalNode__p7" target="36" source="30"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Join____end__to____end" target="30" source="37"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="do_b__to__Fork__do_b" target="38" source="33"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="30" name="__end" incoming="28" outgoing="27"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="31" name="__start" incoming="21" outgoing="22"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="32" name="do_a" incoming="23" outgoing="25" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="33" name="do_b" incoming="22" outgoing="29" behavior="13"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="34" name="do_b__na_result_1" incoming="24" outgoing="26"/>
+        <node xmi:type="uml:InitialNode" xmi:id="35" name="InitialNode__p1" outgoing="21"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="36" name="FinalNode__p7" incoming="27"/>
+        <node xmi:type="uml:JoinNode" xmi:id="37" name="Join____end" incoming="25 26" outgoing="28"/>
+        <node xmi:type="uml:ForkNode" xmi:id="38" name="Fork__do_b" incoming="29" outgoing="23 24"/>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="33">
-      <eAnnotations xmi:id="34" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="39">
+      <eAnnotations xmi:id="40" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="35" guard="not done_a" base_RedefinableElement="12" atomic="true">
+  <PokaYoke:FormalElement xmi:id="41" guard="not done_a" base_RedefinableElement="12" atomic="true">
     <effects>done_a := true&#xD;
 </effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="36" guard="not done_a and not done_b" base_RedefinableElement="13">
+  <PokaYoke:FormalElement xmi:id="42" guard="not done_a and not done_b" base_RedefinableElement="13">
     <effects>done_b := true</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -73,13 +74,27 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static String getGuard(RedefinableElement element) {
+        if (element instanceof ActivityEdge edge) {
+            return getGuard(edge);
+        }
+
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
     }
 
+    public static String getGuard(ActivityEdge activityEdge) {
+        ValueSpecification guard = activityEdge.getGuard();
+        return guard == null ? null : guard.stringValue();
+    }
+
     public static void setGuard(RedefinableElement element, String newValue) {
-        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
-        element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
+        if (element instanceof ActivityEdge edge) {
+            setGuard(edge, newValue);
+        }
+        else {
+            Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
+            element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
+        }
     }
 
     public static boolean isSetEffects(RedefinableElement element) {
@@ -133,23 +148,27 @@ public class PokaYokeUmlProfileUtil {
         element.setValue(st, PROP_FORMAL_ELEMENT_ATOMIC, newValue);
     }
 
+    public static boolean isDeterministic(RedefinableElement element) {
+        return getEffects(element).size() <= 1;
+    }
+
     /**
      * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code controlFlow}.
+     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code activityEdge}.
      *
-     * @param controlFlow The control flow to set the guard value on.
+     * @param activityEdge The control flow to set the guard value on.
      * @param newValue The new value of the guard.
      */
-    public static void setGuard(ControlFlow controlFlow, String newValue) {
+    public static void setGuard(ActivityEdge activityEdge, String newValue) {
         if (Strings.isNullOrEmpty(newValue)) {
-            if (controlFlow.getGuard() != null) {
+            if (activityEdge.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
                 // Avoiding this by setting a LiteralNull value.
-                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
             }
             return;
         }
-        controlFlow.setGuard(createCifExpression(newValue));
+        activityEdge.setGuard(createCifExpression(newValue));
     }
 
     /**

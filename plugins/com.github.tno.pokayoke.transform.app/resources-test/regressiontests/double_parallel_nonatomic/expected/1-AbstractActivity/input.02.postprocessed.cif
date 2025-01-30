@@ -22,7 +22,15 @@ plant automaton Machine:
   alg bool Precondition = not a_executed and not b_executed and not c_executed and not d_executed;
   alg bool __precondition = Precondition;
   alg bool Postcondition = a_executed = true and b_executed = true and c_executed = true and d_executed = true;
-  alg bool __postcondition = Postcondition;
+  alg bool __postcondition__nonAtomicActive__NonAtomicA = not __nonAtomicActive__NonAtomicA;
+  alg bool __postcondition__nonAtomicActive__NonAtomicB = not __nonAtomicActive__NonAtomicB;
+  alg bool __postcondition__nonAtomicActive__NonAtomicC = not __nonAtomicActive__NonAtomicC;
+  alg bool __postcondition__nonAtomicActive__NonAtomicD = not __nonAtomicActive__NonAtomicD;
+  alg bool __postcondition__IntervalConstraintA__NonAtomicA = IntervalConstraintA__NonAtomicA.__occurrences >= 0;
+  alg bool __postcondition__IntervalConstraintB__NonAtomicB = IntervalConstraintB__NonAtomicB.__occurrences >= 0;
+  alg bool __postcondition__IntervalConstraintC__NonAtomicC = IntervalConstraintC__NonAtomicC.__occurrences >= 0;
+  alg bool __postcondition__IntervalConstraintD__NonAtomicD = IntervalConstraintD__NonAtomicD.__occurrences >= 0;
+  alg bool __postcondition = Postcondition and __postcondition__nonAtomicActive__NonAtomicA and (__postcondition__nonAtomicActive__NonAtomicB and __postcondition__nonAtomicActive__NonAtomicC) and (__postcondition__nonAtomicActive__NonAtomicD and __postcondition__IntervalConstraintA__NonAtomicA and (__postcondition__IntervalConstraintB__NonAtomicB and (__postcondition__IntervalConstraintC__NonAtomicC and __postcondition__IntervalConstraintD__NonAtomicD)));
   initial __precondition;
   marked __postcondition;
   location:
@@ -43,30 +51,34 @@ plant automaton Machine:
 end
 requirement automaton IntervalConstraintA__NonAtomicA:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge NonAtomicA when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton IntervalConstraintB__NonAtomicB:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge NonAtomicB when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton IntervalConstraintC__NonAtomicC:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge NonAtomicC when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement automaton IntervalConstraintD__NonAtomicD:
   disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
   location:
     initial;
-    marked __occurrences >= 0;
+    marked;
     edge NonAtomicD when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Machine.__postcondition disables NonAtomicA;
@@ -81,7 +93,3 @@ requirement invariant Machine.__postcondition disables NonAtomicC__na_result_2;
 requirement invariant Machine.__postcondition disables NonAtomicD;
 requirement invariant Machine.__postcondition disables NonAtomicD__na_result_1;
 requirement invariant Machine.__postcondition disables NonAtomicD__na_result_2;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicA;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicB;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicC;
-requirement invariant Machine.__postcondition => not Machine.__nonAtomicActive__NonAtomicD;

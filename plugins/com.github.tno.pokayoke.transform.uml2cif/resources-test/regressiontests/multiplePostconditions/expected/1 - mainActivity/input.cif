@@ -1,7 +1,9 @@
 plant automaton Context:
+  alg bool __precondition = true;
   alg bool postcondition1 = true;
   alg bool postcondition2 = false;
   alg bool __postcondition = postcondition1 and postcondition2;
+  initial __precondition;
   marked __postcondition;
   location:
     initial;

@@ -19,20 +19,24 @@ automaton minimal:
     marked;
   @state(projected = "s3")
   location s4:
-    edge do_b__na_result_1 goto s7;
+    edge do_b__na_result_1 goto s8;
     edge do_a goto s6;
   @state(projected = "s4")
-  @state(projected = "s9")
+  @state(projected = "s10")
   location s5:
-    edge do_c goto s8;
+    edge do_c goto s9;
   @state(projected = "s7")
   location s6:
+    edge do_c goto s7;
     edge do_b__na_result_1 goto s5;
-  @state(projected = "s6")
+  @state(projected = "s9")
   location s7:
+    edge do_b__na_result_1 goto s9;
+  @state(projected = "s6")
+  location s8:
     edge do_a goto s5;
   @state(projected = "s5")
-  @state(projected = "s10")
-  location s8:
+  @state(projected = "s11")
+  location s9:
     edge __end goto s3;
 end

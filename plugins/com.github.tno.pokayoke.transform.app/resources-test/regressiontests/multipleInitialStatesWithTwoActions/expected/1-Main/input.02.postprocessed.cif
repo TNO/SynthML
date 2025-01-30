@@ -3,8 +3,10 @@ controllable right;
 plant automaton Context:
   disc bool field1 in any;
   disc bool field2 = false;
+  alg bool __precondition = true;
   alg bool postcondition = field2;
   alg bool __postcondition = postcondition;
+  initial __precondition;
   marked __postcondition;
   location:
     initial;
