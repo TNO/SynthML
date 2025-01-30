@@ -442,9 +442,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } else {
             QueryableIterable<InitialNode> initialNodes = from(activity.getNodes()).objectsOfKind(InitialNode.class);
             if (initialNodes.size() != 1) {
-<<<<<<< HEAD
-                error("Abstract activity should have exactly one initial node but got " + initialNodes.size(), activity,
-=======
                 error("Concrete activity should have exactly one initial node but got " + initialNodes.size(), activity,
                         null);
             }
@@ -453,7 +450,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .objectsOfKind(ActivityFinalNode.class);
             if (finalNodes.size() > 1) {
                 error("Concrete activity should have at most one final node but got " + finalNodes.size(), activity,
->>>>>>> refs/remotes/origin/main
+
                         null);
             }
         }
