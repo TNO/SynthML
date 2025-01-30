@@ -12,8 +12,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
@@ -82,9 +80,7 @@ public class CompositeDataTypeFlattener {
         // Step 2:
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
-        Map<String, Pair<String, Property>> renamingMap = new LinkedHashMap<>();
-        Map<String, Pair<String, Property>> orderedFlattenedNames = renameAndFlattenProperties(activeClass,
-                renamingMap);
+        Map<String, String> orderedFlattenedNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
 
         // Step 3:
         // Delete the composite data types and related properties.
@@ -505,8 +501,8 @@ public class CompositeDataTypeFlattener {
      * @param renamingMap The map linking the new flattened names to the old dotted names and its property.
      * @return A map containing the old and new names, along with the property they refer to.
      */
-    private static Map<String, Pair<String, Property>> renameAndFlattenProperties(AttributeOwner attributeOwner,
-            Map<String, Pair<String, Property>> renamingMap)
+    private static Map<String, String> renameAndFlattenProperties(AttributeOwner attributeOwner,
+            Map<String, String> renamingMap)
     {
         for (Property property: attributeOwner.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
@@ -534,15 +530,16 @@ public class CompositeDataTypeFlattener {
      * @param innerLayer If {@code true} removes the children properties from the dependency tree.
      * @return A set of renamed properties.
      */
-    private static Set<Property> getRenamedProperties(List<Property> parentAttributes,
-            Map<String, Pair<String, Property>> renamingMap, boolean innerLayer)
+    private static Set<Property> getRenamedProperties(List<Property> parentAttributes, Map<String, String> renamingMap,
+            boolean innerLayer)
     {
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
 
         // Get the names of the siblings (parent's children) to check for naming clashes. Loop over the siblings and
         // rename their children.
         Set<String> localNames = parentAttributes.stream().map(Property::getName).collect(Collectors.toSet());
-        for (Property property: parentAttributes) {
+        Collection<Property> parentAttributesCopy = EcoreUtil.copyAll(parentAttributes);
+        for (Property property: parentAttributesCopy) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 Set<Property> renamedProperties = renameChildProperties(property, renamingMap, localNames);
                 propertiesToAdd.addAll(renamedProperties);
@@ -553,12 +550,13 @@ public class CompositeDataTypeFlattener {
                 // Update local names with the newly created, renamed properties.
                 localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
             }
+//            parentAttributes.remove(property);
         }
         return propertiesToAdd;
     }
 
-    private static Set<Property> renameChildProperties(Property property,
-            Map<String, Pair<String, Property>> renamingMap, Set<String> existingNames)
+    private static Set<Property> renameChildProperties(Property property, Map<String, String> renamingMap,
+            Set<String> existingNames)
     {
         List<Property> childProperties = ((DataType)property.getType()).getOwnedAttributes();
         Set<Property> renamedProperties = new LinkedHashSet<>();
@@ -570,17 +568,19 @@ public class CompositeDataTypeFlattener {
 
             // Find the child name for the "dotted" name part. If the child has already been renamed, i.e. it is not a
             // leaf, find its name in the renaming map; otherwise, get its actual name.
-            Pair<String, Property> childNameAndProperty = renamingMap.get(child.getName());
-            String childName = childNameAndProperty == null ? child.getName() : childNameAndProperty.getLeft();
+            String childName = renamingMap.get(child.getName()) == null ? child.getName()
+                    : renamingMap.get(child.getName());
 
             // Store the pair (old name, property) together with the new name key in the map.
             String dottedName = property.getName() + "." + childName;
-            renamingMap.put(flattenedName, Pair.of(dottedName, child));
+            renamingMap.put(flattenedName, dottedName);
         }
         return renamedProperties;
     }
 
-    private static String generateNewPropertyName(String childName, String parentName, Collection<String> existingNames) {
+    private static String generateNewPropertyName(String childName, String parentName,
+            Collection<String> existingNames)
+    {
         String candidateName = parentName + "_" + childName;
         if (existingNames.contains(candidateName)) {
             int count = 0;
@@ -599,7 +599,7 @@ public class CompositeDataTypeFlattener {
         return rewrittenProperty;
     }
 
-    // STEP 3 STARTS HERE
+    // STEP 3 STARTS HERE.
 
     /**
      * Deletes properties of the model that are composite data types.
@@ -631,12 +631,11 @@ public class CompositeDataTypeFlattener {
      * @param namesMap The map containing the old and new property names.
      * @throws RuntimeException If an element other than an activity or an opaque behavior is detected.
      */
-    private static void rewriteOwnedBehaviors(Class clazz, Map<String, Pair<String, Property>> namesMap) {
+    private static void rewriteOwnedBehaviors(Class clazz, Map<String, String> namesMap) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
-            for (Entry<String, Pair<String, Property>> entry: namesMap.entrySet()) {
+            for (Entry<String, String> entry: namesMap.entrySet()) {
                 String newName = entry.getKey();
-                Pair<String, Property> oldNameAndProperty = entry.getValue();
-                String oldName = oldNameAndProperty.getLeft();
+                String oldName = entry.getValue();
 
                 if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
                     rewriteGuardAndEffects(umlOpaqueBehavior, newName, oldName);
@@ -686,7 +685,7 @@ public class CompositeDataTypeFlattener {
     private static void rewritePrePostConditions(List<Constraint> umlConstraints, String newName, String oldName) {
         for (Constraint constraint: umlConstraints) {
             if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-                EList<String> constraintBodies = opaqueSpec.getBodies();
+                List<String> constraintBodies = opaqueSpec.getBodies();
                 rewriteGuardBodies(constraintBodies, newName, oldName);
             } else {
                 throw new RuntimeException(
@@ -701,13 +700,13 @@ public class CompositeDataTypeFlattener {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
-                    EList<String> guardBodies = opaqueGuard.getBodies();
+                    List<String> guardBodies = opaqueGuard.getBodies();
                     rewriteGuardBodies(guardBodies, newName, oldName);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 // Get guards and respective bodies, and updates them with the flattened names.
                 Behavior guard = callBehavior.getBehavior();
-                EList<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
+                List<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
                 rewriteGuardBodies(guardBodies, newName, oldName);
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 rewriteGuardAndEffects(internalAction, newName, oldName);
