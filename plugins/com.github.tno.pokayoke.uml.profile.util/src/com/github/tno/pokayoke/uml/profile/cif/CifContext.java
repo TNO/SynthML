@@ -183,13 +183,10 @@ public class CifContext {
         return referenceableElements.get(name);
     }
 
-<<<<<<< HEAD
     public Map<String, NamedElement> getReferenceableElements() {
         return Collections.unmodifiableMap(referenceableElements);
     }
 
-=======
->>>>>>> refs/remotes/origin/main
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
         return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
@@ -208,14 +205,11 @@ public class CifContext {
                 .map(Activity.class::cast).toList();
     }
 
-<<<<<<< HEAD
     public List<DataType> getAllDeclaredDataTypes(Predicate<DataType> predicate) {
         return getDeclaredElements().stream().filter(e -> e instanceof DataType d && predicate.test(d))
                 .map(DataType.class::cast).toList();
     }
 
-=======
->>>>>>> refs/remotes/origin/main
     public List<Property> getAllDeclaredProperties() {
         return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
     }
