@@ -75,9 +75,10 @@ public class CompositeDataTypeFlattener {
         Class activeClass = getSingleActiveClass(context);
         List<DataType> dataTypes = context.getAllDeclaredDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
 
-        // Step 1: until line 480.
-        // Unfold all behaviors' elements that involve a composite data type assignment or comparison.
-        unfoldRulesAndBehaviors(activeClass, context.getReferenceableElements());
+        // Step 1:
+        // Unfold all references to properties with composite data type in assignments and comparisons, in the whole UML
+        // model.
+        unfoldCompositeDataTypeReferences(activeClass, context.getReferenceableElements());
 
         // Step 2:
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
@@ -104,41 +105,43 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds any behavior containing composite data type assignments or comparison into the corresponding leaf
-     * properties.
+     * Unfold all references to properties with composite data type in assignments and comparisons, in the given class.
      *
-     * @param clazz The active class that contains the behaviors.
-     * @param ctx The CIF context as a map.
+     * @param clazz The class in which to do the unfolding.
+     * @param referenceableElements Per absolute name of a referenceable element, the element that is referenced.
      */
-    private static void unfoldRulesAndBehaviors(Class clazz, Map<String, NamedElement> ctx) {
+    private static void unfoldCompositeDataTypeReferences(Class clazz,
+            Map<String, NamedElement> referenceableElements)
+    {
         // Unfold opaque behaviors and activities.
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior element) {
-                unfoldGuardAndEffects(element, ctx);
+                unfoldGuardAndEffects(element, referenceableElements);
             } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                unfoldAbstractActivity(activity, ctx);
+                unfoldAbstractActivity(activity, referenceableElements);
             } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                unfoldConcreteActivity(activity, ctx);
+                unfoldConcreteActivity(activity, referenceableElements);
             } else {
-                throw new RuntimeException(
-                        String.format("Unfolding behaviors of class '%s' not supported.", classBehavior.getClass()));
+                throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.", clazz));
             }
         }
 
         // Unfold constraints.
-        unfoldConstraints(clazz.getOwnedRules(), ctx);
+        unfoldConstraints(clazz.getOwnedRules(), referenceableElements);
     }
 
     /**
      * Unfolds guards and effects of a redefinable element.
      *
-     * @param element The opaque behavior.
-     * @param ctx The CIF context as a map.
+     * @param element The redefinable element.
+     * @param referenceableElements The CIF context as a map.
      */
-    private static void unfoldGuardAndEffects(RedefinableElement element, Map<String, NamedElement> ctx) {
+    private static void unfoldGuardAndEffects(RedefinableElement element,
+            Map<String, NamedElement> referenceableElements)
+    {
         // Perform the guard unfolding.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
-        AExpression newGuard = unfoldACifExpression(guardExpr, ctx);
+        AExpression newGuard = unfoldACifExpression(guardExpr, referenceableElements);
         String newGuardString = ACifObjectTranslator.toString(newGuard);
         PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
 
@@ -150,13 +153,14 @@ public class CompositeDataTypeFlattener {
             List<String> updateStrings = new LinkedList<>();
             for (AUpdate update: updates) {
                 if (update instanceof AAssignmentUpdate assignExpr) {
-                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentExpression(assignExpr, ctx);
+                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentExpression(assignExpr,
+                            referenceableElements);
                     for (ACifObject unfoldedUpdate: newUpdates) {
                         String unfoldedUpdateString = ACifObjectTranslator.toString(unfoldedUpdate);
                         updateStrings.add(unfoldedUpdateString);
                     }
                 } else if (update instanceof AIfUpdate ifUpdateExpr) {
-                    ACifObject unfoldedIfUpdate = unfoldACifIfUpdateExpression(ifUpdateExpr, ctx);
+                    ACifObject unfoldedIfUpdate = unfoldACifIfUpdateExpression(ifUpdateExpr, referenceableElements);
                     String unfoldedIfUpdateString = ACifObjectTranslator.toString(unfoldedIfUpdate);
                     updateStrings.add(unfoldedIfUpdateString);
                 } else {
@@ -178,23 +182,23 @@ public class CompositeDataTypeFlattener {
      * leaf properties.
      *
      * @param expression A CIF {@link AExpression} to be unfolded.
-     * @param ctx A Map containing the name and the UML NamedElement of every element of the UML model.
+     * @param referenceableElements A Map containing the name and the UML NamedElement of every element of the UML
+     *     model.
      * @return The unfolded CIF {@link AExpression}.
      */
-    private static AExpression unfoldACifExpression(AExpression expression, Map<String, NamedElement> ctx) {
-        // Name expressions, boolean expressions, integer expression cannot contain hierarchical assignments, so only
-        // considers binary and unary expressions.
+    private static AExpression unfoldACifExpression(AExpression expression,
+            Map<String, NamedElement> referenceableElements)
+    {
         if (expression instanceof ABinaryExpression binExpr) {
-            AExpression unfoldedLeft = unfoldACifExpression(binExpr.left, ctx);
-            AExpression unfoldedRight = unfoldACifExpression(binExpr.right, ctx);
+            AExpression unfoldedLeft = unfoldACifExpression(binExpr.left, referenceableElements);
+            AExpression unfoldedRight = unfoldACifExpression(binExpr.right, referenceableElements);
 
-            // If both left and right attributes are ANameExpression, unfold. This assumes that only a ABinaryExpression
-            // with ANameExpression as left and right attributes is the relevant one.
+            // Unfold comparisons of properties with composite data types.
             if (binExpr.left instanceof ANameExpression leftNameExpr
                     && binExpr.right instanceof ANameExpression rightNameExpr)
             {
-                ABinaryExpression unfoldedExpression = getUnfoldedBinaryExpression(leftNameExpr.name.name,
-                        rightNameExpr.name.name, binExpr.operator, binExpr.position, ctx);
+                ABinaryExpression unfoldedExpression = unfoldComparisonExpression(leftNameExpr.name.name,
+                        rightNameExpr.name.name, binExpr.operator, binExpr.position, referenceableElements);
                 return unfoldedExpression;
             }
 
@@ -203,26 +207,27 @@ public class CompositeDataTypeFlattener {
                     expression.position);
             return unfoldedExpression;
         } else if (expression instanceof AUnaryExpression unaryExpr) {
-            return new AUnaryExpression(unaryExpr.operator, unfoldACifExpression(unaryExpr.child, ctx),
-                    unaryExpr.position);
+            return new AUnaryExpression(unaryExpr.operator,
+                    unfoldACifExpression(unaryExpr.child, referenceableElements), unaryExpr.position);
         } else {
-            // If not binary or unary expression, there cannot be a hierarchical assignment. Return the expression as
-            // is.
+            // Expressions without children don't need unfolding.
             return expression;
         }
     }
 
-    private static ABinaryExpression getUnfoldedBinaryExpression(String lhsName, String rhsName, String operator,
-            TextPosition position, Map<String, NamedElement> ctx)
+    private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, String operator,
+            TextPosition position, Map<String, NamedElement> referenceableElements)
     {
         // If left hand side or right hand side are not a variable, there is no unfolding to be done.
-        if (!(ctx.get(rhsName) instanceof Property) || !(ctx.get(lhsName) instanceof Property)) {
+        if (!(referenceableElements.get(rhsName) instanceof Property)
+                || !(referenceableElements.get(lhsName) instanceof Property))
+        {
             return createABinaryExpression(lhsName, rhsName, operator, position);
         }
-        Property lhsProperty = (Property)ctx.get(lhsName);
-        Property rhsProperty = (Property)ctx.get(rhsName);
+        Property lhsProperty = (Property)referenceableElements.get(lhsName);
+        Property rhsProperty = (Property)referenceableElements.get(rhsName);
 
-        // Collect the names of all leaves children of left and right hand side data type.
+        // Collect the names of all leaves children of left and right hand side composite data types.
         Set<String> leavesLeft = new LinkedHashSet<>();
         PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(lhsProperty, "", leavesLeft);
         Set<String> leavesRight = new LinkedHashSet<>();
@@ -263,7 +268,7 @@ public class CompositeDataTypeFlattener {
     }
 
     private static List<AAssignmentUpdate> unfoldACifAssignmentExpression(AAssignmentUpdate assignExpr,
-            Map<String, NamedElement> ctx)
+            Map<String, NamedElement> referenceableElements)
     {
         if (assignExpr.addressable instanceof ANameExpression aNameAddressable
                 && assignExpr.value instanceof ANameExpression aNameValue)
@@ -271,7 +276,7 @@ public class CompositeDataTypeFlattener {
             String lhsName = aNameAddressable.name.name;
             String rhsName = aNameValue.name.name;
             List<AAssignmentUpdate> unfoldedAssignment = getUnfoldedAssignmentExpression(lhsName, rhsName,
-                    assignExpr.position, ctx);
+                    assignExpr.position, referenceableElements);
             return unfoldedAssignment;
         }
         // If 'addressable' and 'value' are not both ANameExpression, skip the unfolding and return the expression.
@@ -279,14 +284,16 @@ public class CompositeDataTypeFlattener {
     }
 
     private static List<AAssignmentUpdate> getUnfoldedAssignmentExpression(String lhsName, String rhsName,
-            TextPosition position, Map<String, NamedElement> ctx)
+            TextPosition position, Map<String, NamedElement> referenceableElements)
     {
-        if (!(ctx.get(rhsName) instanceof Property) || !(ctx.get(lhsName) instanceof Property)) {
+        if (!(referenceableElements.get(rhsName) instanceof Property)
+                || !(referenceableElements.get(lhsName) instanceof Property))
+        {
             // If left hand side or right hand side are not a variable, there is no unfolding to be done.
             return new LinkedList<>(List.of(getNewAssignementUpdate(lhsName, rhsName, position)));
         }
-        Property lhsProperty = (Property)ctx.get(lhsName);
-        Property rhsProperty = (Property)ctx.get(rhsName);
+        Property lhsProperty = (Property)referenceableElements.get(lhsName);
+        Property rhsProperty = (Property)referenceableElements.get(rhsName);
 
         // Find all leaves children of left and right hand side data type.
         Set<String> leavesLeft = new LinkedHashSet<>();
@@ -319,22 +326,24 @@ public class CompositeDataTypeFlattener {
         return new AAssignmentUpdate(leftExpression, rightExpression, position);
     }
 
-    private static void unfoldAbstractActivity(Activity activity, Map<String, NamedElement> ctx) {
+    private static void unfoldAbstractActivity(Activity activity, Map<String, NamedElement> referenceableElements) {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
         // Unfold the precondition and postcondition constraints.
-        unfoldConstraints(preconditions, ctx);
-        unfoldConstraints(postconditions, ctx);
+        unfoldConstraints(preconditions, referenceableElements);
+        unfoldConstraints(postconditions, referenceableElements);
     }
 
-    private static void unfoldConstraints(List<Constraint> umlConstraints, Map<String, NamedElement> ctx) {
+    private static void unfoldConstraints(List<Constraint> umlConstraints,
+            Map<String, NamedElement> referenceableElements)
+    {
         for (Constraint constraint: umlConstraints) {
             // Skip occurrence constraints.
             if (constraint instanceof IntervalConstraint) {
                 continue;
             } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-                unfoldGuardBodies(opaqueSpec, ctx);
+                unfoldGuardBodies(opaqueSpec, referenceableElements);
             } else {
                 throw new RuntimeException(
                         "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
@@ -342,7 +351,9 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static void unfoldGuardBodies(OpaqueExpression constraintSpec, Map<String, NamedElement> ctx) {
+    private static void unfoldGuardBodies(OpaqueExpression constraintSpec,
+            Map<String, NamedElement> referenceableElements)
+    {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
         List<String> constraintBodyStrings = constraintSpec.getBodies();
 
@@ -351,9 +362,9 @@ public class CompositeDataTypeFlattener {
             ACifObject currentBody = constraintBodyExpressions.get(i);
             ACifObject unfoldedBody;
             if (currentBody instanceof AExpression bodyExpression) {
-                unfoldedBody = unfoldACifExpression(bodyExpression, ctx);
+                unfoldedBody = unfoldACifExpression(bodyExpression, referenceableElements);
             } else if (currentBody instanceof AInvariant bodyInvariant) {
-                unfoldedBody = unfoldACifInvariant(bodyInvariant, ctx);
+                unfoldedBody = unfoldACifInvariant(bodyInvariant, referenceableElements);
             } else {
                 throw new RuntimeException("Guard body is not an expression nor an invariant.");
             }
@@ -362,30 +373,32 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static AInvariant unfoldACifInvariant(AInvariant invariant, Map<String, NamedElement> ctx) {
+    private static AInvariant unfoldACifInvariant(AInvariant invariant,
+            Map<String, NamedElement> referenceableElements)
+    {
         return invariant;
         // TODO: only considers predicate, the remaining fields can remain as they are.
         // Call unfoldACifExpression on the predicate.
     }
 
-    private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> ctx) {
+    private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> referenceableElements) {
         // Unfold the behaviors of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
-                    unfoldGuardBodies(opaqueGuard, ctx);
+                    unfoldGuardBodies(opaqueGuard, referenceableElements);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 Behavior guard = callBehavior.getBehavior();
                 if (guard instanceof OpaqueBehavior opaqueGuard) {
-                    unfoldGuardBodies(null, ctx);
+                    unfoldGuardBodies(null, referenceableElements);
                 } else {
                     throw new RuntimeException(
                             String.format("Call behavior of class %s is not supported.", guard.getClass()));
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
-                unfoldGuardAndEffects(internalAction, ctx);
+                unfoldGuardAndEffects(internalAction, referenceableElements);
             } else if (ownedElement instanceof ActivityNode activityNode) {
                 // This assumes that nodes in activities have empty names and bodies.
                 continue;
@@ -399,16 +412,18 @@ public class CompositeDataTypeFlattener {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
-        unfoldConstraints(preconditions, ctx);
-        unfoldConstraints(postconditions, ctx);
+        unfoldConstraints(preconditions, referenceableElements);
+        unfoldConstraints(postconditions, referenceableElements);
     }
 
-    private static AUpdate unfoldACifIfUpdateExpression(AIfUpdate ifUpdateExpr, Map<String, NamedElement> ctx) {
+    private static AUpdate unfoldACifIfUpdateExpression(AIfUpdate ifUpdateExpr,
+            Map<String, NamedElement> referenceableElements)
+    {
         // Process the if statements. The element of the list represent the conditions separated by a comma.
         List<AExpression> ifStatements = ifUpdateExpr.guards;
         List<AExpression> unfoldedIfStatements = new LinkedList<>();
         for (AExpression ifStatement: ifStatements) {
-            AExpression unfoldedIfStatement = unfoldACifExpression(ifStatement, ctx);
+            AExpression unfoldedIfStatement = unfoldACifExpression(ifStatement, referenceableElements);
             unfoldedIfStatements.add(unfoldedIfStatement);
         }
 
@@ -416,7 +431,7 @@ public class CompositeDataTypeFlattener {
         List<AElifUpdate> elifStatements = ifUpdateExpr.elifs;
         List<AElifUpdate> unfoldedElifs = new LinkedList<>();
         for (AElifUpdate elifStatement: elifStatements) {
-            AElifUpdate unfoldedElifStatement = unfoldACifElifUpdateExpression(elifStatement, ctx);
+            AElifUpdate unfoldedElifStatement = unfoldACifElifUpdateExpression(elifStatement, referenceableElements);
             unfoldedElifs.add(unfoldedElifStatement);
         }
 
@@ -426,10 +441,12 @@ public class CompositeDataTypeFlattener {
         List<AUpdate> unfoldedElses = new LinkedList<>();
         for (AUpdate elseStatement: elseStatements) {
             if (elseStatement instanceof AAssignmentUpdate elseAssignment) {
-                List<AAssignmentUpdate> unfoldedElseStatement = unfoldACifAssignmentExpression(elseAssignment, ctx);
+                List<AAssignmentUpdate> unfoldedElseStatement = unfoldACifAssignmentExpression(elseAssignment,
+                        referenceableElements);
                 unfoldedElses.addAll(unfoldedElseStatement);
             } else {
-                AUpdate unfoldedElseStatement = unfoldACifIfUpdateExpression((AIfUpdate)elseStatement, ctx);
+                AUpdate unfoldedElseStatement = unfoldACifIfUpdateExpression((AIfUpdate)elseStatement,
+                        referenceableElements);
                 unfoldedElses.add(unfoldedElseStatement);
             }
         }
@@ -440,10 +457,12 @@ public class CompositeDataTypeFlattener {
         List<AUpdate> unfoldedThens = new LinkedList<>();
         for (AUpdate thenStatement: thenStatements) {
             if (thenStatement instanceof AAssignmentUpdate thenAssignment) {
-                List<AAssignmentUpdate> unfoldedThenStatement = unfoldACifAssignmentExpression(thenAssignment, ctx);
+                List<AAssignmentUpdate> unfoldedThenStatement = unfoldACifAssignmentExpression(thenAssignment,
+                        referenceableElements);
                 unfoldedThens.addAll(unfoldedThenStatement);
             } else {
-                AUpdate unfoldedThenStatement = unfoldACifIfUpdateExpression((AIfUpdate)thenStatement, ctx);
+                AUpdate unfoldedThenStatement = unfoldACifIfUpdateExpression((AIfUpdate)thenStatement,
+                        referenceableElements);
                 unfoldedThens.add(unfoldedThenStatement);
             }
         }
@@ -451,13 +470,13 @@ public class CompositeDataTypeFlattener {
     }
 
     private static AElifUpdate unfoldACifElifUpdateExpression(AElifUpdate elifUpdateExpr,
-            Map<String, NamedElement> ctx)
+            Map<String, NamedElement> referenceableElements)
     {
         // Process the elif guards as CIF AExpressions.
         List<AExpression> elifGuards = elifUpdateExpr.guards;
         List<AExpression> unfoldedElifGuards = new LinkedList<>();
         for (AExpression elifGuard: elifGuards) {
-            AExpression unfoldedElifGuard = unfoldACifExpression(elifGuard, ctx);
+            AExpression unfoldedElifGuard = unfoldACifExpression(elifGuard, referenceableElements);
             unfoldedElifGuards.add(unfoldedElifGuard);
         }
 
@@ -466,10 +485,11 @@ public class CompositeDataTypeFlattener {
         List<AUpdate> unfoldedElifThens = new LinkedList<>();
         for (AUpdate elifThen: elifThens) {
             if (elifThen instanceof AAssignmentUpdate elifThenAssignment) {
-                List<AAssignmentUpdate> unfoldedElifThen = unfoldACifAssignmentExpression(elifThenAssignment, ctx);
+                List<AAssignmentUpdate> unfoldedElifThen = unfoldACifAssignmentExpression(elifThenAssignment,
+                        referenceableElements);
                 unfoldedElifThens.addAll(unfoldedElifThen);
             } else {
-                AUpdate unfoldedElifThen = unfoldACifIfUpdateExpression((AIfUpdate)elifThen, ctx);
+                AUpdate unfoldedElifThen = unfoldACifIfUpdateExpression((AIfUpdate)elifThen, referenceableElements);
                 unfoldedElifThens.add(unfoldedElifThen);
             }
         }
