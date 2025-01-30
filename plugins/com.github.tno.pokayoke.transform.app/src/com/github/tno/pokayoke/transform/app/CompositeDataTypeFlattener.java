@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,6 +29,7 @@ import org.eclipse.escet.cif.parser.ast.tokens.AName;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
@@ -83,7 +82,9 @@ public class CompositeDataTypeFlattener {
         // Step 2:
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
-        Map<String, Pair<String, Property>> orderedFlattenedNames = renameAndFlattenProperties(activeClass);
+        Map<String, Pair<String, Property>> renamingMap = new LinkedHashMap<>();
+        Map<String, Pair<String, Property>> orderedFlattenedNames = renameAndFlattenProperties(activeClass,
+                renamingMap);
 
         // Step 3:
         // Delete the composite data types and related properties.
@@ -498,77 +499,43 @@ public class CompositeDataTypeFlattener {
 
     /**
      * Recursively computes a map of the nested properties, where the keys are the new flattened names, and the values
-     * are the old dotted names. The map is ordered by key length, so that the name substitution avoids incomplete
-     * replacing.
+     * are pairs of the old dotted names and the property.
      *
-     * @param activeClass The main active class of the UML model.
-     * @return A map containing the old and new names, along with the property they refer to, with items sorted by key
-     *     length in descending order.
+     * @param attributeOwner The attribute owner whose properties are looped over.
+     * @param renamingMap The map linking the new flattened names to the old dotted names and its property.
+     * @return A map containing the old and new names, along with the property they refer to.
      */
-    private static Map<String, Pair<String, Property>> renameAndFlattenProperties(Class activeClass) {
-        Map<String, Pair<String, Property>> renamingMap = new LinkedHashMap<>();
-
-        // Add the names of the properties defined at the model level.
-        for (Property property: activeClass.getOwnedAttributes()) {
-            // If property is of leaf type, add it to the renaming map.
-            if (PokaYokeTypeUtil.isSupportedType(property.getType())
-                    && !PokaYokeTypeUtil.isCompositeDataType(property.getType()))
-            {
-                renamingMap.put(property.getName(), Pair.of(property.getName(), property));
+    private static Map<String, Pair<String, Property>> renameAndFlattenProperties(AttributeOwner attributeOwner,
+            Map<String, Pair<String, Property>> renamingMap)
+    {
+        for (Property property: attributeOwner.getOwnedAttributes()) {
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
+                renameAndFlattenProperties((DataType)property.getType(), renamingMap);
             }
         }
 
-        flattenProperties(activeClass, renamingMap);
-
-        return orderMapByKeyLength(renamingMap);
-    }
-
-    private static Map<String, Pair<String, Property>> flattenProperties(Class clazz,
-            Map<String, Pair<String, Property>> renamingMap)
-    {
-        for (Property property: clazz.getOwnedAttributes()) {
-            flattenProperties(property, renamingMap);
-        }
-
         // Collect the properties of the class to ensure there are no name clashes with the renamed children.
-        List<Property> parentAttributes = clazz.getOwnedAttributes();
+        List<Property> parentAttributes = attributeOwner.getOwnedAttributes();
 
-        // Get the renamed properties and add them to the class attributes. The children are not deleted from the data
-        // type attributes, as other instances of the same composite data type need to use the type structure.
-        boolean deleteChildren = false;
-        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, deleteChildren);
-        clazz.getOwnedAttributes().addAll(propertiesToAdd);
+        // Get the renamed properties and add them to the owner attributes. The children are not deleted from the data
+        // type attributes if the parent is the class, as other instances of the same composite data type need to use
+        // the type structure.
+        boolean innerLayer = !(attributeOwner instanceof Class);
+        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, innerLayer);
+        attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
         return renamingMap;
     }
 
-    private static void flattenProperties(Property parentProperty, Map<String, Pair<String, Property>> renamingMap) {
-        for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
-            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                flattenProperties(property, renamingMap);
-            }
-        }
-
-        // Collect the properties of the class to ensure there are no name clashes with the renamed children.
-        List<Property> parentAttributes = ((DataType)parentProperty.getType()).getOwnedAttributes();
-
-        // Get the renamed properties and add them to the class attributes. The children are deleted from the data
-        // type attributes, as other instances of the same composite data type use the structure established at the
-        // outer most level.
-        boolean deleteChildren = true;
-        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, deleteChildren);
-        ((DataType)parentProperty.getType()).getOwnedAttributes().addAll(propertiesToAdd);
-    }
-
     /**
-     * Recursively finds every (in)direct composite data type attribute and renames them with a flattened name.
+     * Finds every (in)direct composite data type attribute and renames them with a flattened name.
      *
      * @param parentAttributes List of properties of the parent composite data type or class.
-     * @param renamingMap The map linking the new flattened names to the old dotted names.
-     * @param deleteChildren If {@code true} removes the children properties from the dependency tree.
+     * @param renamingMap The map linking the new flattened names to the old dotted names and its property.
+     * @param innerLayer If {@code true} removes the children properties from the dependency tree.
      * @return A set of renamed properties.
      */
     private static Set<Property> getRenamedProperties(List<Property> parentAttributes,
-            Map<String, Pair<String, Property>> renamingMap, boolean deleteChildren)
+            Map<String, Pair<String, Property>> renamingMap, boolean innerLayer)
     {
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
 
@@ -577,9 +544,11 @@ public class CompositeDataTypeFlattener {
         Set<String> localNames = parentAttributes.stream().map(Property::getName).collect(Collectors.toSet());
         for (Property property: parentAttributes) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                Set<Property> renamedProperties = renameChildProperties(property, renamingMap, localNames,
-                        deleteChildren);
+                Set<Property> renamedProperties = renameChildProperties(property, renamingMap, localNames);
                 propertiesToAdd.addAll(renamedProperties);
+                if (innerLayer) {
+                    ((DataType)property.getType()).getOwnedAttributes().clear();
+                }
 
                 // Update local names with the newly created, renamed properties.
                 localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
@@ -589,38 +558,29 @@ public class CompositeDataTypeFlattener {
     }
 
     private static Set<Property> renameChildProperties(Property property,
-            Map<String, Pair<String, Property>> renamingMap, Set<String> existingNames, boolean deleteChildren)
+            Map<String, Pair<String, Property>> renamingMap, Set<String> existingNames)
     {
         List<Property> childProperties = ((DataType)property.getType()).getOwnedAttributes();
         Set<Property> renamedProperties = new LinkedHashSet<>();
         for (Property child: childProperties) {
-            // Find a new name ensuring it does not clash with the existing names, create a new property with the
-            // flattened name, and add it to the renamed properties set.
-            String flattenedName = findNewPropertyName(child.getName(), property.getName(), existingNames);
-            Property renamedProperty = renameProperty(child, flattenedName);
+            // Create a new property with a clash-free name and add it to the renamed properties set.
+            String flattenedName = generateNewPropertyName(child.getName(), property.getName(), existingNames);
+            Property renamedProperty = copyAndRenameProperty(child, flattenedName);
             renamedProperties.add(renamedProperty);
 
             // Find the child name for the "dotted" name part. If the child has already been renamed, i.e. it is not a
             // leaf, find its name in the renaming map; otherwise, get its actual name.
             Pair<String, Property> childNameAndProperty = renamingMap.get(child.getName());
-            String childName;
-            if (childNameAndProperty == null) {
-                childName = child.getName();
-            } else {
-                childName = childNameAndProperty.getLeft();
-            }
+            String childName = childNameAndProperty == null ? child.getName() : childNameAndProperty.getLeft();
 
             // Store the pair (old name, property) together with the new name key in the map.
             String dottedName = property.getName() + "." + childName;
             renamingMap.put(flattenedName, Pair.of(dottedName, child));
         }
-        if (deleteChildren) {
-            ((DataType)property.getType()).getOwnedAttributes().removeAll(childProperties);
-        }
         return renamedProperties;
     }
 
-    private static String findNewPropertyName(String childName, String parentName, Collection<String> existingNames) {
+    private static String generateNewPropertyName(String childName, String parentName, Collection<String> existingNames) {
         String candidateName = parentName + "_" + childName;
         if (existingNames.contains(candidateName)) {
             int count = 0;
@@ -633,27 +593,7 @@ public class CompositeDataTypeFlattener {
         return candidateName;
     }
 
-    // not needed?
-    private static Map<String, Pair<String, Property>>
-            orderMapByKeyLength(Map<String, Pair<String, Property>> renamingMap)
-    {
-        Map<String, Pair<String, Property>> orderedMap = new TreeMap<>(new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                if (s1.length() > s2.length()) {
-                    return -1;
-                } else if (s1.length() < s2.length()) {
-                    return 1;
-                } else {
-                    return s1.compareTo(s2);
-                }
-            }
-        });
-        orderedMap.putAll(renamingMap);
-        return orderedMap;
-    }
-
-    private static Property renameProperty(Property originalProperty, String newName) {
+    private static Property copyAndRenameProperty(Property originalProperty, String newName) {
         Property rewrittenProperty = EcoreUtil.copy(originalProperty);
         rewrittenProperty.setName(newName);
         return rewrittenProperty;
