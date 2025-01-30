@@ -374,9 +374,9 @@ public class CompositeDataTypeFlattener {
     private static AInvariant unfoldACifInvariant(AInvariant invariant,
             Map<String, NamedElement> referenceableElements)
     {
-        return invariant;
-        // TODO: only considers predicate, the remaining fields can remain as they are.
-        // Call unfoldACifExpression on the predicate.
+        // Unfold only the invariant predicate.
+        return new AInvariant(invariant.name, unfoldACifExpression(invariant.predicate, referenceableElements),
+                invariant.invKind, invariant.events);
     }
 
     private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> referenceableElements) {
