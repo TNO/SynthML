@@ -80,8 +80,10 @@ public class CompositeDataTypeFlattener {
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
         Map<String, String> flatToDottedNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
+
+        // TODO: Temporary fix for duplicate names (discussion point).
         Map<String, String> dottedToFlatNames = flatToDottedNames.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey, (oldValue, newValue) -> newValue));
 
         // Step 3:
         // Delete the composite data types and related properties.
