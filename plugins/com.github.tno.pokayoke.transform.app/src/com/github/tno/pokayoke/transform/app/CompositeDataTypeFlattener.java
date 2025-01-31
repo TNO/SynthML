@@ -88,7 +88,7 @@ public class CompositeDataTypeFlattener {
 
         // Step 4:
         // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
-        rewriteOwnedBehaviors(activeClass, orderedFlattenedNames);
+        rewriteCompositeDataTypeReferences(activeClass, orderedFlattenedNames);
     }
 
     /**
@@ -150,13 +150,13 @@ public class CompositeDataTypeFlattener {
             List<String> newUpdateStrings = new LinkedList<>();
             for (AUpdate update: updates) {
                 if (update instanceof AAssignmentUpdate assign) {
-                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentExpression(assign, referenceableElements);
+                    List<AAssignmentUpdate> newUpdates = unfoldACifAssignmentUpdate(assign, referenceableElements);
                     for (ACifObject newUpdate: newUpdates) {
                         String newUpdateString = ACifObjectTranslator.toString(newUpdate);
                         newUpdateStrings.add(newUpdateString);
                     }
                 } else if (update instanceof AIfUpdate ifUpdate) {
-                    ACifObject newIfUpdate = unfoldACifIfUpdateExpression(ifUpdate, referenceableElements);
+                    ACifObject newIfUpdate = unfoldACifIfUpdate(ifUpdate, referenceableElements);
                     String newIfUpdateString = ACifObjectTranslator.toString(newIfUpdate);
                     newUpdateStrings.add(newIfUpdateString);
                 } else {
@@ -262,23 +262,23 @@ public class CompositeDataTypeFlattener {
         return new ABinaryExpression(operator, leftExpression, rightExpression, position);
     }
 
-    private static List<AAssignmentUpdate> unfoldACifAssignmentExpression(AAssignmentUpdate assignExpr,
+    private static List<AAssignmentUpdate> unfoldACifAssignmentUpdate(AAssignmentUpdate assignUpdate,
             Map<String, NamedElement> referenceableElements)
     {
-        if (assignExpr.addressable instanceof ANameExpression aNameAddressable
-                && assignExpr.value instanceof ANameExpression aNameValue)
+        if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
+                && assignUpdate.value instanceof ANameExpression aNameValue)
         {
             String lhsName = aNameAddressable.name.name;
             String rhsName = aNameValue.name.name;
-            List<AAssignmentUpdate> unfoldedAssignment = getUnfoldedAssignmentExpression(lhsName, rhsName,
-                    assignExpr.position, referenceableElements);
+            List<AAssignmentUpdate> unfoldedAssignment = getUnfoldedAssignmentUpdate(lhsName, rhsName,
+                    assignUpdate.position, referenceableElements);
             return unfoldedAssignment;
         }
         // If 'addressable' and 'value' are not both ANameExpression, skip the unfolding and return the expression.
-        return new LinkedList<>(List.of(assignExpr));
+        return new LinkedList<>(List.of(assignUpdate));
     }
 
-    private static List<AAssignmentUpdate> getUnfoldedAssignmentExpression(String lhsName, String rhsName,
+    private static List<AAssignmentUpdate> getUnfoldedAssignmentUpdate(String lhsName, String rhsName,
             TextPosition position, Map<String, NamedElement> referenceableElements)
     {
         if (!(referenceableElements.get(rhsName) instanceof Property)
@@ -411,11 +411,9 @@ public class CompositeDataTypeFlattener {
         unfoldConstraints(postconditions, referenceableElements);
     }
 
-    private static AUpdate unfoldACifIfUpdateExpression(AIfUpdate ifUpdateExpr,
-            Map<String, NamedElement> referenceableElements)
-    {
+    private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, NamedElement> referenceableElements) {
         // Process the if statements. The element of the list represent the conditions separated by a comma.
-        List<AExpression> ifStatements = ifUpdateExpr.guards;
+        List<AExpression> ifStatements = ifUpdate.guards;
         List<AExpression> unfoldedIfStatements = new LinkedList<>();
         for (AExpression ifStatement: ifStatements) {
             AExpression unfoldedIfStatement = unfoldACifExpression(ifStatement, referenceableElements);
@@ -423,52 +421,50 @@ public class CompositeDataTypeFlattener {
         }
 
         // Process the elif statements. Each element of the list represents a complete elif statement.
-        List<AElifUpdate> elifStatements = ifUpdateExpr.elifs;
+        List<AElifUpdate> elifStatements = ifUpdate.elifs;
         List<AElifUpdate> unfoldedElifs = new LinkedList<>();
         for (AElifUpdate elifStatement: elifStatements) {
-            AElifUpdate unfoldedElifStatement = unfoldACifElifUpdateExpression(elifStatement, referenceableElements);
+            AElifUpdate unfoldedElifStatement = unfoldACifElifUpdate(elifStatement, referenceableElements);
             unfoldedElifs.add(unfoldedElifStatement);
         }
 
         // Process the else statements as CIF AUpdates. Each element of the list represents a different assignment,
         // syntactically separated by a comma.
-        List<AUpdate> elseStatements = ifUpdateExpr.elses;
+        List<AUpdate> elseStatements = ifUpdate.elses;
         List<AUpdate> unfoldedElses = new LinkedList<>();
         for (AUpdate elseStatement: elseStatements) {
             if (elseStatement instanceof AAssignmentUpdate elseAssignment) {
-                List<AAssignmentUpdate> unfoldedElseStatement = unfoldACifAssignmentExpression(elseAssignment,
+                List<AAssignmentUpdate> unfoldedElseStatement = unfoldACifAssignmentUpdate(elseAssignment,
                         referenceableElements);
                 unfoldedElses.addAll(unfoldedElseStatement);
             } else {
-                AUpdate unfoldedElseStatement = unfoldACifIfUpdateExpression((AIfUpdate)elseStatement,
-                        referenceableElements);
+                AUpdate unfoldedElseStatement = unfoldACifIfUpdate((AIfUpdate)elseStatement, referenceableElements);
                 unfoldedElses.add(unfoldedElseStatement);
             }
         }
 
         // Process the then statements as CIF AUpdates. Each element of the list represents a different assignment,
         // syntactically separated by a comma.
-        List<AUpdate> thenStatements = ifUpdateExpr.thens;
+        List<AUpdate> thenStatements = ifUpdate.thens;
         List<AUpdate> unfoldedThens = new LinkedList<>();
         for (AUpdate thenStatement: thenStatements) {
             if (thenStatement instanceof AAssignmentUpdate thenAssignment) {
-                List<AAssignmentUpdate> unfoldedThenStatement = unfoldACifAssignmentExpression(thenAssignment,
+                List<AAssignmentUpdate> unfoldedThenStatement = unfoldACifAssignmentUpdate(thenAssignment,
                         referenceableElements);
                 unfoldedThens.addAll(unfoldedThenStatement);
             } else {
-                AUpdate unfoldedThenStatement = unfoldACifIfUpdateExpression((AIfUpdate)thenStatement,
-                        referenceableElements);
+                AUpdate unfoldedThenStatement = unfoldACifIfUpdate((AIfUpdate)thenStatement, referenceableElements);
                 unfoldedThens.add(unfoldedThenStatement);
             }
         }
-        return new AIfUpdate(unfoldedIfStatements, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdateExpr.position);
+        return new AIfUpdate(unfoldedIfStatements, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdate.position);
     }
 
-    private static AElifUpdate unfoldACifElifUpdateExpression(AElifUpdate elifUpdateExpr,
+    private static AElifUpdate unfoldACifElifUpdate(AElifUpdate elifUpdate,
             Map<String, NamedElement> referenceableElements)
     {
         // Process the elif guards as CIF AExpressions.
-        List<AExpression> elifGuards = elifUpdateExpr.guards;
+        List<AExpression> elifGuards = elifUpdate.guards;
         List<AExpression> unfoldedElifGuards = new LinkedList<>();
         for (AExpression elifGuard: elifGuards) {
             AExpression unfoldedElifGuard = unfoldACifExpression(elifGuard, referenceableElements);
@@ -476,19 +472,19 @@ public class CompositeDataTypeFlattener {
         }
 
         // Process the elif thens as CIF AUpdates.
-        List<AUpdate> elifThens = elifUpdateExpr.thens;
+        List<AUpdate> elifThens = elifUpdate.thens;
         List<AUpdate> unfoldedElifThens = new LinkedList<>();
         for (AUpdate elifThen: elifThens) {
             if (elifThen instanceof AAssignmentUpdate elifThenAssignment) {
-                List<AAssignmentUpdate> unfoldedElifThen = unfoldACifAssignmentExpression(elifThenAssignment,
+                List<AAssignmentUpdate> unfoldedElifThen = unfoldACifAssignmentUpdate(elifThenAssignment,
                         referenceableElements);
                 unfoldedElifThens.addAll(unfoldedElifThen);
             } else {
-                AUpdate unfoldedElifThen = unfoldACifIfUpdateExpression((AIfUpdate)elifThen, referenceableElements);
+                AUpdate unfoldedElifThen = unfoldACifIfUpdate((AIfUpdate)elifThen, referenceableElements);
                 unfoldedElifThens.add(unfoldedElifThen);
             }
         }
-        return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdateExpr.position);
+        return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
     }
 
     // STEP 2 METHODS START HERE.
@@ -628,7 +624,7 @@ public class CompositeDataTypeFlattener {
      * @param namesMap The map containing the old and new property names.
      * @throws RuntimeException If an element other than an activity or an opaque behavior is detected.
      */
-    private static void rewriteOwnedBehaviors(Class clazz, Map<String, String> namesMap) {
+    private static void rewriteCompositeDataTypeReferences(Class clazz, Map<String, String> namesMap) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             for (Entry<String, String> entry: namesMap.entrySet()) {
                 String newName = entry.getKey();
