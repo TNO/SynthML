@@ -516,8 +516,7 @@ public class CompositeDataTypeFlattener {
         // Get the renamed properties and add them to the owner attributes. The children are not deleted from the data
         // type attributes if the parent is the class, as other instances of the same composite data type need to use
         // the type structure.
-        boolean innerLayer = !(attributeOwner instanceof Class);
-        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap, innerLayer);
+        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap);
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
         return renamingMap;
     }
@@ -527,11 +526,10 @@ public class CompositeDataTypeFlattener {
      *
      * @param parentAttributes List of properties of the parent composite data type or class.
      * @param renamingMap The map linking the new flattened names to the old dotted names and its property.
-     * @param innerLayer If {@code true} removes the children properties from the dependency tree.
      * @return A set of renamed properties.
      */
-    private static Set<Property> getRenamedProperties(List<Property> parentAttributes, Map<String, String> renamingMap,
-            boolean innerLayer)
+    private static Set<Property> getRenamedProperties(List<Property> parentAttributes,
+            Map<String, String> renamingMap)
     {
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
 
@@ -543,14 +541,11 @@ public class CompositeDataTypeFlattener {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 Set<Property> renamedProperties = renameChildProperties(property, renamingMap, localNames);
                 propertiesToAdd.addAll(renamedProperties);
-                if (innerLayer) {
-                    ((DataType)property.getType()).getOwnedAttributes().clear();
-                }
 
                 // Update local names with the newly created, renamed properties.
                 localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
             }
-//            parentAttributes.remove(property);
+            parentAttributes.remove(property);
         }
         return propertiesToAdd;
     }
@@ -566,14 +561,16 @@ public class CompositeDataTypeFlattener {
             Property renamedProperty = copyAndRenameProperty(child, flattenedName);
             renamedProperties.add(renamedProperty);
 
-            // Find the child name for the "dotted" name part. If the child has already been renamed, i.e. it is not a
-            // leaf, find its name in the renaming map; otherwise, get its actual name.
-            String childName = renamingMap.get(child.getName()) == null ? child.getName()
-                    : renamingMap.get(child.getName());
+            // Store only the leaf types.
+            if (!PokaYokeTypeUtil.isCompositeDataType(child.getType())) {
+                // Find the child name for the "dotted" name part.
+                String childName = renamingMap.get(child.getName()) == null ? child.getName()
+                        : renamingMap.get(child.getName());
 
-            // Store the pair (old name, property) together with the new name key in the map.
-            String dottedName = property.getName() + "." + childName;
-            renamingMap.put(flattenedName, dottedName);
+                // Store the pair (old name, property) together with the new name key in the map.
+                String dottedName = property.getName() + "." + childName;
+                renamingMap.put(flattenedName, dottedName);
+            }
         }
         return renamedProperties;
     }
