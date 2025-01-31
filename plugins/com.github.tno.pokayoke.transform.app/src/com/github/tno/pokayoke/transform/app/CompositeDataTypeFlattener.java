@@ -79,7 +79,9 @@ public class CompositeDataTypeFlattener {
         // Step 2:
         // Find all properties of the main class that are instances of a composite data class, recursively rewrites them
         // with a flattened name, and return a map linking to the original reference name.
-        Map<String, String> orderedFlattenedNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
+        Map<String, String> flatToDottedNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
+        Map<String, String> dottedToFlatNames = flatToDottedNames.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
         // Step 3:
         // Delete the composite data types and related properties.
@@ -87,7 +89,7 @@ public class CompositeDataTypeFlattener {
 
         // Step 4:
         // Updates the opaque behaviors, abstract and concrete activities of the active class with the flattened names.
-        rewriteCompositeDataTypeReferences(activeClass, orderedFlattenedNames);
+        rewriteCompositeDataTypeReferences(activeClass, dottedToFlatNames);
     }
 
     /**
@@ -624,6 +626,7 @@ public class CompositeDataTypeFlattener {
      * @throws RuntimeException If an element other than an activity or an opaque behavior is detected.
      */
     private static void rewriteCompositeDataTypeReferences(Class clazz, Map<String, String> renamingMap) {
+        // Rewrite owned behaviors and activities.
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
                 rewriteGuardAndEffects(umlOpaqueBehavior, renamingMap);
@@ -639,8 +642,8 @@ public class CompositeDataTypeFlattener {
             }
         }
 
-        // TODO: Rewrite constraints.
-//        rewriteConstraints(clazz.getOwnedRules(), "", "");
+        // Rewrite constraints.
+        rewriteConstraints(clazz.getOwnedRules(), renamingMap);
     }
 
     private static void rewriteGuardAndEffects(RedefinableElement element, Map<String, String> renamingMap) {
@@ -733,24 +736,70 @@ public class CompositeDataTypeFlattener {
     private static AUpdate rewriteACifIfUpdate(AIfUpdate ifUpdate, Map<String, String> renamingMap) {
         // Process the if statements. The element of the list represent the conditions separated by a comma.
         List<AExpression> ifStatements = ifUpdate.guards;
-        List<AExpression> unfoldedIfStatements = new LinkedList<>();
+        List<AExpression> newIfStatements = new LinkedList<>();
         for (AExpression ifStatement: ifStatements) {
-            AExpression unfoldedIfStatement = rewriteACifExpression(ifStatement, renamingMap);
-            unfoldedIfStatements.add(unfoldedIfStatement);
+            AExpression newIfStatement = rewriteACifExpression(ifStatement, renamingMap);
+            newIfStatements.add(newIfStatement);
         }
 
         // Process the elif statements. Each element of the list represents a complete elif statement.
-        // TODO
+        List<AElifUpdate> elifStatements = ifUpdate.elifs;
+        List<AElifUpdate> newElifs = new LinkedList<>();
+        for (AElifUpdate elifStatement: elifStatements) {
+            AElifUpdate newElifStatement = rewriteACifElifUpdate(elifStatement, renamingMap);
+            newElifs.add(newElifStatement);
+        }
 
-        // Process the else statements as CIF AUpdates. Each element of the list represents a different assignment,
-        // syntactically separated by a comma.
-        // TODO
+        // Process the else statements as CIF AUpdates.
+        List<AUpdate> elseStatements = ifUpdate.elses;
+        List<AUpdate> newElses = new LinkedList<>();
+        for (AUpdate elseStatement: elseStatements) {
+            if (elseStatement instanceof AAssignmentUpdate elseAssignment) {
+                AAssignmentUpdate newElseStatement = rewriteACifAssignmentUpdate(elseAssignment, renamingMap);
+                newElses.add(newElseStatement);
+            } else {
+                AUpdate unfoldedElseStatement = rewriteACifIfUpdate((AIfUpdate)elseStatement, renamingMap);
+                newElses.add(unfoldedElseStatement);
+            }
+        }
 
-        // Process the then statements as CIF AUpdates. Each element of the list represents a different assignment,
-        // syntactically separated by a comma.
-        // TODO
+        // Process the then statements as CIF AUpdates.
+        List<AUpdate> thenStatements = ifUpdate.thens;
+        List<AUpdate> newThens = new LinkedList<>();
+        for (AUpdate thenStatement: thenStatements) {
+            if (thenStatement instanceof AAssignmentUpdate thenAssignment) {
+                AAssignmentUpdate newThenStatement = rewriteACifAssignmentUpdate(thenAssignment, renamingMap);
+                newThens.add(newThenStatement);
+            } else {
+                AUpdate unfoldedThenStatement = rewriteACifIfUpdate((AIfUpdate)thenStatement, renamingMap);
+                newThens.add(unfoldedThenStatement);
+            }
+        }
+        return new AIfUpdate(newIfStatements, newThens, newElifs, newElses, ifUpdate.position);
+    }
 
-        return ifUpdate;
+    private static AElifUpdate rewriteACifElifUpdate(AElifUpdate elifUpdate, Map<String, String> renamingMap) {
+        // Process the elif guards as CIF AExpressions.
+        List<AExpression> elifGuards = elifUpdate.guards;
+        List<AExpression> newElifGuards = new LinkedList<>();
+        for (AExpression elifGuard: elifGuards) {
+            AExpression newElifGuard = rewriteACifExpression(elifGuard, renamingMap);
+            newElifGuards.add(newElifGuard);
+        }
+
+        // Process the elif thens as CIF AUpdates.
+        List<AUpdate> elifThens = elifUpdate.thens;
+        List<AUpdate> newElifThens = new LinkedList<>();
+        for (AUpdate elifThen: elifThens) {
+            if (elifThen instanceof AAssignmentUpdate elifThenAssignment) {
+                AAssignmentUpdate newElifThen = rewriteACifAssignmentUpdate(elifThenAssignment, renamingMap);
+                newElifThens.add(newElifThen);
+            } else {
+                AUpdate newElifThen = rewriteACifIfUpdate((AIfUpdate)elifThen, renamingMap);
+                newElifThens.add(newElifThen);
+            }
+        }
+        return new AElifUpdate(newElifGuards, newElifThens, elifUpdate.position);
     }
 
     private static void rewriteAbstractActivity(Activity activity, Map<String, String> renamingMap) {
