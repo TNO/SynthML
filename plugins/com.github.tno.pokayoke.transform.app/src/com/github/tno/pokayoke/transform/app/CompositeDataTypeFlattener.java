@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -621,65 +620,152 @@ public class CompositeDataTypeFlattener {
      * names map.
      *
      * @param clazz The class considered.
-     * @param namesMap The map containing the old and new property names.
+     * @param renamingMap The map containing the old and new property names.
      * @throws RuntimeException If an element other than an activity or an opaque behavior is detected.
      */
-    private static void rewriteCompositeDataTypeReferences(Class clazz, Map<String, String> namesMap) {
+    private static void rewriteCompositeDataTypeReferences(Class clazz, Map<String, String> renamingMap) {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
-            for (Entry<String, String> entry: namesMap.entrySet()) {
-                String newName = entry.getKey();
-                String oldName = entry.getValue();
+            if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
+                rewriteGuardAndEffects(umlOpaqueBehavior, renamingMap);
+            } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
+                rewriteAbstractActivity(activity, renamingMap);
+                // TODO
+            } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
+                rewriteConcreteActivity(activity, renamingMap);
+                // TODO
+            } else {
+                throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported.",
+                        classBehavior.getClass()));
+            }
+        }
 
-                if (classBehavior instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    rewriteGuardAndEffects(umlOpaqueBehavior, newName, oldName);
-                } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                    rewriteAbstractActivity(activity, newName, oldName);
-                } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                    rewriteConcreteActivity(activity, newName, oldName);
+        // TODO: Rewrite constraints.
+//        rewriteConstraints(clazz.getOwnedRules(), "", "");
+    }
+
+    private static void rewriteGuardAndEffects(RedefinableElement element, Map<String, String> renamingMap) {
+        // Update the guard if it is not null.
+        AExpression guardExpr = CifParserHelper.parseGuard(element);
+        if (guardExpr != null) {
+            AExpression newGuardExpr = rewriteACifExpression(guardExpr, renamingMap);
+            String newGuardString = ACifObjectTranslator.toString(newGuardExpr);
+            PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
+        }
+
+        // Update effects.
+        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
+        List<String> newEffects = new LinkedList<>();
+        for (String effect: effects) {
+            List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
+            List<String> newUpdateStrings = new LinkedList<>();
+            for (AUpdate update: updates) {
+                if (update instanceof AAssignmentUpdate assign) {
+                    AAssignmentUpdate newUpdate = rewriteACifAssignmentUpdate(assign, renamingMap);
+                    String newUpdateString = ACifObjectTranslator.toString(newUpdate);
+                    newUpdateStrings.add(newUpdateString);
+                } else if (update instanceof AIfUpdate ifUpdate) {
+                    // TODO
+                    ACifObject newIfUpdate = rewriteACifIfUpdate(ifUpdate, renamingMap);
+                    String newIfUpdateString = ACifObjectTranslator.toString(newIfUpdate);
+                    newUpdateStrings.add(newIfUpdateString);
                 } else {
-                    throw new RuntimeException(String.format(
-                            "Renaming flattened properties of class '%s' not supported.", classBehavior.getClass()));
+                    throw new RuntimeException(String.format("Unfolding unsupported update: %s.", update));
                 }
             }
+
+            // Join the updates with a comma, and store them into the unfolded effects list.
+            String newEffect = String.join(", ", newUpdateStrings);
+            newEffects.add(newEffect);
         }
+        PokaYokeUmlProfileUtil.setEffects(element, newEffects);
     }
 
-    private static void rewriteGuardAndEffects(RedefinableElement element, String newName, String oldName) {
-        String guard = PokaYokeUmlProfileUtil.getGuard(element);
-        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
+    private static AExpression rewriteACifExpression(AExpression expression, Map<String, String> renamingMap) {
+        if (expression instanceof ABinaryExpression binExpr) {
+            AExpression rewrittenLeft = rewriteACifExpression(binExpr.left, renamingMap);
+            AExpression rewrittenRight = rewriteACifExpression(binExpr.right, renamingMap);
 
-        // Update the guard if it is not null and contains the old name.
-        if (guard != null && guard.contains(oldName)) {
-            guard = guard.replaceAll(oldName, newName);
-            PokaYokeUmlProfileUtil.setGuard(element, guard);
-        }
-
-        // Update the effects if they contain the old name.
-        ArrayList<String> renamedEffects = new ArrayList<>();
-        for (String effect: effects) {
-            if (effect.contains(oldName)) {
-                effect = effect.replaceAll(oldName, newName);
-                renamedEffects.add(effect);
-            } else {
-                renamedEffects.add(effect);
+            // Rewrite comparisons of properties with composite data types.
+            if (binExpr.left instanceof ANameExpression leftNameExpr
+                    && binExpr.right instanceof ANameExpression rightNameExpr)
+            {
+                ABinaryExpression unfoldedExpression = rewriteComparisonExpression(leftNameExpr.name.name,
+                        rightNameExpr.name.name, binExpr.operator, binExpr.position, renamingMap);
+                return unfoldedExpression;
             }
+
+            // Combine the rewritten left and right components to form a new binary expression.
+            ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, rewrittenLeft,
+                    rewrittenRight, expression.position);
+            return unfoldedExpression;
+        } else if (expression instanceof AUnaryExpression unaryExpr) {
+            return new AUnaryExpression(unaryExpr.operator, rewriteACifExpression(unaryExpr.child, renamingMap),
+                    unaryExpr.position);
+        } else {
+            // Expressions without children don't need rewriting.
+            return expression;
         }
-        PokaYokeUmlProfileUtil.setEffects(element, renamedEffects);
     }
 
-    private static void rewriteAbstractActivity(Activity activity, String newName, String oldName) {
+    private static ABinaryExpression rewriteComparisonExpression(String lhsName, String rhsName, String operator,
+            TextPosition position, Map<String, String> renamingMap)
+    {
+        // Get flattened names, if present.
+        String newLhsName = renamingMap.getOrDefault(lhsName, lhsName);
+        String newRhsName = renamingMap.getOrDefault(rhsName, rhsName);
+        return createABinaryExpression(newLhsName, newRhsName, operator, position);
+    }
+
+    private static AAssignmentUpdate rewriteACifAssignmentUpdate(AAssignmentUpdate assign,
+            Map<String, String> renamingMap)
+    {
+        String newLhsName = ACifObjectTranslator.toString(assign.addressable);
+        if (assign.addressable instanceof ANameExpression aNameAddressable) {
+            newLhsName = renamingMap.getOrDefault(aNameAddressable.name.name, newLhsName);
+        }
+        String newRhsName = ACifObjectTranslator.toString(assign.value);
+        if (assign.value instanceof ANameExpression aNameValue) {
+            newRhsName = renamingMap.getOrDefault(aNameValue.name.name, newRhsName);
+        }
+        return getNewAssignementUpdate(newLhsName, newRhsName, assign.position);
+    }
+
+    private static AUpdate rewriteACifIfUpdate(AIfUpdate ifUpdate, Map<String, String> renamingMap) {
+        // Process the if statements. The element of the list represent the conditions separated by a comma.
+        List<AExpression> ifStatements = ifUpdate.guards;
+        List<AExpression> unfoldedIfStatements = new LinkedList<>();
+        for (AExpression ifStatement: ifStatements) {
+            AExpression unfoldedIfStatement = rewriteACifExpression(ifStatement, renamingMap);
+            unfoldedIfStatements.add(unfoldedIfStatement);
+        }
+
+        // Process the elif statements. Each element of the list represents a complete elif statement.
+        // TODO
+
+        // Process the else statements as CIF AUpdates. Each element of the list represents a different assignment,
+        // syntactically separated by a comma.
+        // TODO
+
+        // Process the then statements as CIF AUpdates. Each element of the list represents a different assignment,
+        // syntactically separated by a comma.
+        // TODO
+
+        return ifUpdate;
+    }
+
+    private static void rewriteAbstractActivity(Activity activity, Map<String, String> renamingMap) {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
-        rewritePrePostConditions(preconditions, newName, oldName);
-        rewritePrePostConditions(postconditions, newName, oldName);
+        rewriteConstraints(preconditions, renamingMap);
+        rewriteConstraints(postconditions, renamingMap);
     }
 
-    private static void rewritePrePostConditions(List<Constraint> umlConstraints, String newName, String oldName) {
+    private static void rewriteConstraints(List<Constraint> umlConstraints, Map<String, String> renamingMap) {
         for (Constraint constraint: umlConstraints) {
             if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
                 List<String> constraintBodies = opaqueSpec.getBodies();
-                rewriteGuardBodies(constraintBodies, newName, oldName);
+                rewriteGuardBodies(constraintBodies, renamingMap);
             } else {
                 throw new RuntimeException(
                         "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
@@ -687,22 +773,22 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static void rewriteConcreteActivity(Activity activity, String newName, String oldName) {
+    private static void rewriteConcreteActivity(Activity activity, Map<String, String> renamingMap) {
         // Update the flattened names of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
                     List<String> guardBodies = opaqueGuard.getBodies();
-                    rewriteGuardBodies(guardBodies, newName, oldName);
+                    rewriteGuardBodies(guardBodies, renamingMap);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 // Get guards and respective bodies, and updates them with the flattened names.
                 Behavior guard = callBehavior.getBehavior();
                 List<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
-                rewriteGuardBodies(guardBodies, newName, oldName);
+                rewriteGuardBodies(guardBodies, renamingMap);
             } else if (ownedElement instanceof OpaqueAction internalAction) {
-                rewriteGuardAndEffects(internalAction, newName, oldName);
+//                rewriteGuardAndEffects(internalAction, newName, oldName);
             } else if (ownedElement instanceof ActivityNode) {
                 // This assumes that nodes in activities have empty names and bodies.
                 continue;
@@ -716,18 +802,16 @@ public class CompositeDataTypeFlattener {
         List<Constraint> preconditions = activity.getPreconditions();
         List<Constraint> postconditions = activity.getPostconditions();
 
-        rewritePrePostConditions(preconditions, newName, oldName);
-        rewritePrePostConditions(postconditions, newName, oldName);
+        rewriteConstraints(preconditions, renamingMap);
+        rewriteConstraints(postconditions, renamingMap);
     }
 
-    private static void rewriteGuardBodies(List<String> guardBodies, String newName, String oldName) {
+    private static void rewriteGuardBodies(List<String> guardBodies, Map<String, String> renamingMap) {
         for (int i = 0; i < guardBodies.size(); i++) {
             // Get the current body and substitute its expression if needed.
             String currentBody = guardBodies.get(i);
-            if (currentBody.contains(oldName)) {
-                String newBodyString = currentBody.replaceAll(oldName, newName);
-                guardBodies.set(i, newBodyString);
-            }
+
+            // TODO
         }
     }
 }
