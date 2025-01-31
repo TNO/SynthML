@@ -390,7 +390,7 @@ public class CompositeDataTypeFlattener {
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 Behavior guard = callBehavior.getBehavior();
                 if (guard instanceof OpaqueBehavior opaqueGuard) {
-                    unfoldGuardBodies(null, referenceableElements);
+                    unfoldGuardAndEffects(opaqueGuard, referenceableElements);
                 } else {
                     throw new RuntimeException(
                             String.format("Call behavior of class %s is not supported.", guard.getClass()));
@@ -674,11 +674,11 @@ public class CompositeDataTypeFlattener {
                     String newIfUpdateString = ACifObjectTranslator.toString(newIfUpdate);
                     newUpdateStrings.add(newIfUpdateString);
                 } else {
-                    throw new RuntimeException(String.format("Unfolding unsupported update: %s.", update));
+                    throw new RuntimeException(String.format("Rewriting unsupported update: %s.", update));
                 }
             }
 
-            // Join the updates with a comma, and store them into the unfolded effects list.
+            // Join the updates with a comma, and store them into the rewritten effects list.
             String newEffect = String.join(", ", newUpdateStrings);
             newEffects.add(newEffect);
         }
@@ -694,15 +694,15 @@ public class CompositeDataTypeFlattener {
             if (binExpr.left instanceof ANameExpression leftNameExpr
                     && binExpr.right instanceof ANameExpression rightNameExpr)
             {
-                ABinaryExpression unfoldedExpression = rewriteComparisonExpression(leftNameExpr.name.name,
+                ABinaryExpression newExpression = rewriteComparisonExpression(leftNameExpr.name.name,
                         rightNameExpr.name.name, binExpr.operator, binExpr.position, renamingMap);
-                return unfoldedExpression;
+                return newExpression;
             }
 
             // Combine the rewritten left and right components to form a new binary expression.
-            ABinaryExpression unfoldedExpression = new ABinaryExpression(binExpr.operator, rewrittenLeft,
+            ABinaryExpression newExpression = new ABinaryExpression(binExpr.operator, rewrittenLeft,
                     rewrittenRight, expression.position);
-            return unfoldedExpression;
+            return newExpression;
         } else if (expression instanceof AUnaryExpression unaryExpr) {
             return new AUnaryExpression(unaryExpr.operator, rewriteACifExpression(unaryExpr.child, renamingMap),
                     unaryExpr.position);
@@ -760,8 +760,8 @@ public class CompositeDataTypeFlattener {
                 AAssignmentUpdate newElseStatement = rewriteACifAssignmentUpdate(elseAssignment, renamingMap);
                 newElses.add(newElseStatement);
             } else {
-                AUpdate unfoldedElseStatement = rewriteACifIfUpdate((AIfUpdate)elseStatement, renamingMap);
-                newElses.add(unfoldedElseStatement);
+                AUpdate newElseStatement = rewriteACifIfUpdate((AIfUpdate)elseStatement, renamingMap);
+                newElses.add(newElseStatement);
             }
         }
 
@@ -773,8 +773,8 @@ public class CompositeDataTypeFlattener {
                 AAssignmentUpdate newThenStatement = rewriteACifAssignmentUpdate(thenAssignment, renamingMap);
                 newThens.add(newThenStatement);
             } else {
-                AUpdate unfoldedThenStatement = rewriteACifIfUpdate((AIfUpdate)thenStatement, renamingMap);
-                newThens.add(unfoldedThenStatement);
+                AUpdate newThenStatement = rewriteACifIfUpdate((AIfUpdate)thenStatement, renamingMap);
+                newThens.add(newThenStatement);
             }
         }
         return new AIfUpdate(newIfStatements, newThens, newElifs, newElses, ifUpdate.position);
@@ -814,9 +814,11 @@ public class CompositeDataTypeFlattener {
 
     private static void rewriteConstraints(List<Constraint> umlConstraints, Map<String, String> renamingMap) {
         for (Constraint constraint: umlConstraints) {
-            if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-                List<String> constraintBodies = opaqueSpec.getBodies();
-                rewriteGuardBodies(constraintBodies, renamingMap);
+            // Skip occurrence constraints.
+            if (constraint instanceof IntervalConstraint) {
+                continue;
+            } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
+                rewriteGuardBodies(opaqueSpec, renamingMap);
             } else {
                 throw new RuntimeException(
                         "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
@@ -830,18 +832,21 @@ public class CompositeDataTypeFlattener {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
-                    List<String> guardBodies = opaqueGuard.getBodies();
-                    rewriteGuardBodies(guardBodies, renamingMap);
+                    rewriteGuardBodies(opaqueGuard, renamingMap);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 // Get guards and respective bodies, and updates them with the flattened names.
                 Behavior guard = callBehavior.getBehavior();
-                List<String> guardBodies = ((OpaqueBehavior)guard).getBodies();
-                rewriteGuardBodies(guardBodies, renamingMap);
+                if (guard instanceof OpaqueBehavior opaqueGuard) {
+                    rewriteGuardAndEffects(opaqueGuard, renamingMap);
+                } else {
+                    throw new RuntimeException(
+                            String.format("Call behavior of class %s is not supported.", guard.getClass()));
+                }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
-//                rewriteGuardAndEffects(internalAction, newName, oldName);
+                rewriteGuardAndEffects(internalAction, renamingMap);
             } else if (ownedElement instanceof ActivityNode) {
-                // This assumes that nodes in activities have empty names and bodies.
+                // Nodes in activities have empty names and bodies.
                 continue;
             } else {
                 throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
@@ -857,12 +862,29 @@ public class CompositeDataTypeFlattener {
         rewriteConstraints(postconditions, renamingMap);
     }
 
-    private static void rewriteGuardBodies(List<String> guardBodies, Map<String, String> renamingMap) {
-        for (int i = 0; i < guardBodies.size(); i++) {
-            // Get the current body and substitute its expression if needed.
-            String currentBody = guardBodies.get(i);
+    private static void rewriteGuardBodies(OpaqueExpression constraintSpec, Map<String, String> renamingMap) {
+        List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
+        List<String> constraintBodyStrings = constraintSpec.getBodies();
 
-            // TODO
+        for (int i = 0; i < constraintBodyExpressions.size(); i++) {
+            // Get the current body, rewrite it, and substitute the corresponding string.
+            ACifObject currentBody = constraintBodyExpressions.get(i);
+            ACifObject newBody;
+            if (currentBody instanceof AExpression bodyExpression) {
+                newBody = rewriteACifExpression(bodyExpression, renamingMap);
+            } else if (currentBody instanceof AInvariant bodyInvariant) {
+                newBody = rewriteACifInvariant(bodyInvariant, renamingMap);
+            } else {
+                throw new RuntimeException("Guard body is not an expression nor an invariant.");
+            }
+            String newBodyString = ACifObjectTranslator.toString(newBody);
+            constraintBodyStrings.set(i, newBodyString);
         }
+    }
+
+    private static AInvariant rewriteACifInvariant(AInvariant invariant, Map<String, String> renamingMap) {
+        // Rewrite only the invariant predicate.
+        return new AInvariant(invariant.name, rewriteACifExpression(invariant.predicate, renamingMap),
+                invariant.invKind, invariant.events);
     }
 }
