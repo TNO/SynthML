@@ -127,9 +127,7 @@ public class CompositeDataTypeFlattener {
         // Collect the properties of the class to ensure there are no name clashes with the renamed children.
         List<Property> parentAttributes = attributeOwner.getOwnedAttributes();
 
-        // Get the renamed properties and add them to the owner attributes. The children are not deleted from the data
-        // type attributes if the parent is the class, as other instances of the same composite data type need to use
-        // the type structure.
+        // Get the renamed properties and add them to the owner attributes.
         Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renamingMap);
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
         return renamingMap;
@@ -301,7 +299,7 @@ public class CompositeDataTypeFlattener {
             if (binExpr.left instanceof ANameExpression leftNameExpr
                     && binExpr.right instanceof ANameExpression rightNameExpr)
             {
-                // Unfold if left hand side and right hand side are both composite data types.
+                // Unfold if left hand side or right hand side are properties.
                 NamedElement lhsElement = referenceableElements.get(leftNameExpr.name.name);
                 NamedElement rhsElement = referenceableElements.get(rightNameExpr.name.name);
                 if (lhsElement instanceof Property || rhsElement instanceof Property) {
@@ -526,7 +524,7 @@ public class CompositeDataTypeFlattener {
     private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> referenceableElements,
             Map<String, Set<String>> propertyLeaves, Map<String, String> renamingMap)
     {
-        // Unfold the behaviors of every control flow, call behavior, and opaque action.
+        // Unfold the guards and effects of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
