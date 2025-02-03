@@ -201,14 +201,13 @@ public class CifContext {
                 .map(Activity.class::cast).toList();
     }
 
-<<<<<<< HEAD
     public List<Activity> getAllConcreteActivities() {
-        return getAllElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
+        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
                 .map(Activity.class::cast).toList();
-=======
+    }
+
     public List<Property> getAllDeclaredProperties() {
         return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
->>>>>>> refs/remotes/origin/main
     }
 
     public boolean isEnumeration(String name) {
