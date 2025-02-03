@@ -11,10 +11,10 @@ plant automaton Context:
   alg bool __precondition = precond;
   alg bool postcond = count = 3;
   alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences__initialize = occurrences__initialize.__occurrences >= 0;
-  alg bool __postcondition__occurrences__incr1 = occurrences__incr1.__occurrences >= 0;
-  alg bool __postcondition__occurrences__incr2 = occurrences__incr2.__occurrences >= 0;
-  alg bool __postcondition = postcond and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences__initialize and (__postcondition__occurrences__incr1 and __postcondition__occurrences__incr2));
+  alg bool __postcondition__occurrences__20__initialize__12 = occurrences__20__initialize__12.__occurrences >= 0;
+  alg bool __postcondition__occurrences__20__incr1__13 = occurrences__20__incr1__13.__occurrences >= 0;
+  alg bool __postcondition__occurrences__20__incr2__14 = occurrences__20__incr2__14.__occurrences >= 0;
+  alg bool __postcondition = postcond and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences__20__initialize__12 and (__postcondition__occurrences__20__incr1__13 and __postcondition__occurrences__20__incr2__14));
   initial __precondition;
   marked __postcondition;
   location:
@@ -26,7 +26,7 @@ plant automaton Context:
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
 end
-requirement automaton occurrences__initialize:
+requirement automaton occurrences__20__initialize__12:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -34,7 +34,7 @@ requirement automaton occurrences__initialize:
     marked;
     edge initialize when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__incr1:
+requirement automaton occurrences__20__incr1__13:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -42,7 +42,7 @@ requirement automaton occurrences__incr1:
     marked;
     edge incr1 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__incr2:
+requirement automaton occurrences__20__incr2__14:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
