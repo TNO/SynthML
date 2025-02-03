@@ -388,7 +388,7 @@ public class UmlToCifTranslator {
      * @return The translated CIF discrete variables.
      */
     private List<DiscVariable> translateProperties() {
-        List<Property> umlProperties = context.getAllProperties();
+        List<Property> umlProperties = context.getAllDeclaredProperties();
         List<DiscVariable> cifVariables = new ArrayList<>(umlProperties.size());
 
         for (Property umlProperty: umlProperties) {

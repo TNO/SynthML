@@ -25,7 +25,13 @@ import org.eclipse.uml2.uml.Namespace;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-/** Helper class for renaming model elements. */
+/**
+ * Helper class for renaming model elements.
+ *
+ * <p>
+ * This class does not support UML models with composite data types.
+ * </p>.
+ * */
 public class NameHelper {
     private NameHelper() {
     }

@@ -122,7 +122,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
             throw new CustomSyntaxException("expected a non-derivative name", expr.position);
         }
 
-        NamedElement element = ctx.getElement(name);
+        NamedElement element = ctx.getReferenceableElement(name);
         if (element instanceof EnumerationLiteral literal) {
             return visit(literal, expr.position, ctx);
         } else if (element instanceof Property property) {

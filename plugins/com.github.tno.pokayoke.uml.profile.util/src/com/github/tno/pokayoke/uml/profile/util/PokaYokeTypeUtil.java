@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.lsat.common.util.IterableUtil;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -21,6 +22,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  * <li>Boolean</li>
  * <li>Integer</li>
  * <li>Enumeration</li>
+ * <li>Composite data type</li>
  * </ul>
  */
 public class PokaYokeTypeUtil {
@@ -32,7 +34,8 @@ public class PokaYokeTypeUtil {
      * Returns all Poka Yoke supported types for {@code context}.
      * <p>
      * The next types are supported: {@link Enumeration enumerations in the model}, {@link UmlPrimitiveType#INTEGER
-     * integers in the model} and {@link UmlPrimitiveType#BOOLEAN the primitive Boolean}.
+     * integers in the model}, {@link UmlPrimitiveType#BOOLEAN the primitive Boolean} and {@link DataType composite data
+     * types in the model}.
      * </p>
      *
      * @param context The context for which the supported types are queried.
@@ -42,15 +45,26 @@ public class PokaYokeTypeUtil {
     public static List<Type> getSupportedTypes(Element context) {
         QueryableIterable<Type> supportedTypes = QueryableIterable.from(context.getModel().getOwnedTypes())
                 .select(PokaYokeTypeUtil::isSupportedType).union(UmlPrimitiveType.BOOLEAN.load(context));
+
         return IterableUtil.sortedBy(supportedTypes, Type::getName);
     }
 
     public static boolean isSupportedType(Type type) {
-        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type);
+        return isEnumerationType(type) || isBooleanType(type) || isIntegerType(type) || isCompositeDataType(type);
+    }
+
+    public static boolean isCompositeDataType(Type type) {
+        // Check the type is only a composite data type; UML DataType is the super interface of Enumeration and
+        // PrimitiveType.
+        return type instanceof DataType && !(isEnumerationType(type) || isPrimitiveType(type));
     }
 
     public static boolean isEnumerationType(Type type) {
         return type instanceof Enumeration;
+    }
+
+    public static boolean isPrimitiveType(Type type) {
+        return isBooleanType(type) || isIntegerType(type);
     }
 
     public static boolean isBooleanType(Type type) {
