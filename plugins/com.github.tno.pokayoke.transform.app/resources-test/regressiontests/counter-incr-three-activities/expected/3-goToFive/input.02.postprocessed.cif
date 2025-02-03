@@ -71,11 +71,11 @@ plant automaton Context:
   alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__37 = not __nonAtomicActive____node__CallBehaviorAction__37;
   alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__79 = not __nonAtomicActive____node__CallBehaviorAction__79;
-  alg bool __postcondition__occurrences_goToFive_thrice__initialize = occurrences_goToFive_thrice__initialize.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive_thrice__incr1 = occurrences_goToFive_thrice__incr1.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive_thrice__incr2 = occurrences_goToFive_thrice__incr2.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive_none__goToFour = occurrences_goToFive_none__goToFour.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFive_none__goToThree = occurrences_goToFive_none__goToThree.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFive_thrice__92__initialize__14 = occurrences_goToFive_thrice__92__initialize__14.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFive_thrice__92__incr1__15 = occurrences_goToFive_thrice__92__incr1__15.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFive_thrice__92__incr2__16 = occurrences_goToFive_thrice__92__incr2__16.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFive_none__94__goToFour__42 = occurrences_goToFive_none__94__goToFour__42.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFive_none__94__goToThree__17 = occurrences_goToFive_none__94__goToThree__17.__occurrences >= 0;
   alg bool __postcondition__controlflow__26 = not __controlflow__26;
   alg bool __postcondition__controlflow__27 = not __controlflow__27;
   alg bool __postcondition__controlflow__28 = not __controlflow__28;
@@ -99,7 +99,7 @@ plant automaton Context:
   alg bool __postcondition__controlflow__68 = not __controlflow__68;
   alg bool __postcondition__controlflow__69 = not __controlflow__69;
   alg bool __postcondition__controlflow__71 = not __controlflow__71;
-  alg bool __postcondition = post_goToFive and __postcondition__nonAtomicActive__initialize and (__postcondition__nonAtomicActive____node__CallBehaviorAction__37 and __postcondition__nonAtomicActive____node__CallBehaviorAction__79) and (__postcondition__occurrences_goToFive_thrice__initialize and __postcondition__occurrences_goToFive_thrice__incr1 and (__postcondition__occurrences_goToFive_thrice__incr2 and __postcondition__occurrences_goToFive_none__goToFour)) and (__postcondition__occurrences_goToFive_none__goToThree and __postcondition__controlflow__26 and (__postcondition__controlflow__27 and __postcondition__controlflow__28) and (__postcondition__controlflow__29 and __postcondition__controlflow__30 and (__postcondition__controlflow__31 and __postcondition__controlflow__33))) and (__postcondition__controlflow__51 and __postcondition__controlflow__52 and (__postcondition__controlflow__54 and __postcondition__controlflow__56) and (__postcondition__controlflow__58 and __postcondition__controlflow__60 and (__postcondition__controlflow__61 and __postcondition__controlflow__62)) and (__postcondition__controlflow__63 and __postcondition__controlflow__64 and (__postcondition__controlflow__65 and __postcondition__controlflow__66) and (__postcondition__controlflow__67 and __postcondition__controlflow__68 and (__postcondition__controlflow__69 and __postcondition__controlflow__71))));
+  alg bool __postcondition = post_goToFive and __postcondition__nonAtomicActive__initialize and (__postcondition__nonAtomicActive____node__CallBehaviorAction__37 and __postcondition__nonAtomicActive____node__CallBehaviorAction__79) and (__postcondition__occurrences_goToFive_thrice__92__initialize__14 and __postcondition__occurrences_goToFive_thrice__92__incr1__15 and (__postcondition__occurrences_goToFive_thrice__92__incr2__16 and __postcondition__occurrences_goToFive_none__94__goToFour__42)) and (__postcondition__occurrences_goToFive_none__94__goToThree__17 and __postcondition__controlflow__26 and (__postcondition__controlflow__27 and __postcondition__controlflow__28) and (__postcondition__controlflow__29 and __postcondition__controlflow__30 and (__postcondition__controlflow__31 and __postcondition__controlflow__33))) and (__postcondition__controlflow__51 and __postcondition__controlflow__52 and (__postcondition__controlflow__54 and __postcondition__controlflow__56) and (__postcondition__controlflow__58 and __postcondition__controlflow__60 and (__postcondition__controlflow__61 and __postcondition__controlflow__62)) and (__postcondition__controlflow__63 and __postcondition__controlflow__64 and (__postcondition__controlflow__65 and __postcondition__controlflow__66) and (__postcondition__controlflow__67 and __postcondition__controlflow__68 and (__postcondition__controlflow__69 and __postcondition__controlflow__71))));
   initial __precondition;
   marked __postcondition;
   location:
@@ -144,7 +144,7 @@ plant automaton Context:
     edge __node__MergeNode__85__2 when true, __controlflow__66, not __controlflow__67 do __controlflow__66 := false, __controlflow__67 := true;
     edge __node__ActivityFinalNode__86 when true, __controlflow__67, count = 4 do __controlflow__67 := false;
 end
-requirement automaton occurrences_goToFive_thrice__initialize:
+requirement automaton occurrences_goToFive_thrice__92__initialize__14:
   disc int[0..3] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -152,7 +152,7 @@ requirement automaton occurrences_goToFive_thrice__initialize:
     marked;
     edge initialize when __occurrences < 3 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFive_thrice__incr1:
+requirement automaton occurrences_goToFive_thrice__92__incr1__15:
   disc int[0..3] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -160,7 +160,7 @@ requirement automaton occurrences_goToFive_thrice__incr1:
     marked;
     edge incr1 when __occurrences < 3 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFive_thrice__incr2:
+requirement automaton occurrences_goToFive_thrice__92__incr2__16:
   disc int[0..3] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -168,7 +168,7 @@ requirement automaton occurrences_goToFive_thrice__incr2:
     marked;
     edge incr2 when __occurrences < 3 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFive_none__goToFour:
+requirement automaton occurrences_goToFive_none__94__goToFour__42:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -176,7 +176,7 @@ requirement automaton occurrences_goToFive_none__goToFour:
     marked;
     edge __node__InitialNode__80 when __occurrences < 0 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFive_none__goToThree:
+requirement automaton occurrences_goToFive_none__94__goToThree__17:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
