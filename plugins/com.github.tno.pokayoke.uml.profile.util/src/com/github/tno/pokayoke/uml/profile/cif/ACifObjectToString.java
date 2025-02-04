@@ -1,8 +1,8 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
@@ -16,30 +16,29 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
-import org.eclipse.escet.cif.parser.ast.tokens.AName;
 
 /** Translates a CIF object expression into the corresponding string. */
 public class ACifObjectToString {
     private ACifObjectToString() {
     }
 
-    public static String toString(ACifObject expression) {
-        if (expression instanceof AExpression aExpr) {
-            return aExpressionToString(aExpr);
-        } else if (expression instanceof AUpdate update) {
+    public static String toString(ACifObject object) {
+        if (object instanceof AExpression expr) {
+            return aExpressionToString(expr);
+        } else if (object instanceof AUpdate update) {
             return aUpdateToString(update);
-        } else if (expression instanceof AElifUpdate elifUpdate) {
+        } else if (object instanceof AElifUpdate elifUpdate) {
             return aElifUpdateToString(elifUpdate);
-        } else if (expression instanceof AInvariant invariant) {
+        } else if (object instanceof AInvariant invariant) {
             return aInvariantToString(invariant);
         } else {
-            throw new RuntimeException(String.format("Unsupported Cif object class: %s.", expression.getClass()));
+            throw new RuntimeException(String.format("Unsupported CIF object class: %s.", object.getClass()));
         }
     }
 
     public static String aExpressionToString(AExpression expression) {
-        if (expression instanceof ANameExpression namExpr) {
-            return namExpr.name.name;
+        if (expression instanceof ANameExpression nameExpr) {
+            return nameExpr.name.name;
         } else if (expression instanceof ABoolExpression boolExpr) {
             return boolExpr.value ? "true" : "false";
         } else if (expression instanceof ABinaryExpression binExpr) {
@@ -57,75 +56,42 @@ public class ACifObjectToString {
         if (update instanceof AAssignmentUpdate assign) {
             return toString(assign.addressable) + " := " + toString(assign.value);
         } else if (update instanceof AIfUpdate ifUpdate) {
-            // Translate to string the 'if' guards.
-            List<String> ifStrings = new LinkedList<>();
-            for (AExpression guard: ifUpdate.guards) {
-                ifStrings.add(toString(guard));
-            }
-            String unfoldedIfs = String.join(", ", ifStrings);
-
-            // Translate to string the 'then' updates.
-            List<String> thenStrings = new LinkedList<>();
-            for (AUpdate then: ifUpdate.thens) {
-                thenStrings.add(toString(then));
-            }
-            String unfoldedThens = String.join(", ", thenStrings);
-
-            // Translate to string the 'elif' updates.
-            List<String> elifStrings = new LinkedList<>();
-            for (AElifUpdate elif: ifUpdate.elifs) {
-                elifStrings.add(toString(elif));
-            }
-            String unfoldedElifs = String.join(" ", elifStrings);
-
-            // Translate to string the 'else' updates.
-            List<String> elseStrings = new LinkedList<>();
-            for (AUpdate elseUpdate: ifUpdate.elses) {
-                elseStrings.add(toString(elseUpdate));
-            }
-            String unfoldedElses = String.join(", ", elseStrings);
-
-            // Compose the final string.
-            return "if " + unfoldedIfs + " : " + unfoldedThens + unfoldedElifs + " else " + unfoldedElses + " end";
+            return "if "
+                    + ifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
+                    + " : "
+                    + ifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
+                    + (ifUpdate.elifs.isEmpty() ? ""
+                            : ifUpdate.elifs.stream().map(u -> ACifObjectToString.toString(u))
+                                    .collect(Collectors.joining(",")))
+                    + (ifUpdate.elses.isEmpty() ? "" : " else " + ifUpdate.elses.stream()
+                            .map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(",")))
+                    + " end";
         } else {
             throw new RuntimeException(String.format("Unsupported update class %s.", update.getClass()));
         }
     }
 
-    public static String aElifUpdateToString(AElifUpdate elifExpr) {
-        // Translate the guards. Guards and thens are separated by commas if there are more than one.
-        List<String> ifStrings = new LinkedList<>();
-        for (AExpression guard: elifExpr.guards) {
-            ifStrings.add(toString(guard));
-        }
-        String unfoldedIfs = String.join(", ", ifStrings);
-
-        // Translate the 'thens' updates.
-        List<String> thenStrings = new LinkedList<>();
-        for (AUpdate then: elifExpr.thens) {
-            thenStrings.add(toString(then));
-        }
-        String unfoldedThens = String.join(", ", thenStrings);
-        return " elif " + unfoldedIfs + " : " + unfoldedThens;
+    public static String aElifUpdateToString(AElifUpdate elifUpdate) {
+        return " elif "
+                + elifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
+                + " : "
+                + elifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","));
     }
 
     public static String aInvariantToString(AInvariant invariant) {
         // Translate the name, if any.
-        String nameString = invariant.name.id != null ? invariant.name.id + ": " : "";
+        String nameString = (invariant.name != null) ? invariant.name.id + ": " : "";
 
         // Translate the predicates.
         String predicateString = aExpressionToString(invariant.predicate);
 
         // Translate the events. If more than one, add curly brackets.
-        List<String> invEventStrings = new LinkedList<>();
-        for (AName eventName: invariant.events) {
-            invEventStrings.add(eventName.name);
-        }
-        String joinedEvents = invEventStrings.size() > 1 ? "{ " + String.join(", ", invEventStrings) + " }"
-                : invEventStrings.get(0);
+        List<String> invEventsNames = invariant.events.stream().map(e -> e.name).collect(Collectors.toList());
+        String joinedEvents = (invEventsNames.size() > 1) ? "{ " + String.join(", ", invEventsNames) + " }"
+                : invEventsNames.get(0);
 
         // Get the string for the invariant type.
-        String invKindString = invariant.invKind.toString();
+        String invKindString = (invariant.invKind == null) ? "" : invariant.invKind.text;
 
         // Compose the final string.
         if (invariant.events.isEmpty()) {
