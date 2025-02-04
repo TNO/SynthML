@@ -60,7 +60,7 @@ public class CompositeDataTypeFlattener {
      *
      * @param model The UML model.
      */
-    public static void inlineNestedDataTypes(Model model) {
+    public static void flattenCompositeDataTypes(Model model) {
         CifContext context = new CifContext(model);
         Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();

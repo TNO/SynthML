@@ -86,7 +86,7 @@ public class FullSynthesisApp {
         FileHelper.normalizeIds(umlSpec);
 
         // Inline composite data types.
-        CompositeDataTypeFlattener.inlineNestedDataTypes(umlSpec);
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
