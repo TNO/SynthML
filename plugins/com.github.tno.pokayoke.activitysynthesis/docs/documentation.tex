@@ -429,8 +429,8 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \begin{example*}[Running Example]
-The translation to CIF of the BitFlipper model is shown in Algorithm~\ref{alg:bitflipper-cif}. The CIF model first defines the events, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
-The BitFlipper model provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to the opaque behaviors defined in the UML model. 
+The translation to CIF of the \texttt{BitFlipper} model is shown in Algorithm~\ref{alg:bitflipper-cif}. The CIF model first defines the events, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
+The \texttt{BitFlipper} model provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialisation. 
 The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialized explicitly, whereas \texttt{init} is initialized as false. 
 The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{initial} to be the algebraic \texttt{precondition} variable, to indicate that this is the initial state for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
@@ -638,7 +638,7 @@ The CIF automaton is composed of five states:
     \item state $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as true), and towards $s5$ after event \texttt{Flipper} (otherwise); 
     \item state $s5$ has one outgoing edge towards $s3$.
 \end{itemize}
-This model is the input to Petrify, that translates it into a Petri net. 
+This state space is the input to Petrify, that synthesized a Petri Net from it. 
 \end{example*}
 
 \input{bitflipper-synthesised-minimised}
@@ -1019,7 +1019,7 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{images/bitflipper_activitysynthesised.png}
-    \caption{The BitFlipper activity synthesized.}
+    \caption{The \texttt{BitFlipper} activity synthesized.}
     \label{fig:synthesized-bitflipper}
 \end{figure}
 
