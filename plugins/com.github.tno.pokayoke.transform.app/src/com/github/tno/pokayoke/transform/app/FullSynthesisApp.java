@@ -83,6 +83,7 @@ public class FullSynthesisApp {
 
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
+        FileHelper.normalizeIds(umlSpec);
 
         // Inline composite data types.
         CompositeDataTypeFlattener.inlineNestedDataTypes(umlSpec);

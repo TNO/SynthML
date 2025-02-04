@@ -5,8 +5,8 @@ plant automaton Class:
   alg bool precond = element = First;
   alg bool __precondition = precond;
   alg bool postcond = element = Second;
-  alg bool __postcondition__happens_at_most_once__change = happens_at_most_once__change.__occurrences >= 0;
-  alg bool __postcondition = postcond and __postcondition__happens_at_most_once__change;
+  alg bool __postcondition__happens_at_most_once__15__change__9 = happens_at_most_once__15__change__9.__occurrences >= 0;
+  alg bool __postcondition = postcond and __postcondition__happens_at_most_once__15__change__9;
   initial __precondition;
   marked __postcondition;
   location:
@@ -14,7 +14,7 @@ plant automaton Class:
     marked;
     edge change when element != Third do element := Second;
 end
-supervisor automaton happens_at_most_once__change:
+supervisor automaton happens_at_most_once__15__change__9:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -27,5 +27,5 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge change when Class.element = First and happens_at_most_once__change.__occurrences = 0;
+    edge change when Class.element = First and happens_at_most_once__15__change__9.__occurrences = 0;
 end

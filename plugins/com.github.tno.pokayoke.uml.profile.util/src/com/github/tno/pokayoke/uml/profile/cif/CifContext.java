@@ -205,10 +205,16 @@ public class CifContext {
                 .map(Activity.class::cast).toList();
     }
 
+<<<<<<< HEAD
     public List<DataType> getAllCompositeDataTypes() {
         return getDeclaredElements().stream()
                 .filter(e -> e instanceof DataType d && PokaYokeTypeUtil.isCompositeDataType(d))
                 .map(DataType.class::cast).toList();
+=======
+    public List<Activity> getAllConcreteActivities() {
+        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
+                .map(Activity.class::cast).toList();
+>>>>>>> refs/remotes/origin/main
     }
 
     public List<Property> getAllDeclaredProperties() {

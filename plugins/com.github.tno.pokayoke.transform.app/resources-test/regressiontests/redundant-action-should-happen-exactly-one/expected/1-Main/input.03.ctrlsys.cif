@@ -6,10 +6,10 @@ plant automaton Context:
   disc bool field2 = false;
   alg bool __precondition = true;
   alg bool postcondition = field2;
-  alg bool __postcondition__at_most_once__left = at_most_once__left.__occurrences >= 0;
-  alg bool __postcondition__at_most_once__right = at_most_once__right.__occurrences >= 0;
-  alg bool __postcondition__exactly_once__flip = exactly_once__flip.__occurrences >= 1;
-  alg bool __postcondition = postcondition and __postcondition__at_most_once__left and (__postcondition__at_most_once__right and __postcondition__exactly_once__flip);
+  alg bool __postcondition__at_most_once__19__left__13 = at_most_once__19__left__13.__occurrences >= 0;
+  alg bool __postcondition__at_most_once__19__right__14 = at_most_once__19__right__14.__occurrences >= 0;
+  alg bool __postcondition__exactly_once__21__flip__15 = exactly_once__21__flip__15.__occurrences >= 1;
+  alg bool __postcondition = postcondition and __postcondition__at_most_once__19__left__13 and (__postcondition__at_most_once__19__right__14 and __postcondition__exactly_once__21__flip__15);
   initial __precondition;
   marked __postcondition;
   location:
@@ -19,7 +19,7 @@ plant automaton Context:
     edge right when field1 do field2 := true;
     edge flip when true do field1 := not field1;
 end
-supervisor automaton at_most_once__left:
+supervisor automaton at_most_once__19__left__13:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -27,7 +27,7 @@ supervisor automaton at_most_once__left:
     marked;
     edge left when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton at_most_once__right:
+supervisor automaton at_most_once__19__right__14:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -35,7 +35,7 @@ supervisor automaton at_most_once__right:
     marked;
     edge right when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton exactly_once__flip:
+supervisor automaton exactly_once__21__flip__15:
   disc int[0..1] __occurrences;
   marked __occurrences >= 1;
   location:
@@ -48,7 +48,7 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge flip when at_most_once__left.__occurrences = 0 and not Context.field2 and (at_most_once__right.__occurrences = 0 and exactly_once__flip.__occurrences = 0) or (at_most_once__left.__occurrences = 0 and Context.field2 and (at_most_once__right.__occurrences = 1 and exactly_once__flip.__occurrences = 0) or at_most_once__left.__occurrences = 1 and Context.field2 and (at_most_once__right.__occurrences = 0 and exactly_once__flip.__occurrences = 0));
-    edge left when at_most_once__left.__occurrences = 0 and not Context.field2 and (at_most_once__right.__occurrences = 0 and not Context.field1) or at_most_once__left.__occurrences = 0 and Context.field2 and (at_most_once__right.__occurrences = 0 and (exactly_once__flip.__occurrences = 0 and not Context.field1));
-    edge right when at_most_once__left.__occurrences = 0 and not Context.field2 and (at_most_once__right.__occurrences = 0 and Context.field1) or at_most_once__left.__occurrences = 0 and Context.field2 and (at_most_once__right.__occurrences = 0 and (exactly_once__flip.__occurrences = 0 and Context.field1));
+    edge flip when at_most_once__19__left__13.__occurrences = 0 and not Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and exactly_once__21__flip__15.__occurrences = 0) or (at_most_once__19__left__13.__occurrences = 0 and Context.field2 and (at_most_once__19__right__14.__occurrences = 1 and exactly_once__21__flip__15.__occurrences = 0) or at_most_once__19__left__13.__occurrences = 1 and Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and exactly_once__21__flip__15.__occurrences = 0));
+    edge left when at_most_once__19__left__13.__occurrences = 0 and not Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and not Context.field1) or at_most_once__19__left__13.__occurrences = 0 and Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and (exactly_once__21__flip__15.__occurrences = 0 and not Context.field1));
+    edge right when at_most_once__19__left__13.__occurrences = 0 and not Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and Context.field1) or at_most_once__19__left__13.__occurrences = 0 and Context.field2 and (at_most_once__19__right__14.__occurrences = 0 and (exactly_once__21__flip__15.__occurrences = 0 and Context.field1));
 end

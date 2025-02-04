@@ -68,7 +68,7 @@ public class FileHelper {
         resource.getContents().addAll(stereotypeApplications);
 
         // Store the model.
-        EMFHelper.normalizeXmiIds((XMLResource)resource);
+        normalizeIds(resource);
         resource.save(Collections.EMPTY_MAP);
 
         // Put the model and stereotype applications back to their original resources.
@@ -83,6 +83,24 @@ public class FileHelper {
                 originalApplicationResource.getContents().add(entry.getKey());
             }
         }
+    }
+
+    /**
+     * Normalizes all XMI IDs in the resource of the given UML model.
+     *
+     * @param model The UML model.
+     */
+    public static void normalizeIds(Model model) {
+        normalizeIds(model.eResource());
+    }
+
+    /**
+     * Normalizes all XMI IDs in the given resource.
+     *
+     * @param resource The resource.
+     */
+    public static void normalizeIds(Resource resource) {
+        EMFHelper.normalizeXmiIds((XMLResource)resource);
     }
 
     public static ResourceSet createModelResourceSet() {
