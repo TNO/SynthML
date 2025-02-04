@@ -24,19 +24,19 @@ public class ACifObjectToString {
 
     public static String toString(ACifObject object) {
         if (object instanceof AExpression expr) {
-            return aExpressionToString(expr);
+            return toString(expr);
         } else if (object instanceof AUpdate update) {
-            return aUpdateToString(update);
+            return toString(update);
         } else if (object instanceof AElifUpdate elifUpdate) {
-            return aElifUpdateToString(elifUpdate);
+            return toString(elifUpdate);
         } else if (object instanceof AInvariant invariant) {
-            return aInvariantToString(invariant);
+            return toString(invariant);
         } else {
             throw new RuntimeException(String.format("Unsupported CIF object class: %s.", object.getClass()));
         }
     }
 
-    public static String aExpressionToString(AExpression expression) {
+    public static String toString(AExpression expression) {
         if (expression instanceof ANameExpression nameExpr) {
             return nameExpr.name.name;
         } else if (expression instanceof ABoolExpression boolExpr) {
@@ -52,7 +52,7 @@ public class ACifObjectToString {
         }
     }
 
-    public static String aUpdateToString(AUpdate update) {
+    public static String toString(AUpdate update) {
         if (update instanceof AAssignmentUpdate assign) {
             return toString(assign.addressable) + " := " + toString(assign.value);
         } else if (update instanceof AIfUpdate ifUpdate) {
@@ -71,19 +71,19 @@ public class ACifObjectToString {
         }
     }
 
-    public static String aElifUpdateToString(AElifUpdate elifUpdate) {
+    public static String toString(AElifUpdate elifUpdate) {
         return " elif "
                 + elifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
                 + " : "
                 + elifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","));
     }
 
-    public static String aInvariantToString(AInvariant invariant) {
+    public static String toString(AInvariant invariant) {
         // Translate the name, if any.
         String nameString = (invariant.name != null) ? invariant.name.id + ": " : "";
 
         // Translate the predicates.
-        String predicateString = aExpressionToString(invariant.predicate);
+        String predicateString = toString(invariant.predicate);
 
         // Translate the events. If more than one, add curly brackets.
         List<String> invEventsNames = invariant.events.stream().map(e -> e.name).collect(Collectors.toList());
