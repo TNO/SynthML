@@ -88,6 +88,7 @@ public class CompositeDataTypeFlattener {
     }
 
     // STEP 1 METHODS START HERE.
+
     /**
      * Per absolute name of a property with a composite data type, the relative names of its leaves.
      *
@@ -143,21 +144,21 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Finds every (in)direct composite data type attribute and renames them with a flattened name.
+     * Finds every direct composite data type attributes and renames them with a flattened name.
      *
-     * @param parentAttributes List of properties of the parent composite data type or class.
+     * @param parentProperties Properties of the parent composite data type or class.
      * @param renames Renames for instantiated properties with a composite data type: per flattened name of such a
      *     property, its original absolute name. Is modified in place.
      * @return A set of renamed properties.
      */
-    private static Set<Property> getRenamedProperties(List<Property> parentAttributes, Map<String, String> renames) {
+    private static Set<Property> getRenamedProperties(List<Property> parentProperties, Map<String, String> renames) {
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
 
         // Get the names of the siblings (parent's children) to check for naming clashes. Loop over the siblings and
         // rename their children.
-        Set<String> localNames = parentAttributes.stream().map(Property::getName).collect(Collectors.toSet());
+        Set<String> localNames = parentProperties.stream().map(Property::getName).collect(Collectors.toSet());
         List<Property> attributesToRemove = new LinkedList<>();
-        for (Property property: parentAttributes) {
+        for (Property property: parentProperties) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 Set<Property> renamedProperties = renameChildProperties(property, renames, localNames);
                 propertiesToAdd.addAll(renamedProperties);
@@ -167,7 +168,7 @@ public class CompositeDataTypeFlattener {
                 attributesToRemove.add(property);
             }
         }
-        parentAttributes.removeAll(attributesToRemove);
+        parentProperties.removeAll(attributesToRemove);
         return propertiesToAdd;
     }
 
@@ -198,13 +199,10 @@ public class CompositeDataTypeFlattener {
             Collection<String> existingNames)
     {
         String candidateName = parentName + "_" + childName;
-        if (existingNames.contains(candidateName)) {
-            int count = 0;
-            candidateName = parentName + String.valueOf(count) + "_" + childName;
-            while (existingNames.contains(candidateName)) {
-                count++;
-                candidateName = parentName + String.valueOf(count) + "_" + childName;
-            }
+        int count = 1;
+        while (existingNames.contains(candidateName)) {
+            count++;
+            candidateName = parentName + "_" + childName + String.valueOf(count);
         }
         return candidateName;
     }
