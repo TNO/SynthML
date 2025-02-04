@@ -48,6 +48,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Verify;
 
 /** Composite data type flattener. */
 public class CompositeDataTypeFlattener {
@@ -69,10 +70,12 @@ public class CompositeDataTypeFlattener {
         // Find and store the leaves of all properties of the main class that are instances of a composite data class.
         // Recursively rewrite the properties with a flattened name, returning a map to the original reference name.
         // Flip the map from absolute names to flattened names.
-        Map<String, Set<String>> propertyLeaves = getLeavesForAllProperties(activeClass, "", new LinkedHashMap<>());
+        Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
+                new LinkedHashMap<>());
         Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
         Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+        Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
 
         // Step 2:
         // Unfold all references to properties with a composite data type in assignments and comparisons.
@@ -85,19 +88,27 @@ public class CompositeDataTypeFlattener {
     }
 
     // STEP 1 METHODS START HERE.
-
-    private static Map<String, Set<String>> getLeavesForAllProperties(AttributeOwner owner, String partialName,
+    /**
+     * Per absolute name of a property with a composite data type, the relative names of its leaves.
+     *
+     * @param owner The attribute owner, either a class or a composite data type.
+     * @param prefix The string containing the absolute name so far.
+     * @param propertyLeaves The map from flattened names of a property to the names of its children. Is modified in
+     *     place.
+     * @return {@code propertyLeaves}
+     */
+    private static Map<String, Set<String>> getLeavesForAllCompositeProperties(AttributeOwner owner, String prefix,
             Map<String, Set<String>> propertyLeaves)
     {
         for (Property property: owner.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                String newName = partialName.equals("") ? property.getName() : partialName + "." + property.getName();
-                getLeavesForAllProperties((DataType)property.getType(), newName, propertyLeaves);
+                String absName = prefix.isEmpty() ? property.getName() : prefix + "." + property.getName();
+                getLeavesForAllCompositeProperties((DataType)property.getType(), absName, propertyLeaves);
 
                 // Add leaves of intermediate nodes.
                 Set<String> leaves = new LinkedHashSet<>();
                 PokaYokeTypeUtil.collectRelativeNamesOfLeafProperties(property, "", leaves);
-                propertyLeaves.put(newName, leaves);
+                propertyLeaves.put(absName, leaves);
             }
         }
         return propertyLeaves;
