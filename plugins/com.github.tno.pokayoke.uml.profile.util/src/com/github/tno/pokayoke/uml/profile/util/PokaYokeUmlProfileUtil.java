@@ -90,8 +90,7 @@ public class PokaYokeUmlProfileUtil {
     public static void setGuard(RedefinableElement element, String newValue) {
         if (element instanceof ActivityEdge edge) {
             setGuard(edge, newValue);
-        }
-        else {
+        } else {
             Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
             element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
         }

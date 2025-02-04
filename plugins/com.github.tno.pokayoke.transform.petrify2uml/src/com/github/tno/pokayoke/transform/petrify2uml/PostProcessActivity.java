@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.ValueSpecification;
 
@@ -194,13 +195,13 @@ public class PostProcessActivity {
      *
      * @param activity The activity to rewrite.
      * @param rewrittenActions All actions that have already been rewritten (on Petri Net level).
-     * @param endEventMap The mapping from the names of end events to their corresponding non-atomic opaque behaviors,
-     *     and the index of the corresponding effect.
+     * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
+     *     elements and the index of the corresponding effect of the end event.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     public static void rewriteLeftoverNonAtomicActions(Activity activity, Set<Action> rewrittenActions,
-            Map<String, Pair<OpaqueBehavior, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
+            Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
@@ -240,25 +241,29 @@ public class PostProcessActivity {
                     String actionName = action.getName();
 
                     if (actionName.contains(nonAtomicOutcomeSuffix)) {
-                        // Find the corresponding non-atomic opaque behavior, and the index to the relevant effect.
-                        Pair<OpaqueBehavior, Integer> opaqueBehavior = endEventMap.get(actionName);
-                        Verify.verifyNotNull(opaqueBehavior,
-                                String.format(
-                                        "Expected the CIF end event '%s' to map to a non-atomic UML opaque behavior.",
-                                        actionName));
+                        // Find the UML element for the non-atomic action, and the index to the relevant effect.
+                        Pair<RedefinableElement, Integer> actionAndEffectIndex = endEventMap.get(actionName);
+                        Verify.verifyNotNull(actionAndEffectIndex, String.format(
+                                "Expected the CIF end event '%s' to map to a non-atomic UML element.", actionName));
 
-                        // Rename the opaque behavior, set its guard to 'true', and retain the original relevant effect.
+                        // Determine the UML element that has the guard and effects of the current action.
+                        RedefinableElement actionElement = actionAndEffectIndex.left;
+                        if (actionElement instanceof CallBehaviorAction cbAction) {
+                            actionElement = cbAction.getBehavior();
+                        }
+
+                        // Rename the current action, set its guard to 'true', and retain the original relevant effect.
                         action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end"));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
-                        String effect = PokaYokeUmlProfileUtil.getEffects(opaqueBehavior.left)
-                                .get(opaqueBehavior.right);
+                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement)
+                                .get(actionAndEffectIndex.right);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
                         // Add a warning that the current non-atomic end action has not been fully merged.
                         warnings.add(String.format(
                                 "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
-                                opaqueBehavior.left.getName(), action.getName()));
+                                actionElement.getName(), action.getName()));
                     }
                 }
             }
