@@ -144,12 +144,11 @@ public class PokaYokeTypeUtil {
     }
 
     /**
-     * Collect all property names from the current property to the leaf property.
+     * Collect the relative names of all leaf properties.
      *
      * @param parentProperty The parent UML property.
-     * @param partialName The string containing the names unfolded so far.
-     * @param childrenProperties The set containing all the unfolded properties of the parent, which will be modified
-     *     in-place.
+     * @param prefix The relative name of the parent property, to use as a prefix.
+     * @param collectedNames The relative names collected so far. Is extended in-place.
      */
     public static void collectPropertyNamesUntilLeaf(Property parentProperty, String partialName,
             Set<String> childrenProperties)
