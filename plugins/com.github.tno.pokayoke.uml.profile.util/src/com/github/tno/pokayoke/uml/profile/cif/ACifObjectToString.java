@@ -1,7 +1,10 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.ACifObject;
@@ -21,6 +24,10 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 public class ACifObjectToString {
     private ACifObjectToString() {
     }
+
+    public static final String[] SET_VALUES = new String[] {"<", "<=", ">", ">=", "=", "!="};
+
+    public static final Set<String> VALUE_THREE_OPERATORS = new LinkedHashSet<>(Arrays.asList(SET_VALUES));
 
     public static String toString(ACifObject object) {
         if (object instanceof AExpression expr) {
@@ -42,9 +49,34 @@ public class ACifObjectToString {
         } else if (expression instanceof ABoolExpression boolExpr) {
             return boolExpr.value ? "true" : "false";
         } else if (expression instanceof ABinaryExpression binExpr) {
-            return toString(binExpr.left) + " " + binExpr.operator + " " + toString(binExpr.right);
+            // See also CifPrettyPrinter.
+            int opStrength = getBindingStrength(binExpr);
+            int leftStrength = getBindingStrength(binExpr.left);
+            int rightStrength = getBindingStrength(binExpr.right);
+
+            String leftTxt = toString(binExpr.left);
+            if (opStrength > leftStrength) {
+                leftTxt = "(" + leftTxt + ")";
+            }
+
+            String rightTxt = toString(binExpr.right);
+            if (opStrength >= rightStrength) {
+                rightTxt = "(" + rightTxt + ")";
+            }
+            return leftTxt + " " + binExpr.operator + " " + rightTxt;
         } else if (expression instanceof AUnaryExpression unExpr) {
-            return unExpr.operator + " " + toString(unExpr.child);
+            // See also CifPrettyPrinter.
+            String childTxt = toString(unExpr.child);
+            String opTxt = unExpr.operator;
+            int opStrength = getBindingStrength(unExpr);
+            int childStrength = getBindingStrength(unExpr.child);
+
+            if (opStrength > childStrength) {
+                childTxt = "(" + childTxt + ")";
+            } else if (opTxt.equals("not")) {
+                opTxt += " ";
+            }
+            return opTxt + childTxt;
         } else if (expression instanceof AIntExpression intExpr) {
             return intExpr.value;
         } else {
@@ -103,5 +135,42 @@ public class ACifObjectToString {
         } else {
             throw new RuntimeException(String.format("Unsupported invariant class %s", invariant.getClass()));
         }
+    }
+
+    public static int getBindingStrength(AExpression expr) {
+        // See {@code CifTextUtils#getBindingStrength}
+        // 1: or
+        // 2: and
+        // 3: <, <=, >, >=, =, !=,
+        // 4: + (binary), - (binary)
+        // 6: - (unary), not
+        // 8: true, false, 5, a
+
+        if (expr instanceof ABoolExpression) {
+            return 8;
+        } else if (expr instanceof AIntExpression) {
+            return 8;
+        } else if (expr instanceof ANameExpression) {
+            return 8;
+        }
+
+        if (expr instanceof AUnaryExpression unaryExpr) {
+            return 6;
+        }
+
+        if (expr instanceof ABinaryExpression binExpr) {
+            if (binExpr.operator.equals("or")) {
+                return 1;
+            } else if (binExpr.operator.equals("and")) {
+                return 2;
+            } else if (VALUE_THREE_OPERATORS.contains(binExpr.operator)) {
+                return 3;
+            } else if (binExpr.operator.equals("+") || binExpr.operator.equals("-")) {
+                return 4;
+            } else {
+                throw new RuntimeException("Unknown expression: " + expr);
+            }
+        }
+        throw new RuntimeException("Unknown expression: " + expr);
     }
 }
