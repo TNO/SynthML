@@ -887,7 +887,7 @@ public class UmlToCifTranslator {
 
                 // If the current control flow has a guard, then add it as an extra guard for ending node execution.
                 // Moreover, in that case, we require that the UML activity node has been translated as an atomic
-                // deterministic action and to has no defined effects, which is needed to adhere to the execution
+                // deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
                 if (outgoing.getGuard() != null) {
