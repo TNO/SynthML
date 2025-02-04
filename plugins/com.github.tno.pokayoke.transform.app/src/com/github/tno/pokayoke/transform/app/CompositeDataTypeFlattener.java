@@ -67,7 +67,7 @@ public class CompositeDataTypeFlattener {
     public static void inlineNestedDataTypes(Model model) {
         CifContext context = new CifContext(model);
         Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
-        List<DataType> dataTypes = context.getAllDeclaredDataTypes(d -> PokaYokeTypeUtil.isCompositeDataType(d));
+        List<DataType> dataTypes = context.getAllCompositeDataTypes();
 
         // Step 1:
         // Find and store the leaves of all properties of the main class that are instances of a composite data class.

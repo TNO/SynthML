@@ -205,8 +205,9 @@ public class CifContext {
                 .map(Activity.class::cast).toList();
     }
 
-    public List<DataType> getAllDeclaredDataTypes(Predicate<DataType> predicate) {
-        return getDeclaredElements().stream().filter(e -> e instanceof DataType d && predicate.test(d))
+    public List<DataType> getAllCompositeDataTypes() {
+        return getDeclaredElements().stream()
+                .filter(e -> e instanceof DataType d && PokaYokeTypeUtil.isCompositeDataType(d))
                 .map(DataType.class::cast).toList();
     }
 
