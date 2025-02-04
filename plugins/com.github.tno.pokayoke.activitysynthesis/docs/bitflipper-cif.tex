@@ -2,40 +2,42 @@
 \lstset{language=Cif}
 \footnotesize
 	\begin{lstlisting}
-controllable Flipper;
-controllable ND_BitInit;
-uncontrollable ND_BitInit__result_1;
-uncontrollable ND_BitInit__result_2;
-plant automaton ActiveClass:
-  disc bool bit in any;
-  disc bool init = false;
-  disc int[0..1] __activeAction;
-  alg bool precondition = not bit;
-  alg bool __precondition = precondition;
-  alg bool postcondition = bit;
-  alg bool __postcondition = postcondition;
-  initial __precondition;
-  marked __postcondition;
-  location:
-    initial;
-    marked;
-    edge Flipper when init = true, __activeAction = 0 
-      do bit := not bit;
-    edge ND_BitInit when not init, __activeAction = 0 
-      do __activeAction := 1;
-    edge ND_BitInit__result_1 when __activeAction = 1 
-      do init := true, bit := true, __activeAction := 0;
-    edge ND_BitInit__result_2 when __activeAction = 1 
-      do init := true, bit := false, __activeAction := 0;
-end
-requirement invariant ActiveClass.__postcondition 
-    disables Flipper;
-requirement invariant ActiveClass.__postcondition 
-    disables ND_BitInit;
-requirement invariant ActiveClass.__postcondition 
-    disables ND_BitInit__result_1;
-requirement invariant ActiveClass.__postcondition 
-    disables ND_BitInit__result_2;
+    controllable Flipper;
+    controllable ND_BitInit;
+    uncontrollable ND_BitInit__result_1;
+    uncontrollable ND_BitInit__result_2;
+    plant automaton ActiveClass:
+      disc bool bit in any;
+      disc bool not init;
+      disc int[0..1] __activeAction;
+      alg bool precondition = not bit;
+      alg bool __precondition = precondition;
+      alg bool postcondition = bit;
+      alg bool __postcondition__activeAction = __activeAction = 0;
+      alg bool __postcondition = postcondition 
+        and __postcondition__activeAction;
+      initial __precondition;
+      marked __postcondition;
+      location:
+        initial;
+        marked;
+        edge Flipper when init, __activeAction = 0 
+          do bit := not bit;
+        edge ND_BitInit when init = false, __activeAction = 0 
+          do __activeAction := 1;
+        edge ND_BitInit__result_1 when __activeAction = 1 
+          do init := true, bit := true, __activeAction := 0;
+        edge ND_BitInit__result_2 when __activeAction = 1 
+          do init := true, bit := false, __activeAction := 0;
+    end
+    requirement invariant ActiveClass.__postcondition 
+      disables Flipper;
+    requirement invariant ActiveClass.__postcondition 
+      disables ND_BitInit;
+    requirement invariant ActiveClass.__postcondition 
+      disables ND_BitInit__result_1;
+    requirement invariant ActiveClass.__postcondition 
+      disables ND_BitInit__result_2;
 \end{lstlisting}
 	\caption{CIF translation of the \texttt{BitFlipper} UML model.}
 	\label{alg:bitflipper-cif}
