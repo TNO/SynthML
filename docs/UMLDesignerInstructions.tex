@@ -24,7 +24,7 @@ In order to create a new UML model,
 \begin{enumerate}
     \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.    
     \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `Poka Yoke' box. 
-    This enables all the Poka Yoke features, as the addition of guards and effects to opaque behaviors. 
+    This enables all the Poka Yoke features, such as the addition of guards and effects to opaque behaviors. 
 \end{enumerate}
 
 The model will have a UML file by default, called \texttt{model.uml}. 
@@ -43,7 +43,7 @@ In the following, we refer to this model instance as the `model', unless otherwi
 \subsection{Create a Class}
 \label{subsec:class}
 
-A UML class represents a container of behaviors. An \emph{active} class starts its classifier behavior (\eg an activity) as a direct consequence of its creation.  
+A UML class represents a (sub)system that has state and behaviors. An \emph{active} class starts its classifier behavior (\eg an activity) as a direct consequence of its creation.  
 There are several ways of creating a class in UML Designer. From the `Model Explorer' view, 
 \begin{enumerate}
     \item Right click on the model $\to$ New Child $\to$ Packaged Element\footnotemark $\to$ Class. You may want to rename it with a meaningful name. 
@@ -111,7 +111,7 @@ Note that you still need to create an enumeration and integer variable via the s
 \subsection{Create a Data Type}
 \label{subsec:data-types}
 
-Data types represent more abstract types, \eg a robot. To create one such element, 
+Data types represent more abstract types, \eg a robot. To create a data type, 
 \begin{enumerate}
     \item Right click on the model $\to$ New Child $\to$ Owned Type\footnotemark $\to$ Data Type.
 \end{enumerate}
@@ -135,19 +135,19 @@ Alternatively, you may create a data type from the `Class Diagram' view. To this
 Activities can either be abstract (in order to be synthesized) or concrete (\ie containing nodes and control flows created by the user). Let us consider abstract activities. 
 
 \begin{enumerate}
-\item Right click on the Class $\to$ New Child $\to$ Classifier Behaviors $\to$ Activity.
-\item By default, the activity is concrete (allowing it to contain, \eg user-defined nodes and control flows).
+\item Right click on the Class $\to$ New Child $\to$ Classifier Behavior $\to$ Activity.
+\item By default, the activity is concrete (allowing it to contain user-defined nodes and control flows).
 \item For synthesis purposes, an abstract activity is required: in the `Properties' view, `General' tab, check the `Abstract' checkbox.
 \end{enumerate}
 Note that a class can only have a single Classifier Behavior. So if you'd add an additional activity, this should be added as an Owned Behavior instead.
 
-For a correct synthesis of an abstract activity we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
-defining respectively the necessary requirements at the beginning and the end of the the activity execution. 
+To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
+defining respectively the system states at the beginning and the end of the the activity execution. 
 Optional components are the constraints (see \S\ref{subsec:constraints}), defining additional requirements, 
 and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to create an activity. 
 
-Note that in the UML designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
+Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -189,7 +189,7 @@ The creation of a concrete activity starts similarly to the creation of an abstr
     \item Right click on the Class $\to$ New Child $\to$ Classifier Behavior $\to$ Activity.
 \end{enumerate}
 Notice that you do not check the `Abstract' checkbox. 
-Recall that a class can only have a single Classifier Behavior: if you have already added a behavior (\eg an abstract activity), 
+Recall that a class can only have a single Classifier Behavior: if you have already added such a behavior (\eg an abstract activity), 
 the concrete activity should be added as an Owned Behavior instead.
 
 A graphical representation of the activity is usually an activity diagram, 
@@ -211,7 +211,7 @@ Similarly to abstract activities, also concrete activities can be visualized via
 
 After having created a concrete activity, adding a control node can be achieved by 
 \begin{enumerate}
-    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Initial / Activity Final / Fork / Join/ Decision / Merge node.
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Initial / Activity Final / Fork / Join / Decision / Merge node.
 \end{enumerate} 
 Note that the final node is denoted as `Activity Final node'.
 
@@ -257,9 +257,9 @@ From the `Palette' view of the activity diagram, you can directly find the Opaqu
 \subsection{Create an Opaque Behavior}
 \label{subsec:opaque-behavior}
 
-Opaque behaviors represents actions that activities can perform. 
-Opaque behaviors can be atomic (the system cannot perform any other operation during the execution of an atomic action) or non-atomic, 
-and deterministic (at most one effect) or non-deterministic (multiple effects, of which only one is chosen to be executed non-deterministically). 
+Opaque behaviors represent actions that activities can perform. 
+Opaque behaviors can be atomic (meaning that the system cannot perform any other operation during the execution of an atomic action) or non-atomic, 
+and deterministic (i.e., having at most one effect) or non-deterministic (i.e., having multiple effects, of which only one is chosen to be executed non-deterministically). 
 For activity synthesis purposes, the user needs to create the actions to be used by the to-be-synthesized activities, as Opaque Behaviors.  
 
 \begin{enumerate}
@@ -280,7 +280,7 @@ Note that the user has no control over which effect is picked by the execution o
 
 For activity synthesis, in addition to abstract activities with pre- and postconditions, and opaque behaviors, 
 also requirements can be specified, to which all synthesized activities must adhere to. Such requirements are specified in UML as Class Constraints.
-To create class constraints, 
+To create a class constraint, 
 \begin{enumerate}
     \item Right click on the Class $\to$ New Child $\to$ Owned Rule $\to$ Constraint.
     \item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
@@ -288,7 +288,7 @@ To create class constraints,
     \item In the `Properties' view, `Default' tab, double click on the `Body' field. The expression body can be several things: 
     \begin{itemize}
         \item A state invariant, \eg \texttt{field1 and not field2}.
-        \item A state/event exclusion invariant, \eg \texttt{action1 needs field1 and not field2}, or \texttt{field2 and not field2 disables action1}.
+        \item A state/event exclusion invariant, \eg \texttt{action1 needs field1 and not field2}, or \texttt{field1 and not field2 disables action1}.
     \end{itemize}
 \end{enumerate}
 
@@ -302,7 +302,7 @@ To create class constraints,
 
 Occurrence constraints define the amount of times a specific UML element (\eg activity or opaque behavior) can be called during the execution of an activity. As such, these are modeled as \emph{interval} constraints in UML Designer. 
 We might think of a specific action that we need to use (\ie the minimum of the occurrence constraint is greater or equal than one) and we do not want to use it more than three times (\ie the maximum of the occurrence constraint is set to three).
-Let us assume we want to add occurrence constraints to an activity. From the `Model Explorer' view, 
+Let us assume we want to add an occurrence constraint to an activity. From the `Model Explorer' view, 
 \begin{enumerate}
     \item Right click on the abstract activity $\to$ New Child $\to$ Owned Rule $\to$ Interval Constraint. 
     You may want to change the name to something representative of the constraint.  In the `Properties' view, click on the `Default' tab and add an element in the `Constrained Element' field. 
@@ -352,7 +352,7 @@ This requires that the UML model is valid. Activity synthesis can be performed b
 In order to find design problems in UML models, they can be simulated using Cameo. 
 This requires translating the UML model to a (similar UML) model that Cameo can understand and simulate. 
 This translation is automated, and can be performed via the steps described below.
-Note that \emph{abstract} activities are not supported for the simulation part. 
+Note that \emph{abstract} activities are not supported for simulation. 
 You can however synthesize a concrete activity for every abstract activity by means of activity synthesis (see \S\ref{subsec:synthesis}), 
 and then translate the outputted UML model into a model that Cameo can simulate.
 \begin{enumerate}
@@ -382,7 +382,7 @@ We can use the following steps:
     \verb#init := true, bit:= false#. \newline
     This action flags the initialisation as done 
     (\texttt{init} is true after the action) and non-deterministically instantiates \texttt{bit}.
-    \item Create a opaque behavior that models a bit flipper action, with guard \verb#init = true# and effects 
+    \item Create a opaque behavior that models a bit flipper action, with guard \verb#init = true# and effect 
     \verb#bit := not bit#, named \texttt{Flipper}. 
     \item Perform the synthesis. Figure~\ref{fig:bitflipper-activity} shows the activity diagram of the synthesised activity. 
 \end{enumerate}
