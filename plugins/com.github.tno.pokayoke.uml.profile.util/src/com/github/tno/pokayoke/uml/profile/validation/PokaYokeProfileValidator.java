@@ -450,7 +450,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .objectsOfKind(ActivityFinalNode.class);
             if (finalNodes.size() > 1) {
                 error("Concrete activity should have at most one final node but got " + finalNodes.size(), activity,
-
                         null);
             }
         }

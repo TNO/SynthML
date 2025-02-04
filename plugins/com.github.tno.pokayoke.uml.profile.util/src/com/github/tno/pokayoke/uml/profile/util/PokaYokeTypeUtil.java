@@ -150,20 +150,15 @@ public class PokaYokeTypeUtil {
      * @param prefix The relative name of the parent property, to use as a prefix.
      * @param collectedNames The relative names collected so far. Is extended in-place.
      */
-    public static void collectPropertyNamesUntilLeaf(Property parentProperty, String partialName,
-            Set<String> childrenProperties)
+    public static void collectRelativeNamesOfLeafProperties(Property parentProperty, String prefix,
+            Set<String> collectedNames)
     {
-        // If parent property is a composite data type, add its name to the string, and perform a recursive call on its
-        // children until a leaf is reached.
-        if (!PokaYokeTypeUtil.isCompositeDataType(parentProperty.getType())) {
-            return;
-        }
         for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
-            String updatedPartialName = partialName + "." + property.getName();
+            String updatedPartialName = prefix + "." + property.getName();
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                collectPropertyNamesUntilLeaf(property, updatedPartialName, childrenProperties);
+                collectRelativeNamesOfLeafProperties(property, updatedPartialName, collectedNames);
             } else {
-                childrenProperties.add(updatedPartialName);
+                collectedNames.add(updatedPartialName);
             }
         }
     }

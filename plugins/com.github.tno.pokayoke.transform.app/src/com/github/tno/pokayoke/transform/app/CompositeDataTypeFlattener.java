@@ -100,7 +100,7 @@ public class CompositeDataTypeFlattener {
 
                 // Add leaves of intermediate nodes.
                 Set<String> leaves = new LinkedHashSet<>();
-                PokaYokeTypeUtil.collectPropertyNamesUntilLeaf(property, "", leaves);
+                PokaYokeTypeUtil.collectRelativeNamesOfLeafProperties(property, "", leaves);
                 propertyLeaves.put(newName, leaves);
             }
         }
