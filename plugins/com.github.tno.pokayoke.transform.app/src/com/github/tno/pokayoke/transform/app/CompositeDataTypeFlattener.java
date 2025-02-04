@@ -43,7 +43,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import com.github.tno.pokayoke.uml.profile.cif.ACifObjectTranslator;
+import com.github.tno.pokayoke.uml.profile.cif.ACifObjectToString;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -252,7 +252,7 @@ public class CompositeDataTypeFlattener {
         // Perform the guard unfolding.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
         AExpression newGuard = unfoldACifExpression(guardExpr, referenceableElements, propertyLeaves, renamingMap);
-        String newGuardString = ACifObjectTranslator.toString(newGuard);
+        String newGuardString = ACifObjectToString.toString(newGuard);
         PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
 
         // Perform the unfolding for the effects (list of list of updates).
@@ -264,7 +264,7 @@ public class CompositeDataTypeFlattener {
             for (AUpdate update: updates) {
                 List<AUpdate> newUpdates = unfoldACifUpdate(update, referenceableElements, propertyLeaves, renamingMap);
                 newUpdateStrings.addAll(
-                        newUpdates.stream().map(u -> ACifObjectTranslator.toString(u)).collect(Collectors.toList()));
+                        newUpdates.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.toList()));
             }
 
             // Join the updates with a comma, and store them into the unfolded effects list.
@@ -507,7 +507,7 @@ public class CompositeDataTypeFlattener {
             } else {
                 throw new RuntimeException("Guard body " + currentBody + " is not an expression nor an invariant.");
             }
-            String newBodyString = ACifObjectTranslator.toString(unfoldedBody);
+            String newBodyString = ACifObjectToString.toString(unfoldedBody);
             constraintBodyStrings.set(i, newBodyString);
         }
     }

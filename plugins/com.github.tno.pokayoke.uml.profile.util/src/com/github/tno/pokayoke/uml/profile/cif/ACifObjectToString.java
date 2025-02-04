@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
@@ -21,11 +18,9 @@ import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.cif.parser.ast.tokens.AName;
 
-/**
- * Translates a CIF object expression into the corresponding string.
- */
-public class ACifObjectTranslator {
-    private ACifObjectTranslator() {
+/** Translates a CIF object expression into the corresponding string. */
+public class ACifObjectToString {
+    private ACifObjectToString() {
     }
 
     public static String toString(ACifObject expression) {
