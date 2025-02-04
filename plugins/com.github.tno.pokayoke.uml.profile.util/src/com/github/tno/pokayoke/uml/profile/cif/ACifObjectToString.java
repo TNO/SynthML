@@ -42,9 +42,9 @@ public class ACifObjectToString {
         } else if (expression instanceof ABoolExpression boolExpr) {
             return boolExpr.value ? "true" : "false";
         } else if (expression instanceof ABinaryExpression binExpr) {
-            return toString(binExpr.left) + " " + binExpr.operator.toString() + " " + toString(binExpr.right);
+            return toString(binExpr.left) + " " + binExpr.operator + " " + toString(binExpr.right);
         } else if (expression instanceof AUnaryExpression unExpr) {
-            return unExpr.operator.toString() + " " + toString(unExpr.child);
+            return unExpr.operator + " " + toString(unExpr.child);
         } else if (expression instanceof AIntExpression intExpr) {
             return intExpr.value;
         } else {
