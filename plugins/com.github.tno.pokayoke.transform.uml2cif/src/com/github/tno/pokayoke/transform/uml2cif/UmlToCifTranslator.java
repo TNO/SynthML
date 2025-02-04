@@ -487,7 +487,8 @@ public class UmlToCifTranslator {
             umlAction = umlElement;
         }
 
-        Preconditions.checkArgument(!(umlAction instanceof Activity), "Expected not to find an activity.");
+        Preconditions.checkArgument(!(umlAction instanceof Activity),
+                "Expected call behavior nodes that call activities to first be flattened.");
 
         // Obtain the guard and effects of the current action.
         Expression guard = getGuard(umlAction);
