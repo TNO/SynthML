@@ -94,7 +94,8 @@ public class CompositeDataTypeFlattener {
      *
      * @param owner The attribute owner, either a class or a composite data type.
      * @param prefix The absolute name of the attribute owner.
-     * @param propertyLeaves Per absolute name of a property with a composite data type, the relative names of its leaves. Is modified in place.
+     * @param propertyLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves. Is modified in place.
      * @return {@code propertyLeaves}
      */
     private static Map<String, Set<String>> getLeavesForAllCompositeProperties(AttributeOwner owner, String prefix,
@@ -133,61 +134,44 @@ public class CompositeDataTypeFlattener {
             }
         }
 
-        // Collect the properties of the class to use their names to avoid name clashes with the flattened children.
+        // Loop over the parent's children and rename the children's children. Add them to the owner attributes.
         List<Property> parentProperties = attributeOwner.getOwnedAttributes();
-
-        // Get the renamed properties and add them to the owner attributes.
-        Set<Property> propertiesToAdd = getRenamedProperties(parentProperties, renames);
-        attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
-        return renames;
-    }
-
-    /**
-     * Find every direct child properties with a composite data type and rename them to their flattened names.
-     *
-     * @param parentProperties Properties of the parent composite data type or class.
-     * @param renames Renames for instantiated properties with a composite data type: per flattened name of such a
-     *     property, its original absolute name. Is modified in place.
-     * @return A set of renamed properties.
-     */
-    private static Set<Property> getRenamedProperties(List<Property> parentProperties, Map<String, String> renames) {
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
-
-        // Get the names of the siblings (parent's children) to check for naming clashes. Loop over the siblings and
-        // rename their children.
-        Set<String> localNames = parentProperties.stream().map(Property::getName).collect(Collectors.toSet());
+        Set<String> localNames = new LinkedHashSet<>();
         List<Property> propertiesToRemove = new LinkedList<>();
         for (Property property: parentProperties) {
+            // Process (i.e. add to rename map and remove from owner) *only* properties of composite data type.
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                Set<Property> renamedProperties = renameChildProperties(property, renames, localNames);
+                Set<Property> renamedProperties = renameChildProperties(
+                        ((DataType)property.getType()).getOwnedAttributes(), property.getName(), renames, localNames);
                 propertiesToAdd.addAll(renamedProperties);
 
-                // Update local names with the newly created, renamed properties, and record the properties to delete.
+                // Update local names with the newly created, renamed properties, and store the properties to delete.
                 localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
                 propertiesToRemove.add(property);
             }
         }
         parentProperties.removeAll(propertiesToRemove);
-        return propertiesToAdd;
+        attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
+        return renames;
     }
 
-    private static Set<Property> renameChildProperties(Property property, Map<String, String> renames,
-            Set<String> existingNames)
+    private static Set<Property> renameChildProperties(List<Property> childProperties, String propertyName,
+            Map<String, String> renames, Set<String> existingNames)
     {
-        List<Property> childProperties = ((DataType)property.getType()).getOwnedAttributes();
         Set<Property> renamedProperties = new LinkedHashSet<>();
         for (Property child: childProperties) {
             // Store only the leaf types.
             if (!PokaYokeTypeUtil.isCompositeDataType(child.getType())) {
                 // Create a new property with a clash-free name, and add it to the renamed properties set.
-                String flattenedName = generateNewPropertyName(child.getName(), property.getName(), existingNames);
+                String flattenedName = generateNewPropertyName(child.getName(), propertyName, existingNames);
                 Property renamedProperty = copyAndRenameProperty(child, flattenedName);
                 renamedProperties.add(renamedProperty);
 
                 // Find the child name for the absolute name part, and store it in the map.
-                String childName = renames.get(child.getName()) == null ? child.getName()
+                String childName = (renames.get(child.getName()) == null) ? child.getName()
                         : renames.get(child.getName());
-                String absoluteName = property.getName() + "." + childName;
+                String absoluteName = propertyName + "." + childName;
                 renames.put(flattenedName, absoluteName);
             }
         }
