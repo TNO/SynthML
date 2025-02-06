@@ -134,10 +134,10 @@ public class CompositeDataTypeFlattener {
         }
 
         // Collect the properties of the class to use their names to avoid name clashes with the flattened children.
-        List<Property> parentAttributes = attributeOwner.getOwnedAttributes();
+        List<Property> parentProperties = attributeOwner.getOwnedAttributes();
 
         // Get the renamed properties and add them to the owner attributes.
-        Set<Property> propertiesToAdd = getRenamedProperties(parentAttributes, renames);
+        Set<Property> propertiesToAdd = getRenamedProperties(parentProperties, renames);
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
         return renames;
     }
@@ -156,7 +156,7 @@ public class CompositeDataTypeFlattener {
         // Get the names of the siblings (parent's children) to check for naming clashes. Loop over the siblings and
         // rename their children.
         Set<String> localNames = parentProperties.stream().map(Property::getName).collect(Collectors.toSet());
-        List<Property> attributesToRemove = new LinkedList<>();
+        List<Property> propertiesToRemove = new LinkedList<>();
         for (Property property: parentProperties) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 Set<Property> renamedProperties = renameChildProperties(property, renames, localNames);
@@ -164,10 +164,10 @@ public class CompositeDataTypeFlattener {
 
                 // Update local names with the newly created, renamed properties, and record the properties to delete.
                 localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
-                attributesToRemove.add(property);
+                propertiesToRemove.add(property);
             }
         }
-        parentProperties.removeAll(attributesToRemove);
+        parentProperties.removeAll(propertiesToRemove);
         return propertiesToAdd;
     }
 
@@ -201,7 +201,7 @@ public class CompositeDataTypeFlattener {
         int count = 1;
         while (existingNames.contains(candidateName)) {
             count++;
-            candidateName = parentName + "_" + childName + String.valueOf(count);
+            candidateName = parentName + "_" + childName + "_" + String.valueOf(count);
         }
         return candidateName;
     }
