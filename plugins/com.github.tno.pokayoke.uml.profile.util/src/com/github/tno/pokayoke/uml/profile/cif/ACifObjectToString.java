@@ -1,10 +1,7 @@
 
 package com.github.tno.pokayoke.uml.profile.cif;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.parser.ast.ACifObject;
@@ -24,10 +21,6 @@ import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 public class ACifObjectToString {
     private ACifObjectToString() {
     }
-
-    public static final String[] SET_VALUES = new String[] {"<", "<=", ">", ">=", "=", "!="};
-
-    public static final Set<String> VALUE_THREE_OPERATORS = new LinkedHashSet<>(Arrays.asList(SET_VALUES));
 
     public static String toString(ACifObject object) {
         if (object instanceof AExpression expr) {
@@ -88,15 +81,12 @@ public class ACifObjectToString {
         if (update instanceof AAssignmentUpdate assign) {
             return toString(assign.addressable) + " := " + toString(assign.value);
         } else if (update instanceof AIfUpdate ifUpdate) {
-            return "if "
-                    + ifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
-                    + ": "
-                    + ifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
-                    + (ifUpdate.elifs.isEmpty() ? ""
-                            : ifUpdate.elifs.stream().map(u -> ACifObjectToString.toString(u))
-                                    .collect(Collectors.joining(",")))
-                    + (ifUpdate.elses.isEmpty() ? "" : " else " + ifUpdate.elses.stream()
-                            .map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(",")))
+            return "if " + ifUpdate.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
+                    + ifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "))
+                    + ifUpdate.elifs.stream().map(u -> toString(u)).collect(Collectors.joining(" "))
+                    + (ifUpdate.elses.isEmpty() ? ""
+                            : " else "
+                                    + ifUpdate.elses.stream().map(u -> toString(u)).collect(Collectors.joining(", ")))
                     + " end";
         } else {
             throw new RuntimeException(String.format("Unsupported update class %s.", update.getClass()));
@@ -104,10 +94,8 @@ public class ACifObjectToString {
     }
 
     public static String toString(AElifUpdate elifUpdate) {
-        return " elif "
-                + elifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
-                + " : "
-                + elifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","));
+        return " elif " + elifUpdate.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + " : "
+                + elifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "));
     }
 
     public static String toString(AInvariant invariant) {
@@ -159,16 +147,17 @@ public class ACifObjectToString {
         }
 
         if (expr instanceof ABinaryExpression binExpr) {
-            if (binExpr.operator.equals("or")) {
-                return 1;
-            } else if (binExpr.operator.equals("and")) {
-                return 2;
-            } else if (VALUE_THREE_OPERATORS.contains(binExpr.operator)) {
-                return 3;
-            } else if (binExpr.operator.equals("+") || binExpr.operator.equals("-")) {
-                return 4;
-            } else {
-                throw new RuntimeException("Unknown expression: " + expr);
+            switch (binExpr.operator) {
+                case "or":
+                    return 1;
+                case "and":
+                    return 2;
+                case "<", "<=", ">", ">=", "=", "!=":
+                    return 3;
+                case "+", "-":
+                    return 4;
+                default:
+                    throw new RuntimeException("Unexpected binary operator: " + binExpr.operator);
             }
         }
         throw new RuntimeException("Unknown expression: " + expr);
