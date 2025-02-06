@@ -436,10 +436,10 @@ The boolean property \texttt{bit} is transformed into a discrete boolean \texttt
 The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{initial} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nonatomic and/or nondeterministic actions, in this case \texttt{ND\_BitInit}.
 Finally, 
-the CIF model denotes the \texttt{Flipper} event as an edge with guard \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
+the CIF model denotes the \texttt{Flipper} event as an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
 \end{example*}
 
-\input{bitflipper-cif}
+\input{images/bitflipper-cif}
 
 
 
@@ -630,18 +630,18 @@ Hence they must be the same location.
 
 \begin{example*}[Running Example]
 The minimized CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}. The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
-The CIF automaton is composed of five states: 
+The CIF automaton is composed of five locations: 
 \begin{itemize}
-    \item state $s1$ is the initial state, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
-    \item state $s2$ has one outgoing edge towards $s4$, after event \texttt{ND\_BitInit}; 
-    \item state $s3$ is marked, namely is a final state, hence without outgoing edges; 
-    \item state $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as true), and towards $s5$ after event \texttt{Flipper} (otherwise); 
-    \item state $s5$ has one outgoing edge towards $s3$.
+    \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
+    \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{ND\_BitInit}; 
+    \item location $s3$ is marked, namely is a final location, hence without outgoing edges; 
+    \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as true), and towards $s5$ after event \texttt{Flipper} (otherwise); 
+    \item location $s5$ has one outgoing edge towards $s3$.
 \end{itemize}
 This state space is the input to Petrify, that synthesizes a Petri Net from it. 
 \end{example*}
 
-\input{bitflipper-synthesised-minimised}
+\input{images/bitflipper-synthesised-minimized}
 
 
 \subsection{Petri Net synthesis}
@@ -1012,7 +1012,7 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 
 \begin{example*}[Running Example]
     Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}. The initial node is marked in blue, 
-    the location \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
+    the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
     If \texttt{bit} is true, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{Flipper} action. The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
 \end{example*}
 
