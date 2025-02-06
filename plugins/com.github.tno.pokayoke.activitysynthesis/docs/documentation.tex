@@ -329,17 +329,17 @@ a boolean named \texttt{init}, initialized as false, denoting whether the bit is
 a boolean named \texttt{bit}, not initialized.  
 The class also contains 
 an abstract activity called \texttt{ActivityMain}, and 
-two opaque behaviors named \texttt{Flipper} and \texttt{ND\_BitInit}. 
+two opaque behaviors named \texttt{Flipper} and \texttt{initialize}. 
 The activity has precondition \texttt{not bit}, and postcondition \texttt{bit}. 
 The \texttt{Flipper} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
-The \texttt{ND\_BitInit} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
+The \texttt{initialize} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
 The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
 \end{example*}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
-    \caption{The \texttt{BitFlipper} model visualized within the PokaYoke UML Designer environment.}
+    \caption{The \texttt{flip} model visualized within the PokaYoke UML Designer environment.}
     \label{fig:bitflipper-uml-designer}
 \end{figure}
 
@@ -429,12 +429,12 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \begin{example*}[Running Example]
-The translation of the UML \texttt{BitFlipper} model to CIF is shown in Algorithm~\ref{alg:bitflipper-cif}. In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
-The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{Flipper} and \texttt{ND\_BitInit} that relate to starting the opaque behaviors defined in the UML model. 
+The translation of the UML \texttt{flip} model to CIF is shown in Algorithm~\ref{alg:bitflipper-cif}. In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
+The \texttt{flip} CIF model provides two controllable events, \texttt{Flipper} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialization. 
 The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialized explicitly, whereas \texttt{init} is initialized as false. 
 The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{initial} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
-The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nonatomic and/or nondeterministic actions, in this case \texttt{ND\_BitInit}.
+The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nonatomic and/or nondeterministic actions, in this case \texttt{initialize}.
 Finally, 
 the CIF model denotes the \texttt{Flipper} event as an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
 \end{example*}
@@ -633,7 +633,7 @@ The minimized CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}
 The CIF automaton is composed of five locations: 
 \begin{itemize}
     \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
-    \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{ND\_BitInit}; 
+    \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{initialize}; 
     \item location $s3$ is marked, namely is a final location, hence without outgoing edges; 
     \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as true), and towards $s5$ after event \texttt{Flipper} (otherwise); 
     \item location $s5$ has one outgoing edge towards $s3$.
@@ -742,7 +742,7 @@ This region mapping is thus a mapping from Petri Net places to sets of automaton
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/bitflipper.dot.png}
+    \includegraphics[width=0.5\linewidth]{images/bitflipper.png}
     \caption{The Petrify output model.}
     \label{fig:petrify-out}
 \end{figure}
@@ -1019,7 +1019,7 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{images/bitflipper_activitysynthesised.png}
-    \caption{The synthesized \texttt{BitFlipper} activity.}
+    \caption{The synthesized \texttt{flip} activity.}
     \label{fig:synthesized-bitflipper}
 \end{figure}
 
