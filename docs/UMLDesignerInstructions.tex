@@ -23,7 +23,7 @@ A snapshot of the main screen is shown in Fig.~\ref{fig:PY-environment}, with th
 In order to create a new UML model, 
 \begin{enumerate}
     \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.    
-    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `Poka Yoke' box. 
+    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `PokaYoke'. 
     This enables all the Poka Yoke features, such as the addition of guards and effects to opaque behaviors. 
 \end{enumerate}
 
@@ -67,7 +67,7 @@ Alternatively, you may create a class from the `Class Diagram' view. To this end
 \subsection{Create a Property}
 \label{subsec:property}
 
-Properties represent the variables of a model. The supported types are boolean, enumeration and ranged integers (besides complex data types, see \S\ref{subsec:data-types}). 
+Properties represent the variables of a model. The supported types are boolean, enumeration and ranged integers (besides composite data types, see \S\ref{subsec:data-types}). 
 To create a boolean-typed property:
 \begin{enumerate} 
 \item Right click on the Class $\to$ New Child $\to$ Owned Attribute $\to$ Property.
@@ -105,26 +105,28 @@ Alternatively, you may create a property from the `Class Diagram' view. To this 
     A popup window will open: fill in the Name, then click OK.
     \item Double click on the property, in the `Properties' view, `Poka Yoke' tab, select the property type from the drop-down menu. 
 \end{enumerate}
-Note that you still need to create an enumeration and integer variable via the standard approach before you can create an integer or enumeration property.
+Note that you still need to create an enumeration and integer type via the standard approach before you can create an integer or enumeration property.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Create a Data Type}
+\subsection{Create a (Composite) Data Type}
 \label{subsec:data-types}
 
-Data types represent more abstract types, \eg a robot. To create a data type, 
+In UML diagrams, data types are model elements that define data values. You typically use data types to represent primitive types, such as integer types, and user-defined data types. 
+In the UML metamodel for Eclipse, the interface \texttt{DataType} is the super interface of enumerations and primitive types: to avoid confusion among types, we refer to \emph{composite} data types to elements of type \texttt{DataType} who are \emph{not} also enumerations or primitive types.  
+Composite data types are used to represent more abstract types, \eg a robot. To create a composite data type, 
 \begin{enumerate}
     \item Right click on the model $\to$ New Child $\to$ Owned Type\footnotemark $\to$ Data Type.
 \end{enumerate}
-Note that data types can have properties (of type boolean, integer, enumeration, or of other data type).
-\footnotetext{A data type can also be added as an `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Data Type. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier is valid. Since a data type is usually considered as a type, it is advised to use the owned type option.}
+Note that composite data types can have properties of type boolean, integer, enumeration, or of other composite data type -- as long as this does not introduce a cyclic structure. 
+\footnotetext{A composite data type can also be added as an `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Data Type. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier is valid. Since a composite data type is usually considered as a type, it is advised to use the owned type option.}
 
 \paragraph*{Graphical Approach.} 
-Alternatively, you may create a data type from the `Class Diagram' view. To this end, you may
+Alternatively, you may create a composite data type from the `Class Diagram' view. To this end, you may
 \begin{enumerate}
     \item In the `Palette' view, click on the tiny arrow located at the left of Enumeration. 
     A drop-down menu will open, revealing `DataType'. 
-    \item Click on DataType, and drag it to the class diagram. 
+    \item Click on `DataType', and drag it to the class diagram. 
     A pop up window will appear, where you can change its name; finally, click OK.
 \end{enumerate}
 
@@ -144,8 +146,7 @@ Note that a class can only have a single classifier behavior. So if you'd add an
 
 To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
 defining respectively the system states at the beginning and the end of the activity execution. 
-Optional components are the constraints (see \S\ref{subsec:constraints}), defining additional requirements, 
-and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
+Additionally, users can specify constraints, (see \S\ref{subsec:constraints}), defining additional requirements, and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity. 
 
 Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
@@ -203,7 +204,7 @@ A node can be a \emph{control node} (initial, final, fork, join, decision, or me
 be an \emph{call behavior node} which either calls another activity of executes an action by calling an opaque behavior,
 or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action. 
 So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or non-deterministic, and either atomic or non-atomic. 
-Similarly to abstract activities, also concrete activities can be visualized via an Activity Diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
+Concrete activities can be visualized via an activity diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
