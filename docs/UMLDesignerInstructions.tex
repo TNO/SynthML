@@ -370,9 +370,9 @@ We can use the following steps:
     \item Create an active class named ActiveClass.
     \item Create two boolean properties, named \texttt{init} and \texttt{bit}. 
     The default value of \texttt{init} is false, none (leave an empty field) for \texttt{bit}.  
-    \item Create an abstract activity, with precondition \verb#not bit#, 
-    and postcondition \verb#bit#.
-    \item Create an opaque behavior, named \texttt{ND\_BitInit}, that models an initialization  action, with guard \texttt{not init} and nondeterministic effects:
+    \item Create an abstract activity, with precondition \verb#not init#, 
+    and postcondition \verb#bit and init#.
+    \item Create an opaque behavior, named \texttt{initialize}, that models an initialization  action, with guard \texttt{not init} and nondeterministic effects:
     \newline
     \verb#init := true, bit := true# \newline
     \verb#~~~# \newline
@@ -380,14 +380,14 @@ We can use the following steps:
     This action flags the initialization as done 
     (\texttt{init} is true after the action) and non-deterministically instantiates \texttt{bit}.
     \item Create a opaque behavior that models a bit flipper action, with guard \verb#init# and effect 
-    \verb#bit := not bit#, named \texttt{Flipper}. 
+    \verb#bit := not bit#, named \texttt{flip}. 
     \item Perform the synthesis. Figure~\ref{fig:bitflipper-activity} shows the activity diagram of the synthesized activity. 
 \end{enumerate}
 
 \begin{figure}
     \centering
     \includegraphics{Figures/bitflipper_activitysynth.png}
-    \caption{The activity diagram of the synthesized bit flipper.}
+    \caption{The synthesized activity diagram.}
     \label{fig:bitflipper-activity}
 \end{figure}
 
