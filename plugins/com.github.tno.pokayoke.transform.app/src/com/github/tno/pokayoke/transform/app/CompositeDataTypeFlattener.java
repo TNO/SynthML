@@ -56,7 +56,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Flatten all properties with a composite data type as their type, flatten all comparison and assignments on
+     * Flatten all properties with a composite data type as their type, flatten all comparisons and assignments on
      * composite data types, and remove all composite data types.
      *
      * @param model The UML model.
@@ -90,12 +90,11 @@ public class CompositeDataTypeFlattener {
     // STEP 1 METHODS START HERE.
 
     /**
-     * Per absolute name of a property with a composite data type, the relative names of its leaves.
+     * Get per absolute name of a property with a composite data type, the relative names of its leaves.
      *
      * @param owner The attribute owner, either a class or a composite data type.
-     * @param prefix The string containing the absolute name so far.
-     * @param propertyLeaves The map from flattened names of a property to the names of its children. Is modified in
-     *     place.
+     * @param prefix The absolute name of the attribute owner.
+     * @param propertyLeaves Per absolute name of a property with a composite data type, the relative names of its leaves. Is modified in place.
      * @return {@code propertyLeaves}
      */
     private static Map<String, Set<String>> getLeavesForAllCompositeProperties(AttributeOwner owner, String prefix,
@@ -144,7 +143,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Finds every direct composite data type attributes and renames them with a flattened name.
+     * Find every direct child properties with a composite data type and rename them to their flattened names.
      *
      * @param parentProperties Properties of the parent composite data type or class.
      * @param renames Renames for instantiated properties with a composite data type: per flattened name of such a

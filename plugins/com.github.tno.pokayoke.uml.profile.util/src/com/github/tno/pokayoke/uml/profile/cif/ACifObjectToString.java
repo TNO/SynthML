@@ -20,7 +20,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 
-/** Translates a CIF object expression into the corresponding string. */
+/** Translates a CIF object into a string. */
 public class ACifObjectToString {
     private ACifObjectToString() {
     }
@@ -90,7 +90,7 @@ public class ACifObjectToString {
         } else if (update instanceof AIfUpdate ifUpdate) {
             return "if "
                     + ifUpdate.guards.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
-                    + " : "
+                    + ": "
                     + ifUpdate.thens.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(","))
                     + (ifUpdate.elifs.isEmpty() ? ""
                             : ifUpdate.elifs.stream().map(u -> ACifObjectToString.toString(u))
@@ -118,7 +118,7 @@ public class ACifObjectToString {
         String predicateString = toString(invariant.predicate);
 
         // Translate the events. If more than one, add curly brackets.
-        List<String> invEventsNames = invariant.events.stream().map(e -> e.name).collect(Collectors.toList());
+        List<String> invEventsNames = invariant.events.stream().map(e -> e.name).toList();
         String joinedEvents = (invEventsNames.size() > 1) ? "{ " + String.join(", ", invEventsNames) + " }"
                 : invEventsNames.get(0);
 
@@ -138,7 +138,7 @@ public class ACifObjectToString {
     }
 
     public static int getBindingStrength(AExpression expr) {
-        // See {@code CifTextUtils#getBindingStrength}
+        // See 'CifTextUtils.getBindingStrength'.
         // 1: or
         // 2: and
         // 3: <, <=, >, >=, =, !=,
