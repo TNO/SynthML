@@ -7,9 +7,11 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
@@ -73,6 +75,7 @@ public class CompositeDataTypeFlattener {
         Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
                 new LinkedHashMap<>());
         Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
+
         Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
         Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
@@ -120,62 +123,79 @@ public class CompositeDataTypeFlattener {
      * names.
      *
      * @param attributeOwner The attribute owner whose properties to flatten.
-     * @param renames Renames for instantiated properties with a composite data type: per flattened name of such a
-     *     property, its original absolute name. Is modified in place.
+     * @param attributeOwnerRenames Pairs of flattened name, absolute name for every property of a composite data type.
+     *     Is modified in place.
      * @return {@code renames}.
      */
     private static Map<String, String> renameAndFlattenProperties(AttributeOwner attributeOwner,
-            Map<String, String> renames)
+            Map<AttributeOwner, Map<String, String>> attributeOwnerRenames)
     {
-        // First, flatten children recursively.
+        // First, flatten children recursively, if the data type has not been processed already.
         for (Property property: attributeOwner.getOwnedAttributes()) {
-            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                renameAndFlattenProperties((DataType)property.getType(), renames);
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())
+                    && attributeOwnerRenames.get((AttributeOwner)property.getType()) == null)
+            {
+                renameAndFlattenProperties((DataType)property.getType(), attributeOwnerRenames);
             }
         }
 
-        // Loop over the parent's children and rename the children's children. Add them to the owner attributes.
-        List<Property> parentProperties = attributeOwner.getOwnedAttributes();
+        // Names of the primitive type child properties of the property.
+        List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
+        Set<String> primitiveNames = ownerProperties.stream()
+                .filter(p -> !PokaYokeTypeUtil.isCompositeDataType(p.getType())).map(Property::getName)
+                .collect(Collectors.toSet());
+
+        // Loop over the owner's properties and rename the properties' children. Add them to the owner attributes.
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
-        Set<String> localNames = new LinkedHashSet<>();
         List<Property> propertiesToRemove = new LinkedList<>();
-        for (Property property: parentProperties) {
+        for (Property property: ownerProperties) {
             // Process (i.e. add to rename map and remove from owner) *only* properties of composite data type.
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                Set<Property> renamedProperties = renameChildProperties(
-                        ((DataType)property.getType()).getOwnedAttributes(), property.getName(), renames, localNames);
-                propertiesToAdd.addAll(renamedProperties);
+                Map<String, String> dataTypeRenames = attributeOwnerRenames.getOrDefault(property.getType(),
+                        new LinkedHashMap<>());
 
-                // Update local names with the newly created, renamed properties, and store the properties to delete.
-                localNames.addAll(propertiesToAdd.stream().map(Property::getName).collect(Collectors.toSet()));
+                // Get children with flattened names and the map flattened to absolute names.
+                Pair<Set<Property>, Map<String, String>> flattenedPropertiesAndRenames = renameChildProperties(
+                        ((DataType)property.getType()).getOwnedAttributes(), property.getName(), dataTypeRenames,
+                        primitiveNames);
+                Set<Property> flattenedProperties = flattenedPropertiesAndRenames.getLeft();
+                Map<String, String> childRenames = flattenedPropertiesAndRenames.getRight();
+                propertiesToAdd.addAll(flattenedProperties);
                 propertiesToRemove.add(property);
+
+                // Add the children to the attribute owner renaming map.
+                attributeOwnerRenames.computeIfAbsent((AttributeOwner)property.getOwner(), t -> new LinkedHashMap<>())
+                        .putAll(childRenames);
             }
         }
-        parentProperties.removeAll(propertiesToRemove);
+        ownerProperties.removeAll(propertiesToRemove);
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
-        return renames;
+
+        // If attribute owner is a class, return its rename map. Otherwise, return an empty list.
+        List<Map<String, String>> classRenames = attributeOwnerRenames.entrySet().stream()
+                .filter(entry -> entry.getKey() instanceof Class).map(Entry::getValue)
+                .collect(Collectors.toCollection(LinkedList::new));
+        return !classRenames.isEmpty() ? classRenames.get(0) : new LinkedHashMap<>();
     }
 
-    private static Set<Property> renameChildProperties(List<Property> childProperties, String propertyName,
-            Map<String, String> renames, Set<String> existingNames)
+    private static Pair<Set<Property>, Map<String, String>> renameChildProperties(List<Property> childProperties,
+            String propertyName, Map<String, String> renames, Set<String> existingNames)
     {
         Set<Property> renamedProperties = new LinkedHashSet<>();
+        Map<String, String> childRenames = new LinkedHashMap<>();
         for (Property child: childProperties) {
-            // Store only the leaf types.
-            if (!PokaYokeTypeUtil.isCompositeDataType(child.getType())) {
-                // Create a new property with a clash-free name, and add it to the renamed properties set.
-                String flattenedName = generateNewPropertyName(child.getName(), propertyName, existingNames);
-                Property renamedProperty = copyAndRenameProperty(child, flattenedName);
-                renamedProperties.add(renamedProperty);
+            // Create a new property with a clash-free name, and add it to the renamed properties set.
+            String flattenedName = generateNewPropertyName(child.getName(), propertyName, existingNames);
+            Property renamedProperty = copyAndRenameProperty(child, flattenedName);
+            renamedProperties.add(renamedProperty);
+            existingNames.add(flattenedName);
 
-                // Find the child name for the absolute name part, and store it in the map.
-                String childName = (renames.get(child.getName()) == null) ? child.getName()
-                        : renames.get(child.getName());
-                String absoluteName = propertyName + "." + childName;
-                renames.put(flattenedName, absoluteName);
-            }
+            // Find the child name for the absolute name part, and store it in the map.
+            String childName = (renames.get(child.getName()) == null) ? child.getName() : renames.get(child.getName());
+            String newName = propertyName + "." + childName;
+            childRenames.put(flattenedName, newName);
         }
-        return renamedProperties;
+        return Pair.of(renamedProperties, childRenames);
     }
 
     private static String generateNewPropertyName(String childName, String parentName,
