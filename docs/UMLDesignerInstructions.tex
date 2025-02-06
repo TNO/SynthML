@@ -117,7 +117,7 @@ Data types represent more abstract types, \eg a robot. To create a data type,
     \item Right click on the model $\to$ New Child $\to$ Owned Type\footnotemark $\to$ Data Type.
 \end{enumerate}
 Note that data types can have properties (of type boolean, integer, enumeration, or of other data type).
-\footnotetext{A data type can also be added as an `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Data Type. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier are valid. Since a data type is usually considered as a type, it is advised to use the owned type option.}
+\footnotetext{A data type can also be added as an `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Data Type. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier is valid. Since a data type is usually considered as a type, it is advised to use the owned type option.}
 
 \paragraph*{Graphical Approach.} 
 Alternatively, you may create a data type from the `Class Diagram' view. To this end, you may
@@ -143,10 +143,10 @@ Activities can either be abstract (in order to be synthesized) or concrete (\ie 
 Note that a class can only have a single classifier behavior. So if you'd add an additional activity, this should be added as an `Owned Behavior' instead.
 
 To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
-defining respectively the system states at the beginning and the end of the the activity execution. 
+defining respectively the system states at the beginning and the end of the activity execution. 
 Optional components are the constraints (see \S\ref{subsec:constraints}), defining additional requirements, 
 and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
-Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to create an activity. 
+Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity. 
 
 Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
 
@@ -164,7 +164,7 @@ Note that in UML Designer activities can also be added as a nested classifier. T
 \item In the new window, write on the `Value' field your precondition constraint. Click Add, then OK.
 \end{enumerate}
 
-We follow similar steps for the postcondition. 
+We follow similar steps for creating postconditions. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -362,7 +362,7 @@ and then translate the outputted UML model into a model that Cameo can simulate.
 
 \section{Synthesis: Bit Flipper Example}
 
-To illustrate activity synthesis, let us now create a bit flipper model. In this model, the to~-~be~-~synthesized activity initializes a boolean variable non~-~deterministically, 
+To illustrate activity synthesis, let us now create a bit flipper model. In this model, the to-be-synthesized activity initializes a boolean variable non~-~deterministically, 
 and it flips it if it is false; does not need to do anything otherwise. 
 We can use the following steps:
 \begin{enumerate}
