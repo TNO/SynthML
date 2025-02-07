@@ -63,11 +63,11 @@ public class CompositeDataTypeFlattener {
      * @param model The UML model.
      */
     public static void flattenCompositeDataTypes(Model model) {
+        // Get active class and composite data types. Unfold and rewrite guards and effects only if there are composite
+        // data types in the UML model.
         CifContext context = new CifContext(model);
         Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
-
-        // Unfold and rewrite only if there are composite data types in the UML model.
         if (!dataTypes.isEmpty()) {
             // Find and store the leaves of all composite data type properties. Recursively rewrite the properties with
             // a flattened name, which is mapped to its absolute name.
@@ -125,7 +125,7 @@ public class CompositeDataTypeFlattener {
     private static Map<String, String> renameAndFlattenProperties(AttributeOwner attributeOwner,
             Map<AttributeOwner, Map<String, String>> attributeOwnerRenames)
     {
-        // First, flatten children recursively, if the composite data type has not been flattened already.
+        // First, flatten children recursively, if the composite data type has not been processed already.
         for (Property property: attributeOwner.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())
                     && !attributeOwnerRenames.containsKey((AttributeOwner)property.getType()))
@@ -133,7 +133,7 @@ public class CompositeDataTypeFlattener {
                 renameAndFlattenProperties((DataType)property.getType(), attributeOwnerRenames);
             }
         }
-        // Collect the names of the properties with primitive type.
+        // Collect the names of the properties of non-composite data type.
         List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
         Set<String> primitivePropertiesNames = ownerProperties.stream()
                 .filter(p -> !PokaYokeTypeUtil.isCompositeDataType(p.getType())).map(Property::getName)
@@ -164,12 +164,8 @@ public class CompositeDataTypeFlattener {
         ownerProperties.removeAll(propertiesToRemove);
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
 
-        // If attribute owner is a class, return its rename map. Otherwise, return an empty list.
-        if (attributeOwner instanceof Class) {
-            return attributeOwnerRenames.get(attributeOwner);
-        } else {
-            return new LinkedHashMap<>();
-        }
+        // If attribute owner is a class, return the complete rename map.
+        return (attributeOwner instanceof Class) ? attributeOwnerRenames.get(attributeOwner) : new LinkedHashMap<>();
     }
 
     /**
@@ -444,9 +440,9 @@ public class CompositeDataTypeFlattener {
             String newRhsName = renames.getOrDefault(rhsName, rhsName);
             return new LinkedList<>(List.of(getNewAssignementUpdate(newLhsName, newRhsName, position)));
         }
-        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
 
         // Create a new assignment update of the unfolded properties for both left and right hand side.
+        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
         List<AUpdate> unfoldedAssignmentUpdates = new LinkedList<>();
         for (String leaf: leaves) {
             String newLhsName = renames.get(lhsName + leaf);
@@ -466,12 +462,9 @@ public class CompositeDataTypeFlattener {
     private static void unfoldAbstractActivity(Activity activity, Map<String, NamedElement> referenceableElements,
             Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
-        List<Constraint> preconditions = activity.getPreconditions();
-        List<Constraint> postconditions = activity.getPostconditions();
-
-        // Unfold the precondition and postcondition constraints.
-        unfoldConstraints(preconditions, referenceableElements, propertyLeaves, renames);
-        unfoldConstraints(postconditions, referenceableElements, propertyLeaves, renames);
+        // Unfold the precondition and postcondition constraints. Skip occurrence constraints.
+        unfoldConstraints(activity.getPreconditions(), referenceableElements, propertyLeaves, renames);
+        unfoldConstraints(activity.getPostconditions(), referenceableElements, propertyLeaves, renames);
     }
 
     private static void unfoldConstraints(List<Constraint> umlConstraints,
@@ -566,9 +559,6 @@ public class CompositeDataTypeFlattener {
      * @param renames The map linking the absolute names to the flattened names.
      * @return The unfolded CIF {@link AIfUpdate}.
      */
-
-    // ifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "))
-
     private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, NamedElement> referenceableElements,
             Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
