@@ -123,7 +123,7 @@ public class CompositeDataTypeFlattener {
      * names.
      *
      * @param attributeOwner The attribute owner whose properties to flatten.
-     * @param attributeOwnerRenames Pairs of flattened name, absolute name for every property of a composite data type.
+     * @param attributeOwnerRenames Pair of flattened name, absolute name for every property of a composite data type.
      *     Is modified in place.
      * @return {@code renames}.
      */
@@ -178,6 +178,16 @@ public class CompositeDataTypeFlattener {
         return !classRenames.isEmpty() ? classRenames.get(0) : new LinkedHashMap<>();
     }
 
+    /**
+     * Create new properties with a unique flattened name, storing also the corresponding absolute names.
+     *
+     * @param childProperties The properties whose names are to be flattened.
+     * @param propertyName The properties' parent name.
+     * @param renames Per flattened name, the absolute name.
+     * @param existingNames Names that already exist among the properties' parent.
+     * @return Pair of flattened name, absolute name for every property.
+     *
+     */
     private static Pair<Set<Property>, Map<String, String>> renameChildProperties(List<Property> childProperties,
             String propertyName, Map<String, String> renames, Set<String> existingNames)
     {
