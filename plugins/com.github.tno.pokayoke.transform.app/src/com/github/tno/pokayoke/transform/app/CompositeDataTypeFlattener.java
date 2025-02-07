@@ -69,10 +69,8 @@ public class CompositeDataTypeFlattener {
 
         // Unfold and rewrite only if there are composite data types in the UML model.
         if (!dataTypes.isEmpty()) {
-            // Step 1:
-            // Find and store the leaves of all properties of the main class that are instances of a composite data
-            // class. Recursively rewrite the properties with a flattened name, returning a map to the original
-            // reference name. Flip the map from absolute names to flattened names.
+            // Find and store the leaves of all composite data type properties. Recursively rewrite the properties with
+            // a flattened name, which is mapped to its absolute name.
             Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
                     new LinkedHashMap<>());
             Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
@@ -80,18 +78,14 @@ public class CompositeDataTypeFlattener {
                     .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
             Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
 
-            // Step 2:
             // Unfold all references to properties with a composite data type in assignments and comparisons.
             unfoldCompositeDataTypeReferences(activeClass, context.getReferenceableElements(), propertyLeaves,
                     absoluteToFlatNames);
 
-            // Step 3:
             // Delete the composite data types.
             model.getPackagedElements().removeAll(dataTypes);
         }
     }
-
-    // STEP 1 METHODS START HERE.
 
     /**
      * Get per absolute name of a property with a composite data type, the relative names of its leaves.
@@ -123,15 +117,15 @@ public class CompositeDataTypeFlattener {
      * Recursively flatten properties with a composite data type, renaming flattened properties to avoid duplicate
      * names.
      *
-     * @param attributeOwner The attribute owner whose properties to flatten.
-     * @param attributeOwnerRenames Pair of flattened name, absolute name for every property of a composite data type.
-     *     Is modified in place.
+     * @param attributeOwner The attribute owner, either a class or composite data type, whose properties to flatten.
+     * @param attributeOwnerRenames Pair of flattened name, absolute name for every property of an attribute owner. Is
+     *     modified in place.
      * @return {@code renames}.
      */
     private static Map<String, String> renameAndFlattenProperties(AttributeOwner attributeOwner,
             Map<AttributeOwner, Map<String, String>> attributeOwnerRenames)
     {
-        // First, flatten children recursively, if the composite data type has not been processed already.
+        // First, flatten children recursively, if the composite data type has not been flattened already.
         for (Property property: attributeOwner.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())
                     && !attributeOwnerRenames.containsKey((AttributeOwner)property.getType()))
@@ -139,14 +133,13 @@ public class CompositeDataTypeFlattener {
                 renameAndFlattenProperties((DataType)property.getType(), attributeOwnerRenames);
             }
         }
-
         // Collect the names of the properties with primitive type.
         List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
-        Set<String> existingNames = ownerProperties.stream()
+        Set<String> primitivePropertiesNames = ownerProperties.stream()
                 .filter(p -> !PokaYokeTypeUtil.isCompositeDataType(p.getType())).map(Property::getName)
                 .collect(Collectors.toSet());
 
-        // Loop over the owner's properties and rename the properties' children. Add them to the owner attributes.
+        // Loop over the owner's properties and rename the properties' children. Add them to the owner properties.
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
         List<Property> propertiesToRemove = new LinkedList<>();
         Map<String, String> childrenRenames = new LinkedHashMap<>();
@@ -155,15 +148,14 @@ public class CompositeDataTypeFlattener {
                 Map<String, String> dataTypeRenames = attributeOwnerRenames.getOrDefault(property.getType(),
                         new LinkedHashMap<>());
 
-                // Rename the children, store the map from flattened name to absolute name.
+                // Rename the children, update the map from flattened name to absolute name.
                 for (Property child: ((DataType)property.getType()).getOwnedAttributes()) {
                     Pair<Property, Map<String, String>> flattenedPropertyAndRename = renameChildProperty(child,
-                            property.getName(), dataTypeRenames, existingNames);
+                            property.getName(), dataTypeRenames, primitivePropertiesNames);
                     Property flattenedProperty = flattenedPropertyAndRename.getLeft();
-                    existingNames.add(flattenedProperty.getName());
-                    Map<String, String> childRename = flattenedPropertyAndRename.getRight();
-                    childrenRenames.putAll(childRename);
+                    primitivePropertiesNames.add(flattenedProperty.getName());
                     propertiesToAdd.add(flattenedProperty);
+                    childrenRenames.putAll(flattenedPropertyAndRename.getRight());
                 }
                 propertiesToRemove.add(property);
             }
@@ -198,7 +190,7 @@ public class CompositeDataTypeFlattener {
         Property renamedProperty = copyAndRenameProperty(child, flattenedName);
 
         // Find the child name for the absolute name part, and return it in a map.
-        String childName = renames.containsKey(child.getName()) ? renames.get(child.getName()) : child.getName();
+        String childName = renames.getOrDefault(child.getName(), child.getName());
         String newName = propertyName + "." + childName;
         return Pair.of(renamedProperty, Map.of(flattenedName, newName));
     }
@@ -220,8 +212,6 @@ public class CompositeDataTypeFlattener {
         rewrittenProperty.setName(newName);
         return rewrittenProperty;
     }
-
-    // STEP 2 METHODS START HERE.
 
     /**
      * Unfold all references to properties with composite data type in assignments and comparisons, in the given class.
@@ -271,7 +261,7 @@ public class CompositeDataTypeFlattener {
             PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
         }
 
-        // Perform the unfolding for the effects (list of list of updates).
+        // Perform the unfolding of the effects.
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
         List<String> newEffects = new LinkedList<>();
         for (String effect: effects) {
@@ -282,8 +272,6 @@ public class CompositeDataTypeFlattener {
                 newUpdateStrings.addAll(
                         newUpdates.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.toList()));
             }
-
-            // Join the updates with a comma, and store them into the unfolded effects list.
             String newEffect = String.join(", ", newUpdateStrings);
             newEffects.add(newEffect);
         }
@@ -360,9 +348,8 @@ public class CompositeDataTypeFlattener {
             // Create the new binary expression of the unfolded properties for both left and right hand side.
             ABinaryExpression unfoldedBinaryExpression = null;
             for (String leaf: leaves) {
-                // Get flattened names, if present.
-                String newLhsName = renames.getOrDefault(lhsName + leaf, lhsName + leaf);
-                String newRhsName = renames.getOrDefault(rhsName + leaf, rhsName + leaf);
+                String newLhsName = renames.get(lhsName + leaf);
+                String newRhsName = renames.get(rhsName + leaf);
                 ABinaryExpression currentBinaryExpression = createABinaryExpression(newLhsName, newRhsName, operator,
                         position);
 
@@ -462,9 +449,8 @@ public class CompositeDataTypeFlattener {
         // Create a new assignment update of the unfolded properties for both left and right hand side.
         List<AUpdate> unfoldedAssignmentUpdates = new LinkedList<>();
         for (String leaf: leaves) {
-            // Get flattened name, if present.
-            String newLhsName = renames.getOrDefault(lhsName + leaf, lhsName + leaf);
-            String newRhsName = renames.getOrDefault(rhsName + leaf, rhsName + leaf);
+            String newLhsName = renames.get(lhsName + leaf);
+            String newRhsName = renames.get(rhsName + leaf);
             AUpdate currentAssignmentExpression = getNewAssignementUpdate(newLhsName, newRhsName, position);
             unfoldedAssignmentUpdates.add(currentAssignmentExpression);
         }
@@ -511,7 +497,6 @@ public class CompositeDataTypeFlattener {
     {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
         List<String> constraintBodyStrings = constraintSpec.getBodies();
-
         for (int i = 0; i < constraintBodyExpressions.size(); i++) {
             // Get the current body, unfold it, and substitute the corresponding string.
             ACifObject currentBody = constraintBodyExpressions.get(i);
@@ -523,8 +508,7 @@ public class CompositeDataTypeFlattener {
             } else {
                 throw new RuntimeException("Guard body " + currentBody + " is not an expression nor an invariant.");
             }
-            String newBodyString = ACifObjectToString.toString(unfoldedBody);
-            constraintBodyStrings.set(i, newBodyString);
+            constraintBodyStrings.set(i, ACifObjectToString.toString(unfoldedBody));
         }
     }
 
@@ -567,11 +551,8 @@ public class CompositeDataTypeFlattener {
         }
 
         // Unfold pre and postconditions.
-        List<Constraint> preconditions = activity.getPreconditions();
-        List<Constraint> postconditions = activity.getPostconditions();
-
-        unfoldConstraints(preconditions, referenceableElements, propertyLeaves, renames);
-        unfoldConstraints(postconditions, referenceableElements, propertyLeaves, renames);
+        unfoldConstraints(activity.getPreconditions(), referenceableElements, propertyLeaves, renames);
+        unfoldConstraints(activity.getPostconditions(), referenceableElements, propertyLeaves, renames);
     }
 
     /**
@@ -585,22 +566,21 @@ public class CompositeDataTypeFlattener {
      * @param renames The map linking the absolute names to the flattened names.
      * @return The unfolded CIF {@link AIfUpdate}.
      */
+
+    // ifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "))
+
     private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, NamedElement> referenceableElements,
             Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
-        // Process the if statements. The element of the list represent the conditions separated by a comma.
-        List<AExpression> ifStatements = ifUpdate.guards;
-        List<AExpression> unfoldedIfStatements = new LinkedList<>();
-        for (AExpression ifStatement: ifStatements) {
-            unfoldedIfStatements.add(unfoldACifExpression(ifStatement, referenceableElements, propertyLeaves, renames));
-        }
+        // Process the if statements.
+        List<AExpression> unfoldedIfStatements = ifUpdate.guards.stream()
+                .map(u -> unfoldACifExpression(u, referenceableElements, propertyLeaves, renames))
+                .collect(Collectors.toList());
 
-        // Process the elif statements. Each element of the list represents a complete elif statement.
-        List<AElifUpdate> elifStatements = ifUpdate.elifs;
-        List<AElifUpdate> unfoldedElifs = new LinkedList<>();
-        for (AElifUpdate elifStatement: elifStatements) {
-            unfoldedElifs.add(unfoldACifElifUpdate(elifStatement, referenceableElements, propertyLeaves, renames));
-        }
+        // Process the elif statements.
+        List<AElifUpdate> unfoldedElifs = ifUpdate.elifs.stream()
+                .map(u -> unfoldACifElifUpdate(u, referenceableElements, propertyLeaves, renames))
+                .collect(Collectors.toList());
 
         // Process the else statements as CIF AUpdates.
         List<AUpdate> elseStatements = ifUpdate.elses;
@@ -623,11 +603,9 @@ public class CompositeDataTypeFlattener {
             Map<String, String> renames)
     {
         // Process the elif guards as CIF AExpressions.
-        List<AExpression> elifGuards = elifUpdate.guards;
-        List<AExpression> unfoldedElifGuards = new LinkedList<>();
-        for (AExpression elifGuard: elifGuards) {
-            unfoldedElifGuards.add(unfoldACifExpression(elifGuard, referenceableElements, propertyLeaves, renames));
-        }
+        List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
+                .map(u -> unfoldACifExpression(u, referenceableElements, propertyLeaves, renames))
+                .collect(Collectors.toList());
 
         // Process the elif thens as CIF AUpdates.
         List<AUpdate> elifThens = elifUpdate.thens;
@@ -637,53 +615,4 @@ public class CompositeDataTypeFlattener {
         }
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
     }
-
-//    public static void translateFlatToAbsoluteNames(Class clazz, Map<String, String> renames) {
-//        // Unfold opaque behaviors and activities.
-//        for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
-//            if (classBehavior instanceof OpaqueBehavior element) {
-//                renameGuardAndEffects(element, renames);
-//            } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-////                renameAbstractActivity(activity, renames);
-//            } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-////                renameConcreteActivity(activity, renames);
-//            } else {
-//                throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.", clazz));
-//            }
-//        }
-//
-//        // Unfold constraints.
-////        renameConstraints(clazz.getOwnedRules(), renames);
-//    }
-//
-//    private static void renameGuardAndEffects(RedefinableElement element,
-//
-//            Map<String, String> renames)
-//    {
-//        // Perform the guard unfolding. Skip if null.
-//        AExpression guardExpr = CifParserHelper.parseGuard(element);
-//        if (guardExpr != null) {
-//            AExpression newGuard = renameACifExpression(guardExpr, renames);
-//            String newGuardString = ACifObjectToString.toString(newGuard);
-//            PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
-//        }
-//
-//        // Perform the unfolding for the effects (list of list of updates).
-//        List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
-//        List<String> newEffects = new LinkedList<>();
-//        for (String effect: effects) {
-//            List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
-//            List<String> newUpdateStrings = new LinkedList<>();
-//            for (AUpdate update: updates) {
-//                List<AUpdate> newUpdates = renameACifUpdate(update, renames);
-//                newUpdateStrings.addAll(
-//                        newUpdates.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.toList()));
-//            }
-//
-//            // Join the updates with a comma, and store them into the unfolded effects list.
-//            String newEffect = String.join(", ", newUpdateStrings);
-//            newEffects.add(newEffect);
-//        }
-//        PokaYokeUmlProfileUtil.setEffects(element, newEffects);
-//    }
 }
