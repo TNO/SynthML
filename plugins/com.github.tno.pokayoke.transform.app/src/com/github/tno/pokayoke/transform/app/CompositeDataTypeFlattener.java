@@ -141,7 +141,7 @@ public class CompositeDataTypeFlattener {
 
         // Loop over the owner's properties and rename the properties' children. Add them to the owner properties.
         Set<Property> propertiesToAdd = new LinkedHashSet<>();
-        List<Property> propertiesToRemove = new LinkedList<>();
+        Set<Property> propertiesToRemove = new LinkedHashSet<>();
         Map<String, String> childrenRenames = new LinkedHashMap<>();
         for (Property property: ownerProperties) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
@@ -571,11 +571,11 @@ public class CompositeDataTypeFlattener {
                 .map(u -> unfoldACifElifUpdate(u, referenceableElements, propertyLeaves, renames))
                 .collect(Collectors.toList());
 
-        // Process the else statements as CIF AUpdates.
+        // Process the else statements.
         List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
                 .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
 
-        // Process the then statements as CIF AUpdates.
+        // Process the then statements.
         List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
                 .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
 
@@ -586,12 +586,12 @@ public class CompositeDataTypeFlattener {
             Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyLeaves,
             Map<String, String> renames)
     {
-        // Process the elif guards as CIF AExpressions.
+        // Process the guards.
         List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
                 .map(u -> unfoldACifExpression(u, referenceableElements, propertyLeaves, renames))
                 .collect(Collectors.toList());
 
-        // Process the elif thens as CIF AUpdates.
+        // Process the thens.
         List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
                 .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
 
