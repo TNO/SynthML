@@ -258,11 +258,13 @@ public class CompositeDataTypeFlattener {
             Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyLeaves,
             Map<String, String> renames)
     {
-        // Perform the guard unfolding.
+        // Perform the guard unfolding. Skip if null.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
-        AExpression newGuard = unfoldACifExpression(guardExpr, referenceableElements, propertyLeaves, renames);
-        String newGuardString = ACifObjectToString.toString(newGuard);
-        PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
+        if (guardExpr != null) {
+            AExpression newGuard = unfoldACifExpression(guardExpr, referenceableElements, propertyLeaves, renames);
+            String newGuardString = ACifObjectToString.toString(newGuard);
+            PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
+        }
 
         // Perform the unfolding for the effects (list of list of updates).
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
