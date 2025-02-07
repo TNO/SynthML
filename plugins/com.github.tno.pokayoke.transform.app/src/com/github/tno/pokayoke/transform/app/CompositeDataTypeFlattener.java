@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,7 +74,6 @@ public class CompositeDataTypeFlattener {
         Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
                 new LinkedHashMap<>());
         Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
-
         Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
         Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
@@ -139,7 +137,7 @@ public class CompositeDataTypeFlattener {
             }
         }
 
-        // Names of the primitive type child properties of the property.
+        // Names of the properties with primitive type.
         List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
         Set<String> primitiveNames = ownerProperties.stream()
                 .filter(p -> !PokaYokeTypeUtil.isCompositeDataType(p.getType())).map(Property::getName)
@@ -172,10 +170,11 @@ public class CompositeDataTypeFlattener {
         attributeOwner.getOwnedAttributes().addAll(propertiesToAdd);
 
         // If attribute owner is a class, return its rename map. Otherwise, return an empty list.
-        List<Map<String, String>> classRenames = attributeOwnerRenames.entrySet().stream()
-                .filter(entry -> entry.getKey() instanceof Class).map(Entry::getValue)
-                .collect(Collectors.toCollection(LinkedList::new));
-        return !classRenames.isEmpty() ? classRenames.get(0) : new LinkedHashMap<>();
+        if (attributeOwner instanceof Class) {
+            return attributeOwnerRenames.get(attributeOwner);
+        } else {
+            return new LinkedHashMap<>();
+        }
     }
 
     /**
