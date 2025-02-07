@@ -67,25 +67,28 @@ public class CompositeDataTypeFlattener {
         Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
 
-        // Step 1:
-        // Find and store the leaves of all properties of the main class that are instances of a composite data class.
-        // Recursively rewrite the properties with a flattened name, returning a map to the original reference name.
-        // Flip the map from absolute names to flattened names.
-        Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
-                new LinkedHashMap<>());
-        Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
-        Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-        Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
+        // Unfold and rewrite only if there are composite data types in the UML model.
+        if (!dataTypes.isEmpty()) {
+            // Step 1:
+            // Find and store the leaves of all properties of the main class that are instances of a composite data
+            // class. Recursively rewrite the properties with a flattened name, returning a map to the original
+            // reference name. Flip the map from absolute names to flattened names.
+            Map<String, Set<String>> propertyLeaves = getLeavesForAllCompositeProperties(activeClass, "",
+                    new LinkedHashMap<>());
+            Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
+            Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+            Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
 
-        // Step 2:
-        // Unfold all references to properties with a composite data type in assignments and comparisons.
-        unfoldCompositeDataTypeReferences(activeClass, context.getReferenceableElements(), propertyLeaves,
-                absoluteToFlatNames);
+            // Step 2:
+            // Unfold all references to properties with a composite data type in assignments and comparisons.
+            unfoldCompositeDataTypeReferences(activeClass, context.getReferenceableElements(), propertyLeaves,
+                    absoluteToFlatNames);
 
-        // Step 3:
-        // Delete the composite data types.
-        model.getPackagedElements().removeAll(dataTypes);
+            // Step 3:
+            // Delete the composite data types.
+            model.getPackagedElements().removeAll(dataTypes);
+        }
     }
 
     // STEP 1 METHODS START HERE.
