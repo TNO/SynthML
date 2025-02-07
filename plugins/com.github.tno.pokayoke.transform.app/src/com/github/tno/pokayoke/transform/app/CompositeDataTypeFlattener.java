@@ -489,7 +489,6 @@ public class CompositeDataTypeFlattener {
             Map<String, String> renames)
     {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
-        List<String> constraintBodyStrings = constraintSpec.getBodies();
         for (int i = 0; i < constraintBodyExpressions.size(); i++) {
             // Get the current body, unfold it, and substitute the corresponding string.
             ACifObject currentBody = constraintBodyExpressions.get(i);
@@ -501,7 +500,7 @@ public class CompositeDataTypeFlattener {
             } else {
                 throw new RuntimeException("Guard body " + currentBody + " is not an expression nor an invariant.");
             }
-            constraintBodyStrings.set(i, ACifObjectToString.toString(unfoldedBody));
+            constraintSpec.getBodies().set(i, ACifObjectToString.toString(unfoldedBody));
         }
     }
 
@@ -573,18 +572,13 @@ public class CompositeDataTypeFlattener {
                 .collect(Collectors.toList());
 
         // Process the else statements as CIF AUpdates.
-        List<AUpdate> elseStatements = ifUpdate.elses;
-        List<AUpdate> unfoldedElses = new LinkedList<>();
-        for (AUpdate elseStatement: elseStatements) {
-            unfoldedElses.addAll(unfoldACifUpdate(elseStatement, referenceableElements, propertyLeaves, renames));
-        }
+        List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
+                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
 
         // Process the then statements as CIF AUpdates.
-        List<AUpdate> thenStatements = ifUpdate.thens;
-        List<AUpdate> unfoldedThens = new LinkedList<>();
-        for (AUpdate thenStatement: thenStatements) {
-            unfoldedThens.addAll(unfoldACifUpdate(thenStatement, referenceableElements, propertyLeaves, renames));
-        }
+        List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
+                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
+
         return new AIfUpdate(unfoldedIfStatements, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdate.position);
     }
 
@@ -598,11 +592,9 @@ public class CompositeDataTypeFlattener {
                 .collect(Collectors.toList());
 
         // Process the elif thens as CIF AUpdates.
-        List<AUpdate> elifThens = elifUpdate.thens;
-        List<AUpdate> unfoldedElifThens = new LinkedList<>();
-        for (AUpdate elifThen: elifThens) {
-            unfoldedElifThens.addAll(unfoldACifUpdate(elifThen, referenceableElements, propertyLeaves, renames));
-        }
+        List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
+                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyLeaves, renames).stream()).toList();
+
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
     }
 }
