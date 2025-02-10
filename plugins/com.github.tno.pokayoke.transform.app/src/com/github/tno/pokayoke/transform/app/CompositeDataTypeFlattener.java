@@ -413,8 +413,8 @@ public class CompositeDataTypeFlattener {
             Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyLeaves,
             Map<String, String> renames)
     {
-        // Unfold only if 'addressable' and 'value' are both ANameExpression, or 'addressable' is ANameExpression and
-        // 'value' is boolean.
+        // Unfold only if 'addressable' is ANameExpression. If also 'value' is ANameExpression, unfold both left and
+        // right hand sides.
         if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
                 && assignUpdate.value instanceof ANameExpression aNameValue)
         {
@@ -430,10 +430,8 @@ public class CompositeDataTypeFlattener {
         } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable) {
             NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
             if (lhsElement instanceof Property) {
-                String newName = renames.getOrDefault(aNameAddressable.name.name, aNameAddressable.name.name);
-                ANameExpression lhsNameExpression = new ANameExpression(new AName(newName, assignUpdate.position),
-                        false, assignUpdate.position);
-                return new LinkedList<>(List.of(new AAssignmentUpdate(lhsNameExpression,
+                return new LinkedList<>(List.of(new AAssignmentUpdate(
+                        unfoldACifExpression(aNameAddressable, referenceableElements, propertyLeaves, renames),
                         unfoldACifExpression(assignUpdate.value, referenceableElements, propertyLeaves, renames),
                         assignUpdate.position)));
             } else {
