@@ -19,6 +19,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -318,6 +319,8 @@ public class CompositeDataTypeFlattener {
             return new AUnaryExpression(unaryExpr.operator,
                     unfoldACifExpression(unaryExpr.child, referenceableElements, propertyLeaves, renames),
                     unaryExpr.position);
+        } else if (expression instanceof ANameExpression nameExpr) {
+            return unfoldANameExpression(nameExpr.name.name, expression.position, renames);
         } else {
             // Expressions without children don't need unfolding.
             return expression;
@@ -355,6 +358,13 @@ public class CompositeDataTypeFlattener {
             }
         }
         return unfoldedBinaryExpression;
+    }
+
+    private static ANameExpression unfoldANameExpression(String name, TextPosition position,
+            Map<String, String> renames)
+    {
+        String newName = renames.getOrDefault(name, name);
+        return new ANameExpression(new AName(newName, position), false, position);
     }
 
     private static ABinaryExpression createABinaryExpression(String lhsName, String rhsName, String operator,
@@ -404,6 +414,8 @@ public class CompositeDataTypeFlattener {
             Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyLeaves,
             Map<String, String> renames)
     {
+        // Unfold only if 'addressable' and 'value' are both ANameExpression, or 'addressable' is ANameExpression and
+        // 'value' is boolean.
         if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
                 && assignUpdate.value instanceof ANameExpression aNameValue)
         {
@@ -416,8 +428,20 @@ public class CompositeDataTypeFlattener {
             } else {
                 return new LinkedList<>(List.of(assignUpdate));
             }
+        } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
+                && assignUpdate.value instanceof ABoolExpression aBoolValue)
+        {
+            NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
+            if (lhsElement instanceof Property) {
+                String newName = renames.getOrDefault(aNameAddressable.name.name, aNameAddressable.name.name);
+                ANameExpression lhsNameExpression = new ANameExpression(new AName(newName, assignUpdate.position),
+                        false, assignUpdate.position);
+                return new LinkedList<>(
+                        List.of(new AAssignmentUpdate(lhsNameExpression, aBoolValue, assignUpdate.position)));
+            } else {
+                return new LinkedList<>(List.of(assignUpdate));
+            }
         }
-        // If 'addressable' and 'value' are not both ANameExpression, skip the unfolding and return the expression.
         return new LinkedList<>(List.of(assignUpdate));
     }
 
