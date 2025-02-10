@@ -428,16 +428,15 @@ public class CompositeDataTypeFlattener {
             } else {
                 return new LinkedList<>(List.of(assignUpdate));
             }
-        } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
-                && assignUpdate.value instanceof ABoolExpression aBoolValue)
-        {
+        } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable) {
             NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
             if (lhsElement instanceof Property) {
                 String newName = renames.getOrDefault(aNameAddressable.name.name, aNameAddressable.name.name);
                 ANameExpression lhsNameExpression = new ANameExpression(new AName(newName, assignUpdate.position),
                         false, assignUpdate.position);
-                return new LinkedList<>(
-                        List.of(new AAssignmentUpdate(lhsNameExpression, aBoolValue, assignUpdate.position)));
+                return new LinkedList<>(List.of(new AAssignmentUpdate(lhsNameExpression,
+                        unfoldACifExpression(assignUpdate.value, referenceableElements, propertyLeaves, renames),
+                        assignUpdate.position)));
             } else {
                 return new LinkedList<>(List.of(assignUpdate));
             }
