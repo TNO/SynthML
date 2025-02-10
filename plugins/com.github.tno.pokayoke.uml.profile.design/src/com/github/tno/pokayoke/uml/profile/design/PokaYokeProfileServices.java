@@ -232,9 +232,14 @@ public class PokaYokeProfileServices {
 
     public String getControlFlowLabel(ControlFlow controlFlow) {
         String label = controlFlow.getName();
-        String guard = getGuard(controlFlow);
-        if (!label.isEmpty() && !guard.isEmpty()) {
+        label = Strings.nullToEmpty(label);
+        if (!label.isEmpty()) {
             label += System.getProperty("line.separator");
+        }
+
+        String guard = getGuard(controlFlow);
+        if (Strings.isNullOrEmpty(guard)) {
+            guard = "true";
         }
 
         if (guard.length() > LABEL_GUARD_MAX_LENGTH) {
@@ -246,15 +251,25 @@ public class PokaYokeProfileServices {
         return label;
     }
 
+    /**
+     * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer.
+     * This implementation changes only the name of an 'ActivityEdge' without altering its guards.
+     * The override occurs implicitly because PokaYokeProfileServices is added to the viewpoint.
+     * This method is called through Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
+     *
+     * @param context The UML element to be edited.
+     * @param editedLabelContent The new label content.
+     * @return The edited UML element.
+     */
     public Element editUmlLabel(Element context, String editedLabelContent) {
         if (context instanceof ActivityEdge edge) {
-            // The implementation in UML designer uses doSwitch to change both the guard and the name of an
-            // {@link ActivityEdge}. This implementation only changes the name.
+            // The implementation in UML Designer uses 'doSwitch' to change both the guard and the name of an
+            // 'ActivityEdge'. This implementation only changes the name.
             setName(edge, editedLabelContent);
             return edge;
         }
 
-        final EditLabelSwitch editLabel = new EditLabelSwitch();
+        EditLabelSwitch editLabel = new EditLabelSwitch();
         editLabel.setEditedLabelContent(editedLabelContent);
         return editLabel.doSwitch(context);
     }
