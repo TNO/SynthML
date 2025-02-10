@@ -304,7 +304,7 @@ public class CompositeDataTypeFlattener {
                 NamedElement rhsElement = referenceableElements.get(rhsNameExpr.name.name);
                 if (lhsElement instanceof Property || rhsElement instanceof Property) {
                     return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, binExpr.operator,
-                            binExpr.position, referenceableElements, propertyLeaves, renames);
+                            binExpr.position, propertyLeaves, renames);
                 } else {
                     return new ABinaryExpression(binExpr.operator, unfoldedLhsExpression, unfoldedRhsExpression,
                             expression.position);
@@ -325,45 +325,36 @@ public class CompositeDataTypeFlattener {
     }
 
     private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, String operator,
-            TextPosition position, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
+            TextPosition position, Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
-        // Unfold if left hand side and right hand side are both composite data types.
-        NamedElement lhsElement = referenceableElements.get(lhsName);
-        NamedElement rhsElement = referenceableElements.get(rhsName);
-        if (lhsElement instanceof Property || rhsElement instanceof Property) {
-            // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
-            // names refer to primitive type. Get flattened name if present.
-            Set<String> lhsLeaves = propertyLeaves.get(lhsName);
-            Set<String> rhsLeaves = propertyLeaves.get(rhsName);
-            if (lhsLeaves == null && rhsLeaves == null) {
-                String newLhsName = renames.getOrDefault(lhsName, lhsName);
-                String newRhsName = renames.getOrDefault(rhsName, rhsName);
-                return createABinaryExpression(newLhsName, newRhsName, operator, position);
-            }
-            Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
-
-            // Create the new binary expression of the unfolded properties for both left and right hand side.
-            ABinaryExpression unfoldedBinaryExpression = null;
-            for (String leaf: leaves) {
-                String newLhsName = renames.get(lhsName + leaf);
-                String newRhsName = renames.get(rhsName + leaf);
-                ABinaryExpression currentBinaryExpression = createABinaryExpression(newLhsName, newRhsName, operator,
-                        position);
-
-                // Create a new binary expression as a conjunction of the expressions generated for every leaf.
-                if (unfoldedBinaryExpression == null) {
-                    unfoldedBinaryExpression = currentBinaryExpression;
-                } else {
-                    unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
-                            currentBinaryExpression, position);
-                }
-            }
-            return unfoldedBinaryExpression;
-        } else {
-            // No need to unfold non-properties.
-            return createABinaryExpression(lhsName, rhsName, operator, position);
+        // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
+        // names refer to primitive type. Get flattened name if present.
+        Set<String> lhsLeaves = propertyLeaves.get(lhsName);
+        Set<String> rhsLeaves = propertyLeaves.get(rhsName);
+        if (lhsLeaves == null && rhsLeaves == null) {
+            String newLhsName = renames.getOrDefault(lhsName, lhsName);
+            String newRhsName = renames.getOrDefault(rhsName, rhsName);
+            return createABinaryExpression(newLhsName, newRhsName, operator, position);
         }
+        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
+
+        // Create the new binary expression of the unfolded properties for both left and right hand side.
+        ABinaryExpression unfoldedBinaryExpression = null;
+        for (String leaf: leaves) {
+            String newLhsName = renames.get(lhsName + leaf);
+            String newRhsName = renames.get(rhsName + leaf);
+            ABinaryExpression currentBinaryExpression = createABinaryExpression(newLhsName, newRhsName, operator,
+                    position);
+
+            // Create a new binary expression as a conjunction of the expressions generated for every leaf.
+            if (unfoldedBinaryExpression == null) {
+                unfoldedBinaryExpression = currentBinaryExpression;
+            } else {
+                unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
+                        currentBinaryExpression, position);
+            }
+        }
+        return unfoldedBinaryExpression;
     }
 
     private static ABinaryExpression createABinaryExpression(String lhsName, String rhsName, String operator,
