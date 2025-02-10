@@ -4,11 +4,9 @@ package com.github.tno.pokayoke.transform.common;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -18,11 +16,8 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.Namespace;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 /**
@@ -65,42 +60,6 @@ public class NameHelper {
      */
     private static boolean shouldBeNamed(NamedElement namedElement) {
         return !(namedElement instanceof ValueSpecification);
-    }
-
-    /**
-     * Ensures unique names for enumerations, properties and activities in a namespace, within their scope.
-     *
-     * @param namespace The namespace to check.
-     * @param names The names of enumerations, properties and activities in the context of the namespace.
-     */
-    public static void ensureUniqueNameForEnumerationsPropertiesActivities(Namespace namespace,
-            Map<String, Integer> names)
-    {
-        Map<String, Integer> localNames = new LinkedHashMap<>(names);
-
-        // Helper for iterating over all enumeration, property and activity members directly within the namespace.
-        Consumer<Consumer<NamedElement>> memberIterator = elementConsumer -> {
-            for (NamedElement member: namespace.getOwnedMembers()) {
-                if (member instanceof Enumeration || member instanceof Property || member instanceof Activity) {
-                    elementConsumer.accept(member);
-                }
-            }
-        };
-
-        // Collect the names of all enumeration, property and activity members.
-        memberIterator.accept(element -> updateNameMap(element, localNames));
-
-        // Ensure unique names for all enumeration, property and activity members.
-        memberIterator.accept(element -> ensureUniqueNameForElement(element, localNames));
-
-        // Recursively consider all nested classes and models.
-        for (Element member: namespace.getOwnedMembers()) {
-            if (member instanceof Class classMember) {
-                ensureUniqueNameForEnumerationsPropertiesActivities(classMember, localNames);
-            } else if (member instanceof Model modelMember) {
-                ensureUniqueNameForEnumerationsPropertiesActivities(modelMember, localNames);
-            }
-        }
     }
 
     /**
