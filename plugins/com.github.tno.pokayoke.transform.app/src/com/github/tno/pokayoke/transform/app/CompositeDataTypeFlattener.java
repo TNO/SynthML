@@ -290,28 +290,30 @@ public class CompositeDataTypeFlattener {
             Map<String, String> renames)
     {
         if (expression instanceof ABinaryExpression binExpr) {
-            AExpression unfoldedLeft = unfoldACifExpression(binExpr.left, referenceableElements, propertyLeaves,
-                    renames);
-            AExpression unfoldedRight = unfoldACifExpression(binExpr.right, referenceableElements, propertyLeaves,
-                    renames);
+            AExpression unfoldedLhsExpression = unfoldACifExpression(binExpr.left, referenceableElements,
+                    propertyLeaves, renames);
+            AExpression unfoldedRhsExpression = unfoldACifExpression(binExpr.right, referenceableElements,
+                    propertyLeaves, renames);
 
             // Unfold comparisons of properties with composite data types.
-            if (binExpr.left instanceof ANameExpression leftNameExpr
-                    && binExpr.right instanceof ANameExpression rightNameExpr)
+            if (binExpr.left instanceof ANameExpression lhsNameExpr
+                    && binExpr.right instanceof ANameExpression rhsNameExpr)
             {
                 // Unfold if left hand side or right hand side are properties.
-                NamedElement lhsElement = referenceableElements.get(leftNameExpr.name.name);
-                NamedElement rhsElement = referenceableElements.get(rightNameExpr.name.name);
+                NamedElement lhsElement = referenceableElements.get(lhsNameExpr.name.name);
+                NamedElement rhsElement = referenceableElements.get(rhsNameExpr.name.name);
                 if (lhsElement instanceof Property || rhsElement instanceof Property) {
-                    return unfoldComparisonExpression(leftNameExpr.name.name, rightNameExpr.name.name, binExpr.operator,
+                    return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, binExpr.operator,
                             binExpr.position, referenceableElements, propertyLeaves, renames);
                 } else {
-                    return new ABinaryExpression(binExpr.operator, unfoldedLeft, unfoldedRight, expression.position);
+                    return new ABinaryExpression(binExpr.operator, unfoldedLhsExpression, unfoldedRhsExpression,
+                            expression.position);
                 }
             }
 
             // Combine the unfolded left and right components to form a new binary expression.
-            return new ABinaryExpression(binExpr.operator, unfoldedLeft, unfoldedRight, expression.position);
+            return new ABinaryExpression(binExpr.operator, unfoldedLhsExpression, unfoldedRhsExpression,
+                    expression.position);
         } else if (expression instanceof AUnaryExpression unaryExpr) {
             return new AUnaryExpression(unaryExpr.operator,
                     unfoldACifExpression(unaryExpr.child, referenceableElements, propertyLeaves, renames),
@@ -367,9 +369,9 @@ public class CompositeDataTypeFlattener {
     private static ABinaryExpression createABinaryExpression(String lhsName, String rhsName, String operator,
             TextPosition position)
     {
-        ANameExpression leftExpression = new ANameExpression(new AName(lhsName, position), false, position);
-        ANameExpression rightExpression = new ANameExpression(new AName(rhsName, position), false, position);
-        return new ABinaryExpression(operator, leftExpression, rightExpression, position);
+        ANameExpression lhsExpression = new ANameExpression(new AName(lhsName, position), false, position);
+        ANameExpression rhsExpression = new ANameExpression(new AName(rhsName, position), false, position);
+        return new ABinaryExpression(operator, lhsExpression, rhsExpression, position);
     }
 
     /**
@@ -454,9 +456,9 @@ public class CompositeDataTypeFlattener {
     }
 
     private static AAssignmentUpdate getNewAssignementUpdate(String lhs, String rhs, TextPosition position) {
-        ANameExpression leftExpression = new ANameExpression(new AName(lhs, position), false, position);
-        ANameExpression rightExpression = new ANameExpression(new AName(rhs, position), false, position);
-        return new AAssignmentUpdate(leftExpression, rightExpression, position);
+        ANameExpression lhsNameExpression = new ANameExpression(new AName(lhs, position), false, position);
+        ANameExpression rhsNameExpression = new ANameExpression(new AName(rhs, position), false, position);
+        return new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position);
     }
 
     private static void unfoldAbstractActivity(Activity activity, Map<String, NamedElement> referenceableElements,
