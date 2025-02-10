@@ -336,9 +336,9 @@ public class CompositeDataTypeFlattener {
             String newRhsName = renames.getOrDefault(rhsName, rhsName);
             return createABinaryExpression(newLhsName, newRhsName, operator, position);
         }
-        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
 
         // Create the new binary expression of the unfolded properties for both left and right hand side.
+        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
         ABinaryExpression unfoldedBinaryExpression = null;
         for (String leaf: leaves) {
             String newLhsName = renames.get(lhsName + leaf);
@@ -411,7 +411,7 @@ public class CompositeDataTypeFlattener {
             NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
             NamedElement rhsElement = referenceableElements.get(aNameValue.name.name);
             if (lhsElement instanceof Property || rhsElement instanceof Property) {
-                return getUnfoldedAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
+                return unfoldPropertiesOfAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
                         assignUpdate.position, propertyLeaves, renames);
             } else {
                 return new LinkedList<>(List.of(assignUpdate));
@@ -421,7 +421,7 @@ public class CompositeDataTypeFlattener {
         return new LinkedList<>(List.of(assignUpdate));
     }
 
-    private static List<AUpdate> getUnfoldedAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
+    private static List<AUpdate> unfoldPropertiesOfAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
             Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
         // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
@@ -431,7 +431,7 @@ public class CompositeDataTypeFlattener {
         if (lhsLeaves == null && rhsLeaves == null) {
             String newLhsName = renames.getOrDefault(lhsName, lhsName);
             String newRhsName = renames.getOrDefault(rhsName, rhsName);
-            return new LinkedList<>(List.of(getNewAssignementUpdate(newLhsName, newRhsName, position)));
+            return new LinkedList<>(List.of(createAAssignementUpdate(newLhsName, newRhsName, position)));
         }
 
         // Create a new assignment update of the unfolded properties for both left and right hand side.
@@ -440,13 +440,13 @@ public class CompositeDataTypeFlattener {
         for (String leaf: leaves) {
             String newLhsName = renames.get(lhsName + leaf);
             String newRhsName = renames.get(rhsName + leaf);
-            AUpdate currentAssignmentExpression = getNewAssignementUpdate(newLhsName, newRhsName, position);
+            AUpdate currentAssignmentExpression = createAAssignementUpdate(newLhsName, newRhsName, position);
             unfoldedAssignmentUpdates.add(currentAssignmentExpression);
         }
         return unfoldedAssignmentUpdates;
     }
 
-    private static AAssignmentUpdate getNewAssignementUpdate(String lhs, String rhs, TextPosition position) {
+    private static AAssignmentUpdate createAAssignementUpdate(String lhs, String rhs, TextPosition position) {
         ANameExpression lhsNameExpression = new ANameExpression(new AName(lhs, position), false, position);
         ANameExpression rhsNameExpression = new ANameExpression(new AName(rhs, position), false, position);
         return new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position);
