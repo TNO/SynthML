@@ -421,8 +421,8 @@ public class CompositeDataTypeFlattener {
         return new LinkedList<>(List.of(assignUpdate));
     }
 
-    private static List<AUpdate> unfoldPropertiesOfAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
-            Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
+    private static List<AUpdate> unfoldPropertiesOfAssignmentUpdate(String lhsName, String rhsName,
+            TextPosition position, Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
         // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
         // names refer to primitive type. Get flattened name if present.
