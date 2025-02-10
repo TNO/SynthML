@@ -30,8 +30,8 @@ import org.eclipse.uml2.uml.ValueSpecification;
  *
  * <p>
  * This class does not support UML models with composite data types.
- * </p>.
- * */
+ * </p>
+ */
 public class NameHelper {
     private NameHelper() {
     }
