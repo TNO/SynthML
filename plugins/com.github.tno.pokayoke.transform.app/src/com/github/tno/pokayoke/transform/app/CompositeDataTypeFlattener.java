@@ -399,7 +399,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AAssignmentUpdate}: substitutes the comparisons between composite data types with the
+     * Unfolds a CIF {@link AAssignmentUpdate}: substitutes the assignment between composite data types with the
      * respective leaf properties.
      *
      * @param assignUpdate A CIF {@link AAssignmentUpdate} to be unfolded.
@@ -422,7 +422,7 @@ public class CompositeDataTypeFlattener {
             NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
             NamedElement rhsElement = referenceableElements.get(aNameValue.name.name);
             if (lhsElement instanceof Property || rhsElement instanceof Property) {
-                return unfoldPropertiesOfAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
+                return unfoldLeavesOfAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
                         assignUpdate.position, propertyLeaves, renames);
             } else {
                 return new LinkedList<>(List.of(assignUpdate));
@@ -441,7 +441,7 @@ public class CompositeDataTypeFlattener {
         return new LinkedList<>(List.of(assignUpdate));
     }
 
-    private static List<AUpdate> unfoldPropertiesOfAssignmentUpdate(String lhsName, String rhsName,
+    private static List<AUpdate> unfoldLeavesOfAssignmentUpdate(String lhsName, String rhsName,
             TextPosition position, Map<String, Set<String>> propertyLeaves, Map<String, String> renames)
     {
         // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
