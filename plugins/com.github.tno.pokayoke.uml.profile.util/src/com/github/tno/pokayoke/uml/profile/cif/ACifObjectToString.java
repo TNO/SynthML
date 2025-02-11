@@ -94,7 +94,7 @@ public class ACifObjectToString {
     }
 
     public static String toString(AElifUpdate elifUpdate) {
-        return " elif " + elifUpdate.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + " : "
+        return " elif " + elifUpdate.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
                 + elifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "));
     }
 
