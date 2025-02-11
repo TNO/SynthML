@@ -34,7 +34,7 @@ In the following, we refer to this model instance as the `model', unless otherwi
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{Figures/PYEnvironmentHighlight.png}
-    \caption{A snapshot of the Poka Yoke environment.}
+    \caption{A screenshot of the Poka Yoke environment.}
     \label{fig:PY-environment}
 \end{figure}
 
@@ -391,7 +391,7 @@ We can use the following steps:
     The default value of \texttt{init} is false, none (leave an empty field) for \texttt{bit}.  
     \item Create an abstract activity, with precondition \verb#not init#, 
     and postcondition \verb#bit and init#.
-    \item Create an opaque behavior, named \texttt{initialize}, that models an initialization  action, with guard \texttt{not init} and nondeterministic effects:
+    \item Create an opaque behavior, named \texttt{initialize}, that models an initialization action, with guard \texttt{not init} and nondeterministic effects:
     \newline
     \verb#init := true, bit := true# \newline
     \verb#~~~# \newline
