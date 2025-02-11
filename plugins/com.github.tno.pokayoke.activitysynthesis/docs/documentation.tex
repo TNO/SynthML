@@ -332,7 +332,7 @@ an abstract activity called \texttt{ActivityMain}, and
 two opaque behaviors named \texttt{flip} and \texttt{initialize}. 
 The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}. 
 The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
-The \texttt{initialize} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
+The opaque behavior \texttt{initialize} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
 The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
 \end{example*}
 
