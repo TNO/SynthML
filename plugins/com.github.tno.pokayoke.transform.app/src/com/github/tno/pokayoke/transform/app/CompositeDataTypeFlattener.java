@@ -66,13 +66,18 @@ public class CompositeDataTypeFlattener {
         // Only perform flattening if there are any composite data types. This not only prevents unnecessary work, but
         // also prevents normalizing expressions/updates.
         CifContext context = new CifContext(model);
-        Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
         if (!dataTypes.isEmpty()) {
-            // Find and store the leaves of all composite data type properties. Recursively rewrite the properties with
-            // a flattened name, which is mapped to its absolute name.
+            Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
+
+            // Get per absolute name of a property with a composite data type, the relative names of its leaves. We use
+            // this later to rewrite references to properties with composite data types.
             Map<String, Set<String>> propertyToLeaves = getLeavesForAllCompositeProperties(activeClass, "",
                     new LinkedHashMap<>());
+
+            // Flatten all properties with composite data types. This also gives us for each original absolute name its
+            // flattened name, which we use later to rewrite absolute names to flattened names in expression and
+            // updates.
             Map<String, String> flatToAbsoluteNames = renameAndFlattenProperties(activeClass, new LinkedHashMap<>());
             Map<String, String> absoluteToFlatNames = flatToAbsoluteNames.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
@@ -146,15 +151,16 @@ public class CompositeDataTypeFlattener {
             Map<AttributeOwner, Map<String, String>> attributeOwnerRenames)
     {
         // First, flatten children recursively, if the composite data type has not been processed already.
-        for (Property property: attributeOwner.getOwnedAttributes()) {
+        List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
+        for (Property property: ownerProperties) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())
                     && !attributeOwnerRenames.containsKey((AttributeOwner)property.getType()))
             {
                 renameAndFlattenProperties((DataType)property.getType(), attributeOwnerRenames);
             }
         }
+
         // Collect the names of the properties with non-composite data types, to avoid these names when flattening.
-        List<Property> ownerProperties = attributeOwner.getOwnedAttributes();
         Set<String> primitivePropertiesNames = ownerProperties.stream()
                 .filter(p -> !PokaYokeTypeUtil.isCompositeDataType(p.getType())).map(Property::getName)
                 .collect(Collectors.toSet());
@@ -165,8 +171,9 @@ public class CompositeDataTypeFlattener {
         Map<String, String> childrenRenames = new LinkedHashMap<>();
         for (Property property: ownerProperties) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                Map<String, String> dataTypeRenames = attributeOwnerRenames.getOrDefault(property.getType(),
-                        new LinkedHashMap<>());
+                // Get renames for the children of the property's composite data type.
+                Map<String, String> dataTypeRenames = attributeOwnerRenames.get((AttributeOwner)property.getType());
+                Verify.verifyNotNull(dataTypeRenames);
 
                 // Copy and rename the children.
                 for (Property child: ((DataType)property.getType()).getOwnedAttributes()) {
@@ -196,7 +203,6 @@ public class CompositeDataTypeFlattener {
      * @param renames Per flattened child property name of the composite data type, its original relative name.
      * @param existingNames Names to avoid when renaming, since they already exist in the new parent (attribute owner).
      * @return The flattened property and its original relative name.
-     *
      */
     private static Pair<Property, Map<String, String>> renameChildProperty(Property child, String propertyName,
             Map<String, String> renames, Set<String> existingNames)
