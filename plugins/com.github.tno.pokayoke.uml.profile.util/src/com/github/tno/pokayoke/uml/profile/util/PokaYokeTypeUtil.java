@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.uml.profile.util;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -13,7 +12,6 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.PrimitiveType;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -141,25 +139,5 @@ public class PokaYokeTypeUtil {
      */
     public static String getLabel(Type type) {
         return type == null ? "null" : type.getLabel(true);
-    }
-
-    /**
-     * Collect the relative names of all leaf properties.
-     *
-     * @param parentProperty The parent UML property.
-     * @param prefix The relative name of the parent property, to use as a prefix.
-     * @param collectedNames The relative names collected so far. Is extended in-place.
-     */
-    public static void collectRelativeNamesOfLeafProperties(Property parentProperty, String prefix,
-            Set<String> collectedNames)
-    {
-        for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
-            String relName = prefix + "." + property.getName();
-            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                collectRelativeNamesOfLeafProperties(property, relName, collectedNames);
-            } else {
-                collectedNames.add(relName);
-            }
-        }
     }
 }

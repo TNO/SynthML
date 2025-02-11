@@ -106,11 +106,31 @@ public class CompositeDataTypeFlattener {
 
                 // Add this attribute owner to the result.
                 Set<String> leaves = new LinkedHashSet<>();
-                PokaYokeTypeUtil.collectRelativeNamesOfLeafProperties(property, "", leaves);
+                collectRelativeNamesOfLeafProperties(property, "", leaves);
                 propertyToLeaves.put(absName, leaves);
             }
         }
         return propertyToLeaves;
+    }
+
+    /**
+     * Collect the relative names of all leaf properties.
+     *
+     * @param parentProperty The parent UML property.
+     * @param prefix The relative name of the parent property, to use as a prefix.
+     * @param collectedNames The relative names collected so far. Is extended in-place.
+     */
+    public static void collectRelativeNamesOfLeafProperties(Property parentProperty, String prefix,
+            Set<String> collectedNames)
+    {
+        for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
+            String relName = prefix + "." + property.getName();
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
+                collectRelativeNamesOfLeafProperties(property, relName, collectedNames);
+            } else {
+                collectedNames.add(relName);
+            }
+        }
     }
 
     /**
