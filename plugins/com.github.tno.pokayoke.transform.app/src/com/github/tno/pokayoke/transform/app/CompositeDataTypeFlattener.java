@@ -177,7 +177,7 @@ public class CompositeDataTypeFlattener {
 
                 // Copy and rename the children.
                 for (Property child: ((DataType)property.getType()).getOwnedAttributes()) {
-                    Pair<Property, Map<String, String>> flattenedPropertyAndRename = renameChildProperty(child,
+                    Pair<Property, Map<String, String>> flattenedPropertyAndRename = flattenChildProperty(child,
                             property.getName(), dataTypeRenames, primitivePropertiesNames);
                     Property flattenedProperty = flattenedPropertyAndRename.getLeft();
                     primitivePropertiesNames.add(flattenedProperty.getName());
@@ -204,7 +204,7 @@ public class CompositeDataTypeFlattener {
      * @param existingNames Names to avoid when renaming, since they already exist in the new parent (attribute owner).
      * @return The flattened property and its original relative name.
      */
-    private static Pair<Property, Map<String, String>> renameChildProperty(Property child, String propertyName,
+    private static Pair<Property, Map<String, String>> flattenChildProperty(Property child, String propertyName,
             Map<String, String> renames, Set<String> existingNames)
     {
         // Copy the property and give it a clash-free name.
