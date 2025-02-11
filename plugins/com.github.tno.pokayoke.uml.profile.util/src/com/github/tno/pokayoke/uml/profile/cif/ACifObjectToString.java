@@ -3,7 +3,9 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -38,7 +40,7 @@ public class ACifObjectToString {
 
     public static String toString(AExpression expression) {
         if (expression instanceof ANameExpression nameExpr) {
-            return nameExpr.name.name;
+            return escapeName(nameExpr.name.name);
         } else if (expression instanceof ABoolExpression boolExpr) {
             return boolExpr.value ? "true" : "false";
         } else if (expression instanceof ABinaryExpression binExpr) {
@@ -83,7 +85,7 @@ public class ACifObjectToString {
         } else if (update instanceof AIfUpdate ifUpdate) {
             return "if " + ifUpdate.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
                     + ifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "))
-                    + ifUpdate.elifs.stream().map(u -> toString(u)).collect(Collectors.joining(" "))
+                    + ifUpdate.elifs.stream().map(u -> toString(u)).collect(Collectors.joining(""))
                     + (ifUpdate.elses.isEmpty() ? ""
                             : " else "
                                     + ifUpdate.elses.stream().map(u -> toString(u)).collect(Collectors.joining(", ")))
@@ -100,13 +102,13 @@ public class ACifObjectToString {
 
     public static String toString(AInvariant invariant) {
         // Translate the name, if any.
-        String nameString = (invariant.name != null) ? invariant.name.id + ": " : "";
+        String nameString = (invariant.name != null) ? escapeName(invariant.name.id) + ": " : "";
 
         // Translate the predicates.
         String predicateString = toString(invariant.predicate);
 
         // Translate the events. If more than one, add curly brackets.
-        List<String> invEventsNames = invariant.events.stream().map(e -> e.name).toList();
+        List<String> invEventsNames = invariant.events.stream().map(e -> escapeName(e.name)).toList();
         String joinedEvents = (invEventsNames.size() > 1) ? "{ " + String.join(", ", invEventsNames) + " }"
                 : invEventsNames.get(0);
 
@@ -161,5 +163,10 @@ public class ACifObjectToString {
             }
         }
         throw new RuntimeException("Unknown expression: " + expr);
+    }
+
+    private static String escapeName(String string) {
+        return Stream.of(string.split("\\.")).map(p -> CifTextUtils.escapeIdentifier(p))
+                .collect(Collectors.joining("."));
     }
 }

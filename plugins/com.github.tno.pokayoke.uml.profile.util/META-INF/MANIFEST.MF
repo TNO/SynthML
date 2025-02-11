@@ -19,7 +19,8 @@ Require-Bundle: com.github.tno.pokayoke.uml.profile.plugin;bundle-version="0.0.1
  org.espilce.periksa.validation.registry;bundle-version="1.0.0",
  org.espilce.periksa.validation;bundle-version="2.0.0",
  com.google.guava;bundle-version="0.0.0",
- org.eclipse.lsat.common.queries;bundle-version="0.3.0"
+ org.eclipse.lsat.common.queries;bundle-version="0.3.0",
+ org.eclipse.escet.cif.common;bundle-version="3.0.0"
 Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.pokayoke.uml.profile.util
 Bundle-RequiredExecutionEnvironment: JavaSE-17
