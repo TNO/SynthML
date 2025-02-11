@@ -177,12 +177,12 @@ public class CompositeDataTypeFlattener {
 
                 // Copy and rename the children.
                 for (Property child: ((DataType)property.getType()).getOwnedAttributes()) {
-                    Pair<Property, Map<String, String>> flattenedPropertyAndRename = flattenChildProperty(child,
-                            property.getName(), dataTypeRenames, primitivePropertiesNames);
-                    Property flattenedProperty = flattenedPropertyAndRename.getLeft();
+                    Pair<Property, String> flattenedPropertyAndRelName = flattenChildProperty(child, property.getName(),
+                            dataTypeRenames, primitivePropertiesNames);
+                    Property flattenedProperty = flattenedPropertyAndRelName.getLeft();
                     primitivePropertiesNames.add(flattenedProperty.getName());
                     propertiesToAdd.add(flattenedProperty);
-                    childrenRenames.putAll(flattenedPropertyAndRename.getRight());
+                    childrenRenames.put(flattenedProperty.getName(), flattenedPropertyAndRelName.getRight());
                 }
                 propertiesToRemove.add(property);
             }
@@ -204,17 +204,18 @@ public class CompositeDataTypeFlattener {
      * @param existingNames Names to avoid when renaming, since they already exist in the new parent (attribute owner).
      * @return The flattened property and its original relative name.
      */
-    private static Pair<Property, Map<String, String>> flattenChildProperty(Property child, String propertyName,
+    private static Pair<Property, String> flattenChildProperty(Property child, String propertyName,
             Map<String, String> renames, Set<String> existingNames)
     {
         // Copy the property and give it a clash-free name.
         String flattenedName = generateNewPropertyName(child.getName(), propertyName, existingNames);
-        Property flattenedProperty = copyAndRenameProperty(child, flattenedName);
+        Property flattenedProperty = EcoreUtil.copy(child);
+        flattenedProperty.setName(flattenedName);
 
         // Get the flattened property's original relative name and return it along with the flattened property.
         String childName = renames.getOrDefault(child.getName(), child.getName());
         String origRelName = propertyName + "." + childName;
-        return Pair.of(flattenedProperty, Map.of(flattenedName, origRelName));
+        return Pair.of(flattenedProperty, origRelName);
     }
 
     private static String generateNewPropertyName(String childName, String parentName,
@@ -227,12 +228,6 @@ public class CompositeDataTypeFlattener {
             candidateName = parentName + "_" + childName + "_" + String.valueOf(count);
         }
         return candidateName;
-    }
-
-    private static Property copyAndRenameProperty(Property originalProperty, String newName) {
-        Property rewrittenProperty = EcoreUtil.copy(originalProperty);
-        rewrittenProperty.setName(newName);
-        return rewrittenProperty;
     }
 
     /**
