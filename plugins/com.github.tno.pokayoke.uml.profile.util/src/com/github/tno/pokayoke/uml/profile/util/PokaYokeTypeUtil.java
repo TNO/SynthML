@@ -156,9 +156,9 @@ public class PokaYokeTypeUtil {
         for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
             String relName = prefix + "." + property.getName();
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                collectRelativeNamesOfLeafProperties(property, updatedPartialName, collectedNames);
+                collectRelativeNamesOfLeafProperties(property, relName, collectedNames);
             } else {
-                collectedNames.add(updatedPartialName);
+                collectedNames.add(relName);
             }
         }
     }
