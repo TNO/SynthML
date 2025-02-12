@@ -3,11 +3,13 @@ package com.github.tno.pokayoke.uml.profile.validation;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -110,6 +113,42 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             history.remove(activity);
         }
         return false;
+    }
+
+    /**
+     * Reports an error if instantiation cycles are found.
+     *
+     * @param model The model to check.
+     */
+    @Check
+    private void checkNoInstantiationCycles(Model model) {
+        Set<String> cycles = new LinkedHashSet<>();
+        for (PackageableElement pack: model.getPackagedElements()) {
+            if (pack instanceof DataType dataType && PokaYokeTypeUtil.isCompositeDataType(dataType)) {
+                findInstantiationCycles(dataType, new Stack<>(), cycles);
+            }
+        }
+
+        for (String cycle: cycles) {
+            error("Found an instantiation cycle: " + cycle, UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
+        }
+    }
+
+    private static void findInstantiationCycles(DataType dataType, Stack<DataType> hierarchy, Set<String> cycles) {
+        hierarchy.push(dataType);
+        for (Property property: dataType.getOwnedAttributes()) {
+            if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
+                if (hierarchy.contains(property.getType())) {
+                    // Add sorted cycle, to avoid duplicates.
+                    List<String> cycle = hierarchy.stream().map(NamedElement::getName).collect(Collectors.toList());
+                    Collections.sort(cycle);
+                    cycles.add(String.join(", ", cycle));
+                } else {
+                    findInstantiationCycles((DataType)property.getType(), hierarchy, cycles);
+                }
+            }
+        }
+        hierarchy.pop();
     }
 
     /**
