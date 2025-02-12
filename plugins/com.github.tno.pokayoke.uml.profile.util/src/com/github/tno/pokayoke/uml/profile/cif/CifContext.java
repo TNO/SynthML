@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +150,7 @@ public class CifContext {
 
             // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
             // identifiers.
-            addProperties(activeClass.getOwnedAttributes(), null);
+            addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
         }
     }
 
@@ -159,8 +160,9 @@ public class CifContext {
      *
      * @param properties The properties to add.
      * @param prefix The prefix of the properties, or {@code null} for root properties.
+     * @param hierarchy The set tracking the composite data type hierarchy.
      */
-    private void addProperties(Collection<Property> properties, String prefix) {
+    private void addProperties(Collection<Property> properties, String prefix, Set<DataType> hierarchy) {
         for (Property umlProperty: properties) {
             String name = ((prefix == null) ? "" : prefix + ".") + umlProperty.getName();
 
@@ -170,7 +172,14 @@ public class CifContext {
 
             // Add descendant, if property has them.
             if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
-                addProperties(((DataType)umlProperty.getType()).getOwnedAttributes(), name);
+                // Stop the recursion if instantiation cycle found.
+                if (hierarchy.contains(umlProperty.getType())) {
+                    return;
+                } else {
+                    hierarchy.add((DataType)umlProperty.getType());
+                    addProperties(((DataType)umlProperty.getType()).getOwnedAttributes(), name, hierarchy);
+                    hierarchy.remove(umlProperty.getType());
+                }
             }
         }
     }
