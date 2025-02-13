@@ -25,7 +25,7 @@ In particular, Poka Yoke supports
 
 == Class
 * The class may not contain nested classifiers.
-* The class must have a classifier behavior.
+* The class must have a classifier behavior, and it must be an activity.
 * The class must own its classifier behavior.
 * The class cannot (directly) contain interval constraints. 
 
@@ -105,6 +105,9 @@ Note that the guard and effects on a call behavior action hide all contained sub
 
 == Opaque Behavior
 * An opaque behavior must have exactly one guard and zero or more effects. 
+
+== Constraint
+* A constraint must contain exactly one opaque expression. 
 
 == Occurrence Constraint
 * Occurrence constraints must have a minimum and maximum values.

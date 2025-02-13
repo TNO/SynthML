@@ -67,7 +67,7 @@ An opaque behavior can only be called, whereas opaque actions represent the actu
 
 == Constraint
 A constraint is an element which represents some condition, restriction or assertion related to its owning element. 
-Constraints are usual specified by an <<opaque expression>> containing a state predicate. 
+Constraints are usually specified by an <<opaque expression>> containing a state predicate. 
 Constraints are used for several purposes: pre and postconditions of an abstract activity, 
 state invariants, 
 action exclusion invariant. 
@@ -77,6 +77,7 @@ An occurrence constraint limits the number of times a given element (denoted _co
 
 == Poka Yoke stereotype
 Poka Yoke stereotypes are an extension to UML constructs, that equips UML elements with formal modeling components. In practical terms, it gives the possibility to specify guards and effects (when appropriate) and to define the atomicity of a UML element. We define four different stereotypes: 
+
 * Formal Element stereotype, that adds guards, effects and the definition of atomicity; it is applied to opaque behaviors, opaque actions, call behavior actions.
 * Control Flow stereotype, that adds only guards; it is applied to control flows. 
 * Property stereotype, that allows the  definition of type and default value; it is applied to properties.

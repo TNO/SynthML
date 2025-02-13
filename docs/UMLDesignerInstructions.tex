@@ -142,7 +142,7 @@ Activities can either be abstract (in order to be synthesized) or concrete (\ie 
 \item By default, the activity is concrete (allowing it to contain user-defined nodes and control flows).
 \item For synthesis purposes, an abstract activity is required: in the `Properties' view, `General' tab, check the `Abstract' checkbox.
 \end{enumerate}
-Note that a class can only have a single classifier behavior. So if you'd add an additional activity, this should be added as an `Owned Behavior' instead.
+Note that a class can only have a single classifier behavior, and it \emph{must} be an activity. So if you'd add an additional activity, this should be added as an `Owned Behavior' instead.
 
 To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
 defining respectively the system states at the beginning and the end of the activity execution. 
@@ -389,7 +389,7 @@ We can use the following steps:
     \item Create an active class named ActiveClass.
     \item Create two boolean properties, named \texttt{init} and \texttt{bit}. 
     The default value of \texttt{init} is false, none (leave an empty field) for \texttt{bit}.  
-    \item Create an abstract activity, with precondition \verb#not init#, 
+    \item Create an abstract activity as the ActiveClass classifier behavior, with precondition \verb#not init#, 
     and postcondition \verb#bit and init#.
     \item Create an opaque behavior, named \texttt{initialize}, that models an initialization action, with guard \texttt{not init} and nondeterministic effects:
     \newline
