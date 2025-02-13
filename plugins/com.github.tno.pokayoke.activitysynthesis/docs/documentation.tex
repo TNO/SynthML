@@ -190,14 +190,13 @@ A high-level overview is presented below.
 	\end{itemize}
 
 	Both abstract and concrete UML activities may contain preconditions, postconditions, and occurrence constraints.
-	In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
-	In the case of concrete activities, these constraints are added primarily as documentation, but they might later be used for, e.g., property checking or for synthesizing activities that can call other activities.
 	The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
 	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
 	Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
-	At the moment, the synthesis algorithm does not yet support synthesis of activities that can call other activities.
-	Nevertheless, the UML models that we consider may already have occurrence constraints over activities.
-	Occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
+	In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
+	If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
+	(Moreover, in principle it would also be possible to later use the preconditions and postconditions of concrete activities for verification, e.g., property checking.)
+	Note that occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
 	
 	The activity synthesis algorithm takes UML models as input, containing any number of abstract UML activities.
 	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
@@ -346,16 +345,19 @@ The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\
 \subsection{Transforming the abstract UML activity to CIF}
 \label{sec:transform-uml-to-cif}
 
-The \transformUmlToCif{\var{umlActivity_{abstr}}} operation translates a given abstract UML activity, \var{umlActivity_{abstr}}, together with all relevant context from the UML model (e.g., UML class properties, constraints, opaque behaviors, etc.) to a CIF specification to be used for supervisory controller synthesis.
+The \transformUmlToCif{\var{umlActivity_{abstr}}} operation translates a given abstract UML activity, \var{umlActivity_{abstr}}, together with all relevant context from the UML model (e.g., UML class properties, constraints, opaque behaviors, concrete activities that may be called, etc.) to a CIF specification to be used for supervisory controller synthesis.
 
 \paragraph{Motivation.}
 With respect to supervisory controller synthesis, the UML model of the abstract input activity \var{umlActivity_{abstr}} specifies the plant and requirements, i.e., the UML opaque behaviors and UML constraints.
 Moreover, the abstract activity itself contains the name of the to-be-synthesized activity as well as its preconditions, postconditions, and occurrence constraints.
 These plant and requirement constructs are translated one-to-one to CIF, to enable running its data-based synthesis tool.
+In case the abstract activity may be able to call other concrete activities, then all nodes and control flows of these concrete activities are translated as well.
+These concrete activities are then considered part of the plant specification for data-based synthesis.
 
 \paragraph{Preconditions.}
 This operation requires the UML model of the abstract input activity to be valid.
-Moreover, all occurrence constraints of \var{umlActivity_{abstr}} must be expressed over actions, i.e., they may not (yet) be expressed over activities.
+Moreover, every occurrence constraint of \var{umlActivity_{abstr}} must be expressed over actions and/or activities.
+If the to-be-synthesized activity is able to call other activities by its occurrence constraints, then all these activities must be concrete, and are not allowed to call other activities (i.e., they must be flattened).
 
 \paragraph{Postconditions.}
 This operation produces a CIF specification that:
@@ -392,6 +394,25 @@ This operation produces a CIF specification that:
 		If the atomicity variable is greater than $0$, then only an end event of the corresponding (indexed) action can be performed, and performing such an end event will reset the active variable to $0$.
 		We add necessary guards to all created CIF edges to ensure that indeed no other CIF event can be performed when the active variable is not $0$.
 	\end{itemize}
+	\item For every concrete UML activity that can be called by the to-be-synthesized activity:
+	\begin{itemize}
+		\item Contains a Boolean-typed CIF discrete variable for every control flow of the concrete UML activity.
+		This variable then indicates whether the corresponding control flow contains a token (\texttt{true}) or not (\texttt{false}).
+		\item Contains CIF event declarations corresponding to all nodes of the concrete UML activity.
+		We translate concrete activity nodes in the same way as we translate actions (i.e., opaque behaviors), as explained above.
+		Control nodes (i.e., fork, join, decision, merge, initial, and final nodes) are always translated as atomic deterministic actions since their execution should be instant.
+		Action nodes (i.e., opaque actions, call behavior nodes that call an opaque behavior, and shadowed call behavior nodes that call an activity) are translated likewise to opaque behaviors: as actions with user-specified guards and effects, that can be atomic or nonatomic, and deterministic or nondeterministic.
+		During this translation, we define extra guards and effects to ensure proper token handling: an activity node can only be executed (as an action) if its incoming control flows have the required tokens for that, and after executing the node, the outgoing control flows receive the proper tokens.
+		In case an outgoing control flow has a guard, then this guard is translated as an extra condition for putting a token on that control flow, i.e., for making the corresponding CIF variable \texttt{true}.
+		
+		Unlike the translation of opaque behaviors, every CIF event that is created for an activity node becomes uncontrollable, with the exception of initial nodes.
+		This is because calling an activity intuitively amounts to `executing its initial node', and this is a controllable event (that is, the synthesis algorithm has control over when some concrete activity is being called).
+		However, once a concrete activity has been called, its execution proceeds uncontrollably, which is why all other CIF events are made uncontrollable.
+		
+		A concrete activity can only be called in a state where its precondition is satisfied.
+		Hence, we translate their preconditions as extra guards for executing the initial nodes.
+		Likewise, we translate their postconditions as extra guards for executing the final nodes.
+	\end{itemize}
 	\item Contains an `initial' predicate from the conjunction of all translated preconditions of the abstract UML activity.
 	There may be multiple preconditions defined for this activity.
 	Each of these preconditions are translated as Boolean algebraic variables in CIF, for better traceability.
@@ -401,30 +422,30 @@ This operation produces a CIF specification that:
 	There may be multiple user-defined postconditions defined for this activity.
 	In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
 	Moreover, in case the abstract activity has occurrence constraints, extra postconditions are generated which express that that occurrence constraints must be satisfied, i.e., the actions/activities that are subject to occurrence constraints must have happened the specified number of times.
+	Furthermore, in case concrete activities were translated, extra postconditions are generated expressing that none of their control flows must have a token.
 	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
 	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
 	This algebraic variable is then used as the `marked' predicate.
-	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, and where no nonatomic and nondeterministic actions are active.
+	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, where no nonatomic and nondeterministic actions are active, where every occurrence constraint is satisfied, and where no translated control flow holds a token.
 	\item Contains requirement invariants stating that the postcondition disables any CIF event.
 	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
 	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
 	An edge is defined for every declared CIF event, both controllable and uncontrollable ones.
-	Every controllable CIF event corresponds one-to-one to a UML opaque behavior definition, and thus their edge guards are the translated action guards.
-	Moreover, in case of an atomic deterministic action, the edge update is the translated action effect.
-	In case of a nonatomic and/or nondeterministic action, the action effects are translated on the corresponding uncontrollable events instead.
-	We do not put the user-written action guards as guards for uncontrollable events, since we don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the corresponding controlled `start' events.
+	Every CIF event, and thereby also every CIF edge, corresponds to a translated action, i.e., a UML opaque behavior or a UML activity node.
+	The action guards are then translated to guards that are put on the edges of the corresponding `start' events of the action, and action effects are translated to edge updates for the `end' events (thereby taking into account that the `start' events of atomic deterministic actions also `end' the action).
+	Thus, we do not put user-written action guards on any edges corresponding to `end' events, since we don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the controllable events.
 	However, we do put guards and effects on the (un)controllable events to correctly handle and maintain the atomicity variable and the active variables.
 	
 	Furthermore, edges are guaranteed not to contain conditional `if'-updates, since these are not supported by data-based synthesis.
 	Any conditional updates have been eliminated from the CIF specification.
 	They are turned into conditional expressions, which are supported by data-based synthesis.
 	\item Contains requirement automata for the occurrence constraints defined for \var{umlActivity_{abstr}}.
-	Occurrence constraints are roughly of the form `action $A$ must happen at least $M$ times and at most $N$ times'.
-	(Note that $A$ must be an action since we don't yet allow occurrence constraints to be expressed over activities.)
-	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred.
-	This variable can then be incremented every time the action occurs.
+	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ refers either to an action or an activity.
+	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred, or how often the activity has already been called, respectively.
+	In case $A$ is an action, this variable is incremented every time the action occurs.
+	In case $A$ is an activity, this variable is incremented every time the initial node of the activity has been executed.
 	The occurrence requirement can then be expressed over this requirement (using edge guards and marked predicates).
 \end{itemize}
 
@@ -440,8 +461,6 @@ the CIF model denotes the \texttt{flip} event as an edge with guards \texttt{ini
 \end{example*}
 
 \input{images/bitflipper-cif}
-
-
 
 \subsection{Data-based synthesis with CIF}
 \label{sec:data-based-synthesis}
@@ -503,7 +522,7 @@ Moreover, due to the way our UML/CIF input for synthesis is constructed (as resu
 \begin{itemize}
 	\item All initial locations in the state space correspond to states that satisfy the precondition of the to-be-synthesized activity.
 	\item All marked locations in the state space correspond to states that satisfy the postcondition of the to-be-synthesized activity.
-	Moreover, no nonatomic and/or nondeterministic actions are active in those states.
+	This includes all implicit postconditions: no nonatomic and/or nondeterministic actions are active in those states, no translated UML control flows have a token, and every occurrence constraint is satisfied.
 	\item Marked locations do not have outgoing edges.
 	This is because it does not make sense to perform further actions after the activity postcondition has been satisfied.
 	\item The state space is non-blocking.
