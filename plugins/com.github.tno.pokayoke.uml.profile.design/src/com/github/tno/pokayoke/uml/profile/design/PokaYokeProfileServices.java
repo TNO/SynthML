@@ -45,8 +45,6 @@ public class PokaYokeProfileServices {
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
-    private static final Integer LABEL_GUARD_MAX_LENGTH = 30;
-
     /**
      * Returns <code>true</code> if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}
      * while 'guard and effects' layer is not enabled.
@@ -242,18 +240,13 @@ public class PokaYokeProfileServices {
             guard = "true";
         }
 
-        if (guard.length() > LABEL_GUARD_MAX_LENGTH) {
-            guard = guard.substring(0, LABEL_GUARD_MAX_LENGTH);
-            guard += "...";
-        }
-
         label += guard;
         return label;
     }
 
     /**
      * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer.
-     * This implementation changes only the name of an 'ActivityEdge' without altering its guards.
+     * This implementation changes only the name of an 'ActivityEdge' without altering its guard.
      * The override occurs implicitly because PokaYokeProfileServices is added to the viewpoint.
      * This method is called through Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *

@@ -20,7 +20,7 @@
           <conditionnalStyles predicateExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)">
             <style sizeComputationExpression="2">
               <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
-              <centerLabelStyleDescription labelExpression="service:self.getControlFlowLabel()">
+              <centerLabelStyleDescription showIcon="false" labelExpression="service:self.getControlFlowLabel()">
                 <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
               </centerLabelStyleDescription>
             </style>
