@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.uml.profile.validation;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -139,8 +140,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         for (Property property: dataType.getOwnedAttributes()) {
             if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
                 if (hierarchy.contains(property.getType())) {
-                    // Add sorted cycle, to avoid duplicates.
-                    List<String> cycle = hierarchy.stream().map(NamedElement::getName).collect(Collectors.toList());
+                    // Get only the elements forming a cycle. Add sorted cycle, to avoid duplicates.
+                    ArrayList<DataType> elements = new ArrayList<>(hierarchy);
+                    int index = elements.indexOf(property.getType());
+                    List<String> cycle = elements.subList(index, elements.size()).stream().map(NamedElement::getName)
+                            .collect(Collectors.toList());
                     Collections.sort(cycle);
                     cycles.add(String.join(", ", cycle));
                 } else {
