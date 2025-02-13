@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -171,14 +172,15 @@ public class CifContext {
             referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
 
             // Add descendant, if property has them.
-            if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
+            Type propertyType = umlProperty.getType();
+            if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
                 // Stop the recursion if instantiation cycle found.
-                if (hierarchy.contains(umlProperty.getType())) {
+                if (hierarchy.contains(propertyType)) {
                     return;
                 } else {
-                    hierarchy.add((DataType)umlProperty.getType());
-                    addProperties(((DataType)umlProperty.getType()).getOwnedAttributes(), name, hierarchy);
-                    hierarchy.remove(umlProperty.getType());
+                    hierarchy.add((DataType)propertyType);
+                    addProperties(((DataType)propertyType).getOwnedAttributes(), name, hierarchy);
+                    hierarchy.remove(propertyType);
                 }
             }
         }
