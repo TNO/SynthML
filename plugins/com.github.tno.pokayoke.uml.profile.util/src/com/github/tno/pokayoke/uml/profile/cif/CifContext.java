@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.cif;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -149,7 +151,7 @@ public class CifContext {
 
             // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
             // identifiers.
-            addProperties(activeClass.getOwnedAttributes(), null);
+            addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
         }
     }
 
@@ -159,8 +161,9 @@ public class CifContext {
      *
      * @param properties The properties to add.
      * @param prefix The prefix of the properties, or {@code null} for root properties.
+     * @param hierarchy The set tracking the composite data type hierarchy.
      */
-    private void addProperties(Collection<Property> properties, String prefix) {
+    private void addProperties(Collection<Property> properties, String prefix, Set<DataType> hierarchy) {
         for (Property umlProperty: properties) {
             String name = ((prefix == null) ? "" : prefix + ".") + umlProperty.getName();
 
@@ -169,8 +172,17 @@ public class CifContext {
             referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
 
             // Add descendant, if property has them.
-            if (PokaYokeTypeUtil.isCompositeDataType(umlProperty.getType())) {
-                addProperties(((DataType)umlProperty.getType()).getOwnedAttributes(), name);
+            Type propertyType = umlProperty.getType();
+            if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
+                // Stop the recursion if instantiation cycle found (the Poka Yoke validator guarantees that valid UML
+                // models don't contain instantiation cycles).
+                if (hierarchy.contains(propertyType)) {
+                    return;
+                } else {
+                    hierarchy.add((DataType)propertyType);
+                    addProperties(((DataType)propertyType).getOwnedAttributes(), name, hierarchy);
+                    hierarchy.remove(propertyType);
+                }
             }
         }
     }

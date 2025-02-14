@@ -5,9 +5,11 @@ import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,7 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -110,6 +113,54 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             history.remove(activity);
         }
         return false;
+    }
+
+    /**
+     * Reports an error if instantiation cycles are found. An instantiation cycle is defined to be a circular dependency
+     * between the properties of the data types that are defined within the given UML model. If the given model contains
+     * instantiation cycles, then only the shortest cycle will be reported. If there are multiple such shortest cycles,
+     * then the first one that's encountered will be reported.
+     *
+     * @param model The model to check.
+     */
+    @Check
+    private void checkNoInstantiationCycles(Model model) {
+        List<String> shortestCycle = new LinkedList<>();
+        for (PackageableElement element: model.getPackagedElements()) {
+            if (element instanceof DataType dataType && PokaYokeTypeUtil.isCompositeDataType(dataType)) {
+                shortestCycle = findShortestInstantiationCycle(dataType, new Stack<>(), shortestCycle);
+            }
+        }
+
+        if (!shortestCycle.isEmpty()) {
+            error("Found an instantiation cycle: " + String.join(" -> ", shortestCycle),
+                    UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
+        }
+    }
+
+    private static List<String> findShortestInstantiationCycle(DataType dataType, Stack<DataType> hierarchy,
+            List<String> shortestCycle)
+    {
+        hierarchy.push(dataType);
+        for (Property property: dataType.getOwnedAttributes()) {
+            Type propertyType = property.getType();
+            if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
+                if (hierarchy.contains(propertyType)) {
+                    // Get only the elements forming a cycle.
+                    List<String> cycle = hierarchy.stream().dropWhile(type -> !type.equals(propertyType))
+                            .map(NamedElement::getName).collect(Collectors.toList());
+                    cycle.add(propertyType.getName());
+                    // Substitute if current cycle is shorter than the shortest cycle that has been found so far.
+                    if (shortestCycle.isEmpty() || cycle.size() < shortestCycle.size()) {
+                        shortestCycle = cycle;
+                    }
+                } else {
+                    shortestCycle = findShortestInstantiationCycle((DataType)propertyType, hierarchy, shortestCycle);
+                }
+            }
+        }
+        hierarchy.pop();
+        return shortestCycle;
     }
 
     /**
