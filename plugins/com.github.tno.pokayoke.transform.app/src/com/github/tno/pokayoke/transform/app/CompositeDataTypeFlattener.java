@@ -19,7 +19,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.cif.parser.ast.tokens.AName;
@@ -247,7 +249,8 @@ public class CompositeDataTypeFlattener {
             } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
                 unfoldConcreteActivity(activity, propertyToLeaves, renames);
             } else {
-                throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.", clazz));
+                throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.",
+                        classBehavior.getClass().getSimpleName()));
             }
         }
 
@@ -322,9 +325,12 @@ public class CompositeDataTypeFlattener {
                     unfoldACifExpression(unaryExpr.child, propertyToLeaves, renames), unaryExpr.position);
         } else if (expression instanceof ANameExpression nameExpr) {
             return unfoldANameExpression(nameExpr.name.name, expression.position, renames);
-        } else {
+        } else if (expression instanceof ABoolExpression || expression instanceof AIntExpression) {
             // Expressions without children don't need unfolding.
             return expression;
+        } else {
+            throw new RuntimeException(String.format("Unfolding expressions of class '%s' is not supported.",
+                    expression.getClass().getSimpleName()));
         }
     }
 
@@ -394,7 +400,8 @@ public class CompositeDataTypeFlattener {
             AUpdate newIfUpdate = unfoldACifIfUpdate(ifUpdate, propertyToLeaves, renames);
             return new LinkedList<>(List.of(newIfUpdate));
         } else {
-            throw new RuntimeException(String.format("Unfolding unsupported update: %s.", update));
+            throw new RuntimeException(
+                    String.format("Unfolding updates of class '%s' not supported.", update.getClass().getSimpleName()));
         }
     }
 
@@ -474,8 +481,8 @@ public class CompositeDataTypeFlattener {
             } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
                 unfoldGuardBodies(opaqueSpec, propertyToLeaves, renames);
             } else {
-                throw new RuntimeException(
-                        "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
+                throw new RuntimeException(String.format("Unfolding constraints of class '%s' is not supported.",
+                        constraint.getClass().getSimpleName()));
             }
         }
     }
@@ -493,7 +500,8 @@ public class CompositeDataTypeFlattener {
             } else if (currentBody instanceof AInvariant bodyInvariant) {
                 unfoldedBody = unfoldACifInvariant(bodyInvariant, propertyToLeaves, renames);
             } else {
-                throw new RuntimeException("Guard body " + currentBody + " is not an expression nor an invariant.");
+                throw new RuntimeException(String.format("Unfolding guard bodies of class '%s' is not supported.",
+                        currentBody.getClass().getSimpleName()));
             }
             constraintSpec.getBodies().set(i, ACifObjectToString.toString(unfoldedBody));
         }
@@ -516,6 +524,10 @@ public class CompositeDataTypeFlattener {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
                     unfoldGuardBodies(opaqueGuard, propertyToLeaves, renames);
+                } else {
+                    throw new RuntimeException(
+                            String.format("Unfolding control flow guards of class %s is not supported.",
+                                    guard.getClass().getSimpleName()));
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 Behavior guard = callBehavior.getBehavior();
@@ -523,7 +535,8 @@ public class CompositeDataTypeFlattener {
                     unfoldGuardAndEffects(opaqueGuard, propertyToLeaves, renames);
                 } else {
                     throw new RuntimeException(
-                            String.format("Call behavior of class %s is not supported.", guard.getClass()));
+                            String.format("Unfolding call behavior actions of class %s is not supported.",
+                                    guard.getClass().getSimpleName()));
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldGuardAndEffects(internalAction, propertyToLeaves, renames);
@@ -531,8 +544,8 @@ public class CompositeDataTypeFlattener {
                 // Nodes in activities have empty names and bodies.
                 continue;
             } else {
-                throw new RuntimeException(String.format("Renaming flattened properties of class '%s' not supported",
-                        ownedElement.getClass()));
+                throw new RuntimeException(String.format("Unfolding elements of class '%s' not supported",
+                        ownedElement.getClass().getSimpleName()));
             }
         }
 
