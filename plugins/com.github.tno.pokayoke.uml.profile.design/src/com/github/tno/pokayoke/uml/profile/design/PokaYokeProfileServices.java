@@ -10,12 +10,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
+import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
+import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -219,6 +223,45 @@ public class PokaYokeProfileServices {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(property);
         property.setType(newValue);
         setPropertyBounds(property);
+    }
+
+    public String getControlFlowLabel(ControlFlow controlFlow) {
+        String label = controlFlow.getName();
+        label = Strings.nullToEmpty(label);
+        if (!label.isEmpty()) {
+            label += System.getProperty("line.separator");
+        }
+
+        String guard = getGuard(controlFlow);
+        if (Strings.isNullOrEmpty(guard)) {
+            guard = "true";
+        }
+
+        label += guard;
+        return label;
+    }
+
+    /**
+     * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer.
+     * This implementation changes only the name of an 'ActivityEdge' without altering its guard.
+     * The override occurs implicitly because {@link PokaYokeProfileServices} is added to the viewpoint.
+     * This method is called through Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
+     *
+     * @param context The UML element to be edited.
+     * @param editedLabelContent The new label content.
+     * @return The edited UML element.
+     */
+    public Element editUmlLabel(Element context, String editedLabelContent) {
+        if (context instanceof ActivityEdge edge) {
+            // The implementation in UML Designer uses 'doSwitch' to change both the guard and the name of an
+            // 'ActivityEdge'. This implementation only changes the name.
+            setName(edge, editedLabelContent);
+            return edge;
+        }
+
+        EditLabelSwitch editLabel = new EditLabelSwitch();
+        editLabel.setEditedLabelContent(editedLabelContent);
+        return editLabel.doSwitch(context);
     }
 
     /**
