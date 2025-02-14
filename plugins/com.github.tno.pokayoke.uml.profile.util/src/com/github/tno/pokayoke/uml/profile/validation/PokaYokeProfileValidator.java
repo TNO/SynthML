@@ -147,9 +147,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     List<String> cycle = hierarchy.stream().dropWhile(type -> !type.equals(propertyType))
                             .map(NamedElement::getName).collect(Collectors.toList());
                     cycle.add(propertyType.getName());
-                    // Substitute if current cycle is shorter than the old, or old is empty.
+                    // Substitute if current cycle is shorter than the shortest cycle that has been found so far.
                     if (shortestCycle.isEmpty() || cycle.size() < shortestCycle.size()) {
-                        shortestCycle = new LinkedList<>(cycle);
+                        shortestCycle = cycle;
                     }
                 } else {
                     shortestCycle = findShortestInstantiationCycle((DataType)propertyType, hierarchy, shortestCycle);
