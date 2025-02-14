@@ -174,7 +174,8 @@ public class CifContext {
             // Add descendant, if property has them.
             Type propertyType = umlProperty.getType();
             if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
-                // Stop the recursion if instantiation cycle found.
+                // Stop the recursion if instantiation cycle found (the Poka Yoke validator guarantees that valid UML
+                // models don't contain instantiation cycles).
                 if (hierarchy.contains(propertyType)) {
                     return;
                 } else {

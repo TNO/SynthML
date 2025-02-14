@@ -116,7 +116,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Reports an error if instantiation cycles are found.
+     * Reports an error if instantiation cycles are found. An instantiation cycle is defined to be a circular dependency
+     * between the properties of the data types that are defined within the given UML model. If the given model contains
+     * instantiation cycles, then only the shortest cycle will be reported. If there are multiple such shortest cycles,
+     * then the first one that's encountered will be reported.
      *
      * @param model The model to check.
      */
