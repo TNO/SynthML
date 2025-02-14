@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -33,8 +32,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
@@ -56,18 +55,18 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     private final Map<Property, DiscVariable> variableMap;
 
-    /** The mapping from UML opaque behaviors to corresponding translated CIF (controllable start) events. */
-    private final Map<OpaqueBehavior, Event> eventMap;
+    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
+    private final Map<Event, RedefinableElement> startEventMap;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            Map<OpaqueBehavior, Event> eventMap)
+            Map<Event, RedefinableElement> startEventMap)
     {
         this.context = context;
         this.enumMap = enumMap;
         this.enumLiteralMap = enumLiteralMap;
         this.variableMap = variableMap;
-        this.eventMap = eventMap;
+        this.startEventMap = startEventMap;
     }
 
     /**
@@ -223,17 +222,25 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
-                Invariant cifInvariant = CifConstructors.newInvariant();
-                cifInvariant.setInvKind(cifInvKind);
-                cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
-                cifInvariant.setSupKind(SupKind.REQUIREMENT);
-                cifInvariants.add(cifInvariant);
+                for (var entry: startEventMap.entrySet()) {
+                    RedefinableElement umlElement = entry.getValue();
 
-                Event cifEvent = eventMap.entrySet().stream().filter(e -> e.getKey().getName().equals(event))
-                        .map(Entry::getValue).findFirst().get();
-                EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
-                        CifConstructors.newBoolType());
-                cifInvariant.setEvent(cifEventExpr);
+                    if (umlElement.getName().equals(event)) {
+                        Event cifEvent = entry.getKey();
+
+                        Invariant cifInvariant = CifConstructors.newInvariant();
+                        cifInvariant.setInvKind(cifInvKind);
+                        cifInvariant.setPredicate(EcoreUtil.copy(cifPredicate));
+                        cifInvariant.setSupKind(SupKind.REQUIREMENT);
+                        cifInvariants.add(cifInvariant);
+
+                        EventExpression cifEventExpr = CifConstructors.newEventExpression(cifEvent, null,
+                                CifConstructors.newBoolType());
+                        cifInvariant.setEvent(cifEventExpr);
+
+                        break;
+                    }
+                }
             }
         }
 

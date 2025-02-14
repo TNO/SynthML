@@ -201,6 +201,11 @@ public class CifContext {
                 .map(Activity.class::cast).toList();
     }
 
+    public List<Activity> getAllConcreteActivities() {
+        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
+                .map(Activity.class::cast).toList();
+    }
+
     public List<Property> getAllDeclaredProperties() {
         return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
     }
