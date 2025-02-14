@@ -193,12 +193,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Class must be active, not passive.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
 
-        if (!(clazz.getClassifierBehavior() instanceof Activity)) {
-            error("Classifier behavior must be an activity.",
+        if (clazz.getClassifierBehavior() == null) {
+            error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-        } else if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
-            error("The classifier behavior of the class is not within the owned behaviors of the class.",
-                    UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
+        } else {
+            if (!(clazz.getClassifierBehavior() instanceof Activity)) {
+                error("Classifier behavior must be an activity.",
+                        UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+            }
+
+            if (!clazz.getOwnedBehaviors().contains(clazz.getClassifierBehavior())) {
+                error("The classifier behavior of the class is not within the owned behaviors of the class.",
+                        UMLPackage.Literals.BEHAVIORED_CLASSIFIER__OWNED_BEHAVIOR);
+            }
         }
 
         // Classes must be defined directly within the model itself.
