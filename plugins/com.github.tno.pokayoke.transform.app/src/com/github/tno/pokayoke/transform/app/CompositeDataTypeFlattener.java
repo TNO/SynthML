@@ -36,7 +36,6 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -84,8 +83,7 @@ public class CompositeDataTypeFlattener {
             Verify.verify(flatToAbsoluteNames.size() == absoluteToFlatNames.size());
 
             // Unfold all references to properties with a composite data type in assignments and comparisons.
-            unfoldCompositeDataTypeReferences(activeClass, context.getReferenceableElements(), propertyToLeaves,
-                    absoluteToFlatNames);
+            unfoldCompositeDataTypeReferences(activeClass, propertyToLeaves, absoluteToFlatNames);
 
             // Delete the composite data types.
             model.getPackagedElements().removeAll(dataTypes);
@@ -234,46 +232,43 @@ public class CompositeDataTypeFlattener {
      * Unfold all references to properties with composite data type in assignments and comparisons, in the given class.
      *
      * @param clazz The class in which to do the unfolding.
-     * @param referenceableElements Per absolute name of a referenceable element, the element that is referenced.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      */
-    private static void unfoldCompositeDataTypeReferences(Class clazz, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static void unfoldCompositeDataTypeReferences(Class clazz, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         // Unfold opaque behaviors and activities.
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior element) {
-                unfoldGuardAndEffects(element, referenceableElements, propertyToLeaves, renames);
+                unfoldGuardAndEffects(element, propertyToLeaves, renames);
             } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                unfoldAbstractActivity(activity, referenceableElements, propertyToLeaves, renames);
+                unfoldAbstractActivity(activity, propertyToLeaves, renames);
             } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                unfoldConcreteActivity(activity, referenceableElements, propertyToLeaves, renames);
+                unfoldConcreteActivity(activity, propertyToLeaves, renames);
             } else {
                 throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.", clazz));
             }
         }
 
         // Unfold constraints.
-        unfoldConstraints(clazz.getOwnedRules(), referenceableElements, propertyToLeaves, renames);
+        unfoldConstraints(clazz.getOwnedRules(), propertyToLeaves, renames);
     }
 
     /**
      * Unfolds guards and effects of a redefinable element.
      *
      * @param element The redefinable element.
-     * @param referenceableElements The CIF context as a map.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      */
-    private static void unfoldGuardAndEffects(RedefinableElement element,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldGuardAndEffects(RedefinableElement element, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         // Perform the guard unfolding. Skip if null.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
         if (guardExpr != null) {
-            AExpression newGuard = unfoldACifExpression(guardExpr, referenceableElements, propertyToLeaves, renames);
+            AExpression newGuard = unfoldACifExpression(guardExpr, propertyToLeaves, renames);
             String newGuardString = ACifObjectToString.toString(newGuard);
             PokaYokeUmlProfileUtil.setGuard(element, newGuardString);
         }
@@ -285,7 +280,7 @@ public class CompositeDataTypeFlattener {
             List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
             List<String> newUpdateStrings = new LinkedList<>();
             for (AUpdate update: updates) {
-                List<AUpdate> newUpdates = unfoldACifUpdate(update, referenceableElements, propertyToLeaves, renames);
+                List<AUpdate> newUpdates = unfoldACifUpdate(update, propertyToLeaves, renames);
                 newUpdateStrings.addAll(
                         newUpdates.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.toList()));
             }
@@ -300,36 +295,23 @@ public class CompositeDataTypeFlattener {
      * leaf properties.
      *
      * @param expression A CIF {@link AExpression} to be unfolded.
-     * @param referenceableElements A Map containing the name and the UML NamedElement of every element of the UML
-     *     model.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      * @return The unfolded CIF {@link AExpression}.
      */
-    private static AExpression unfoldACifExpression(AExpression expression,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
+    private static AExpression unfoldACifExpression(AExpression expression, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         if (expression instanceof ABinaryExpression binExpr) {
-            AExpression unfoldedLhsExpression = unfoldACifExpression(binExpr.left, referenceableElements,
-                    propertyToLeaves, renames);
-            AExpression unfoldedRhsExpression = unfoldACifExpression(binExpr.right, referenceableElements,
-                    propertyToLeaves, renames);
+            AExpression unfoldedLhsExpression = unfoldACifExpression(binExpr.left, propertyToLeaves, renames);
+            AExpression unfoldedRhsExpression = unfoldACifExpression(binExpr.right, propertyToLeaves, renames);
 
-            // Unfold comparisons of properties with composite data types.
+            // Unfold comparisons where both are name expressions.
             if (binExpr.left instanceof ANameExpression lhsNameExpr
                     && binExpr.right instanceof ANameExpression rhsNameExpr)
             {
-                // Unfold if left hand side or right hand side are properties.
-                NamedElement lhsElement = referenceableElements.get(lhsNameExpr.name.name);
-                NamedElement rhsElement = referenceableElements.get(rhsNameExpr.name.name);
-                if (lhsElement instanceof Property || rhsElement instanceof Property) {
-                    return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, binExpr.operator,
-                            binExpr.position, propertyToLeaves, renames);
-                } else {
-                    return new ABinaryExpression(binExpr.operator, unfoldedLhsExpression, unfoldedRhsExpression,
-                            expression.position);
-                }
+                return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, binExpr.operator,
+                        binExpr.position, propertyToLeaves, renames);
             }
 
             // Combine the unfolded left and right components to form a new binary expression.
@@ -337,8 +319,7 @@ public class CompositeDataTypeFlattener {
                     expression.position);
         } else if (expression instanceof AUnaryExpression unaryExpr) {
             return new AUnaryExpression(unaryExpr.operator,
-                    unfoldACifExpression(unaryExpr.child, referenceableElements, propertyToLeaves, renames),
-                    unaryExpr.position);
+                    unfoldACifExpression(unaryExpr.child, propertyToLeaves, renames), unaryExpr.position);
         } else if (expression instanceof ANameExpression nameExpr) {
             return unfoldANameExpression(nameExpr.name.name, expression.position, renames);
         } else {
@@ -400,19 +381,17 @@ public class CompositeDataTypeFlattener {
      * properties.
      *
      * @param update A CIF {@link AUpdate} to be unfolded.
-     * @param referenceableElements A Map containing the name and the UML NamedElement of every element of the UML
-     *     model.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      * @return The list containing the unfolded CIF {@link AUpdate}.
      */
-    private static List<AUpdate> unfoldACifUpdate(AUpdate update, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static List<AUpdate> unfoldACifUpdate(AUpdate update, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         if (update instanceof AAssignmentUpdate assign) {
-            return unfoldACifAssignmentUpdate(assign, referenceableElements, propertyToLeaves, renames);
+            return unfoldACifAssignmentUpdate(assign, propertyToLeaves, renames);
         } else if (update instanceof AIfUpdate ifUpdate) {
-            AUpdate newIfUpdate = unfoldACifIfUpdate(ifUpdate, referenceableElements, propertyToLeaves, renames);
+            AUpdate newIfUpdate = unfoldACifIfUpdate(ifUpdate, propertyToLeaves, renames);
             return new LinkedList<>(List.of(newIfUpdate));
         } else {
             throw new RuntimeException(String.format("Unfolding unsupported update: %s.", update));
@@ -424,40 +403,24 @@ public class CompositeDataTypeFlattener {
      * respective leaf properties.
      *
      * @param assignUpdate A CIF {@link AAssignmentUpdate} to be unfolded.
-     * @param referenceableElements A Map containing the name and the UML NamedElement of every element of the UML
-     *     model.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      * @return The unfolded CIF {@link AAssignmentUpdate}.
      */
     private static List<AUpdate> unfoldACifAssignmentUpdate(AAssignmentUpdate assignUpdate,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
-            Map<String, String> renames)
+            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
     {
         // Unfold only if 'addressable' is ANameExpression. If also 'value' is ANameExpression, unfold both left and
         // right hand sides.
         if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
                 && assignUpdate.value instanceof ANameExpression aNameValue)
         {
-            // Unfold if left hand side or right hand side are properties.
-            NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
-            NamedElement rhsElement = referenceableElements.get(aNameValue.name.name);
-            if (lhsElement instanceof Property || rhsElement instanceof Property) {
-                return unfoldLeavesOfAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
-                        assignUpdate.position, propertyToLeaves, renames);
-            } else {
-                return new LinkedList<>(List.of(assignUpdate));
-            }
+            return unfoldLeavesOfAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
+                    assignUpdate.position, propertyToLeaves, renames);
         } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable) {
-            NamedElement lhsElement = referenceableElements.get(aNameAddressable.name.name);
-            if (lhsElement instanceof Property) {
-                return new LinkedList<>(List.of(new AAssignmentUpdate(
-                        unfoldACifExpression(aNameAddressable, referenceableElements, propertyToLeaves, renames),
-                        unfoldACifExpression(assignUpdate.value, referenceableElements, propertyToLeaves, renames),
-                        assignUpdate.position)));
-            } else {
-                return new LinkedList<>(List.of(assignUpdate));
-            }
+            return new LinkedList<>(List.of(new AAssignmentUpdate(
+                    unfoldACifExpression(aNameAddressable, propertyToLeaves, renames),
+                    unfoldACifExpression(assignUpdate.value, propertyToLeaves, renames), assignUpdate.position)));
         }
         return new LinkedList<>(List.of(assignUpdate));
     }
@@ -493,16 +456,15 @@ public class CompositeDataTypeFlattener {
         return new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position);
     }
 
-    private static void unfoldAbstractActivity(Activity activity, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static void unfoldAbstractActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         // Unfold the precondition and postcondition constraints. Skip occurrence constraints.
-        unfoldConstraints(activity.getPreconditions(), referenceableElements, propertyToLeaves, renames);
-        unfoldConstraints(activity.getPostconditions(), referenceableElements, propertyToLeaves, renames);
+        unfoldConstraints(activity.getPreconditions(), propertyToLeaves, renames);
+        unfoldConstraints(activity.getPostconditions(), propertyToLeaves, renames);
     }
 
-    private static void unfoldConstraints(List<Constraint> umlConstraints,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldConstraints(List<Constraint> umlConstraints, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         for (Constraint constraint: umlConstraints) {
@@ -510,7 +472,7 @@ public class CompositeDataTypeFlattener {
             if (constraint instanceof IntervalConstraint) {
                 continue;
             } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-                unfoldGuardBodies(opaqueSpec, referenceableElements, propertyToLeaves, renames);
+                unfoldGuardBodies(opaqueSpec, propertyToLeaves, renames);
             } else {
                 throw new RuntimeException(
                         "Constraint specification " + constraint.getSpecification() + " is not an opaque expression.");
@@ -518,8 +480,7 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static void unfoldGuardBodies(OpaqueExpression constraintSpec,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldGuardBodies(OpaqueExpression constraintSpec, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
@@ -528,9 +489,9 @@ public class CompositeDataTypeFlattener {
             ACifObject currentBody = constraintBodyExpressions.get(i);
             ACifObject unfoldedBody;
             if (currentBody instanceof AExpression bodyExpression) {
-                unfoldedBody = unfoldACifExpression(bodyExpression, referenceableElements, propertyToLeaves, renames);
+                unfoldedBody = unfoldACifExpression(bodyExpression, propertyToLeaves, renames);
             } else if (currentBody instanceof AInvariant bodyInvariant) {
-                unfoldedBody = unfoldACifInvariant(bodyInvariant, referenceableElements, propertyToLeaves, renames);
+                unfoldedBody = unfoldACifInvariant(bodyInvariant, propertyToLeaves, renames);
             } else {
                 throw new RuntimeException("Guard body " + currentBody + " is not an expression nor an invariant.");
             }
@@ -538,35 +499,34 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static AInvariant unfoldACifInvariant(AInvariant invariant, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static AInvariant unfoldACifInvariant(AInvariant invariant, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         // Unfold only the invariant predicate.
-        return new AInvariant(invariant.name,
-                unfoldACifExpression(invariant.predicate, referenceableElements, propertyToLeaves, renames),
+        return new AInvariant(invariant.name, unfoldACifExpression(invariant.predicate, propertyToLeaves, renames),
                 invariant.invKind, invariant.events);
     }
 
-    private static void unfoldConcreteActivity(Activity activity, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static void unfoldConcreteActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         // Unfold the guards and effects of every control flow, call behavior, and opaque action.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
-                    unfoldGuardBodies(opaqueGuard, referenceableElements, propertyToLeaves, renames);
+                    unfoldGuardBodies(opaqueGuard, propertyToLeaves, renames);
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 Behavior guard = callBehavior.getBehavior();
                 if (guard instanceof OpaqueBehavior opaqueGuard) {
-                    unfoldGuardAndEffects(opaqueGuard, referenceableElements, propertyToLeaves, renames);
+                    unfoldGuardAndEffects(opaqueGuard, propertyToLeaves, renames);
                 } else {
                     throw new RuntimeException(
                             String.format("Call behavior of class %s is not supported.", guard.getClass()));
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
-                unfoldGuardAndEffects(internalAction, referenceableElements, propertyToLeaves, renames);
+                unfoldGuardAndEffects(internalAction, propertyToLeaves, renames);
             } else if (ownedElement instanceof ActivityNode activityNode) {
                 // Nodes in activities have empty names and bodies.
                 continue;
@@ -577,8 +537,8 @@ public class CompositeDataTypeFlattener {
         }
 
         // Unfold pre and postconditions.
-        unfoldConstraints(activity.getPreconditions(), referenceableElements, propertyToLeaves, renames);
-        unfoldConstraints(activity.getPostconditions(), referenceableElements, propertyToLeaves, renames);
+        unfoldConstraints(activity.getPreconditions(), propertyToLeaves, renames);
+        unfoldConstraints(activity.getPostconditions(), propertyToLeaves, renames);
     }
 
     /**
@@ -586,48 +546,42 @@ public class CompositeDataTypeFlattener {
      * leaf properties.
      *
      * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
-     * @param referenceableElements A Map containing the name and the UML NamedElement of every element of the UML
-     *     model.
      * @param propertyToLeaves The map linking each property to its leaf types.
      * @param renames The map linking the absolute names to the flattened names.
      * @return The unfolded CIF {@link AIfUpdate}.
      */
-    private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, NamedElement> referenceableElements,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
+    private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> renames)
     {
         // Process the if statements.
         List<AExpression> unfoldedIfStatements = ifUpdate.guards.stream()
-                .map(u -> unfoldACifExpression(u, referenceableElements, propertyToLeaves, renames))
-                .collect(Collectors.toList());
+                .map(u -> unfoldACifExpression(u, propertyToLeaves, renames)).collect(Collectors.toList());
 
         // Process the elif statements.
         List<AElifUpdate> unfoldedElifs = ifUpdate.elifs.stream()
-                .map(u -> unfoldACifElifUpdate(u, referenceableElements, propertyToLeaves, renames))
-                .collect(Collectors.toList());
+                .map(u -> unfoldACifElifUpdate(u, propertyToLeaves, renames)).collect(Collectors.toList());
 
         // Process the else statements.
         List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
-                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyToLeaves, renames).stream()).toList();
+                .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
         // Process the then statements.
         List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
-                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyToLeaves, renames).stream()).toList();
+                .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
         return new AIfUpdate(unfoldedIfStatements, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdate.position);
     }
 
-    private static AElifUpdate unfoldACifElifUpdate(AElifUpdate elifUpdate,
-            Map<String, NamedElement> referenceableElements, Map<String, Set<String>> propertyToLeaves,
+    private static AElifUpdate unfoldACifElifUpdate(AElifUpdate elifUpdate, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         // Process the guards.
         List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
-                .map(u -> unfoldACifExpression(u, referenceableElements, propertyToLeaves, renames))
-                .collect(Collectors.toList());
+                .map(u -> unfoldACifExpression(u, propertyToLeaves, renames)).collect(Collectors.toList());
 
         // Process the thens.
         List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
-                .flatMap(u -> unfoldACifUpdate(u, referenceableElements, propertyToLeaves, renames).stream()).toList();
+                .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
     }
