@@ -396,9 +396,9 @@ This operation produces a CIF specification that:
 	\end{itemize}
 	\item For every concrete UML activity that can be called by the to-be-synthesized activity:
 	\begin{itemize}
-		\item Contains a Boolean-typed CIF discrete variable for every control flow of the concrete UML activity.
+		\item The translated CIF specification contains a Boolean-typed CIF discrete variable for every control flow of the concrete UML activity.
 		This variable then indicates whether the corresponding control flow contains a token (\texttt{true}) or not (\texttt{false}).
-		\item Contains CIF event declarations corresponding to all nodes of the concrete UML activity.
+		\item The translated CIF specification contains CIF event declarations corresponding to all nodes of the concrete UML activity.
 		We translate concrete activity nodes in the same way as we translate actions (i.e., opaque behaviors), as explained above.
 		Control nodes (i.e., fork, join, decision, merge, initial, and final nodes) are always translated as atomic deterministic actions since their execution should be instant.
 		Action nodes (i.e., opaque actions, call behavior nodes that call an opaque behavior, and shadowed call behavior nodes that call an activity) are translated likewise to opaque behaviors: as actions with user-specified guards and effects, that can be atomic or nonatomic, and deterministic or nondeterministic.
