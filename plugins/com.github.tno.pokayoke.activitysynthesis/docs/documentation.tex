@@ -405,7 +405,7 @@ This operation produces a CIF specification that:
 		During this translation, we define extra guards and effects to ensure proper token handling: an activity node can only be executed (as an action) if its incoming control flows have the required tokens for that, and after executing the node, the outgoing control flows receive the proper tokens.
 		In case an outgoing control flow has a guard, then this guard is translated as an extra condition for putting a token on that control flow, i.e., for making the corresponding CIF variable \texttt{true}.
 		
-		Unlike the translation of opaque behaviors, every CIF event that is created for an activity node becomes uncontrollable, with the exception of initial nodes.
+		Unlike the translation of opaque behaviors, every CIF event that is created for an activity node is uncontrollable, with the exception of initial nodes.
 		This is because calling an activity intuitively amounts to `executing its initial node', and this is a controllable event (that is, the synthesis algorithm has control over when some concrete activity is being called).
 		However, once a concrete activity has been called, its execution proceeds uncontrollably, which is why all other CIF events are made uncontrollable.
 		
