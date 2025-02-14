@@ -48,6 +48,7 @@
 \newcommand{\guard}[0]{\textsf{guard}}
 \newcommand{\identity}[1]{\lambda{#1}.{#1}}
 \newcommand{\incoming}[0]{\textsf{in}}
+\newcommand{\incomingguard}[0]{\textsf{guard}_{\incoming}}
 \newcommand{\init}[0]{\textsf{init}}
 \newcommand{\join}[0]{\textsf{join}}
 \newcommand{\Label}[0]{\textsf{Label}}
@@ -56,6 +57,7 @@
 \newcommand{\orlabel}[0]{\textsf{or}}
 \newcommand{\ornode}[1]{\orlabel\langle#1\rangle}
 \newcommand{\outgoing}[0]{\textsf{out}}
+\newcommand{\outgoingguard}[0]{\textsf{guard}_{\outgoing}}
 \newcommand{\source}[0]{\textsf{source}}
 \newcommand{\State}[0]{\textsf{State}}
 \newcommand{\target}[0]{\textsf{target}}
@@ -160,20 +162,27 @@ Let $\action : \CoreNode \rightarrow \Action$ be a projection function for obtai
 
 \paragraph{Core activities.} 
 Let us now define \emph{core activities}, which are essentially graphs consisting of core nodes, as defined in the previous paragraph, that are connected via guarded edges.
-The edge guards are (later) used to restrict when an edge can \emph{receive} a token.
-During activity execution, any edge can only receive a token while the activity is in a state where the edge guard holds.
-This is for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
+The edges of core activities have two guards, namely an \emph{incoming guard} and an \emph{outgoing guard}.
+The incoming guards are (later) used to restrict when an edge can \emph{receive} a token, while outgoing guards restrict when a token can be \emph{taken} from an edge.
+That is, during activity execution, any edge can only receive a token whenever the activity is in a state where the incoming edge guard holds, and this token can only be taken from the edge whenever the outgoing edge guard holds.
+Incoming edge guards are for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
+Outgoing edge guards are for example needed for defining extra (waiting) conditions for an action to be performed.
 
-More formally, core activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \CoreNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \mathcal{N}}$.
-Any edge $\coreedge \in \mathcal{E}$ so that $\coreedge = (\corenode,g,\corenode')$ consists of a \emph{source node} $\corenode \in \mathcal{N}$, a \emph{target node} $\corenode' \in \mathcal{N}$ and a \emph{guard} $g \in \Guard$.
-Let $\source : \mathcal{E} \rightarrow \mathcal{N}$, $\target : \mathcal{E} \rightarrow \mathcal{N}$ and $\guard : \mathcal{E} \rightarrow \Guard$ be projection functions to obtain the source, target, and guard of any edge, respectively.
-
+More formally, core activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \CoreNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \Guard \times \mathcal{N}}$.
+Any edge $\coreedge \in \mathcal{E}$ so that $\coreedge = (\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')$ consists of a source node $\corenode \in \mathcal{N}$, an incoming guard $g_{\mathit{in}} \in \Guard$, an outgoing guard $g_{\mathit{out}} \in \Guard$, and a target node $\corenode' \in \mathcal{N}$.
+Let us define the following projection functions for edges:
+\begin{itemize}
+	\item $\source : \mathcal{E} \rightarrow \mathcal{N}$ such that $\source((\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')) = \corenode$.
+	\item $\incomingguard : \mathcal{E} \rightarrow \Guard$ such that $\incomingguard((\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')) = g_{\mathit{in}}$.
+	\item $\outgoingguard : \mathcal{E} \rightarrow \Guard$ such that $\outgoingguard((\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')) = g_{\mathit{out}}$.
+	\item $\target : \mathcal{E} \rightarrow \mathcal{N}$ such that $\target((\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')) = \corenode'$.
+\end{itemize}
 We define the following shorthand notations for any $\corenode \in \mathcal{N}$ and $\sigma \in \State$:
 \begin{itemize}
 	\item $\incoming(\corenode) = \{ \coreedge \in \mathcal{E} ~|~ \target(\coreedge) = \corenode \}$ be the set of all incoming edges of $\corenode$.
 	\item $\outgoing(\corenode) = \{ \coreedge \in \mathcal{E} ~|~ \source(\coreedge) = \corenode \}$ be the set of all outgoing edges of $\corenode$.
-	\item $\incoming(\corenode,\sigma) = \{ \coreedge \in \incoming(\eta) ~|~ \guard(\coreedge)(\sigma) \}$ be all incoming edges of $\corenode$ whose guard holds with respect to $\sigma$.
-	\item $\outgoing(\corenode,\sigma) = \{ \coreedge \in \outgoing(\eta) ~|~ \guard(\coreedge)(\sigma) \}$ be all outgoing edges of $\corenode$ whose guard holds with respect to $\sigma$.
+	\item $\incoming(\corenode,\sigma) = \{ \coreedge \in \incoming(\eta) ~|~ \outgoingguard(\coreedge)(\sigma) \}$ be all incoming edges of $\corenode$ whose outgoing guard holds with respect to $\sigma$.
+	\item $\outgoing(\corenode,\sigma) = \{ \coreedge \in \outgoing(\eta) ~|~ \incomingguard(\coreedge)(\sigma) \}$ be all outgoing edges of $\corenode$ whose incoming guard holds with respect to $\sigma$.
 \end{itemize}
 
 \subsection{Dynamics}
@@ -192,9 +201,8 @@ More formally, let $\Config = \cramped{2^\mathcal{E} \times \State}$ be the set 
 A configuration $(\Sigma, \sigma) \in \Config$ is a pair with $\Sigma \subseteq \mathcal{E}$ a set of edges---the ones currently holding a token---and $\sigma$ a `current' state.
 We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sigma, \sigma)$.
 
-Any edge $\coreedge$ is said to be \emph{enabled in $c$} if it has a token in $c$, i.e., if $\coreedge \in \Sigma$.
+Any edge $\coreedge$ is said to be \emph{enabled in $c$} if $\coreedge \in \Sigma$ and $\outgoingguard(\coreedge)(\sigma)$ holds, i.e., if $\coreedge$ has a token in $c$ and if the outgoing guard of $\coreedge$ holds in $c$.
 If $c$ is clear from the context, we may just say that $\coreedge$ is \emph{enabled}.
-Note that edge guards control/restrict/regulate when an edge can \emph{receive} a token, as opposed to whether they can hold a token.
 
 \paragraph{Reductions.}
 Let us now define the operational semantics of core activities, in token passing style.
@@ -207,6 +215,8 @@ The notation $c \xrightarrow{\corenode} c'$ is used as shorthand for $(c, \coren
 The two rules are:
 \begin{mathpar}
 	\inferrule[And] {
+		\incoming(\corenode) = \incoming(\corenode, \sigma)
+		\\
 		\incoming(\corenode) \subseteq \Sigma
 		\\
 		(\outgoing(\corenode) \setminus \incoming(\corenode)) \cap \Sigma = \emptyset
@@ -223,13 +233,13 @@ The two rules are:
 	}
 	
 	\inferrule[Or] {
-		\coreedge \in \incoming(\corenode) \cap \Sigma
-		\\
-		\coreedge' \in \outgoing(\corenode, \sigma') \setminus (\Sigma \! \setminus \! \{\coreedge\})
+		\coreedge \in \incoming(\corenode, \sigma) \cap \Sigma
 		\\
 		\guard(\alpha)(\sigma)
 		\\
 		\sigma' \in \effects(\alpha)(\sigma)
+		\\
+		\coreedge' \in \outgoing(\corenode, \sigma') \setminus (\Sigma \! \setminus \! \{\coreedge\})
 	} {
 		(\Sigma,\sigma) \xrightarrow{\corenode} ((\Sigma \setminus \{\coreedge\}) \cup \{\coreedge'\}, \sigma')
 	} { 
@@ -238,17 +248,17 @@ The two rules are:
 \end{mathpar}
 
 The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\corenode$, for which $\action(\corenode) = \andnode{\alpha}$.
-\textsc{And} has five premises.
-It requires: (1) all incoming edges into $\corenode$ to have a token; (2) none of the outgoing edges of $\corenode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (3) the action guard $\guard(\alpha)$ to hold with respect to the current state $\sigma$; (4) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (5) the guards of all outgoing edges to hold with respect to $\sigma'$.
-If all five premises are met, \textsc{And} removes all tokens from $\incoming(\corenode)$ and puts tokens on $\outgoing(\corenode)$, making $\cramped{(\Sigma \setminus \incoming(\corenode)) \cup \outgoing(\corenode)}$ the new token arrangement.
-
+\textsc{And} has six premises.
+It requires: (1) the outgoing guards of all incoming edges into $\corenode$ to hold with respect to the current state $\sigma$; (2) all incoming edges to have a token; (3) none of the outgoing edges of $\corenode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (4) the action guard $\guard(\alpha)$ to hold with respect to $\sigma$; (5) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (6) the incoming guards of all outgoing edges to hold with respect to $\sigma'$.
+Note that premises (1) and (2) together mean that all incoming edges into $\corenode$ must be enabled in the current configuration.
+If all six premises are met, \textsc{And} removes all tokens from $\incoming(\corenode)$ and puts tokens on $\outgoing(\corenode)$, making $\cramped{(\Sigma \setminus \incoming(\corenode)) \cup \outgoing(\corenode)}$ the new token arrangement.
 
 The \textsc{Or} rule defines the execution of $\orlabel$-type nodes $\corenode$, for which $\action(\corenode) = \ornode{\alpha}$.
 \textsc{Or} has four premises.
-It requires: (1) the existence of an incoming edge $\coreedge$ of $\corenode$ that is enabled; (2) the existence of an outgoing edge $\coreedge'$ of $\corenode$ that is not enabled unless it equals $\coreedge$, and whose guard holds with respect to $\sigma'$; (3) the guard of $\alpha$ to hold with respect to the current state $\sigma$; and (4) a successor state $\sigma'$ to be available from $\alpha$'s effects.
+It requires: (1) the existence of an incoming edge $\coreedge$ of $\corenode$ that is enabled, i.e., that has a token and whose outgoing guard holds; (2) the guard of $\alpha$ to hold with respect to the current state $\sigma$; (3) a successor state $\sigma'$ to be available from $\alpha$'s effects; and (4) the existence of an outgoing edge $\coreedge'$ of $\corenode$ which does not hold a token unless it equals $\coreedge$, and whose incoming guard holds with respect to $\sigma'$.
 The \textsc{Or} rule allows multiple input edges to be enabled, but only one of them will participate per application of the \textsc{Or} rule.
 Similarly, if multiple outgoing edges could potentially participate, one of them actually participates.
-If all five premises are met, \textsc{Or} removes the token from $\coreedge$ and puts it on $\coreedge'$, making $\cramped{(\Sigma \setminus \{\coreedge\}) \cup \{\coreedge'\}}$ the new arrangement of tokens.
+If all four premises are met, \textsc{Or} removes the token from $\coreedge$ and puts it on $\coreedge'$, making $\cramped{(\Sigma \setminus \{\coreedge\}) \cup \{\coreedge'\}}$ the new arrangement of tokens.
 
 Finally, as a shorthand notation, we may write $c \xrightarrow{\alpha} c'$ if there exists an $\corenode \in \mathcal{N}$ such that $c \xrightarrow{\corenode} c'$ and $\action(\corenode) = \alpha$.
 
@@ -283,13 +293,16 @@ Action-typed nodes $\act(\alpha)$ closely relate to opaque actions in UML in the
 The other node types are standard in UML: initial and final nodes ($\init$ and $\final$), fork and join nodes ($\fork$ and $\join$), and decision and merge nodes ($\decision$ and $\merge$)
 
 \paragraph{Activities.}
-Concrete activities $A = (N, E)$ are graphs with $N \subseteq \ConcrNode$ a set of concrete activity nodes and $E \subseteq N \times \Guard \times N$ a set of guarded edges.
+Concrete activities $A = (N, E)$ are graphs with $N \subseteq \ConcrNode$ a set of concrete activity nodes and $E \subseteq N \times \Guard \times \Guard \times N$ a set of edges that have an incoming and outgoing guard.
 
 Any number of additional well-formedness conditions may be imposed on activities, e.g., action nodes having exactly one incoming and outgoing edge, or final nodes not being allowed to have outgoing edges.
 However, the semantics of activities, as defined in \autoref{sec:concrdynamics}, is not dependent on any such additional structural well-formedness conditions, making the semantics easier to define.
 
-Moreover, note that all edges have guards, rather than just the ones coming out of decision nodes.
-This is consistent with UML activities (except that, in UML, guards are ignored unless the edge comes out of a decision node).
+Moreover, note that every edge has an incoming and outgoing guard, rather than, e.g., just the ones coming out of decision nodes.
+This is slightly different from UML activities, since in UML, any edge can only have a single guard, and this guard is ignored unless the edge comes out of a decision node.
+Any edge guards that are not ignored are then considered to be incoming guards in UML.
+Our definition of concrete activities is therefore more general than the standard UML activities, since we also support outgoing guards, in addition to incoming ones.
+Outgoing edge guards can be used to impose extra (waiting) conditions in order for some action node to be performed, in addition to the action guard.
 
 \subsection{Dynamics}
 \label{sec:concrdynamics}
@@ -336,9 +349,9 @@ In fUML semantics, when firing a fork node, tokens are consumed from all incomin
 Join nodes ($\join$) are executed likewise to fork nodes: their executions requires all incoming edges (usually multiple) to be enabled and puts a token on all outgoing edges (usually just one).
 In fUML semantics, join nodes can only fire when all incoming edges have tokens (\cite{fUMLSemantics}, page 222).
 
-Decision nodes ($\decision$) are translated as $\orlabel$-typed nodes, as their execution requires a single incoming edge (usually there is only one) to be enabled and nondeterministically chooses a single outgoing edge whose guard holds to receive a token.
-In fUML semantics, when firing a decision node, a token is offered to all outgoing edges whose guard holds\footnote{The actual description as given in~\cite{fUMLSemantics} is slightly more complex, since it involves decision input flows that supply extra values to decision nodes (e.g., object flows), which somehow are used as tokens. However, this is the gist of it.} (\cite{fUMLSemantics}, page 213). 
-Merge nodes ($\merge$) are translated similarly: their execution requires a single incoming edge (usually multiple) to be enabled, and puts a token on one outgoing edge (usually there is one).
+Decision nodes ($\decision$) are translated as $\orlabel$-typed nodes, as their execution requires a single incoming edge (usually just one) to be enabled and nondeterministically chooses a single outgoing edge whose incoming guard holds to receive a token.
+In fUML semantics, when firing a decision node, a token is offered to all outgoing edges whose (incoming) guard holds\footnote{The actual description as given in~\cite{fUMLSemantics} is slightly more complex, since it involves decision input flows that supply extra values to decision nodes (e.g., object flows), which somehow are used as tokens. However, this is the gist of it.} (\cite{fUMLSemantics}, page 213). 
+Merge nodes ($\merge$) are translated similarly: their execution requires a single incoming edge (usually multiple) to be enabled, and puts a token on one outgoing edge (usually just one).
 The description of the semantics of merge nodes in~\cite{fUMLSemantics} is not super clear.
 
 Finally, action nodes are translated as $\andlabel$-typed nodes.
@@ -349,8 +362,8 @@ Appendix A of~\cite{DawC2015} shows how more complex behavior of UML activities 
 
 \paragraph{Edge translation.}
 The translation of edges is straightforward, and simply amounts to translating the source and target node.
-Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \ConcrNode \rightarrow \CoreNode \times \Guard \times \CoreNode$ be the translation function for edges, defined such that
-$\denote{(n,g,n')} = (\denotn{n},g, \denotn{n'})$.
+Let $\denote{~\cdot~} : \ConcrNode \times \Guard \times \Guard \times \ConcrNode \rightarrow \CoreNode \times \Guard \times \Guard \times \CoreNode$ be the translation function for edges, defined such that
+$$\denote{(n,g_{\mathit{in}},g_{\mathit{out}},n')} = (\denotn{n},g_{\mathit{in}},g_{\mathit{out}}, \denotn{n'}).$$
 
 \paragraph{Activity semantics.}
 Now that we can translate the nodes and edges of concrete activities, let us combine these translations.
@@ -412,7 +425,11 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	\item Nodes of type $\act(\alpha)$ roughly correspond to opaque actions in UML.
 	However, opaque actions in UML do not have guards nor effects.
 	This is something we added to $\alpha$ in our definition of activities.
-	\item Our definition of activities imposes a \emph{waiting semantics}, meaning that execution of some action $\alpha$ `waits' until $\guard(\alpha)$ holds, and likewise for edge guards.
+	\item In fUML, every edge can only have a single guard, which only has actual meaning in case the edge goes out of a decision node.
+	In that case, the edge guard is considered to be the incoming guard of that edge.
+	Our definition of activities supports two types of edge guards: incoming and outgoing ones.
+	Moreover, with our definition, every edge guard has a meaning, as opposed to just the ones that are related to decision nodes.
+	\item Our definition of activities imposes a \emph{waiting semantics}, meaning that execution of some action $\alpha$ `waits' until $\guard(\alpha)$ holds, and likewise for incoming and outgoing edge guards.
 	In fUML, action nodes are not guarded and do not have a waiting semantics.
 	Instead of waiting, in fUML, the activity typically terminates whenever a state is encountered in which no immediate progress can be made, e.g., in case of decision nodes where none of the outgoing edges can be taken.
 	\item Nodes of type $\act(\alpha)$ execute \emph{atomically}.
@@ -468,21 +485,24 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\Guard$ & The set of all guards \\
 	$\guard$ & Projection function for obtaining the guard of an action \\
 	$g$ & A guard, which is a state predicate \\
+	$g_{\mathit{in}}$ & The incoming guard of an edge \\
+	$g_{\mathit{out}}$ & The outgoing guard of an edge \\
 	$\ell$ & A node identifier, used to give identity to core and concrete activity nodes \\
 	$\incoming$ & Function for getting all incoming edges of a node \\
+	$\incomingguard$ & Projection function for obtaining the incoming guard of an edge \\
 	$\init$ & The initial node type of concrete activities \\
 	$\Label$ & The set of all action labels \\
 	$\actlabel$ & Projection function for obtaining the action label of an action \\
 	$\join$ & The join node type of concrete activities \\
 	$\merge$ & The merge node type of concrete activities \\
 	$\NodeID$ & The set of all node identifiers \\
-	$\mathcal{N}$ & A set of nodes of a core activity \\
-	$N$ & A set of concrete nodes of a concrete (UML-like) activity \\
-	$\corenode$ & A node of a core activity \\
-	$n$ & A concrete node of a concrete activity
+	$\mathcal{N}$ & A set of nodes of a core activity
 \end{tabular}
 
 \begin{tabular}{cl}
+	$N$ & A set of concrete nodes of a concrete (UML-like) activity \\
+	$\corenode$ & A node of a core activity \\
+	$n$ & A concrete node of a concrete activity \\
 	$\ornode{\alpha}$ & A core node type describing an $\orlabel$-style execution of $\alpha$ \\
 	$\pi$ & A trace, i.e., a sequence of actions \\
 	$\Sigma$ & A set of core edges holding a token, as part of a configuration \\
@@ -491,6 +511,7 @@ Below is a list of similarities and differences with respect to fUML semantics:
 	$\State$ & The set of all states \\
 	$\target$ & Projection function for getting the target node of an edge \\
 	$\outgoing$ & Function for getting all outgoing edges of a node \\
+	$\outgoingguard$ & Projection function for obtaining the outgoing guard of an edge \\
 	$u$ & An effects function, mapping a state to zero or more successor states \\
 	$\rightarrow$ & Reduction relation defining the semantics of core activities \\
 	$\xrightarrow{\alpha}$ & Reduction relation for a core node with action $\alpha$ \\
