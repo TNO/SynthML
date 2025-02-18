@@ -125,7 +125,7 @@ public class CompositeDataTypeFlattener {
      * @param prefix The relative name of the parent property, to use as a prefix.
      * @param collectedNames The relative names collected so far. Is extended in-place.
      */
-    public static void collectRelativeNamesOfLeafProperties(Property parentProperty, String prefix,
+    private static void collectRelativeNamesOfLeafProperties(Property parentProperty, String prefix,
             Set<String> collectedNames)
     {
         for (Property property: ((DataType)parentProperty.getType()).getOwnedAttributes()) {
@@ -234,8 +234,8 @@ public class CompositeDataTypeFlattener {
      * Unfold all references to properties with composite data type in assignments and comparisons, in the given class.
      *
      * @param clazz The class in which to do the unfolding.
-     * @param propertyToLeaves The map linking each property to its leaf types.
-     * @param renames The map linking the absolute names to the flattened names.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its leaves.
+     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      */
     private static void unfoldCompositeDataTypeReferences(Class clazz, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
@@ -268,7 +268,7 @@ public class CompositeDataTypeFlattener {
     private static void unfoldGuardAndEffects(RedefinableElement element, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
-        // Perform the guard unfolding. Skip if null.
+        // Perform the guard unfolding. Skip if there is no guard.
         AExpression guardExpr = CifParserHelper.parseGuard(element);
         if (guardExpr != null) {
             AExpression newGuard = unfoldACifExpression(guardExpr, propertyToLeaves, renames);
@@ -281,21 +281,15 @@ public class CompositeDataTypeFlattener {
         List<String> newEffects = new LinkedList<>();
         for (String effect: effects) {
             List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
-            List<String> newUpdateStrings = new LinkedList<>();
-            for (AUpdate update: updates) {
-                List<AUpdate> newUpdates = unfoldACifUpdate(update, propertyToLeaves, renames);
-                newUpdateStrings.addAll(
-                        newUpdates.stream().map(u -> ACifObjectToString.toString(u)).collect(Collectors.toList()));
-            }
-            String newEffect = String.join(", ", newUpdateStrings);
+            String newEffect = updates.stream().flatMap(u -> unfoldACifUpdate(update, propertyToLeaves, renames).stream()).map(u -> ACifObjectToString.toString(u)).collect(Collectors.joining(", "));
             newEffects.add(newEffect);
         }
         PokaYokeUmlProfileUtil.setEffects(element, newEffects);
     }
 
     /**
-     * Unfolds a CIF {@link AExpression}: substitutes the comparisons between composite data types with the respective
-     * leaf properties.
+     * Unfolds a CIF {@link AExpression}: replaces comparisons between properties with composite data types by comparisons of the respective flattened leaf properties.
+     * ```
      *
      * @param expression A CIF {@link AExpression} to be unfolded.
      * @param propertyToLeaves The map linking each property to its leaf types.
@@ -337,7 +331,7 @@ public class CompositeDataTypeFlattener {
     private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, String operator,
             TextPosition position, Map<String, Set<String>> propertyToLeaves, Map<String, String> renames)
     {
-        // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
+        // Collect the names of all leaves of left (and right) hand side composite data types. If empty,
         // names refer to primitive type. Get flattened name if present.
         Set<String> lhsLeaves = propertyToLeaves.get(lhsName);
         Set<String> rhsLeaves = propertyToLeaves.get(rhsName);
@@ -487,7 +481,7 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static void unfoldGuardBodies(OpaqueExpression constraintSpec, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldGuardBodies(OpaqueExpression opaqueExpression, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
         List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(constraintSpec);
@@ -566,19 +560,19 @@ public class CompositeDataTypeFlattener {
     private static AUpdate unfoldACifIfUpdate(AIfUpdate ifUpdate, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
-        // Process the if statements.
-        List<AExpression> unfoldedIfStatements = ifUpdate.guards.stream()
+        // Process the 'if' statements.
+        List<AExpression> unfoldedGuards = ifUpdate.guards.stream()
                 .map(u -> unfoldACifExpression(u, propertyToLeaves, renames)).collect(Collectors.toList());
 
-        // Process the elif statements.
+        // Process the 'elif' statements.
         List<AElifUpdate> unfoldedElifs = ifUpdate.elifs.stream()
-                .map(u -> unfoldACifElifUpdate(u, propertyToLeaves, renames)).collect(Collectors.toList());
+                .map(u -> unfoldACifElifUpdate(u, propertyToLeaves, renames)).toList();
 
-        // Process the else statements.
+        // Process the 'else' statements.
         List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
                 .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
-        // Process the then statements.
+        // Process the 'then' statements.
         List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
                 .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
@@ -588,11 +582,11 @@ public class CompositeDataTypeFlattener {
     private static AElifUpdate unfoldACifElifUpdate(AElifUpdate elifUpdate, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> renames)
     {
-        // Process the guards.
+        // Process the 'guards'.
         List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
-                .map(u -> unfoldACifExpression(u, propertyToLeaves, renames)).collect(Collectors.toList());
+                .map(u -> unfoldACifExpression(u, propertyToLeaves, renames)).toList();
 
-        // Process the thens.
+        // Process the 'thens'.
         List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
                 .flatMap(u -> unfoldACifUpdate(u, propertyToLeaves, renames).stream()).toList();
 
