@@ -582,22 +582,26 @@ public class CompositeDataTypeFlattener {
                     unfoldOpaqueExpression(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
                 } else {
                     throw new RuntimeException(
-                            String.format("Unfolding control flow guards of class %s is not supported.",
+                            String.format("Unfolding control flow guards of class '%s' is not supported.",
                                     guard.getClass().getSimpleName()));
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
-                Behavior guard = callBehavior.getBehavior();
-                if (guard instanceof OpaqueBehavior opaqueGuard) {
+                Behavior behavior = callBehavior.getBehavior();
+                if (behavior instanceof OpaqueBehavior opaqueGuard) {
                     unfoldRedefinableElement(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
+                } else if (behavior instanceof Activity calledActivity && calledActivity.isAbstract()) {
+                    unfoldAbstractActivity(calledActivity, propertyToLeaves, absoluteToFlatNames);
+                } else if (behavior instanceof Activity calledActivity && !calledActivity.isAbstract()) {
+                    unfoldConcreteActivity(calledActivity, propertyToLeaves, absoluteToFlatNames);
                 } else {
                     throw new RuntimeException(
-                            String.format("Unfolding call behavior actions of class %s is not supported.",
-                                    guard.getClass().getSimpleName()));
+                            String.format("Unfolding call behavior actions of class '%s' is not supported.",
+                                    behavior.getClass().getSimpleName()));
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldRedefinableElement(internalAction, propertyToLeaves, absoluteToFlatNames);
             } else if (ownedElement instanceof ActivityNode activityNode) {
-                // Nodes in activities have empty names and bodies.
+                // Nodes in activities should not refer to properties.
                 continue;
             } else {
                 throw new RuntimeException(String.format("Unfolding elements of class '%s' not supported",
