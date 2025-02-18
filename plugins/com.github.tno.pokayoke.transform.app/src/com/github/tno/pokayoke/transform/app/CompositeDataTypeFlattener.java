@@ -350,7 +350,9 @@ public class CompositeDataTypeFlattener {
         if (lhsLeaves == null && rhsLeaves == null) {
             String newLhsName = absoluteToFlatNames.getOrDefault(lhsName, lhsName);
             String newRhsName = absoluteToFlatNames.getOrDefault(rhsName, rhsName);
-            return createABinaryExpression(newLhsName, newRhsName, operator, position);
+            ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, position), false, position);
+            ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, position), false, position);
+            return new ABinaryExpression(operator, lhsExpression, rhsExpression, position);
         }
 
         // Create the new binary expression of the unfolded properties for both left and right hand side.
@@ -359,15 +361,22 @@ public class CompositeDataTypeFlattener {
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
-            ABinaryExpression currentBinaryExpression = createABinaryExpression(newLhsName, newRhsName, operator,
+            ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, position), false, position);
+            ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, position), false, position);
+            ABinaryExpression currentBinaryExpression = new ABinaryExpression(operator, lhsExpression, rhsExpression,
                     position);
 
             // Create a new binary expression as a conjunction of the expressions generated for every leaf.
             if (unfoldedBinaryExpression == null) {
                 unfoldedBinaryExpression = currentBinaryExpression;
             } else {
-                unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
-                        currentBinaryExpression, position);
+                if (operator.equals("=")) {
+                    unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
+                            currentBinaryExpression, position);
+                } else {
+                    unfoldedBinaryExpression = new ABinaryExpression("or", unfoldedBinaryExpression,
+                            currentBinaryExpression, position);
+                }
             }
         }
         return unfoldedBinaryExpression;
@@ -378,14 +387,6 @@ public class CompositeDataTypeFlattener {
     {
         String newName = absoluteToFlatNames.getOrDefault(name, name);
         return new ANameExpression(new AName(newName, position), false, position);
-    }
-
-    private static ABinaryExpression createABinaryExpression(String lhsName, String rhsName, String operator,
-            TextPosition position)
-    {
-        ANameExpression lhsExpression = new ANameExpression(new AName(lhsName, position), false, position);
-        ANameExpression rhsExpression = new ANameExpression(new AName(rhsName, position), false, position);
-        return new ABinaryExpression(operator, lhsExpression, rhsExpression, position);
     }
 
     /**
@@ -405,7 +406,7 @@ public class CompositeDataTypeFlattener {
             return unfoldAAssignmentUpdate(assign, propertyToLeaves, absoluteToFlatNames);
         } else if (update instanceof AIfUpdate ifUpdate) {
             AUpdate newIfUpdate = unfoldAIfUpdate(ifUpdate, propertyToLeaves, absoluteToFlatNames);
-            return new LinkedList<>(List.of(newIfUpdate));
+            return List.of(newIfUpdate);
         } else {
             throw new RuntimeException(
                     String.format("Unfolding updates of class '%s' not supported.", update.getClass().getSimpleName()));
@@ -433,12 +434,12 @@ public class CompositeDataTypeFlattener {
             return unfoldLeavesOfAAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
                     assignUpdate.position, propertyToLeaves, absoluteToFlatNames);
         } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable) {
-            return new LinkedList<>(List.of(
+            return List.of(
                     new AAssignmentUpdate(unfoldAExpression(aNameAddressable, propertyToLeaves, absoluteToFlatNames),
                             unfoldAExpression(assignUpdate.value, propertyToLeaves, absoluteToFlatNames),
-                            assignUpdate.position)));
+                            assignUpdate.position));
         }
-        return new LinkedList<>(List.of(assignUpdate));
+        return List.of(assignUpdate);
     }
 
     private static List<AUpdate> unfoldLeavesOfAAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
@@ -453,7 +454,7 @@ public class CompositeDataTypeFlattener {
             String newRhsName = absoluteToFlatNames.getOrDefault(rhsName, rhsName);
             ANameExpression lhsNameExpression = new ANameExpression(new AName(newLhsName, position), false, position);
             ANameExpression rhsNameExpression = new ANameExpression(new AName(newRhsName, position), false, position);
-            return new LinkedList<>(List.of(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position)));
+            return List.of(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position));
         }
 
         // Create a new assignment update of the unfolded properties for both left and right hand side.
