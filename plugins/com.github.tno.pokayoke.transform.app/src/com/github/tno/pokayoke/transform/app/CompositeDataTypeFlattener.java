@@ -451,7 +451,9 @@ public class CompositeDataTypeFlattener {
         if (lhsLeaves == null && rhsLeaves == null) {
             String newLhsName = absoluteToFlatNames.getOrDefault(lhsName, lhsName);
             String newRhsName = absoluteToFlatNames.getOrDefault(rhsName, rhsName);
-            return new LinkedList<>(List.of(createAAssignementUpdate(newLhsName, newRhsName, position)));
+            ANameExpression lhsNameExpression = new ANameExpression(new AName(newLhsName, position), false, position);
+            ANameExpression rhsNameExpression = new ANameExpression(new AName(newRhsName, position), false, position);
+            return new LinkedList<>(List.of(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position)));
         }
 
         // Create a new assignment update of the unfolded properties for both left and right hand side.
@@ -460,16 +462,11 @@ public class CompositeDataTypeFlattener {
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
-            AUpdate currentAssignmentExpression = createAAssignementUpdate(newLhsName, newRhsName, position);
-            unfoldedAssignmentUpdates.add(currentAssignmentExpression);
+            ANameExpression lhsNameExpression = new ANameExpression(new AName(newLhsName, position), false, position);
+            ANameExpression rhsNameExpression = new ANameExpression(new AName(newRhsName, position), false, position);
+            unfoldedAssignmentUpdates.add(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position));
         }
         return unfoldedAssignmentUpdates;
-    }
-
-    private static AAssignmentUpdate createAAssignementUpdate(String lhs, String rhs, TextPosition position) {
-        ANameExpression lhsNameExpression = new ANameExpression(new AName(lhs, position), false, position);
-        ANameExpression rhsNameExpression = new ANameExpression(new AName(rhs, position), false, position);
-        return new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position);
     }
 
     /**
@@ -530,14 +527,15 @@ public class CompositeDataTypeFlattener {
             Map<String, String> absoluteToFlatNames)
     {
         for (Constraint constraint: umlConstraints) {
-            // Skip occurrence constraints.
             if (constraint instanceof IntervalConstraint) {
-                continue;
+                continue; // Skip occurrence constraints.
             } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
                 unfoldOpaqueExpression(opaqueSpec, propertyToLeaves, absoluteToFlatNames);
             } else {
-                throw new RuntimeException(String.format("Unfolding constraints of class '%s' is not supported.",
-                        constraint.getClass().getSimpleName()));
+                throw new RuntimeException(
+                        String.format("Unfolding constraints of class '%s' with specification '%s' is not supported.",
+                                constraint.getClass().getSimpleName(),
+                                constraint.getSpecification().getClass().getSimpleName()));
             }
         }
     }
