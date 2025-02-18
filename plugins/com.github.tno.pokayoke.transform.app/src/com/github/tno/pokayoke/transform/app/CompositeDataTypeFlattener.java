@@ -599,6 +599,10 @@ public class CompositeDataTypeFlattener {
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldRedefinableElement(internalAction, propertyToLeaves, absoluteToFlatNames);
+            } else if (ownedElement instanceof List elementList && elementList.get(0) instanceof Constraint) {
+                @SuppressWarnings("unchecked")
+                List<Constraint> constraints = elementList;
+                unfoldConstraints(constraints, propertyToLeaves, absoluteToFlatNames);
             } else if (ownedElement instanceof ActivityNode activityNode) {
                 // Nodes in activities should not refer to properties.
                 continue;
@@ -607,9 +611,5 @@ public class CompositeDataTypeFlattener {
                         ownedElement.getClass().getSimpleName()));
             }
         }
-
-        // Unfold pre and postconditions.
-        unfoldConstraints(activity.getPreconditions(), propertyToLeaves, absoluteToFlatNames);
-        unfoldConstraints(activity.getPostconditions(), propertyToLeaves, absoluteToFlatNames);
     }
 }
