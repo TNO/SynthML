@@ -270,7 +270,8 @@ public class CompositeDataTypeFlattener {
      * Unfolds guards and effects of a redefinable element.
      *
      * @param element The redefinable element.
-     * @param propertyToLeaves The map linking each property to its leaf types.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
      * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      */
     private static void unfoldRedefinableElement(RedefinableElement element, Map<String, Set<String>> propertyToLeaves,
@@ -299,10 +300,11 @@ public class CompositeDataTypeFlattener {
 
     /**
      * Unfolds a CIF {@link AExpression}: replaces comparisons between properties with composite data types by
-     * comparisons of the respective flattened leaf properties. ```
+     * comparisons of the respective flattened leaf properties.
      *
      * @param expression A CIF {@link AExpression} to be unfolded.
-     * @param propertyToLeaves The map linking each property to its leaf types.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
      * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      * @return The unfolded CIF {@link AExpression}.
      */
@@ -387,11 +389,12 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AUpdate}: substitutes the comparisons between composite data types with the respective leaf
-     * properties.
+     * Unfolds a CIF {@link AUpdate}: replaces updates between properties with composite data types by updates of the
+     * respective flattened leaf properties.
      *
      * @param update A CIF {@link AUpdate} to be unfolded.
-     * @param propertyToLeaves The map linking each property to its leaf types.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
      * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      * @return The list containing the unfolded CIF {@link AUpdate}.
      */
@@ -410,11 +413,12 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AAssignmentUpdate}: substitutes the assignment between composite data types with the
-     * respective leaf properties.
+     * Unfolds a CIF {@link AAssignmentUpdate}: replaces assignments between properties with composite data types by
+     * assignments of the respective flattened leaf properties.
      *
      * @param assignUpdate A CIF {@link AAssignmentUpdate} to be unfolded.
-     * @param propertyToLeaves The map linking each property to its leaf types.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
      * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      * @return The unfolded CIF {@link AAssignmentUpdate}.
      */
@@ -561,11 +565,12 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AIfUpdate}: substitutes the comparisons between composite data types with the respective
-     * leaf properties.
+     * Unfolds a CIF {@link AIfUpdate}: replaces updates between properties with composite data types by updates of the
+     * respective flattened leaf properties.
      *
      * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
-     * @param propertyToLeaves The map linking each property to its leaf types.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
      * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
      * @return The unfolded CIF {@link AIfUpdate}.
      */
