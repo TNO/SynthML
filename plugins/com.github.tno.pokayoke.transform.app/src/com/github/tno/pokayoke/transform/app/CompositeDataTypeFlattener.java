@@ -11,7 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.ExternalCrossReferencer;
 import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
@@ -89,6 +92,10 @@ public class CompositeDataTypeFlattener {
 
             // Delete the composite data types.
             model.getPackagedElements().removeAll(dataTypes);
+
+            // Sanity check: there should not be any references to objects not contained in the model.
+            Map<EObject, Collection<Setting>> problems = ExternalCrossReferencer.find(model);
+            Verify.verify(problems.isEmpty());
         }
     }
 
