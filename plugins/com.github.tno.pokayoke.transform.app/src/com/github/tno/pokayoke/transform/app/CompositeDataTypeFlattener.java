@@ -472,6 +472,52 @@ public class CompositeDataTypeFlattener {
         return new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position);
     }
 
+    /**
+     * Unfolds a CIF {@link AIfUpdate}: replaces updates between properties with composite data types by updates of the
+     * respective flattened leaf properties.
+     *
+     * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
+     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
+     *     leaves.
+     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @return The unfolded CIF {@link AIfUpdate}.
+     */
+    private static AUpdate unfoldAIfUpdate(AIfUpdate ifUpdate, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> absoluteToFlatNames)
+    {
+        // Process the 'if' statements.
+        List<AExpression> unfoldedGuards = ifUpdate.guards.stream()
+                .map(u -> unfoldAExpression(u, propertyToLeaves, absoluteToFlatNames)).toList();
+
+        // Process the 'then' statements.
+        List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
+                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
+
+        // Process the 'elif' statements.
+        List<AElifUpdate> unfoldedElifs = ifUpdate.elifs.stream()
+                .map(u -> unfoldAElifUpdate(u, propertyToLeaves, absoluteToFlatNames)).toList();
+
+        // Process the 'else' statements.
+        List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
+                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
+
+        return new AIfUpdate(unfoldedGuards, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdate.position);
+    }
+
+    private static AElifUpdate unfoldAElifUpdate(AElifUpdate elifUpdate, Map<String, Set<String>> propertyToLeaves,
+            Map<String, String> absoluteToFlatNames)
+    {
+        // Process the 'guards'.
+        List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
+                .map(u -> unfoldAExpression(u, propertyToLeaves, absoluteToFlatNames)).toList();
+
+        // Process the 'thens'.
+        List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
+                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
+
+        return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
+    }
+
     private static void unfoldAbstractActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
     {
@@ -562,51 +608,5 @@ public class CompositeDataTypeFlattener {
         // Unfold pre and postconditions.
         unfoldConstraints(activity.getPreconditions(), propertyToLeaves, absoluteToFlatNames);
         unfoldConstraints(activity.getPostconditions(), propertyToLeaves, absoluteToFlatNames);
-    }
-
-    /**
-     * Unfolds a CIF {@link AIfUpdate}: replaces updates between properties with composite data types by updates of the
-     * respective flattened leaf properties.
-     *
-     * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
-     * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
-     *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
-     * @return The unfolded CIF {@link AIfUpdate}.
-     */
-    private static AUpdate unfoldAIfUpdate(AIfUpdate ifUpdate, Map<String, Set<String>> propertyToLeaves,
-            Map<String, String> absoluteToFlatNames)
-    {
-        // Process the 'if' statements.
-        List<AExpression> unfoldedGuards = ifUpdate.guards.stream()
-                .map(u -> unfoldAExpression(u, propertyToLeaves, absoluteToFlatNames)).collect(Collectors.toList());
-
-        // Process the 'elif' statements.
-        List<AElifUpdate> unfoldedElifs = ifUpdate.elifs.stream()
-                .map(u -> unfoldAElifUpdate(u, propertyToLeaves, absoluteToFlatNames)).toList();
-
-        // Process the 'else' statements.
-        List<AUpdate> unfoldedElses = ifUpdate.elses.stream()
-                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
-
-        // Process the 'then' statements.
-        List<AUpdate> unfoldedThens = ifUpdate.thens.stream()
-                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
-
-        return new AIfUpdate(unfoldedGuards, unfoldedThens, unfoldedElifs, unfoldedElses, ifUpdate.position);
-    }
-
-    private static AElifUpdate unfoldAElifUpdate(AElifUpdate elifUpdate, Map<String, Set<String>> propertyToLeaves,
-            Map<String, String> absoluteToFlatNames)
-    {
-        // Process the 'guards'.
-        List<AExpression> unfoldedElifGuards = elifUpdate.guards.stream()
-                .map(u -> unfoldAExpression(u, propertyToLeaves, absoluteToFlatNames)).toList();
-
-        // Process the 'thens'.
-        List<AUpdate> unfoldedElifThens = elifUpdate.thens.stream()
-                .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
-
-        return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
     }
 }
