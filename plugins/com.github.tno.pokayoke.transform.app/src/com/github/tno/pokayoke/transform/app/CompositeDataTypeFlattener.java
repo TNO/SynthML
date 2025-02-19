@@ -340,7 +340,7 @@ public class CompositeDataTypeFlattener {
                 Set<String> rhsLeaves = propertyToLeaves.get(rhsNameExpr.name.name);
                 Verify.verify(Objects.equal(lhsLeaves, rhsLeaves));
 
-                // Unfold both if composite data types.
+                // Unfold both if composite data types, otherwise create a new binary expression.
                 if (lhsLeaves != null) {
                     return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, lhsLeaves,
                             binExpr.operator, binExpr.position, absoluteToFlatNames);
@@ -574,7 +574,7 @@ public class CompositeDataTypeFlattener {
     private static void unfoldConcreteActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
     {
-        // Unfold the guards and effects of every control flow, call behavior, and opaque action.
+        // Unfold the guards and effects of owned elements.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
