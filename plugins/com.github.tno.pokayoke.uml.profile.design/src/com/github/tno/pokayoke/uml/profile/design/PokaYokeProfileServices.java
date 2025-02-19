@@ -242,10 +242,10 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer.
-     * This implementation changes only the name of an 'ActivityEdge' without altering its guard.
-     * The override occurs implicitly because {@link PokaYokeProfileServices} is added to the viewpoint.
-     * This method is called through Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
+     * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer. This
+     * implementation changes only the name of an 'ActivityEdge' without altering its guard. The override occurs
+     * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
+     * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *
      * @param context The UML element to be edited.
      * @param editedLabelContent The new label content.
