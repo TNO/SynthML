@@ -164,9 +164,9 @@ Let $\action : \CoreNode \rightarrow \Action$ be a projection function for obtai
 Let us now define \emph{core activities}, which are essentially graphs consisting of core nodes, as defined in the previous paragraph, that are connected via guarded edges.
 The edges of core activities have two guards, namely an \emph{incoming guard} and an \emph{outgoing guard}.
 The incoming guards are (later) used to restrict when an edge can \emph{receive} a token, while outgoing guards restrict when a token can be \emph{taken} from an edge.
-That is, during activity execution, any edge can only receive a token whenever the activity is in a state where the incoming edge guard holds, and this token can only be taken from the edge whenever the outgoing edge guard holds.
+That is, during activity execution, any edge can receive a token only when the activity is in a state where the incoming edge guard holds, and this token can be taken from the edge only when the outgoing edge guard holds.
 Incoming edge guards are for example needed to define the semantics of UML decision nodes, of which an outgoing edge can only receive a token if its guard holds.
-Outgoing edge guards are for example needed for defining extra (waiting) conditions for an action to be performed.
+Outgoing edge guards are for example needed for defining extra (waiting) conditions for a following action to be performed.
 
 More formally, core activities $\mathcal{A} = (\mathcal{N},\mathcal{E})$ are graphs with nodes $\mathcal{N} \subseteq \CoreNode$ and edges $\mathcal{E} \subseteq \cramped{\mathcal{N} \times \Guard \times \Guard \times \mathcal{N}}$.
 Any edge $\coreedge \in \mathcal{E}$ so that $\coreedge = (\corenode,g_{\mathit{in}},g_{\mathit{out}},\corenode')$ consists of a source node $\corenode \in \mathcal{N}$, an incoming guard $g_{\mathit{in}} \in \Guard$, an outgoing guard $g_{\mathit{out}} \in \Guard$, and a target node $\corenode' \in \mathcal{N}$.
@@ -249,7 +249,7 @@ The two rules are:
 
 The \textsc{And} rule defines the execution of $\andlabel$-type nodes $\corenode$, for which $\action(\corenode) = \andnode{\alpha}$.
 \textsc{And} has six premises.
-It requires: (1) the outgoing guards of all incoming edges into $\corenode$ to hold with respect to the current state $\sigma$; (2) all incoming edges to have a token; (3) none of the outgoing edges of $\corenode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (4) the action guard $\guard(\alpha)$ to hold with respect to $\sigma$; (5) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (6) the incoming guards of all outgoing edges to hold with respect to $\sigma'$.
+It requires: (1) the outgoing guards of all incoming edges into $\corenode$ to hold with respect to the current state $\sigma$; (2) all incoming edges into $\corenode$ to have a token; (3) none of the outgoing edges of $\corenode$ except self-loops to have a token, otherwise action execution might attempt to put more than one token on a single edge, which is not allowed; (4) the action guard $\guard(\alpha)$ to hold with respect to $\sigma$; (5) a successor state $\sigma'$ to be available from the effects $\effects(\alpha)$ of $\alpha$; and (6) the incoming guards of all outgoing edges to hold with respect to $\sigma'$.
 Note that premises (1) and (2) together mean that all incoming edges into $\corenode$ must be enabled in the current configuration.
 If all six premises are met, \textsc{And} removes all tokens from $\incoming(\corenode)$ and puts tokens on $\outgoing(\corenode)$, making $\cramped{(\Sigma \setminus \incoming(\corenode)) \cup \outgoing(\corenode)}$ the new token arrangement.
 
@@ -381,7 +381,7 @@ In esoteric cases, an activity might have no initial configurations in case ther
 
 Let $A = (N,E)$ be an activity.
 Then $(\{\coreedge\}, \sigma_I) \in \Config$ is defined to be an \emph{initial configuration of $A$} for any choice of initial state $\sigma_I \in \State$, if there exists an initial node $(\ell, \init) \in N$ such that $\coreedge \in \outgoing(\denotn{(\ell, \init)},\sigma_I)$.
-In other words, any outgoing edge of any initial node can form an initial configuration together with some initial state $\sigma_I$, given that this edge is allowed by its guard to receive an (initial) token in the initial state $\sigma_I$.
+In other words, any outgoing edge of any initial node can form an initial configuration together with some initial state $\sigma_I$, given that this edge is allowed by its incoming guard to receive an (initial) token in the initial state $\sigma_I$.
 This initial state $\sigma_I$ could for example be chosen to be the initial valuation of all variables defined in the context of $A$.
 Recall that the current definitions abstract over details like variables and their values\footnote{We are not going to define a custom expression/effects language and its semantics. There are plenty of good existing languages that could be picked off-the-shelf, like for example CIF.}.
 The formalization could later be instantiated with such details.
