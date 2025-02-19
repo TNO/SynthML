@@ -440,20 +440,24 @@ public class CompositeDataTypeFlattener {
     private static List<AUpdate> unfoldAAssignmentUpdate(AAssignmentUpdate assignUpdate,
             Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
     {
-        // Unfold only if 'addressable' is ANameExpression. If also 'value' is ANameExpression, unfold both left and
-        // right hand sides.
-        if (assignUpdate.addressable instanceof ANameExpression aNameAddressable
-                && assignUpdate.value instanceof ANameExpression aNameValue)
-        {
-            return unfoldLeavesOfAAssignmentUpdate(aNameAddressable.name.name, aNameValue.name.name,
-                    assignUpdate.position, propertyToLeaves, absoluteToFlatNames);
-        } else if (assignUpdate.addressable instanceof ANameExpression aNameAddressable) {
-            return List.of(
-                    new AAssignmentUpdate(unfoldAExpression(aNameAddressable, propertyToLeaves, absoluteToFlatNames),
-                            unfoldAExpression(assignUpdate.value, propertyToLeaves, absoluteToFlatNames),
-                            assignUpdate.position));
+        // Sanity check: 'addressable' must be a name expression.
+        Verify.verify(assignUpdate.addressable instanceof ANameExpression);
+        Set<String> lhsLeaves = propertyToLeaves.get(((ANameExpression)assignUpdate.addressable).name.name);
+        if (lhsLeaves != null) {
+            // If 'addressable' is of composite data type, also 'value' must be a name expression and be of the same
+            // composite data type. Unfold them together.
+            Verify.verify(assignUpdate.value instanceof ANameExpression);
+            Set<String> rhsLeaves = propertyToLeaves.get(((ANameExpression)assignUpdate.value).name.name);
+            Verify.verify(Objects.equal(lhsLeaves, rhsLeaves));
+            return unfoldLeavesOfAAssignmentUpdate(((ANameExpression)assignUpdate.addressable).name.name,
+                    ((ANameExpression)assignUpdate.value).name.name, assignUpdate.position, propertyToLeaves,
+                    absoluteToFlatNames);
+        } else {
+            return List.of(new AAssignmentUpdate(
+                    unfoldAExpression(assignUpdate.addressable, propertyToLeaves, absoluteToFlatNames),
+                    unfoldAExpression(assignUpdate.value, propertyToLeaves, absoluteToFlatNames),
+                    assignUpdate.position));
         }
-        return List.of(assignUpdate);
     }
 
     private static List<AUpdate> unfoldLeavesOfAAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
