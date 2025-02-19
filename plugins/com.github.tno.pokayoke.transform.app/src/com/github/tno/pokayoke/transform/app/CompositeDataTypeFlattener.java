@@ -450,7 +450,7 @@ public class CompositeDataTypeFlattener {
             Set<String> rhsLeaves = propertyToLeaves.get(((ANameExpression)assignUpdate.value).name.name);
             Verify.verify(Objects.equal(lhsLeaves, rhsLeaves));
             return unfoldLeavesOfAAssignmentUpdate(((ANameExpression)assignUpdate.addressable).name.name,
-                    ((ANameExpression)assignUpdate.value).name.name, assignUpdate.position, propertyToLeaves,
+                    ((ANameExpression)assignUpdate.value).name.name, lhsLeaves, assignUpdate.position,
                     absoluteToFlatNames);
         } else {
             return List.of(new AAssignmentUpdate(
@@ -460,23 +460,10 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static List<AUpdate> unfoldLeavesOfAAssignmentUpdate(String lhsName, String rhsName, TextPosition position,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
+    private static List<AUpdate> unfoldLeavesOfAAssignmentUpdate(String lhsName, String rhsName, Set<String> leaves,
+            TextPosition position, Map<String, String> absoluteToFlatNames)
     {
-        // Collect the names of all leaves children of left (and right) hand side composite data types. If empty,
-        // names refer to primitive type. Get flattened name if present.
-        Set<String> lhsLeaves = propertyToLeaves.get(lhsName);
-        Set<String> rhsLeaves = propertyToLeaves.get(rhsName);
-        if (lhsLeaves == null && rhsLeaves == null) {
-            String newLhsName = absoluteToFlatNames.getOrDefault(lhsName, lhsName);
-            String newRhsName = absoluteToFlatNames.getOrDefault(rhsName, rhsName);
-            ANameExpression lhsNameExpression = new ANameExpression(new AName(newLhsName, position), false, position);
-            ANameExpression rhsNameExpression = new ANameExpression(new AName(newRhsName, position), false, position);
-            return List.of(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position));
-        }
-
         // Create a new assignment update of the unfolded properties for both left and right hand side.
-        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
         List<AUpdate> unfoldedAssignmentUpdates = new ArrayList<>();
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
