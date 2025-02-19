@@ -56,6 +56,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Objects;
 import com.google.common.base.Verify;
 
 import PokaYoke.PokaYokePackage;
@@ -332,8 +333,25 @@ public class CompositeDataTypeFlattener {
             if (binExpr.left instanceof ANameExpression lhsNameExpr
                     && binExpr.right instanceof ANameExpression rhsNameExpr)
             {
-                return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, binExpr.operator,
-                        binExpr.position, propertyToLeaves, absoluteToFlatNames);
+                // Assert that both lhs and rhs are of the same composite data types, or both are not.
+                Set<String> lhsLeaves = propertyToLeaves.get(lhsNameExpr.name.name);
+                Set<String> rhsLeaves = propertyToLeaves.get(rhsNameExpr.name.name);
+                Verify.verify(Objects.equal(lhsLeaves, rhsLeaves));
+
+                // Unfold both if composite data types.
+                if (lhsLeaves != null) {
+                    return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, lhsLeaves,
+                            binExpr.operator, binExpr.position, absoluteToFlatNames);
+                } else {
+                    String newLhsName = absoluteToFlatNames.getOrDefault(lhsNameExpr.name.name, lhsNameExpr.name.name);
+                    String newRhsName = absoluteToFlatNames.getOrDefault(rhsNameExpr.name.name, rhsNameExpr.name.name);
+                    Verify.verify(newLhsName != null && newRhsName != null);
+                    ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, binExpr.position), false,
+                            binExpr.position);
+                    ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, binExpr.position), false,
+                            binExpr.position);
+                    return new ABinaryExpression(binExpr.operator, lhsExpression, rhsExpression, binExpr.position);
+                }
             }
 
             // Combine the unfolded left and right components to form a new binary expression.
@@ -353,24 +371,11 @@ public class CompositeDataTypeFlattener {
         }
     }
 
-    private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, String operator,
-            TextPosition position, Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
+    private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, Set<String> leaves,
+            String operator, TextPosition position, Map<String, String> absoluteToFlatNames)
     {
-        // Collect the names of all leaves of left (and right) hand side composite data types. If empty,
-        // names refer to primitive type. Get flattened name if present.
-        Set<String> lhsLeaves = propertyToLeaves.get(lhsName);
-        Set<String> rhsLeaves = propertyToLeaves.get(rhsName);
-        if (lhsLeaves == null && rhsLeaves == null) {
-            String newLhsName = absoluteToFlatNames.getOrDefault(lhsName, lhsName);
-            String newRhsName = absoluteToFlatNames.getOrDefault(rhsName, rhsName);
-            ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, position), false, position);
-            ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, position), false, position);
-            return new ABinaryExpression(operator, lhsExpression, rhsExpression, position);
-        }
-
-        // Create the new binary expression of the unfolded properties for both left and right hand side.
-        Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
         ABinaryExpression unfoldedBinaryExpression = null;
+        String unfoldOperator = operator.equals("=") ? "and" : "or";
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
@@ -379,17 +384,13 @@ public class CompositeDataTypeFlattener {
             ABinaryExpression currentBinaryExpression = new ABinaryExpression(operator, lhsExpression, rhsExpression,
                     position);
 
-            // Create a new binary expression as a conjunction of the expressions generated for every leaf.
+            // According to the operator, create a new binary expression as a conjunction or disjunction of unfolded
+            // expressions.
             if (unfoldedBinaryExpression == null) {
                 unfoldedBinaryExpression = currentBinaryExpression;
             } else {
-                if (operator.equals("=")) {
-                    unfoldedBinaryExpression = new ABinaryExpression("and", unfoldedBinaryExpression,
-                            currentBinaryExpression, position);
-                } else {
-                    unfoldedBinaryExpression = new ABinaryExpression("or", unfoldedBinaryExpression,
-                            currentBinaryExpression, position);
-                }
+                unfoldedBinaryExpression = new ABinaryExpression(unfoldOperator, unfoldedBinaryExpression,
+                        currentBinaryExpression, position);
             }
         }
         return unfoldedBinaryExpression;
