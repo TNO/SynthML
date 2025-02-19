@@ -363,7 +363,8 @@ public class CompositeDataTypeFlattener {
             return new AUnaryExpression(unaryExpr.operator,
                     unfoldAExpression(unaryExpr.child, propertyToLeaves, absoluteToFlatNames), unaryExpr.position);
         } else if (expression instanceof ANameExpression nameExpr) {
-            return unfoldANameExpression(nameExpr.name.name, expression.position, absoluteToFlatNames);
+            String newName = absoluteToFlatNames.getOrDefault(nameExpr.name.name, nameExpr.name.name);
+            return new ANameExpression(new AName(newName, nameExpr.position), false, nameExpr.position);
         } else if (expression instanceof ABoolExpression || expression instanceof AIntExpression) {
             // Expressions without children don't need unfolding.
             return expression;
@@ -396,13 +397,6 @@ public class CompositeDataTypeFlattener {
             }
         }
         return unfoldedBinaryExpression;
-    }
-
-    private static ANameExpression unfoldANameExpression(String name, TextPosition position,
-            Map<String, String> absoluteToFlatNames)
-    {
-        String newName = absoluteToFlatNames.getOrDefault(name, name);
-        return new ANameExpression(new AName(newName, position), false, position);
     }
 
     /**
