@@ -400,7 +400,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AUpdate}: replaces updates between properties with composite data types by updates of the
+     * Unfolds a CIF {@link AUpdate}: replaces updates of properties with composite data types by updates of the
      * respective flattened leaf properties.
      *
      * @param update A CIF {@link AUpdate} to be unfolded.
@@ -424,7 +424,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AAssignmentUpdate}: replaces assignments between properties with composite data types by
+     * Unfolds a CIF {@link AAssignmentUpdate}: replaces assignments of properties with composite data types by
      * assignments of the respective flattened leaf properties.
      *
      * @param assignUpdate A CIF {@link AAssignmentUpdate} to be unfolded.
@@ -472,7 +472,7 @@ public class CompositeDataTypeFlattener {
     }
 
     /**
-     * Unfolds a CIF {@link AIfUpdate}: replaces updates between properties with composite data types by updates of the
+     * Unfolds a CIF {@link AIfUpdate}: replaces updates of properties with composite data types by updates of the
      * respective flattened leaf properties.
      *
      * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
