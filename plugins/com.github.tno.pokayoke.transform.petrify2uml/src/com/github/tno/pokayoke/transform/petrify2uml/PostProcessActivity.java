@@ -155,21 +155,6 @@ public class PostProcessActivity {
     }
 
     /**
-     * Updates the names of any UML edges with choice guards, to be the textual choice guard expression.
-     *
-     * @param activity The activity to process.
-     */
-    public static void addGuardsToControlFlowNames(Activity activity) {
-        for (ActivityEdge edge: activity.getEdges()) {
-            if (edge.getGuard() instanceof OpaqueExpression guard) {
-                Preconditions.checkArgument(guard.getBodies().size() == 1,
-                        "Expected choice guards to have exacty one body expression.");
-                edge.setName(guard.getBodies().get(0));
-            }
-        }
-    }
-
-    /**
      * Simplifies the given activity.
      *
      * @param activity The activity to simplify, which is modified in-place.

@@ -322,12 +322,6 @@ public class FullSynthesisApp {
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
-        // Post-process the activity to add choice guards to the name of the UML control flow they are on.
-        Path umlChoiceGuardNamesAddedOutputPath = outputFolderPath
-                .resolve(filePrefix + ".20.choiceguardnamesadded.uml");
-        PostProcessActivity.addGuardsToControlFlowNames(activity);
-        FileHelper.storeModel(activity.getModel(), umlChoiceGuardNamesAddedOutputPath.toString());
-
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
     }
