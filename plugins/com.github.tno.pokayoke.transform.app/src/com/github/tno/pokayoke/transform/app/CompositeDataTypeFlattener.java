@@ -56,6 +56,7 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Objects;
 import com.google.common.base.Verify;
 
@@ -101,16 +102,17 @@ public class CompositeDataTypeFlattener {
 
             // Sanity check: there should not be any references to objects not contained in the model.
             Map<EObject, Collection<Setting>> problems = ExternalCrossReferencer.find(model);
+            PrimitiveType primitiveBoolean = UmlPrimitiveType.BOOLEAN.load(model);
             Map<Object, Object> filteredProblems = problems.entrySet().stream()
-                    .filter(entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey()))
+                    .filter(entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey(), primitiveBoolean))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             Verify.verify(filteredProblems.isEmpty());
         }
     }
 
-    private static boolean isPokaYokeProfilePackageOrBoolean(Object o) {
-        return (o instanceof Profile profile && profile.getName().equals("PokaYoke")) || o instanceof PokaYokePackage
-                || (o instanceof PrimitiveType primitive && primitive.getName().equals("Boolean"));
+    private static boolean isPokaYokeProfilePackageOrBoolean(Object o, PrimitiveType p) {
+        return (o instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
+                || o instanceof PokaYokePackage || (o instanceof PrimitiveType primitive && primitive.equals(p)));
     }
 
     /**
