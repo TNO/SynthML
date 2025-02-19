@@ -1,10 +1,10 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,10 +40,13 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.IntervalConstraint;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
+import org.eclipse.uml2.uml.PrimitiveType;
+import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
@@ -54,6 +57,8 @@ import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
+
+import PokaYoke.PokaYokePackage;
 
 /** Composite data type flattener. */
 public class CompositeDataTypeFlattener {
@@ -95,8 +100,16 @@ public class CompositeDataTypeFlattener {
 
             // Sanity check: there should not be any references to objects not contained in the model.
             Map<EObject, Collection<Setting>> problems = ExternalCrossReferencer.find(model);
-            Verify.verify(problems.isEmpty());
+            Map<Object, Object> filteredProblems = problems.entrySet().stream()
+                    .filter(entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Verify.verify(filteredProblems.isEmpty());
         }
+    }
+
+    private static boolean isPokaYokeProfilePackageOrBoolean(Object o) {
+        return (o instanceof Profile profile && profile.getName().equals("PokaYoke")) || o instanceof PokaYokePackage
+                || (o instanceof PrimitiveType primitive && primitive.getName().equals("Boolean"));
     }
 
     /**
@@ -287,7 +300,7 @@ public class CompositeDataTypeFlattener {
 
         // Perform the unfolding of the effects.
         List<String> effects = PokaYokeUmlProfileUtil.getEffects(element);
-        List<String> newEffects = new LinkedList<>();
+        List<String> newEffects = new ArrayList<>();
         for (String effect: effects) {
             List<AUpdate> updates = CifParserHelper.parseUpdates(effect, element);
             String newEffect = updates.stream()
@@ -459,7 +472,7 @@ public class CompositeDataTypeFlattener {
 
         // Create a new assignment update of the unfolded properties for both left and right hand side.
         Set<String> leaves = lhsLeaves == null ? rhsLeaves : lhsLeaves;
-        List<AUpdate> unfoldedAssignmentUpdates = new LinkedList<>();
+        List<AUpdate> unfoldedAssignmentUpdates = new ArrayList<>();
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
@@ -579,6 +592,8 @@ public class CompositeDataTypeFlattener {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
                     unfoldOpaqueExpression(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
+                } else if (guard instanceof LiteralBoolean) {
+                    continue;
                 } else {
                     throw new RuntimeException(
                             String.format("Unfolding control flow guards of class '%s' is not supported.",
