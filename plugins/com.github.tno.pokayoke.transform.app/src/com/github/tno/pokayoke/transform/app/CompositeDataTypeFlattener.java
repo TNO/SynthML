@@ -590,19 +590,6 @@ public class CompositeDataTypeFlattener {
                 if (PokaYokeUmlProfileUtil.isFormalElement(callBehavior)) {
                     // Shadowed call, process guards and effects of the call behavior.
                     unfoldRedefinableElement(callBehavior, propertyToLeaves, absoluteToFlatNames);
-                } else {
-                    Behavior behavior = callBehavior.getBehavior();
-                    if (behavior instanceof OpaqueBehavior opaqueGuard) {
-                        unfoldRedefinableElement(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
-                    } else if (behavior instanceof Activity calledActivity && calledActivity.isAbstract()) {
-                        unfoldAbstractActivity(calledActivity, propertyToLeaves, absoluteToFlatNames);
-                    } else if (behavior instanceof Activity calledActivity && !calledActivity.isAbstract()) {
-                        unfoldConcreteActivity(calledActivity, propertyToLeaves, absoluteToFlatNames);
-                    } else {
-                        throw new RuntimeException(
-                                String.format("Unfolding call behavior actions of class '%s' is not supported.",
-                                        behavior.getClass().getSimpleName()));
-                    }
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldRedefinableElement(internalAction, propertyToLeaves, absoluteToFlatNames);
