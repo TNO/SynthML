@@ -427,12 +427,17 @@ This operation produces a CIF specification that:
 \begin{example*}[Running Example]
 The translation of the UML \texttt{BitFlipper} model to CIF is shown in Algorithm~\ref{alg:bitflipper-cif}. In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
 The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
-Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialization. 
-The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialized explicitly, whereas \texttt{init} is initialized as \texttt{false}. 
+Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization. 
+The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}. 
 The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
-The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nonatomic and/or nondeterministic actions, in this case \texttt{initialize}.
-Finally, 
-the CIF model denotes the \texttt{flip} event as an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
+The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nondeterministic actions, in this case \texttt{initialize}.
+The \texttt{flip} event is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
+The opaque behavior \texttt{initialize} is translated into a series of edges. 
+First, an edge \texttt{initialize} is defined, with guard \texttt{init = false and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the nondeterministic action is being performed). 
+Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively. 
+At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the nondeterministic action. 
+Finally, four requirement invariants state that the postcondition disables all CIF events. 
+In practice, these four requirements mimic the fact that once the system reaches a state where the postcondition holds, no additional actions need to be taken. 
 \end{example*}
 
 \ciffile{images/bitflipper_cif.cif}{CIF translation of the \texttt{BitFlipper} UML model.}{alg:bitflipper-cif}
