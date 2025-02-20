@@ -171,7 +171,7 @@ public class CifContext {
             referenceableElements.put(name, umlProperty);
             referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
 
-            // Add descendant, if property has them.
+            // Add descendants, if property has them.
             Type propertyType = umlProperty.getType();
             if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
                 // Stop the recursion if instantiation cycle found (the Poka Yoke validator guarantees that valid UML
