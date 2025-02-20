@@ -148,25 +148,10 @@ public class PostProcessActivity {
      * @param activity The activity from which to remove names of nodes and edges.
      */
     public static void removeNodesEdgesNames(Activity activity) {
-        activity.getEdges().stream().forEach(edge -> edge.setName(null));
+        activity.getEdges().stream().forEach(edge -> edge.unsetName());
         List<ActivityNode> nodes = activity.getNodes().stream()
                 .filter(node -> !(node instanceof OpaqueAction) && !(node instanceof CallBehaviorAction)).toList();
-        nodes.stream().forEach(node -> node.setName(null));
-    }
-
-    /**
-     * Updates the names of any UML edges with choice guards, to be the textual choice guard expression.
-     *
-     * @param activity The activity to process.
-     */
-    public static void addGuardsToControlFlowNames(Activity activity) {
-        for (ActivityEdge edge: activity.getEdges()) {
-            if (edge.getGuard() instanceof OpaqueExpression guard) {
-                Preconditions.checkArgument(guard.getBodies().size() == 1,
-                        "Expected choice guards to have exacty one body expression.");
-                edge.setName(guard.getBodies().get(0));
-            }
-        }
+        nodes.stream().forEach(node -> node.unsetName());
     }
 
     /**

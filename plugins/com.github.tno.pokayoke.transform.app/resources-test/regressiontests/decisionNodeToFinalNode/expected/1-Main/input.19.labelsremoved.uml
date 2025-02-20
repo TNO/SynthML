@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="Model">
     <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="8" isActive="true">
       <ownedAttribute xmi:id="3" name="field" visibility="public">
@@ -25,39 +25,23 @@
           </specification>
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="13" target="24" source="22">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="14">
             <body>not field</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="22" source="20">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="22" source="20"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="16" target="23" source="22">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
             <body>field</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="24" source="21">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="20" source="24">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="24" source="21"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="20" source="24"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="20" name="action" incoming="19" outgoing="15" behavior="7"/>
-        <node xmi:type="uml:InitialNode" xmi:id="21" outgoing="18">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="22" incoming="15" outgoing="13 16">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="23" incoming="16">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:MergeNode" xmi:id="24" incoming="18 13" outgoing="19">
-          <name xsi:nil="true"/>
-        </node>
+        <node xmi:type="uml:InitialNode" xmi:id="21" outgoing="18"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="22" incoming="15" outgoing="13 16"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="23" incoming="16"/>
+        <node xmi:type="uml:MergeNode" xmi:id="24" incoming="18 13" outgoing="19"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="25">

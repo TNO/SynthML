@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="Model">
     <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="17" isActive="true">
       <nameExpression xmi:id="3" name="literals">
@@ -38,80 +38,48 @@
           <specification xmi:type="uml:Interval" xmi:id="23" name="" max="5" min="4"/>
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="24" target="50" source="59">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" target="65" source="59">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="28" target="55" source="50">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" target="55" source="50"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="29" target="51" source="60">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="30">
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="31" target="54" source="60">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="32">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="60" source="65">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="64" source="55">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="60" source="65"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="64" source="55"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="35" target="53" source="61">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="37" target="56" source="61">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="38">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="61" source="51">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="49" source="54">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="62" source="64">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="42" target="62" source="56">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="52" source="62">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="63" source="49">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="63" source="53">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="46" target="63" source="52">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="47" target="58" source="63">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="48" target="59" source="57">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="61" source="51"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="49" source="54"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="62" source="64"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" target="62" source="56"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="52" source="62"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="63" source="49"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="63" source="53"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" target="63" source="52"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="47" target="58" source="63"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="48" target="59" source="57"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="49" name="do_a" incoming="40" outgoing="44" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="50" name="do_a" incoming="24" outgoing="28" behavior="15"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="51" name="do_a" incoming="29" outgoing="39" behavior="15"/>
@@ -120,27 +88,13 @@
         <node xmi:type="uml:OpaqueAction" xmi:id="54" name="do_b_end1" incoming="31" outgoing="40"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="55" name="reset" incoming="28" outgoing="34" behavior="66"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="56" name="reset" incoming="37" outgoing="42" behavior="66"/>
-        <node xmi:type="uml:InitialNode" xmi:id="57" outgoing="48">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="58" incoming="47">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="59" incoming="48" outgoing="24 26">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="60" incoming="33" outgoing="29 31">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="61" incoming="39" outgoing="35 37">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:MergeNode" xmi:id="62" incoming="41 42" outgoing="43">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:MergeNode" xmi:id="63" incoming="44 45 46" outgoing="47">
-          <name xsi:nil="true"/>
-        </node>
+        <node xmi:type="uml:InitialNode" xmi:id="57" outgoing="48"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="58" incoming="47"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="59" incoming="48" outgoing="24 26"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="60" incoming="33" outgoing="29 31"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="61" incoming="39" outgoing="35 37"/>
+        <node xmi:type="uml:MergeNode" xmi:id="62" incoming="41 42" outgoing="43"/>
+        <node xmi:type="uml:MergeNode" xmi:id="63" incoming="44 45 46" outgoing="47"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="64" name="do_b_start" incoming="34" outgoing="41"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="65" name="do_b_start" incoming="26" outgoing="33"/>
       </ownedBehavior>
