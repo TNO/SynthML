@@ -298,12 +298,8 @@ A short explanation is given for every operation, followed by the motivation for
 
 \begin{example*}[Running Example]
 Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.  
-The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: 
-a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and 
-a boolean named \texttt{bit}, not initialized.  
-The class also contains 
-an abstract activity called \texttt{ActivityMain}, and 
-two opaque behaviors named \texttt{flip} and \texttt{initialize}. 
+The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a boolean named \texttt{bit}, not initialized.  
+The class also contains an abstract activity called \texttt{ActivityMain}, and two opaque behaviors named \texttt{flip} and \texttt{initialize}. 
 The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}. 
 The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
 The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion. 
@@ -425,11 +421,14 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \begin{example*}[Running Example]
-The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{alg:bitflipper-cif}. In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
+The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{alg:bitflipper-cif}. 
+In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
 The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization. 
 The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}. 
-The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
+The activity precondition and postcondition are translated into algebraic boolean variables. 
+Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. 
+Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nondeterministic actions, in this case \texttt{initialize}.
 The \texttt{flip} event is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
 The opaque behavior \texttt{initialize} is translated into a series of edges. 
@@ -628,7 +627,8 @@ Hence they must be the same location.
 
 
 \begin{example*}[Running Example]
-The minimized CIF model is shown in Listing~\ref{alg:bitflipper-minimized-cif}. The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
+The minimized CIF model is shown in Listing~\ref{alg:bitflipper-minimized-cif}. 
+The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
 The CIF automaton is composed of five locations: 
 \begin{itemize}
     \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
@@ -734,8 +734,9 @@ Furthermore, a region mapping is computed that indicates how Petri Net places co
 This region mapping is thus a mapping from Petri Net places to sets of automaton locations.
 
 \begin{example*}[Running example]
-    The Petrify output is depicted in Fig.~\ref{fig:petrify-out}. 
-    Notice that the end event \texttt{\_\_end} has been split into two separate transitions that will be merged together (in fact, as a UML merge node) in a following step. Further, the final place \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps. 
+The Petrify output is depicted in Fig.~\ref{fig:petrify-out}. 
+Notice that the end event \texttt{\_\_end} has been split into two separate transitions that will be merged together (in fact, as a UML merge node) in a following step. 
+Further, the final place \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps. 
 \end{example*}
 
 \begin{figure}
@@ -1009,9 +1010,10 @@ This operation ensures that the synthesized UML activity no longer contains inte
 Moreover, all names of control nodes (initial/final/fork/join/decision/merge nodes) and control flow have been removed for better readability.
 
 \begin{example*}[Running Example]
-    Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}. The initial node is marked in blue, 
-    the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
-    If \texttt{bit} is true, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action. The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
+Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}. 
+The initial node is marked in blue, the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
+If \texttt{bit} is true, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action. 
+The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
 \end{example*}
 
 \begin{figure}
