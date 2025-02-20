@@ -148,10 +148,10 @@ public class PostProcessActivity {
      * @param activity The activity from which to remove names of nodes and edges.
      */
     public static void removeNodesEdgesNames(Activity activity) {
-        activity.getEdges().stream().forEach(edge -> edge.setName(null));
+        activity.getEdges().stream().forEach(edge -> edge.unsetName());
         List<ActivityNode> nodes = activity.getNodes().stream()
                 .filter(node -> !(node instanceof OpaqueAction) && !(node instanceof CallBehaviorAction)).toList();
-        nodes.stream().forEach(node -> node.setName(null));
+        nodes.stream().forEach(node -> node.unsetName());
     }
 
     /**
