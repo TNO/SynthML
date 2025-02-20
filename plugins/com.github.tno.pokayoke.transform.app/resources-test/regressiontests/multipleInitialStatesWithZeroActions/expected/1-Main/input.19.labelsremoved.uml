@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Model">
   <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="6" isActive="true">
     <ownedAttribute xmi:id="3" name="field" visibility="public">
       <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
@@ -7,15 +7,9 @@
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
     </ownedAttribute>
     <ownedBehavior xmi:type="uml:Activity" xmi:id="6" name="Main" node="8 9">
-      <edge xmi:type="uml:ControlFlow" xmi:id="7" target="9" source="8">
-        <name xsi:nil="true"/>
-      </edge>
-      <node xmi:type="uml:InitialNode" xmi:id="8" outgoing="7">
-        <name xsi:nil="true"/>
-      </node>
-      <node xmi:type="uml:ActivityFinalNode" xmi:id="9" incoming="7">
-        <name xsi:nil="true"/>
-      </node>
+      <edge xmi:type="uml:ControlFlow" xmi:id="7" target="9" source="8"/>
+      <node xmi:type="uml:InitialNode" xmi:id="8" outgoing="7"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="9" incoming="7"/>
     </ownedBehavior>
   </packagedElement>
   <profileApplication xmi:id="10">

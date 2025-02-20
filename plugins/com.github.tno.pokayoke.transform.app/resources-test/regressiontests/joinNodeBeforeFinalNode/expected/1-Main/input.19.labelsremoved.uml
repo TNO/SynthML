@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="Model">
     <packagedElement xmi:type="uml:Class" xmi:id="2" name="Example" visibility="public" classifierBehavior="11" isActive="true">
       <ownedAttribute xmi:id="3" name="field1" visibility="public">
@@ -32,59 +32,31 @@
             <body>field1 and field2</body>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="16" target="34" source="33">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="28" source="33">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" target="34" source="33"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" target="28" source="33"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="18" target="32" source="30">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
             <body>field1</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="20" target="34" source="30">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
             <body>true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="22" target="30" source="27">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="23" target="32" source="28">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="31" source="32">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="25" target="33" source="29">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="27" source="34">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="22" target="30" source="27"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" target="32" source="28"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="31" source="32"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" target="33" source="29"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" target="27" source="34"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="27" name="action1" incoming="26" outgoing="22" behavior="9"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="28" name="action2" incoming="17" outgoing="23" behavior="10"/>
-        <node xmi:type="uml:InitialNode" xmi:id="29" outgoing="25">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="30" incoming="22" outgoing="18 20">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="31" incoming="24">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:JoinNode" xmi:id="32" incoming="18 23" outgoing="24">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:ForkNode" xmi:id="33" incoming="25" outgoing="16 17">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:MergeNode" xmi:id="34" incoming="16 20" outgoing="26">
-          <name xsi:nil="true"/>
-        </node>
+        <node xmi:type="uml:InitialNode" xmi:id="29" outgoing="25"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="30" incoming="22" outgoing="18 20"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="31" incoming="24"/>
+        <node xmi:type="uml:JoinNode" xmi:id="32" incoming="18 23" outgoing="24"/>
+        <node xmi:type="uml:ForkNode" xmi:id="33" incoming="25" outgoing="16 17"/>
+        <node xmi:type="uml:MergeNode" xmi:id="34" incoming="16 20" outgoing="26"/>
       </ownedBehavior>
     </packagedElement>
     <profileApplication xmi:id="35">
