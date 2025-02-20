@@ -432,7 +432,7 @@ Moreover, we define the marked state predicate \texttt{marked} to be the algebra
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nondeterministic actions, in this case \texttt{initialize}.
 The \texttt{flip} event is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
 The opaque behavior \texttt{initialize} is translated into a series of edges. 
-First, an edge \texttt{initialize} is defined, with guard \texttt{init = false and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the nondeterministic action is being performed). 
+First, an edge \texttt{initialize} is defined, with guard \texttt{not init and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the nondeterministic action is being performed). 
 Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively. 
 At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the nondeterministic action. 
 Finally, four requirement invariants state that the postcondition disables all CIF events. 
