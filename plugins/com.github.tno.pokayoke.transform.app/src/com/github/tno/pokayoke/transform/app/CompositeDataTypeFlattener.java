@@ -278,8 +278,10 @@ public class CompositeDataTypeFlattener {
             }
         }
 
-        // Unfold constraints.
-        unfoldConstraints(clazz.getOwnedRules(), propertyToLeaves, absoluteToFlatNames);
+        // Unfold class constraints.
+        for (Constraint constraint: clazz.getOwnedRules()) {
+            unfoldConstraint(constraint, propertyToLeaves, absoluteToFlatNames);
+        }
     }
 
     /**
@@ -521,24 +523,21 @@ public class CompositeDataTypeFlattener {
             Map<String, String> absoluteToFlatNames)
     {
         // Unfold the precondition and postcondition constraints. Skip occurrence constraints.
-        unfoldConstraints(activity.getPreconditions(), propertyToLeaves, absoluteToFlatNames);
-        unfoldConstraints(activity.getPostconditions(), propertyToLeaves, absoluteToFlatNames);
+        activity.getPreconditions().stream().forEach(p -> unfoldConstraint(p, propertyToLeaves, absoluteToFlatNames));
+        activity.getPostconditions().stream().forEach(p -> unfoldConstraint(p, propertyToLeaves, absoluteToFlatNames));
     }
 
-    private static void unfoldConstraints(List<Constraint> umlConstraints, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldConstraint(Constraint constraint, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
     {
-        for (Constraint constraint: umlConstraints) {
-            if (constraint instanceof IntervalConstraint) {
-                continue; // Skip occurrence constraints.
-            } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-                unfoldOpaqueExpression(opaqueSpec, propertyToLeaves, absoluteToFlatNames);
-            } else {
-                throw new RuntimeException(
-                        String.format("Unfolding constraints of class '%s' with specification '%s' is not supported.",
-                                constraint.getClass().getSimpleName(),
-                                constraint.getSpecification().getClass().getSimpleName()));
-            }
+        if (constraint instanceof IntervalConstraint) {
+            return; // Skip occurrence constraints.
+        } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
+            unfoldOpaqueExpression(opaqueSpec, propertyToLeaves, absoluteToFlatNames);
+        } else {
+            throw new RuntimeException(String.format(
+                    "Unfolding constraints of class '%s' with specification '%s' is not supported.",
+                    constraint.getClass().getSimpleName(), constraint.getSpecification().getClass().getSimpleName()));
         }
     }
 
@@ -602,10 +601,8 @@ public class CompositeDataTypeFlattener {
                 }
             } else if (ownedElement instanceof OpaqueAction internalAction) {
                 unfoldRedefinableElement(internalAction, propertyToLeaves, absoluteToFlatNames);
-            } else if (ownedElement instanceof List elementList && elementList.get(0) instanceof Constraint) {
-                @SuppressWarnings("unchecked")
-                List<Constraint> constraints = elementList;
-                unfoldConstraints(constraints, propertyToLeaves, absoluteToFlatNames);
+            } else if (ownedElement instanceof Constraint constraint) {
+                unfoldConstraint(constraint, propertyToLeaves, absoluteToFlatNames);
             } else if (ownedElement instanceof ActivityNode activityNode) {
                 // Nodes in activities should not refer to properties.
                 continue;
