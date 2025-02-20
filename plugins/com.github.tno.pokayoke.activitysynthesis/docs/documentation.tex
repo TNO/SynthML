@@ -299,21 +299,21 @@ A short explanation is given for every operation, followed by the motivation for
 \begin{example*}[Running Example]
 Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.  
 The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: 
-a boolean named \texttt{init}, initialized as false, denoting whether the system is initialized, and 
+a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and 
 a boolean named \texttt{bit}, not initialized.  
 The class also contains 
 an abstract activity called \texttt{ActivityMain}, and 
 two opaque behaviors named \texttt{flip} and \texttt{initialize}. 
 The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}. 
 The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
-The opaque behavior \texttt{initialize} turns \texttt{init} from false to true, and instantiates \texttt{bit} either as true of false in a nondeterministic fashion. 
+The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion. 
 The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}. 
 \end{example*}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
-    \caption{The \texttt{flip} model visualized within the PokaYoke UML Designer environment.}
+    \caption{The \texttt{BitFlipper} model visualized within the PokaYoke UML Designer environment.}
     \label{fig:bitflipper-uml-designer}
 \end{figure}
 
@@ -428,7 +428,7 @@ This operation produces a CIF specification that:
 The translation of the UML \texttt{BitFlipper} model to CIF is shown in Algorithm~\ref{alg:bitflipper-cif}. In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
 The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic result of the \texttt{bit} initialization. 
-The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialized explicitly, whereas \texttt{init} is initialized as false. 
+The boolean property \texttt{bit} is transformed into a discrete boolean \texttt{disc bool} variable, which is not initialized explicitly, whereas \texttt{init} is initialized as \texttt{false}. 
 The activity precondition and postcondition are translated into algebraic boolean variables. Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nonatomic and/or nondeterministic actions, in this case \texttt{initialize}.
 Finally, 
