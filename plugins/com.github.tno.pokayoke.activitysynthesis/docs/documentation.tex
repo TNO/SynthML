@@ -421,7 +421,7 @@ This operation produces a CIF specification that:
 \end{itemize}
 
 \begin{example*}[Running Example]
-The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{alg:bitflipper-cif}. 
+The translation of the UML \texttt{BitFlipper} model to CIF is shown in Listing~\ref{lst:bitflipper-cif}. 
 In the CIF model, first the events are defined, either controllable (denoting the start of an action) or uncontrollable (usually describing a nondeterministic or external event).  
 The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip} and \texttt{initialize} that relate to starting the opaque behaviors defined in the UML model. 
 Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization. 
@@ -439,7 +439,7 @@ Finally, four requirement invariants state that the postcondition disables all C
 In practice, these four requirements mimic the fact that once the system reaches a state where the postcondition holds, no additional actions need to be taken. 
 \end{example*}
 
-\ciffile{images/bitflipper_cif.cif}{CIF translation of the \texttt{BitFlipper} UML model.}{alg:bitflipper-cif}
+\ciffile{images/bitflipper_cif.cif}{CIF translation of the \texttt{BitFlipper} UML model.}{lst:bitflipper-cif}
 
 \subsection{Data-based synthesis with CIF}
 \label{sec:data-based-synthesis}
@@ -627,7 +627,7 @@ Hence they must be the same location.
 
 
 \begin{example*}[Running Example]
-The minimized CIF model is shown in Listing~\ref{alg:bitflipper-minimized-cif}. 
+The minimized CIF model is shown in Listing~\ref{lst:bitflipper-minimized-cif}. 
 The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
 The CIF automaton is composed of five locations: 
 \begin{itemize}
@@ -640,7 +640,7 @@ The CIF automaton is composed of five locations:
 This state space is the input to Petrify, that synthesizes a Petri Net from it. 
 \end{example*}
 
-\ciffile{images/bitflipper_synthesized_minimized.cif}{Minimized CIF model.}{alg:bitflipper-minimized-cif}
+\ciffile{images/bitflipper_synthesized_minimized.cif}{Minimized CIF model.}{lst:bitflipper-minimized-cif}
 
 \subsection{Petri Net synthesis}
 \label{sec:petrinet-synthesis}
