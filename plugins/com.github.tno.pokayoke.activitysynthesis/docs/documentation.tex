@@ -11,7 +11,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{mathpar}
 \usepackage{mathtools}
-\usepackage{listings}
+\usepackage{cif_listing}
 
 % Color of comments in algorithms.
 \newcommand{\commfont}[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
@@ -75,31 +75,6 @@
 \theoremstyle{definition}
 \newtheorem{example}{Example}[section]
 \newtheorem*{example*}{Example}
-
-% Colored keywords for algorithm 
-\usepackage{xcolor}
-\definecolor{Turquoise}{RGB}{0, 206, 209}
-\definecolor{ForestGreen}{RGB}{34, 139, 34}
-\definecolor{Grey}{RGB}{105, 105, 105}
-\lstdefinelanguage{Cif}
-{
-    keywords=[1]{
-        controllable, uncontrollable, plant, automaton, disc, bool, any, true, false, int, alg, bool, initial, marked, location, initial, edge, when, do, end, requirement, invariant, disables
-    },
-    keywordstyle=[1]\color{blue},
-    keywords=[2]{in, not},
-    keywordstyle=[2]\color{Turquoise},
-    keywords=[3]{0, 1},
-    keywordstyle=[3]\color{ForestGreen},
-    keywords=[4]{@state},
-    keywordstyle=[4]\color{Grey},
-    sensitive=false,
-    morestring=[b]',
-    morecomment=[l]{--}, 
-    morecomment=[s][\color{red!50!brown}\ttfamily]{"}{"}, 
-}
-
-
 
 \title{Synthesis of Poka Yoke Activity Diagrams}
 
@@ -460,7 +435,7 @@ Finally,
 the CIF model denotes the \texttt{flip} event as an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
 \end{example*}
 
-\input{images/bitflipper-cif}
+\ciffile{images/bitflipper_cif.cif}{CIF translation of the \texttt{BitFlipper} UML model.}{alg:bitflipper-cif}
 
 \subsection{Data-based synthesis with CIF}
 \label{sec:data-based-synthesis}
@@ -648,7 +623,7 @@ Hence they must be the same location.
 
 
 \begin{example*}[Running Example]
-The minimized CIF model is shown in Algorithm~\ref{alg:bitflipper-minimised-cif}. The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
+The minimized CIF model is shown in Algorithm~\ref{alg:bitflipper-minimized-cif}. The CIF model has a \texttt{\_\_start} and an \texttt{\_\_end} event, denoting the start and end of the activity to be synthesized. 
 The CIF automaton is composed of five locations: 
 \begin{itemize}
     \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
@@ -660,8 +635,7 @@ The CIF automaton is composed of five locations:
 This state space is the input to Petrify, that synthesizes a Petri Net from it. 
 \end{example*}
 
-\input{images/bitflipper-synthesised-minimized}
-
+\ciffile{images/bitflipper_synthesized_minimized.cif}{Minimized CIF model.}{alg:bitflipper-minimized-cif}
 
 \subsection{Petri Net synthesis}
 \label{sec:petrinet-synthesis}
