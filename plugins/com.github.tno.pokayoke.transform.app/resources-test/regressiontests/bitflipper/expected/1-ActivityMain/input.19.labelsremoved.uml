@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="BitFlipper">
     <packagedElement xmi:type="uml:Class" xmi:id="2" name="ActiveClass" classifierBehavior="11" isActive="true">
       <ownedAttribute xmi:id="3" name="init" visibility="public">
@@ -29,43 +29,25 @@
           </specification>
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="16" target="24" source="27">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
             <body>not bit</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="27" source="25">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="29" source="28">
-          <name xsi:nil="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="20" target="28" source="24">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="27" source="25"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="19" target="29" source="28"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="20" target="28" source="24"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="21" target="28" source="27">
-          <name xsi:nil="true"/>
           <guard xmi:type="uml:OpaqueExpression" xmi:id="22">
             <body>bit</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="23" target="25" source="26">
-          <name xsi:nil="true"/>
-        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" target="25" source="26"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="24" name="flip" incoming="16" outgoing="20" behavior="30"/>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="25" name="initialize" incoming="23" outgoing="18" behavior="31"/>
-        <node xmi:type="uml:InitialNode" xmi:id="26" outgoing="23">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="27" incoming="18" outgoing="16 21">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:MergeNode" xmi:id="28" incoming="20 21" outgoing="19">
-          <name xsi:nil="true"/>
-        </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="29" incoming="19">
-          <name xsi:nil="true"/>
-        </node>
+        <node xmi:type="uml:InitialNode" xmi:id="26" outgoing="23"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="27" incoming="18" outgoing="16 21"/>
+        <node xmi:type="uml:MergeNode" xmi:id="28" incoming="20 21" outgoing="19"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="29" incoming="19"/>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="30" name="flip"/>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="31" name="initialize"/>
