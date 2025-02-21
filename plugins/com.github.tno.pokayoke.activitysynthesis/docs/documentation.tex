@@ -824,7 +824,8 @@ We aim to (eventually) merge this pattern back into a single call behavior node 
 
 However, we cannot directly merge this pattern here since that would complicate choice guard computation later on.
 If we would merge the pattern here, then we would have to push down the decision node to below the merged `call $\textsf{A}$' action.
-By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level. On Petri Net level, there are only places and transitions, in contrast to the various different types of nodes that UML has for forking, joining, branching, merging, etc., which might also be composed in arbitrary ways.
+By doing so, it would become (more) difficult to compute the control flow guards, as there may be all kinds of forking/joining/branching/merging constructions in the `$\dots$' parts below the decision node that we then would have pushed down\footnote{This is also the main reason why we actually do the guard computation on the Petri Net level rather than on UML activity level. 
+On Petri Net level, there are only places and transitions, in contrast to the various different types of nodes that UML has for forking, joining, branching, merging, etc., which might also be composed in arbitrary ways.
 Nevertheless, the high-level synthesis algorithm is easier to explain on UML activity level, since then the explanation doesn't have to rely on details such as the connection/relation between the Petri Net and the translated UML activity.}.
 These constructions make it more difficult (though not impossible) to gather all necessary state information for the guard computation.
 
@@ -882,7 +883,7 @@ Constructing the state information mapping requires some backtracking.
 For every execution point (roughly corresponding to control flows) in the synthesized UML activity, we need to know the set of all states in which the system may be at that point.
 These sets of states can be found by tracing back the CIF state annotations from the earlier generated CIF state space (see \autoref{sec:state-space-generation}), through the various CIF event-based toolkit steps.
 So for every control flow we must: (1) determine the Petri Net place corresponding to it, (2) use the region mapping produced in \autoref{sec:petrinet-synthesis} to determine which CIF locations correspond to that Petri Net place, and (3) collect the state annotations from these locations in the generated CIF state space.
-Step (3) is slightly tricky in case there were atomic nondeterministic actions, as we should not consider the state annotations of any `intermediate' CIF locations in which an atomic nondeterministic action is being executed (e.g., since the atomicity variable is true in any such intermediate state, and choice guards should not depend on internal details).
+Step (3) is slightly tricky in case there were atomic nondeterministic actions, as we should not consider the state annotations of any `intermediate' CIF locations in which an atomic nondeterministic action is being executed (e.g., since the atomicity variable is \texttt{true} in any such intermediate state, and choice guards should not depend on internal details).
 Therefore, any such state annotations must be filtered out first.
 The set of all system states can then be represented as a single predicate.
 
