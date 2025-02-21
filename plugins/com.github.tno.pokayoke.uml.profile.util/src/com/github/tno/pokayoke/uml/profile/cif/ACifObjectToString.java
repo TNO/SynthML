@@ -35,7 +35,7 @@ public class ACifObjectToString {
         } else if (object instanceof AInvariant invariant) {
             return toString(invariant);
         } else {
-            throw new RuntimeException(String.format("Unsupported CIF object class: %s.", object.getClass()));
+            throw new RuntimeException(String.format("Unsupported CIF object class: '%s'.", object.getClass()));
         }
     }
 
@@ -76,7 +76,7 @@ public class ACifObjectToString {
         } else if (expression instanceof AIntExpression intExpr) {
             return intExpr.value;
         } else {
-            throw new RuntimeException(String.format("Unsupported expression class %s.", expression.getClass()));
+            throw new RuntimeException(String.format("Unsupported expression class '%s'.", expression.getClass()));
         }
     }
 
@@ -92,7 +92,7 @@ public class ACifObjectToString {
                                     + ifUpdate.elses.stream().map(u -> toString(u)).collect(Collectors.joining(", ")))
                     + " end";
         } else {
-            throw new RuntimeException(String.format("Unsupported update class %s.", update.getClass()));
+            throw new RuntimeException(String.format("Unsupported update class '%s'.", update.getClass()));
         }
     }
 
@@ -102,6 +102,7 @@ public class ACifObjectToString {
     }
 
     public static String toString(AInvariant invariant) {
+        // Sanity check.
         Assert.ifAndOnlyIf(invariant.invKind == null, invariant.events == null);
 
         // Translate the name, if any.
@@ -110,7 +111,7 @@ public class ACifObjectToString {
         // Translate the predicates.
         String predicateString = toString(invariant.predicate);
 
-        // Translate the events. If more than one, add curly brackets.
+        // Translate the events, if any. If more than one, add curly brackets.
         String joinedEvents = "";
         if (invariant.events != null) {
             List<String> invEventsNames = invariant.events.stream().map(e -> escapeName(e.name)).toList();
@@ -129,7 +130,7 @@ public class ACifObjectToString {
         } else if (invKindString.equals("needs")) {
             return nameString + joinedEvents + " needs " + predicateString;
         } else {
-            throw new RuntimeException(String.format("Unsupported invariant class %s", invariant.getClass()));
+            throw new RuntimeException(String.format("Unsupported invariant class '%s'", invariant.getClass()));
         }
     }
 
