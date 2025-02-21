@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.ExternalCrossReferencer;
-import org.eclipse.escet.cif.parser.ast.ACifObject;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
@@ -547,21 +546,14 @@ public class CompositeDataTypeFlattener {
     private static void unfoldOpaqueExpression(OpaqueExpression opaqueExpression,
             Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
     {
-        List<AExpression> constraintBodyExpressions = CifParserHelper.parseBodies(opaqueExpression);
-        for (int i = 0; i < constraintBodyExpressions.size(); i++) {
-            // Get the current body, unfold it, and substitute the corresponding string.
-            ACifObject currentBody = constraintBodyExpressions.get(i);
-            ACifObject unfoldedBody;
-            if (currentBody instanceof AExpression bodyExpression) {
-                unfoldedBody = unfoldAExpression(bodyExpression, propertyToLeaves, absoluteToFlatNames);
-            } else if (currentBody instanceof AInvariant bodyInvariant) {
-                unfoldedBody = unfoldAInvariant(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
-            } else {
-                throw new RuntimeException(String.format("Unfolding guard bodies of class '%s' is not supported.",
-                        currentBody.getClass().getSimpleName()));
-            }
-            opaqueExpression.getBodies().set(i, ACifObjectToString.toString(unfoldedBody));
-        }
+        // Sanity check: opaque expression must have one body.
+        Verify.verify(opaqueExpression.getBodies().size() == 1);
+
+        // Get the current body, unfold it, and substitute the corresponding string.
+        String opaqueExprBody = opaqueExpression.getBodies().get(0);
+        AInvariant bodyInvariant = CifParserHelper.parseInvariant(opaqueExprBody, opaqueExpression);
+        AInvariant unfoldedBody = unfoldAInvariant(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
+        opaqueExpression.getBodies().set(0, ACifObjectToString.toString(unfoldedBody));
     }
 
     private static AInvariant unfoldAInvariant(AInvariant invariant, Map<String, Set<String>> propertyToLeaves,
