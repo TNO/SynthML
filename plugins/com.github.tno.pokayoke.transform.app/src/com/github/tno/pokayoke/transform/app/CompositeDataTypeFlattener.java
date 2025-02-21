@@ -116,7 +116,7 @@ public class CompositeDataTypeFlattener {
     {
         return (object instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
                 || object instanceof PokaYokePackage || (object instanceof PrimitiveType primitive
-                        && (primitive.equals(booleanType) || primitive.equals(integerType))));
+                        && (primitive == booleanType || primitive == integerType)));
     }
 
     /**
