@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -54,17 +53,6 @@ public class CifParserHelper {
             return null;
         }
         return parseExpression(PokaYokeUmlProfileUtil.getGuard(element), element);
-    }
-
-    public static List<AExpression> parseBodies(OpaqueExpression expression) throws SyntaxException {
-        if (expression == null) {
-            return null;
-        }
-        List<AExpression> parsedBodies = new LinkedList<>();
-        for (String body: expression.getBodies()) {
-            parsedBodies.add(parseExpression(body, expression));
-        }
-        return parsedBodies;
     }
 
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
