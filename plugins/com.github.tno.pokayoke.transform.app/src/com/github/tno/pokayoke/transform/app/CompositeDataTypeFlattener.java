@@ -105,13 +105,13 @@ public class CompositeDataTypeFlattener {
             PrimitiveType primitiveBoolean = UmlPrimitiveType.BOOLEAN.load(model);
             PrimitiveType primitiveInteger = UmlPrimitiveType.INTEGER.load(model);
             Map<Object, Object> filteredProblems = problems.entrySet().stream().filter(
-                    entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey(), primitiveBoolean, primitiveInteger))
+                    entry -> !isAllowedExternalObject(entry.getKey(), primitiveBoolean, primitiveInteger))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             Verify.verify(filteredProblems.isEmpty());
         }
     }
 
-    private static boolean isPokaYokeProfilePackageOrBoolean(Object object, PrimitiveType booleanType,
+    private static boolean isAllowedExternalObject(Object object, PrimitiveType booleanType,
             PrimitiveType integerType)
     {
         return (object instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
