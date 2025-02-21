@@ -582,7 +582,7 @@ public class CompositeDataTypeFlattener {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
                     unfoldOpaqueExpression(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
-                } else if (guard instanceof LiteralBoolean) {
+                } else if (guard instanceof LiteralBoolean || guard == null) {
                     continue;
                 } else {
                     throw new RuntimeException(
