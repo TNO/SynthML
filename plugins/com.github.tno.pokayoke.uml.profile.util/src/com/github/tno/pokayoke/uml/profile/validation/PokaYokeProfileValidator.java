@@ -46,7 +46,6 @@ import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.OpaqueExpression;
-import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -117,24 +116,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     /**
      * Reports an error if instantiation cycles are found. An instantiation cycle is defined to be a circular dependency
-     * between the properties of the data types that are defined within the given UML model. If the given model contains
-     * instantiation cycles, then only the shortest cycle will be reported. If there are multiple such shortest cycles,
-     * then the first one that's encountered will be reported.
+     * between the properties of the data types that are defined within the given UML model. If the given data type is
+     * part of some instantiation cycles, then only the shortest cycle will be reported. If there are multiple such
+     * shortest cycles, then the first one that's encountered will be reported.
      *
-     * @param model The model to check.
+     * @param dataType The data type to check.
      */
     @Check
-    private void checkNoInstantiationCycles(Model model) {
-        List<String> shortestCycle = new LinkedList<>();
-        for (PackageableElement element: model.getPackagedElements()) {
-            if (element instanceof DataType dataType && PokaYokeTypeUtil.isCompositeDataType(dataType)) {
-                shortestCycle = findShortestInstantiationCycle(dataType, new Stack<>(), shortestCycle);
+    private void checkNoInstantiationCycles(DataType dataType) {
+        // Only composite data types can be part of an instantiation cycle.
+        if (PokaYokeTypeUtil.isCompositeDataType(dataType)) {
+            List<String> shortestCycle = new LinkedList<>();
+            shortestCycle = findShortestInstantiationCycle(dataType, new Stack<>(), shortestCycle);
+            if (!shortestCycle.isEmpty()) {
+                error("Found an instantiation cycle: " + String.join(" -> ", shortestCycle),
+                        UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
             }
-        }
-
-        if (!shortestCycle.isEmpty()) {
-            error("Found an instantiation cycle: " + String.join(" -> ", shortestCycle),
-                    UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
         }
     }
 
