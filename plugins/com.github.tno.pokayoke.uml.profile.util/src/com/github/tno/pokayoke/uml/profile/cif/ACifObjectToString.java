@@ -18,6 +18,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
+import org.eclipse.escet.common.java.Assert;
 
 /** Translates a CIF object into a string. */
 public class ACifObjectToString {
@@ -101,6 +102,8 @@ public class ACifObjectToString {
     }
 
     public static String toString(AInvariant invariant) {
+        Assert.ifAndOnlyIf(invariant.invKind == null, invariant.events == null);
+
         // Translate the name, if any.
         String nameString = (invariant.name != null) ? escapeName(invariant.name.id) + ": " : "";
 
@@ -108,15 +111,18 @@ public class ACifObjectToString {
         String predicateString = toString(invariant.predicate);
 
         // Translate the events. If more than one, add curly brackets.
-        List<String> invEventsNames = invariant.events.stream().map(e -> escapeName(e.name)).toList();
-        String joinedEvents = (invEventsNames.size() > 1) ? "{ " + String.join(", ", invEventsNames) + " }"
-                : invEventsNames.get(0);
+        String joinedEvents = "";
+        if (invariant.events != null) {
+            List<String> invEventsNames = invariant.events.stream().map(e -> escapeName(e.name)).toList();
+            joinedEvents = (invEventsNames.size() > 1) ? "{ " + String.join(", ", invEventsNames) + " }"
+                    : invEventsNames.get(0);
+        }
 
         // Get the string for the invariant type.
         String invKindString = (invariant.invKind == null) ? "" : invariant.invKind.text;
 
         // Compose the final string.
-        if (invariant.events.isEmpty()) {
+        if (invariant.events == null) {
             return nameString + predicateString;
         } else if (invKindString.equals("disables")) {
             return nameString + predicateString + " disables " + joinedEvents;
