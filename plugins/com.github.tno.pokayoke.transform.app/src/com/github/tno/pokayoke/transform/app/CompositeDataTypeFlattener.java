@@ -271,9 +271,7 @@ public class CompositeDataTypeFlattener {
         for (Behavior classBehavior: clazz.getOwnedBehaviors()) {
             if (classBehavior instanceof OpaqueBehavior element) {
                 unfoldRedefinableElement(element, propertyToLeaves, absoluteToFlatNames);
-            } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
-                unfoldAbstractActivity(activity, propertyToLeaves, absoluteToFlatNames);
-            } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
+            } else if (classBehavior instanceof Activity activity) {
                 unfoldActivity(activity, propertyToLeaves, absoluteToFlatNames);
             } else {
                 throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.",
@@ -519,14 +517,6 @@ public class CompositeDataTypeFlattener {
                 .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
 
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
-    }
-
-    private static void unfoldAbstractActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
-            Map<String, String> absoluteToFlatNames)
-    {
-        // Unfold the precondition and postcondition constraints. Skip occurrence constraints.
-        activity.getPreconditions().stream().forEach(p -> unfoldConstraint(p, propertyToLeaves, absoluteToFlatNames));
-        activity.getPostconditions().stream().forEach(p -> unfoldConstraint(p, propertyToLeaves, absoluteToFlatNames));
     }
 
     private static void unfoldConstraint(Constraint constraint, Map<String, Set<String>> propertyToLeaves,
