@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
-  <uml:Model xmi:id="_ZgAmYMd9Ee--jc4lXL-BHw" name="NewModel">
+  <uml:Model xmi:id="_ZgAmYMd9Ee--jc4lXL-BHw" name="BitFlipper">
     <packagedElement xmi:type="uml:Class" xmi:id="_c2oj8Md9Ee--jc4lXL-BHw" name="ActiveClass" classifierBehavior="_jGcVIMd9Ee--jc4lXL-BHw" isActive="true">
+      <ownedAttribute xmi:id="_J_Wn8O9pEe-OWbsCeUFhqQ" name="init" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_J_Wn8e9pEe-OWbsCeUFhqQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_J_Wn8u9pEe-OWbsCeUFhqQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_J_Wn8-9pEe-OWbsCeUFhqQ">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
       <ownedAttribute xmi:id="_foV2kMd9Ee--jc4lXL-BHw" name="bit" visibility="public">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gkt_QMd9Ee--jc4lXL-BHw" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gkt_Qcd9Ee--jc4lXL-BHw" value="1"/>
         <defaultValue xmi:type="uml:LiteralNull" xmi:id="_scJWwMkeEe-FBs3p21lQgw"/>
-      </ownedAttribute>
-      <ownedAttribute xmi:id="_NWVVUMkeEe-FBs3p21lQgw" name="init" visibility="public">
-        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OIBQ8MkeEe-FBs3p21lQgw" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OIBQ8ckeEe-FBs3p21lQgw" value="1"/>
-        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_J6R5oMkoEe-oP8mw-alLTw">
-          <language>CIF</language>
-          <body>false</body>
-        </defaultValue>
       </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_jGcVIMd9Ee--jc4lXL-BHw" name="ActivityMain" isAbstract="true" postcondition="_tuw-sMd9Ee--jc4lXL-BHw" precondition="_mh5IUMd9Ee--jc4lXL-BHw">
         <ownedRule xmi:id="_mh5IUMd9Ee--jc4lXL-BHw" name="precondition">
@@ -39,10 +39,10 @@
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_2jwCYMd9Ee--jc4lXL-BHw" guard="init = true" base_RedefinableElement="_0_1_oMd9Ee--jc4lXL-BHw" atomic="true">
+  <PokaYoke:FormalElement xmi:id="_2jwCYMd9Ee--jc4lXL-BHw" guard="init" base_RedefinableElement="_0_1_oMd9Ee--jc4lXL-BHw" atomic="true">
     <effects>bit := not bit</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_TccX8MkeEe-FBs3p21lQgw" guard="init = false" base_RedefinableElement="_QZQ60MkeEe-FBs3p21lQgw" atomic="true">
+  <PokaYoke:FormalElement xmi:id="_TccX8MkeEe-FBs3p21lQgw" guard="not init" base_RedefinableElement="_QZQ60MkeEe-FBs3p21lQgw" atomic="true">
     <effects>init := true, &#xD;
 bit := true</effects>
     <effects>init := true,&#xD;

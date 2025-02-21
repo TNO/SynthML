@@ -1,0 +1,27 @@
+controllable flip;
+controllable initialize;
+uncontrollable initialize__result_1;
+uncontrollable initialize__result_2;
+plant automaton ActiveClass:
+  disc bool bit in any;
+  disc bool not init;
+  disc int[0..1] __activeAction;
+  alg bool precondition = not init;
+  alg bool __precondition = precondition;
+  alg bool postcondition = bit and init;
+  alg bool __postcondition__activeAction = __activeAction = 0;
+  alg bool __postcondition = postcondition and __postcondition__activeAction;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge flip when init, __activeAction = 0 do bit := not bit;
+    edge initialize when not init, __activeAction = 0 do __activeAction := 1;
+    edge initialize__result_1 when __activeAction = 1 do init := true, bit := true, __activeAction := 0;
+    edge initialize__result_2 when __activeAction = 1 do init := true, bit := false, __activeAction := 0;
+end
+requirement invariant ActiveClass.__postcondition disables flip;
+requirement invariant ActiveClass.__postcondition disables initialize;
+requirement invariant ActiveClass.__postcondition disables initialize__result_1;
+requirement invariant ActiveClass.__postcondition disables initialize__result_2;

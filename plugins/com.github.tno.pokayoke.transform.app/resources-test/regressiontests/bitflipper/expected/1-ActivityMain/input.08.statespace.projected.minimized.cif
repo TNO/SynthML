@@ -1,9 +1,3 @@
-\begin{algorithm}[t!]
-\lstset{language=Cif,
-stringstyle=\ttfamily\color{red!50!brown},
-showstringspaces=false}
-\footnotesize
-	\begin{lstlisting}
 controllable flip;
 controllable initialize;
 controllable __start;
@@ -28,7 +22,3 @@ automaton minimal:
   location s5:
     edge __end goto s3;
 end
-\end{lstlisting}
-	\caption{Minimized CIF model.}
-	\label{alg:bitflipper-minimised-cif}
-\end{algorithm}
