@@ -299,7 +299,7 @@ A short explanation is given for every operation, followed by the motivation for
 \begin{example*}[Running Example]
 Let us consider a simple UML model, named \texttt{BitFlipper}, where we aim at synthesizing an activity that flips a single nondeterministically initialized boolean value.  
 The UML model is composed of a single class \texttt{ActiveClass}, which contains two properties: a boolean named \texttt{init}, initialized as \texttt{false}, denoting whether the system is initialized, and a boolean named \texttt{bit}, not initialized.  
-The class also contains an abstract activity called \texttt{ActivityMain}, and two opaque behaviors named \texttt{flip} and \texttt{initialize}. 
+The class also contains an abstract activity called \texttt{ActivityMain}, and two atomic opaque behaviors named \texttt{flip} and \texttt{initialize}.
 The activity has precondition \texttt{not init}, and postcondition \texttt{bit and init}. 
 The \texttt{flip} opaque behavior's effect is to flip the boolean \texttt{bit} after it is initialized: its guard is \texttt{init}, whilst its effects consist of a single assignment \texttt{bit := not bit}. 
 The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} to \texttt{true}, and sets \texttt{bit} either to \texttt{true} or \texttt{false} in a nondeterministic fashion. 
@@ -429,14 +429,14 @@ The boolean property \texttt{bit} is transformed into a discrete boolean (\textt
 The activity precondition and postcondition are translated into algebraic boolean variables. 
 Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis. 
 Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
-The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of nondeterministic actions, in this case \texttt{initialize}.
-The \texttt{flip} event is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and effects composed of the single update \texttt{bit := not bit}.   
-The opaque behavior \texttt{initialize} is translated into a series of edges. 
-First, an edge \texttt{initialize} is defined, with guard \texttt{not init and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the nondeterministic action is being performed). 
+The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of atomic nondeterministic actions, in this case \texttt{initialize}.
+The atomic deterministic opaque behavior \texttt{flip} is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and a single update \texttt{bit := not bit}.
+The atomic non-deterministic opaque behavior \texttt{initialize} is translated into a series of edges. 
+First, an edge \texttt{initialize} is defined, with guard \texttt{not init and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the atomic nondeterministic action starting).
 Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively. 
-At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the nondeterministic action. 
+At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the atomic nondeterministic action. 
 Finally, four requirement invariants state that the postcondition disables all CIF events. 
-In practice, these four requirements mimic the fact that once the system reaches a state where the postcondition holds, no additional actions need to be taken. 
+In practice, these four requirements ensure that once the system reaches a state where the postcondition holds, no additional actions can be taken.
 \end{example*}
 
 \ciffile{images/bitflipper_cif.cif}{CIF translation of the \texttt{BitFlipper} UML model.}{lst:bitflipper-cif}
@@ -634,7 +634,7 @@ The CIF automaton is composed of five locations:
     \item location $s1$ is the initial location, with one outgoing edge towards $s2$ after event \texttt{\_\_start};
     \item location $s2$ has one outgoing edge towards $s4$, after event \texttt{initialize}; 
     \item location $s3$ is marked, namely is a final location, hence without outgoing edges; 
-    \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as true), and towards $s5$ after event \texttt{flip} (otherwise); 
+    \item location $s4$ has two outgoing edges towards $s3$, after event \texttt{\_\_end} (in case \texttt{bit} is initialized as \texttt{true}), and towards $s5$ after event \texttt{flip} (otherwise); 
     \item location $s5$ has one outgoing edge towards $s3$, after event \texttt{\_\_end}.
 \end{itemize}
 This state space is the input to Petrify, that synthesizes a Petri Net from it. 
@@ -1012,7 +1012,7 @@ Moreover, all names of control nodes (initial/final/fork/join/decision/merge nod
 \begin{example*}[Running Example]
 Finally, the synthesized activity is shown in Fig.~\ref{fig:synthesized-bitflipper}. 
 The initial node is marked in blue, the place \texttt{p3} has been turned into a decision node, and the two outgoing control flows represent the nondeterministic initialization of \texttt{bit}.  
-If \texttt{bit} is true, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action. 
+If \texttt{bit} is \texttt{true}, the flow can go directly to the final node (shown with a blue border); otherwise, the flow goes through the \texttt{flip} action. 
 The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node. 
 \end{example*}
 
