@@ -274,7 +274,7 @@ public class CompositeDataTypeFlattener {
             } else if (classBehavior instanceof Activity activity && activity.isAbstract()) {
                 unfoldAbstractActivity(activity, propertyToLeaves, absoluteToFlatNames);
             } else if (classBehavior instanceof Activity activity && !activity.isAbstract()) {
-                unfoldConcreteActivity(activity, propertyToLeaves, absoluteToFlatNames);
+                unfoldActivity(activity, propertyToLeaves, absoluteToFlatNames);
             } else {
                 throw new RuntimeException(String.format("Unfolding behaviors of class '%s' not supported.",
                         classBehavior.getClass().getSimpleName()));
@@ -565,7 +565,7 @@ public class CompositeDataTypeFlattener {
                 invariant.events);
     }
 
-    private static void unfoldConcreteActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
+    private static void unfoldActivity(Activity activity, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
     {
         // Unfold the guards and effects of owned elements.
