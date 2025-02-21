@@ -124,16 +124,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkNoInstantiationCycles(DataType dataType) {
-        List<String> shortestCycle = new LinkedList<>();
-
         // Only composite data types can be part of an instantiation cycle.
         if (PokaYokeTypeUtil.isCompositeDataType(dataType)) {
+            List<String> shortestCycle = new LinkedList<>();
             shortestCycle = findShortestInstantiationCycle(dataType, new Stack<>(), shortestCycle);
-        }
-
-        if (!shortestCycle.isEmpty()) {
-            error("Found an instantiation cycle: " + String.join(" -> ", shortestCycle),
-                    UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
+            if (!shortestCycle.isEmpty()) {
+                error("Found an instantiation cycle: " + String.join(" -> ", shortestCycle),
+                        UMLPackage.Literals.ELEMENT__OWNED_ELEMENT);
+            }
         }
     }
 
