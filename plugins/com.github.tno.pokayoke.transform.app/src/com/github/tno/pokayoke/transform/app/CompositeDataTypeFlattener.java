@@ -386,7 +386,11 @@ public class CompositeDataTypeFlattener {
             String operator, TextPosition position, Map<String, String> absoluteToFlatNames)
     {
         ABinaryExpression unfoldedBinaryExpression = null;
-        String unfoldOperator = operator.equals("=") ? "and" : "or";
+        String unfoldOperator = switch (operator) {
+            case "=" -> "and";
+            case "!=" -> "or";
+            default -> throw new RuntimeException("Comparison with operator " + operator + " is not supported.");
+        };
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
