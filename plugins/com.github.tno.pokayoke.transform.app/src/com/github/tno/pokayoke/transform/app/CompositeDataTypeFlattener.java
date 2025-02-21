@@ -337,7 +337,7 @@ public class CompositeDataTypeFlattener {
             AExpression unfoldedLhsExpression = unfoldAExpression(binExpr.left, propertyToLeaves, absoluteToFlatNames);
             AExpression unfoldedRhsExpression = unfoldAExpression(binExpr.right, propertyToLeaves, absoluteToFlatNames);
 
-            // Unfold comparisons where of properties with composite data types.
+            // Unfold comparisons of properties with composite data types.
             if (binExpr.left instanceof ANameExpression lhsNameExpr
                     && binExpr.right instanceof ANameExpression rhsNameExpr)
             {
@@ -380,7 +380,7 @@ public class CompositeDataTypeFlattener {
         String unfoldOperator = switch (operator) {
             case "=" -> "and";
             case "!=" -> "or";
-            default -> throw new RuntimeException("Comparison with operator " + operator + " is not supported.");
+            default -> throw new RuntimeException("Comparison with operator '" + operator + "' is not supported.");
         };
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
@@ -539,7 +539,7 @@ public class CompositeDataTypeFlattener {
             unfoldOpaqueExpression(opaqueSpec, propertyToLeaves, absoluteToFlatNames);
         } else {
             throw new RuntimeException(String.format(
-                    "Unfolding constraints of class '%s' with specification '%s' is not supported.",
+                    "Unfolding constraint of class '%s' with specification '%s' is not supported.",
                     constraint.getClass().getSimpleName(), constraint.getSpecification().getClass().getSimpleName()));
         }
     }
