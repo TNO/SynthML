@@ -350,15 +350,6 @@ public class CompositeDataTypeFlattener {
                 if (lhsLeaves != null) {
                     return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, lhsLeaves,
                             binExpr.operator, binExpr.position, absoluteToFlatNames);
-                } else {
-                    String newLhsName = absoluteToFlatNames.getOrDefault(lhsNameExpr.name.name, lhsNameExpr.name.name);
-                    String newRhsName = absoluteToFlatNames.getOrDefault(rhsNameExpr.name.name, rhsNameExpr.name.name);
-                    Verify.verify(newLhsName != null && newRhsName != null);
-                    ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, binExpr.position), false,
-                            binExpr.position);
-                    ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, binExpr.position), false,
-                            binExpr.position);
-                    return new ABinaryExpression(binExpr.operator, lhsExpression, rhsExpression, binExpr.position);
                 }
             }
 
