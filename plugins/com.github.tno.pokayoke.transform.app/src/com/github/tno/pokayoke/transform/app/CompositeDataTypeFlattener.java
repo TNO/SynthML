@@ -104,8 +104,8 @@ public class CompositeDataTypeFlattener {
             Map<EObject, Collection<Setting>> problems = ExternalCrossReferencer.find(model);
             PrimitiveType primitiveBoolean = UmlPrimitiveType.BOOLEAN.load(model);
             PrimitiveType primitiveInteger = UmlPrimitiveType.INTEGER.load(model);
-            Map<Object, Object> filteredProblems = problems.entrySet().stream().filter(
-                    entry -> !isAllowedExternalObject(entry.getKey(), primitiveBoolean, primitiveInteger))
+            Map<Object, Object> filteredProblems = problems.entrySet().stream()
+                    .filter(entry -> !isAllowedExternalObject(entry.getKey(), primitiveBoolean, primitiveInteger))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             Verify.verify(filteredProblems.isEmpty());
         }
@@ -227,7 +227,7 @@ public class CompositeDataTypeFlattener {
      *
      * @param child The child property of a composite data type to be flattened.
      * @param propertyName The name of the property with a composite data type that contains the child property.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      * @param existingNames Names to avoid when renaming, since they already exist in the new parent (attribute owner).
      * @return The flattened property and its original relative name.
      */
@@ -263,7 +263,7 @@ public class CompositeDataTypeFlattener {
      * @param clazz The class in which to do the unfolding.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      */
     private static void unfoldClass(Class clazz, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
@@ -294,7 +294,7 @@ public class CompositeDataTypeFlattener {
      * @param element The redefinable element.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      */
     private static void unfoldRedefinableElement(RedefinableElement element, Map<String, Set<String>> propertyToLeaves,
             Map<String, String> absoluteToFlatNames)
@@ -327,7 +327,7 @@ public class CompositeDataTypeFlattener {
      * @param expression A CIF {@link AExpression} to be unfolded.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      * @return The unfolded CIF {@link AExpression}.
      */
     private static AExpression unfoldAExpression(AExpression expression, Map<String, Set<String>> propertyToLeaves,
@@ -337,7 +337,7 @@ public class CompositeDataTypeFlattener {
             AExpression unfoldedLhsExpression = unfoldAExpression(binExpr.left, propertyToLeaves, absoluteToFlatNames);
             AExpression unfoldedRhsExpression = unfoldAExpression(binExpr.right, propertyToLeaves, absoluteToFlatNames);
 
-            // Unfold comparisons where both are name expressions.
+            // Unfold comparisons where of properties with composite data types.
             if (binExpr.left instanceof ANameExpression lhsNameExpr
                     && binExpr.right instanceof ANameExpression rhsNameExpr)
             {
@@ -346,7 +346,7 @@ public class CompositeDataTypeFlattener {
                 Set<String> rhsLeaves = propertyToLeaves.get(rhsNameExpr.name.name);
                 Verify.verify(Objects.equal(lhsLeaves, rhsLeaves));
 
-                // Unfold both if composite data types, otherwise create a new binary expression.
+                // Unfold comparison of properties with composite data types, if applicable.
                 if (lhsLeaves != null) {
                     return unfoldComparisonExpression(lhsNameExpr.name.name, rhsNameExpr.name.name, lhsLeaves,
                             binExpr.operator, binExpr.position, absoluteToFlatNames);
@@ -369,6 +369,8 @@ public class CompositeDataTypeFlattener {
             return new AUnaryExpression(unaryExpr.operator,
                     unfoldAExpression(unaryExpr.child, propertyToLeaves, absoluteToFlatNames), unaryExpr.position);
         } else if (expression instanceof ANameExpression nameExpr) {
+            // If it is a reference to a leaf property, flatten the name. Composite property names are not changed here;
+            // they get unfolded elsewhere.
             String newName = absoluteToFlatNames.getOrDefault(nameExpr.name.name, nameExpr.name.name);
             return new ANameExpression(new AName(newName, nameExpr.position), false, nameExpr.position);
         } else if (expression instanceof ABoolExpression || expression instanceof AIntExpression) {
@@ -412,7 +414,7 @@ public class CompositeDataTypeFlattener {
      * @param update A CIF {@link AUpdate} to be unfolded.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      * @return The list containing the unfolded CIF {@link AUpdate}.
      */
     private static List<AUpdate> unfoldAUpdate(AUpdate update, Map<String, Set<String>> propertyToLeaves,
@@ -436,7 +438,7 @@ public class CompositeDataTypeFlattener {
      * @param assignUpdate A CIF {@link AAssignmentUpdate} to be unfolded.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      * @return The unfolded CIF {@link AAssignmentUpdate}.
      */
     private static List<AUpdate> unfoldAAssignmentUpdate(AAssignmentUpdate assignUpdate,
@@ -484,7 +486,7 @@ public class CompositeDataTypeFlattener {
      * @param ifUpdate A CIF {@link AIfUpdate} to be unfolded.
      * @param propertyToLeaves Per absolute name of a property with a composite data type, the relative names of its
      *     leaves.
-     * @param absoluteToFlatNames Per original absolute name of a flattened property, its flattened name.
+     * @param absoluteToFlatNames Per original absolute name of a flattened leaf property, its flattened name.
      * @return The unfolded CIF {@link AIfUpdate}.
      */
     private static AUpdate unfoldAIfUpdate(AIfUpdate ifUpdate, Map<String, Set<String>> propertyToLeaves,
