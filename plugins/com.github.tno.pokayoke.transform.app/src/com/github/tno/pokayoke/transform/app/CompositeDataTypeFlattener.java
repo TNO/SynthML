@@ -103,16 +103,20 @@ public class CompositeDataTypeFlattener {
             // Sanity check: there should not be any references to objects not contained in the model.
             Map<EObject, Collection<Setting>> problems = ExternalCrossReferencer.find(model);
             PrimitiveType primitiveBoolean = UmlPrimitiveType.BOOLEAN.load(model);
-            Map<Object, Object> filteredProblems = problems.entrySet().stream()
-                    .filter(entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey(), primitiveBoolean))
+            PrimitiveType primitiveInteger = UmlPrimitiveType.INTEGER.load(model);
+            Map<Object, Object> filteredProblems = problems.entrySet().stream().filter(
+                    entry -> !isPokaYokeProfilePackageOrBoolean(entry.getKey(), primitiveBoolean, primitiveInteger))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             Verify.verify(filteredProblems.isEmpty());
         }
     }
 
-    private static boolean isPokaYokeProfilePackageOrBoolean(Object o, PrimitiveType p) {
-        return (o instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
-                || o instanceof PokaYokePackage || (o instanceof PrimitiveType primitive && primitive.equals(p)));
+    private static boolean isPokaYokeProfilePackageOrBoolean(Object object, PrimitiveType booleanType,
+            PrimitiveType integerType)
+    {
+        return (object instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
+                || object instanceof PokaYokePackage || (object instanceof PrimitiveType primitive
+                        && (primitive.equals(booleanType) || primitive.equals(integerType))));
     }
 
     /**
