@@ -394,6 +394,7 @@ public class CompositeDataTypeFlattener {
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
+            Verify.verify(newLhsName != null && newRhsName != null);
             ANameExpression lhsExpression = new ANameExpression(new AName(newLhsName, position), false, position);
             ANameExpression rhsExpression = new ANameExpression(new AName(newRhsName, position), false, position);
             ABinaryExpression currentBinaryExpression = new ABinaryExpression(operator, lhsExpression, rhsExpression,
@@ -476,6 +477,7 @@ public class CompositeDataTypeFlattener {
         for (String leaf: leaves) {
             String newLhsName = absoluteToFlatNames.get(lhsName + leaf);
             String newRhsName = absoluteToFlatNames.get(rhsName + leaf);
+            Verify.verify(newLhsName != null && newRhsName != null);
             ANameExpression lhsNameExpression = new ANameExpression(new AName(newLhsName, position), false, position);
             ANameExpression rhsNameExpression = new ANameExpression(new AName(newRhsName, position), false, position);
             unfoldedAssignmentUpdates.add(new AAssignmentUpdate(lhsNameExpression, rhsNameExpression, position));
