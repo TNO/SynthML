@@ -1,6 +1,8 @@
 
 package com.github.tno.pokayoke.transform.flatten;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -10,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
@@ -50,6 +53,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.ACifObjectToString;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
@@ -64,6 +68,14 @@ import PokaYoke.PokaYokePackage;
 /** Composite data type flattener. */
 public class CompositeDataTypeFlattener {
     private CompositeDataTypeFlattener() {
+    }
+
+    public static void transformFile(Path sourcePath, Path targetPath) throws IOException {
+        String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
+        Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
+        Model model = FileHelper.loadModel(sourcePath.toString());
+        flattenCompositeDataTypes(model);
+        FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
     /**
