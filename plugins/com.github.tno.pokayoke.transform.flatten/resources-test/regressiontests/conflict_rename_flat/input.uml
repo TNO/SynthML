@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_weTOsMH5Ee-Q36L-9MaMAQ" name="NewModel">
+    <packagedElement xmi:type="uml:DataType" xmi:id="_5Fz3EMH5Ee-Q36L-9MaMAQ" name="dt1">
+      <ownedAttribute xmi:id="_Ayt4YMH6Ee-Q36L-9MaMAQ" name="name2" type="_8jAWsMH5Ee-Q36L-9MaMAQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Tz2nAMH6Ee-Q36L-9MaMAQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Tz2nAcH6Ee-Q36L-9MaMAQ" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_8jAWsMH5Ee-Q36L-9MaMAQ" name="dt2">
+      <ownedAttribute xmi:id="_mCIVUMH6Ee-Q36L-9MaMAQ" name="name3" type="_NlYdIMH7Ee-Q36L-9MaMAQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_G5yu4MH7Ee-Q36L-9MaMAQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_G5yu4cH7Ee-Q36L-9MaMAQ" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_F3gn8MH6Ee-Q36L-9MaMAQ" name="name1_name2_name3">
+      <ownedLiteral xmi:id="_AB1w4MIBEe-t7scsEKx2jw" name="inner"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_OtNdUMH6Ee-Q36L-9MaMAQ" name="dt3">
+      <ownedAttribute xmi:id="_cSBQsMH7Ee-Q36L-9MaMAQ" name="name4" type="_NlYdIMH7Ee-Q36L-9MaMAQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cwNBgMH7Ee-Q36L-9MaMAQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cwNBgcH7Ee-Q36L-9MaMAQ" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_NlYdIMH7Ee-Q36L-9MaMAQ" name="enumer">
+      <ownedLiteral xmi:id="_RiGKUMH7Ee-Q36L-9MaMAQ" name="ok"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_V9BOwMIBEe-t7scsEKx2jw" name="Class1" isActive="true">
+      <ownedAttribute xmi:id="_VlbncMH8Ee-Q36L-9MaMAQ" name="name1" type="_5Fz3EMH5Ee-Q36L-9MaMAQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WNqFEMH8Ee-Q36L-9MaMAQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WNqFEcH8Ee-Q36L-9MaMAQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_fR4eoMH8Ee-Q36L-9MaMAQ" name="name1_name2_name31">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gQwhsMH8Ee-Q36L-9MaMAQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gQwhscH8Ee-Q36L-9MaMAQ" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_2f9PIMH5Ee-Q36L-9MaMAQ" name="Activity1"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_P7s-0MH8Ee-Q36L-9MaMAQ" name="OpaqueBehavior1"/>
+    </packagedElement>
+    <profileApplication xmi:id="_TzuEIMH6Ee-Q36L-9MaMAQ">
+      <eAnnotations xmi:id="_Tz1_8MH6Ee-Q36L-9MaMAQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_Q3eqkMH8Ee-Q36L-9MaMAQ" guard="true" base_RedefinableElement="_P7s-0MH8Ee-Q36L-9MaMAQ">
+    <effects>name1.name2.name3 := ok</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>
