@@ -525,25 +525,19 @@ public class CompositeDataTypeFlattener {
         if (constraint instanceof IntervalConstraint) {
             return; // Skip occurrence constraints.
         } else if (constraint.getSpecification() instanceof OpaqueExpression opaqueSpec) {
-            unfoldOpaqueExpression(opaqueSpec, propertyToLeaves, absoluteToFlatNames);
+            // Sanity check: opaque expression must have one body.
+            Verify.verify(opaqueSpec.getBodies().size() == 1);
+
+            // Get the current body, unfold it, and substitute the corresponding string.
+            String opaqueExprBody = opaqueSpec.getBodies().get(0);
+            AInvariant bodyInvariant = CifParserHelper.parseInvariant(opaqueExprBody, opaqueSpec);
+            AInvariant unfoldedBody = unfoldAInvariant(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
+            opaqueSpec.getBodies().set(0, ACifObjectToString.toString(unfoldedBody));
         } else {
             throw new RuntimeException(String.format(
                     "Unfolding constraint of class '%s' with specification '%s' is not supported.",
                     constraint.getClass().getSimpleName(), constraint.getSpecification().getClass().getSimpleName()));
         }
-    }
-
-    private static void unfoldOpaqueExpression(OpaqueExpression opaqueExpression,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
-    {
-        // Sanity check: opaque expression must have one body.
-        Verify.verify(opaqueExpression.getBodies().size() == 1);
-
-        // Get the current body, unfold it, and substitute the corresponding string.
-        String opaqueExprBody = opaqueExpression.getBodies().get(0);
-        AInvariant bodyInvariant = CifParserHelper.parseInvariant(opaqueExprBody, opaqueExpression);
-        AInvariant unfoldedBody = unfoldAInvariant(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
-        opaqueExpression.getBodies().set(0, ACifObjectToString.toString(unfoldedBody));
     }
 
     private static AInvariant unfoldAInvariant(AInvariant invariant, Map<String, Set<String>> propertyToLeaves,
@@ -563,7 +557,14 @@ public class CompositeDataTypeFlattener {
             if (ownedElement instanceof ControlFlow controlEdge) {
                 ValueSpecification guard = controlEdge.getGuard();
                 if (guard instanceof OpaqueExpression opaqueGuard) {
-                    unfoldOpaqueExpression(opaqueGuard, propertyToLeaves, absoluteToFlatNames);
+                    // Sanity check: opaque expression must have one body.
+                    Verify.verify(opaqueGuard.getBodies().size() == 1);
+
+                    // Get the current body, unfold it, and substitute the corresponding string.
+                    String opaqueExprBody = opaqueGuard.getBodies().get(0);
+                    AExpression bodyInvariant = CifParserHelper.parseExpression(opaqueExprBody, opaqueGuard);
+                    AExpression unfoldedBody = unfoldAExpression(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
+                    opaqueGuard.getBodies().set(0, ACifObjectToString.toString(unfoldedBody));
                 } else if (guard instanceof LiteralBoolean || guard == null) {
                     continue;
                 } else {
