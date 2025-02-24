@@ -51,6 +51,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -93,6 +94,7 @@ public class UMLToCameoTransformer {
         String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
         Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
         Model model = FileHelper.loadModel(sourcePath.toString());
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
         new UMLToCameoTransformer(model).transformModel();
         FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
