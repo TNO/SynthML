@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_nWcu8KWVEe-6vO4j1pGN5g" name="DataTypesGuardsAndEffects">
+    <packagedElement xmi:type="uml:Class" xmi:id="_b2Pd4K1mEe-el42Ake7YLQ" name="Main" classifierBehavior="_dlUO0K1mEe-el42Ake7YLQ" isActive="true">
+      <ownedAttribute xmi:id="_u-rR4K1nEe-el42Ake7YLQ" name="robot1" visibility="public" type="_3NsFsLuUEe-b2q_agDsUbg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_u-r48K1nEe-el42Ake7YLQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_u-r48a1nEe-el42Ake7YLQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_FGRW8K1vEe-el42Ake7YLQ" name="init" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_FGRW8a1vEe-el42Ake7YLQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_FGRW8q1vEe-el42Ake7YLQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_Hf_UkPBQEe-OvrlOCdq0qA">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_JKxU0K44Ee-4dKdyG9ialg" name="robot2" visibility="public" type="_3NsFsLuUEe-b2q_agDsUbg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_JKxU0a44Ee-4dKdyG9ialg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_JKxU0q44Ee-4dKdyG9ialg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_w78j4K44Ee-4dKdyG9ialg" name="val" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_w78j4a44Ee-4dKdyG9ialg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_w78j4q44Ee-4dKdyG9ialg" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_1QX10OrmEe--EpawL8E37A" name="unfoldIntegerGuardEffect"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_YBkvcOrdEe-PPtp2Gv3_IA" name="unfoldBoolGuardEffect"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_tPZBYK1uEe-el42Ake7YLQ" name="nonDetEffects_notUnfold"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_yGmhkK1mEe-el42Ake7YLQ" name="simple_notUnfold"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_dlUO0K1mEe-el42Ake7YLQ" name="InstatiateProducts" isAbstract="true" postcondition="_IQ6jcK1uEe-el42Ake7YLQ" precondition="_RHgJoK1uEe-el42Ake7YLQ">
+        <ownedRule xmi:id="_IQ6jcK1uEe-el42Ake7YLQ" name="Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_MwH5sK1uEe-el42Ake7YLQ" name="">
+            <body>not init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_RHgJoK1uEe-el42Ake7YLQ" name="Pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_SMajQK1uEe-el42Ake7YLQ" name="">
+            <body>robot1.product.status = New</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_0zVrMLC0Ee-Jc_0VD6Xjdw" name="unfoldGuardEffects_nonDetUpdates"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_DGDO8K5cEe-ChscMtuOuvg" name="unfoldGuardEffect_Primitive"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_HNX1sNQkEe-U5NOTNjr87Q" name="unfoldGuardEffectsIfElseUpdate"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_OBU6oPBQEe-OvrlOCdq0qA" name="flip_init"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_8-A98K2QEe-8Ca8RUPM_ow" name="Status">
+      <ownedLiteral xmi:id="_FABskK2REe-8Ca8RUPM_ow" name="Good"/>
+      <ownedLiteral xmi:id="_GQJQoK2REe-8Ca8RUPM_ow" name="Bad"/>
+      <ownedLiteral xmi:id="_I5ZK0K2REe-8Ca8RUPM_ow" name="New"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_YHZy0K2hEe-QL8Vd0DTJzw" name="Position">
+      <ownedLiteral xmi:id="_eD7boK2hEe-QL8Vd0DTJzw" name="INOUT"/>
+      <ownedLiteral xmi:id="_fTu2oK2hEe-QL8Vd0DTJzw" name="P1"/>
+      <ownedLiteral xmi:id="_gKdDQK2hEe-QL8Vd0DTJzw" name="P2"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_hV4r8LuUEe-b2q_agDsUbg" name="Product">
+      <ownedAttribute xmi:id="_93gTYOkoEe-2L5oam6N09Q" name="position" type="_YHZy0K2hEe-QL8Vd0DTJzw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_AZXzMOkpEe-2L5oam6N09Q" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_AZXzMekpEe-2L5oam6N09Q" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_sZxQILuUEe-b2q_agDsUbg" name="status" type="_8-A98K2QEe-8Ca8RUPM_ow">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vOdlULuUEe-b2q_agDsUbg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vOdlUbuUEe-b2q_agDsUbg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_JlMGgPBQEe-OvrlOCdq0qA">
+          <language>CIF</language>
+          <body>New</body>
+        </defaultValue>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_3NsFsLuUEe-b2q_agDsUbg" name="Robot">
+      <ownedAttribute xmi:id="_5hLLQLuUEe-b2q_agDsUbg" name="position" type="_YHZy0K2hEe-QL8Vd0DTJzw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_8rYdcLuUEe-b2q_agDsUbg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_8rYdcbuUEe-b2q_agDsUbg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6OKNELuUEe-b2q_agDsUbg" name="product" type="_hV4r8LuUEe-b2q_agDsUbg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-IYm8LuUEe-b2q_agDsUbg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-IYm8buUEe-b2q_agDsUbg" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_YrMewOreEe-PPtp2Gv3_IA" name="booly">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Z9i3cOreEe-PPtp2Gv3_IA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Z9i3cereEe-PPtp2Gv3_IA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ui0YsOrmEe--EpawL8E37A" name="identity" type="_lmbsgOrmEe--EpawL8E37A">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vMUBoOrmEe--EpawL8E37A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vMUosOrmEe--EpawL8E37A" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_lmbsgOrmEe--EpawL8E37A" name="Integer1">
+      <ownedRule xmi:id="_oAbpwOrmEe--EpawL8E37A" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_4jIqQOrqEe-gVpA6ZSSyfg" value="3"/>
+      </ownedRule>
+      <ownedRule xmi:id="_ogzL4OrmEe--EpawL8E37A" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_eNkJoPBZEe-jmI83AKUfDA" value="4"/>
+      </ownedRule>
+      <generalization xmi:id="_mCad4OrmEe--EpawL8E37A">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_erEvkPBaEe-jmI83AKUfDA" name=""/>
+    <profileApplication xmi:id="_uYTD0K1mEe-el42Ake7YLQ">
+      <eAnnotations xmi:id="_uYVgEK1mEe-el42Ake7YLQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_0CCTgK1mEe-el42Ake7YLQ" guard="true" base_RedefinableElement="_yGmhkK1mEe-el42Ake7YLQ" atomic="true"/>
+  <PokaYoke:FormalElement xmi:id="_x9P3oK1uEe-el42Ake7YLQ" guard="init = false" base_RedefinableElement="_tPZBYK1uEe-el42Ake7YLQ" atomic="true">
+    <effects>init := true,&#xD;
+val := true</effects>
+    <effects>init := true,&#xD;
+val := not val</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_oL8OQK1xEe-el42Ake7YLQ" guard="init = true" atomic="true">
+    <effects>v := not v</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IJG5IK5cEe-ChscMtuOuvg" guard="robot1.position = INOUT" base_RedefinableElement="_DGDO8K5cEe-ChscMtuOuvg" atomic="true">
+    <effects>robot1.position := P1</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_3M6KoLC0Ee-Jc_0VD6Xjdw" guard="robot1 =  robot2 and val = true" base_RedefinableElement="_0zVrMLC0Ee-Jc_0VD6Xjdw" atomic="true">
+    <effects>robot1.product := robot2.product, robot1.position := robot2.position, init := true</effects>
+    <effects>robot2.product := robot1.product, robot2.position := robot1.position, init := not init</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_sB2QkLxeEe-dceer0CDIKg" guard="true" atomic="true">
+    <effects>true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_PEKLwNQkEe-U5NOTNjr87Q" guard="robot1 = robot2" base_RedefinableElement="_HNX1sNQkEe-U5NOTNjr87Q" atomic="true">
+    <effects>if init=true and not init = false : val := true elif init=true and val = false : val:=true, robot2 := robot1 elif init=true, val=true : robot1:= robot2 else val := false end</effects>
+    <effects>if not init : robot1 := robot2 else robot2 := robot1 end</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_d3YFMOrdEe-PPtp2Gv3_IA" guard="robot1.booly = true" base_RedefinableElement="_YBkvcOrdEe-PPtp2Gv3_IA" atomic="true">
+    <effects>robot2.booly := false</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_4SQ5gOrmEe--EpawL8E37A" guard="robot1.identity = robot2.identity and robot1.identity = 4" base_RedefinableElement="_1QX10OrmEe--EpawL8E37A" atomic="true">
+    <effects>robot2.identity := 3, robot1.identity := 3</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_PiwRIPBQEe-OvrlOCdq0qA" guard="true" base_RedefinableElement="_OBU6oPBQEe-OvrlOCdq0qA" atomic="true">
+    <effects>init := not init</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

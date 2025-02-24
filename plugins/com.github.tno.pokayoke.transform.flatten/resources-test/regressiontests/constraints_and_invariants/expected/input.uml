@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="ConstraintsAndInvariants">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Class1" classifierBehavior="21" isActive="true">
+      <ownedRule xmi:id="3" name="ClassConstraint">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="4" name="">
+          <body>p_good and not p_bad</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="5" name="ClassConstraintStateInvariant">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="6" name="">
+          <body>action1 needs p_good and not p_bad</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="7" name="ClassConstraintExclusionInvariant">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="8" name="">
+          <body>not p_good and p_bad disables action1</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="9" name="p_good">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="12">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="13" name="p_bad">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="14" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="15" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="16">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="17" name="p_init">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="18" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="19" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="20">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="21" name="Activity1" isAbstract="true" postcondition="24" precondition="22">
+        <ownedRule xmi:id="22" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="23" name="">
+            <body>not p_init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="24" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="25" name="">
+            <body>p_init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="26" name="IntervalConstraint1" constrainedElement="29">
+          <specification xmi:type="uml:Interval" xmi:id="27" name="Occurrence" max="31" min="30"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="28" name="flip"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="29" name="action1"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="30" name="MinZero"/>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="31" name="MaxOne" value="1"/>
+    <profileApplication xmi:id="32">
+      <eAnnotations xmi:id="33" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="34" guard="not p_init" base_RedefinableElement="28" atomic="true">
+    <effects>p_init := not p_init</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="35" guard="true" base_RedefinableElement="29" atomic="true"/>
+</xmi:XMI>

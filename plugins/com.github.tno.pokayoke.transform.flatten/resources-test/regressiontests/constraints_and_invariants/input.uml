@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_G7qCAPBcEe-Dz-y9zKi0tw" name="ConstraintsAndInvariants">
+    <packagedElement xmi:type="uml:Class" xmi:id="_IN8wUPBcEe-Dz-y9zKi0tw" name="Class1" classifierBehavior="_YI80cPBcEe-Dz-y9zKi0tw" isActive="true">
+      <ownedRule xmi:id="_xk8tsPBcEe-Dz-y9zKi0tw" name="ClassConstraint">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_zVbM0PBcEe-Dz-y9zKi0tw" name="">
+          <body>p.good and not p.bad</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_nNWgYPBfEe-Dz-y9zKi0tw" name="ClassConstraintStateInvariant">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_on-EQPBfEe-Dz-y9zKi0tw" name="">
+          <body>action1 needs p.good and not p.bad</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_ylYvoPBfEe-Dz-y9zKi0tw" name="ClassConstraintExclusionInvariant">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_0XIaEPBfEe-Dz-y9zKi0tw" name="">
+          <body>not p.good and p.bad disables action1</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="_gBiZ8PBfEe-Dz-y9zKi0tw" name="p" type="_TpxzEPBfEe-Dz-y9zKi0tw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gaN_sPBfEe-Dz-y9zKi0tw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gaN_sfBfEe-Dz-y9zKi0tw" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_YI80cPBcEe-Dz-y9zKi0tw" name="Activity1" isAbstract="true" postcondition="_esQJYPBcEe-Dz-y9zKi0tw" precondition="_aO83oPBcEe-Dz-y9zKi0tw">
+        <ownedRule xmi:id="_aO83oPBcEe-Dz-y9zKi0tw" name="precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_cPkEgPBcEe-Dz-y9zKi0tw" name="">
+            <body>not p.init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_esQJYPBcEe-Dz-y9zKi0tw" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_gd2C0PBcEe-Dz-y9zKi0tw" name="">
+            <body>p.init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_MF_KIPBiEe-Dz-y9zKi0tw" name="IntervalConstraint1" constrainedElement="_QVVKUPBgEe-Dz-y9zKi0tw">
+          <specification xmi:type="uml:Interval" xmi:id="_YKbMYPBiEe-Dz-y9zKi0tw" name="Occurrence" max="_UTBdAPBiEe-Dz-y9zKi0tw" min="_RQv-0PBiEe-Dz-y9zKi0tw"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_mckrEPBcEe-Dz-y9zKi0tw" name="flip"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_QVVKUPBgEe-Dz-y9zKi0tw" name="action1"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_TpxzEPBfEe-Dz-y9zKi0tw" name="Container">
+      <ownedAttribute xmi:id="_VqnpcPBfEe-Dz-y9zKi0tw" name="good">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_amoQcPBfEe-Dz-y9zKi0tw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_amoQcfBfEe-Dz-y9zKi0tw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_bG2BkPBfEe-Dz-y9zKi0tw">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_WRW5UPBfEe-Dz-y9zKi0tw" name="bad">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bU8H8PBfEe-Dz-y9zKi0tw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bU8H8fBfEe-Dz-y9zKi0tw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_b8CkMPBfEe-Dz-y9zKi0tw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_XdVkQPBfEe-Dz-y9zKi0tw" name="init">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cMDWIPBfEe-Dz-y9zKi0tw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cMD9MPBfEe-Dz-y9zKi0tw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_c0Sa0PBfEe-Dz-y9zKi0tw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_RQv-0PBiEe-Dz-y9zKi0tw" name="MinZero"/>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_UTBdAPBiEe-Dz-y9zKi0tw" name="MaxOne" value="1"/>
+    <profileApplication xmi:id="_lIqMIPBcEe-Dz-y9zKi0tw">
+      <eAnnotations xmi:id="_lItPcPBcEe-Dz-y9zKi0tw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_nKXlMPBcEe-Dz-y9zKi0tw" guard="not p.init" base_RedefinableElement="_mckrEPBcEe-Dz-y9zKi0tw" atomic="true">
+    <effects>p.init := not p.init</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_R3L-oPBgEe-Dz-y9zKi0tw" guard="true" base_RedefinableElement="_QVVKUPBgEe-Dz-y9zKi0tw" atomic="true"/>
+</xmi:XMI>
