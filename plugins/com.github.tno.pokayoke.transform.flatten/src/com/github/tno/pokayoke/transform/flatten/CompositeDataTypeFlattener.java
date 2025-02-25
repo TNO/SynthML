@@ -574,8 +574,8 @@ public class CompositeDataTypeFlattener {
 
                     // Get the current body, unfold it, and substitute the corresponding string.
                     String opaqueExprBody = opaqueGuard.getBodies().get(0);
-                    AExpression bodyInvariant = CifParserHelper.parseExpression(opaqueExprBody, opaqueGuard);
-                    AExpression unfoldedBody = unfoldAExpression(bodyInvariant, propertyToLeaves, absoluteToFlatNames);
+                    AExpression bodyExpr = CifParserHelper.parseExpression(opaqueExprBody, opaqueGuard);
+                    AExpression unfoldedBody = unfoldAExpression(bodyExpr, propertyToLeaves, absoluteToFlatNames);
                     opaqueGuard.getBodies().set(0, ACifObjectToString.toString(unfoldedBody));
                 } else if (guard instanceof LiteralBoolean || guard == null) {
                     continue;
