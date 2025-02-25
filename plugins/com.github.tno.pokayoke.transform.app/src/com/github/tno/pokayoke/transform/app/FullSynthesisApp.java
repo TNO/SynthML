@@ -85,6 +85,9 @@ public class FullSynthesisApp {
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlSpec);
 
+        // Flatten composite data types.
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec);
+
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
                 new CifContext(umlSpec).getAllActivities());

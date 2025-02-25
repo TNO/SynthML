@@ -195,6 +195,10 @@ public class CifContext {
         return referenceableElements.get(name);
     }
 
+    public Map<String, NamedElement> getReferenceableElements() {
+        return Collections.unmodifiableMap(referenceableElements);
+    }
+
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
         return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
@@ -211,6 +215,12 @@ public class CifContext {
     public List<Activity> getAllAbstractActivities() {
         return getDeclaredElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
                 .map(Activity.class::cast).toList();
+    }
+
+    public List<DataType> getAllCompositeDataTypes() {
+        return getDeclaredElements().stream()
+                .filter(e -> e instanceof DataType d && PokaYokeTypeUtil.isCompositeDataType(d))
+                .map(DataType.class::cast).toList();
     }
 
     public List<Activity> getAllConcreteActivities() {
