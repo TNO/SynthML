@@ -52,6 +52,9 @@ public class FlattenUMLActivity {
         // names of relevant model elements.
         ValidationHelper.validateModel(model);
 
+        // Flatten composite data types.
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
+
         // Give each element a name.
         NameHelper.giveNameToModelElements(model);
 
