@@ -1,0 +1,38 @@
+
+typedef Boolean= 0..1 ;
+typedef IntegerA= 1..10 ;
+typedef IntegerB= 11..21 ;
+gal MyModel__Context{
+  int intA1_myInt = 1;
+  int intA2_myInt = 5;
+  int intB1_myInt = 15;
+  int __init = 0;
+  int __edge__0 = 1;
+  int __edge__1 = 0;
+  transition __initialize(IntegerA $intA1_myInt) [ __init == 0 ] {
+    __init = 1    ;
+    intA1_myInt = $intA1_myInt    ;
+  }
+  transition __ActivityFinalNode_Main__ActivityFinalNode__1 [ __init == 1 && 1 <= intA1_myInt && intA1_myInt <= 10 && 1 <= intA2_myInt && intA2_myInt <= 10 && 11 <= intB1_myInt && intB1_myInt <= 21 && __edge__1 == 1 ] {
+    __edge__1 = 0    ;
+  }
+  transition __OpaqueAction_Main__MyAction__2 [ __init == 1 && intA2_myInt < 8 && 1 <= intA1_myInt && intA1_myInt <= 10 && 1 <= intA2_myInt && intA2_myInt <= 10 && 11 <= intB1_myInt && intB1_myInt <= 21 && __edge__0 == 1 && __edge__1 == 0 ] {
+    intA1_myInt = ( intA1_myInt + 1 )    ;
+    intB1_myInt = 16    ;
+    __edge__0 = 0    ;
+    __edge__1 = 1    ;
+  }
+}
+main MyModel__Context ;
+property "intA1_myInt_bounds"  [invariant] : 
+  1 <= intA1_myInt && intA1_myInt <= 10
+
+;
+property "intA2_myInt_bounds"  [invariant] : 
+  1 <= intA2_myInt && intA2_myInt <= 10
+
+;
+property "intB1_myInt_bounds"  [invariant] : 
+  11 <= intB1_myInt && intB1_myInt <= 21
+
+;

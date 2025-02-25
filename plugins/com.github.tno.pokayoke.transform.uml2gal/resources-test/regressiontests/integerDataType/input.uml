@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_mxOBEPGSEe6asLMew-pIxQ" name="MyModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_ti5wQPGSEe6asLMew-pIxQ" name="Context" visibility="public" classifierBehavior="_15g14PGSEe6asLMew-pIxQ" isActive="true">
+      <ownedAttribute xmi:id="_xn4ooPGSEe6asLMew-pIxQ" name="intA1" visibility="public" type="_Qn7uEPNREe-AEq9xq-YRZw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xn4oofGSEe6asLMew-pIxQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xn4oovGSEe6asLMew-pIxQ" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_I-O1IAuLEe-HifYXejEQDQ" name="intA2" visibility="public" type="_XJmrUPNREe-AEq9xq-YRZw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_I-PcMAuLEe-HifYXejEQDQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_I-PcMQuLEe-HifYXejEQDQ" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_e70DYPNREe-AEq9xq-YRZw"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_m2kgYAuXEe-xpbvHVxDP5A" name="intB1" visibility="public" type="_g_HX4PNREe-AEq9xq-YRZw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_m2kgYQuXEe-xpbvHVxDP5A" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_m2kgYguXEe-xpbvHVxDP5A" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_ongsoPNREe-AEq9xq-YRZw"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_15g14PGSEe6asLMew-pIxQ" name="Main" node="_AMpSkPGTEe6asLMew-pIxQ _BbHQ0PGTEe6asLMew-pIxQ _CVWrgPGTEe6asLMew-pIxQ">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_GhHhUPGTEe6asLMew-pIxQ" target="_CVWrgPGTEe6asLMew-pIxQ" source="_AMpSkPGTEe6asLMew-pIxQ">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_GhIIYPGTEe6asLMew-pIxQ" name="_To_MyAction_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_GhIvcPGTEe6asLMew-pIxQ" name="_To_MyAction_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_HEAzAPGTEe6asLMew-pIxQ" target="_BbHQ0PGTEe6asLMew-pIxQ" source="_CVWrgPGTEe6asLMew-pIxQ">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_HEAzAfGTEe6asLMew-pIxQ" name="MyAction_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_HEAzAvGTEe6asLMew-pIxQ" name="MyAction_To__weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_AMpSkPGTEe6asLMew-pIxQ" name="" outgoing="_GhHhUPGTEe6asLMew-pIxQ"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_BbHQ0PGTEe6asLMew-pIxQ" name="" incoming="_HEAzAPGTEe6asLMew-pIxQ"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_CVWrgPGTEe6asLMew-pIxQ" name="MyAction" incoming="_GhHhUPGTEe6asLMew-pIxQ" outgoing="_HEAzAPGTEe6asLMew-pIxQ">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_VD050AetEe-uToQqJyLVrg" name="IntegerA" visibility="public">
+      <ownedRule xmi:id="_cEtioAetEe-uToQqJyLVrg" name="min" constrainedElement="_VD050AetEe-uToQqJyLVrg">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_GC994AuLEe-HifYXejEQDQ" value="1"/>
+      </ownedRule>
+      <ownedRule xmi:id="_g129cAetEe-uToQqJyLVrg" name="max" constrainedElement="_VD050AetEe-uToQqJyLVrg">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_GbDGsAuLEe-HifYXejEQDQ" value="10"/>
+      </ownedRule>
+      <generalization xmi:id="_ZiF04AetEe-uToQqJyLVrg">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_ZeKU0AuXEe-xpbvHVxDP5A" name="IntegerB" visibility="public">
+      <ownedRule xmi:id="_cBmh8AuXEe-xpbvHVxDP5A" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_cBmh8QuXEe-xpbvHVxDP5A" value="11"/>
+      </ownedRule>
+      <ownedRule xmi:id="_cW1LEAuXEe-xpbvHVxDP5A" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_cW1LEQuXEe-xpbvHVxDP5A" value="21"/>
+      </ownedRule>
+      <generalization xmi:id="_cdcJYAuXEe-xpbvHVxDP5A">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_Qn7uEPNREe-AEq9xq-YRZw" name="MyDataTypeA1">
+      <ownedAttribute xmi:id="_Sj2oMPNREe-AEq9xq-YRZw" name="myInt" type="_VD050AetEe-uToQqJyLVrg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_TYo7IPNREe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_TYo7IfNREe-AEq9xq-YRZw" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_XJmrUPNREe-AEq9xq-YRZw" name="MyDataTypeA2">
+      <ownedAttribute xmi:id="_YFdPkPNREe-AEq9xq-YRZw" name="myInt" type="_VD050AetEe-uToQqJyLVrg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Zo6mYPNREe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Zo7NcPNREe-AEq9xq-YRZw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_bLB5YPNREe-AEq9xq-YRZw">
+          <language>CIF</language>
+          <body>5</body>
+        </defaultValue>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_g_HX4PNREe-AEq9xq-YRZw" name="MyDataTypeB">
+      <ownedAttribute xmi:id="_ivE5oPNREe-AEq9xq-YRZw" name="myInt" type="_ZeKU0AuXEe-xpbvHVxDP5A">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_jn5_EPNREe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_jn5_EfNREe-AEq9xq-YRZw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_krne0PNREe-AEq9xq-YRZw">
+          <language>CIF</language>
+          <body>15</body>
+        </defaultValue>
+      </ownedAttribute>
+    </packagedElement>
+    <profileApplication xmi:id="_KNaz8PGTEe6asLMew-pIxQ">
+      <eAnnotations xmi:id="_KNdQMPGTEe6asLMew-pIxQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_KNd3QPGTEe6asLMew-pIxQ" guard="intA2.myInt &lt; 8" base_RedefinableElement="_CVWrgPGTEe6asLMew-pIxQ" atomic="true">
+    <effects>intA1.myInt := intA1.myInt + 1,&#xD;
+intB1.myInt := 16&#xD;
+</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

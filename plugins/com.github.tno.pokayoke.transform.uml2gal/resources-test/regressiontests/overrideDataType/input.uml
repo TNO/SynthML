@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_EzH8kI3JEe6_8e6M7syDNw" name="ExampleModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_btLdgI3JEe6_8e6M7syDNw" name="ExampleClass" classifierBehavior="_EDdIQI3LEe6_8e6M7syDNw" isActive="true">
+      <ownedAttribute xmi:id="_AcpZoI3LEe6_8e6M7syDNw" name="inputLocation" type="_iJrxcI3KEe6_8e6M7syDNw"/>
+      <ownedAttribute xmi:id="_rn28EI3KEe6_8e6M7syDNw" name="robot1" type="_cKc5kPNSEe-AEq9xq-YRZw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gIv7IPNSEe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gIwiMPNSEe-AEq9xq-YRZw" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_goUzEPNSEe-AEq9xq-YRZw"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_6ZT-MI3KEe6_8e6M7syDNw" name="robot2" type="_cKc5kPNSEe-AEq9xq-YRZw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_hEB3oPNSEe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_hECesPNSEe-AEq9xq-YRZw" value="1"/>
+        <defaultValue xmi:type="uml:LiteralNull" xmi:id="_heaGgPNSEe-AEq9xq-YRZw"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_EDdIQI3LEe6_8e6M7syDNw" name="ExampleActivity" node="_L49E4I3LEe6_8e6M7syDNw _QVyckI3LEe6_8e6M7syDNw _Rj_8II3LEe6_8e6M7syDNw _SkzR0I3LEe6_8e6M7syDNw _UUZAII3LEe6_8e6M7syDNw _dj5coI3LEe6_8e6M7syDNw _yXwVEI-XEe6xDuEp1zNm9g">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_jzytYI3LEe6_8e6M7syDNw" target="_QVyckI3LEe6_8e6M7syDNw" source="_L49E4I3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_kOnBII3LEe6_8e6M7syDNw" target="_Rj_8II3LEe6_8e6M7syDNw" source="_QVyckI3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_knmv8I3LEe6_8e6M7syDNw" target="_SkzR0I3LEe6_8e6M7syDNw" source="_QVyckI3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_lA9rII3LEe6_8e6M7syDNw" target="_UUZAII3LEe6_8e6M7syDNw" source="_Rj_8II3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_lW6tAI3LEe6_8e6M7syDNw" target="_UUZAII3LEe6_8e6M7syDNw" source="_SkzR0I3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_zAbeoI-XEe6xDuEp1zNm9g" target="_yXwVEI-XEe6xDuEp1zNm9g" source="_UUZAII3LEe6_8e6M7syDNw"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_zdTn4I-XEe6xDuEp1zNm9g" target="_dj5coI3LEe6_8e6M7syDNw" source="_yXwVEI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:InitialNode" xmi:id="_L49E4I3LEe6_8e6M7syDNw" name="" outgoing="_jzytYI3LEe6_8e6M7syDNw"/>
+        <node xmi:type="uml:ForkNode" xmi:id="_QVyckI3LEe6_8e6M7syDNw" name="" incoming="_jzytYI3LEe6_8e6M7syDNw" outgoing="_kOnBII3LEe6_8e6M7syDNw _knmv8I3LEe6_8e6M7syDNw"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_Rj_8II3LEe6_8e6M7syDNw" name="claim_robot1" incoming="_kOnBII3LEe6_8e6M7syDNw" outgoing="_lA9rII3LEe6_8e6M7syDNw">
+          <body>not robot1_claimed</body>
+          <body>robot1_claimed := true</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_SkzR0I3LEe6_8e6M7syDNw" name="claim_robot2" incoming="_knmv8I3LEe6_8e6M7syDNw" outgoing="_lW6tAI3LEe6_8e6M7syDNw">
+          <body>not robot2_claimed</body>
+          <body>robot2_claimed := true</body>
+        </node>
+        <node xmi:type="uml:JoinNode" xmi:id="_UUZAII3LEe6_8e6M7syDNw" name="" incoming="_lA9rII3LEe6_8e6M7syDNw _lW6tAI3LEe6_8e6M7syDNw" outgoing="_zAbeoI-XEe6xDuEp1zNm9g">
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_UUZAIY3LEe6_8e6M7syDNw" name="Join1" value="true"/>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_dj5coI3LEe6_8e6M7syDNw" name="" incoming="_zdTn4I-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_yXwVEI-XEe6xDuEp1zNm9g" name="process_LorR" incoming="_zAbeoI-XEe6xDuEp1zNm9g" outgoing="_zdTn4I-XEe6xDuEp1zNm9g" behavior="_idWG0I-XEe6xDuEp1zNm9g"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_idWG0I-XEe6xDuEp1zNm9g" name="DoOperation" node="_koqu4I-XEe6xDuEp1zNm9g _l-w_II-XEe6xDuEp1zNm9g _sJCJAI-XEe6xDuEp1zNm9g _sJCJAY-XEe6xDuEp1zNm9g _sJCJAo-XEe6xDuEp1zNm9g _sJCJA4-XEe6xDuEp1zNm9g">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBI-XEe6xDuEp1zNm9g" target="_sJCJAo-XEe6xDuEp1zNm9g" source="_sJCJAI-XEe6xDuEp1zNm9g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBY-XEe6xDuEp1zNm9g" target="_sJCJAo-XEe6xDuEp1zNm9g" source="_sJCJA4-XEe6xDuEp1zNm9g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJBo-XEe6xDuEp1zNm9g" name="inputLocation = Right" target="_sJCJA4-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_sJCJB4-XEe6xDuEp1zNm9g" name="">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            <body>inputLocation = Right</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_sJCJCI-XEe6xDuEp1zNm9g" name="inputLocation = Left" target="_sJCJAI-XEe6xDuEp1zNm9g" source="_sJCJAY-XEe6xDuEp1zNm9g">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_sJCJCY-XEe6xDuEp1zNm9g" name="">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            <body>inputLocation = Left</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_vowYMI-XEe6xDuEp1zNm9g" target="_sJCJAY-XEe6xDuEp1zNm9g" source="_koqu4I-XEe6xDuEp1zNm9g"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_wGQMgI-XEe6xDuEp1zNm9g" target="_l-w_II-XEe6xDuEp1zNm9g" source="_sJCJAo-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:InitialNode" xmi:id="_koqu4I-XEe6xDuEp1zNm9g" name="" outgoing="_vowYMI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_l-w_II-XEe6xDuEp1zNm9g" name="" incoming="_wGQMgI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJAI-XEe6xDuEp1zNm9g" name="process_L" incoming="_sJCJCI-XEe6xDuEp1zNm9g" outgoing="_sJCJBI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_sJCJAY-XEe6xDuEp1zNm9g" name="" incoming="_vowYMI-XEe6xDuEp1zNm9g" outgoing="_sJCJCI-XEe6xDuEp1zNm9g _sJCJBo-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:MergeNode" xmi:id="_sJCJAo-XEe6xDuEp1zNm9g" name="" incoming="_sJCJBY-XEe6xDuEp1zNm9g _sJCJBI-XEe6xDuEp1zNm9g" outgoing="_wGQMgI-XEe6xDuEp1zNm9g"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sJCJA4-XEe6xDuEp1zNm9g" name="process_R" incoming="_sJCJBo-XEe6xDuEp1zNm9g" outgoing="_sJCJBY-XEe6xDuEp1zNm9g"/>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_iJrxcI3KEe6_8e6M7syDNw" name="InputLocation">
+      <ownedLiteral xmi:id="_jw4_0I3KEe6_8e6M7syDNw" name="Left"/>
+      <ownedLiteral xmi:id="_mXZIAI3KEe6_8e6M7syDNw" name="Right"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_cKc5kPNSEe-AEq9xq-YRZw" name="Robot">
+      <ownedAttribute xmi:id="_dnT5IPNSEe-AEq9xq-YRZw" name="claimed">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eIPb8PNSEe-AEq9xq-YRZw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_eIQDAPNSEe-AEq9xq-YRZw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_e1-EoPNSEe-AEq9xq-YRZw">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+    </packagedElement>
+    <profileApplication xmi:id="_IKL68PyWEe6JbLeUfj0rXg">
+      <eAnnotations xmi:id="_IKPlUPyWEe6JbLeUfj0rXg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_IK3QYPyWEe6JbLeUfj0rXg" guard="not robot1.claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw" atomic="true">
+    <effects>robot1.claimed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK33cPyWEe6JbLeUfj0rXg" guard="not robot2.claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw" atomic="true">
+    <effects>robot2.claimed := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_OH074AFpEe-kj6Ms76Mokg" guard="true" base_RedefinableElement="_yXwVEI-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1.claimed := false,&#xD;
+robot2.claimed := false</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK33cfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJAI-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1.claimed := false,
+robot2.claimed := false</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_IK4egPyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJA4-XEe6xDuEp1zNm9g" atomic="true">
+    <effects>robot1.claimed := false,
+robot2.claimed := false</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

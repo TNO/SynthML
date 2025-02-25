@@ -1,0 +1,52 @@
+
+$Left=0 ;
+$Right=1 ;
+typedef Boolean= 0..1 ;
+typedef InputLocation= 0..1 ;
+gal ExampleModel__ExampleClass{
+  int inputLocation = 0;
+  int robot1_claimed = 0;
+  int robot2_claimed = 0;
+  int __init = 0;
+  int __edge__0 = 1;
+  int __edge__1 = 0;
+  int __edge__2 = 0;
+  int __edge__3 = 0;
+  int __edge__4 = 0;
+  int __edge__5 = 0;
+  int __edge__6 = 0;
+  transition __initialize(InputLocation $inputLocation) [ __init == 0 ] {
+    __init = 1    ;
+    inputLocation = $inputLocation    ;
+  }
+  transition __ForkNode_ExampleActivity__ForkNode__1 [ __init == 1 && __edge__0 == 1 && __edge__1 == 0 && __edge__2 == 0 ] {
+    __edge__0 = 0    ;
+    __edge__1 = 1    ;
+    __edge__2 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__claim_robot1__2 [ __init == 1 && !robot1_claimed == 1 && __edge__1 == 1 && __edge__3 == 0 ] {
+    robot1_claimed = 1    ;
+    __edge__1 = 0    ;
+    __edge__3 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__claim_robot2__3 [ __init == 1 && !robot2_claimed == 1 && __edge__2 == 1 && __edge__4 == 0 ] {
+    robot2_claimed = 1    ;
+    __edge__2 = 0    ;
+    __edge__4 = 1    ;
+  }
+  transition __JoinNode_ExampleActivity__JoinNode__4 [ __init == 1 && __edge__3 == 1 && __edge__4 == 1 && __edge__5 == 0 ] {
+    __edge__3 = 0    ;
+    __edge__4 = 0    ;
+    __edge__5 = 1    ;
+  }
+  transition __ActivityFinalNode_ExampleActivity__ActivityFinalNode__5 [ __init == 1 && __edge__6 == 1 ] {
+    __edge__6 = 0    ;
+  }
+  transition __CallBehaviorAction_ExampleActivity__process_LorR__6 [ __init == 1 && true && __edge__5 == 1 && __edge__6 == 0 ] {
+    robot1_claimed = 0    ;
+    robot2_claimed = 0    ;
+    __edge__5 = 0    ;
+    __edge__6 = 1    ;
+  }
+}
+main ExampleModel__ExampleClass ;
