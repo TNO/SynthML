@@ -18,12 +18,10 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.ForkNode;
@@ -118,7 +116,43 @@ public class UMLToCameoTransformer {
 
         // Collect integer bounds and set default values for all class properties
         propertyBounds.clear();
-        setPropertiesDefaultValues(contextClass);
+        for (Property property: contextClass.getOwnedAttributes()) {
+            // Collect the bounds for integer properties, they will be validated later.
+            Range<Integer> propertyRange = null;
+            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
+                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                        PokaYokeTypeUtil.getMaxValue(property.getType()));
+                propertyBounds.put(property.getName(), propertyRange);
+            }
+
+            // Translate all default values of class properties to become Python expressions,
+            // or set default values for simulation.
+            AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
+            if (cifExpression != null) {
+                OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
+                newDefaultValue.getLanguages().add("Python");
+                String translatedLiteral = translator.translateExpression(cifExpression);
+                newDefaultValue.getBodies().add(translatedLiteral);
+                property.setDefaultValue(newDefaultValue);
+            } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
+                // As default value, we choose the value that is closest to zero within its bounds.
+                int propertyDefault = 0;
+                if (propertyRange.getMaximum() < 0) {
+                    propertyDefault = propertyRange.getMaximum();
+                } else if (propertyRange.getMinimum() > 0) {
+                    propertyDefault = propertyRange.getMinimum();
+                }
+                LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
+                value.setValue(propertyDefault);
+                property.setDefaultValue(value);
+            } else if (PokaYokeTypeUtil.isBooleanType(property.getType())) {
+                property.setDefaultValue(FileHelper.FACTORY.createLiteralBoolean());
+            } else if (PokaYokeTypeUtil.isEnumerationType(property.getType())) {
+                InstanceValue value = FileHelper.FACTORY.createInstanceValue();
+                value.setInstance(((Enumeration)property.getType()).getOwnedLiterals().get(0));
+                property.setDefaultValue(value);
+            }
+        }
 
         // Make sure the class does not contain an attribute named 'active'.
         Preconditions.checkArgument(
@@ -212,53 +246,6 @@ public class UMLToCameoTransformer {
         Profile pokaYokeUmlProfile = model.getAppliedProfile(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE);
         if (pokaYokeUmlProfile != null) {
             model.unapplyProfile(pokaYokeUmlProfile);
-        }
-    }
-
-    private void setPropertiesDefaultValues(AttributeOwner owner) {
-        for (Property property: owner.getOwnedAttributes()) {
-            // Collect the bounds for integer properties, they will be validated later.
-            Range<Integer> propertyRange = null;
-            if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
-                        PokaYokeTypeUtil.getMaxValue(property.getType()));
-                propertyBounds.put(property.getName(), propertyRange);
-            }
-
-            // Translate all default values of class properties to become Python expressions,
-            // or set default values for simulation, if not done before.
-            if (!(property.getDefaultValue() instanceof OpaqueExpression opaqueExpr
-                    && opaqueExpr.getLanguages().contains("Python")))
-            {
-                AExpression cifExpression = CifParserHelper.parseExpression(property.getDefaultValue());
-                if (cifExpression != null) {
-                    OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
-                    newDefaultValue.getLanguages().add("Python");
-                    String translatedLiteral = translator.translateExpression(cifExpression);
-                    newDefaultValue.getBodies().add(translatedLiteral);
-                    property.setDefaultValue(newDefaultValue);
-                } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
-                    // As default value, we choose the value that is closest to zero within its bounds.
-                    int propertyDefault = 0;
-                    if (propertyRange.getMaximum() < 0) {
-                        propertyDefault = propertyRange.getMaximum();
-                    } else if (propertyRange.getMinimum() > 0) {
-                        propertyDefault = propertyRange.getMinimum();
-                    }
-                    LiteralInteger value = FileHelper.FACTORY.createLiteralInteger();
-                    value.setValue(propertyDefault);
-                    property.setDefaultValue(value);
-                } else if (PokaYokeTypeUtil.isBooleanType(property.getType())) {
-                    property.setDefaultValue(FileHelper.FACTORY.createLiteralBoolean());
-                } else if (PokaYokeTypeUtil.isEnumerationType(property.getType())) {
-                    InstanceValue value = FileHelper.FACTORY.createInstanceValue();
-                    value.setInstance(((Enumeration)property.getType()).getOwnedLiterals().get(0));
-                    property.setDefaultValue(value);
-                } else if (PokaYokeTypeUtil.isCompositeDataType(property.getType())) {
-                    // Set the properties of the composite data types.
-                    setPropertiesDefaultValues(((DataType)property.getType()));
-                }
-            }
         }
     }
 
