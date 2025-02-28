@@ -12,9 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 
-/**
- * Regression tests.
- */
+/** Regression tests for the composite data type flattener. */
 class CompositeDataTypeFlattenerRegressionTest extends RegressionTest {
     public static final String INPUT_FILE_EXTENSION = "uml";
 

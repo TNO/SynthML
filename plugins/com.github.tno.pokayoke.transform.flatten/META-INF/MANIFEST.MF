@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TNO Poka Yoke Functionality For Flattening UML Specifications
 Bundle-SymbolicName: com.github.tno.pokayoke.transform.flatten
 Bundle-Version: 0.0.1.qualifier
-Require-Bundle: 
- org.apache.commons.lang3;bundle-version="3.12.0",
+Require-Bundle: org.apache.commons.lang3;bundle-version="3.12.0",
  org.eclipse.emf.ecore;bundle-version="2.34.0",
  org.eclipse.escet.cif.parser;bundle-version="3.0.0",
  org.eclipse.escet.common.java;bundle-version="3.0.0",
