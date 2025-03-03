@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
-  <uml:Model xmi:id="_nWcu8KWVEe-6vO4j1pGN5g" name="DataTypesGuardsAndEffects">
-    <packagedElement xmi:type="uml:Class" xmi:id="_b2Pd4K1mEe-el42Ake7YLQ" name="Main" classifierBehavior="_0zVrMLC0Ee-Jc_0VD6Xjdw" isActive="true">
+  <uml:Model xmi:id="_nWcu8KWVEe-6vO4j1pGN5g" name="DataTypesControlFlowGuards">
+    <packagedElement xmi:type="uml:Class" xmi:id="_b2Pd4K1mEe-el42Ake7YLQ" name="Main" classifierBehavior="_huBrUPg-Ee-2zbND5lomxQ" isActive="true">
       <ownedAttribute xmi:id="_u-rR4K1nEe-el42Ake7YLQ" name="robot1" visibility="public" type="_3NsFsLuUEe-b2q_agDsUbg">
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_u-r48K1nEe-el42Ake7YLQ" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_u-r48a1nEe-el42Ake7YLQ" value="1"/>
@@ -24,7 +24,31 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_w78j4a44Ee-4dKdyG9ialg" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_w78j4q44Ee-4dKdyG9ialg" value="1"/>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_0zVrMLC0Ee-Jc_0VD6Xjdw" name="inequalityGuardEffects"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_huBrUPg-Ee-2zbND5lomxQ" name="ConcreteActivity" node="_lRB4APg-Ee-2zbND5lomxQ _moA5EPg-Ee-2zbND5lomxQ _ubdKwPg_Ee-2zbND5lomxQ _vnqfMPg_Ee-2zbND5lomxQ _wZ078Pg_Ee-2zbND5lomxQ">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_zgoxUPg-Ee-2zbND5lomxQ" target="_moA5EPg-Ee-2zbND5lomxQ"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_0x_2EPg_Ee-2zbND5lomxQ" target="_wZ078Pg_Ee-2zbND5lomxQ" source="_ubdKwPg_Ee-2zbND5lomxQ">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_LV6u8PhAEe-2zbND5lomxQ">
+            <language>CIF</language>
+            <body>robot1 = robot2</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_4Sln8Pg_Ee-2zbND5lomxQ" target="_vnqfMPg_Ee-2zbND5lomxQ" source="_ubdKwPg_Ee-2zbND5lomxQ">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_5bFhEPg_Ee-2zbND5lomxQ">
+            <language>CIF</language>
+            <body>robot2 != robot1</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_5_P-EPg_Ee-2zbND5lomxQ" target="_ubdKwPg_Ee-2zbND5lomxQ" source="_lRB4APg-Ee-2zbND5lomxQ"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_6jwZUPg_Ee-2zbND5lomxQ" target="_moA5EPg-Ee-2zbND5lomxQ" source="_vnqfMPg_Ee-2zbND5lomxQ"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_8M1P8Pg_Ee-2zbND5lomxQ" target="_vnqfMPg_Ee-2zbND5lomxQ" source="_wZ078Pg_Ee-2zbND5lomxQ"/>
+        <node xmi:type="uml:InitialNode" xmi:id="_lRB4APg-Ee-2zbND5lomxQ" name="Initial1" outgoing="_5_P-EPg_Ee-2zbND5lomxQ"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_moA5EPg-Ee-2zbND5lomxQ" name="ActivityFinal1" incoming="_zgoxUPg-Ee-2zbND5lomxQ _6jwZUPg_Ee-2zbND5lomxQ"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_ubdKwPg_Ee-2zbND5lomxQ" name="Decision1" incoming="_5_P-EPg_Ee-2zbND5lomxQ" outgoing="_0x_2EPg_Ee-2zbND5lomxQ _4Sln8Pg_Ee-2zbND5lomxQ"/>
+        <node xmi:type="uml:MergeNode" xmi:id="_vnqfMPg_Ee-2zbND5lomxQ" name="Merge1" incoming="_4Sln8Pg_Ee-2zbND5lomxQ _8M1P8Pg_Ee-2zbND5lomxQ" outgoing="_6jwZUPg_Ee-2zbND5lomxQ"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_wZ078Pg_Ee-2zbND5lomxQ" name="OpaqueAction1" incoming="_0x_2EPg_Ee-2zbND5lomxQ" outgoing="_8M1P8Pg_Ee-2zbND5lomxQ">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
     </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_8-A98K2QEe-8Ca8RUPM_ow" name="Status">
       <ownedLiteral xmi:id="_FABskK2REe-8Ca8RUPM_ow" name="Good"/>
@@ -81,8 +105,8 @@
       </generalization>
     </packagedElement>
     <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_erEvkPBaEe-jmI83AKUfDA" name=""/>
-    <profileApplication xmi:id="_uYTD0K1mEe-el42Ake7YLQ">
-      <eAnnotations xmi:id="_uYVgEK1mEe-el42Ake7YLQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="_zObKgPg_Ee-2zbND5lomxQ">
+      <eAnnotations xmi:id="_zOe04Pg_Ee-2zbND5lomxQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
@@ -91,10 +115,8 @@
   <PokaYoke:FormalElement xmi:id="_oL8OQK1xEe-el42Ake7YLQ" guard="init = true" atomic="true">
     <effects>v := not v</effects>
   </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_3M6KoLC0Ee-Jc_0VD6Xjdw" guard="robot1 !=  robot2 and val = true" base_RedefinableElement="_0zVrMLC0Ee-Jc_0VD6Xjdw" atomic="true">
-    <effects>robot1 := robot2</effects>
-  </PokaYoke:FormalElement>
   <PokaYoke:FormalElement xmi:id="_sB2QkLxeEe-dceer0CDIKg" guard="true" atomic="true">
     <effects>true</effects>
   </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_zOfb8Pg_Ee-2zbND5lomxQ" guard="true" base_RedefinableElement="_wZ078Pg_Ee-2zbND5lomxQ" atomic="true"/>
 </xmi:XMI>

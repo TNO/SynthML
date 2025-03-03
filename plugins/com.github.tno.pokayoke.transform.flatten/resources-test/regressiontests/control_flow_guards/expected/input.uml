@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="DataTypesControlFlowGuards">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Main" classifierBehavior="42" isActive="true">
+      <ownedAttribute xmi:id="3" name="init" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="6">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="7" name="val" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="8" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="9" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="robot1_position" type="60">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="11" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="12" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="13" name="robot1_booly">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="14" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="15" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="16" name="robot1_identity" type="64">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="17" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="18" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="19" name="robot1_product_position" type="60">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="20" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="21" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="22" name="robot1_product_status" type="56">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="23" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="24" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="25">
+          <language>CIF</language>
+          <body>New</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="26" name="robot2_position" type="60">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="27" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="28" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="29" name="robot2_booly">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="30" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="31" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="32" name="robot2_identity" type="64">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="33" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="34" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="35" name="robot2_product_position" type="60">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="36" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="37" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="38" name="robot2_product_status" type="56">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="39" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="40" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="41">
+          <language>CIF</language>
+          <body>New</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="42" name="ConcreteActivity" node="51 52 53 54 55">
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="52"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="55" source="53">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="45">
+            <language>CIF</language>
+            <body>robot1_position = robot2_position and robot1_product_position = robot2_product_position and robot1_product_status = robot2_product_status and robot1_booly = robot2_booly and robot1_identity = robot2_identity</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" target="54" source="53">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="47">
+            <language>CIF</language>
+            <body>robot2_position != robot1_position or robot2_product_position != robot1_product_position or robot2_product_status != robot1_product_status or robot2_booly != robot1_booly or robot2_identity != robot1_identity</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="48" target="53" source="51"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="49" target="52" source="54"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="50" target="54" source="55"/>
+        <node xmi:type="uml:InitialNode" xmi:id="51" name="Initial1" outgoing="48"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="52" name="ActivityFinal1" incoming="43 49"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="53" name="Decision1" incoming="48" outgoing="44 46"/>
+        <node xmi:type="uml:MergeNode" xmi:id="54" name="Merge1" incoming="46 50" outgoing="49"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="55" name="OpaqueAction1" incoming="44" outgoing="50">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="56" name="Status">
+      <ownedLiteral xmi:id="57" name="Good"/>
+      <ownedLiteral xmi:id="58" name="Bad"/>
+      <ownedLiteral xmi:id="59" name="New"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="60" name="Position">
+      <ownedLiteral xmi:id="61" name="INOUT"/>
+      <ownedLiteral xmi:id="62" name="P1"/>
+      <ownedLiteral xmi:id="63" name="P2"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="64" name="Integer1">
+      <ownedRule xmi:id="65" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="66" value="3"/>
+      </ownedRule>
+      <ownedRule xmi:id="67" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="68" value="4"/>
+      </ownedRule>
+      <generalization xmi:id="69">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="70" name=""/>
+    <profileApplication xmi:id="71">
+      <eAnnotations xmi:id="72" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="73" guard="true" base_RedefinableElement="55" atomic="true"/>
+</xmi:XMI>
