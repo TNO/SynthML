@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="1" name="NewModel">
-    <packagedElement xmi:type="uml:Enumeration" xmi:id="2" name="name1_name2_name3">
-      <ownedLiteral xmi:id="3" name="inner"/>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="2" name="enumer">
+      <ownedLiteral xmi:id="3" name="ok"/>
     </packagedElement>
-    <packagedElement xmi:type="uml:Enumeration" xmi:id="4" name="enumer">
-      <ownedLiteral xmi:id="5" name="ok"/>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Class" xmi:id="6" name="Class1" isActive="true">
-      <ownedAttribute xmi:id="7" name="name1_name2_name31">
+    <packagedElement xmi:type="uml:Class" xmi:id="4" name="Class1" isActive="true">
+      <ownedAttribute xmi:id="5" name="name1_name2_name3_2">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="8" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="9" value="1"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="7" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="10" name="name1_name2_name3" type="4">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="11" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="12" value="1"/>
+      <ownedAttribute xmi:id="8" name="name1_name2_name3">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="9" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="10" value="1"/>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="13" name="Activity1"/>
+      <ownedAttribute xmi:id="11" name="name1_name2_name3_3" type="2">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="13" value="1"/>
+      </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="14" name="OpaqueBehavior1"/>
     </packagedElement>
     <profileApplication xmi:id="15">
@@ -28,6 +29,6 @@
     </profileApplication>
   </uml:Model>
   <PokaYoke:FormalElement xmi:id="17" guard="true" base_RedefinableElement="14">
-    <effects>name1_name2_name3 := ok</effects>
+    <effects>name1_name2_name3_3 := ok</effects>
   </PokaYoke:FormalElement>
 </xmi:XMI>

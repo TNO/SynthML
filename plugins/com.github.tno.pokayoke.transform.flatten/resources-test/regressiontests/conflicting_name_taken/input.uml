@@ -13,15 +13,6 @@
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_G5yu4cH7Ee-Q36L-9MaMAQ" value="1"/>
       </ownedAttribute>
     </packagedElement>
-    <packagedElement xmi:type="uml:Enumeration" xmi:id="_F3gn8MH6Ee-Q36L-9MaMAQ" name="name1_name2_name3">
-      <ownedLiteral xmi:id="_AB1w4MIBEe-t7scsEKx2jw" name="inner"/>
-    </packagedElement>
-    <packagedElement xmi:type="uml:DataType" xmi:id="_OtNdUMH6Ee-Q36L-9MaMAQ" name="dt3">
-      <ownedAttribute xmi:id="_cSBQsMH7Ee-Q36L-9MaMAQ" name="name4" type="_NlYdIMH7Ee-Q36L-9MaMAQ">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cwNBgMH7Ee-Q36L-9MaMAQ" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cwNBgcH7Ee-Q36L-9MaMAQ" value="1"/>
-      </ownedAttribute>
-    </packagedElement>
     <packagedElement xmi:type="uml:Enumeration" xmi:id="_NlYdIMH7Ee-Q36L-9MaMAQ" name="enumer">
       <ownedLiteral xmi:id="_RiGKUMH7Ee-Q36L-9MaMAQ" name="ok"/>
     </packagedElement>
@@ -30,12 +21,16 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WNqFEMH8Ee-Q36L-9MaMAQ" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WNqFEcH8Ee-Q36L-9MaMAQ" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="_fR4eoMH8Ee-Q36L-9MaMAQ" name="name1_name2_name31">
+      <ownedAttribute xmi:id="_fR4eoMH8Ee-Q36L-9MaMAQ" name="name1_name2_name3_2">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gQwhsMH8Ee-Q36L-9MaMAQ" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gQwhscH8Ee-Q36L-9MaMAQ" value="1"/>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_2f9PIMH5Ee-Q36L-9MaMAQ" name="Activity1"/>
+      <ownedAttribute xmi:id="_ylKSQPgXEe-e2Pza6pQuxQ" name="name1_name2_name3">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0PRqsPgXEe-e2Pza6pQuxQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0PRqsfgXEe-e2Pza6pQuxQ" value="1"/>
+      </ownedAttribute>
       <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_P7s-0MH8Ee-Q36L-9MaMAQ" name="OpaqueBehavior1"/>
     </packagedElement>
     <profileApplication xmi:id="_TzuEIMH6Ee-Q36L-9MaMAQ">
