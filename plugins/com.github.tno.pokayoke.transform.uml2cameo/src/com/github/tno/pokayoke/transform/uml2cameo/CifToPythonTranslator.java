@@ -9,7 +9,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
@@ -90,6 +92,21 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     @Override
     protected String visit(Property property, TextPosition propertyPos, CifContext ctx) {
         return property.getName();
+    }
+
+    @Override
+    protected String visit(ANameExpression expr, CifContext ctx) {
+        if (expr.derivative) {
+            throw new CustomSyntaxException("Expected a non-derivative name", expr.position);
+        }
+
+        String name = expr.name.name;
+
+        if (name.startsWith(EffectPrestateRenamer.PREFIX)) {
+            return name;
+        } else {
+            return super.visit(expr, ctx);
+        }
     }
 
     @Override
