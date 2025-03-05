@@ -23,7 +23,7 @@ public class EffectPrestateRenamer extends CifExpressionRenamer {
     /**
      * Constructs a new {@link EffectPrestateRenamer} that renames by prefixing given variable names with 'pre__'.
      *
-     * @param context The context to determine
+     * @param context The context to determine.
      */
     public EffectPrestateRenamer(CifContext context) {
         super(name -> context.isVariable(name) ? PREFIX + name : name);
