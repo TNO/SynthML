@@ -121,14 +121,16 @@
           </outputValue>
           <body>guard = True
 if guard:
-	if not (field1):
+	pre__field1 = field1
+	pre__field2 = field2
+	if not (pre__field1):
 		field1 = True
-		if not (field2):
+		if not (pre__field2):
 			field2 = True
 			field3 = True
 		else:
 			field4 = False
-	elif field1:
+	elif pre__field1:
 		field5 = True
 	else:
 		pass

@@ -112,7 +112,8 @@
           </outputValue>
           <body>guard = (intA2) &lt; (8)
 if guard:
-	intA1 = (intA1) + (1)
+	pre__intA1 = intA1
+	intA1 = (pre__intA1) + (1)
 	intB1 = 16
 if guard:
 	if not (1 &lt;= intA1 &lt;= 10):

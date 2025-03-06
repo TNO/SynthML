@@ -13,7 +13,9 @@ import java.util.function.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.common.java.Lists;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -427,7 +429,24 @@ public class UMLToCameoTransformer {
      * @return The translated effects.
      */
     private List<List<String>> translateEffects(RedefinableElement element) {
-        return CifParserHelper.parseEffects(element).stream().map(translator::translateUpdates).toList();
+        // Parse all effects.
+        List<List<AUpdate>> parsedEffects = CifParserHelper.parseEffects(element);
+
+        // Rename all variables on the right-hand sides of assignments by prefixing them with 'pre__'.
+        Map<String, String> renaming = new LinkedHashMap<>();
+        List<List<AUpdate>> renamedEffects = new EffectPrestateRenamer(cifContext).renameEffects(parsedEffects,
+                renaming);
+
+        // Translate all parsed and renamed effects.
+        List<List<String>> translatedEffects = renamedEffects.stream().map(translator::translateUpdates).toList();
+
+        // From the renaming map, construct pre-state assignments of the form 'pre__X = X' with 'X' a renamed variable.
+        List<String> prestateAssignments = renaming.entrySet().stream()
+                .filter(entry -> entry.getValue().startsWith(EffectPrestateRenamer.PREFIX))
+                .map(entry -> entry.getValue() + " = " + entry.getKey()).toList();
+
+        // Add these pre-state assignments to the front of every translated effect, and return the result.
+        return translatedEffects.stream().map(effect -> Lists.concat(prestateAssignments, effect)).toList();
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {
