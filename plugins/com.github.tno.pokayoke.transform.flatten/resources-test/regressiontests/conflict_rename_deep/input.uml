@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_g7I2YM8sEe-o2rNifWuOqg" name="NewModel">
+  <packagedElement xmi:type="uml:Class" xmi:id="_nG5OAM8sEe-o2rNifWuOqg" name="ActiveClass" classifierBehavior="_tSkxUNGWEe-zM8_uGzQqhw" isActive="true">
+    <ownedAttribute xmi:id="_zW18sM8sEe-o2rNifWuOqg" name="a_b_c_d_e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0_3wAM8sEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0_3wAc8sEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_eHWYwM8vEe-o2rNifWuOqg" name="a" type="_Yqm4sM8uEe-o2rNifWuOqg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ezBL8M8vEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ezBL8c8vEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_f4rMcM8vEe-o2rNifWuOqg" name="a_b" type="_VH5KcM8vEe-o2rNifWuOqg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gmHhQM8vEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gmHhQc8vEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_2_PDkN8uEe-L79uVM4EeZQ" name="property4" type="_Yqm4sM8uEe-o2rNifWuOqg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5C-c8N8uEe-L79uVM4EeZQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5C-c8d8uEe-L79uVM4EeZQ" value="1"/>
+    </ownedAttribute>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_tSkxUNGWEe-zM8_uGzQqhw" name="ConcreteActivity" isAbstract="true" postcondition="_TU2OkNGXEe-zM8_uGzQqhw" precondition="_N4vLMNGXEe-zM8_uGzQqhw">
+      <ownedRule xmi:id="_N4vLMNGXEe-zM8_uGzQqhw" name="Precondition">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_O1P2wNGXEe-zM8_uGzQqhw" name="">
+          <body>true</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="_TU2OkNGXEe-zM8_uGzQqhw" name="Postcondition">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="_VQO9MNGXEe-zM8_uGzQqhw" name="">
+          <body>true</body>
+        </specification>
+      </ownedRule>
+    </ownedBehavior>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_Yqm4sM8uEe-o2rNifWuOqg" name="AType">
+    <ownedAttribute xmi:id="_8CJ1EM8uEe-o2rNifWuOqg" name="b_c" type="_dF6mYM8uEe-o2rNifWuOqg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9gn-MM8uEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9golQM8uEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_FyWj0M8vEe-o2rNifWuOqg" name="b" type="_sl60wNGYEe-G9_rmFBbjoQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_PXKh8M8vEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_PXKh8c8vEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_dF6mYM8uEe-o2rNifWuOqg" name="BCType">
+    <ownedAttribute xmi:id="_fDVVUM8uEe-o2rNifWuOqg" name="d">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gpfa0M8uEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gpgB4M8uEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_jzIsUM8uEe-o2rNifWuOqg" name="CType">
+    <ownedAttribute xmi:id="_nrAVwM8uEe-o2rNifWuOqg" name="d_e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_pBoKcM8uEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_pBoKcc8uEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_VH5KcM8vEe-o2rNifWuOqg" name="ABType">
+    <ownedAttribute xmi:id="_XE30gM8vEe-o2rNifWuOqg" name="c_d" type="_wn3KwNGZEe-G9_rmFBbjoQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Y1CxoM8vEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y1Cxoc8vEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_bgC_UM8vEe-o2rNifWuOqg" name="c_d_e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cQvccM8vEe-o2rNifWuOqg" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cQvccc8vEe-o2rNifWuOqg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_sl60wNGYEe-G9_rmFBbjoQ" name="BType">
+    <ownedAttribute xmi:id="_u6-AkNGYEe-G9_rmFBbjoQ" name="c" type="_jzIsUM8uEe-o2rNifWuOqg">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vXchMNGYEe-G9_rmFBbjoQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vXfkgNGYEe-G9_rmFBbjoQ" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:DataType" xmi:id="_wn3KwNGZEe-G9_rmFBbjoQ" name="CDType">
+    <ownedAttribute xmi:id="_zFfDwNGZEe-G9_rmFBbjoQ" name="e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zwFf8NGZEe-G9_rmFBbjoQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zwFf8dGZEe-G9_rmFBbjoQ" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <profileApplication xmi:id="_0_umFM8sEe-o2rNifWuOqg">
+    <eAnnotations xmi:id="_0_0ssM8sEe-o2rNifWuOqg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+    </eAnnotations>
+    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+  </profileApplication>
+</uml:Model>

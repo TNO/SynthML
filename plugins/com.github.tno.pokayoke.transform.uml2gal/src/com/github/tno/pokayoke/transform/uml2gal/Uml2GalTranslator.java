@@ -36,7 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.github.tno.pokayoke.transform.common.FlattenUMLActivity;
+import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
+import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
@@ -107,6 +109,10 @@ public class Uml2GalTranslator {
      * @throws CoreException Thrown when {@code model} cannot be transformed.
      */
     public Specification translate(Model model) throws CoreException {
+        // Flatten composite data types, and normalize the XMI IDs.
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
+        FileHelper.normalizeIds(model);
+
         // Validate and flatten the model.
         new FlattenUMLActivity(model).transform();
 

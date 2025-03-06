@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.common;
+package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +22,13 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueBehavior;
+
+import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.IDHelper;
+import com.github.tno.pokayoke.transform.common.NameHelper;
+import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
+import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
+import com.github.tno.pokayoke.transform.common.ValidationHelper;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {

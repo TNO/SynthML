@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_3p1-cPBTEe-mR_gjNrGnng" name="ConcreteActivityElements">
+    <packagedElement xmi:type="uml:Class" xmi:id="_5crOAPBTEe-mR_gjNrGnng" name="Class1" classifierBehavior="_7MLcwPBTEe-mR_gjNrGnng" isActive="true">
+      <ownedAttribute xmi:id="_YcyvwPBXEe-mR_gjNrGnng" name="init" type="_iuiFUPBXEe-mR_gjNrGnng">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_au2R8PBXEe-mR_gjNrGnng" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_au2R8fBXEe-mR_gjNrGnng" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_7MLcwPBTEe-mR_gjNrGnng" name="Activity1" node="_-hjdIPBTEe-mR_gjNrGnng __XowkPBTEe-mR_gjNrGnng _CNkb4PBUEe-mR_gjNrGnng _EUkkoPBUEe-mR_gjNrGnng _HVTxwPBUEe-mR_gjNrGnng _JG_x0PBUEe-mR_gjNrGnng _gkoPAPBWEe-mR_gjNrGnng _sgPFYPBWEe-mR_gjNrGnng _1hC-kPBWEe-mR_gjNrGnng _8TGhMPBWEe-mR_gjNrGnng __puewPBWEe-mR_gjNrGnng">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_rEFQcPBWEe-mR_gjNrGnng" target="_EUkkoPBUEe-mR_gjNrGnng" source="_-hjdIPBTEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_wbNtMPBWEe-mR_gjNrGnng" target="_gkoPAPBWEe-mR_gjNrGnng" source="_EUkkoPBUEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_xc4lkPBWEe-mR_gjNrGnng" target="_sgPFYPBWEe-mR_gjNrGnng" source="_gkoPAPBWEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_0-8XEPBWEe-mR_gjNrGnng" target="_JG_x0PBUEe-mR_gjNrGnng" source="_sgPFYPBWEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_5bVp4PBWEe-mR_gjNrGnng" target="_1hC-kPBWEe-mR_gjNrGnng" source="_EUkkoPBUEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_6BHQcPBWEe-mR_gjNrGnng" target="_JG_x0PBUEe-mR_gjNrGnng" source="_1hC-kPBWEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_7GLbEPBWEe-mR_gjNrGnng" target="_CNkb4PBUEe-mR_gjNrGnng" source="_JG_x0PBUEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_-sASQPBWEe-mR_gjNrGnng" name="init.b = true" target="_8TGhMPBWEe-mR_gjNrGnng" source="_CNkb4PBUEe-mR_gjNrGnng">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_9a8iAPIiEe-IB93TFGi1EQ">
+            <language>CIF</language>
+            <body>init.b = true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_B2dcEPBXEe-mR_gjNrGnng" name="init.b = false" target="__puewPBWEe-mR_gjNrGnng" source="_CNkb4PBUEe-mR_gjNrGnng">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_5Q3HMPIiEe-IB93TFGi1EQ">
+            <language>CIF</language>
+            <body>init.b = false</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_G7rCYPBXEe-mR_gjNrGnng" target="_HVTxwPBUEe-mR_gjNrGnng" source="__puewPBWEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_HXgp0PBXEe-mR_gjNrGnng" target="_HVTxwPBUEe-mR_gjNrGnng" source="_8TGhMPBWEe-mR_gjNrGnng"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_MA7E8PBXEe-mR_gjNrGnng" target="__XowkPBTEe-mR_gjNrGnng" source="_HVTxwPBUEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:InitialNode" xmi:id="_-hjdIPBTEe-mR_gjNrGnng" name="Initial1" outgoing="_rEFQcPBWEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="__XowkPBTEe-mR_gjNrGnng" name="ActivityFinal1" incoming="_MA7E8PBXEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_CNkb4PBUEe-mR_gjNrGnng" name="Decision1" incoming="_7GLbEPBWEe-mR_gjNrGnng" outgoing="_-sASQPBWEe-mR_gjNrGnng _B2dcEPBXEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:ForkNode" xmi:id="_EUkkoPBUEe-mR_gjNrGnng" name="Fork1" incoming="_rEFQcPBWEe-mR_gjNrGnng" outgoing="_wbNtMPBWEe-mR_gjNrGnng _5bVp4PBWEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:MergeNode" xmi:id="_HVTxwPBUEe-mR_gjNrGnng" name="Merge1" incoming="_G7rCYPBXEe-mR_gjNrGnng _HXgp0PBXEe-mR_gjNrGnng" outgoing="_MA7E8PBXEe-mR_gjNrGnng"/>
+        <node xmi:type="uml:JoinNode" xmi:id="_JG_x0PBUEe-mR_gjNrGnng" name="Join1" incoming="_0-8XEPBWEe-mR_gjNrGnng _6BHQcPBWEe-mR_gjNrGnng" outgoing="_7GLbEPBWEe-mR_gjNrGnng">
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_JHAY4PBUEe-mR_gjNrGnng" name="Join1" value="true"/>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_gkoPAPBWEe-mR_gjNrGnng" name="OpaqueAction1" incoming="_wbNtMPBWEe-mR_gjNrGnng" outgoing="_xc4lkPBWEe-mR_gjNrGnng">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_sgPFYPBWEe-mR_gjNrGnng" name="OpaqueAction2" incoming="_xc4lkPBWEe-mR_gjNrGnng" outgoing="_0-8XEPBWEe-mR_gjNrGnng">
+          <body>// TODO body of OpaqueAction2</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_1hC-kPBWEe-mR_gjNrGnng" name="OpaqueAction3" incoming="_5bVp4PBWEe-mR_gjNrGnng" outgoing="_6BHQcPBWEe-mR_gjNrGnng">
+          <body>// TODO body of OpaqueAction3</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_8TGhMPBWEe-mR_gjNrGnng" name="OpaqueAction4" incoming="_-sASQPBWEe-mR_gjNrGnng" outgoing="_HXgp0PBXEe-mR_gjNrGnng">
+          <body>// TODO body of OpaqueAction4</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="__puewPBWEe-mR_gjNrGnng" name="OpaqueAction5" incoming="_B2dcEPBXEe-mR_gjNrGnng" outgoing="_G7rCYPBXEe-mR_gjNrGnng">
+          <body>// TODO body of OpaqueAction5</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_iuiFUPBXEe-mR_gjNrGnng" name="Container">
+      <ownedAttribute xmi:id="_kMzaIPBXEe-mR_gjNrGnng" name="b">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_kxs28PBXEe-mR_gjNrGnng" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_kxs28fBXEe-mR_gjNrGnng" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_mBJFkPBXEe-mR_gjNrGnng">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_-4ngAPBYEe-9faQ-dWw4dA" name="left">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_AKy5kPBZEe-9faQ-dWw4dA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_AKzgoPBZEe-9faQ-dWw4dA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_A1T2MPBZEe-9faQ-dWw4dA" name="right">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BW9KsPBZEe-9faQ-dWw4dA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BW9KsfBZEe-9faQ-dWw4dA" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <profileApplication xmi:id="_nK6mgPBWEe-mR_gjNrGnng">
+      <eAnnotations xmi:id="_nK_fAPBWEe-mR_gjNrGnng" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_nLq0cPBWEe-mR_gjNrGnng" guard="true" base_RedefinableElement="_gkoPAPBWEe-mR_gjNrGnng">
+    <effects>init.b := not init.b</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_tuzxUPBWEe-mR_gjNrGnng" guard="true" base_RedefinableElement="_sgPFYPBWEe-mR_gjNrGnng">
+    <effects>init.b := not init.b</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_2Y_6QPBWEe-mR_gjNrGnng" guard="true" base_RedefinableElement="_1hC-kPBWEe-mR_gjNrGnng" atomic="true">
+    <effects>init.b := not init.b</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_9PX8MPBWEe-mR_gjNrGnng" guard="true" base_RedefinableElement="_8TGhMPBWEe-mR_gjNrGnng" atomic="true">
+    <effects>init.left := true</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="_Ajq-gPBXEe-mR_gjNrGnng" guard="true" base_RedefinableElement="__puewPBWEe-mR_gjNrGnng">
+    <effects>init.right := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

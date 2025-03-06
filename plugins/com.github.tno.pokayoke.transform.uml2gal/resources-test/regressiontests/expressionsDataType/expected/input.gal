@@ -1,0 +1,25 @@
+
+$Left=0 ;
+$Right=1 ;
+typedef Boolean= 0..1 ;
+typedef Location= 0..1 ;
+gal ExpressionsCompositeDataTypes__Context{
+  int myDataType_myBool = 1;
+  int myDataType_myEnum = $Left;
+  int __init = 0;
+  int __edge__0 = 1;
+  int __edge__1 = 0;
+  transition __initialize [ __init == 0 ] {
+    __init = 1    ;
+  }
+  transition __ActivityFinalNode_Expressions__ActivityFinalNode__1 [ __init == 1 && __edge__1 == 1 ] {
+    __edge__1 = 0    ;
+  }
+  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == 1 && !myDataType_myBool == 1 && myDataType_myBool == 0 && myDataType_myEnum == $Left && __edge__0 == 1 && __edge__1 == 0 ] {
+    myDataType_myEnum = $Right    ;
+    myDataType_myBool = (!( true && !( true)  || !( true)  && true)  && ( myDataType_myEnum == $Right || myDataType_myBool == (false && false) ))    ;
+    __edge__0 = 0    ;
+    __edge__1 = 1    ;
+  }
+}
+main ExpressionsCompositeDataTypes__Context ;

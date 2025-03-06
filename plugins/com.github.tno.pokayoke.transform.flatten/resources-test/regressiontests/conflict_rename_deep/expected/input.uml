@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="NewModel">
+  <packagedElement xmi:type="uml:Class" xmi:id="2" name="ActiveClass" classifierBehavior="24" isActive="true">
+    <ownedAttribute xmi:id="3" name="a_b_c_d_e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="6" name="a_b_c_d">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="9" name="a_b_c_d_e_2">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="12" name="a_b_c_d_e_3">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="13" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="15" name="a_b_c_d_e_2_2">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="16" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="17" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="18" name="property4_b_c_d">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="19" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="20" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="21" name="property4_b_c_d_e">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="22" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="23" value="1"/>
+    </ownedAttribute>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="24" name="ConcreteActivity" isAbstract="true" postcondition="27" precondition="25">
+      <ownedRule xmi:id="25" name="Precondition">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="26" name="">
+          <body>true</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="27" name="Postcondition">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="28" name="">
+          <body>true</body>
+        </specification>
+      </ownedRule>
+    </ownedBehavior>
+  </packagedElement>
+  <profileApplication xmi:id="29">
+    <eAnnotations xmi:id="30" source="http://www.eclipse.org/uml2/2.0.0/UML">
+      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+    </eAnnotations>
+    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+  </profileApplication>
+</uml:Model>
