@@ -34,7 +34,6 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DataType;
-import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
@@ -521,18 +520,36 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
         if (edge instanceof ControlFlow controlFlow) {
-            checkNamingConventions(edge, NamingConvention.OPTIONAL);
-
-            if (controlFlow.getSource() instanceof DecisionNode) {
-                try {
-                    AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
-                    if (guardExpr == null) {
-                        return;
-                    }
-                    new CifTypeChecker(controlFlow).checkBooleanAssignment(guardExpr);
-                } catch (RuntimeException e) {
-                    error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+            try {
+                if (controlFlow.getGuard() instanceof OpaqueExpression opaqueGuard
+                        && opaqueGuard.getBodies().size() != 2)
+                {
+                    error(String.format("Control flow guard should have 2 bodies, found %s.",
+                            String.valueOf(opaqueGuard.getBodies().size())), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                    return;
                 }
+
+                // An outgoing edge from a node that has effects must have null incoming guard. This is needed to adhere
+                // to the execution semantics of activities.
+                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+                if ((controlFlow.getSource() instanceof CallBehaviorAction
+                        || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && incomingGuardExpr != null)
+                {
+                    error("Edge leaving a node with effects has not-null incoming guard.",
+                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                    return;
+                }
+
+                if (incomingGuardExpr != null) {
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(incomingGuardExpr);
+                }
+
+                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
+                if (outgoingGuardExpr != null) {
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(outgoingGuardExpr);
+                }
+            } catch (RuntimeException e) {
+                error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
             }
         } else {
             error("Unsupported activity edge type: " + edge.eClass().getName(), null);
