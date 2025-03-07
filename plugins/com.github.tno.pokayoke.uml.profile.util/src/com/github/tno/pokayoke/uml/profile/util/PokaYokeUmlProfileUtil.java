@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.NamedElement;
@@ -118,7 +117,8 @@ public class PokaYokeUmlProfileUtil {
 
     public static void setGuard(RedefinableElement element, String newValue) {
         if (element instanceof ActivityEdge edge) {
-            setGuard(edge, newValue);
+            throw new RuntimeException(
+                    "Cannot set guard of activity edge. Incoming or outgoing guard setter must be used.");
         } else {
             Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
             element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
@@ -182,21 +182,88 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code activityEdge}.
+     * {@link ActivityEdge#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for {@code activityEdge}.
      *
-     * @param activityEdge The control flow to set the guard value on.
-     * @param newValue The new value of the guard.
+     * @param activityEdge The activity edge to set the incoming guard value on.
+     * @param newValue The new value of the incoming guard.
      */
-    public static void setGuard(ActivityEdge activityEdge, String newValue) {
+    public static void setIncomingGuard(ActivityEdge activityEdge, String newValue) {
         if (Strings.isNullOrEmpty(newValue)) {
-            if (activityEdge.getGuard() != null) {
-                // Resetting a value to null causes a model-element deletion popup in UML designer.
-                // Avoiding this by setting a LiteralNull value.
-                activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            if (activityEdge.getGuard() instanceof OpaqueExpression opaqueExprGuard) {
+                List<String> currentBodies = opaqueExprGuard.getBodies();
+                if (currentBodies.size() == 2 && currentBodies.get(1) == null) {
+                    // Resetting a value to null causes a model-element deletion popup in UML designer.
+                    // Avoiding this by setting a LiteralNull value.
+                    activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                    return;
+                }
             }
-            return;
+            newValue = null;
         }
-        activityEdge.setGuard(createCifExpression(newValue));
+
+        // Get current guard, and update the first element of the body of the opaque expression.
+        ValueSpecification currentGuard = activityEdge.getGuard();
+        if (currentGuard instanceof OpaqueExpression opaqueExprGuard) {
+            List<String> currentBodies = opaqueExprGuard.getBodies();
+            if (currentBodies.size() == 2) {
+                activityEdge
+                        .setGuard(createOpaqueExpressionWithBodies(Stream.of(newValue, currentBodies.get(1)).toList()));
+            } else if (currentBodies.size() == 1) {
+                // Backward compatibility: if there is only one body, consider it as an outgoing guard. Create a new
+                // expression with two bodies.
+                activityEdge
+                        .setGuard(createOpaqueExpressionWithBodies(Stream.of(newValue, currentBodies.get(0)).toList()));
+            }
+        } else {
+            if (newValue == null) {
+                activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            } else {
+                activityEdge.setGuard(createOpaqueExpressionWithBodies(Stream.of(newValue, null).toList()));
+            }
+        }
+    }
+
+    /**
+     * Applies the Poka Yoke UML Profile and sets the
+     * {@link ActivityEdge#setGuard(org.eclipse.uml2.uml.ValueSpecification) outgoing guard} for {@code activityEdge}.
+     *
+     * @param activityEdge The activity edge to set the outgoing guard value on.
+     * @param newValue The new value of the outgoing guard.
+     */
+    public static void setOutgoingGuard(ActivityEdge activityEdge, String newValue) {
+        if (Strings.isNullOrEmpty(newValue)) {
+            if (activityEdge.getGuard() instanceof OpaqueExpression opaqueExprGuard) {
+                List<String> currentBodies = opaqueExprGuard.getBodies();
+                if (currentBodies.size() == 2 && currentBodies.get(0) == null) {
+                    // Resetting a value to null causes a model-element deletion popup in UML designer.
+                    // Avoiding this by setting a LiteralNull value.
+                    activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                    return;
+                }
+            }
+            newValue = null;
+        }
+
+        // Get current guard, and update the second element of the body of the opaque expression.
+        ValueSpecification currentGuard = activityEdge.getGuard();
+        if (currentGuard instanceof OpaqueExpression opaqueExprGuard) {
+            List<String> currentBodies = opaqueExprGuard.getBodies();
+
+            if (currentBodies.size() == 2) {
+                activityEdge
+                        .setGuard(createOpaqueExpressionWithBodies(Stream.of(currentBodies.get(0), newValue).toList()));
+            } else if (currentBodies.size() == 1) {
+                // Backward compatibility: if there is only one body, consider it as an outgoing guard. Replace it, and
+                // create a new expression with two bodies.
+                activityEdge.setGuard(createOpaqueExpressionWithBodies(Stream.of(null, newValue).toList()));
+            }
+        } else {
+            if (newValue == null) {
+                activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            } else {
+                activityEdge.setGuard(createOpaqueExpressionWithBodies(Stream.of(null, newValue).toList()));
+            }
+        }
     }
 
     /**
