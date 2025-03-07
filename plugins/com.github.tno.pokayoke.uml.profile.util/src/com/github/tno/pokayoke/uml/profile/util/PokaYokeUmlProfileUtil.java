@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.uml.profile.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -75,16 +76,44 @@ public class PokaYokeUmlProfileUtil {
 
     public static String getGuard(RedefinableElement element) {
         if (element instanceof ActivityEdge edge) {
-            return getGuard(edge);
+            throw new RuntimeException(
+                    "Cannot get guard of activity edge. Incoming or outgoing guard getter must be used.");
         }
 
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
     }
 
-    public static String getGuard(ActivityEdge activityEdge) {
+    public static String getIncomingGuard(ActivityEdge activityEdge) {
         ValueSpecification guard = activityEdge.getGuard();
-        return guard == null ? null : guard.stringValue();
+        if (guard instanceof OpaqueExpression opaqueExprGuard) {
+            // Backward compatibility: if there is a single body, assume it is an outgoing guard. Create a new opaque
+            // expression with two bodies, and return the first one (null).
+            if (opaqueExprGuard.getBodies().size() == 1) {
+                activityEdge.setGuard(
+                        createOpaqueExpressionWithBodies(Stream.of(null, opaqueExprGuard.getBodies().get(0)).toList()));
+                guard.destroy();
+                return null;
+            }
+            return opaqueExprGuard.getBodies().get(0);
+        }
+        return (guard == null) ? null : guard.stringValue();
+    }
+
+    public static String getOutgoingGuard(ActivityEdge activityEdge) {
+        ValueSpecification guard = activityEdge.getGuard();
+        if (guard instanceof OpaqueExpression opaqueExprGuard) {
+            // Backward compatibility: if there is a single body, assume it is an outgoing guard. Create a new opaque
+            // expression with two bodies, and return the second one.
+            if (opaqueExprGuard.getBodies().size() == 1) {
+                activityEdge.setGuard(
+                        createOpaqueExpressionWithBodies(Stream.of(null, opaqueExprGuard.getBodies().get(0)).toList()));
+                guard.destroy();
+                return ((OpaqueExpression)activityEdge.getGuard()).getBodies().get(1);
+            }
+            return opaqueExprGuard.getBodies().get(1);
+        }
+        return (guard == null) ? null : guard.stringValue();
     }
 
     public static void setGuard(RedefinableElement element, String newValue) {
