@@ -632,11 +632,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidGuard(RedefinableElement element) {
         try {
-            AExpression guardExpr = CifParserHelper.parseGuard(element);
-            if (guardExpr == null) {
-                return;
+            if (element instanceof ActivityEdge edge) {
+                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(edge);
+                if (incomingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
+                }
+                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(edge);
+                if (outgoingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
+                }
+            } else {
+                AExpression guardExpr = CifParserHelper.parseGuard(element);
+                if (guardExpr == null) {
+                    return;
+                }
+                new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
             }
-            new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
