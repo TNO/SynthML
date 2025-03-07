@@ -273,4 +273,13 @@ public class PokaYokeUmlProfileUtil {
         expression.getBodies().add(newValue);
         return expression;
     }
+
+    private static OpaqueExpression createOpaqueExpressionWithBodies(List<String> newValues) {
+        OpaqueExpression expression = UMLFactory.eINSTANCE.createOpaqueExpression();
+        for (String newValue: newValues) {
+            expression.getLanguages().add("CIF");
+            expression.getBodies().add(newValue);
+        }
+        return expression;
+    }
 }
