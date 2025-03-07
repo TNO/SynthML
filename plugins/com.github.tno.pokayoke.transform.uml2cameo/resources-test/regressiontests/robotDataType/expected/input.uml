@@ -248,8 +248,10 @@ isSuccessful = guard</body>
             </outputValue>
             <body>guard = True
 if guard:
-	robot1_product_position = product1_position
-	robot1_product_status = product1_status
+	pre__product1_position = product1_position
+	pre__product1_status = product1_status
+	robot1_product_position = pre__product1_position
+	robot1_product_status = pre__product1_status
 pass
 active = ''
 isSuccessful = guard</body>
@@ -659,8 +661,10 @@ isSuccessful = guard</body>
             </outputValue>
             <body>guard = True
 if guard:
-	robot1_product_position = product2_position
-	robot1_product_status = product2_status
+	pre__product2_position = product2_position
+	pre__product2_status = product2_status
+	robot1_product_position = pre__product2_position
+	robot1_product_status = pre__product2_status
 pass
 active = ''
 isSuccessful = guard</body>
