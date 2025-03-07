@@ -13,6 +13,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -51,8 +52,25 @@ public class CifParserHelper {
     public static AExpression parseGuard(RedefinableElement element) throws SyntaxException {
         if (element == null) {
             return null;
+        } else if (element instanceof ActivityEdge) {
+            throw new CustomSyntaxException("Activity edges must use 'parseIncomingEdge' or 'parseOutgoingEdge'.",
+                    TextPosition.createDummy(getLocation(element)));
         }
         return parseExpression(PokaYokeUmlProfileUtil.getGuard(element), element);
+    }
+
+    public static AExpression parseIncomingGuard(ActivityEdge edge) throws SyntaxException {
+        if (edge == null) {
+            return null;
+        }
+        return parseExpression(PokaYokeUmlProfileUtil.getIncomingGuard(edge), edge);
+    }
+
+    public static AExpression parseOutgoingGuard(ActivityEdge edge) throws SyntaxException {
+        if (edge == null) {
+            return null;
+        }
+        return parseExpression(PokaYokeUmlProfileUtil.getOutgoingGuard(edge), edge);
     }
 
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {
