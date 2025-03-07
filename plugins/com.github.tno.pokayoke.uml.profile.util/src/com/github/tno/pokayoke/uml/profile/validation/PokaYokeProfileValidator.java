@@ -453,7 +453,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         checkNamingConventions(expression, NamingConvention.OPTIONAL);
 
-        if (expression.getBodies().size() != 1) {
+        // A control flow's opaque expression must have 2 bodies; otherwise, just 1.
+        if (expression.getOwner() instanceof ControlFlow && expression.getBodies().size() != 2) {
+            error(String.format(
+                    "A control flow's opaque expression should have exactly two expression bodies, found %s.",
+                    expression.getBodies().size()), UMLPackage.Literals.OPAQUE_EXPRESSION__BODY);
+        } else if (!(expression.getOwner() instanceof ControlFlow) && expression.getBodies().size() != 1) {
             error(String.format("Opaque expression should have exactly one expression body, found %s.",
                     expression.getBodies().size()), UMLPackage.Literals.OPAQUE_EXPRESSION__BODY);
         }
