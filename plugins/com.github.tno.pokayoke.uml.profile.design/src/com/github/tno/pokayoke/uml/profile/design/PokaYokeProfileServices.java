@@ -74,6 +74,30 @@ public class PokaYokeProfileServices {
     }
 
     /**
+     * Returns the first body of the {@link ActivityEdge#getGuard() incoming guard} if <code>edge</code> is stereotyped,
+     * <code>null</code> otherwise.
+     *
+     * @param edge The activity edge to interrogate.
+     * @return The first body of the {@link ActivityEdge#getGuard() incoming guard} if <code>edge</code> is stereotyped,
+     *     <code>null</code> otherwise.
+     */
+    public String getIncomingGuard(ActivityEdge edge) {
+        return PokaYokeUmlProfileUtil.getIncomingGuard(edge);
+    }
+
+    /**
+     * Returns the second body of the {@link ActivityEdge#getGuard() incoming guard} if <code>edge</code> is
+     * stereotyped, <code>null</code> otherwise.
+     *
+     * @param edge The activity edge to interrogate.
+     * @return The second body of the {@link ActivityEdge#getGuard() incoming guard} if <code>edge</code> is
+     *     stereotyped, <code>null</code> otherwise.
+     */
+    public String getOutgoingGuard(ActivityEdge edge) {
+        return PokaYokeUmlProfileUtil.getOutgoingGuard(edge);
+    }
+
+    /**
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setGuard(String) guard} property
      * for <code>element</code>.
      * <p>
@@ -100,6 +124,20 @@ public class PokaYokeProfileServices {
         }
         // Empty values are not allowed, so reset the value
         PokaYokeUmlProfileUtil.setGuard(element, Strings.emptyToNull(newValue));
+    }
+
+    public void setIncomingGuard(ActivityEdge edge, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(edge);
+
+        // Empty values are not allowed, so reset the value.
+        PokaYokeUmlProfileUtil.setIncomingGuard(edge, Strings.emptyToNull(newValue));
+    }
+
+    public void setOutgoingGuard(ActivityEdge edge, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(edge);
+
+        // Empty values are not allowed, so reset the value to true.
+        PokaYokeUmlProfileUtil.setOutgoingGuard(edge, Strings.emptyToNull(newValue));
     }
 
     public void unsetGuard(RedefinableElement element) {
@@ -232,12 +270,16 @@ public class PokaYokeProfileServices {
             label += System.getProperty("line.separator");
         }
 
-        String guard = getGuard(controlFlow);
-        if (Strings.isNullOrEmpty(guard)) {
-            guard = "true";
+        String incomingGuard = getIncomingGuard(controlFlow);
+        if (Strings.isNullOrEmpty(incomingGuard)) {
+            incomingGuard = "true";
+        }
+        String outgoingGuard = getOutgoingGuard(controlFlow);
+        if (Strings.isNullOrEmpty(outgoingGuard)) {
+            outgoingGuard = "true";
         }
 
-        label += guard;
+        label += incomingGuard + " / " + outgoingGuard;
         return label;
     }
 
