@@ -31,6 +31,15 @@ public interface PokaYokeFactory extends EFactory {
 	FormalElement createFormalElement();
 
 	/**
+	 * Returns a new object of class '<em>Formal Control Flow</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Formal Control Flow</em>'.
+	 * @generated
+	 */
+	FormalControlFlow createFormalControlFlow();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

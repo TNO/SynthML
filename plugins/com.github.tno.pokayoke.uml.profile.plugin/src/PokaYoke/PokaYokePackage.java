@@ -120,6 +120,52 @@ public interface PokaYokePackage extends EPackage {
 	 */
 	int FORMAL_ELEMENT_OPERATION_COUNT = 0;
 
+	/**
+	 * The meta object id for the '{@link PokaYoke.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see PokaYoke.impl.FormalControlFlowImpl
+	 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalControlFlow()
+	 * @generated
+	 */
+	int FORMAL_CONTROL_FLOW = 1;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Guard</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONTROL_FLOW__OUTGOING_GUARD = 0;
+
+	/**
+	 * The feature id for the '<em><b>Base Control Flow</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW = 1;
+
+	/**
+	 * The number of structural features of the '<em>Formal Control Flow</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONTROL_FLOW_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Formal Control Flow</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_CONTROL_FLOW_OPERATION_COUNT = 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link PokaYoke.FormalElement <em>Formal Element</em>}'.
@@ -174,6 +220,38 @@ public interface PokaYokePackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getFormalElement_Atomic();
+
+	/**
+	 * Returns the meta object for class '{@link PokaYoke.FormalControlFlow <em>Formal Control Flow</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formal Control Flow</em>'.
+	 * @see PokaYoke.FormalControlFlow
+	 * @generated
+	 */
+	EClass getFormalControlFlow();
+
+	/**
+	 * Returns the meta object for the attribute '{@link PokaYoke.FormalControlFlow#getOutgoingGuard <em>Outgoing Guard</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Outgoing Guard</em>'.
+	 * @see PokaYoke.FormalControlFlow#getOutgoingGuard()
+	 * @see #getFormalControlFlow()
+	 * @generated
+	 */
+	EAttribute getFormalControlFlow_OutgoingGuard();
+
+	/**
+	 * Returns the meta object for the reference '{@link PokaYoke.FormalControlFlow#getBase_ControlFlow <em>Base Control Flow</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Control Flow</em>'.
+	 * @see PokaYoke.FormalControlFlow#getBase_ControlFlow()
+	 * @see #getFormalControlFlow()
+	 * @generated
+	 */
+	EReference getFormalControlFlow_Base_ControlFlow();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -239,6 +317,32 @@ public interface PokaYokePackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FORMAL_ELEMENT__ATOMIC = eINSTANCE.getFormalElement_Atomic();
+
+		/**
+		 * The meta object literal for the '{@link PokaYoke.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see PokaYoke.impl.FormalControlFlowImpl
+		 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalControlFlow()
+		 * @generated
+		 */
+		EClass FORMAL_CONTROL_FLOW = eINSTANCE.getFormalControlFlow();
+
+		/**
+		 * The meta object literal for the '<em><b>Outgoing Guard</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FORMAL_CONTROL_FLOW__OUTGOING_GUARD = eINSTANCE.getFormalControlFlow_OutgoingGuard();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Control Flow</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW = eINSTANCE.getFormalControlFlow_Base_ControlFlow();
 
 	}
 

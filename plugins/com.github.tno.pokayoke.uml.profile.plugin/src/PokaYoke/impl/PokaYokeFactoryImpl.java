@@ -57,6 +57,7 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case PokaYokePackage.FORMAL_ELEMENT: return createFormalElement();
+			case PokaYokePackage.FORMAL_CONTROL_FLOW: return createFormalControlFlow();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -71,6 +72,17 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	public FormalElement createFormalElement() {
 		FormalElementImpl formalElement = new FormalElementImpl();
 		return formalElement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public FormalControlFlow createFormalControlFlow() {
+		FormalControlFlowImpl formalControlFlow = new FormalControlFlowImpl();
+		return formalControlFlow;
 	}
 
 	/**
