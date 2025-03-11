@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.uml.profile.design;
 
+import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.FORMAL_CONTROL_FLOW_STEREOTYPE;
 import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.FORMAL_ELEMENT_STEREOTYPE;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
+import PokaYoke.FormalControlFlow;
 import PokaYoke.FormalElement;
 
 /**
@@ -61,6 +63,10 @@ public class PokaYokeProfileServices {
         return PokaYokeUmlProfileUtil.isFormalElement(element);
     }
 
+    public static boolean isFormalControlFlow(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.isFormalControlFlow(controlFlow);
+    }
+
     /**
      * Returns the {@link FormalElement#getGuard() guard} property value if <code>element</code> is stereotyped,
      * <code>null</code> otherwise.
@@ -71,6 +77,29 @@ public class PokaYokeProfileServices {
      */
     public String getGuard(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.getGuard(element);
+    }
+
+    /**
+     * Returns the control flow {@link PokaYokeUmlProfileUtil#getIncomingGuard incoming guard}.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return The {@link FormalControlFlow#getOutgoingGuard() guard} property value if <code>controlFlow</code> is
+     *     stereotyped, <code>null</code> otherwise.
+     */
+    public String getIncomingGuard(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow);
+    }
+
+    /**
+     * Returns the {@link FormalControlFlow#getOutgoingGuard() outgoing guard} property value if
+     * <code>controlFlow</code> is stereotyped, <code>null</code> otherwise.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return The {@link FormalControlFlow#getOutgoingGuard() guard} property value if <code>controlFlow</code> is
+     *     stereotyped, <code>null</code> otherwise.
+     */
+    public String getOutgoingGuard(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow);
     }
 
     /**
@@ -87,7 +116,7 @@ public class PokaYokeProfileServices {
      */
     public void setGuard(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (Strings.isNullOrEmpty(newValue) && !(element instanceof ActivityEdge)) {
+        if (Strings.isNullOrEmpty(newValue) && !(element instanceof ControlFlow)) {
             String effects = getEffects(element);
             boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(effects) && !atomic) {
@@ -98,8 +127,53 @@ public class PokaYokeProfileServices {
                 return;
             }
         }
-        // Empty values are not allowed, so reset the value
+
+        // Empty values are not allowed, so reset the value.
         PokaYokeUmlProfileUtil.setGuard(element, Strings.emptyToNull(newValue));
+    }
+
+    /**
+     * Applies the {@link FormalControlFlow} stereotype and sets the {@link ControlFlow#getGuard guard} as an opaque
+     * expression with one body containing <code>newValue</code>.
+     *
+     * <p>
+     * The {@link FormalControlFlow} stereotype is removed if <code>newValue</code> is <code>null</code> or
+     * {@link String#isEmpty() empty} and {@link #getOutgoingGuard} also is <code>null</code> or {@link String#isEmpty()
+     * empty}.
+     * </p>
+     *
+     * @param controlFlow The control flow to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setIncomingGuard(ControlFlow controlFlow, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
+        PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, Strings.emptyToNull(newValue));
+        if (Strings.isNullOrEmpty(newValue) && Strings.isNullOrEmpty(getOutgoingGuard(controlFlow))) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
+            refresh(controlFlow);
+        }
+    }
+
+    /**
+     * Applies the {@link FormalControlFlow} stereotype and sets the {@link FormalControlFlow#setOutgoingGuard(String)
+     * guard} property for <code>controlFlow</code>.
+     *
+     * <p>
+     * The {@link FormalControlFlow} stereotype is removed if <code>newValue</code> is <code>null</code> or
+     * {@link String#isEmpty() empty} and {@link #getIncomingGuard} also is <code>null</code> or {@link String#isEmpty()
+     * empty}.
+     * </p>
+     *
+     * @param controlFlow The control flow to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
+        PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
+        if (Strings.isNullOrEmpty(newValue) && Strings.isNullOrEmpty(getIncomingGuard(controlFlow))) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
+            refresh(controlFlow);
+        }
     }
 
     public void unsetGuard(RedefinableElement element) {
@@ -232,12 +306,22 @@ public class PokaYokeProfileServices {
             label += System.getProperty("line.separator");
         }
 
-        String guard = getGuard(controlFlow);
-        if (Strings.isNullOrEmpty(guard)) {
-            guard = "true";
+        String guards = "";
+        if (isFormalControlFlow(controlFlow)) {
+            String incomingGuard = getIncomingGuard(controlFlow);
+            if (Strings.isNullOrEmpty(incomingGuard)) {
+                incomingGuard = "true";
+            }
+
+            String outgoingGuard = getOutgoingGuard(controlFlow);
+            if (Strings.isNullOrEmpty(outgoingGuard)) {
+                outgoingGuard = "true";
+            }
+
+            guards = incomingGuard + System.getProperty("line.separator") + outgoingGuard;
         }
 
-        label += guard;
+        label += guards;
         return label;
     }
 
