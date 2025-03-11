@@ -11,7 +11,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -30,6 +29,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
+import PokaYoke.FormalControlFlow;
 import PokaYoke.FormalElement;
 import PokaYoke.PokaYokePackage;
 
@@ -43,12 +43,21 @@ public class PokaYokeUmlProfileUtil {
 
     private static final String PROP_FORMAL_ELEMENT_ATOMIC = PokaYokePackage.Literals.FORMAL_ELEMENT__ATOMIC.getName();
 
+    private static final String ST_FORMAL_CONTROL_FLOW = PokaYokePackage.Literals.FORMAL_CONTROL_FLOW.getName();
+
+    private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = PokaYokePackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
+            .getName();
+
     /** Qualified name for the {@link PokaYokePackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = PokaYokePackage.eNAME;
 
     /** Qualified name for the {@link FormalElement} stereotype. */
     public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_ELEMENT;
+
+    /** Qualified name for the {@link FormalControlFlow} stereotype. */
+    public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_CONTROL_FLOW;
 
     private PokaYokeUmlProfileUtil() {
         // Empty for utility classes
@@ -64,6 +73,16 @@ public class PokaYokeUmlProfileUtil {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
     }
 
+    /**
+     * Returns <code>true</code> if {@link FormalControlFlow} stereotype is applied on {@link ControlFlow controlFlow}.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return <code>true</code> if {@link FormalControlFlow} stereotype is applied on the control flow.
+     */
+    public static boolean isFormalControlFlow(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.getAppliedStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE).isPresent();
+    }
+
     public static boolean isGuardEffectsAction(Action action) {
         return isSetGuard(action) || isSetEffects(action);
     }
@@ -74,22 +93,27 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static String getGuard(RedefinableElement element) {
-        if (element instanceof ActivityEdge edge) {
-            return getGuard(edge);
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard getter.");
         }
 
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
     }
 
-    public static String getGuard(ActivityEdge activityEdge) {
-        ValueSpecification guard = activityEdge.getGuard();
+    public static String getIncomingGuard(ControlFlow controlFlow) {
+        ValueSpecification guard = controlFlow.getGuard();
         return guard == null ? null : guard.stringValue();
     }
 
+    public static String getOutgoingGuard(ControlFlow controlFlow) {
+        return getAppliedStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE)
+                .map(st -> (String)controlFlow.getValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD)).orElse(null);
+    }
+
     public static void setGuard(RedefinableElement element, String newValue) {
-        if (element instanceof ActivityEdge edge) {
-            setGuard(edge, newValue);
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard setter.");
         } else {
             Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
             element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
@@ -153,21 +177,35 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code activityEdge}.
+     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code controlFlow}.
      *
-     * @param activityEdge The control flow to set the guard value on.
+     * @param controlFlow The control flow to set the guard value on.
      * @param newValue The new value of the guard.
      */
-    public static void setGuard(ActivityEdge activityEdge, String newValue) {
+    public static void setIncomingGuard(ControlFlow controlFlow, String newValue) {
+        applyStereotype(controlFlow, getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
         if (Strings.isNullOrEmpty(newValue)) {
-            if (activityEdge.getGuard() != null) {
+            if (controlFlow.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
                 // Avoiding this by setting a LiteralNull value.
-                activityEdge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
             }
             return;
         }
-        activityEdge.setGuard(createCifExpression(newValue));
+        controlFlow.setGuard(createCifExpression(newValue));
+    }
+
+    /**
+     * Applies the Poka Yoke UML Profile and sets the {@link FormalControlFlow#getOutgoingGuard()} property for
+     * {@code controlFlow}.
+     *
+     * @param controlFlow The control flow to set the guard value on.
+     * @param newValue The new value of the guard.
+     */
+    public static void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
+        Stereotype st = applyStereotype(controlFlow,
+                getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
+        controlFlow.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newValue);
     }
 
     /**
