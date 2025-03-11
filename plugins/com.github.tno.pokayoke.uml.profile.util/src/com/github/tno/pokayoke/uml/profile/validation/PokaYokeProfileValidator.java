@@ -34,7 +34,6 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DataType;
-import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
@@ -518,16 +517,28 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (edge instanceof ControlFlow controlFlow) {
             checkNamingConventions(edge, NamingConvention.OPTIONAL);
 
-            if (controlFlow.getSource() instanceof DecisionNode) {
-                try {
-                    AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
-                    if (guardExpr == null) {
-                        return;
-                    }
-                    new CifTypeChecker(controlFlow).checkBooleanAssignment(guardExpr);
-                } catch (RuntimeException e) {
-                    error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+            try {
+                // Check that an edge that leaves a node with effects has incoming guard true or null. This is
+                // needed to adhere to the execution semantics of activities.
+                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+                if ((controlFlow.getSource() instanceof CallBehaviorAction
+                        || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && incomingGuardExpr != null)
+                {
+                    error("Edge leaving a node with effects has not-null incoming guard.",
+                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                    return;
                 }
+
+                if (incomingGuardExpr != null) {
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(incomingGuardExpr);
+                }
+
+                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
+                if (outgoingGuardExpr != null) {
+                    new CifTypeChecker(controlFlow).checkBooleanAssignment(outgoingGuardExpr);
+                }
+            } catch (RuntimeException e) {
+                error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
             }
         } else {
             error("Unsupported activity edge type: " + edge.eClass().getName(), null);
@@ -610,11 +621,22 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     @Check
     private void checkValidGuard(RedefinableElement element) {
         try {
-            AExpression guardExpr = CifParserHelper.parseGuard(element);
-            if (guardExpr == null) {
-                return;
+            if (element instanceof ControlFlow controlFlow) {
+                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+                if (incomingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
+                }
+                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
+                if (outgoingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
+                }
+            } else {
+                AExpression guardExpr = CifParserHelper.parseGuard(element);
+                if (guardExpr == null) {
+                    return;
+                }
+                new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
             }
-            new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
