@@ -614,7 +614,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link FormalElement#getGuard()} property if set.
+     * Validates the {@link FormalElement#getGuard()} property or the incoming and outgoing guards of a control flow, if
+     * set.
      *
      * @param element The element to validate.
      */
