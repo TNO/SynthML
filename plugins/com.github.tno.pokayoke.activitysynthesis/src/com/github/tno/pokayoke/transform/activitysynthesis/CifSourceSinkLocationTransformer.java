@@ -169,13 +169,12 @@ public class CifSourceSinkLocationTransformer {
      * {@link CifSourceSinkLocationTransformer 'single source and sink location' transformation}.
      *
      * @param uncontrolledSystemGuards The uncontrolled system guards mapping, which is modified in-place.
-     * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
      * @param bddSpec The CIF/BDD specification of {@code specification}.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
      */
-    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, Specification specification,
-            CifBddSpec bddSpec, UmlToCifTranslator translator)
+    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, CifBddSpec bddSpec,
+            UmlToCifTranslator translator)
     {
         // Obtain the preconditions and postconditions of the translated CIF specification.
         Expression precondition = translator.getTranslatedPrecondition();

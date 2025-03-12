@@ -173,7 +173,7 @@ public class FullSynthesisApp {
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
         // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
-        CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifStateSpace, cifBddSpec,
+        CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifBddSpec,
                 umlToCifTranslator);
 
         // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
