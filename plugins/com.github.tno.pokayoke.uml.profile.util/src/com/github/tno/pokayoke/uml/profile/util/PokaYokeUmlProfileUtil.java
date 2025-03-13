@@ -177,10 +177,10 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) guard} for {@code controlFlow}.
+     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for {@code controlFlow}.
      *
-     * @param controlFlow The control flow to set the guard value on.
-     * @param newValue The new value of the guard.
+     * @param controlFlow The control flow to set the incoming guard on.
+     * @param newGurad The new incoming guard.
      */
     public static void setIncomingGuard(ControlFlow controlFlow, String newValue) {
         applyStereotype(controlFlow, getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
@@ -199,8 +199,8 @@ public class PokaYokeUmlProfileUtil {
      * Applies the Poka Yoke UML Profile and sets the {@link FormalControlFlow#getOutgoingGuard()} property for
      * {@code controlFlow}.
      *
-     * @param controlFlow The control flow to set the guard value on.
-     * @param newValue The new value of the guard.
+     * @param controlFlow The control flow to set the outgoing guard on.
+     * @param newGurad The new outgoing guard.
      */
     public static void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
         Stereotype st = applyStereotype(controlFlow,
