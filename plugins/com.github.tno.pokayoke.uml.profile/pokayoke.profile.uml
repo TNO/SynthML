@@ -5,7 +5,7 @@
       <eAnnotations xmi:id="_mN_9sP28Ee-zsJSc6VDrlw" source="UMLDesignerProfileVersion">
         <details xmi:id="_mN_9sf28Ee-zsJSc6VDrlw" key="Version" value="0.0.7"/>
         <details xmi:id="_mN_9sv28Ee-zsJSc6VDrlw" key="Date" value="2025-03-10"/>
-        <details xmi:id="_mN_9s_28Ee-zsJSc6VDrlw" key="Author" value="Yuri Blankenstein"/>
+        <details xmi:id="_mN_9s_28Ee-zsJSc6VDrlw" key="Author" value="Poka Yoke"/>
         <details xmi:id="_mN_9tP28Ee-zsJSc6VDrlw" key="Copyright" value="TNO"/>
         <details xmi:id="_mN_9tf28Ee-zsJSc6VDrlw" key="Comment" value="UML profile for Poka Yoke modeling"/>
       </eAnnotations>
