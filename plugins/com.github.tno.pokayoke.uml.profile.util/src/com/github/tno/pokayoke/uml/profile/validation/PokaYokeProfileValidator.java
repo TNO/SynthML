@@ -18,6 +18,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
@@ -520,8 +521,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Check that an edge that leaves a node with effects has incoming guard true or null. This is
             // needed to adhere to the execution semantics of activities.
             AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+            boolean incomingGuardTrueOrNull = (incomingGuardExpr instanceof ABoolExpression boolIncoming
+                    && boolIncoming.value) || incomingGuardExpr == null;
             if ((controlFlow.getSource() instanceof CallBehaviorAction
-                    || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && incomingGuardExpr != null)
+                    || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && !incomingGuardTrueOrNull)
             {
                 error("Edge leaving a node with effects has not-null incoming guard.",
                         UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
