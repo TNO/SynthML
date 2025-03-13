@@ -76,6 +76,9 @@ public class PokaYokeProfileServices {
      *     <code>null</code> otherwise.
      */
     public String getGuard(RedefinableElement element) {
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard getter.");
+        }
         return PokaYokeUmlProfileUtil.getGuard(element);
     }
 
@@ -115,6 +118,10 @@ public class PokaYokeProfileServices {
      * @param newValue The new property value.
      */
     public void setGuard(RedefinableElement element, String newValue) {
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard setter.");
+        }
+
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue) && !(element instanceof ControlFlow)) {
             String effects = getEffects(element);
