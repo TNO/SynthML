@@ -87,7 +87,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="com.github.tno.pokayoke.transform.uml2gal"
          download-size="0"
@@ -125,6 +125,20 @@
 
    <plugin
          id="com.github.tno.pokayoke.transform.activitysynthesis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.flatten"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tno.pokayoke.transform.petrify"
          download-size="0"
          install-size="0"
          version="0.0.0"
