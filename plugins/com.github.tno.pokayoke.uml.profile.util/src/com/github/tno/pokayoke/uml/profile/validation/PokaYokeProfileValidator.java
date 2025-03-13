@@ -24,7 +24,6 @@ import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
@@ -510,38 +509,35 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
-    private void checkValidActivityEdge(ActivityEdge edge) {
-        if (!isPokaYokeUmlProfileApplied(edge)) {
+    private void checkValidActivityEdge(ControlFlow controlFlow) {
+        if (!isPokaYokeUmlProfileApplied(controlFlow)) {
             return;
         }
-        if (edge instanceof ControlFlow controlFlow) {
-            checkNamingConventions(edge, NamingConvention.OPTIONAL);
 
-            try {
-                // Check that an edge that leaves a node with effects has incoming guard true or null. This is
-                // needed to adhere to the execution semantics of activities.
-                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
-                if ((controlFlow.getSource() instanceof CallBehaviorAction
-                        || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && incomingGuardExpr != null)
-                {
-                    error("Edge leaving a node with effects has not-null incoming guard.",
-                            UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
-                    return;
-                }
+        checkNamingConventions(controlFlow, NamingConvention.OPTIONAL);
 
-                if (incomingGuardExpr != null) {
-                    new CifTypeChecker(controlFlow).checkBooleanAssignment(incomingGuardExpr);
-                }
-
-                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
-                if (outgoingGuardExpr != null) {
-                    new CifTypeChecker(controlFlow).checkBooleanAssignment(outgoingGuardExpr);
-                }
-            } catch (RuntimeException e) {
-                error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+        try {
+            // Check that an edge that leaves a node with effects has incoming guard true or null. This is
+            // needed to adhere to the execution semantics of activities.
+            AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+            if ((controlFlow.getSource() instanceof CallBehaviorAction
+                    || PokaYokeUmlProfileUtil.isSetEffects(controlFlow.getSource())) && incomingGuardExpr != null)
+            {
+                error("Edge leaving a node with effects has not-null incoming guard.",
+                        UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
+                return;
             }
-        } else {
-            error("Unsupported activity edge type: " + edge.eClass().getName(), null);
+
+            if (incomingGuardExpr != null) {
+                new CifTypeChecker(controlFlow).checkBooleanAssignment(incomingGuardExpr);
+            }
+
+            AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
+            if (outgoingGuardExpr != null) {
+                new CifTypeChecker(controlFlow).checkBooleanAssignment(outgoingGuardExpr);
+            }
+        } catch (RuntimeException e) {
+            error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
         }
     }
 
