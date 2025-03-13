@@ -45,8 +45,8 @@ public class PokaYokeProfileServices {
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
     /**
-     * Returns {@code true} if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}
-     * while 'guard and effects' layer is not enabled.
+     * Returns {@code true} if {@link FormalElement} stereotype is applied on {@link RedefinableElement element} while
+     * 'guard and effects' layer is not enabled.
      *
      * @param element The element to interrogate.
      * @param diagram The diagram containing the element.
@@ -68,12 +68,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped,
-     * {@code null} otherwise.
+     * Returns the {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
+     * otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped,
-     *     {@code null} otherwise.
+     * @return The {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
+     *     otherwise.
      */
     public String getGuard(RedefinableElement element) {
         if (element instanceof ControlFlow) {
@@ -94,8 +94,8 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalControlFlow#getOutgoingGuard() outgoing guard} property value if
-     * {@code controlFlow} is stereotyped, {@code null} otherwise.
+     * Returns the {@link FormalControlFlow#getOutgoingGuard() outgoing guard} property value if {@code controlFlow} is
+     * stereotyped, {@code null} otherwise.
      *
      * @param controlFlow The control flow to interrogate.
      * @return The {@link FormalControlFlow#getOutgoingGuard() guard} property value if {@code controlFlow} is
@@ -109,9 +109,9 @@ public class PokaYokeProfileServices {
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setGuard(String) guard} property
      * for {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #getEffects(RedefinableElement)} also is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is {@code false}.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
      * </p>
      *
      * @param element The element to set the property on.
@@ -211,9 +211,9 @@ public class PokaYokeProfileServices {
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#getEffects() effects} property for
      * {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #getGuard(RedefinableElement)} also is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is {@code false}.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getGuard(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
      * </p>
      *
      * @param element The element to set the property on.
@@ -264,9 +264,9 @@ public class PokaYokeProfileServices {
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setAtomic(boolean) atomic}
      * property for {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or
-     * {@code false} and {@link #getGuard(RedefinableElement)} is {@code null} or {@link String#isEmpty()
-     * empty} and {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty}.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@code false} and
+     * {@link #getGuard(RedefinableElement)} is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty}.
      * </p>
      *
      * @param element The element to set the property on.
