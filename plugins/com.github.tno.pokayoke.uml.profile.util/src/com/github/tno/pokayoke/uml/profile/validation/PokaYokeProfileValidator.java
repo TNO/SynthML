@@ -620,24 +620,33 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(RedefinableElement element) {
-        try {
-            if (element instanceof ControlFlow controlFlow) {
+        if (element instanceof ControlFlow controlFlow) {
+            try {
                 AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
                 if (incomingGuardExpr != null) {
                     new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
                 }
+            } catch (RuntimeException e) {
+                error("Invalid incoming guard: " + e.getLocalizedMessage(), null);
+            }
+
+            try {
                 AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
                 if (outgoingGuardExpr != null) {
                     new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
                 }
-            } else {
+            } catch (RuntimeException e) {
+                error("Invalid outgoing guard: " + e.getLocalizedMessage(), null);
+            }
+        } else {
+            try {
                 AExpression guardExpr = CifParserHelper.parseGuard(element);
                 if (guardExpr != null) {
                     new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
                 }
+            } catch (RuntimeException e) {
+                error("Invalid guard: " + e.getLocalizedMessage(), null);
             }
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
         }
     }
 
