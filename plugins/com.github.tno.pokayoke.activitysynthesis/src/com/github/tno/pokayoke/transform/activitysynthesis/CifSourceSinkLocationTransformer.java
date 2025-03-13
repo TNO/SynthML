@@ -23,7 +23,6 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
-import org.eclipse.uml2.uml.Behavior;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
@@ -170,18 +169,16 @@ public class CifSourceSinkLocationTransformer {
      * {@link CifSourceSinkLocationTransformer 'single source and sink location' transformation}.
      *
      * @param uncontrolledSystemGuards The uncontrolled system guards mapping, which is modified in-place.
-     * @param specification The CIF specification that was transformed using {@link #transform(Specification)}.
      * @param bddSpec The CIF/BDD specification of {@code specification}.
      * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
      *     specification.
      */
-    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, Specification specification,
-            CifBddSpec bddSpec, UmlToCifTranslator translator)
+    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, CifBddSpec bddSpec,
+            UmlToCifTranslator translator)
     {
-        // Obtain the original preconditions and postconditions in the UML input model.
-        Behavior behavior = translator.getActivity();
-        Expression precondition = translator.translateStateInvariantConstraints(behavior.getPreconditions());
-        Expression postcondition = translator.translateStateInvariantConstraints(behavior.getPostconditions());
+        // Obtain the preconditions and postconditions of the translated CIF specification.
+        Expression precondition = translator.getTranslatedPrecondition();
+        Expression postcondition = translator.getTranslatedPostcondition();
 
         // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
         try {

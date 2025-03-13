@@ -116,6 +116,12 @@ public class UmlToCifTranslator {
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     private final UmlAnnotationsToCif translator;
 
+    /** The translated precondition CIF variable. */
+    private AlgVariable preconditionVariable;
+
+    /** The translated postcondition CIF variable. */
+    private AlgVariable postconditionVariable;
+
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
     private final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
 
@@ -156,6 +162,26 @@ public class UmlToCifTranslator {
      */
     public Activity getActivity() {
         return activity;
+    }
+
+    /**
+     * Gives the CIF precondition of the translated activity.
+     *
+     * @return The CIF precondition of the translated activity.
+     */
+    public Expression getTranslatedPrecondition() {
+        Verify.verifyNotNull(preconditionVariable, "Expected a translated precondition CIF variable.");
+        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), preconditionVariable);
+    }
+
+    /**
+     * Gives the CIF postcondition of the translated activity.
+     *
+     * @return The CIF postcondition of the translated activity.
+     */
+    public Expression getTranslatedPostcondition() {
+        Verify.verifyNotNull(postconditionVariable, "Expected a translated postcondition CIF variable.");
+        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), postconditionVariable);
     }
 
     /**
@@ -320,22 +346,20 @@ public class UmlToCifTranslator {
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
         cifPlant.getDeclarations().addAll(preconditions.left);
-        AlgVariable cifPreconditionVar = preconditions.right;
-        cifPlant.getDeclarations().add(cifPreconditionVar);
-        cifPlant.getInitials()
-                .add(CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPreconditionVar));
+        preconditionVariable = preconditions.right;
+        cifPlant.getDeclarations().add(preconditionVariable);
+        cifPlant.getInitials().add(getTranslatedPrecondition());
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
         Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
                 cifAtomicityVar);
         cifPlant.getDeclarations().addAll(postconditions.left);
-        AlgVariable cifPostconditionVar = postconditions.right;
-        cifPlant.getDeclarations().add(cifPostconditionVar);
-        cifPlant.getMarkeds().add(
-                CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), cifPostconditionVar));
+        postconditionVariable = postconditions.right;
+        cifPlant.getDeclarations().add(postconditionVariable);
+        cifPlant.getMarkeds().add(getTranslatedPostcondition());
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
-        List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(cifPostconditionVar);
+        List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
         cifSpec.getInvariants().addAll(cifDisableConstraints);
 
         // Translate all UML class constraints as CIF invariants.
