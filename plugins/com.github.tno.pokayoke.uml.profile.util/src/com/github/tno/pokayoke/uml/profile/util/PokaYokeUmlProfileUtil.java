@@ -180,11 +180,11 @@ public class PokaYokeUmlProfileUtil {
      * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for {@code controlFlow}.
      *
      * @param controlFlow The control flow to set the incoming guard on.
-     * @param newGurad The new incoming guard.
+     * @param newGuard The new incoming guard.
      */
-    public static void setIncomingGuard(ControlFlow controlFlow, String newValue) {
+    public static void setIncomingGuard(ControlFlow controlFlow, String newGuard) {
         applyStereotype(controlFlow, getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
-        if (Strings.isNullOrEmpty(newValue)) {
+        if (Strings.isNullOrEmpty(newGuard)) {
             if (controlFlow.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
                 // Avoiding this by setting a LiteralNull value.
@@ -192,7 +192,7 @@ public class PokaYokeUmlProfileUtil {
             }
             return;
         }
-        controlFlow.setGuard(createCifExpression(newValue));
+        controlFlow.setGuard(createCifExpression(newGuard));
     }
 
     /**
@@ -200,12 +200,12 @@ public class PokaYokeUmlProfileUtil {
      * {@code controlFlow}.
      *
      * @param controlFlow The control flow to set the outgoing guard on.
-     * @param newGurad The new outgoing guard.
+     * @param newGuard The new outgoing guard.
      */
-    public static void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
+    public static void setOutgoingGuard(ControlFlow controlFlow, String newGuard) {
         Stereotype st = applyStereotype(controlFlow,
                 getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
-        controlFlow.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newValue);
+        controlFlow.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newGuard);
     }
 
     /**
