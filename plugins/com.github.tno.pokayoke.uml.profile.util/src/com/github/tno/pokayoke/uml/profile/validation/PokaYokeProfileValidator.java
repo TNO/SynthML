@@ -509,7 +509,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
-    private void checkValidActivityEdge(ControlFlow controlFlow) {
+    private void checkValidControlFlow(ControlFlow controlFlow) {
         if (!isPokaYokeUmlProfileApplied(controlFlow)) {
             return;
         }
