@@ -601,16 +601,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
         boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
                 .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
-        if (containsGuardEffectsActions) {
+        boolean containsFormalControlFlows = from(activity.getOwnedElements()).objectsOfKind(ControlFlow.class)
+                .exists(cf -> PokaYokeUmlProfileUtil.isFormalControlFlow(cf));
+        if (containsGuardEffectsActions || containsFormalControlFlows) {
             return true;
         } else if (!history.add(activity)) {
-            // Cope with cycles
+            // Cope with cycles.
             return false;
         }
 
         return from(activity.getOwnedNodes()).objectsOfKind(CallBehaviorAction.class)
                 .xcollectOne(CallBehaviorAction::getBehavior).exists(b -> b instanceof OpaqueBehavior
-                        || b instanceof Activity a && isGuardEffectsActivity(a, history));
+                        || b instanceof Activity a && isGuardEffectsActivity(a, history))
+                || containsFormalControlFlows;
     }
 
     /**
