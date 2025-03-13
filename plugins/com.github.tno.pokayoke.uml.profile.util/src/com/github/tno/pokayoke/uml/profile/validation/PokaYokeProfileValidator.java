@@ -632,10 +632,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 }
             } else {
                 AExpression guardExpr = CifParserHelper.parseGuard(element);
-                if (guardExpr == null) {
-                    return;
+                if (guardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
                 }
-                new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
             }
         } catch (RuntimeException e) {
             error("Invalid guard: " + e.getLocalizedMessage(), null);
