@@ -323,11 +323,13 @@ public class PokaYokeProfileServices {
             if (Strings.isNullOrEmpty(incomingGuard)) {
                 incomingGuard = "true";
             }
+            incomingGuard = "In: " + incomingGuard;
 
             String outgoingGuard = getOutgoingGuard(controlFlow);
             if (Strings.isNullOrEmpty(outgoingGuard)) {
                 outgoingGuard = "true";
             }
+            outgoingGuard = "Out: " + outgoingGuard;
 
             guards = incomingGuard + System.getProperty("line.separator") + outgoingGuard;
         }
