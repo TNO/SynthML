@@ -602,7 +602,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid incoming guard: " + e.getLocalizedMessage(), null);
+                error("Invalid incoming guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
             }
 
             try {
@@ -611,7 +611,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid outgoing guard: " + e.getLocalizedMessage(), null);
+                error("Invalid outgoing guard: " + e.getLocalizedMessage(),
+                        PokaYokePackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
             }
         } else {
             try {
@@ -620,7 +621,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid guard: " + e.getLocalizedMessage(), null);
+                error("Invalid guard: " + e.getLocalizedMessage(), PokaYokePackage.Literals.FORMAL_ELEMENT__GUARD);
             }
         }
     }
@@ -641,7 +642,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (effects.size() > 1) {
                     prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
                 }
-                error(prefix + re.getLocalizedMessage(), null);
+                error(prefix + re.getLocalizedMessage(), PokaYokePackage.Literals.FORMAL_ELEMENT__EFFECTS);
             }
         }
     }
@@ -751,7 +752,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
     }
 
@@ -759,7 +760,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__CONTEXT);
         }
     }
 
