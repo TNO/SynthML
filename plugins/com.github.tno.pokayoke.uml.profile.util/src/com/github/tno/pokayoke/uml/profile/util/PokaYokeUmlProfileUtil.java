@@ -88,6 +88,9 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static boolean isSetGuard(RedefinableElement element) {
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use the formal control flow stereotype.");
+        }
         return getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE)
                 .map(st -> element.hasValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(false);
     }
