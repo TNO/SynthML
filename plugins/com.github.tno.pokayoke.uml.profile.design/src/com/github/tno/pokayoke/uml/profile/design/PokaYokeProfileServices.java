@@ -123,7 +123,7 @@ public class PokaYokeProfileServices {
         }
 
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (Strings.isNullOrEmpty(newValue) && !(element instanceof ControlFlow)) {
+        if (Strings.isNullOrEmpty(newValue)) {
             String effects = getEffects(element);
             boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(effects) && !atomic) {
