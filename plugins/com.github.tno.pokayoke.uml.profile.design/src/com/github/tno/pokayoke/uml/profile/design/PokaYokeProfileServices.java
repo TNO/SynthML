@@ -19,6 +19,8 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
+import org.obeonetwork.dsl.uml2.core.api.services.ReusedDescriptionServices;
+import org.obeonetwork.dsl.uml2.core.internal.services.DirectEditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
@@ -359,6 +361,28 @@ public class PokaYokeProfileServices {
         EditLabelSwitch editLabel = new EditLabelSwitch();
         editLabel.setEditedLabelContent(editedLabelContent);
         return editLabel.doSwitch(context);
+    }
+
+    /**
+     * Compute the label of the given element for direct edit. Overrides the
+     * {@link ReusedDescriptionServices#computeUmlDirectEditLabel(Element) computeUmlDirectEditLabel} method in UML
+     * Designer. This implementation returns only the name of an 'ActivityEdge' without adding the stereotype name
+     * within angle brackets before it. The override occurs implicitly because {@link PokaYokeProfileServices} is added
+     * to the viewpoint. This method is called through Activity Diagram defined in the uml2core.odesign file in the UML
+     * Designer project.
+     *
+     * @param element The {@link Element} for which to retrieve a label.
+     * @return The computed label.
+     */
+    public String computeUmlDirectEditLabel(Element element) {
+        if (element instanceof ActivityEdge edge) {
+            // The implementation in UML Designer uses 'doSwitch' to return both the the name of an 'ActivityEdge' and
+            // the name of its stereotype. This implementation only returns the name.
+            return edge.getName();
+        }
+
+        final DirectEditLabelSwitch directEditLabel = new DirectEditLabelSwitch();
+        return directEditLabel.doSwitch(element);
     }
 
     /**
