@@ -142,14 +142,7 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Applies the {@link FormalControlFlow} stereotype and sets the {@link ControlFlow#getGuard guard} as an opaque
-     * expression with one body containing {@code newValue}.
-     *
-     * <p>
-     * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #getOutgoingGuard} also is {@code null} or {@link String#isEmpty()
-     * empty}.
-     * </p>
+     * Sets the {@link ControlFlow#getGuard guard} as an opaque expression with one body containing {@code newValue}.
      *
      * @param controlFlow The control flow to set the property on.
      * @param newValue The new property value.
@@ -157,12 +150,6 @@ public class PokaYokeProfileServices {
     public void setIncomingGuard(ControlFlow controlFlow, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, Strings.emptyToNull(newValue));
-        if (Strings.isNullOrEmpty(newValue) && Strings.isNullOrEmpty(getOutgoingGuard(controlFlow))) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
-            // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-            // is used in the odesign file. So we trigger a refresh here.
-            refresh(controlFlow);
-        }
     }
 
     /**
@@ -171,8 +158,7 @@ public class PokaYokeProfileServices {
      *
      * <p>
      * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
-     * {@link String#isEmpty() empty} and {@link #getIncomingGuard} also is {@code null} or {@link String#isEmpty()
-     * empty}.
+     * {@link String#isEmpty() empty}.
      * </p>
      *
      * @param controlFlow The control flow to set the property on.
@@ -180,13 +166,15 @@ public class PokaYokeProfileServices {
      */
     public void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
-        PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
-        if (Strings.isNullOrEmpty(newValue) && Strings.isNullOrEmpty(getIncomingGuard(controlFlow))) {
+
+        if (Strings.isNullOrEmpty(newValue)) {
             PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
             // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
             // is used in the odesign file. So we trigger a refresh here.
             refresh(controlFlow);
+            return;
         }
+        PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
     }
 
     public void unsetGuard(RedefinableElement element) {
