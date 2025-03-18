@@ -179,14 +179,13 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Applies the Poka Yoke UML Profile and sets the
-     * {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for {@code controlFlow}.
+     * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
+     * {@code controlFlow}.
      *
      * @param controlFlow The control flow to set the incoming guard on.
      * @param newGuard The new incoming guard.
      */
     public static void setIncomingGuard(ControlFlow controlFlow, String newGuard) {
-        applyStereotype(controlFlow, getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
         if (Strings.isNullOrEmpty(newGuard)) {
             if (controlFlow.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
