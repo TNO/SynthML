@@ -18,7 +18,7 @@
         <edgeMappingImports name="AD_DecisionControlFlowPY">
           <importedMapping xsi:type="description_1:EdgeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@edgeMappings[name='AD_ControlFlow']"/>
           <conditionnalStyles predicateExpression="aql:self.oclIsTypeOf(uml::ControlFlow)">
-            <style sizeComputationExpression="2">
+            <style>
               <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
               <centerLabelStyleDescription showIcon="false" labelExpression="service:self.getControlFlowLabel()">
                 <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
