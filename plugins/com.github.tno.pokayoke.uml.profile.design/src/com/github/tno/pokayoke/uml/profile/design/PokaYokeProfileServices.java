@@ -307,9 +307,10 @@ public class PokaYokeProfileServices {
             label += System.getProperty("line.separator");
         }
 
+        // If at least one guard is present, visualize.
         String guards = "";
-        if (isFormalControlFlow(controlFlow)) {
-            String incomingGuard = getIncomingGuard(controlFlow);
+        String incomingGuard = getIncomingGuard(controlFlow);
+        if (isFormalControlFlow(controlFlow) || !Strings.isNullOrEmpty(incomingGuard)) {
             if (Strings.isNullOrEmpty(incomingGuard)) {
                 incomingGuard = "true";
             }
