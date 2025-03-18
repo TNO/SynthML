@@ -587,8 +587,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         return from(activity.getOwnedNodes()).objectsOfKind(CallBehaviorAction.class)
                 .xcollectOne(CallBehaviorAction::getBehavior).exists(b -> b instanceof OpaqueBehavior
-                        || b instanceof Activity a && isGuardEffectsActivity(a, history))
-                || containsFormalControlFlows;
+                        || b instanceof Activity a && isGuardEffectsActivity(a, history));
     }
 
     /**
