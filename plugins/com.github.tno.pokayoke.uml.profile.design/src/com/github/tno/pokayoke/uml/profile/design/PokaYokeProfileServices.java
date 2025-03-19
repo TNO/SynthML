@@ -165,8 +165,6 @@ public class PokaYokeProfileServices {
      * @param newValue The new property value.
      */
     public void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
-        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
-
         if (Strings.isNullOrEmpty(newValue)) {
             PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
             // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
@@ -174,6 +172,7 @@ public class PokaYokeProfileServices {
             refresh(controlFlow);
             return;
         }
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
     }
 
@@ -303,12 +302,9 @@ public class PokaYokeProfileServices {
     public String getControlFlowLabel(ControlFlow controlFlow) {
         String label = controlFlow.getName();
         label = Strings.nullToEmpty(label);
-        if (!label.isEmpty()) {
-            label += System.getProperty("line.separator");
-        }
 
         // If at least one guard is present, visualize both.
-        String guards = "";
+        String guards = label.isEmpty() ? "" : System.getProperty("line.separator");
         String incomingGuard = getIncomingGuard(controlFlow);
         if (isFormalControlFlow(controlFlow) || !Strings.isNullOrEmpty(incomingGuard)) {
             if (Strings.isNullOrEmpty(incomingGuard)) {
@@ -322,7 +318,7 @@ public class PokaYokeProfileServices {
             }
             outgoingGuard = "Out: " + outgoingGuard;
 
-            guards = incomingGuard + System.getProperty("line.separator") + outgoingGuard;
+            guards += incomingGuard + System.getProperty("line.separator") + outgoingGuard;
         }
 
         label += guards;
