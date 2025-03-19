@@ -516,8 +516,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
         if (!(activityEdge instanceof ControlFlow)) {
             error("Unsupported activity edge type: " + activityEdge.eClass().getName(), null);
+        } else {
+            checkNamingConventions(activityEdge, NamingConvention.OPTIONAL);
         }
-        checkNamingConventions(activityEdge, NamingConvention.OPTIONAL);
     }
 
     @Check
