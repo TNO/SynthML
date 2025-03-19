@@ -13,6 +13,8 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
 import org.eclipse.escet.common.java.TextPosition;
@@ -162,4 +164,26 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 
     protected abstract T visit(Optional<String> invKind, List<String> events, TextPosition invariantPos, T predicate,
             CifContext ctx);
+
+    @Override
+    protected T visit(AIfExpression expression, CifContext ctx) {
+        List<T> guards = expression.guards.stream().map(grd -> visit(grd, ctx)).toList();
+        T thenExpr = visit(expression.then, ctx);
+        List<T> elifs = expression.elifs.stream().map(upd -> visit(upd, ctx)).toList();
+        T elseExpr = visit(expression.elseExpr, ctx);;
+
+        return visit(guards, thenExpr, elifs, elseExpr, expression.position, ctx);
+    }
+
+    protected abstract T visit(List<T> guards, T thenExpr, List<T> elifs, T elseExpr, TextPosition updatePos,
+            CifContext ctx);
+
+    protected T visit(AElifExpression expression, CifContext ctx) {
+        List<T> guards = expression.guards.stream().map(grd -> visit(grd, ctx)).toList();
+        T thenExpr = visit(expression.then, ctx);
+
+        return visit(guards, thenExpr, expression.position, ctx);
+    }
+
+    protected abstract T visit(List<T> guards, T thenExpr, TextPosition updatePos, CifContext ctx);
 }

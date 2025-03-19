@@ -13,7 +13,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -99,5 +101,22 @@ public class CifExpressionRenamer extends ACifObjectVisitor<ACifObject, Map<Stri
     protected ACifObject visit(AInvariant invariant, Map<String, String> renaming) {
         AExpression predicate = (AExpression)visit(invariant.predicate, renaming);
         return new AInvariant(invariant.name, predicate, invariant.invKind, invariant.events);
+    }
+
+    @Override
+    protected ACifObject visit(AIfExpression expr, Map<String, String> renaming) {
+        List<AExpression> guards = expr.guards.stream().map(guard -> (AExpression)visit(guard, renaming)).toList();
+        AExpression then = (AExpression)visit(expr.then, renaming);
+        List<AElifExpression> elifs = expr.elifs.stream().map(elif -> (AElifExpression)visit(elif, renaming)).toList();
+        AExpression elseExpr = (AExpression)visit(expr.elseExpr, renaming);
+
+        return new AIfExpression(guards, then, elifs, elseExpr, expr.position);
+    }
+
+    @Override
+    protected ACifObject visit(AElifExpression expr, Map<String, String> renaming) {
+        List<AExpression> guards = expr.guards.stream().map(guard -> (AExpression)visit(guard, renaming)).toList();
+        AExpression then = (AExpression)visit(expr.then, renaming);
+        return new AElifExpression(guards, then, expr.position);
     }
 }

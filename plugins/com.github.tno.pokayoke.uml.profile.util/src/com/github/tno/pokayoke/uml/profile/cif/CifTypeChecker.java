@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;
@@ -106,11 +107,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     @Override
     protected Type visit(Type addressable, TextPosition assignmentPos, Type value, CifContext ctx) {
-        if (combineTypes(addressable, value) == null) {
-            throw new TypeException(String.format("expected %s but got %s", PokaYokeTypeUtil.getLabel(addressable),
-                    PokaYokeTypeUtil.getLabel(value)), assignmentPos);
-        }
-        return addressable;
+         return combineTypesOrThrow(addressable, value, assignmentPos);
     }
 
     @Override
@@ -122,13 +119,32 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     @Override
     protected Type visit(List<Type> guards, List<Type> thens, TextPosition updatePos, CifContext ctx) {
+        return visit(guards, thens.get(0), updatePos, ctx);
+    }
+
+    @Override
+    protected Type visit(List<Type> guards, Type thenExpr, List<Type> elifs, Type elseExpr, TextPosition updatePos,
+            CifContext ctx)
+    {
+        Type thenType = visit(guards, thenExpr, updatePos, ctx);
+        Type combinedType = combineTypesOrThrow(thenType, elseExpr, updatePos);
+
+        for (Type elif : elifs) {
+            combinedType = combineTypesOrThrow(combinedType, elif, updatePos);
+        }
+
+        return combinedType;
+    }
+
+    @Override
+    protected Type visit(List<Type> guards, Type thenExpr, TextPosition updatePos, CifContext ctx) {
         for (Type type: guards) {
             if (!type.conformsTo(booleanType)) {
                 throw new TypeException(String.format("Expected a Boolean but got '%s'", type), updatePos);
             }
         }
 
-        return thens.get(0);
+        return thenExpr;
     }
 
     @Override
@@ -218,5 +234,24 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
             return integerType;
         }
         return null;
+    }
+
+    /**
+     * Combines the {@code left} and {@code right} types into a compatible return type.
+     * Throws an exception if the types cannot be combined
+     *
+     * @param left One of the types to combine.
+     * @param right One of the types to combine.
+     * @param updatePos The text position of the types.
+     * @return The compatible return type.
+     */
+    protected Type combineTypesOrThrow(Type left, Type right, TextPosition updatePos) {
+        Type combined = combineTypes(left, right);
+        if (combined == null) {
+            throw new TypeException(String.format("Expected %s but got %s",
+                    PokaYokeTypeUtil.getLabel(left), PokaYokeTypeUtil.getLabel(right)), updatePos);
+        }
+
+        return combined;
     }
 }

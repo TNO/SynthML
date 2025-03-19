@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.common.CifTypeUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
+import org.eclipse.escet.cif.common.RangeCompat;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
 import org.eclipse.escet.cif.metamodel.cif.SupKind;
@@ -19,6 +20,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.ElifExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
@@ -30,6 +32,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.common.position.common.PositionUtils;
+import org.eclipse.escet.common.position.metamodel.position.Position;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
@@ -152,6 +156,39 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
         List<Update> thenUpdates = thens.stream().map(Update.class::cast).toList();
 
         return CifConstructors.newElifUpdate(guardExprs, null, thenUpdates);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, Object then, List<Object> elifs, Object _else,
+            TextPosition updatePos, CifContext ctx)
+    {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        Expression thenExpr = (Expression)then;
+        List<ElifExpression> elifExprs = elifs.stream().map(ElifExpression.class::cast).toList();
+        Expression elseExpr = (Expression)_else;
+
+        CifType thenType = thenExpr.getType();
+        CifType elseType = elseExpr.getType();
+
+        if (!CifTypeUtils.checkTypeCompat(thenType, elseType , RangeCompat.IGNORE)) {
+            String errorString = String.format("Incompatible types detected: %s %s", thenType, elseType);
+            throw new RuntimeException(errorString);
+        }
+
+        Position dummy = PositionUtils.createDummy(updatePos.location, updatePos.source);
+        CifType mergedType = CifTypeUtils.mergeTypes(thenType, elseType, dummy);
+
+        return CifConstructors.newIfExpression(elifExprs, elseExpr, guardExprs, dummy, thenExpr, mergedType);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, Object thenExpr, TextPosition updatePos, CifContext ctx) {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        Expression thenUpdates = (Expression)thenExpr;
+
+        Position dummy = PositionUtils.createDummy(updatePos.location, updatePos.source);
+
+        return CifConstructors.newElifExpression(guardExprs, dummy, thenUpdates);
     }
 
     @Override
