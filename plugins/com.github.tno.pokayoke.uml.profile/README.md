@@ -17,7 +17,8 @@ Perform the following steps to re-generate this plugin when the profile has chan
 4. When asked to export deployable plug-ins and fragments, you can cancel the wizard.
 5. The workspace now contains a new generated `com.github.tno.pokayoke.uml.profile.plugin` project which is closed.
    This project is now located in your Eclipse workspace, use the properties view to see its location on disk.
-   If you need to modify (again) the stereotype, remove this folder including its projects contents on disk, and restart from Step 2. Alternatively, start from scratch.
+   If you need to modify (again) the stereotype, remove this folder including its projects contents on disk, and restart from Step 2.
+   Alternatively, start from scratch.
 6. Replace the `src` and `model` folders from the `com.github.tno.pokayoke.uml.profile.plugin` in Git with the ones from the generated project.
 7. Remove the generated project from your workspace, **including its project contents on disk!**
 8. Re-import projects from Git by means of an Oomph refresh.

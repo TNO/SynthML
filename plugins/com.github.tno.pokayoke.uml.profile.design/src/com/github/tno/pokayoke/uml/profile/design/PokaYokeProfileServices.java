@@ -307,7 +307,7 @@ public class PokaYokeProfileServices {
             label += System.getProperty("line.separator");
         }
 
-        // If at least one guard is present, visualize.
+        // If at least one guard is present, visualize both.
         String guards = "";
         String incomingGuard = getIncomingGuard(controlFlow);
         if (isFormalControlFlow(controlFlow) || !Strings.isNullOrEmpty(incomingGuard)) {
@@ -365,7 +365,7 @@ public class PokaYokeProfileServices {
      */
     public String computeUmlDirectEditLabel(Element element) {
         if (element instanceof ActivityEdge edge) {
-            // The implementation in UML Designer uses 'doSwitch' to return both the the name of an 'ActivityEdge' and
+            // The implementation in UML Designer uses 'doSwitch' to return both the name of an 'ActivityEdge' and
             // the name of its stereotype. This implementation only returns the name.
             return edge.getName();
         }

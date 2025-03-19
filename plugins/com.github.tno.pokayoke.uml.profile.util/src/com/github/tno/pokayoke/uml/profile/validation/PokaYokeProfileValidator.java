@@ -578,7 +578,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
         boolean containsGuardedControlFlows = from(activity.getOwnedElements()).objectsOfKind(ControlFlow.class)
                 .exists(cf -> PokaYokeUmlProfileUtil.isFormalControlFlow(cf)
-                        || Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getIncomingGuard(cf)));
+                        || !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getIncomingGuard(cf)));
         if (containsGuardEffectsActions || containsGuardedControlFlows) {
             return true;
         } else if (!history.add(activity)) {
@@ -756,7 +756,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 
@@ -764,7 +764,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__CONTEXT);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 
