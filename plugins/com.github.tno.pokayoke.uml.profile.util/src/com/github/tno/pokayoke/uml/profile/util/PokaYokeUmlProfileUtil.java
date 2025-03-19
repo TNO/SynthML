@@ -118,6 +118,15 @@ public class PokaYokeUmlProfileUtil {
         if (element instanceof ControlFlow) {
             throw new RuntimeException("Control flow must use incoming or outgoing guard setter.");
         } else {
+            if (Strings.isNullOrEmpty(newValue)) {
+                List<String> effects = getEffects(element);
+                boolean atomic = isAtomic(element);
+                if (effects.isEmpty() && !atomic) {
+                    PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
+                    return;
+                }
+            }
+
             Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
             element.setValue(st, PROP_FORMAL_ELEMENT_GUARD, newValue);
         }
@@ -153,8 +162,16 @@ public class PokaYokeUmlProfileUtil {
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "null"})
     public static void setEffects(RedefinableElement element, List<String> newValue) {
+        if (newValue.isEmpty() || newValue == null) {
+            String guard = getGuard(element);
+            boolean atomic = isAtomic(element);
+            if (Strings.isNullOrEmpty(guard) && !atomic) {
+                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
+                return;
+            }
+        }
         Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
         EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ELEMENT_EFFECTS);
         if (newValue == null) {
@@ -170,6 +187,14 @@ public class PokaYokeUmlProfileUtil {
     }
 
     public static void setAtomic(RedefinableElement element, Boolean newValue) {
+        if (newValue == null || !newValue) {
+            String guard = getGuard(element);
+            List<String> effects = getEffects(element);
+            if (Strings.isNullOrEmpty(guard) && effects.isEmpty()) {
+                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
+                return;
+            }
+        }
         Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ELEMENT));
         element.setValue(st, PROP_FORMAL_ELEMENT_ATOMIC, newValue);
     }
@@ -205,6 +230,10 @@ public class PokaYokeUmlProfileUtil {
      * @param newGuard The new outgoing guard.
      */
     public static void setOutgoingGuard(ControlFlow controlFlow, String newGuard) {
+        if (Strings.isNullOrEmpty(newGuard)) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
+            return;
+        }
         Stereotype st = applyStereotype(controlFlow,
                 getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
         controlFlow.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newGuard);

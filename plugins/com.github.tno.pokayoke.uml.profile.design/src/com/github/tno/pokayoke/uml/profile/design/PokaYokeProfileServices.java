@@ -1,9 +1,6 @@
 
 package com.github.tno.pokayoke.uml.profile.design;
 
-import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.FORMAL_CONTROL_FLOW_STEREOTYPE;
-import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.FORMAL_ELEMENT_STEREOTYPE;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -125,20 +122,13 @@ public class PokaYokeProfileServices {
         }
 
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (Strings.isNullOrEmpty(newValue)) {
-            String effects = getEffects(element);
-            boolean atomic = isAtomic(element);
-            if (Strings.isNullOrEmpty(effects) && !atomic) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger a refresh here.
-                refresh(element);
-                return;
-            }
-        }
 
         // Empty values are not allowed, so reset the value.
         PokaYokeUmlProfileUtil.setGuard(element, Strings.emptyToNull(newValue));
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(element);
     }
 
     /**
@@ -165,15 +155,12 @@ public class PokaYokeProfileServices {
      * @param newValue The new property value.
      */
     public void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
-        if (Strings.isNullOrEmpty(newValue)) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
-            // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-            // is used in the odesign file. So we trigger a refresh here.
-            refresh(controlFlow);
-            return;
-        }
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(controlFlow);
     }
 
     public void unsetGuard(RedefinableElement element) {
@@ -211,22 +198,15 @@ public class PokaYokeProfileServices {
     public void setEffects(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
-            String guard = getGuard(element);
-            boolean atomic = isAtomic(element);
-            if (Strings.isNullOrEmpty(guard) && !atomic) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger the refresh here.
-                refresh(element);
-                return;
-            }
-        }
-        if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value
             PokaYokeUmlProfileUtil.setEffects(element, null);
         } else {
             PokaYokeUmlProfileUtil.setEffects(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
         }
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(element);
     }
 
     public void unsetEffects(RedefinableElement element) {
@@ -263,18 +243,11 @@ public class PokaYokeProfileServices {
      */
     public void setAtomic(RedefinableElement element, Boolean newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (newValue == null || !newValue) {
-            String guard = getGuard(element);
-            String effects = getEffects(element);
-            if (Strings.isNullOrEmpty(guard) && Strings.isNullOrEmpty(effects)) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger the refresh here.
-                refresh(element);
-                return;
-            }
-        }
         PokaYokeUmlProfileUtil.setAtomic(element, newValue);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(element);
     }
 
     public void setPropertyName(Property property, String newValue) {
