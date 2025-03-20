@@ -20,8 +20,9 @@ import com.google.common.base.Preconditions;
  * <p>
  * A <i>redundant decision-merge pattern</i> is a pattern where the activity branches and after that directly merges.
  * This pattern consists of a decision node and a merge node, such that all control flows from the decision node go
- * directly to the merge node, with nothing in between. Every such pattern can be rewritten by replacing the decision
- * node and merge node and all control flows in between, by a single control flow.
+ * directly to the merge node, with nothing in between. Every such pattern can be rewritten by removing the decision
+ * node and possibly the merge node (depending on whether it has other incoming control flows), and redirecting the
+ * outgoing control flow of the decision node to the proper target node.
  * </p>
  */
 public class RedundantDecisionMergePattern {
@@ -87,14 +88,25 @@ public class RedundantDecisionMergePattern {
                 String.format("Expected merge nodes to have only one outgoing control flow, but found '%d'.",
                         mergeNode.getOutgoings().size()));
 
-        // Update the target of the single incoming control flow into the decision node, to be the target of the single
-        // outgoing control flow out of the merge node.
-        decisionNode.getIncomings().get(0).setTarget(mergeNode.getOutgoings().get(0).getTarget());
+        // Update the target of the single incoming control flow into the decision node, to be the merge node in case
+        // it has other incoming control flows (since the merge node will not be deleted), or otherwise to be the target
+        // of the single outgoing control flow out of the merge node (since the merge node will be deleted).
+        boolean keepMergeNode = mergeNode.getIncomings().stream()
+                .anyMatch(controlFlow -> !controlFlow.getSource().equals(decisionNode));
 
-        // Delete the decision and merge nodes, and all control flows between them.
+        if (keepMergeNode) {
+            decisionNode.getIncomings().get(0).setTarget(mergeNode);
+        } else {
+            decisionNode.getIncomings().get(0).setTarget(mergeNode.getOutgoings().get(0).getTarget());
+        }
+
+        // Delete the decision node and possibly the merge node, and all control flows between the deleted nodes.
         List.copyOf(decisionNode.getOutgoings()).forEach(ActivityEdge::destroy);
-        List.copyOf(mergeNode.getOutgoings()).forEach(ActivityEdge::destroy);
         decisionNode.destroy();
-        mergeNode.destroy();
+
+        if (!keepMergeNode) {
+            List.copyOf(mergeNode.getOutgoings()).forEach(ActivityEdge::destroy);
+            mergeNode.destroy();
+        }
     }
 }

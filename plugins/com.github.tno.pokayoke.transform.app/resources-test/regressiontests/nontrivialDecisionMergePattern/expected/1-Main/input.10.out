@@ -1,0 +1,26 @@
+.model minimal
+.dummy  __start flip right left flip__na_result_2 flip__na_result_1 __end __loop
+.graph
+__end p8
+__loop p8
+__start p2
+flip p6
+flip/1 p3
+flip__na_result_1 p7
+flip__na_result_1/1 p5
+flip__na_result_2 p7
+flip__na_result_2/1 p5
+left p7
+left/1 p4
+p1 __start
+p2 flip/1 left/1 right/1
+p3 flip__na_result_1/1 flip__na_result_2/1
+p4 flip
+p5 left right
+p6 flip__na_result_1 flip__na_result_2
+p7 __end
+p8 __loop
+right p7
+right/1 p4
+.marking { p1 }
+.end
