@@ -578,7 +578,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
                 .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
         boolean containsGuardedControlFlows = from(activity.getOwnedElements()).objectsOfKind(ControlFlow.class)
-                .exists(cf -> PokaYokeUmlProfileUtil.isFormalControlFlow(cf)
+                .exists(cf -> !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getOutgoingGuard(cf))
                         || !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getIncomingGuard(cf)));
         if (containsGuardEffectsActions || containsGuardedControlFlows) {
             return true;

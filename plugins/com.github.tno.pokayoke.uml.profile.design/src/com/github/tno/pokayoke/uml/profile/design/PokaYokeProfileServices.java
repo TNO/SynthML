@@ -62,10 +62,6 @@ public class PokaYokeProfileServices {
         return PokaYokeUmlProfileUtil.isFormalElement(element);
     }
 
-    public static boolean isFormalControlFlow(ControlFlow controlFlow) {
-        return PokaYokeUmlProfileUtil.isFormalControlFlow(controlFlow);
-    }
-
     /**
      * Returns the {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
      * otherwise.
@@ -279,13 +275,13 @@ public class PokaYokeProfileServices {
         // If at least one guard is present, visualize both.
         String guards = label.isEmpty() ? "" : System.getProperty("line.separator");
         String incomingGuard = getIncomingGuard(controlFlow);
-        if (isFormalControlFlow(controlFlow) || !Strings.isNullOrEmpty(incomingGuard)) {
+        String outgoingGuard = getOutgoingGuard(controlFlow);
+        if (!Strings.isNullOrEmpty(outgoingGuard) || !Strings.isNullOrEmpty(incomingGuard)) {
             if (Strings.isNullOrEmpty(incomingGuard)) {
                 incomingGuard = "true";
             }
             incomingGuard = "In: " + incomingGuard;
 
-            String outgoingGuard = getOutgoingGuard(controlFlow);
             if (Strings.isNullOrEmpty(outgoingGuard)) {
                 outgoingGuard = "true";
             }

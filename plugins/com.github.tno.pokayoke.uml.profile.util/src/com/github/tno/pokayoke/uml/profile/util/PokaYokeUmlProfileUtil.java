@@ -73,16 +73,6 @@ public class PokaYokeUmlProfileUtil {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
     }
 
-    /**
-     * Returns {@code true} if {@link FormalControlFlow} stereotype is applied on {@link ControlFlow controlFlow}.
-     *
-     * @param controlFlow The control flow to interrogate.
-     * @return {@code true} if {@link FormalControlFlow} stereotype is applied on the control flow.
-     */
-    public static boolean isFormalControlFlow(ControlFlow controlFlow) {
-        return PokaYokeUmlProfileUtil.getAppliedStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE).isPresent();
-    }
-
     public static boolean isGuardEffectsAction(Action action) {
         return isSetGuard(action) || isSetEffects(action);
     }
