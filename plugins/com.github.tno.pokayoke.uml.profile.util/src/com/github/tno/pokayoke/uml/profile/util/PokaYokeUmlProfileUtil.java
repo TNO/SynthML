@@ -169,7 +169,7 @@ public class PokaYokeUmlProfileUtil {
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings("unchecked")
     public static void setEffects(RedefinableElement element, List<String> newValue) {
         if (newValue == null || newValue.isEmpty()) {
             String guard = getGuard(element);

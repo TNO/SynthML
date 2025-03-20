@@ -141,7 +141,6 @@ public class PokaYokeProfileServices {
     /**
      * Applies the {@link FormalControlFlow} stereotype and sets the {@link FormalControlFlow#setOutgoingGuard(String)
      * guard} property for {@code controlFlow}.
-     *
      * <p>
      * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
      * {@link String#isEmpty() empty}.
