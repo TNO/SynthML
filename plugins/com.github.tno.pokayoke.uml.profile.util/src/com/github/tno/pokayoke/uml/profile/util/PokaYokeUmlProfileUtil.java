@@ -209,7 +209,7 @@ public class PokaYokeUmlProfileUtil {
         if (newValue == null || !newValue) {
             String guard = getGuard(element);
             List<String> effects = getEffects(element);
-            if (Strings.isNullOrEmpty(guard) && (effects == null || effects.isEmpty())) {
+            if (Strings.isNullOrEmpty(guard) && effects.isEmpty()) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 return;
             }
