@@ -104,6 +104,18 @@ public class PokaYokeUmlProfileUtil {
                 .map(st -> (String)controlFlow.getValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD)).orElse(null);
     }
 
+    /**
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setGuard(String) guard} property
+     * for {@code element}.
+     * <p>
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
+     * </p>
+     *
+     * @param element The element to set the property on.
+     * @param newValue The new property value.
+     */
     public static void setGuard(RedefinableElement element, String newValue) {
         if (element instanceof ControlFlow) {
             throw new RuntimeException("Control flow must use incoming or outgoing guard setter.");
@@ -148,11 +160,16 @@ public class PokaYokeUmlProfileUtil {
      * Sets {@code newValue} as contents of the {@link FormalElement#getEffects() effects}. We are using a setter here
      * to deal with the stereotype that is required to set the value. We do not want to implicitly create the stereotype
      * on read, but explicitly create it on write.
+     * <p>
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getGuard(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
+     * </p>
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    @SuppressWarnings({"unchecked", "null"})
+    @SuppressWarnings({"unchecked"})
     public static void setEffects(RedefinableElement element, List<String> newValue) {
         if (newValue == null || newValue.isEmpty()) {
             String guard = getGuard(element);
@@ -176,6 +193,18 @@ public class PokaYokeUmlProfileUtil {
                 .map(st -> (Boolean)element.getValue(st, PROP_FORMAL_ELEMENT_ATOMIC)).orElse(false);
     }
 
+    /**
+     * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setAtomic(boolean) atomic}
+     * property for {@code element}.
+     * <p>
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@code false} and
+     * {@link #getGuard(RedefinableElement)} is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty}.
+     * </p>
+     *
+     * @param element The element to set the property on.
+     * @param newValue The new property value.
+     */
     public static void setAtomic(RedefinableElement element, Boolean newValue) {
         if (newValue == null || !newValue) {
             String guard = getGuard(element);
@@ -215,6 +244,10 @@ public class PokaYokeUmlProfileUtil {
     /**
      * Applies the Poka Yoke UML Profile and sets the {@link FormalControlFlow#getOutgoingGuard()} property for
      * {@code controlFlow}.
+     * <p>
+     * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
+     * {@link String#isEmpty() empty}.
+     * </p>
      *
      * @param controlFlow The control flow to set the outgoing guard on.
      * @param newGuard The new outgoing guard.
