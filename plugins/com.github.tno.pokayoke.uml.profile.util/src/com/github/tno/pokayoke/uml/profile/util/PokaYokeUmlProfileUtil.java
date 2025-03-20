@@ -154,7 +154,7 @@ public class PokaYokeUmlProfileUtil {
      */
     @SuppressWarnings({"unchecked", "null"})
     public static void setEffects(RedefinableElement element, List<String> newValue) {
-        if (newValue.isEmpty() || newValue == null) {
+        if (newValue == null || newValue.isEmpty()) {
             String guard = getGuard(element);
             boolean atomic = isAtomic(element);
             if (Strings.isNullOrEmpty(guard) && !atomic) {
@@ -180,7 +180,7 @@ public class PokaYokeUmlProfileUtil {
         if (newValue == null || !newValue) {
             String guard = getGuard(element);
             List<String> effects = getEffects(element);
-            if (Strings.isNullOrEmpty(guard) && effects.isEmpty()) {
+            if (Strings.isNullOrEmpty(guard) && (effects == null || effects.isEmpty())) {
                 PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
                 return;
             }
