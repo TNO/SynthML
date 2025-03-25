@@ -39,22 +39,26 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p2__to__do_a/1" target="50" source="59">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p2__to__do_b/1" target="65" source="59">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="do_a/1__to__reset" target="55" source="50"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Decision__p4__to__do_a/2" target="51" source="60">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="30">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Decision__p4__to__do_b__na_result_1/2" target="54" source="60">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="32">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -62,11 +66,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="34" name="reset__to__do_b" target="64" source="55"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p6__to__do_b__na_result_1/1" target="53" source="61">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Decision__p6__to__reset/1" target="56" source="61">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="38">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

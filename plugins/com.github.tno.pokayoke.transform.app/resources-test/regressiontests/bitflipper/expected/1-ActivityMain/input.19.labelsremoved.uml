@@ -30,6 +30,7 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="16" target="24" source="27">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
+            <language>CIF</language>
             <body>not bit</body>
           </guard>
         </edge>
@@ -38,6 +39,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="20" target="28" source="24"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="21" target="28" source="27">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="22">
+            <language>CIF</language>
             <body>bit</body>
           </guard>
         </edge>

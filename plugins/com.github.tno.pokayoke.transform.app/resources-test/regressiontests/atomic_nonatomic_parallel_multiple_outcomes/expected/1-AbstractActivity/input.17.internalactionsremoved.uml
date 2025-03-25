@@ -42,11 +42,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="27" name="InitialNode__p1__to__Fork____start" target="39" source="34"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p5__to__Merge__p7" target="37" source="35">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="29">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Decision__p5__to__Merge__p7" target="37" source="35">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="31">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

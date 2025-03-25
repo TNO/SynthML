@@ -26,12 +26,14 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="13" name="Decision__p3__to__action" target="24" source="22">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="14">
+            <language>CIF</language>
             <body>not field</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Merge__p3__to__Decision__p3" target="22" source="20"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="16" name="Decision__p3__to__FinalNode__p4" target="23" source="22">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="17">
+            <language>CIF</language>
             <body>field</body>
           </guard>
         </edge>

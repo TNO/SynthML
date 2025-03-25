@@ -65,11 +65,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="34" name="Fork__Turn_Computer_On__to__Starting_Computer" target="52" source="61"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Decision__p5__to__Drink_Coffee" target="48" source="57">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="36">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Decision__p5__to__Drink_Tea" target="49" source="57">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="38">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

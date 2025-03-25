@@ -39,11 +39,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="20" name="action1__to__Merge__p4" target="36" source="32"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="21" name="Decision__p4__to__Join____end" target="39" source="37">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="22">
+            <language>CIF</language>
             <body>field1</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Decision__p4__to__action1" target="32" source="37">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="24">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

@@ -19,6 +19,7 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="10" name="Decision__p2__to__action" target="17" source="19">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="11">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -26,6 +27,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="13" name="action__to__Merge__p3" target="20" source="17"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="14" name="Decision__p2__to__Merge__p3" target="20" source="19">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="15">
+            <language>CIF</language>
             <body>field</body>
           </guard>
         </edge>
