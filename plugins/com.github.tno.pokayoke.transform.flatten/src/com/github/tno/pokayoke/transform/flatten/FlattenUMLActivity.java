@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -29,6 +28,7 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.UMLActivityUtils;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {
@@ -157,7 +157,8 @@ public class FlattenUMLActivity {
                             // The guard of the new edge is set to the guard of the incoming edge of the call
                             // behavior action. We ignore the guard of the outgoing edge of the initial node because
                             // the source of this edge is not a decision node.
-                            newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
+                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge,
+                                    PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
                             newEdge.setActivity(parentActivity);
 
                             // Add a name for the newly added edge.
@@ -206,7 +207,8 @@ public class FlattenUMLActivity {
 
                             // The guard of the new edge is set to the guard of the incoming edge of the final node.
                             // We ignore the guard of the outgoing edge of the behavior action.
-                            newEdge.setGuard(EcoreUtil.copy(incomingEdge.getGuard()));
+                            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
+                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
                             newEdge.setActivity(parentActivity);
 
                             // Add a name for the newly added edge.
