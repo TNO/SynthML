@@ -175,7 +175,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         return visit(guards, thenExpr, elifs, elseExpr, expression.position, ctx);
     }
 
-    protected abstract T visit(List<T> guards, T thenExpr, List<T> elifs, T elseExpr, TextPosition updatePos,
+    protected abstract T visit(List<T> guards, T thenExpr, List<T> elifs, T elseExpr, TextPosition expressionPos,
             CifContext ctx);
 
     @Override
@@ -186,5 +186,5 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         return visit(guards, thenExpr, expression.position, ctx);
     }
 
-    protected abstract T visit(List<T> guards, T thenExpr, TextPosition updatePos, CifContext ctx);
+    protected abstract T visit(List<T> guards, T thenExpr, TextPosition expressionPos, CifContext ctx);
 }

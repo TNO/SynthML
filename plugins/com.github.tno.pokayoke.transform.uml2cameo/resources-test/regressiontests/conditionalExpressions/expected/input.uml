@@ -192,7 +192,7 @@ isSuccessful = guard</body>
             <body>guard = True
 if guard:
 	pre__counter = counter
-	counter = 12 if (pre__counter) &lt; (10) else 4 if (pre__counter) &lt; (5) else 3
+	counter = (12) if ((pre__counter) &lt; (10)) else (4) if ((pre__counter) &lt; (5)) else (3)
 if guard:
 	if not (0 &lt;= counter &lt;= 20):
 		print(&quot;Expected 'counter' to stay between 0 and 20, but got &quot; + str(counter))
@@ -457,7 +457,7 @@ isSuccessful = guard</body>
             <outputValue xmi:id="222" name="doesGuardHold" outgoing="199">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
             </outputValue>
-            <body>True if (counter) &lt; (10) else False</body>
+            <body>(True) if ((counter) &lt; (10)) else (False)</body>
           </node>
           <node xmi:type="uml:DecisionNode" xmi:id="223" incoming="198 199" outgoing="200 202"/>
           <node xmi:type="uml:SendSignalAction" xmi:id="224" outgoing="205" signal="344">
@@ -485,7 +485,7 @@ isSuccessful = guard</body>
             <outputValue xmi:id="234" name="isSuccessful" outgoing="214">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
             </outputValue>
-            <body>guard = True if (counter) &lt; (10) else False
+            <body>guard = (True) if ((counter) &lt; (10)) else (False)
 pass
 active = ''
 isSuccessful = guard</body>
@@ -579,7 +579,7 @@ isSuccessful = guard</body>
             <body>guard = True
 if guard:
 	pre__counter = counter
-	counter = 4 if (pre__counter) > (10) else 12
+	counter = (4) if ((pre__counter) > (10)) else (12)
 if guard:
 	if not (0 &lt;= counter &lt;= 20):
 		print(&quot;Expected 'counter' to stay between 0 and 20, but got &quot; + str(counter))
@@ -629,8 +629,8 @@ isSuccessful = guard</body>
         </outputValue>
         <body>import random
 branches = []
-if False if False else True if (counter) > (10) else False if False else False: branches.append(0)
-if False if False else True: branches.append(1)
+if (False) if (False) else (True) if ((counter) > (10)) else (False) if (False) else (False): branches.append(0)
+if (False) if (False) else (True): branches.append(1)
 branch = random.choice(branches)
 </body>
       </node>

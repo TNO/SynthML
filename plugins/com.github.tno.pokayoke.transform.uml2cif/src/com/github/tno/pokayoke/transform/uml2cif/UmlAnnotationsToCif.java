@@ -160,33 +160,30 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
 
     @Override
     protected Object visit(List<Object> guards, Object then, List<Object> elifs, Object _else,
-            TextPosition updatePos, CifContext ctx)
+            TextPosition expressionPos, CifContext ctx)
     {
         List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
         Expression thenExpr = (Expression)then;
         List<ElifExpression> elifExprs = elifs.stream().map(ElifExpression.class::cast).toList();
         Expression elseExpr = (Expression)_else;
+        Position dummy = PositionUtils.createDummy(expressionPos.location, expressionPos.source);
 
-        CifType thenType = thenExpr.getType();
-        CifType elseType = elseExpr.getType();
+        CifType combinedType = CifTypeUtils.mergeTypes(thenExpr.getType(), elseExpr.getType(), dummy);
 
-        if (!CifTypeUtils.checkTypeCompat(thenType, elseType , RangeCompat.IGNORE)) {
-            String errorString = String.format("Incompatible types detected: %s %s", thenType, elseType);
-            throw new RuntimeException(errorString);
+        for (ElifExpression elif: elifExprs) {
+            Expression childThen = elif.getThen();
+            combinedType = CifTypeUtils.mergeTypes(combinedType, childThen.getType(), dummy);
         }
 
-        Position dummy = PositionUtils.createDummy(updatePos.location, updatePos.source);
-        CifType mergedType = CifTypeUtils.mergeTypes(thenType, elseType, dummy);
-
-        return CifConstructors.newIfExpression(elifExprs, elseExpr, guardExprs, dummy, thenExpr, mergedType);
+        return CifConstructors.newIfExpression(elifExprs, elseExpr, guardExprs, dummy, thenExpr, combinedType);
     }
 
     @Override
-    protected Object visit(List<Object> guards, Object thenExpr, TextPosition updatePos, CifContext ctx) {
+    protected Object visit(List<Object> guards, Object thenExpr, TextPosition expressionPos, CifContext ctx) {
         List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
         Expression thenUpdates = (Expression)thenExpr;
 
-        Position dummy = PositionUtils.createDummy(updatePos.location, updatePos.source);
+        Position dummy = PositionUtils.createDummy(expressionPos.location, expressionPos.source);
 
         return CifConstructors.newElifExpression(guardExprs, dummy, thenUpdates);
     }
