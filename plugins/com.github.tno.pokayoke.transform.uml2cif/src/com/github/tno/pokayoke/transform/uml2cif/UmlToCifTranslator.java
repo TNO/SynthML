@@ -50,6 +50,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
@@ -845,6 +846,12 @@ public class UmlToCifTranslator {
                     EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
             startEdge.getGuards().add(guard);
 
+            // Add a guard expressing that the outgoing guard of the current incoming UML control flow must hold.
+            if (PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incoming) != null) {
+                startEdge.getGuards()
+                        .add(translator.translate(CifParserHelper.parseOutgoingGuard((ControlFlow)incoming)));
+            }
+
             // Add an update that consumes the token on the current incoming UML control flow.
             Assignment update = CifConstructors.newAssignment();
             update.setAddressable(CifConstructors.newDiscVariableExpression(null,
@@ -891,26 +898,33 @@ public class UmlToCifTranslator {
                 // deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (outgoing.getGuard() != null) {
+                if (PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoing) != null) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
                             "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
 
-                    endEdge.getGuards().add(translator.translate(CifParserHelper.parseExpression(outgoing.getGuard())));
+                    endEdge.getGuards()
+                            .add(translator.translate(CifParserHelper.parseIncomingGuard((ControlFlow)outgoing)));
                 }
             }
         }
     }
 
     /**
-     * Gives the guard of the given UML element.
+     * Gives the guard of the given UML element. If the element is a control flow, uses the incoming guard.
      *
      * @param element The UML element.
      * @return The guard of the given UML element.
      */
     public Expression getGuard(RedefinableElement element) {
-        AExpression guard = CifParserHelper.parseGuard(element);
+        AExpression guard;
+        if (element instanceof ControlFlow controlFlow) {
+            guard = CifParserHelper.parseIncomingGuard(controlFlow);
+        } else {
+            guard = CifParserHelper.parseGuard(element);
+        }
+
         if (guard == null) {
             return CifValueUtils.makeTrue();
         }
