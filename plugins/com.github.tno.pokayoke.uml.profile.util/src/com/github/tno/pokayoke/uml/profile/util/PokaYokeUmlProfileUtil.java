@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -239,6 +240,30 @@ public class PokaYokeUmlProfileUtil {
             return;
         }
         controlFlow.setGuard(createCifExpression(newGuard));
+    }
+
+    /**
+     * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
+     * {@code controlFlow}.
+     *
+     * @param controlFlow The control flow to set the incoming guard on.
+     * @param valueSpec The value specification to be set as incoming guard.
+     */
+    public static void setIncomingGuard(ControlFlow controlFlow, ValueSpecification valueSpec) {
+        if (valueSpec == null) {
+            if (controlFlow.getGuard() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            }
+            return;
+        }
+
+        if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
+            controlFlow.setGuard(valueSpec);
+        } else {
+            throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
+        }
     }
 
     /**
