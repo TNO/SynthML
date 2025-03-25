@@ -19,6 +19,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Comment;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -214,6 +215,22 @@ public class Uml2GalTranslator {
             }
         }
 
+        // Add incoming guard of initial node's outgoing edge.
+        Activity mainActivity = (Activity)classElement.getClassifierBehavior();
+        for (ActivityNode node: mainActivity.getNodes()) {
+            if (node instanceof InitialNode initialNode) {
+                Verify.verify(initialNode.getOutgoings().size() == 1,
+                        "Expected only one outgoing edge from the initial node.");
+                // Add incoming guard of the outgoing edge.
+                AExpression incomingGuardExpr = CifParserHelper
+                        .parseIncomingGuard((ControlFlow)initialNode.getOutgoings().get(0));
+                BooleanExpression guard = expressionTranslator.translateBoolExpr(incomingGuardExpr);
+                if (guard != null) {
+                    initTransitionBuilder.addGuard(guard);
+                }
+            }
+        }
+
         // Build the initialization transition and add it to the GAL type declaration.
         typeBuilder.addTransition(initTransitionBuilder.build());
 
@@ -319,13 +336,8 @@ public class Uml2GalTranslator {
     private void translateDecisionNode(DecisionNode node) {
         // Define a GAL transition for every outgoing edge, so that only one of these edges can be taken.
         for (ActivityEdge outgoingEdge: node.getOutgoings()) {
-            // Translate the edge guard and include it in the GAL transition.
-            AExpression guardExpr = CifParserHelper.parseExpression(outgoingEdge.getGuard());
-            BooleanExpression guard = expressionTranslator.translateBoolExpr(guardExpr);
-            List<BooleanExpression> guards = guard == null ? ImmutableList.of() : ImmutableList.of(guard);
-
             typeBuilder.addTransition(translateActivityNode(node, node.getIncomings(), ImmutableList.of(outgoingEdge),
-                    guards, ImmutableList.of()));
+                    ImmutableList.of(), ImmutableList.of()));
         }
     }
 
@@ -355,6 +367,10 @@ public class Uml2GalTranslator {
                 "Expected all incoming edges to consider to be actual incoming edges of the given node.");
         Preconditions.checkArgument(node.getOutgoings().containsAll(outgoingEdgesToConsider),
                 "Expected all outgoing edges to consider to be actual outgoing edges of the given node.");
+        Preconditions.checkArgument(incomingEdgesToConsider.stream().allMatch(e -> e instanceof ControlFlow),
+                "Expected all incoming edges to be control flows.");
+        Preconditions.checkArgument(outgoingEdgesToConsider.stream().allMatch(e -> e instanceof ControlFlow),
+                "Expected all outgoing edges to be control flows.");
 
         // Define a builder for the GAL transition to translate the given node to.
         GalTransitionBuilder transitionBuilder = new GalTransitionBuilder();
@@ -390,6 +406,13 @@ public class Uml2GalTranslator {
             Variable variable = edgeMapping.get(incomingEdge);
             transitionBuilder.addEqualityGuard(variable, Uml2GalTranslationHelper.toIntExpression(true));
             transitionBuilder.addAssignment(variable, Uml2GalTranslationHelper.toIntExpression(false));
+
+            // Add outgoing guard of the incoming edge.
+            AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard((ControlFlow)incomingEdge);
+            BooleanExpression guard = expressionTranslator.translateBoolExpr(outgoingGuardExpr);
+            if (guard != null) {
+                transitionBuilder.addGuard(guard);
+            }
         }
 
         // Define a guard for every outgoing edge to consider, to check if it is disabled, as well as an assignment to
@@ -398,6 +421,13 @@ public class Uml2GalTranslator {
             Variable variable = edgeMapping.get(outgoingEdge);
             transitionBuilder.addEqualityGuard(variable, Uml2GalTranslationHelper.toIntExpression(false));
             transitionBuilder.addAssignment(variable, Uml2GalTranslationHelper.toIntExpression(true));
+
+            // Add incoming guard of the outgoing edges.
+            AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
+            BooleanExpression guard = expressionTranslator.translateBoolExpr(incomingGuardExpr);
+            if (guard != null) {
+                transitionBuilder.addGuard(guard);
+            }
         }
 
         // Build and return the transition.
