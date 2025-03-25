@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Lists;
 import org.eclipse.uml2.uml.Action;
@@ -44,7 +45,6 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -58,6 +58,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 
 /**
  * Transforms UML models that are annotated with guards, effects, preconditions, etc., to UML models that can be
@@ -421,7 +422,23 @@ public class UMLToCameoTransformer {
      * @return The translated guard.
      */
     private String translateGuard(RedefinableElement element) {
-        return translator.translateExpression(CifParserHelper.parseGuard(element));
+        // Get the outgoing guard of the incoming edge, if element is an activity node.
+        AExpression extraGuard = null;
+        if (!(element instanceof OpaqueBehavior)) {
+            List<ActivityEdge> incomingEdges = ((ActivityNode)element).getIncomings();
+            Verify.verify(incomingEdges.size() == 1);
+            extraGuard = CifParserHelper.parseOutgoingGuard((ControlFlow)incomingEdges.get(0));
+        }
+
+        // Get the guard of the element. Conjunct with the extra guard if relevant.
+        AExpression elementGuard = CifParserHelper.parseGuard(element);
+        if (extraGuard != null && elementGuard != null) {
+            extraGuard = new ABinaryExpression("and", extraGuard, extraGuard, null);
+        } else {
+            extraGuard = (extraGuard == null) ? elementGuard : extraGuard;
+        }
+
+        return translator.translateExpression(extraGuard);
     }
 
     /**
@@ -463,10 +480,10 @@ public class UMLToCameoTransformer {
         decisionEvaluationProgram.append("import random\n");
         decisionEvaluationProgram.append("branches = []\n");
 
+        // Get the incoming guard of the outgoing edges.
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
-            ActivityEdge edge = decisionNode.getOutgoings().get(i);
-            ValueSpecification edgeGuard = edge.getGuard();
-            String translatedGuard = translator.translateExpression(CifParserHelper.parseExpression(edgeGuard));
+            ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
             decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
