@@ -15,6 +15,7 @@ import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Lists;
 import org.eclipse.uml2.uml.Action;
@@ -26,6 +27,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -116,6 +118,25 @@ public class UMLToCameoTransformer {
         Preconditions.checkArgument(modelNestedClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
+
+        // Check that only outgoing edges from decision nodes have incoming guards, and only incoming edges to guarded
+        // actions have outgoing guards.
+        for (Element activityElement: ((Activity)contextClass.getClassifierBehavior()).getOwnedElements()) {
+            if (activityElement instanceof ControlFlow controlFlow) {
+                AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
+                Preconditions.checkArgument(
+                        incomingGuard == null || (incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)
+                                || controlFlow.getSource() instanceof DecisionNode,
+                        "Expected incoming guards only for edges that leave a decision node.");
+
+                AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard(controlFlow);
+                Preconditions.checkArgument(
+                        outgoingGuard == null || (outgoingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)
+                                || controlFlow.getTarget() instanceof CallBehaviorAction
+                                || controlFlow.getTarget() instanceof OpaqueAction,
+                        "Expected outgoing guards only for edges that reach a call behavior or opaque action node.");
+            }
+        }
 
         // Collect integer bounds and set default values for all class properties
         propertyBounds.clear();
