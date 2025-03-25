@@ -107,7 +107,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     @Override
     protected Type visit(Type addressable, TextPosition assignmentPos, Type value, CifContext ctx) {
-         return combineTypesOrThrow(addressable, value, assignmentPos);
+        return combineTypesOrThrow(addressable, value, assignmentPos);
     }
 
     @Override
@@ -238,7 +238,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
 
     /**
      * Combines the {@code left} and {@code right} types into a compatible return type.
-     * Throws an exception if the types cannot be combined
+     * Throws an exception if the types cannot be combined.
      *
      * @param left One of the types to combine.
      * @param right One of the types to combine.

@@ -40,11 +40,11 @@ public abstract class ACifObjectVisitor<T, C> {
         }
     }
 
-    protected abstract T visit(AElifExpression update, C ctx);
-
     protected abstract T visit(AAssignmentUpdate update, C ctx);
 
     protected abstract T visit(AIfUpdate update, C ctx);
+
+    protected abstract T visit(AElifExpression update, C ctx);
 
     protected T visit(AExpression expr, C ctx) {
         if (expr instanceof ABinaryExpression binExpr) {
