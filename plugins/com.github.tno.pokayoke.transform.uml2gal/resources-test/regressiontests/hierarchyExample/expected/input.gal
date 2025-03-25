@@ -52,11 +52,11 @@ gal ExampleModel__ExampleClass{
     __edge__8 = 0    ;
     __edge__7 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__7 [ __init == 1 && inputLocation == $Left && __edge__5 == 1 && __edge__8 == 0 ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__7 [ __init == 1 && __edge__5 == 1 && __edge__8 == 0 && inputLocation == $Left ] {
     __edge__5 = 0    ;
     __edge__8 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__8 [ __init == 1 && inputLocation == $Right && __edge__5 == 1 && __edge__9 == 0 ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__8 [ __init == 1 && __edge__5 == 1 && __edge__9 == 0 && inputLocation == $Right ] {
     __edge__5 = 0    ;
     __edge__9 = 1    ;
   }
