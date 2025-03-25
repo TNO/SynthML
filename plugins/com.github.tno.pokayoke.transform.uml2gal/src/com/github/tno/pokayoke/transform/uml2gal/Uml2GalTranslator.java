@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -326,6 +327,18 @@ public class Uml2GalTranslator {
         if (updates.size() > 1) {
             throw new RuntimeException("Multiple effects are not supported yet, on activity node: " + node);
         }
+
+        // Check that a node with effects does not have incoming guards on its outgoing edges.
+        if (updates.size() > 0) {
+            for (ActivityEdge outgoingEdge: node.getOutgoings()) {
+                AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
+                if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
+                    throw new RuntimeException(String.format(
+                            "Edge leaving node '%s' with effects has not-null incoming guard.", node.getName()));
+                }
+            }
+        }
+
         List<Assignment> effects = expressionTranslator
                 .translateUpdates(Iterables.getFirst(updates, Collections.emptyList()));
 
