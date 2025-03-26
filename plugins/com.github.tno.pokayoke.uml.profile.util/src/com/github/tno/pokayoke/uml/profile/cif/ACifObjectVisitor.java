@@ -44,8 +44,6 @@ public abstract class ACifObjectVisitor<T, C> {
 
     protected abstract T visit(AIfUpdate update, C ctx);
 
-    protected abstract T visit(AElifExpression update, C ctx);
-
     protected T visit(AExpression expr, C ctx) {
         if (expr instanceof ABinaryExpression binExpr) {
             return visit(binExpr, ctx);
@@ -75,6 +73,8 @@ public abstract class ACifObjectVisitor<T, C> {
     protected abstract T visit(AUnaryExpression expr, C ctx);
 
     protected abstract T visit(AIfExpression expr, C ctx);
+
+    protected abstract T visit(AElifExpression update, C ctx);
 
     protected abstract T visit(AInvariant invariant, C ctx);
 }
