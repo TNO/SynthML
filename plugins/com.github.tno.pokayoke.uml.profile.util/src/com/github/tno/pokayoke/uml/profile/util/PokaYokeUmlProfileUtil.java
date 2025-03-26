@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -227,42 +228,50 @@ public class PokaYokeUmlProfileUtil {
      * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
      * {@code controlFlow}.
      *
-     * @param controlFlow The control flow to set the incoming guard on.
+     * @param edge The activity edge to set the incoming guard on.
      * @param newGuard The new incoming guard.
      */
-    public static void setIncomingGuard(ControlFlow controlFlow, String newGuard) {
-        if (Strings.isNullOrEmpty(newGuard)) {
-            if (controlFlow.getGuard() != null) {
-                // Resetting a value to null causes a model-element deletion popup in UML designer.
-                // Avoiding this by setting a LiteralNull value.
-                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+    public static void setIncomingGuard(ActivityEdge edge, String newGuard) {
+        if (edge instanceof ControlFlow controlFlow) {
+            if (Strings.isNullOrEmpty(newGuard)) {
+                if (controlFlow.getGuard() != null) {
+                    // Resetting a value to null causes a model-element deletion popup in UML designer.
+                    // Avoiding this by setting a LiteralNull value.
+                    controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                }
+                return;
             }
-            return;
+            controlFlow.setGuard(createCifExpression(newGuard));
+        } else {
+            throw new RuntimeException("Activity edges must be of type control flow.");
         }
-        controlFlow.setGuard(createCifExpression(newGuard));
     }
 
     /**
      * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
      * {@code controlFlow}.
      *
-     * @param controlFlow The control flow to set the incoming guard on.
+     * @param edge The activity edge to set the incoming guard on.
      * @param valueSpec The value specification to be set as incoming guard.
      */
-    public static void setIncomingGuard(ControlFlow controlFlow, ValueSpecification valueSpec) {
-        if (valueSpec == null) {
-            if (controlFlow.getGuard() != null) {
-                // Resetting a value to null causes a model-element deletion popup in UML designer.
-                // Avoiding this by setting a LiteralNull value.
-                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+    public static void setIncomingGuard(ActivityEdge edge, ValueSpecification valueSpec) {
+        if (edge instanceof ControlFlow controlFlow) {
+            if (valueSpec == null) {
+                if (controlFlow.getGuard() != null) {
+                    // Resetting a value to null causes a model-element deletion popup in UML designer.
+                    // Avoiding this by setting a LiteralNull value.
+                    controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                }
+                return;
             }
-            return;
-        }
 
-        if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
-            controlFlow.setGuard(valueSpec);
+            if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
+                controlFlow.setGuard(valueSpec);
+            } else {
+                throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
+            }
         } else {
-            throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
+            throw new RuntimeException("Activity edges must be of type control flow.");
         }
     }
 
