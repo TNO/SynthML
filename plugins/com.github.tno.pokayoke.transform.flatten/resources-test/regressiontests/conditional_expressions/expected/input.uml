@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="System" classifierBehavior="14" isActive="true">
+      <nameExpression xmi:id="3" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="4" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="5" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="6" name="init" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="9">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="counter_clicks" visibility="public" type="39">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="11" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="12" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="13">
+          <language>CIF</language>
+          <body>2</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Decision" node="33 34 35 36 37 38">
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" target="37" source="35">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
+            <language>CIF</language>
+            <body>if false: false elif counter_clicks > 10: true elif false: false else false end</body>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="17" name="Decision1_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" target="36" source="35">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+            <language>CIF</language>
+            <body>if false: false else true end</body>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="20" name="Decision1_To_OpaqueAction2_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="21" target="36" source="37">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="22" name="OpaqueAction1_To_Merge1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="23" name="OpaqueAction1_To_Merge1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="34" source="36">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="25" name="Merge1_To_ActivityFinal1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="26" name="Merge1_To_ActivityFinal1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" target="38" source="33">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="28" name="Initial1_To_OpaqueAction3_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="29" name="Initial1_To_OpaqueAction3_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" target="35" source="38">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="31" name="OpaqueAction3_To_Decision1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="32" name="OpaqueAction3_To_Decision1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="33" name="Initial" outgoing="27"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="34" name="ActivityFinal1" incoming="24"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="35" name="Decision" incoming="30" outgoing="15 18"/>
+        <node xmi:type="uml:MergeNode" xmi:id="36" name="Merge" incoming="21 18" outgoing="24"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="37" name="OpaqueAction1" incoming="15" outgoing="21">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="38" name="Counter" incoming="27" outgoing="30">
+          <body>// TODO body of OpaqueAction3</body>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="39" name="counterSize" visibility="public">
+      <ownedRule xmi:id="40" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="41"/>
+      </ownedRule>
+      <ownedRule xmi:id="42" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="43" value="20"/>
+      </ownedRule>
+      <generalization xmi:id="44">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <profileApplication xmi:id="45">
+      <eAnnotations xmi:id="46" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="47" base_RedefinableElement="37" atomic="true">
+    <effects>counter_clicks := if counter_clicks > 10: 6 elif counter_clicks &lt; 5: 4 else counter_clicks - 1 end</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalElement xmi:id="48" guard="init = false and if counter_clicks = 2: true else false end" base_RedefinableElement="38" atomic="true">
+    <effects>counter_clicks := if counter_clicks > 10: 4 else 12 end, init := true</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

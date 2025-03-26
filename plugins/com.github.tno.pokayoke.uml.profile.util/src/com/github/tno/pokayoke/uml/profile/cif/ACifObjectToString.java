@@ -14,7 +14,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -32,6 +34,8 @@ public class ACifObjectToString {
             return toString(update);
         } else if (object instanceof AElifUpdate elifUpdate) {
             return toString(elifUpdate);
+        } else if (object instanceof AElifExpression elifExpression) {
+            return toString(elifExpression);
         } else if (object instanceof AInvariant invariant) {
             return toString(invariant);
         } else {
@@ -44,6 +48,11 @@ public class ACifObjectToString {
             return escapeName(nameExpr.name.name);
         } else if (expression instanceof ABoolExpression boolExpr) {
             return boolExpr.value ? "true" : "false";
+        } else if (expression instanceof AIfExpression ifExpr) {
+            return "if " + ifExpr.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
+                    + toString(ifExpr.then)
+                    + ifExpr.elifs.stream().map(u -> toString(u)).collect(Collectors.joining(""))
+                    + " else " + toString(ifExpr.elseExpr) + " end";
         } else if (expression instanceof ABinaryExpression binExpr) {
             // See also CifPrettyPrinter.
             int opStrength = getBindingStrength(binExpr);
@@ -101,6 +110,11 @@ public class ACifObjectToString {
                 + elifUpdate.thens.stream().map(u -> toString(u)).collect(Collectors.joining(", "));
     }
 
+    public static String toString(AElifExpression elifExpression) {
+        return " elif " + elifExpression.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
+                + toString(elifExpression.then);
+    }
+
     public static String toString(AInvariant invariant) {
         // Sanity check.
         Assert.ifAndOnlyIf(invariant.invKind == null, invariant.events == null);
@@ -141,13 +155,15 @@ public class ACifObjectToString {
         // 3: <, <=, >, >=, =, !=,
         // 4: + (binary), - (binary)
         // 6: - (unary), not
-        // 8: true, false, 5, a
+        // 8: true, false, 5, a, if
 
         if (expr instanceof ABoolExpression) {
             return 8;
         } else if (expr instanceof AIntExpression) {
             return 8;
         } else if (expr instanceof ANameExpression) {
+            return 8;
+        } else if (expr instanceof AIfExpression) {
             return 8;
         }
 
