@@ -536,7 +536,7 @@ public class UMLToCameoTransformer {
             OpaqueExpression newGuard = FileHelper.FACTORY.createOpaqueExpression();
             newGuard.getLanguages().add("Python");
             newGuard.getBodies().add("branch == " + i);
-            edge.setGuard(newGuard);
+            PokaYokeUmlProfileUtil.setIncomingGuard((ControlFlow)edge, newGuard);
         }
     }
 }
