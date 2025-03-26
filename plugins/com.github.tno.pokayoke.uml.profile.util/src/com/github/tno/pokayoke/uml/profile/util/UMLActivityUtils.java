@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.uml.profile.util;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
@@ -34,7 +33,7 @@ public class UMLActivityUtils {
             if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
                     && literal.isValue())
             {
-                PokaYokeUmlProfileUtil.setIncomingGuard((ControlFlow)edge, (ValueSpecification)null);
+                PokaYokeUmlProfileUtil.setIncomingGuard(edge, (ValueSpecification)null);
             }
         }
     }
