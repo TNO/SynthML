@@ -399,4 +399,33 @@ public class PokaYokeUmlProfileUtil {
         expression.getBodies().add(newValue);
         return expression;
     }
+
+    /**
+     * Compute the conjunction of both the guards of the incoming control flow, and the incoming guard of the outgoing
+     * control flow.
+     *
+     * @param incomingFlow The incoming control flow.
+     * @param outgoingFlow The outgoing control flow.
+     * @return The string with the guards conjunction.
+     */
+    public static String computeGuardConjunction(ControlFlow incomingFlow, ControlFlow outgoingFlow) {
+        String newGuard = null;
+        String incomingGuardOfIncomingEdge = PokaYokeUmlProfileUtil.getIncomingGuard(incomingFlow);
+        if (incomingGuardOfIncomingEdge != null) {
+            newGuard = incomingGuardOfIncomingEdge;
+        }
+        String outgoingGuardOfIncomingEdge = PokaYokeUmlProfileUtil.getOutgoingGuard(incomingFlow);
+        if (newGuard != null && outgoingGuardOfIncomingEdge != null) {
+            newGuard = String.format("(%s) and (%s)", newGuard, outgoingGuardOfIncomingEdge);
+        } else if (outgoingGuardOfIncomingEdge != null) {
+            newGuard = outgoingGuardOfIncomingEdge;
+        }
+        String incomingGuardOfOutgoingEdge = PokaYokeUmlProfileUtil.getIncomingGuard(outgoingFlow);
+        if (newGuard != null && incomingGuardOfOutgoingEdge != null) {
+            newGuard = String.format("(%s) and (%s)", newGuard, incomingGuardOfOutgoingEdge);
+        } else if (incomingGuardOfOutgoingEdge != null) {
+            newGuard = incomingGuardOfOutgoingEdge;
+        }
+        return newGuard;
+    }
 }
