@@ -42,7 +42,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.IntervalConstraint;
-import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -60,7 +59,6 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
 import PokaYoke.PokaYokePackage;
@@ -567,32 +565,19 @@ public class CompositeDataTypeFlattener {
         // Unfold the guards and effects of owned elements.
         for (Element ownedElement: activity.getOwnedElements()) {
             if (ownedElement instanceof ControlFlow controlEdge) {
-                // If the control flow has incoming or outgoing guards, unfold them.
-                if (!Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getOutgoingGuard(controlEdge))
-                        || !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getIncomingGuard(controlEdge)))
-                {
-                    // Get the incoming and outgoing guards, unfold them, and substitute the corresponding string.
-                    AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlEdge);
-                    if (incomingGuard != null) {
-                        AExpression unfoldedIncoming = unfoldAExpression(incomingGuard, propertyToLeaves,
-                                absoluteToFlatNames);
-                        PokaYokeUmlProfileUtil.setIncomingGuard(controlEdge,
-                                ACifObjectToString.toString(unfoldedIncoming));
-                    }
+                // Get the incoming and outgoing guards, unfold them, and substitute the corresponding string.
+                AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlEdge);
+                if (incomingGuard != null) {
+                    AExpression unfoldedIncoming = unfoldAExpression(incomingGuard, propertyToLeaves,
+                            absoluteToFlatNames);
+                    PokaYokeUmlProfileUtil.setIncomingGuard(controlEdge, ACifObjectToString.toString(unfoldedIncoming));
+                }
 
-                    AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard(controlEdge);
-                    if (outgoingGuard != null) {
-                        AExpression unfoldedOutgoing = unfoldAExpression(outgoingGuard, propertyToLeaves,
-                                absoluteToFlatNames);
-                        PokaYokeUmlProfileUtil.setOutgoingGuard(controlEdge,
-                                ACifObjectToString.toString(unfoldedOutgoing));
-                    }
-                } else if (controlEdge.getGuard() instanceof LiteralBoolean || controlEdge.getGuard() == null) {
-                    continue;
-                } else {
-                    throw new RuntimeException(
-                            String.format("Unfolding control flow guards of class '%s' is not supported.",
-                                    controlEdge.getGuard().getClass().getSimpleName()));
+                AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard(controlEdge);
+                if (outgoingGuard != null) {
+                    AExpression unfoldedOutgoing = unfoldAExpression(outgoingGuard, propertyToLeaves,
+                            absoluteToFlatNames);
+                    PokaYokeUmlProfileUtil.setOutgoingGuard(controlEdge, ACifObjectToString.toString(unfoldedOutgoing));
                 }
             } else if (ownedElement instanceof CallBehaviorAction callBehavior) {
                 if (PokaYokeUmlProfileUtil.isFormalElement(callBehavior)) {
