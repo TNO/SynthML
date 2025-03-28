@@ -154,11 +154,15 @@ public class FlattenUMLActivity {
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
 
-                            // The guard of the new edge is set to the guard of the incoming edge of the call
-                            // behavior action. We ignore the guard of the outgoing edge of the initial node because
-                            // the source of this edge is not a decision node.
-                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge,
-                                    PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
+                            // The incoming guard of the new edge is set to the conjunction of both the guard of the
+                            // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
+                            // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
+                            // outgoing edge.
+                            String newGuard = PokaYokeUmlProfileUtil.computeGuardConjunction((ControlFlow)incomingEdge,
+                                    (ControlFlow)outgoingEdge);
+                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newGuard);
+                            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
+                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
                             newEdge.setActivity(parentActivity);
 
                             // Add a name for the newly added edge.
@@ -205,10 +209,15 @@ public class FlattenUMLActivity {
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
 
-                            // The guard of the new edge is set to the guard of the incoming edge of the final node.
-                            // We ignore the guard of the outgoing edge of the behavior action.
+                            // The incoming guard of the new edge is set to the conjunction of both the guard of the
+                            // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
+                            // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
+                            // outgoing edge.
+                            String newGuard = PokaYokeUmlProfileUtil.computeGuardConjunction((ControlFlow)incomingEdge,
+                                    (ControlFlow)outgoingEdge);
+                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newGuard);
                             PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
+                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
                             newEdge.setActivity(parentActivity);
 
                             // Add a name for the newly added edge.
