@@ -6,7 +6,6 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralInteger;
-import org.eclipse.uml2.uml.ValueSpecification;
 
 /** Utils that process UML activities. */
 public class UMLActivityUtils {
@@ -33,7 +32,7 @@ public class UMLActivityUtils {
             if (!(edge.getSource() instanceof DecisionNode) && edge.getGuard() instanceof LiteralBoolean literal
                     && literal.isValue())
             {
-                PokaYokeUmlProfileUtil.setIncomingGuard(edge, (ValueSpecification)null);
+                edge.setGuard(null);
             }
         }
     }
