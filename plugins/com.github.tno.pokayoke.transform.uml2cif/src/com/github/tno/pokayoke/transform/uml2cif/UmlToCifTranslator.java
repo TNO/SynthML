@@ -42,6 +42,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
@@ -495,6 +496,20 @@ public class UmlToCifTranslator {
         Expression guard = getGuard(umlAction);
         List<List<Update>> effects = getEffects(umlAction);
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
+
+        // Check that a node with effects does not have incoming guards on its outgoing edges.
+        if (!effects.get(0).isEmpty()
+                && (umlElement instanceof OpaqueAction || umlElement instanceof CallBehaviorAction))
+        {
+            ActivityNode node = (ActivityNode)umlElement;
+            for (ActivityEdge outgoingEdge: node.getOutgoings()) {
+                AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
+                if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
+                    throw new RuntimeException(String.format(
+                            "Edge leaving node '%s' with effects has not-null/true incoming guard.", node.getName()));
+                }
+            }
+        }
 
         // Create a CIF start event for the action.
         Event cifStartEvent = CifConstructors.newEvent();
