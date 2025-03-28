@@ -29,7 +29,6 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -151,7 +150,7 @@ public class ActivityHelper {
         OpaqueExpression decisionToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         decisionToMergeGuard.getBodies().add("else");
         decisionToMergeGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(checkGuardDecisionToOuterMergeFlow, decisionToMergeGuard);
+        checkGuardDecisionToOuterMergeFlow.setGuard(decisionToMergeGuard);
 
         // Define the acquire signal send action.
         SendSignalAction sendAcquireNode = FileHelper.FACTORY.createSendSignalAction();
@@ -181,7 +180,7 @@ public class ActivityHelper {
         OpaqueExpression decisionToFinalGuard = FileHelper.FACTORY.createOpaqueExpression();
         decisionToFinalGuard.getBodies().add(checkGuardOutput.getName());
         decisionToFinalGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(checkGuardDecisionToRequesterValueFlow, decisionToFinalGuard);
+        checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
 
         // Define the object flow from the requester value node to the node that sends the acquire signal.
         ObjectFlow requesterObjectFlow = FileHelper.FACTORY.createObjectFlow();
@@ -248,7 +247,7 @@ public class ActivityHelper {
         OpaqueExpression innerDecisionToGuardAndEffectGuard = FileHelper.FACTORY.createOpaqueExpression();
         innerDecisionToGuardAndEffectGuard.getBodies().add("isActive");
         innerDecisionToGuardAndEffectGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(innerDecisionToGuardAndEffectFlow, innerDecisionToGuardAndEffectGuard);
+        innerDecisionToGuardAndEffectFlow.setGuard(innerDecisionToGuardAndEffectGuard);
 
         // Define the control flow from the inner decision node to the node that executes the guard and effect.
         ControlFlow innerDecisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
@@ -258,7 +257,7 @@ public class ActivityHelper {
         OpaqueExpression innerDecisionToInnerMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         innerDecisionToInnerMergeGuard.getBodies().add("else");
         innerDecisionToInnerMergeGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(innerDecisionToInnerMergeFlow, innerDecisionToInnerMergeGuard);
+        innerDecisionToInnerMergeFlow.setGuard(innerDecisionToInnerMergeGuard);
 
         // Define the outer decision node.
         DecisionNode outerDecisionNode = FileHelper.FACTORY.createDecisionNode();
@@ -288,7 +287,7 @@ public class ActivityHelper {
         OpaqueExpression outerDecisionToFinalGuard = FileHelper.FACTORY.createOpaqueExpression();
         outerDecisionToFinalGuard.getBodies().add(guardAndEffectOutput.getName());
         outerDecisionToFinalGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(outerDecisionToFinalFlow, outerDecisionToFinalGuard);
+        outerDecisionToFinalFlow.setGuard(outerDecisionToFinalGuard);
 
         // Define the control flow from the outer decision node to the outer merge node.
         ControlFlow outerDecisionToOuterMergeFlow = FileHelper.FACTORY.createControlFlow();
@@ -298,7 +297,7 @@ public class ActivityHelper {
         OpaqueExpression outerDecisionToOuterMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         outerDecisionToOuterMergeGuard.getBodies().add("else");
         outerDecisionToOuterMergeGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(outerDecisionToOuterMergeFlow, outerDecisionToOuterMergeGuard);
+        outerDecisionToOuterMergeFlow.setGuard(outerDecisionToOuterMergeGuard);
 
         return activity;
     }
@@ -493,7 +492,7 @@ public class ActivityHelper {
         OpaqueExpression decisionToWaitGuard = FileHelper.FACTORY.createOpaqueExpression();
         decisionToWaitGuard.getBodies().add(checkReleasedOutput.getName());
         decisionToWaitGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(decisionToOuterMergeFlow, decisionToWaitGuard);
+        decisionToOuterMergeFlow.setGuard(decisionToWaitGuard);
 
         // Define the control flow between the decision node and the inner merge node.
         ControlFlow decisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
@@ -503,7 +502,7 @@ public class ActivityHelper {
         OpaqueExpression decisionToInnerMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         decisionToInnerMergeGuard.getBodies().add("else");
         decisionToInnerMergeGuard.getLanguages().add("Python");
-        PokaYokeUmlProfileUtil.setIncomingGuard(decisionToInnerMergeFlow, decisionToInnerMergeGuard);
+        decisionToInnerMergeFlow.setGuard(decisionToInnerMergeGuard);
 
         return activity;
     }
