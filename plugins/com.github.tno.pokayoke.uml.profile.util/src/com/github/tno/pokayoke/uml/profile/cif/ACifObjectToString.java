@@ -51,8 +51,8 @@ public class ACifObjectToString {
         } else if (expression instanceof AIfExpression ifExpr) {
             return "if " + ifExpr.guards.stream().map(u -> toString(u)).collect(Collectors.joining(", ")) + ": "
                     + toString(ifExpr.then)
-                    + ifExpr.elifs.stream().map(u -> toString(u)).collect(Collectors.joining(""))
-                    + " else " + toString(ifExpr.elseExpr) + " end";
+                    + ifExpr.elifs.stream().map(u -> toString(u)).collect(Collectors.joining("")) + " else "
+                    + toString(ifExpr.elseExpr) + " end";
         } else if (expression instanceof ABinaryExpression binExpr) {
             // See also CifPrettyPrinter.
             int opStrength = getBindingStrength(binExpr);

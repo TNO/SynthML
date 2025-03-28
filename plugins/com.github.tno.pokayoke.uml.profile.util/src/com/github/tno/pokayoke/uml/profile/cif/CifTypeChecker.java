@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.uml.profile.cif;
 
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 import org.eclipse.escet.cif.parser.ast.AInvariant;

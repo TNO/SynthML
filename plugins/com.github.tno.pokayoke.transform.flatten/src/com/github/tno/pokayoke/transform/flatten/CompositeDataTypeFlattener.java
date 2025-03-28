@@ -392,6 +392,15 @@ public class CompositeDataTypeFlattener {
         }
     }
 
+    private static AElifExpression unfoldAElifExpression(AElifExpression elifExpr,
+            Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
+    {
+        List<AExpression> guardExprs = elifExpr.guards.stream()
+                .map(guard -> unfoldAExpression(guard, propertyToLeaves, absoluteToFlatNames)).toList();
+        AExpression thenExpr = unfoldAExpression(elifExpr.then, propertyToLeaves, absoluteToFlatNames);
+        return new AElifExpression(guardExprs, thenExpr, elifExpr.position);
+    }
+
     private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, Set<String> leaves,
             String operator, TextPosition position, Map<String, String> absoluteToFlatNames)
     {
@@ -539,15 +548,6 @@ public class CompositeDataTypeFlattener {
                 .flatMap(u -> unfoldAUpdate(u, propertyToLeaves, absoluteToFlatNames).stream()).toList();
 
         return new AElifUpdate(unfoldedElifGuards, unfoldedElifThens, elifUpdate.position);
-    }
-
-    private static AElifExpression unfoldAElifExpression(AElifExpression elifExpr,
-            Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
-    {
-        List<AExpression> guardExprs = elifExpr.guards.stream()
-                .map(guard -> unfoldAExpression(guard, propertyToLeaves, absoluteToFlatNames)).toList();
-        AExpression thenExpr = unfoldAExpression(elifExpr.then, propertyToLeaves, absoluteToFlatNames);
-        return new AElifExpression(guardExprs, thenExpr, elifExpr.position);
     }
 
     private static void unfoldConstraint(Constraint constraint, Map<String, Set<String>> propertyToLeaves,

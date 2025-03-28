@@ -74,7 +74,7 @@ public abstract class ACifObjectVisitor<T, C> {
 
     protected abstract T visit(AIfExpression expr, C ctx);
 
-    protected abstract T visit(AElifExpression update, C ctx);
+    protected abstract T visit(AElifExpression expr, C ctx);
 
     protected abstract T visit(AInvariant invariant, C ctx);
 }
