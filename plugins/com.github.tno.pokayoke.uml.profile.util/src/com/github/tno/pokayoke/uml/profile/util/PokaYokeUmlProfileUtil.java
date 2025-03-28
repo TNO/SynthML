@@ -232,19 +232,19 @@ public class PokaYokeUmlProfileUtil {
      * @param newGuard The new incoming guard.
      */
     public static void setIncomingGuard(ActivityEdge edge, String newGuard) {
-        if (edge instanceof ControlFlow controlFlow) {
-            if (Strings.isNullOrEmpty(newGuard)) {
-                if (controlFlow.getGuard() != null) {
-                    // Resetting a value to null causes a model-element deletion popup in UML designer.
-                    // Avoiding this by setting a LiteralNull value.
-                    controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
-                }
-                return;
-            }
-            controlFlow.setGuard(createCifExpression(newGuard));
-        } else {
+        if (!(edge instanceof ControlFlow)) {
             throw new RuntimeException("Activity edges must be of type control flow.");
         }
+
+        if (Strings.isNullOrEmpty(newGuard)) {
+            if (edge.getGuard() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                edge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            }
+            return;
+        }
+        edge.setGuard(createCifExpression(newGuard));
     }
 
     /**
@@ -255,23 +255,23 @@ public class PokaYokeUmlProfileUtil {
      * @param valueSpec The value specification to be set as incoming guard.
      */
     public static void setIncomingGuard(ActivityEdge edge, ValueSpecification valueSpec) {
-        if (edge instanceof ControlFlow controlFlow) {
-            if (valueSpec == null) {
-                if (controlFlow.getGuard() != null) {
-                    // Resetting a value to null causes a model-element deletion popup in UML designer.
-                    // Avoiding this by setting a LiteralNull value.
-                    controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
-                }
-                return;
-            }
-
-            if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
-                controlFlow.setGuard(valueSpec);
-            } else {
-                throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
-            }
-        } else {
+        if (!(edge instanceof ControlFlow)) {
             throw new RuntimeException("Activity edges must be of type control flow.");
+        }
+
+        if (valueSpec == null) {
+            if (edge.getGuard() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                edge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            }
+            return;
+        }
+
+        if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
+            edge.setGuard(valueSpec);
+        } else {
+            throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
         }
     }
 
