@@ -222,6 +222,7 @@ public class Uml2GalTranslator {
             if (node instanceof InitialNode initialNode) {
                 Verify.verify(initialNode.getOutgoings().size() == 1,
                         "Expected only one outgoing edge from the initial node.");
+
                 // Add incoming guard of the outgoing edge.
                 AExpression incomingGuardExpr = CifParserHelper
                         .parseIncomingGuard((ControlFlow)initialNode.getOutgoings().get(0));
@@ -334,7 +335,7 @@ public class Uml2GalTranslator {
                 AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
                 if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
                     throw new RuntimeException(String.format(
-                            "Edge leaving node '%s' with effects has not-null incoming guard.", node.getName()));
+                            "Edge leaving node '%s' with effects has not-null/true incoming guard.", node.getName()));
                 }
             }
         }
