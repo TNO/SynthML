@@ -13,9 +13,9 @@ public class ControlFlowHelper {
     }
 
     /**
-     * Add guards to UML control flows as indicated by the specified mapping.
+     * Add incoming guards to UML control flows as indicated by the specified mapping.
      *
-     * @param controlFlowToGuard The map from UML control flows to their guards as textual CIF expressions.
+     * @param controlFlowToGuard The map from UML control flows to their incoming guards as textual CIF expressions.
      */
     public static void addGuards(Map<ControlFlow, String> controlFlowToGuard) {
         controlFlowToGuard.forEach(ControlFlowHelper::addGuard);
