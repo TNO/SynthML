@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
-import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -26,8 +24,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
-import com.github.tno.pokayoke.uml.profile.cif.ACifObjectToString;
-import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -85,9 +81,10 @@ public class PostProcessActivity {
 
             // Add a new control flow from source to target.
             ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
-            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge,
-                    combineGuards(CifParserHelper.parseIncomingGuard((ControlFlow)incomingEdge),
-                            CifParserHelper.parseOutgoingGuard((ControlFlow)outgoingEdge)));
+            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, PokaYokeUmlProfileUtil
+                    .computeGuardConjunction((ControlFlow)incomingEdge, (ControlFlow)outgoingEdge));
+            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
+                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
@@ -95,31 +92,6 @@ public class PostProcessActivity {
             action.destroy();
         }
         return numberOfActions;
-    }
-
-    /**
-     * Combines two given edge guards into a single edge guard.
-     *
-     * @param left The first edge guard to combine.
-     * @param right The second edge guard to combine.
-     * @return The combined edge guard.
-     */
-    private static String combineGuards(AExpression left, AExpression right) {
-        if (left == null && right == null) {
-            return null;
-        }
-        if (left == null) {
-            return ACifObjectToString.toString(right);
-        }
-        if (right == null) {
-            return ACifObjectToString.toString(left);
-        }
-
-        try {
-            return ACifObjectToString.toString(new ABinaryExpression("and", left, right, null));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not combine " + left + " with " + right);
-        }
     }
 
     /**
