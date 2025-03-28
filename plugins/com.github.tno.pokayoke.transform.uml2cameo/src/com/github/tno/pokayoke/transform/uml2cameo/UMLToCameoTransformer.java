@@ -445,8 +445,8 @@ public class UMLToCameoTransformer {
     private String translateGuard(RedefinableElement element) {
         // Get the outgoing guard of the incoming edge, if element is an activity node.
         AExpression extraGuard = null;
-        if (!(element instanceof OpaqueBehavior)) {
-            List<ActivityEdge> incomingEdges = ((ActivityNode)element).getIncomings();
+        if (element instanceof ActivityNode activityNode) {
+            List<ActivityEdge> incomingEdges = activityNode.getIncomings();
             Verify.verify(incomingEdges.size() == 1);
             extraGuard = CifParserHelper.parseOutgoingGuard((ControlFlow)incomingEdges.get(0));
         }
@@ -454,7 +454,7 @@ public class UMLToCameoTransformer {
         // Get the guard of the element. Conjunct with the extra guard if relevant.
         AExpression elementGuard = CifParserHelper.parseGuard(element);
         if (extraGuard != null && elementGuard != null) {
-            extraGuard = new ABinaryExpression("and", extraGuard, extraGuard, null);
+            extraGuard = new ABinaryExpression("and", extraGuard, elementGuard, null);
         } else {
             extraGuard = (extraGuard == null) ? elementGuard : extraGuard;
         }
