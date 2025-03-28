@@ -7,7 +7,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 
-/** Helper for adding guards to UML control flows. */
+/** Helper for adding incoming guards to UML control flows. */
 public class ControlFlowHelper {
     private ControlFlowHelper() {
     }

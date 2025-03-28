@@ -584,7 +584,7 @@ public class CompositeDataTypeFlattener {
                     if (outgoingGuard != null) {
                         AExpression unfoldedOutgoing = unfoldAExpression(outgoingGuard, propertyToLeaves,
                                 absoluteToFlatNames);
-                        PokaYokeUmlProfileUtil.setIncomingGuard(controlEdge,
+                        PokaYokeUmlProfileUtil.setOutgoingGuard(controlEdge,
                                 ACifObjectToString.toString(unfoldedOutgoing));
                     }
                 } else if (controlEdge.getGuard() instanceof LiteralBoolean || controlEdge.getGuard() == null) {
