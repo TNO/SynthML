@@ -814,7 +814,8 @@ public class UmlToCifTranslator {
      * given incoming and outgoing UML control flows of a translated activity node. The guards will express that, to
      * start executing the activity node, every given incoming control flow must have a token, and none of the given
      * outgoing control flows must have a token. The updates will consume the token from every given incoming control
-     * flow, and produce a token on every given outgoing control flow.
+     * flow, and produce a token on every given outgoing control flow. Furthermore, the outgoing guards of the incoming
+     * control flows and the incoming guards of the outgoing control flows are taken into account.
      *
      * @param incomingControlFlows The incoming UML control flows to consider. This list can be empty if no incoming
      *     control flows should be considered (e.g., for initial nodes).
@@ -836,8 +837,9 @@ public class UmlToCifTranslator {
             endEdges = List.of(startEdge);
         }
 
-        // Add guards expressing that, to start executing the node, every incoming UML control flow must have a token.
-        // Also add updates that consume the token from every incoming UML control flow when starting node execution.
+        // Add guards expressing that, to start executing the node, every incoming UML control flow must have a token,
+        // and their outgoing guard must hold. Also add updates that consume the token from every incoming UML control
+        // flow when starting node execution.
         for (ActivityEdge incoming: incomingControlFlows) {
             DiscVariable incomingVariable = controlFlowMap.get(incoming);
 
@@ -861,8 +863,9 @@ public class UmlToCifTranslator {
         }
 
         // Add guards expressing that, to start executing the node, no outgoing UML control flow must have a token. Also
-        // add guards expressing that, to end node execution, no outgoing UML control flow must have a token. And also
-        // add updates that produce a token on every outgoing UML control flow when ending the execution of the node.
+        // add guards expressing that, to end node execution, no outgoing UML control flow must have a token. If the
+        // control flow has an incoming guard, add it as an extra guard to end node execution. And also add updates that
+        // produce a token on every outgoing UML control flow when ending the execution of the node.
         for (ActivityEdge outgoing: outgoingControlFlows) {
             DiscVariable outgoingVariable = controlFlowMap.get(outgoing);
 
@@ -893,9 +896,9 @@ public class UmlToCifTranslator {
                 update.setValue(CifValueUtils.makeTrue());
                 endEdge.getUpdates().add(update);
 
-                // If the current control flow has a guard, then add it as an extra guard for ending node execution.
-                // Moreover, in that case, we require that the UML activity node has been translated as an atomic
-                // deterministic action and it has no defined effects, which is needed to adhere to the execution
+                // If the current control flow has an incoming guard, then add it as an extra guard for ending node
+                // execution. Moreover, in that case, we require that the UML activity node has been translated as an
+                // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
                 if (PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoing) != null) {
