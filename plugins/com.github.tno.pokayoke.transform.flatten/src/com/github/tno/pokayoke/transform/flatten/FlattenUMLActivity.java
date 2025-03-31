@@ -210,8 +210,8 @@ public class FlattenUMLActivity {
                             newEdge.setTarget(outgoingEdge.getTarget());
 
                             // The incoming guard of the new edge is set to the conjunction of both the guards of the
-                            // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
-                            // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
+                            // incoming edge of the final node and the incoming guard of the outgoing edge of the call
+                            // behavior action. The outgoing guard of the new edge is set to the outgoing guard of the
                             // outgoing edge.
                             String newGuard = PokaYokeUmlProfileUtil.computeGuardConjunction((ControlFlow)incomingEdge,
                                     (ControlFlow)outgoingEdge);
