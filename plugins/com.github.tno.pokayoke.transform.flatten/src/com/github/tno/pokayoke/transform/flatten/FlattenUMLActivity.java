@@ -154,7 +154,7 @@ public class FlattenUMLActivity {
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
 
-                            // The incoming guard of the new edge is set to the conjunction of both the guard of the
+                            // The incoming guard of the new edge is set to the conjunction of both the guards of the
                             // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
                             // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
                             // outgoing edge.
@@ -209,7 +209,7 @@ public class FlattenUMLActivity {
                             newEdge.setSource(incomingEdge.getSource());
                             newEdge.setTarget(outgoingEdge.getTarget());
 
-                            // The incoming guard of the new edge is set to the conjunction of both the guard of the
+                            // The incoming guard of the new edge is set to the conjunction of both the guards of the
                             // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
                             // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
                             // outgoing edge.

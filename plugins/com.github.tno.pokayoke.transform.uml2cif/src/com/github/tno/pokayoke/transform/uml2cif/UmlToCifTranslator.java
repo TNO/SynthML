@@ -498,7 +498,7 @@ public class UmlToCifTranslator {
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
 
         // Check that a node with effects does not have incoming guards on its outgoing edges.
-        if (!effects.get(0).isEmpty()
+        if (effects.stream().flatMap(updates -> updates.stream()).findAny().isPresent()
                 && (umlElement instanceof OpaqueAction || umlElement instanceof CallBehaviorAction))
         {
             ActivityNode node = (ActivityNode)umlElement;
