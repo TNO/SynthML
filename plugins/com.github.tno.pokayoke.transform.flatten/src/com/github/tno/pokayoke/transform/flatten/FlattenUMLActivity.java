@@ -158,9 +158,12 @@ public class FlattenUMLActivity {
                             // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
                             // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
                             // outgoing edge.
-                            String newGuard = PokaYokeUmlProfileUtil.computeGuardConjunction((ControlFlow)incomingEdge,
-                                    (ControlFlow)outgoingEdge);
-                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newGuard);
+                            List<String> incomingGuardList = new ArrayList<>();
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+                            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
+                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
                             PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
                                     PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
                             newEdge.setActivity(parentActivity);
@@ -213,9 +216,12 @@ public class FlattenUMLActivity {
                             // incoming edge of the final node and the incoming guard of the outgoing edge of the call
                             // behavior action. The outgoing guard of the new edge is set to the outgoing guard of the
                             // outgoing edge.
-                            String newGuard = PokaYokeUmlProfileUtil.computeGuardConjunction((ControlFlow)incomingEdge,
-                                    (ControlFlow)outgoingEdge);
-                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newGuard);
+                            List<String> incomingGuardList = new ArrayList<>();
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
+                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+                            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
+                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
                             PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
                                     PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
                             newEdge.setActivity(parentActivity);
@@ -270,5 +276,24 @@ public class FlattenUMLActivity {
         source.eResource().getContents().addAll(copier.copyAll(stereotypeApplications));
         copier.copyReferences();
         return result;
+    }
+
+    /**
+     * Compute the conjunction of guards passed as arguments.
+     *
+     * @param guards The list containing the guards.
+     * @return The string with the guards conjunction.
+     */
+    private static String computeGuardConjunction(List<String> guards) {
+        String newGuard = null;
+        for (String guard: guards) {
+            if (guard != null && newGuard == null) {
+                newGuard = guard;
+            } else if (guard != null) {
+                newGuard = String.format("(%s) and (%s)", newGuard, guard);
+            }
+        }
+
+        return newGuard;
     }
 }

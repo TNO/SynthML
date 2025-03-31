@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +82,12 @@ public class PostProcessActivity {
 
             // Add a new control flow from source to target.
             ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
-            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, PokaYokeUmlProfileUtil
-                    .computeGuardConjunction((ControlFlow)incomingEdge, (ControlFlow)outgoingEdge));
+            List<String> incomingGuardList = new ArrayList<>();
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
+            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
             PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
                     PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
 
@@ -205,5 +210,24 @@ public class PostProcessActivity {
                 }
             }
         }
+    }
+
+    /**
+     * Compute the conjunction of guards passed as arguments.
+     *
+     * @param guards The list containing the guards.
+     * @return The string with the guards conjunction.
+     */
+    private static String computeGuardConjunction(List<String> guards) {
+        String newGuard = null;
+        for (String guard: guards) {
+            if (guard != null && newGuard == null) {
+                newGuard = guard;
+            } else if (guard != null) {
+                newGuard = String.format("(%s) and (%s)", newGuard, guard);
+            }
+        }
+
+        return newGuard;
     }
 }
