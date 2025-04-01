@@ -126,6 +126,23 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    protected String visit(List<String> guards, String thenExpr, List<String> elifs, String elseExpr,
+            TextPosition expressionPos, CifContext ctx)
+    {
+        String guard = conjoinExprs(guards);
+        String elif = mergeAll(elifs, " ").map(e -> " " + e).orElse("");
+
+        return String.format("(%s) if (%s)%s else (%s)", thenExpr, guard, elif, elseExpr);
+    }
+
+    @Override
+    protected String visit(List<String> guards, String thenExpr, TextPosition expressionPos, CifContext ctx) {
+        String guard = conjoinExprs(guards);
+
+        return String.format("else (%s) if (%s)", thenExpr, guard);
+    }
+
     /**
      * Increases the tab indentation of the given Python element by one.
      *

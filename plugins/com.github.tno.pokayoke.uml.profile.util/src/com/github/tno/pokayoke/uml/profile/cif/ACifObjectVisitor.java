@@ -8,7 +8,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -17,6 +19,8 @@ public abstract class ACifObjectVisitor<T, C> {
     protected T visit(ACifObject object, C ctx) {
         if (object instanceof AExpression expr) {
             return visit(expr, ctx);
+        } else if (object instanceof AElifExpression elifExpr) {
+            return visit(elifExpr, ctx);
         } else if (object instanceof AInvariant invariant) {
             return visit(invariant, ctx);
         } else if (object instanceof AUpdate update) {
@@ -51,6 +55,8 @@ public abstract class ACifObjectVisitor<T, C> {
             return visit(nameExpr, ctx);
         } else if (expr instanceof AUnaryExpression unaryExpr) {
             return visit(unaryExpr, ctx);
+        } else if (expr instanceof AIfExpression ifExpr) {
+            return visit(ifExpr, ctx);
         } else {
             throw new RuntimeException("Unsupported expression: " + expr.getClass().getSimpleName());
         }
@@ -65,6 +71,10 @@ public abstract class ACifObjectVisitor<T, C> {
     protected abstract T visit(ANameExpression expr, C ctx);
 
     protected abstract T visit(AUnaryExpression expr, C ctx);
+
+    protected abstract T visit(AIfExpression expr, C ctx);
+
+    protected abstract T visit(AElifExpression expr, C ctx);
 
     protected abstract T visit(AInvariant invariant, C ctx);
 }

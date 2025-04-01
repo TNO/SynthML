@@ -19,6 +19,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.ElifExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.EventExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
@@ -30,6 +31,8 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.common.java.TextPosition;
+import org.eclipse.escet.common.position.common.PositionUtils;
+import org.eclipse.escet.common.position.metamodel.position.Position;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
@@ -152,6 +155,36 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
         List<Update> thenUpdates = thens.stream().map(Update.class::cast).toList();
 
         return CifConstructors.newElifUpdate(guardExprs, null, thenUpdates);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, Object then, List<Object> elifs, Object _else,
+            TextPosition expressionPos, CifContext ctx)
+    {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        Expression thenExpr = (Expression)then;
+        List<ElifExpression> elifExprs = elifs.stream().map(ElifExpression.class::cast).toList();
+        Expression elseExpr = (Expression)_else;
+        Position dummy = PositionUtils.createDummy(expressionPos.location, expressionPos.source);
+
+        CifType combinedType = CifTypeUtils.mergeTypes(thenExpr.getType(), elseExpr.getType(), dummy);
+
+        for (ElifExpression elif: elifExprs) {
+            Expression childThen = elif.getThen();
+            combinedType = CifTypeUtils.mergeTypes(combinedType, childThen.getType(), dummy);
+        }
+
+        return CifConstructors.newIfExpression(elifExprs, elseExpr, guardExprs, dummy, thenExpr, combinedType);
+    }
+
+    @Override
+    protected Object visit(List<Object> guards, Object thenExpr, TextPosition expressionPos, CifContext ctx) {
+        List<Expression> guardExprs = guards.stream().map(Expression.class::cast).toList();
+        Expression thenUpdates = (Expression)thenExpr;
+
+        Position dummy = PositionUtils.createDummy(expressionPos.location, expressionPos.source);
+
+        return CifConstructors.newElifExpression(guardExprs, dummy, thenUpdates);
     }
 
     @Override

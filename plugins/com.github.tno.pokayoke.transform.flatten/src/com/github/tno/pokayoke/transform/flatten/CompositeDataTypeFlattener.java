@@ -25,7 +25,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AElifExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIfExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AUnaryExpression;
@@ -376,10 +378,27 @@ public class CompositeDataTypeFlattener {
         } else if (expression instanceof ABoolExpression || expression instanceof AIntExpression) {
             // Expressions without children don't need unfolding.
             return expression;
+        } else if (expression instanceof AIfExpression ifExpr) {
+            List<AExpression> guardExprs = ifExpr.guards.stream()
+                    .map(guard -> unfoldAExpression(guard, propertyToLeaves, absoluteToFlatNames)).toList();
+            AExpression thenExpr = unfoldAExpression(ifExpr.then, propertyToLeaves, absoluteToFlatNames);
+            List<AElifExpression> elifExprs = ifExpr.elifs.stream()
+                    .map(elif -> unfoldAElifExpression(elif, propertyToLeaves, absoluteToFlatNames)).toList();
+            AExpression elseExpr = unfoldAExpression(ifExpr.elseExpr, propertyToLeaves, absoluteToFlatNames);
+            return new AIfExpression(guardExprs, thenExpr, elifExprs, elseExpr, ifExpr.position);
         } else {
             throw new RuntimeException(String.format("Unfolding expressions of class '%s' is not supported.",
                     expression.getClass().getSimpleName()));
         }
+    }
+
+    private static AElifExpression unfoldAElifExpression(AElifExpression elifExpr,
+            Map<String, Set<String>> propertyToLeaves, Map<String, String> absoluteToFlatNames)
+    {
+        List<AExpression> guardExprs = elifExpr.guards.stream()
+                .map(guard -> unfoldAExpression(guard, propertyToLeaves, absoluteToFlatNames)).toList();
+        AExpression thenExpr = unfoldAExpression(elifExpr.then, propertyToLeaves, absoluteToFlatNames);
+        return new AElifExpression(guardExprs, thenExpr, elifExpr.position);
     }
 
     private static ABinaryExpression unfoldComparisonExpression(String lhsName, String rhsName, Set<String> leaves,
