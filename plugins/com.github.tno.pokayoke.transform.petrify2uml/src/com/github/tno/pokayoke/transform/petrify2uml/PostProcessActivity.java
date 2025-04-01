@@ -224,7 +224,7 @@ public class PostProcessActivity {
             if (guard != null && newGuard == null) {
                 newGuard = guard;
             } else if (guard != null) {
-                newGuard = String.format("(%s) and (%s)", newGuard, guard);
+                newGuard = String.format("(%s) and (%s)", guard, newGuard);
             }
         }
 
