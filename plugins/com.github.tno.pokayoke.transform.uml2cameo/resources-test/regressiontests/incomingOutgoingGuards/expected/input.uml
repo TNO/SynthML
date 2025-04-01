@@ -76,7 +76,7 @@
           <outputValue xmi:id="41" name="doesGuardHold" outgoing="18">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>(init) and (init)</body>
+          <body>(init) and (True)</body>
         </node>
         <node xmi:type="uml:DecisionNode" xmi:id="42" incoming="17 18" outgoing="19 21"/>
         <node xmi:type="uml:SendSignalAction" xmi:id="43" outgoing="24" signal="152">
@@ -104,7 +104,7 @@
           <outputValue xmi:id="53" name="isSuccessful" outgoing="33">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
           </outputValue>
-          <body>guard = (init) and (init)
+          <body>guard = (init) and (True)
 if guard:
 	pre__val = val
 	val = not (pre__val)
