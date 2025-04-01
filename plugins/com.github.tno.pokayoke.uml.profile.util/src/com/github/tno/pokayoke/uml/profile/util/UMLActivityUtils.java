@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.common;
+package com.github.tno.pokayoke.uml.profile.util;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;

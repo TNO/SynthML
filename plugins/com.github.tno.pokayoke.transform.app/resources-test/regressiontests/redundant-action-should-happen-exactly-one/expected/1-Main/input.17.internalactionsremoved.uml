@@ -44,11 +44,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Fork____start__to__flip" target="35" source="43"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p3__to__left" target="36" source="39">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p3__to__right" target="37" source="39">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

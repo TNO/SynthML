@@ -43,11 +43,13 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="23" target="31" source="34">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="24">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="25" target="32" source="34">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="26">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

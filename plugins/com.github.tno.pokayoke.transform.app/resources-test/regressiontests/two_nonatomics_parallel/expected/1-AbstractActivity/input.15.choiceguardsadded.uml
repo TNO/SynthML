@@ -38,22 +38,26 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Fork____start__to__NonAtomicB" target="44" source="58"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="24" name="Decision__p4__to____tau_0" target="47" source="52">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p4__to____tau_1" target="48" source="52">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="NonAtomicA__to__Decision__p4" target="52" source="43"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Decision__p5__to____tau_2" target="49" source="53">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="30">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Decision__p5__to____tau_3" target="50" source="53">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="32">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

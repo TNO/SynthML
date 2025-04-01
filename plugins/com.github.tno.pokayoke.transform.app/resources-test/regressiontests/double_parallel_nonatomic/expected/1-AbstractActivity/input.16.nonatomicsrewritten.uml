@@ -61,22 +61,26 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Fork____start__to__NonAtomicC" target="71" source="94"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Decision__p4__to____tau_0" target="75" source="87">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="42">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Decision__p4__to____tau_1" target="76" source="87">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="44">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="45" name="NonAtomicA__to__Decision__p4" target="87" source="69"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="46" name="Decision__p5__to____tau_4" target="79" source="88">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="47">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="48" name="Decision__p5__to____tau_5" target="80" source="88">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="49">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -89,22 +93,26 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="56" name="Merge__p7__to__NonAtomicD" target="72" source="90"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="57" name="Decision__p8__to____tau_2" target="77" source="91">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="58">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="59" name="Decision__p8__to____tau_3" target="78" source="91">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="60">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="61" name="NonAtomicB__to__Decision__p8" target="91" source="70"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="62" name="Decision__p9__to____tau_6" target="81" source="92">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="63">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="64" name="Decision__p9__to____tau_7" target="82" source="92">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="65">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

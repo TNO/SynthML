@@ -44,11 +44,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="30" target="37" source="38"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="31" target="36" source="39">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="32">
+            <language>CIF</language>
             <body>count = 1 or (count = 3 or count = 5)</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="33" target="35" source="39">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="34">
+            <language>CIF</language>
             <body>count = 0 or (count = 2 or count = 4)</body>
           </guard>
         </edge>
@@ -81,33 +83,39 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="52" name="__start__to__initialize" target="87" source="78"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="53" name="Decision__p3__to____tau_0" target="79" source="89">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="54">
+            <language>CIF</language>
             <body>count = 1 or (count = 3 or count = 5)</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="55" name="Decision__p3__to____tau_1" target="80" source="89">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="56">
+            <language>CIF</language>
             <body>count = 0 or (count = 2 or count = 4)</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="57" name="initialize__to__Decision__p3" target="89" source="87"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="58" name="Decision__p4__to__incr1/2" target="83" source="90">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="59">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="60" name="Decision__p4__to__incr2/2" target="86" source="90">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="61">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="62" name="__tau_0__to__Decision__p4" target="90" source="79"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="63" name="Decision__p5__to__incr1/1" target="82" source="91">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="64">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="65" name="Decision__p5__to__incr2/1" target="85" source="91">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="66">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

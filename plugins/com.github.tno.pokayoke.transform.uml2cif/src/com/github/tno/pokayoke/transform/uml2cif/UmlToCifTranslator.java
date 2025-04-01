@@ -42,6 +42,7 @@ import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
@@ -50,6 +51,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
@@ -495,6 +497,20 @@ public class UmlToCifTranslator {
         List<List<Update>> effects = getEffects(umlAction);
         Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
 
+        // Check that a node with effects does not have incoming guards on its outgoing edges.
+        if (effects.stream().flatMap(updates -> updates.stream()).findAny().isPresent()
+                && (umlElement instanceof OpaqueAction || umlElement instanceof CallBehaviorAction))
+        {
+            ActivityNode node = (ActivityNode)umlElement;
+            for (ActivityEdge outgoingEdge: node.getOutgoings()) {
+                AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
+                if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
+                    throw new RuntimeException(String.format(
+                            "Edge leaving node '%s' with effects has not-null/true incoming guard.", node.getName()));
+                }
+            }
+        }
+
         // Create a CIF start event for the action.
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(controllableStartEvent);
@@ -813,7 +829,8 @@ public class UmlToCifTranslator {
      * given incoming and outgoing UML control flows of a translated activity node. The guards will express that, to
      * start executing the activity node, every given incoming control flow must have a token, and none of the given
      * outgoing control flows must have a token. The updates will consume the token from every given incoming control
-     * flow, and produce a token on every given outgoing control flow.
+     * flow, and produce a token on every given outgoing control flow. Furthermore, the outgoing guards of the incoming
+     * control flows and the incoming guards of the outgoing control flows are taken into account.
      *
      * @param incomingControlFlows The incoming UML control flows to consider. This list can be empty if no incoming
      *     control flows should be considered (e.g., for initial nodes).
@@ -835,8 +852,9 @@ public class UmlToCifTranslator {
             endEdges = List.of(startEdge);
         }
 
-        // Add guards expressing that, to start executing the node, every incoming UML control flow must have a token.
-        // Also add updates that consume the token from every incoming UML control flow when starting node execution.
+        // Add guards expressing that, to start executing the node, every incoming UML control flow must have a token,
+        // and their outgoing guard must hold. Also add updates that consume the token from every incoming UML control
+        // flow when starting node execution.
         for (ActivityEdge incoming: incomingControlFlows) {
             DiscVariable incomingVariable = controlFlowMap.get(incoming);
 
@@ -844,6 +862,12 @@ public class UmlToCifTranslator {
             DiscVariableExpression guard = CifConstructors.newDiscVariableExpression(null,
                     EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
             startEdge.getGuards().add(guard);
+
+            // Add a guard expressing that the outgoing guard of the current incoming UML control flow must hold.
+            if (PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incoming) != null) {
+                startEdge.getGuards()
+                        .add(translator.translate(CifParserHelper.parseOutgoingGuard((ControlFlow)incoming)));
+            }
 
             // Add an update that consumes the token on the current incoming UML control flow.
             Assignment update = CifConstructors.newAssignment();
@@ -854,8 +878,9 @@ public class UmlToCifTranslator {
         }
 
         // Add guards expressing that, to start executing the node, no outgoing UML control flow must have a token. Also
-        // add guards expressing that, to end node execution, no outgoing UML control flow must have a token. And also
-        // add updates that produce a token on every outgoing UML control flow when ending the execution of the node.
+        // add guards expressing that, to end node execution, no outgoing UML control flow must have a token. If the
+        // control flow has an incoming guard, add it as an extra guard to end node execution. And also add updates that
+        // produce a token on every outgoing UML control flow when ending the execution of the node.
         for (ActivityEdge outgoing: outgoingControlFlows) {
             DiscVariable outgoingVariable = controlFlowMap.get(outgoing);
 
@@ -886,31 +911,38 @@ public class UmlToCifTranslator {
                 update.setValue(CifValueUtils.makeTrue());
                 endEdge.getUpdates().add(update);
 
-                // If the current control flow has a guard, then add it as an extra guard for ending node execution.
-                // Moreover, in that case, we require that the UML activity node has been translated as an atomic
-                // deterministic action and it has no defined effects, which is needed to adhere to the execution
+                // If the current control flow has an incoming guard, then add it as an extra guard for ending node
+                // execution. Moreover, in that case, we require that the UML activity node has been translated as an
+                // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (outgoing.getGuard() != null) {
+                if (PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoing) != null) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
                             "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
 
-                    endEdge.getGuards().add(translator.translate(CifParserHelper.parseExpression(outgoing.getGuard())));
+                    endEdge.getGuards()
+                            .add(translator.translate(CifParserHelper.parseIncomingGuard((ControlFlow)outgoing)));
                 }
             }
         }
     }
 
     /**
-     * Gives the guard of the given UML element.
+     * Gives the guard of the given UML element. If the element is a control flow, uses the incoming guard.
      *
      * @param element The UML element.
      * @return The guard of the given UML element.
      */
     public Expression getGuard(RedefinableElement element) {
-        AExpression guard = CifParserHelper.parseGuard(element);
+        AExpression guard;
+        if (element instanceof ControlFlow controlFlow) {
+            guard = CifParserHelper.parseIncomingGuard(controlFlow);
+        } else {
+            guard = CifParserHelper.parseGuard(element);
+        }
+
         if (guard == null) {
             return CifValueUtils.makeTrue();
         }

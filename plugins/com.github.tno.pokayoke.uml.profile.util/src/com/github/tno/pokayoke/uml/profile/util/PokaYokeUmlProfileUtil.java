@@ -11,9 +11,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueExpression;
@@ -226,19 +228,51 @@ public class PokaYokeUmlProfileUtil {
      * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
      * {@code controlFlow}.
      *
-     * @param controlFlow The control flow to set the incoming guard on.
+     * @param edge The activity edge to set the incoming guard on.
      * @param newGuard The new incoming guard.
      */
-    public static void setIncomingGuard(ControlFlow controlFlow, String newGuard) {
+    public static void setIncomingGuard(ActivityEdge edge, String newGuard) {
+        if (!(edge instanceof ControlFlow)) {
+            throw new RuntimeException("Activity edges must be of type control flow.");
+        }
+
         if (Strings.isNullOrEmpty(newGuard)) {
-            if (controlFlow.getGuard() != null) {
+            if (edge.getGuard() != null) {
                 // Resetting a value to null causes a model-element deletion popup in UML designer.
                 // Avoiding this by setting a LiteralNull value.
-                controlFlow.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+                edge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
             }
             return;
         }
-        controlFlow.setGuard(createCifExpression(newGuard));
+        edge.setGuard(createCifExpression(newGuard));
+    }
+
+    /**
+     * Sets the {@link ControlFlow#setGuard(org.eclipse.uml2.uml.ValueSpecification) incoming guard} for
+     * {@code controlFlow}.
+     *
+     * @param edge The activity edge to set the incoming guard on.
+     * @param valueSpec The value specification to be set as incoming guard.
+     */
+    public static void setIncomingGuard(ActivityEdge edge, ValueSpecification valueSpec) {
+        if (!(edge instanceof ControlFlow)) {
+            throw new RuntimeException("Activity edges must be of type control flow.");
+        }
+
+        if (valueSpec == null) {
+            if (edge.getGuard() != null) {
+                // Resetting a value to null causes a model-element deletion popup in UML designer.
+                // Avoiding this by setting a LiteralNull value.
+                edge.setGuard(UMLFactory.eINSTANCE.createLiteralNull());
+            }
+            return;
+        }
+
+        if (valueSpec instanceof LiteralBoolean || valueSpec instanceof OpaqueExpression) {
+            edge.setGuard(valueSpec);
+        } else {
+            throw new RuntimeException("Unsupported guard type: " + valueSpec.getType().getName());
+        }
     }
 
     /**

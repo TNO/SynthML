@@ -36,11 +36,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="17" target="28" source="33"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="18" target="32" source="30">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+            <language>CIF</language>
             <body>field1</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="20" target="34" source="30">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

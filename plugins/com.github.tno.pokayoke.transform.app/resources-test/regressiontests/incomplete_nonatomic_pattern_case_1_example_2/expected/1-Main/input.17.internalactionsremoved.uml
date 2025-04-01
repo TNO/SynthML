@@ -34,22 +34,26 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="21" name="Decision__p2__to__do_a" target="38" source="43">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="22">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Decision__p2__to__do_b/1" target="49" source="43">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="24">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="25" name="do_a__to__do_b" target="48" source="38"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p4__to__do_a/1" target="39" source="44">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p4__to__do_b__na_result_1/1" target="41" source="44">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="29">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

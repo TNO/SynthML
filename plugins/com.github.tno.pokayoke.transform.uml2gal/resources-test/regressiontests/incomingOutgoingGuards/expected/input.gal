@@ -1,0 +1,48 @@
+
+typedef Boolean= 0..1 ;
+gal NewModel__Class1{
+  int init = 0;
+  int val = 0;
+  int __init = 0;
+  int __edge__0 = 0;
+  int __edge__1 = 0;
+  int __edge__2 = 0;
+  int __edge__3 = 0;
+  int __edge__4 = 1;
+  int __edge__5 = 0;
+  transition __initialize(Boolean $val) [ __init == 0 && !init == 1 ] {
+    __init = 1    ;
+    val = $val    ;
+  }
+  transition __ActivityFinalNode_Activity1__ActivityFinal1__1 [ __init == 1 && __edge__2 == 1 ] {
+    __edge__2 = 0    ;
+  }
+  transition __DecisionNode_Activity1__Decision1__2 [ __init == 1 && __edge__5 == 1 && __edge__0 == 0 && val == 1 ] {
+    __edge__5 = 0    ;
+    __edge__0 = 1    ;
+  }
+  transition __DecisionNode_Activity1__Decision1__3 [ __init == 1 && __edge__5 == 1 && __edge__1 == 0 && !val == 1 ] {
+    __edge__5 = 0    ;
+    __edge__1 = 1    ;
+  }
+  transition __MergeNode_Activity1__Merge1__4 [ __init == 1 && __edge__0 == 1 && __edge__2 == 0 ] {
+    __edge__0 = 0    ;
+    __edge__2 = 1    ;
+  }
+  transition __MergeNode_Activity1__Merge1__5 [ __init == 1 && __edge__3 == 1 && __edge__2 == 0 ] {
+    __edge__3 = 0    ;
+    __edge__2 = 1    ;
+  }
+  transition __OpaqueAction_Activity1__OpaqueAction1__6 [ __init == 1 && true && __edge__1 == 1 && init == 1 && __edge__3 == 0 ] {
+    val = (!val == 1)    ;
+    __edge__1 = 0    ;
+    __edge__3 = 1    ;
+  }
+  transition __OpaqueAction_Activity1__Initialize__7 [ __init == 1 && !init == 1 && __edge__4 == 1 && __edge__5 == 0 ] {
+    init = 1    ;
+    val = 0    ;
+    __edge__4 = 0    ;
+    __edge__5 = 1    ;
+  }
+}
+main NewModel__Class1 ;

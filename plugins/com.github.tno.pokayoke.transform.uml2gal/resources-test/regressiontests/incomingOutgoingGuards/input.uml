@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_G4L5IPQ_Ee-C4MKlHZKtHw" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_I_rxIPQ_Ee-C4MKlHZKtHw" name="Class1" classifierBehavior="_J4bXAPQ_Ee-C4MKlHZKtHw" isActive="true">
+      <ownedAttribute xmi:id="_njxlkPQ_Ee-C4MKlHZKtHw" name="init">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_oKwtEPQ_Ee-C4MKlHZKtHw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_oKxUIPQ_Ee-C4MKlHZKtHw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_QE2NEAokEfCXvv6_cIbHbQ">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_51Y7wPQ_Ee-C4MKlHZKtHw" name="val">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_6bwYMPQ_Ee-C4MKlHZKtHw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_6bwYMfQ_Ee-C4MKlHZKtHw" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_J4bXAPQ_Ee-C4MKlHZKtHw" name="Activity1" node="_L_l30PQ_Ee-C4MKlHZKtHw _NKp8wPQ_Ee-C4MKlHZKtHw _QtBQQPQ_Ee-C4MKlHZKtHw _SRq54PQ_Ee-C4MKlHZKtHw _Ven-EPQ_Ee-C4MKlHZKtHw _kCiqkAokEfCXvv6_cIbHbQ">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_6S_vgP3cEe-4iYT6H1Cm7A" name="Name" target="_SRq54PQ_Ee-C4MKlHZKtHw" source="_QtBQQPQ_Ee-C4MKlHZKtHw">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_YF-K4AokEfCXvv6_cIbHbQ">
+            <language>CIF</language>
+            <body>val</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_nGs9gP5PEe-8grzMx7bmSw" target="_Ven-EPQ_Ee-C4MKlHZKtHw" source="_QtBQQPQ_Ee-C4MKlHZKtHw">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_whdAsP5PEe-8grzMx7bmSw">
+            <language>CIF</language>
+            <body>not val</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_xHHrEAAnEfCxz9B5p9BaEw" name="NameOfControlFlow" target="_NKp8wPQ_Ee-C4MKlHZKtHw" source="_SRq54PQ_Ee-C4MKlHZKtHw">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_tdgk8APpEfCgdteQrczT_g"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_xHKuYAAnEfCxz9B5p9BaEw" name="Merge1_To_ActivityFinal1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_nA2fUAUBEfCTCMdkvp90mw" target="_SRq54PQ_Ee-C4MKlHZKtHw" source="_Ven-EPQ_Ee-C4MKlHZKtHw">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_D16LAAokEfCXvv6_cIbHbQ"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_nA7X0AUBEfCTCMdkvp90mw" name="OpaqueAction1_To_Merge1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_vXTjYAokEfCXvv6_cIbHbQ" target="_kCiqkAokEfCXvv6_cIbHbQ" source="_L_l30PQ_Ee-C4MKlHZKtHw">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_x5-7gAokEfCXvv6_cIbHbQ">
+            <language>CIF</language>
+            <body>not init</body>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_vXUxgAokEfCXvv6_cIbHbQ" name="Initial1_To_Initialize_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_wEA4YAokEfCXvv6_cIbHbQ" target="_QtBQQPQ_Ee-C4MKlHZKtHw" source="_kCiqkAokEfCXvv6_cIbHbQ">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_xDG94AokEfCXvv6_cIbHbQ"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_wEBfcQokEfCXvv6_cIbHbQ" name="Initialize_To_Decision1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_L_l30PQ_Ee-C4MKlHZKtHw" name="Initial1" outgoing="_vXTjYAokEfCXvv6_cIbHbQ"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_NKp8wPQ_Ee-C4MKlHZKtHw" name="ActivityFinal1" incoming="_xHHrEAAnEfCxz9B5p9BaEw"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_QtBQQPQ_Ee-C4MKlHZKtHw" name="Decision1" incoming="_wEA4YAokEfCXvv6_cIbHbQ" outgoing="_6S_vgP3cEe-4iYT6H1Cm7A _nGs9gP5PEe-8grzMx7bmSw"/>
+        <node xmi:type="uml:MergeNode" xmi:id="_SRq54PQ_Ee-C4MKlHZKtHw" name="Merge1" incoming="_6S_vgP3cEe-4iYT6H1Cm7A _nA2fUAUBEfCTCMdkvp90mw" outgoing="_xHHrEAAnEfCxz9B5p9BaEw"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_Ven-EPQ_Ee-C4MKlHZKtHw" name="OpaqueAction1" incoming="_nGs9gP5PEe-8grzMx7bmSw" outgoing="_nA2fUAUBEfCTCMdkvp90mw">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_kCiqkAokEfCXvv6_cIbHbQ" name="Initialize" incoming="_vXTjYAokEfCXvv6_cIbHbQ" outgoing="_wEA4YAokEfCXvv6_cIbHbQ"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="_b2mMwPQ_Ee-C4MKlHZKtHw">
+      <eAnnotations xmi:id="_b2s6cPQ_Ee-C4MKlHZKtHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <PokaYoke:FormalElement xmi:id="_b3Xo0PQ_Ee-C4MKlHZKtHw" guard="true" base_RedefinableElement="_Ven-EPQ_Ee-C4MKlHZKtHw" atomic="true">
+    <effects>val := not val</effects>
+  </PokaYoke:FormalElement>
+  <PokaYoke:FormalControlFlow xmi:id="_whbykP5PEe-8grzMx7bmSw" outgoingGuard="init" base_ControlFlow="_nGs9gP5PEe-8grzMx7bmSw"/>
+  <PokaYoke:FormalControlFlow xmi:id="_5vuRoP5QEe-8grzMx7bmSw" outgoingGuard="init"/>
+  <PokaYoke:FormalElement xmi:id="_mQHVYAokEfCXvv6_cIbHbQ" guard="not init" base_RedefinableElement="_kCiqkAokEfCXvv6_cIbHbQ" atomic="true">
+    <effects>init := true, val := false</effects>
+  </PokaYoke:FormalElement>
+</xmi:XMI>

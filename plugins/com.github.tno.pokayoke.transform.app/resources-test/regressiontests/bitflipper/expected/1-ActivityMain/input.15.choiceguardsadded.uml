@@ -32,11 +32,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="17" name="__start__to__initialize" target="31" source="29"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p3__to____end/1" target="28" source="33">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+            <language>CIF</language>
             <body>bit</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="20" name="Decision__p3__to__flip" target="30" source="33">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="21">
+            <language>CIF</language>
             <body>not bit</body>
           </guard>
         </edge>

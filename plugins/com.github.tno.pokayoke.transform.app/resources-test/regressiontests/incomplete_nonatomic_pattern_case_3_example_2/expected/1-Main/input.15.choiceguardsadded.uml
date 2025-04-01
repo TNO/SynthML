@@ -40,11 +40,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="24" name="InitialNode__p1__to____start" target="44" source="50"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="25" name="Decision__p2__to__do_a/1" target="46" source="51">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="26">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="27" name="Decision__p2__to__do_b" target="47" source="51">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="28">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

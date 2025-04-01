@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,14 +15,10 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.LiteralBoolean;
-import org.eclipse.uml2.uml.LiteralNull;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
-import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
-import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
@@ -31,7 +26,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsI
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -88,7 +82,14 @@ public class PostProcessActivity {
 
             // Add a new control flow from source to target.
             ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
-            newEdge.setGuard(combineGuards(incomingEdge.getGuard(), outgoingEdge.getGuard()));
+            List<String> incomingGuardList = new ArrayList<>();
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
+            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
+            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
+                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
@@ -96,50 +97,6 @@ public class PostProcessActivity {
             action.destroy();
         }
         return numberOfActions;
-    }
-
-    /**
-     * Combines two given edge guards into a single edge guard.
-     *
-     * @param left The first edge guard to combine.
-     * @param right The second edge guard to combine.
-     * @return The combined edge guard.
-     */
-    private static ValueSpecification combineGuards(ValueSpecification left, ValueSpecification right) {
-        if (left == null || left instanceof LiteralNull) {
-            return right;
-        }
-        if (right == null || right instanceof LiteralNull) {
-            return left;
-        }
-        if (left instanceof LiteralBoolean leftBool && right instanceof LiteralBoolean rightBool) {
-            LiteralBoolean result = UMLFactory.eINSTANCE.createLiteralBoolean();
-            result.setType(UmlPrimitiveType.BOOLEAN.load(left));
-            result.setValue(leftBool.isValue() && rightBool.isValue());
-            return result;
-        }
-        if (left instanceof OpaqueExpression leftExpr && right instanceof OpaqueExpression rightExpr) {
-            OpaqueExpression result = UMLFactory.eINSTANCE.createOpaqueExpression();
-            result.setType(UmlPrimitiveType.BOOLEAN.load(left));
-
-            // Combine languages.
-            Preconditions.checkArgument(leftExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
-                    "Expected to combine only CIF expressions.");
-            Preconditions.checkArgument(rightExpr.getLanguages().stream().allMatch(l -> l.equals("CIF")),
-                    "Expected to combine only CIF expressions.");
-            result.getLanguages().add("CIF");
-
-            // Combine bodies.
-            List<String> bodies = new ArrayList<>();
-            bodies.addAll(leftExpr.getBodies());
-            bodies.addAll(rightExpr.getBodies());
-            Optional<String> body = bodies.stream().reduce((l, r) -> String.format("(%s) and (%s)", l, r));
-            body.ifPresent(b -> result.getBodies().add(b));
-
-            return result;
-        }
-
-        throw new RuntimeException("Could not combine " + left + " with " + right);
     }
 
     /**
@@ -253,5 +210,24 @@ public class PostProcessActivity {
                 }
             }
         }
+    }
+
+    /**
+     * Compute the conjunction of guards passed as arguments.
+     *
+     * @param guards The list containing the guards.
+     * @return The string with the guards conjunction.
+     */
+    private static String computeGuardConjunction(List<String> guards) {
+        String newGuard = null;
+        for (String guard: guards) {
+            if (guard != null && newGuard == null) {
+                newGuard = guard;
+            } else if (guard != null) {
+                newGuard = String.format("(%s) and (%s)", guard, newGuard);
+            }
+        }
+
+        return newGuard;
     }
 }
