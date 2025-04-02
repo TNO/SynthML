@@ -39,19 +39,31 @@
           <weight xmi:type="uml:LiteralInteger" xmi:id="20" name="Decision1_To_OpaqueAction2_weight"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="21" target="36" source="37">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="22" name="OpaqueAction1_To_Merge1_guard" value="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="22">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
           <weight xmi:type="uml:LiteralInteger" xmi:id="23" name="OpaqueAction1_To_Merge1_weight"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="24" target="34" source="36">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="25" name="Merge1_To_ActivityFinal1_guard" value="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="25">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
           <weight xmi:type="uml:LiteralInteger" xmi:id="26" name="Merge1_To_ActivityFinal1_weight"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="27" target="38" source="33">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="28" name="Initial1_To_OpaqueAction3_guard" value="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="28">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
           <weight xmi:type="uml:LiteralInteger" xmi:id="29" name="Initial1_To_OpaqueAction3_weight"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" target="35" source="38">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="31" name="OpaqueAction3_To_Decision1_guard" value="true"/>
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="31">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
           <weight xmi:type="uml:LiteralInteger" xmi:id="32" name="OpaqueAction3_To_Decision1_weight"/>
         </edge>
         <node xmi:type="uml:InitialNode" xmi:id="33" name="Initial" outgoing="27"/>
