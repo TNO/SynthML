@@ -54,16 +54,19 @@
         </ownedRule>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p2__to__flip/1" target="48" source="54">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="29">
+            <language>CIF</language>
             <body>(field1 or mode) and (not field1 or not mode)</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Decision__p2__to__left/1" target="50" source="54">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="31">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Decision__p2__to__right/1" target="52" source="54">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="33">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -73,11 +76,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="Merge__p4__to__flip" target="47" source="55"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Decision__p5__to__left" target="49" source="56">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="39">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Decision__p5__to__right" target="51" source="56">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="41">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
