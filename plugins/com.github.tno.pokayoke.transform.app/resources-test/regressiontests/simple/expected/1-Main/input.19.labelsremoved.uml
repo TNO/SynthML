@@ -92,11 +92,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="48" target="57" source="66"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="49" target="60" source="67">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="50">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="51" target="61" source="67">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="52">
+            <language>CIF</language>
             <body>productCorrectlyPlaced != False</body>
           </guard>
         </edge>

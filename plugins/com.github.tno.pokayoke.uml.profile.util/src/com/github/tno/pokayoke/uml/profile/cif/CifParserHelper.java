@@ -14,6 +14,7 @@ import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -49,10 +50,29 @@ public class CifParserHelper {
     }
 
     public static AExpression parseGuard(RedefinableElement element) throws SyntaxException {
+        if (element instanceof ControlFlow) {
+            throw new CustomSyntaxException("Control flows must use incoming or outgoing guard parsing.",
+                    TextPosition.createDummy(getLocation(element)));
+        }
+
         if (element == null) {
             return null;
         }
         return parseExpression(PokaYokeUmlProfileUtil.getGuard(element), element);
+    }
+
+    public static AExpression parseIncomingGuard(ControlFlow controlFlow) throws SyntaxException {
+        if (controlFlow == null) {
+            return null;
+        }
+        return parseExpression(PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow), controlFlow);
+    }
+
+    public static AExpression parseOutgoingGuard(ControlFlow controlFlow) throws SyntaxException {
+        if (controlFlow == null) {
+            return null;
+        }
+        return parseExpression(PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow), controlFlow);
     }
 
     public static List<AUpdate> parseUpdates(String updates, Element context) throws SyntaxException {

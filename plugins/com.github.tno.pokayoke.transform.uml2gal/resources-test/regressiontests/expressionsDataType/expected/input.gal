@@ -9,13 +9,13 @@ gal ExpressionsCompositeDataTypes__Context{
   int __init = 0;
   int __edge__0 = 1;
   int __edge__1 = 0;
-  transition __initialize [ __init == 0 ] {
+  transition __initialize [ __init == 0 && true ] {
     __init = 1    ;
   }
   transition __ActivityFinalNode_Expressions__ActivityFinalNode__1 [ __init == 1 && __edge__1 == 1 ] {
     __edge__1 = 0    ;
   }
-  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == 1 && !myDataType_myBool == 1 && myDataType_myBool == 0 && myDataType_myEnum == $Left && __edge__0 == 1 && __edge__1 == 0 ] {
+  transition __OpaqueAction_Expressions__OpaqueAction1__2 [ __init == 1 && !myDataType_myBool == 1 && myDataType_myBool == 0 && myDataType_myEnum == $Left && __edge__0 == 1 && __edge__1 == 0 && true ] {
     myDataType_myEnum = $Right    ;
     myDataType_myBool = (!( true && !( true)  || !( true)  && true)  && ( myDataType_myEnum == $Right || myDataType_myBool == (false && false) ))    ;
     __edge__0 = 0    ;

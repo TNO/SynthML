@@ -1,8 +1,6 @@
 
 package com.github.tno.pokayoke.uml.profile.design;
 
-import static com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil.FORMAL_ELEMENT_STEREOTYPE;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +16,8 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
+import org.obeonetwork.dsl.uml2.core.api.services.ReusedDescriptionServices;
+import org.obeonetwork.dsl.uml2.core.internal.services.DirectEditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
@@ -28,6 +28,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
+import PokaYoke.FormalControlFlow;
 import PokaYoke.FormalElement;
 
 /**
@@ -43,12 +44,12 @@ public class PokaYokeProfileServices {
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
     /**
-     * Returns <code>true</code> if {@link FormalElement} stereotype is applied on {@link RedefinableElement element}
-     * while 'guard and effects' layer is not enabled.
+     * Returns {@code true} if {@link FormalElement} stereotype is applied on {@link RedefinableElement element} while
+     * 'guard and effects' layer is not enabled.
      *
      * @param element The element to interrogate.
      * @param diagram The diagram containing the element.
-     * @return <code>true</code> if {@link FormalElement} stereotype is applied on element.
+     * @return {@code true} if {@link FormalElement} stereotype is applied on element.
      */
     public boolean decorateFormalElement(RedefinableElement element, DSemanticDiagram diagram) {
         if (diagram.getActivatedLayers().stream().anyMatch(l -> GUARD_EFFECTS_LAYER.equals(l.getName()))) {
@@ -62,44 +63,99 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#getGuard() guard} property value if <code>element</code> is stereotyped,
-     * <code>null</code> otherwise.
+     * Returns the {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
+     * otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#getGuard() guard} property value if <code>element</code> is stereotyped,
-     *     <code>null</code> otherwise.
+     * @return The {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
+     *     otherwise.
      */
     public String getGuard(RedefinableElement element) {
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard getter.");
+        }
         return PokaYokeUmlProfileUtil.getGuard(element);
     }
 
     /**
+     * Returns the control flow {@link PokaYokeUmlProfileUtil#getIncomingGuard incoming guard}.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return The {@link FormalControlFlow#getOutgoingGuard() guard} property value if {@code controlFlow} is
+     *     stereotyped, {@code null} otherwise.
+     */
+    public String getIncomingGuard(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow);
+    }
+
+    /**
+     * Returns the {@link FormalControlFlow#getOutgoingGuard() outgoing guard} property value if {@code controlFlow} is
+     * stereotyped, {@code null} otherwise.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return The {@link FormalControlFlow#getOutgoingGuard() guard} property value if {@code controlFlow} is
+     *     stereotyped, {@code null} otherwise.
+     */
+    public String getOutgoingGuard(ControlFlow controlFlow) {
+        return PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow);
+    }
+
+    /**
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setGuard(String) guard} property
-     * for <code>element</code>.
+     * for {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
-     * {@link String#isEmpty() empty} and {@link #getEffects(RedefinableElement)} also is <code>null</code> or
-     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is <code>false</code>.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
      * </p>
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
     public void setGuard(RedefinableElement element, String newValue) {
-        PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (Strings.isNullOrEmpty(newValue) && !(element instanceof ActivityEdge)) {
-            String effects = getEffects(element);
-            boolean atomic = isAtomic(element);
-            if (Strings.isNullOrEmpty(effects) && !atomic) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger a refresh here.
-                refresh(element);
-                return;
-            }
+        if (element instanceof ControlFlow) {
+            throw new RuntimeException("Control flow must use incoming or outgoing guard setter.");
         }
-        // Empty values are not allowed, so reset the value
+
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
+
+        // Empty values are not allowed, so reset the value.
         PokaYokeUmlProfileUtil.setGuard(element, Strings.emptyToNull(newValue));
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(element);
+    }
+
+    /**
+     * Sets the {@link ControlFlow#getGuard guard} as an opaque expression with one body containing {@code newValue}.
+     *
+     * @param controlFlow The control flow to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setIncomingGuard(ControlFlow controlFlow, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
+        PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, Strings.emptyToNull(newValue));
+    }
+
+    /**
+     * Applies the {@link FormalControlFlow} stereotype and sets the {@link FormalControlFlow#setOutgoingGuard(String)
+     * guard} property for {@code controlFlow}.
+     * <p>
+     * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
+     * {@link String#isEmpty() empty}.
+     * </p>
+     *
+     * @param controlFlow The control flow to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setOutgoingGuard(ControlFlow controlFlow, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
+        PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, Strings.emptyToNull(newValue));
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger a refresh here.
+        refresh(controlFlow);
     }
 
     public void unsetGuard(RedefinableElement element) {
@@ -111,12 +167,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#getEffects() effects} property value if <code>element</code> is stereotyped,
-     * <code>null</code> otherwise.
+     * Returns the {@link FormalElement#getEffects() effects} property value if {@code element} is stereotyped,
+     * {@code null} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#getEffects() effects} property value if <code>element</code> is stereotyped,
-     *     <code>null</code> otherwise.
+     * @return The {@link FormalElement#getEffects() effects} property value if {@code element} is stereotyped,
+     *     {@code null} otherwise.
      */
     public String getEffects(RedefinableElement element) {
         return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getEffects(element));
@@ -124,11 +180,11 @@ public class PokaYokeProfileServices {
 
     /**
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#getEffects() effects} property for
-     * <code>element</code>.
+     * {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
-     * {@link String#isEmpty() empty} and {@link #getGuard(RedefinableElement)} also is <code>null</code> or
-     * {@link String#isEmpty() empty} and {@link #isAtomic(RedefinableElement)} is <code>false</code>.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
+     * empty} and {@link #getGuard(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #isAtomic(RedefinableElement)} is {@code false}.
      * </p>
      *
      * @param element The element to set the property on.
@@ -137,22 +193,15 @@ public class PokaYokeProfileServices {
     public void setEffects(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
-            String guard = getGuard(element);
-            boolean atomic = isAtomic(element);
-            if (Strings.isNullOrEmpty(guard) && !atomic) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger the refresh here.
-                refresh(element);
-                return;
-            }
-        }
-        if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value
             PokaYokeUmlProfileUtil.setEffects(element, null);
         } else {
             PokaYokeUmlProfileUtil.setEffects(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
         }
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(element);
     }
 
     public void unsetEffects(RedefinableElement element) {
@@ -164,12 +213,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalElement#isAtomic() atomic} property value if <code>element</code> is stereotyped,
-     * <code>false</code> otherwise.
+     * Returns the {@link FormalElement#isAtomic() atomic} property value if {@code element} is stereotyped,
+     * {@code false} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalElement#isAtomic() atomic} property value if <code>element</code> is stereotyped,
-     *     <code>false</code> otherwise.
+     * @return The {@link FormalElement#isAtomic() atomic} property value if {@code element} is stereotyped,
+     *     {@code false} otherwise.
      */
     public boolean isAtomic(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.isAtomic(element);
@@ -177,11 +226,11 @@ public class PokaYokeProfileServices {
 
     /**
      * Applies the {@link FormalElement} stereotype and sets the {@link FormalElement#setAtomic(boolean) atomic}
-     * property for <code>element</code>.
+     * property for {@code element}.
      * <p>
-     * The {@link FormalElement} stereotype is removed if <code>newValue</code> is <code>null</code> or
-     * <code>false</code> and {@link #getGuard(RedefinableElement)} is <code>null</code> or {@link String#isEmpty()
-     * empty} and {@link #getEffects(RedefinableElement)} also is <code>null</code> or {@link String#isEmpty() empty}.
+     * The {@link FormalElement} stereotype is removed if {@code newValue} is {@code null} or {@code false} and
+     * {@link #getGuard(RedefinableElement)} is {@code null} or {@link String#isEmpty() empty} and
+     * {@link #getEffects(RedefinableElement)} also is {@code null} or {@link String#isEmpty() empty}.
      * </p>
      *
      * @param element The element to set the property on.
@@ -189,18 +238,11 @@ public class PokaYokeProfileServices {
      */
     public void setAtomic(RedefinableElement element, Boolean newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
-        if (newValue == null || !newValue) {
-            String guard = getGuard(element);
-            String effects = getEffects(element);
-            if (Strings.isNullOrEmpty(guard) && Strings.isNullOrEmpty(effects)) {
-                PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ELEMENT_STEREOTYPE);
-                // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
-                // is used in the odesign file. So we trigger the refresh here.
-                refresh(element);
-                return;
-            }
-        }
         PokaYokeUmlProfileUtil.setAtomic(element, newValue);
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(element);
     }
 
     public void setPropertyName(Property property, String newValue) {
@@ -228,16 +270,26 @@ public class PokaYokeProfileServices {
     public String getControlFlowLabel(ControlFlow controlFlow) {
         String label = controlFlow.getName();
         label = Strings.nullToEmpty(label);
-        if (!label.isEmpty()) {
-            label += System.getProperty("line.separator");
+
+        // If at least one guard is present, visualize both.
+        String guards = label.isEmpty() ? "" : System.getProperty("line.separator");
+        String incomingGuard = getIncomingGuard(controlFlow);
+        String outgoingGuard = getOutgoingGuard(controlFlow);
+        if (!Strings.isNullOrEmpty(outgoingGuard) || !Strings.isNullOrEmpty(incomingGuard)) {
+            if (Strings.isNullOrEmpty(incomingGuard)) {
+                incomingGuard = "true";
+            }
+            incomingGuard = "In: " + incomingGuard;
+
+            if (Strings.isNullOrEmpty(outgoingGuard)) {
+                outgoingGuard = "true";
+            }
+            outgoingGuard = "Out: " + outgoingGuard;
+
+            guards += incomingGuard + System.getProperty("line.separator") + outgoingGuard;
         }
 
-        String guard = getGuard(controlFlow);
-        if (Strings.isNullOrEmpty(guard)) {
-            guard = "true";
-        }
-
-        label += guard;
+        label += guards;
         return label;
     }
 
@@ -262,6 +314,28 @@ public class PokaYokeProfileServices {
         EditLabelSwitch editLabel = new EditLabelSwitch();
         editLabel.setEditedLabelContent(editedLabelContent);
         return editLabel.doSwitch(context);
+    }
+
+    /**
+     * Compute the label of the given element for direct edit. Overrides the
+     * {@link ReusedDescriptionServices#computeUmlDirectEditLabel(Element) computeUmlDirectEditLabel} method in UML
+     * Designer. This implementation returns only the name of an 'ActivityEdge' without adding the stereotype name
+     * within angle brackets before it. The override occurs implicitly because {@link PokaYokeProfileServices} is added
+     * to the viewpoint. This method is called through Activity Diagram defined in the uml2core.odesign file in the UML
+     * Designer project.
+     *
+     * @param element The {@link Element} for which to retrieve a label.
+     * @return The computed label.
+     */
+    public String computeUmlDirectEditLabel(Element element) {
+        if (element instanceof ActivityEdge edge) {
+            // The implementation in UML Designer uses 'doSwitch' to return both the name of an 'ActivityEdge' and
+            // the name of its stereotype. This implementation only returns the name.
+            return edge.getName();
+        }
+
+        final DirectEditLabelSwitch directEditLabel = new DirectEditLabelSwitch();
+        return directEditLabel.doSwitch(element);
     }
 
     /**

@@ -2,6 +2,7 @@
  */
 package PokaYoke.impl;
 
+import PokaYoke.FormalControlFlow;
 import PokaYoke.FormalElement;
 import PokaYoke.PokaYokeFactory;
 import PokaYoke.PokaYokePackage;
@@ -31,6 +32,13 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	private EClass formalElementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass formalControlFlowEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -153,6 +161,36 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
+	public EClass getFormalControlFlow() {
+		return formalControlFlowEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getFormalControlFlow_OutgoingGuard() {
+		return (EAttribute)formalControlFlowEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFormalControlFlow_Base_ControlFlow() {
+		return (EReference)formalControlFlowEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public PokaYokeFactory getPokaYokeFactory() {
 		return (PokaYokeFactory)getEFactoryInstance();
 	}
@@ -181,6 +219,10 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		createEAttribute(formalElementEClass, FORMAL_ELEMENT__EFFECTS);
 		createEReference(formalElementEClass, FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT);
 		createEAttribute(formalElementEClass, FORMAL_ELEMENT__ATOMIC);
+
+		formalControlFlowEClass = createEClass(FORMAL_CONTROL_FLOW);
+		createEAttribute(formalControlFlowEClass, FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
+		createEReference(formalControlFlowEClass, FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW);
 	}
 
 	/**
@@ -222,6 +264,10 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		initEAttribute(getFormalElement_Effects(), theTypesPackage.getString(), "effects", null, 0, -1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEReference(getFormalElement_Base_RedefinableElement(), theUMLPackage.getRedefinableElement(), null, "base_RedefinableElement", null, 1, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getFormalElement_Atomic(), theTypesPackage.getBoolean(), "atomic", "false", 0, 1, FormalElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+
+		initEClass(formalControlFlowEClass, FormalControlFlow.class, "FormalControlFlow", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFormalControlFlow_OutgoingGuard(), theTypesPackage.getString(), "outgoingGuard", null, 0, 1, FormalControlFlow.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getFormalControlFlow_Base_ControlFlow(), theUMLPackage.getControlFlow(), null, "base_ControlFlow", null, 1, 1, FormalControlFlow.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

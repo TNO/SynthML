@@ -43,11 +43,11 @@ gal ExampleModel__ExampleClass{
     __edge__4 = 0    ;
     __edge__5 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__DecisionNode__5 [ __init == 1 && inputLocation == $Left && __edge__5 == 1 && __edge__6 == 0 ] {
+  transition __DecisionNode_ExampleActivity__DecisionNode__5 [ __init == 1 && __edge__5 == 1 && __edge__6 == 0 && inputLocation == $Left ] {
     __edge__5 = 0    ;
     __edge__6 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__DecisionNode__6 [ __init == 1 && inputLocation == $Right && __edge__5 == 1 && __edge__7 == 0 ] {
+  transition __DecisionNode_ExampleActivity__DecisionNode__6 [ __init == 1 && __edge__5 == 1 && __edge__7 == 0 && inputLocation == $Right ] {
     __edge__5 = 0    ;
     __edge__7 = 1    ;
   }

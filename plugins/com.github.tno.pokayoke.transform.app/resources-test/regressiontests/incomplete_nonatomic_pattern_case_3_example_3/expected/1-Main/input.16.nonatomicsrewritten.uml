@@ -41,11 +41,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="25" name="__end__to__FinalNode__p10" target="62" source="51"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="26" name="Decision__p2__to__do_a/1" target="54" source="63">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="27">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p2__to__do_b/1" target="69" source="63">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="29">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -53,11 +55,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="31" name="do_a/1__to__reset" target="59" source="54"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Decision__p4__to__do_a/2" target="55" source="64">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="33">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="34" name="Decision__p4__to__do_b__na_result_1/2" target="58" source="64">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="35">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
@@ -65,11 +69,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="37" name="reset__to__do_b" target="68" source="59"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="38" name="Decision__p6__to__do_b__na_result_1/1" target="57" source="65">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="39">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="40" name="Decision__p6__to__reset/1" target="60" source="65">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="41">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

@@ -92,11 +92,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="48" name="Merge__p7__to__measure_product_position" target="57" source="66"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="49" name="Decision__p8__to__robot_adjust_product" target="60" source="67">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="50">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="51" name="Decision__p8__to__robot_move_to_location1" target="61" source="67">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="52">
+            <language>CIF</language>
             <body>productCorrectlyPlaced != False</body>
           </guard>
         </edge>

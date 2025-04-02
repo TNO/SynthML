@@ -12,4 +12,10 @@
         eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//Boolean"
         defaultValueLiteral="false"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormalControlFlow">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="outgoingGuard" ordered="false"
+        eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="base_ControlFlow" ordered="false"
+        lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//ControlFlow"/>
+  </eClassifiers>
 </ecore:EPackage>

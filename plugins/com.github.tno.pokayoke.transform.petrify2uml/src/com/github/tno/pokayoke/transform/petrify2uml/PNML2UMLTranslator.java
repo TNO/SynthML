@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 import fr.lip6.move.pnml.framework.utils.exception.ImportException;
@@ -243,7 +244,7 @@ public class PNML2UMLTranslator {
 
                 LiteralBoolean guard = UML_FACTORY.createLiteralBoolean();
                 guard.setValue(true);
-                flow.setGuard(guard);
+                PokaYokeUmlProfileUtil.setIncomingGuard(flow, guard);
             }
         }
 

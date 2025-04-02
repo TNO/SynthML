@@ -61,21 +61,25 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="40" name="InitialNode__p1__to__Fork____start" target="60" source="53"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="41" name="Decision__p4__to__Merge__p6" target="57" source="55">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="42">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Decision__p4__to__Merge__p6" target="57" source="55">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="44">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="45" name="Decision__p5__to__Merge__p7" target="58" source="56">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="46">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="47" name="Decision__p5__to__Merge__p7" target="58" source="56">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="48">
+            <language>CIF</language>
             <body>true</body>
           </guard>
         </edge>

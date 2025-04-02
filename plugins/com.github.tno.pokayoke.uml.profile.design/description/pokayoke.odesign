@@ -17,8 +17,8 @@
       <layers name="PY_GuardsEffects" label="Guards and Effects" activeByDefault="true">
         <edgeMappingImports name="AD_DecisionControlFlowPY">
           <importedMapping xsi:type="description_1:EdgeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@edgeMappings[name='AD_ControlFlow']"/>
-          <conditionnalStyles predicateExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)">
-            <style sizeComputationExpression="2">
+          <conditionnalStyles predicateExpression="true">
+            <style>
               <strokeColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='gray']"/>
               <centerLabelStyleDescription showIcon="false" labelExpression="service:self.getControlFlowLabel()">
                 <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
@@ -210,7 +210,7 @@
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_OpaqueBehaviorPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueBehavior" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <pages name="PR_ControlFlowPage" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" preconditionExpression="aql:self.source.oclIsTypeOf(uml::DecisionNode)" groups="//@extensions.0/@categories.0/@groups.1"/>
+      <pages name="PR_ControlFlowPage" labelExpression="Poka Yoke" domainClass="uml::ControlFlow" groups="//@extensions.0/@categories.0/@groups.1"/>
       <pages name="PR_PropertyPage" labelExpression="Poka Yoke" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="Poka Yoke" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
@@ -241,9 +241,14 @@
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setName(newValue)"/>
           </initialOperation>
         </controls>
-        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_Guard" labelExpression="Guard:" helpExpression="The Guard of the Control Flow" lineCount="3" valueExpression="service:self.getGuard()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_IncomingGuard" labelExpression="Incoming Guard:" helpExpression="The Incoming Guard of the Control Flow" lineCount="3" valueExpression="service:self.getIncomingGuard()">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setGuard(newValue)"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setIncomingGuard(newValue)"/>
+          </initialOperation>
+        </controls>
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CF_OutgoingGuard" labelExpression="Outgoing Guard:" helpExpression="The Outgoing Guard of the Control Flow" lineCount="3" valueExpression="service:self.getOutgoingGuard()">
+          <initialOperation>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setOutgoingGuard(newValue)"/>
           </initialOperation>
         </controls>
       </groups>

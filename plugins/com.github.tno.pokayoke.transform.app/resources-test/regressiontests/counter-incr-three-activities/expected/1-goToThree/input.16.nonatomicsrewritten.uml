@@ -41,11 +41,13 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="27" name="__start__to__initialize" target="45" source="40"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Decision__p3__to____tau_0" target="41" source="47">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="29">
+            <language>CIF</language>
             <body>count = 1 or (count = 3 or count = 5)</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Decision__p3__to____tau_1" target="42" source="47">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="31">
+            <language>CIF</language>
             <body>count = 0 or (count = 2 or count = 4)</body>
           </guard>
         </edge>

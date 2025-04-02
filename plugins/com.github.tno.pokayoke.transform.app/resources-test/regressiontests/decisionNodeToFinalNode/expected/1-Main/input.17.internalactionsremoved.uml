@@ -28,12 +28,14 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="14" name="action__to__Merge__p3" target="24" source="21"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="15" name="Decision__p3__to__action" target="21" source="25">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="16">
+            <language>CIF</language>
             <body>not field</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="17" name="Merge__p3__to__Decision__p3" target="25" source="24"/>
         <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Decision__p3__to__FinalNode__p4" target="26" source="25">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="19">
+            <language>CIF</language>
             <body>field</body>
           </guard>
         </edge>

@@ -9,14 +9,14 @@ gal MyModel__Context{
   int __init = 0;
   int __edge__0 = 1;
   int __edge__1 = 0;
-  transition __initialize(IntegerA $intA1_myInt) [ __init == 0 ] {
+  transition __initialize(IntegerA $intA1_myInt) [ __init == 0 && true ] {
     __init = 1    ;
     intA1_myInt = $intA1_myInt    ;
   }
   transition __ActivityFinalNode_Main__ActivityFinalNode__1 [ __init == 1 && 1 <= intA1_myInt && intA1_myInt <= 10 && 1 <= intA2_myInt && intA2_myInt <= 10 && 11 <= intB1_myInt && intB1_myInt <= 21 && __edge__1 == 1 ] {
     __edge__1 = 0    ;
   }
-  transition __OpaqueAction_Main__MyAction__2 [ __init == 1 && intA2_myInt < 8 && 1 <= intA1_myInt && intA1_myInt <= 10 && 1 <= intA2_myInt && intA2_myInt <= 10 && 11 <= intB1_myInt && intB1_myInt <= 21 && __edge__0 == 1 && __edge__1 == 0 ] {
+  transition __OpaqueAction_Main__MyAction__2 [ __init == 1 && intA2_myInt < 8 && 1 <= intA1_myInt && intA1_myInt <= 10 && 1 <= intA2_myInt && intA2_myInt <= 10 && 11 <= intB1_myInt && intB1_myInt <= 21 && __edge__0 == 1 && __edge__1 == 0 && true ] {
     intA1_myInt = ( intA1_myInt + 1 )    ;
     intB1_myInt = 16    ;
     __edge__0 = 0    ;

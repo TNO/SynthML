@@ -34,7 +34,6 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DataType;
-import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
 import org.eclipse.uml2.uml.InitialNode;
@@ -511,26 +510,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     @Check
-    private void checkValidActivityEdge(ActivityEdge edge) {
-        if (!isPokaYokeUmlProfileApplied(edge)) {
+    private void checkValidActivityEdge(ActivityEdge activityEdge) {
+        if (!isPokaYokeUmlProfileApplied(activityEdge)) {
             return;
         }
-        if (edge instanceof ControlFlow controlFlow) {
-            checkNamingConventions(edge, NamingConvention.OPTIONAL);
-
-            if (controlFlow.getSource() instanceof DecisionNode) {
-                try {
-                    AExpression guardExpr = CifParserHelper.parseExpression(controlFlow.getGuard());
-                    if (guardExpr == null) {
-                        return;
-                    }
-                    new CifTypeChecker(controlFlow).checkBooleanAssignment(guardExpr);
-                } catch (RuntimeException e) {
-                    error("Invalid guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
-                }
-            }
+        if (!(activityEdge instanceof ControlFlow)) {
+            error("Unsupported activity edge type: " + activityEdge.eClass().getName(), null);
         } else {
-            error("Unsupported activity edge type: " + edge.eClass().getName(), null);
+            checkNamingConventions(activityEdge, NamingConvention.OPTIONAL);
         }
     }
 
@@ -590,10 +577,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private static boolean isGuardEffectsActivity(Activity activity, Set<Activity> history) {
         boolean containsGuardEffectsActions = from(activity.getOwnedNodes()).objectsOfKind(Action.class)
                 .exists(a -> PokaYokeUmlProfileUtil.isSetGuard(a) || PokaYokeUmlProfileUtil.isSetEffects(a));
-        if (containsGuardEffectsActions) {
+        boolean containsGuardedControlFlows = from(activity.getOwnedElements()).objectsOfKind(ControlFlow.class)
+                .exists(cf -> !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getOutgoingGuard(cf))
+                        || !Strings.isNullOrEmpty(PokaYokeUmlProfileUtil.getIncomingGuard(cf)));
+        if (containsGuardEffectsActions || containsGuardedControlFlows) {
             return true;
         } else if (!history.add(activity)) {
-            // Cope with cycles
+            // Cope with cycles.
             return false;
         }
 
@@ -603,20 +593,41 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link FormalElement#getGuard()} property if set.
+     * Validates the {@link FormalElement#getGuard()} property or the incoming and outgoing guards of a control flow, if
+     * set.
      *
      * @param element The element to validate.
      */
     @Check
     private void checkValidGuard(RedefinableElement element) {
-        try {
-            AExpression guardExpr = CifParserHelper.parseGuard(element);
-            if (guardExpr == null) {
-                return;
+        if (element instanceof ControlFlow controlFlow) {
+            try {
+                AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
+                if (incomingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
+                }
+            } catch (RuntimeException e) {
+                error("Invalid incoming guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
             }
-            new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
-        } catch (RuntimeException e) {
-            error("Invalid guard: " + e.getLocalizedMessage(), null);
+
+            try {
+                AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
+                if (outgoingGuardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
+                }
+            } catch (RuntimeException e) {
+                error("Invalid outgoing guard: " + e.getLocalizedMessage(),
+                        PokaYokePackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
+            }
+        } else {
+            try {
+                AExpression guardExpr = CifParserHelper.parseGuard(element);
+                if (guardExpr != null) {
+                    new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
+                }
+            } catch (RuntimeException e) {
+                error("Invalid guard: " + e.getLocalizedMessage(), PokaYokePackage.Literals.FORMAL_ELEMENT__GUARD);
+            }
         }
     }
 
@@ -636,7 +647,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (effects.size() > 1) {
                     prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
                 }
-                error(prefix + re.getLocalizedMessage(), null);
+                error(prefix + re.getLocalizedMessage(), PokaYokePackage.Literals.FORMAL_ELEMENT__EFFECTS);
             }
         }
     }
@@ -746,7 +757,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         UMLPackage.Literals.NAMESPACE__MEMBER);
             }
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 
@@ -754,7 +765,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         try {
             new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
-            error("Invalid invariant: " + e.getLocalizedMessage(), null);
+            error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
     }
 
