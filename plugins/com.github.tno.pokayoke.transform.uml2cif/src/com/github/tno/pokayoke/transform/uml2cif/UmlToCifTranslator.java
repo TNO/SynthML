@@ -410,7 +410,7 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF enumeration declarations.
      */
-    private List<EnumDecl> translateEnumerations() {
+    protected List<EnumDecl> translateEnumerations() {
         List<Enumeration> umlEnums = context.getAllEnumerations();
         List<EnumDecl> cifEnums = new ArrayList<>(umlEnums.size());
 
@@ -428,7 +428,7 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF enumeration literals.
      */
-    private List<EnumLiteral> translateEnumerationLiterals() {
+    protected List<EnumLiteral> translateEnumerationLiterals() {
         List<EnumerationLiteral> umlLiterals = context.getAllEnumerationLiterals();
         List<EnumLiteral> cifLiterals = new ArrayList<>(umlLiterals.size());
 
@@ -447,7 +447,7 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF discrete variables.
      */
-    private List<DiscVariable> translateProperties() {
+    protected List<DiscVariable> translateProperties() {
         List<Property> umlProperties = context.getAllDeclaredProperties();
         List<DiscVariable> cifVariables = new ArrayList<>(umlProperties.size());
 
@@ -672,7 +672,7 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivities() {
+    protected Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateActivities() {
         Set<DiscVariable> newVariables = new LinkedHashSet<>();
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
@@ -732,7 +732,7 @@ public class UmlToCifTranslator {
      * @param node The UML activity node to translate.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateActivityNode(ActivityNode node) {
+    protected BiMap<Event, Edge> translateActivityNode(ActivityNode node) {
         // Translate the given activity node as either an AND or OR type node, depending on its type. The CIF start
         // events that will be created for this node should only be controllable in case the node is an initial node.
         BiMap<Event, Edge> newEventEdges;
@@ -799,7 +799,7 @@ public class UmlToCifTranslator {
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
+    protected BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
         // Translate the UML activity node as an action.
@@ -830,7 +830,7 @@ public class UmlToCifTranslator {
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    private BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean isAtomic,
+    protected BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
         // Find all combinations of incoming and outgoing UML control flows to translate CIF events/edges for, as pairs.
@@ -1067,7 +1067,7 @@ public class UmlToCifTranslator {
      *
      * @return The created atomicity variable, or {@code null} in case there are no atomic non-deterministic actions.
      */
-    private DiscVariable encodeAtomicNonDeterministicActionConstraints() {
+    protected DiscVariable encodeAtomicNonDeterministicActionConstraints() {
         DiscVariable cifAtomicityVar = null;
 
         // Find all the start and end events of atomic non-deterministic actions.
@@ -1164,7 +1164,7 @@ public class UmlToCifTranslator {
      *
      * @return The created active variables.
      */
-    private List<DiscVariable> encodeNonAtomicActionConstraints() {
+    protected List<DiscVariable> encodeNonAtomicActionConstraints() {
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
         List<DiscVariable> cifNonAtomicVars = new ArrayList<>(nonAtomicEventMap.size());
@@ -1371,7 +1371,7 @@ public class UmlToCifTranslator {
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
-    private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
+    protected Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
         List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
         return Pair.pair(preconditionVars, preconditionVar);
@@ -1431,7 +1431,7 @@ public class UmlToCifTranslator {
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
-    private Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
+    protected Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
             DiscVariable cifAtomicityVar)
     {
         List<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
