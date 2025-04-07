@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -27,6 +28,7 @@ import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
+import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
@@ -35,6 +37,7 @@ import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
@@ -51,6 +54,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
+import com.github.tno.pokayoke.transform.app.LanguageEquivalenceCheckHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -63,9 +67,11 @@ import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslatorPostSynth;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -105,7 +111,10 @@ public class FullSynthesisApp {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
             Path localOutputPath = outputFolderPath.resolve(String.format("%d-%s", i + 1, activity.getName()));
             Files.createDirectories(localOutputPath);
-            performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
+            UmlToCifTranslator translator = performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
+            boolean languageEquivalentModels = performLanguageEquivalenceCheck(filePrefix, localOutputPath, translator);
+            Verify.verify(languageEquivalentModels,
+                    "Final UML model is not language equivalent to the synthesized CIF model.");
         }
     }
 
@@ -342,5 +351,104 @@ public class FullSynthesisApp {
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
+    }
+
+    private static boolean performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
+            UmlToCifTranslator translator) throws CoreException
+    {
+        // Find state space UML file.
+        Specification stateSpaceGenerated = CifFileHelper
+                .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
+
+        // Translate final UML model to CIF and get its state space.
+        Pair<Specification, UmlToCifTranslator> stateSpaceAndTranslator = translatePostSynthesisUmlToStateSpace(
+                filePrefix, localOutputPath);
+        Specification stateSpacePostSynthChain = stateSpaceAndTranslator.getLeft();
+        UmlToCifTranslator translatorPostSynth = stateSpaceAndTranslator.getRight();
+
+        // Clean the state annotations, and get the epsilon and non-epsilon events before the language equivalence
+        // check.
+        ModelPreparationResult result = LanguageEquivalenceCheckHelper.prepareModels(stateSpaceGenerated,
+                translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
+                translatorPostSynth.getNormalizedNameToEventsMap(), translatorPostSynth.getEventsToIgnore(),
+                translator.getVariableNames());
+
+        // If the corresponding events from one automaton to the other is null, the two automata are not language
+        // equivalent, so return false.
+        if (result.pairedEvents() == null) {
+            return false;
+        }
+
+        Automaton automaton1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
+        Automaton automaton2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
+
+        StateAwareWeakTraceEquivalenceChecker sawteChecker = new StateAwareWeakTraceEquivalenceChecker();
+        boolean areEquivalentModels = sawteChecker.check(automaton1, result.stateAnnotations1(),
+                translator.getEventsToIgnore(), automaton2, result.stateAnnotations2(),
+                translatorPostSynth.getEventsToIgnore(), result.pairedEvents());
+
+        return areEquivalentModels;
+    }
+
+    private static Pair<Specification, UmlToCifTranslator> translatePostSynthesisUmlToStateSpace(String filePrefix,
+            Path localOutputPath) throws CoreException
+    {
+        // Find final UML file.
+        Path finalUmlModel = localOutputPath.resolve(filePrefix + ".19.labelsremoved.uml");
+        Model synthUmlFile = FileHelper.loadModel(finalUmlModel.toString());
+
+        // Translation of final UML file to CIF.
+        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(synthUmlFile,
+                filePrefix + ".99", localOutputPath);
+
+        // Find state space post-synthesis chain file.
+        Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
+        Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(stateSpacePostSynthChainPath);
+
+        return Pair.of(stateSpacePostSynthChain, umlToCifTranslatorPostSynth);
+    }
+
+    private static UmlToCifTranslator translateAndGenerateStateSpace(Model synthUmlFile, String filePrefix,
+            Path outputFolderPath) throws CoreException
+    {
+        // Translate UML file to CIF.
+        Activity concreteActivity = (Activity)((BehavioredClassifier)synthUmlFile.getPackagedElements().get(0))
+                .getClassifierBehavior();
+        UmlToCifTranslatorPostSynth umlToCifTranslatorPostSynth = new UmlToCifTranslatorPostSynth(concreteActivity);
+        Specification cifSpec = umlToCifTranslatorPostSynth.translate();
+        Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.finalUmlToCif.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
+        // Post-process the CIF specification to eliminate all if-updates.
+        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
+        elimIfUpdates.transform(cifSpec);
+        Path cifPostProcessedSpecPath = outputFolderPath.resolve(filePrefix + ".02.postprocessed.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
+        // Perform state space generation.
+        Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif");
+        String[] stateSpaceGenerationArgs = new String[] {cifPostProcessedSpecPath.toString(),
+                "--output=" + cifStateSpacePath.toString()};
+        AppStream explorerAppStream = new MemAppStream();
+        AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
+                explorerAppStream, explorerAppStream);
+        ExplorerApplication explorerApp = new ExplorerApplication(explorerAppStreams);
+        int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException(
+                    "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
+        }
+
+        return umlToCifTranslatorPostSynth;
     }
 }
