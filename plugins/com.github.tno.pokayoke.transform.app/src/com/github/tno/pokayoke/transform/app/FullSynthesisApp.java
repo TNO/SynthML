@@ -109,7 +109,7 @@ public class FullSynthesisApp {
         }
     }
 
-    public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
+    public static UmlToCifTranslator performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
         // Translate the UML specification to a CIF specification.
@@ -328,6 +328,8 @@ public class FullSynthesisApp {
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
+
+        return umlToCifTranslator;
     }
 
     private static String getPreservedEvents(Specification spec) {
