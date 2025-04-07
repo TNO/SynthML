@@ -65,6 +65,7 @@ import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.MergeNode;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Property;
@@ -151,6 +152,12 @@ public class UmlToCifTranslator {
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
+    /** The one-to-many mapping from normalized names of UML elements to their corresponding CIF events. */
+    private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
+
+    /** The set containing CIF epsilon-events, i.e. events that make irrelevant changes to the state. */
+    private final Set<Event> cifEventsToIgnore = new LinkedHashSet<>();
+
     public UmlToCifTranslator(Activity activity) {
         this.activity = activity;
         this.context = new CifContext(activity.getModel());
@@ -164,6 +171,33 @@ public class UmlToCifTranslator {
      */
     public Activity getActivity() {
         return activity;
+    }
+
+    /**
+     * Returns the map from the normalized name of the UML element to a list of CIF events that refer to it.
+     *
+     * @return The map from the normalized names of UML elements to CIF events.
+     */
+    public Map<String, List<Event>> getNormalizedNameToEventsMap() {
+        return normalizedNamesToEvents;
+    }
+
+    /**
+     * Returns the set containing the events corresponding to epsilon transitions, e.g. going over a join node.
+     *
+     * @return The set of events corresponding to epsilon transitions.
+     */
+    public Set<Event> getEventsToIgnore() {
+        return cifEventsToIgnore;
+    }
+
+    /**
+     * Returns the set containing the names of UML properties.
+     *
+     * @return The set of UML properties names.
+     */
+    public Set<String> getVariableNames() {
+        return variableMap.keySet().stream().map(p -> p.getName()).collect(Collectors.toSet());
     }
 
     /**
@@ -541,6 +575,17 @@ public class UmlToCifTranslator {
         cifStartEvent.setName(name);
         startEventMap.put(cifStartEvent, umlElement);
 
+        // Add the start event to the normalized name to event map.
+        if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
+                || umlElement instanceof OpaqueBehavior)
+        {
+            // Add the event to the corresponding normalized name. More events may correspond to the same name.
+            normalizedNamesToEvents.computeIfAbsent(normalizeNames(umlAction, "", 0), k -> new ArrayList<>())
+                    .add(cifStartEvent);
+        } else {
+            cifEventsToIgnore.add(cifStartEvent);
+        }
+
         // Create a CIF edge for this start event.
         EventExpression cifEventExpr = CifConstructors.newEventExpression();
         cifEventExpr.setEvent(cifStartEvent);
@@ -572,6 +617,17 @@ public class UmlToCifTranslator {
                         : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
                 cifEndEvent.setName(name + outcomeSuffix + (i + 1));
                 cifEndEvents.add(cifEndEvent);
+
+                // Add the end event to the normalized names to event map.
+                if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
+                        || umlElement instanceof OpaqueBehavior)
+                {
+                    normalizedNamesToEvents
+                            .computeIfAbsent(normalizeNames(umlAction, outcomeSuffix, i + 1), k -> new ArrayList<>())
+                            .add(cifEndEvent);
+                } else {
+                    cifEventsToIgnore.add(cifEndEvent);
+                }
 
                 // Make the CIF edge for the uncontrollable end event.
                 EventExpression cifEndEventExpr = CifConstructors.newEventExpression();
@@ -1546,5 +1602,28 @@ public class UmlToCifTranslator {
     public Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
         List<Expression> cifConstraints = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
         return CifValueUtils.createConjunction(cifConstraints);
+    }
+
+    private String normalizeNames(NamedElement umlElement, String extraString, int resultNumber) {
+        while (umlElement instanceof CallBehaviorAction cbAction) {
+            umlElement = cbAction.getBehavior();
+        }
+
+        // If name contains the post-synthesis identifier for the start or end of a non-atomic action, replace it with
+        // its original non-atomic action identifier. The identifiers are defined in
+        // PostProcessActivity#rewriteLeftoverNonAtomicActions.
+        String elementName = umlElement.getName();
+        if (elementName.contains("_start")) {
+            umlElement.setName(elementName.replace("_start", ""));
+        } else if (elementName.contains("_end")) {
+            umlElement.setName(elementName.replace("_end", NONATOMIC_OUTCOME_SUFFIX));
+        }
+
+        // If this element has effects, return the element name with the effect number.
+        if (resultNumber > 0) {
+            return "__UML_element_" + umlElement.getName() + extraString + String.valueOf(resultNumber);
+        } else {
+            return "__UML_element_" + umlElement.getName();
+        }
     }
 }
