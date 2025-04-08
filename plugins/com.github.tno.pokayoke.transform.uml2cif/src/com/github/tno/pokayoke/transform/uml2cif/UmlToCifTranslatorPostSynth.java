@@ -146,7 +146,7 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
         List<DiscVariable> cifPropertyVars = translateProperties();
         cifPlant.getDeclarations().addAll(cifPropertyVars);
 
-        // Add an called initial node variable.
+        // Add a called initial node variable.
         DiscVariable cifInitialNodeCalledVariable = createCalledInitialNode();
         cifPlant.getDeclarations().add(cifInitialNodeCalledVariable);
 
@@ -193,7 +193,8 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
     }
 
     private DiscVariable createCalledInitialNode() {
-        // Create a Boolean CIF variable for the initial node unique call, with default value false.
+        // Create a boolean CIF variable for the call to the initial node of a concrete activity, with default value
+        // false.
         DiscVariable cifVariable = CifConstructors.newDiscVariable();
         cifVariable.setName(INITIAL_NODE_CALLED);
         cifVariable.setType(CifConstructors.newBoolType());
@@ -273,7 +274,8 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
     }
 
     private void addInitialNodeExtraGuard(Edge edge) {
-        // Add a guard expressing that, to start node execution, the initial node should not have been called earlier.
+        // Add a guard expressing that, to start the activity execution, the initial node should not have been called
+        // earlier.
         UnaryExpression startGuard = CifConstructors.newUnaryExpression();
         startGuard.setChild(CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(initialNodeCalled.getType()),
                 initialNodeCalled));

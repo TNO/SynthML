@@ -38,7 +38,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     /**
-     * Checks whether two CIF automata are language equivalent.
+     * Checks whether two CIF automata are weak-trace equivalent, considering state annotations.
      *
      * @param automaton1 The first CIF automaton.
      * @param stateAnnotations1 The map from CIF locations to their state annotations, for the first model.
@@ -46,7 +46,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
      * @param automaton2 The second CIF automaton.
      * @param stateAnnotations2 The map from CIF locations to their state annotations, for the second model.
      * @param epsilonEvents2 The set containing events that represent an epsilon transition for the second model.
-     * @param pairedEvents The set containing pairs of corresponding lists of events for the two automata.
+     * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two automata.
      * @return {@code true} if the two automata are language equivalent, {@code false} otherwise.
      */
     public boolean check(Automaton automaton1, Map<Location, Annotation> stateAnnotations1, Set<Event> epsilonEvents1,
@@ -69,7 +69,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
             // Pop first element of the queue.
             Pair<Set<Location>, Set<Location>> currentPair = queue.remove();
 
-            // Compute epsilon-reachable states and their projections.
+            // Compute epsilon-reachable locations and their projections.
             Set<Location> epsilonReachableLocations1 = getEpsilonReachableLocations(currentPair.getLeft(),
                     absNamesEpsEvents1);
             Set<Location> epsilonReachableLocations2 = getEpsilonReachableLocations(currentPair.getRight(),
@@ -81,26 +81,26 @@ public class StateAwareWeakTraceEquivalenceChecker {
             Verify.verify(projectedLocations1.size() == 1, "Epsilon reachability found extra locations.");
             Verify.verify(projectedLocations2.size() == 1, "Epsilon reachability found extra locations.");
 
-            // If projections are not equal, the two models are not equivalent.
+            // If projections are not equivalent, the two models are not equivalent.
             if (!areEquivalentLocations(projectedLocations1.get(0), stateAnnotations1, projectedLocations2.get(0),
                     stateAnnotations2))
             {
                 return false;
             } else {
-                // Find next states for each event in the compatible event set.
+                // Find next locations for each event in the compatible event set.
                 for (Pair<List<Event>, List<Event>> events: pairedEvents) {
-                    Set<Location> targetStates1 = getNextLocations(epsilonReachableLocations1, events.getKey());
-                    Set<Location> targetStates2 = getNextLocations(epsilonReachableLocations2, events.getValue());
+                    Set<Location> targetLocations1 = getNextLocations(epsilonReachableLocations1, events.getKey());
+                    Set<Location> targetLocations2 = getNextLocations(epsilonReachableLocations2, events.getValue());
 
                     // If one location can reach some target with this action, but the other location cannot reach any,
                     // the two models are different. Note that this is different from checking the sizes of the target
                     // sets, which can be different. This works only if the size of one is zero while the size of the
                     // other is not zero.
-                    if (targetStates1.size() > 0 != targetStates2.size() > 0) {
+                    if (targetLocations1.size() > 0 != targetLocations2.size() > 0) {
                         return false;
-                    } else if (targetStates1.size() > 0) {
+                    } else if (targetLocations1.size() > 0) {
                         // Add the next pair to the queue, if not already visited.
-                        Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetStates1, targetStates2);
+                        Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetLocations1, targetLocations2);
                         if (!visitedPairs.contains(nextPair)) {
                             visitedPairs.add(nextPair);
                             queue.add(nextPair);
@@ -167,9 +167,9 @@ public class StateAwareWeakTraceEquivalenceChecker {
     private Set<Location> getEpsilonReachableLocations(Set<Location> locations, Set<String> epsilonEvents) {
         // Perform epsilon reachability computation for all locations, for all epsilon events.
         LinkedHashSet<Location> epsilonReachableLocs = new LinkedHashSet<>();
-        for (Location state: locations) {
-            Set<Location> epsilonReachedLocs = epsilonReach(state, epsilonEvents,
-                    new LinkedHashSet<>(Arrays.asList(state)));
+        for (Location loc: locations) {
+            Set<Location> epsilonReachedLocs = epsilonReach(loc, epsilonEvents,
+                    new LinkedHashSet<>(Arrays.asList(loc)));
             epsilonReachableLocs.addAll(epsilonReachedLocs);
         }
         return epsilonReachableLocs;
@@ -198,7 +198,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
         for (Location loc: locations) {
             if (projectedAnnotationsAllLocations.isEmpty()) {
-                // Add the first annotation and the first state into the lists.
+                // Add the first annotation and the first location into the lists.
                 projectedAnnotationsAllLocations.add(locToAnnotations.get(loc));
                 projectedLocations.add(loc);
             } else {
@@ -217,14 +217,14 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
     private Set<Location> getNextLocations(Set<Location> sourceLocations, List<Event> events) {
         // Get next location for all source locations, for all events.
-        LinkedHashSet<Location> targetStates = new LinkedHashSet<>();
+        LinkedHashSet<Location> targetLocations = new LinkedHashSet<>();
         for (Location loc: sourceLocations) {
             for (Event event: events) {
                 Set<Location> targets = getNext(loc, event);
-                targetStates.addAll(targets);
+                targetLocations.addAll(targets);
             }
         }
-        return targetStates;
+        return targetLocations;
     }
 
     private Set<Location> getNext(Location loc, Event event) {

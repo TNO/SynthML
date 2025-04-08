@@ -1604,7 +1604,18 @@ public class UmlToCifTranslator {
         return CifValueUtils.createConjunction(cifConstraints);
     }
 
+    /**
+     * For a UML element, returns a normalized name that is consistent pre and post synthesis. It is used to map a CIF
+     * event to the underlying UML element: e.g., if the element is a call behavior action, it refers to the called
+     * element.
+     *
+     * @param umlElement The UML element.
+     * @param extraString A string that is added to the normalized name; it can be empty.
+     * @param resultNumber An integer that marks the effect number, if the UML element has effects.
+     * @return The normalized name of the UML element.
+     */
     private String normalizeNames(NamedElement umlElement, String extraString, int resultNumber) {
+        // Get to the (nested) called behavior.
         while (umlElement instanceof CallBehaviorAction cbAction) {
             umlElement = cbAction.getBehavior();
         }
