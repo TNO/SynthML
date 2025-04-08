@@ -397,7 +397,26 @@ public class UMLToCameoTransformer {
         if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
             transformAction(activity, action, acquireSignal);
         } else if (action.getBehavior() instanceof OpaqueBehavior behavior) {
-            action.setBehavior(behavior.getOwnedBehaviors().get(0));
+            // Check whether 'action' has any outgoing guards on any incoming edges.
+            boolean incomingEdgesHaveOutgoingGuards = action.getIncomings().stream()
+                    .anyMatch(edge -> PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)edge) != null);
+
+            // If the action has outgoing guards on incoming edges, we must translate these outgoing guards in such a
+            // way that the called behavior can only be performed if the outgoing guards hold. To do that, we can't
+            // simply call the activity that's created for the called opaque behavior. Instead, we translate the
+            // behavior as an opaque action, and consider the outgoing guards to be extra action guards. To do this
+            // translation, we first shadow the call behavior node by lifting the guard, effects, and atomicity of the
+            // called behavior to the call node, and then translate the call node as an action.
+            if (incomingEdgesHaveOutgoingGuards) {
+                PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(behavior));
+                PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(behavior));
+                PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(behavior));
+                transformAction(activity, action, acquireSignal);
+            } else {
+                Verify.verify(behavior.getOwnedBehaviors().size() == 1,
+                        "The opaque behavior owns more than one activity.");
+                action.setBehavior(behavior.getOwnedBehaviors().get(0));
+            }
         }
     }
 
