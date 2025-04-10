@@ -18,8 +18,8 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -143,14 +143,11 @@ public class FlattenUMLActivity {
                 for (ActivityEdge edge: node.getIncomings()) {
                     edge.setActivity(parentActivity);
                 }
-                // Creates a dummy node (an opaque action, with a true guard and empty effects), to substitute the
-                // activity's initial node. This maintains the original structure, and the edges can maintain their
-                // guards. No tracing comment are needed.
+                // Creates a dummy node (a merge node), to substitute the activity's initial node. This maintains the
+                // original structure, and the edges can maintain their guards. No tracing comment are needed.
                 if (node instanceof InitialNode initialNode) {
                     // Create dummy node to substitute the initial node.
-                    OpaqueAction initialNodeSub = FileHelper.FACTORY.createOpaqueAction();
-                    initialNodeSub.getLanguages().add("CIF");
-                    initialNodeSub.getBodies().add("true");
+                    MergeNode initialNodeSub = FileHelper.FACTORY.createMergeNode();
 
                     for (ActivityEdge outgoingEdge: new ArrayList<>(initialNode.getOutgoings())) {
                         for (ActivityEdge incomingEdge: new ArrayList<>(callBehaviorActionToReplace.getIncomings())) {
@@ -163,14 +160,11 @@ public class FlattenUMLActivity {
                     initialNode.destroy();
                 }
 
-                // Creates a dummy node (an opaque action, with a true guard and empty effects), to substitute the
-                // activity's final node. This maintains the original structure, and the edges can maintain their
-                // guards. No tracing comment are needed.
+                // Creates a dummy node (a merge node), to substitute the activity's final node. This maintains the
+                // original structure, and the edges can maintain their guards. No tracing comment are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
                     // Create dummy node to substitute the final node.
-                    OpaqueAction finalNodeSub = FileHelper.FACTORY.createOpaqueAction();
-                    finalNodeSub.getLanguages().add("CIF");
-                    finalNodeSub.getBodies().add("true");
+                    MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
 
                     for (ActivityEdge incomingEdge: new ArrayList<>(finalNode.getIncomings())) {
                         for (ActivityEdge outgoingEdge: new ArrayList<>(callBehaviorActionToReplace.getOutgoings())) {
