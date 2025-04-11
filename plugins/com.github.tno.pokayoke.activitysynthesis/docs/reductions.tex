@@ -1,0 +1,112 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+\usepackage{graphicx} % support the \includegraphics command and options
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% Custom commands
+\newcommand{\andlabel}[0]{\textsf{and}}
+\newcommand{\Bool}[0]{\mathbb{B}}
+\newcommand{\Config}[0]{\textsf{Config}}
+\newcommand{\coreedge}[0]{\varepsilon}
+\newcommand{\Effects}[0]{\textsf{Effects}}
+\newcommand{\Guard}[0]{\textsf{Guard}}
+\newcommand{\orlabel}[0]{\textsf{or}}
+\newcommand{\outgoing}[0]{\textsf{out}}
+\newcommand{\outgoingguard}[0]{\textsf{guard}_{\outgoing}}
+\newcommand{\State}[0]{\textsf{State}}
+
+\title{Reduction Rules for Poka Yoke Activities}
+%\author{}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+This document defines reduction rules for (simple UML-like) activities. 
+These activities and their semantics are slightly different from other UML semantics, e.g. fUML, activities. 
+For example, every action has an associated guard and effects that specify how action execution influences the system state. 
+Edges have two guards, named incoming and outgoing guard, that define when a token can be placed on an edge, and when it can be removed, respectively. 
+This document aims at finding patterns of action, nodes, edges that can be transformed into simpler patterns, while maintaining the same operational semantic of the activity. 
+We call these transformations \emph{reductions}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Preliminaries and Notation}
+\label{sec:prelim}
+
+We largely refer to the Operation Semantics of Poka Yoke Activities for the static structure and dynamics behaviors of activities. 
+We recall here only the elements that are useful for this document. 
+
+\subsection{Statics}
+\label{subsec:statics}
+
+\paragraph{State.}
+Activities are defined in the presence of \emph{state}, for example a set of variables and their current valuation.
+We keep the notion of state more abstract for the purpose of defining the semantics, and let $\State$ be the set of all states.
+Users of this semantics could later instantiate $\State$ as desired, e.g., as variable valuation mappings.
+Let $\sigma \in \State$ be a typical state.
+
+\paragraph{Guards and effects.}
+Guards are defined to be state predicates, while effects are defined to be state transformers, i.e., functions that map states to any number of `successor states', to be able to model nondeterministic action behavior.
+
+Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Effects = \State \rightarrow 2^{\State}$ be the set of all \emph{effects functions} over states, with $2^{\State}$ the powerset of $\State$.
+We use $g \in \Guard$ and $u \in \Effects$ to denote a typical guard and effects function, respectively.
+
+\subsection{Dynamics}
+\label{subsec:dynamics}
+
+This section defines the dynamic behavior of core activities, by means of a token passing style operational semantics.
+Its rules describe how to go from one configuration to another, where a configuration is essentially a set of edges holding a token together with a `current' state.
+There are two token-passing rules: one for $\andlabel$-style and one for $\orlabel$-style action execution.
+
+\paragraph{Configurations.}
+The semantics of core activities is essentially defined as a relation between \emph{configurations}, in the sense that an execution step in an activity gets you from one configuration to another configuration.
+A configuration describes which edges currently hold a token, and what the current state is.
+
+More formally, let $\Config = 2^\mathcal{E} \times \State$ be the set of all configurations.
+A configuration $(\Sigma, \sigma) \in \Config$ is a pair with $\Sigma \subseteq \mathcal{E}$ a set of edges---the ones currently holding a token---and $\sigma$ a `current' state.
+We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sigma, \sigma)$.
+
+Any edge $\coreedge$ is said to be \emph{enabled in $c$} if $\coreedge \in \Sigma$ and $\outgoingguard(\coreedge)(\sigma)$ holds, i.e., if $\coreedge$ has a token in $c$ and if the outgoing guard of $\coreedge$ holds in $c$.
+If $c$ is clear from the context, we may just say that $\coreedge$ is \emph{enabled}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Reductions}
+\label{sec:reductions}
+
+\subsection{Series Edge Merging}
+
+
+
+\end{document}
