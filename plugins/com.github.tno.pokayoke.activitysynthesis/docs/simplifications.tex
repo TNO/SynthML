@@ -17,6 +17,8 @@
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathpar}
 
 %%% SECTION TITLE APPEARANCE
 \usepackage{sectsty}
@@ -30,13 +32,27 @@
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
 %%% Custom commands
+\newtheorem{definition}{Definition}[section]
+\newtheorem{simplificationrule}{Simplification Rule}[section]
+
+\newcommand{\action}[0]{\textsf{action}}
+\newcommand{\Action}[0]{\textsf{Action}}
 \newcommand{\andlabel}[0]{\textsf{and}}
+\newcommand{\andnode}[1]{\andlabel\langle#1\rangle}
 \newcommand{\Bool}[0]{\mathbb{B}}
 \newcommand{\Config}[0]{\textsf{Config}}
+\newcommand{\coreActivity}[0]{\mathcal{A}}
 \newcommand{\coreedge}[0]{\varepsilon}
+\newcommand{\CoreNode}[0]{\textsf{CoreNode}}
+\newcommand{\corenode}[0]{\eta}
+\newcommand{\CoreNodeType}[0]{\textsf{CoreNodeType}}
 \newcommand{\Effects}[0]{\textsf{Effects}}
 \newcommand{\Guard}[0]{\textsf{Guard}}
+\newcommand{\incoming}[0]{\textsf{in}}
+\newcommand{\incomingguard}[0]{\textsf{guard}_{\incoming}}
+\newcommand{\NodeID}[0]{\textsf{NodeID}}
 \newcommand{\orlabel}[0]{\textsf{or}}
+\newcommand{\ornode}[1]{\orlabel\langle#1\rangle}
 \newcommand{\outgoing}[0]{\textsf{out}}
 \newcommand{\outgoingguard}[0]{\textsf{guard}_{\outgoing}}
 \newcommand{\State}[0]{\textsf{State}}
@@ -82,6 +98,33 @@ Guards are defined to be state predicates, while effects are defined to be state
 Let $\Guard = \State \rightarrow \Bool$ be the set of all \emph{guards} and $\Effects = \State \rightarrow 2^{\State}$ be the set of all \emph{effects functions} over states, with $2^{\State}$ the powerset of $\State$.
 We use $g \in \Guard$ and $u \in \Effects$ to denote a typical guard and effects function, respectively.
 
+\paragraph{Core nodes.}
+Now that actions have been defined, we can define the \emph{nodes} of core activities, which carry out these actions during executions of the activity.
+Core activity nodes consist of two parts: a node identifier, and a node type that also contains (wraps) the action to perform.
+The node identifiers are used to give identity to nodes, which are needed to allow having multiple nodes in an activity that perform the same action.
+In core activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
+An $\andlabel$-style execution of an action node requires that \emph{all} its incoming edges must have a token, and after having performed the action, \emph{all} outgoing edges will get a token (under some additional conditions that are explained later).
+In contrast, an $\orlabel$-style execution of an action node requires just \emph{a single} incoming edge to have a token, and after having performed the action, \emph{a single} outgoing edge will receive a token (again, under some extra conditions).
+This distinction between $\andlabel$-type and $\orlabel$-type nodes is also made in~\cite{DawC2015} with respect to a token firing semantics, explaining that most UML node types can be divided into these two groups.
+For example, UML nodes like `fork' and `join' can be represented as $\andlabel$-nodes, while `decision' and `merge' can be represented in terms of $\orlabel$-nodes.
+
+More formally, let $\NodeID$ be a set of all \emph{node identifiers}, used to give identity to activity nodes, and let $\ell \in \NodeID$ be a typical node identifier.
+Then the set $\CoreNode$ of all possible \emph{core activity nodes} is defined as follows:
+\begin{mathpar}
+	\CoreNode = \NodeID \times \CoreNodeType
+	\and
+	\CoreNodeType ::= \andnode{\alpha} ~|~ \ornode{\alpha}
+\end{mathpar}
+
+Core activity nodes are pairs consisting of a node identifier $\ell$ and an action $\alpha$ to execute, either in $\andlabel$-style or in $\orlabel$-style.
+We write $\corenode \in \CoreNode$ to denote a typical node.
+Let $\action : \CoreNode \rightarrow \Action$ be a projection function for obtaining the actions of core nodes, so that:
+\begin{mathpar}
+	\action((\ell,\andnode{\alpha})) = \alpha
+	\and
+	\action((\ell,\ornode{\alpha})) = \alpha
+\end{mathpar}
+
 \subsection{Dynamics}
 \label{subsec:dynamics}
 
@@ -100,15 +143,68 @@ We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sig
 Any edge $\coreedge$ is said to be \emph{enabled in $c$} if $\coreedge \in \Sigma$ and $\outgoingguard(\coreedge)(\sigma)$ holds, i.e., if $\coreedge$ has a token in $c$ and if the outgoing guard of $\coreedge$ holds in $c$.
 If $c$ is clear from the context, we may just say that $\coreedge$ is \emph{enabled}.
 
+\subsection{Additional Notation}
+\label{subsec:notation}
+
+A core activity  $\mathcal{A} = (\mathcal{N},\mathcal{E})$ is fundamentally a graph with nodes $\mathcal{N} \subseteq \CoreNode$ and edges $\mathcal{E} \subseteq \mathcal{N} \times \Guard \times \Guard \times \mathcal{N}$.  
+For every core activity $\coreActivity$, the language of $\coreActivity$, denoted $L(\coreActivity)$, is the set of all legal sequences $\omega \in T^*$ of transitions firings starting from the initial configuration of tokens $c_0$. 
+Let $X$ be a set of nodes of core activity $\coreActivity$. 
+We use $\coreActivity | X$ for the core activity obtained by restricting the underlying graph to $X$, and $\coreActivity - X$ to denote $\coreActivity | \bar{X}$, where $\bar{X}$ denotes the complement of $X$. 
+This notation is also used for core activity states and firing schedules. 
+For example, $\coreActivity - \{ t_1, t_2 \}$ refers to what is left of activity $\coreActivity$ once one removes the transitions $t_1$ and $t_2$ together with all arcs incident on either $t_1$ or $t_2$.
+We draw inspiration from \cite{sloan96reduction} for the following definition of equivalence of core activities. 
+
+\paragraph{Equivalence of Core Activities}
+
+The goal of this manuscript is to take a core activity $\coreActivity$ and to reduce it to a smaller activity $\coreActivity'$ that is more amenable to analysis. 
+Of course, we want the activity $\coreActivity'$ to be in some sense the ``same'' as the original activity $\coreActivity$. 
+We will focus on language preservation (among unmodified transitions). 
+
+\begin{definition}
+\label{def:equivalence-of-core-activities}
+Fix some rule for transforming a core activity $\coreActivity$ to a core activity $\coreActivity'$. 
+Let $U$ be the set of transitions of $\coreActivity$ which are left completely unmodified by this transformation. 
+We say that the (simplified) core activity $\coreActivity'$ is equivalent to activiy $\coreActivity$ after the transformation if 
+$$
+L(\coreActivity) | U = L(\coreActivity') | U.
+$$
+
+\end{definition}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Simplifications}
 \label{sec:simplifications}
 
+\subsection{Serial Fusion}
 
-\subsection{Series Edge Merging}
+\begin{simplificationrule}
+If there exist two transitions $t_1$ with $\incomingguard(t_1): g_1$, $\outgoingguard(t_1): g_2$, and $t_2$ with $\incomingguard(t_2): g_3$, $\outgoingguard(t_2): g_4$, and a node $n$ satisfying: 
+\begin{enumerate}
+\item The initial configuration $c_0$ does not place any taken on $t_1$ or $t_2$
+\item $t_1 \, ^\bullet = \{ n \} = \ ^\bullet t_2$, i.e. node $n$ is the unique output node of $t_1$ and the unique input node of $t_2$
+\item Node $n$ is disconnected from all other transitions, and has no effects
+\item $(^\bullet t_1)^\bullet = \{ t_1 \}$, i.e. transition $t_1$ does not share any of its input place with any other transitions
+\end{enumerate}
+then transitions $t_1$ and $t_2$ can be replaced by a single transition $t_F$ with input set $^\bullet t_F = ^\bullet t_1$, with output set $ t_F ^\bullet = t_2 ^ \bullet$ and guards $\incomingguard(t_F): g_1$, $\outgoingguard(t_F): g_2 \wedge g_3 \wedge g_4$.
+\end{simplificationrule}
+
+\begin{proof}
+TBD
+\end{proof}
+
+\begin{figure}\centering
+\subfloat[Original edge scenario.]{\label{a}\includegraphics[width=.33\linewidth]{images/edge_simplification_entire.png}}
+\subfloat[First simplification.]{\label{b}\includegraphics[width=.33\linewidth]{images/edge_simplification_reduced1.png}}
+\subfloat[Second simplification.]{\label{c}\includegraphics[width=.33\linewidth]{images/edge_simplification_reduced2.png}}
+\caption{The series edge merging scenario.}
+\label{fig:series-edge-merging}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newpage
 \begin{thebibliography}{9}
 \bibitem{schatz96application}
 Shatz, Sol M., et al. "An application of Petri net reduction for Ada tasking deadlock analysis." IEEE Transactions on Parallel and Distributed Systems 7.12 (1996): 1307-1322.
