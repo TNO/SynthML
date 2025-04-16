@@ -41,7 +41,7 @@
 \newcommand{\outgoingguard}[0]{\textsf{guard}_{\outgoing}}
 \newcommand{\State}[0]{\textsf{State}}
 
-\title{Reduction Rules for Poka Yoke Activities}
+\title{Simplification Rules for Poka Yoke Activities}
 %\author{}
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
@@ -52,12 +52,12 @@
 \section{Introduction}
 \label{sec:intro}
 
-This document defines reduction rules for (simple UML-like) activities. 
+This document defines simplification rules for (simple UML-like) activities. 
 These activities and their semantics are slightly different from other UML semantics, e.g. fUML, activities. 
 For example, every action has an associated guard and effects that specify how action execution influences the system state. 
 Edges have two guards, named incoming and outgoing guard, that define when a token can be placed on an edge, and when it can be removed, respectively. 
 This document aims at finding patterns of action, nodes, edges that can be transformed into simpler patterns, while maintaining the same operational semantic of the activity. 
-We call these transformations \emph{reductions}. 
+We call these transformations \emph{simplifications}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -102,8 +102,8 @@ If $c$ is clear from the context, we may just say that $\coreedge$ is \emph{enab
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Reductions}
-\label{sec:reductions}
+\section{Simplifications}
+\label{sec:simplifications}
 
 
 \subsection{Series Edge Merging}
