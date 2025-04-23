@@ -36,6 +36,7 @@ import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.FlowFinalNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
@@ -505,6 +506,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (finalNodes.size() > 1) {
                 error("Concrete activity should have at most one final node but got " + finalNodes.size(), activity,
                         null);
+            }
+
+            QueryableIterable<FlowFinalNode> flowFinalNodes = from(activity.getNodes())
+                    .objectsOfKind(FlowFinalNode.class);
+            if (!flowFinalNodes.isEmpty()) {
+                error("Flow final nodes are not supported.", activity, null);
             }
         }
     }
