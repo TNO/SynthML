@@ -84,7 +84,7 @@ We call these transformations \emph{simplifications}.
 \section{Preliminaries and Notation}
 \label{sec:prelim}
 
-We largely refer to the Operation Semantics of Poka Yoke Activities for the static structure and dynamics behaviors of activities. 
+We largely refer to the Operation Semantics of Poka Yoke Activities document for the static structure and dynamics behaviors of activities. 
 We recall here only the elements that are useful for this document. 
 
 \subsection{Statics}
@@ -109,7 +109,7 @@ The node identifiers are used to give identity to nodes, which are needed to all
 In core activities, actions can be executed in one of two ways: in $\andlabel$-style or in $\orlabel$-style, as indicated by the node type.
 An $\andlabel$-style execution of an action node requires that \emph{all} its incoming edges must have a token, and after having performed the action, \emph{all} outgoing edges will get a token (under some additional conditions that are explained later).
 In contrast, an $\orlabel$-style execution of an action node requires just \emph{a single} incoming edge to have a token, and after having performed the action, \emph{a single} outgoing edge will receive a token (again, under some extra conditions).
-This distinction between $\andlabel$-type and $\orlabel$-type nodes is also made in~\cite{DawC2015} with respect to a token firing semantics, explaining that most UML node types can be divided into these two groups.
+This distinction between $\andlabel$-type and $\orlabel$-type nodes is also made in our semantics document with respect to a token firing semantics, explaining that most UML node types can be divided into these two groups.
 For example, UML nodes like `fork' and `join' can be represented as $\andlabel$-nodes, while `decision' and `merge' can be represented in terms of $\orlabel$-nodes.
 
 More formally, let $\NodeID$ be a set of all \emph{node identifiers}, used to give identity to activity nodes, and let $\ell \in \NodeID$ be a typical node identifier.
@@ -164,23 +164,23 @@ With slight abuse of notation, we extend this notation to sets of nodes and edge
 A core activity $\coreActivity$ is \emph{safe} if all configurations reachable by legal sequences of edge firings from the initial configuration have either zero or one tokens in every edge. 
 We assume that all considered core activities are safe.
 
-For every core activity $\coreActivity$, the language of $\coreActivity$, denoted $L(\coreActivity)$, is the set of all legal sequences $\omega \in T^*$ of transitions firings starting from the initial configuration of tokens $c_0$. 
+For every core activity $\coreActivity$, the language of $\coreActivity$, denoted $L(\coreActivity)$, is the set of all legal sequences $\omega \in T^*$ of edges firings starting from the initial configuration of tokens $c_0$. 
 Let $X$ be a set of nodes of core activity $\coreActivity$. 
 We use $\coreActivity | X$ for the core activity obtained by restricting the underlying graph to $X$, and $\coreActivity - X$ to denote $\coreActivity | \bar{X}$, where $\bar{X}$ denotes the complement of $X$. 
 This notation is also used for core activity states and firing schedules. 
-For example, $\coreActivity - \{ t_1, t_2 \}$ refers to what is left of activity $\coreActivity$ once one removes the transitions $t_1$ and $t_2$ together with all arcs incident on either $t_1$ or $t_2$.
+For example, $\coreActivity - \{ e_1, e_2 \}$ refers to what is left of activity $\coreActivity$ once one removes the edges $e_1$ and $e_2$.
 We draw inspiration from \cite{sloan96reduction} for the following definition of equivalence of core activities. 
 
 \paragraph{Equivalence of Core Activities}
 
 The goal of this manuscript is to take a core activity $\coreActivity$ and to reduce it to a smaller activity $\coreActivity'$ that is more amenable to analysis. 
 Of course, we want the activity $\coreActivity'$ to be in some sense the ``same'' as the original activity $\coreActivity$. 
-We will focus on language preservation (among unmodified transitions). 
+We will focus on language preservation (among unmodified edges). 
 
 \begin{definition}
 \label{def:equivalence-of-core-activities}
 Fix some rule for transforming a core activity $\coreActivity$ to a core activity $\coreActivity'$. 
-Let $U$ be the set of transitions of $\coreActivity$ which are left completely unmodified by this transformation. 
+Let $U$ be the set of edges of $\coreActivity$ which are left completely unmodified by this transformation. 
 We say that the (simplified) core activity $\coreActivity'$ is equivalent to activity $\coreActivity$ after the transformation if 
 $$
 L(\coreActivity) | U = L(\coreActivity') | U.
@@ -193,85 +193,86 @@ $$
 \section{Simplifications}
 \label{sec:simplifications}
 
-\ap{notation to be updated with edges instead of transitions}
-
 \subsection{Serial Fusion}
 
 \begin{simplificationrule}
-If there exist two transitions $t_1$ with $\incomingguard(t_1)= g_1$, $\outgoingguard(t_1)= g_2$, and $t_2$ with $\incomingguard(t_2)= g_3$, $\outgoingguard(t_2)= g_4$, and a node $n$ satisfying: 
+If there exist two edges $e_1$ with $\incomingguard(e_1)= g_1$, $\outgoingguard(e_1)= g_2$, and $e_2$ with $\incomingguard(e_2)= g_3$, $\outgoingguard(e_2)= g_4$, and a node $n$ satisfying: 
 \begin{enumerate}
-\item The initial configuration $c_0$ does not place any token on $t_2$
-\item $t_1 \, ^\bullet = \{ n \} = \ ^\bullet t_2$, i.e. node $n$ is the unique output node of $t_1$ and the unique input node of $t_2$
-\item Node $n$ is disconnected from all other transitions, and has no effects
-\item $(^\bullet t_1)^\bullet = \{ t_1 \}$, i.e. transition $t_1$ does not share any of its input place with any other transitions
+\item The initial configuration $c_0$ does not place any token on $e_2$
+\item $e_1 \, ^\bullet = \{ n \} = \ ^\bullet e_2$, i.e. node $n$ is the unique output node of $e_1$ and the unique input node of $e_2$
+\item Node $n$ is disconnected from all other edges, and has no effects
+\item $(^\bullet e_1)^\bullet = \{ e_1 \}$, i.e. edge $e_1$ does not share any of its input place with any other edges
 \end{enumerate}
-then transitions $t_1$ and $t_2$ can be replaced by a single transition $t_F$ with input set $^\bullet t_F = \ ^\bullet t_1$, with output set $ t_F \, ^\bullet = t_2 \, ^ \bullet$ and guards $\incomingguard(t_F)= g_1$, $\outgoingguard(t_F)= g_2 \wedge g_3 \wedge g_4$.
+then edges $e_1$ and $e_2$ can be replaced by a single edge $e_F$ with input set $^\bullet e_F = \ ^\bullet e_1$, with output set $ e_F \, ^\bullet = e_2 \, ^ \bullet$ and guards $\incomingguard(e_F)= g_1$, $\outgoingguard(e_F)= g_2 \wedge g_3 \wedge g_4$.
 \end{simplificationrule}
 
 \begin{figure}\centering
 \subfloat[Original edge scenario.]{\label{a}\includegraphics[width=.33\linewidth]{images/edge_simplification_entire.png}}
-\subfloat[First simplification.]{\label{b}\includegraphics[width=.33\linewidth]{images/edge_simplification_reduced1.png}}
-\subfloat[Second simplification.]{\label{c}\includegraphics[width=.33\linewidth]{images/edge_simplification_reduced2.png}}
-\caption{The series edge merging scenario. \ap{Pictures to be improved, and I am not sure why these are so ``decadent''}.}
+\subfloat[Edge simplification.]{\label{b}\includegraphics[width=.39\linewidth]{images/edge_simplification_reduced2.png}}
+\caption{The series edge merging scenario. \ap{Pictures to be improved}.}
 \label{fig:series-edge-merging}
 \end{figure}
 
 \begin{proof}
-We must show that $L(\coreActivity) - \{ t_1, t_2 \} \subseteq L(\coreActivity') - \{ t_F \}$ and that $L(\coreActivity) -\{ t_1, t_2 \} \supseteq L(\coreActivity') - \{ t_F \}$. 
+We must show that $L(\coreActivity) - \{ e_1, e_2 \} \subseteq L(\coreActivity') - \{ e_F \}$ and that $L(\coreActivity) -\{ e_1, e_2 \} \supseteq L(\coreActivity') - \{ e_F \}$. 
+For simplicity, let us assume that node $n$ does not have a guard. 
+In presence of a guard, it is sufficient to conjunct it with either the outgoing guard $g_2$ or the incoming guard $g_3$.
 
-Let us first show that $L(\coreActivity) - \{ t_1, t_2 \} \subseteq L(\coreActivity') - \{ t_F \}$; we do so by induction on the number of firings of $t_2$. 
-Note that we are interested in \emph{non-blocking} sequences, so we should always be able to take transition $t_2$ and execute its outgoing node (which might be a final node or not). 
-First, note that $\coreActivity - \{ t_1, t_2 \} = \coreActivity' - \{ t_F \}$.
-For the base case, let $\varsigma$ be a schedule that contains no firing of $t_2$.
-If also $t_1 \notin \varsigma$, then $\varsigma \in L(\coreActivity - \{ t_1, t_2, n \})$, and we can use $\varsigma' = \varsigma$ in $\coreActivity'$ to satisfy our claim. 
-If instead $t_1 \in \varsigma$, note that there must be exactly one firing of $t_1$ in $\varsigma$ since $\coreActivity$ is safe. 
-Let $\varsigma = \varsigma_1 (t_1) \varsigma_2$ where neither $t_1$ or $t_2$ appear in $\varsigma_1$, $\varsigma_2$.  By definition, $g_1$ must be true at the end of $\varsigma_1$ for $t_1$ to take place. 
-Note that $t_1$ cannot be enabled at the end of $\varsigma_2$ -- since $t_2$ has not fired yet -- because the activity is safe and node $n$ has no other outgoing edges. 
-Then, we can use $\varsigma' = \varsigma_1 (t_F) \varsigma_2$ as a schedule for $\coreActivity'$ -- $t_F$ also can be taken if and only if $g_1$ holds -- and our claim is satisfied. 
+Let us first show that $L(\coreActivity) - \{ e_1, e_2 \} \subseteq L(\coreActivity') - \{ e_F \}$; we do so by induction on the number of firings of $e_2$. 
+Note that we are interested in \emph{non-blocking} sequences, so we should always be able to take edge $e_2$ and execute its outgoing node (which might be a final node or not). 
+First, note that $\coreActivity - \{ e_1, e_2 \} = \coreActivity' - \{ e_F \}$.
+For the base case, let $\varsigma$ be a schedule that contains no firing of $e_2$.
+If also $e_1 \notin \varsigma$, then $\varsigma \in L(\coreActivity - \{ e_1, e_2, n \})$, and we can use $\varsigma' = \varsigma$ in $\coreActivity'$ to satisfy our claim. 
+If instead $e_1 \in \varsigma$, note that there must be exactly one firing of $e_1$ in $\varsigma$ since $\coreActivity$ is safe. 
+Let $\varsigma = \varsigma_1 (e_1) \varsigma_2$ where neither $e_1$ or $e_2$ appear in $\varsigma_1$, $\varsigma_2$.  
+By definition, $g_1$ must be true at some point of $\varsigma_1$ in order to place a token in $e_1$. 
+Similarly, both guards $g_2$ and $g_3$ must be true at the end of $\varsigma_1$ for the firing of $e_1$. 
+Note that $e_1$ cannot be enabled at the end of $\varsigma_2$ -- since $e_2$ has not fired yet -- because the activity is safe and node $n$ has no other outgoing edges. 
+Then, we can use $\varsigma' = \varsigma_1 (\cdot) \varsigma_2$ as a schedule for $\coreActivity'$ -- note that we can put a token on $e_F$ if and only if $g_1$ holds at some point, but we cannot remove it until also $g_4$ holds -- and our claim is satisfied. 
 
-Let us now assume that the claim is true until $k$ firings of $t_2$, and consider a schedule $\varsigma$ of $\coreActivity$ where there are $k+1$ firings of $t_2$. 
-Since  $t_1 \, ^\bullet = \{ n \} = \ ^\bullet t_2$, activity $\coreActivity$ is safe, and $t_2$ is not in the initial configuration, $t_1$ must fire exactly once before each firing of $t_2$. 
-Hence, $\varsigma$ contains either $k+1$ or $k+2$ firings of $t_1$. 
-Let consider a schedule with $k+1$ firings of $t_1$: we can write 
-$$ \varsigma = \varsigma_1 (t_1) v_1 (t_2) \varsigma_2 (t_1) v_2 \ldots \varsigma_{k+1}(t_1) v_{k+1} (t_2) \varsigma_{k+2}, $$
-where neither $t_1$ or $t_2$ appears in $\varsigma_i$ nor $v_i$. 
-By inductive hypothesis, we can set $\varsigma' =  \varsigma_1 (t_1) v_1 (t_2) \varsigma_2 (t_1) v_2 \ldots \varsigma_{k+1}$ such that the two languages are equivalent (until step $k$). 
-If transition $t_1$ does not share any input nodes, then then final firing in $\varsigma$  must happen when $g_2 \wedge g_2$ holds. 
-Let us now analyze $v_{k+1}$: if during this sequence of firings the values of $g_2$, $g_3$, $g_4$, do not change -- and in particular must all be true, since we have a firing of $t_2$ afterwards -- we can simply adapt the final part of the schedule as $\varsigma_{k+1} (t_F) v_{k+1} \varsigma_{k+2}$ or $\varsigma_{k+1} v_{k+1} (t_F) \varsigma_{k+2}$ without loss of generality, and again our claim is satisfied. 
-In general however, sequence $v_{k+1}$ can change the truth values of $g_2$ or $g_3$ (Note that at the end of $v_{k+1}$ guard $g_4$ must hold, since we have a firing of $t_2$). 
+Let us now assume that the claim is true until $k$ firings of $e_2$, and consider a schedule $\varsigma$ of $\coreActivity$ where there are $k+1$ firings of $e_2$. 
+Since  $e_1 \, ^\bullet = \{ n \} = \ ^\bullet e_2$, activity $\coreActivity$ is safe, and $e_2$ is not in the initial configuration, $e_1$ must fire exactly once before each firing of $e_2$. 
+Hence, $\varsigma$ contains either $k+1$ or $k+2$ firings of $e_1$. 
+Let consider a schedule with $k+1$ firings of $e_1$: we can write 
+$$ \varsigma = \varsigma_1 (e_1) v_1 (e_2) \varsigma_2 (e_1) v_2 \ldots \varsigma_{k+1}(e_1) v_{k+1} (e_2) \varsigma_{k+2}, $$
+where neither $e_1$ or $e_2$ appears in $\varsigma_i$ nor $v_i$. 
+By inductive hypothesis, we can set $\varsigma' =  \varsigma_1 (e_1) v_1 (e_2) \varsigma_2 (e_1) v_2 \ldots \varsigma_{k+1}$ such that the two languages are equivalent (until step $k$). 
+If edge $e_1$ does not share any input nodes, then then final firing in $\varsigma$  must happen when $g_2 \wedge g_3$ holds. 
+Let us now analyze $v_{k+1}$: if during this sequence of firings the values of $g_2$, $g_3$, $g_4$, do not change -- and in particular must all be true, since we have a firing of $e_2$ afterwards -- we can simply adapt the final part of the schedule as $\varsigma_{k+1} (e_F) v_{k+1} \varsigma_{k+2}$ or $\varsigma_{k+1} v_{k+1} (e_F) \varsigma_{k+2}$ without loss of generality, and again our claim is satisfied. 
+In general however, sequence $v_{k+1}$ can change the truth values of $g_2$ or $g_3$ (Note that at the end of $v_{k+1}$ guard $g_4$ must hold, since we have a firing of $e_2$). 
 If that happens, we have a sequence in $\coreActivity$ that cannot be reproduced in $\coreActivity'$: to prevent this, we impose that if $g_4$ is true, then also $g_2 \wedge g_3$ must hold.
 In this way, we ensure that at the end of $v_{k+1}$ all guards $g_2$, $g_3$, $g_4$ must hold, and we can use the adapted version of $\varsigma$ (see previous discussion) in $\coreActivity'$, and this concludes the proof. 
 
 \smallskip
 
-Let us now show that  $L(\coreActivity) - \{ t_1, t_2 \} \supseteq L(\coreActivity') - \{ t_F \}$. 
+Let us now show that  $L(\coreActivity) - \{ e_1, e_2 \} \supseteq L(\coreActivity') - \{ e_F \}$. 
 Similarly to the previous case, we consider schedules $\varsigma'$ in $\coreActivity'$ and prove that there exists a schedule $\varsigma$ in $\coreActivity$ that ensure language equivalence. 
-We proceed by induction in the number of steps of $t_F$. 
-If there are no firings of $t_F$, the proof follows analogously to the previous case scenario. 
+We proceed by induction in the number of steps of $e_F$. 
+If there are no firings of $e_F$, the proof follows analogously to the previous case scenario. 
 Let us now take the inductive hypothesis, and consider a schedule
-$$ \varsigma' = \varsigma'_1 (t_F) \varsigma'_2 (t_F) \ldots \varsigma'_{k+1}(t_F) \varsigma'_{k+2},  $$
-that contains $k+1$ firings of $t_F$, and the $ \varsigma_i$ do not contain any firing of $t_F$.
-Note that $\varsigma_{k+1}$ enables the firing of $t_F$ by definition: this means that, by inductive hypothesis, there exists a schedule $\varsigma$ in $\coreActivity$ where transition $t_1$ is enabled.
-The guards as well simply mirror this, as if $g_2 \wedge g_3 \wedge g_4$ holds, so does $g_2 \wedge g_3$ (the condition to enable $t_1$). 
-Thus, transition $t_1$ can freely fire: we extend the schedule $\varsigma$ for $\coreActivity$ by appending the firing of $t_1$ at the end of $\varsigma$. 
-To that, we append also $(t_2) \varsigma'_{k+2}$: since $^\bullet t_F = \, ^\bullet t_1$, if the last transition of $\varsigma'_{k+1}$ enables $t_F$, then it also enables $t_1$. 
+$$ \varsigma' = \varsigma'_1 (e_F) \varsigma'_2 (e_F) \ldots \varsigma'_{k+1}(e_F) \varsigma'_{k+2},  $$
+that contains $k+1$ firings of $e_F$, and the $ \varsigma_i$ do not contain any firing of $e_F$.
+Note that $\varsigma_{k+1}$ enables the firing of $e_F$ by definition: this means that, by inductive hypothesis, there exists a schedule $\varsigma$ in $\coreActivity$ where edge $e_1$ is enabled.
+The guards as well simply mirror this, as if $g_2 \wedge g_3 \wedge g_4$ holds, so does $g_2 \wedge g_3$ (the condition to enable $e_1$). 
+Thus, edge $e_1$ can freely fire: we extend the schedule $\varsigma$ for $\coreActivity$ by appending the firing of $e_1$ at the end of $\varsigma$. 
+To that, we append also $(e_2) \varsigma'_{k+2}$: since $^\bullet e_F = \, ^\bullet e_1$, if the last edge of $\varsigma'_{k+1}$ enables $e_F$, then it also enables $e_1$. 
 \end{proof}
 
 \medskip
 
 \begin{simplificationrule}
-If there exist two transitions $t_1$ with $\incomingguard(t_1)= g_1$, $\outgoingguard(t_1)= g_2$, and $t_2$ with $\incomingguard(t_2)= g_3$, $\outgoingguard(t_2)= g_4$, and a node $n$ satisfying: 
+If there exist two edges $e_1$ with $\incomingguard(e_1)= g_1$, $\outgoingguard(e_1)= g_2$, and $e_2$ with $\incomingguard(e_2)= g_3$, $\outgoingguard(e_2)= g_4$, and a node $n$ satisfying: 
 \begin{enumerate}
-\item The initial configuration $c_0$ does not place any token on $t_1$
-\item $t_1 \, ^\bullet = \{ n \} = \ ^\bullet t_2$, i.e. node $n$ is the unique output node of $t_1$ and the unique input node of $t_2$
-\item Node $n$ is disconnected from all other transitions, and has no effects
-\item $(^\bullet t_1)^\bullet = \{ t_1 \}$, i.e. transition $t_1$ does not share any of its input place with any other transitions
+\item The initial configuration $c_0$ does not place any token on $e_1$
+\item $e_1 \, ^\bullet = \{ n \} = \ ^\bullet e_2$, i.e. node $n$ is the unique output node of $e_1$ and the unique input node of $e_2$
+\item Node $n$ is disconnected from all other edges, and has no effects
+\item $(^\bullet e_1)^\bullet = \{ e_1 \}$, i.e. edge $e_1$ does not share any of its input place with any other edges
 \end{enumerate}
-then transitions $t_1$ and $t_2$ can be replaced by a single transition $t_F$ with input set $^\bullet t_F = \ ^\bullet t_1$, with output set $ t_F \, ^\bullet = t_2 \, ^ \bullet$ and guards $\incomingguard(t_F)= g_1 \wedge g_2 \wedge g_3$, $\outgoingguard(t_F)=  g_4$.
+then edges $e_1$ and $e_2$ can be replaced by a single edge $e_F$ with input set $^\bullet e_F = \ ^\bullet e_1$, with output set $ e_F \, ^\bullet = e_2 \, ^ \bullet$ and guards $\incomingguard(e_F)= g_1 \wedge g_2 \wedge g_3$, $\outgoingguard(e_F)=  g_4$.
 \end{simplificationrule}
 
 \begin{proof}
-The proof *should* follow similarly, perhaps with induction on $t_1$ for the first part. \ap{\#TODO}
+The proof *should* follow similarly, perhaps with induction on $e_1$ for the first part. \ap{\#TODO}
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
