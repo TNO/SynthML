@@ -144,7 +144,7 @@ public class FlattenUMLActivity {
                     edge.setActivity(parentActivity);
                 }
                 // Creates a dummy node (a merge node), to substitute the activity's initial node. This maintains the
-                // original structure, and the edges can maintain their guards. No tracing comment are needed.
+                // original structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof InitialNode initialNode) {
                     // Create dummy node to substitute the initial node.
                     MergeNode initialNodeSub = FileHelper.FACTORY.createMergeNode();
@@ -161,9 +161,9 @@ public class FlattenUMLActivity {
                 }
 
                 // Creates a dummy node (a merge node), to substitute the activity's final node. This maintains the
-                // original structure, and the edges can maintain their guards. No tracing comment are needed.
+                // original structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
-                    // Create dummy node to substitute the final node.
+                    // Create dummy node to substitute the activity final node.
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
 
                     for (ActivityEdge incomingEdge: new ArrayList<>(finalNode.getIncomings())) {
