@@ -146,14 +146,13 @@ public class FlattenUMLActivity {
                 // Creates a dummy node (a merge node), to substitute the activity's initial node. This maintains the
                 // original structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof InitialNode initialNode) {
-                    // Create dummy node to substitute the initial node.
+                    // Create dummy node to substitute the initial node, and redirect the relevant edges.
                     MergeNode initialNodeSub = FileHelper.FACTORY.createMergeNode();
-
                     for (ActivityEdge outgoingEdge: new ArrayList<>(initialNode.getOutgoings())) {
-                        for (ActivityEdge incomingEdge: new ArrayList<>(callBehaviorActionToReplace.getIncomings())) {
-                            incomingEdge.setTarget(initialNodeSub);
-                            outgoingEdge.setSource(initialNodeSub);
-                        }
+                        outgoingEdge.setSource(initialNodeSub);
+                    }
+                    for (ActivityEdge incomingEdge: new ArrayList<>(callBehaviorActionToReplace.getIncomings())) {
+                        incomingEdge.setTarget(initialNodeSub);
                     }
 
                     // Destroy the initial node.
@@ -163,14 +162,13 @@ public class FlattenUMLActivity {
                 // Creates a dummy node (a merge node), to substitute the activity's final node. This maintains the
                 // original structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
-                    // Create dummy node to substitute the activity final node.
+                    // Create dummy node to substitute the activity final node, and redirect the relevant edges.
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
-
                     for (ActivityEdge incomingEdge: new ArrayList<>(finalNode.getIncomings())) {
-                        for (ActivityEdge outgoingEdge: new ArrayList<>(callBehaviorActionToReplace.getOutgoings())) {
-                            incomingEdge.setTarget(finalNodeSub);
-                            outgoingEdge.setSource(finalNodeSub);
-                        }
+                        incomingEdge.setTarget(finalNodeSub);
+                    }
+                    for (ActivityEdge outgoingEdge: new ArrayList<>(callBehaviorActionToReplace.getOutgoings())) {
+                        outgoingEdge.setSource(finalNodeSub);
                     }
 
                     // Destroy the final node.
