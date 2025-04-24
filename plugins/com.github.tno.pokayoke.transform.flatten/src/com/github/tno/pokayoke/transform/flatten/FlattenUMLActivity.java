@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
@@ -143,11 +144,12 @@ public class FlattenUMLActivity {
                 for (ActivityEdge edge: node.getIncomings()) {
                     edge.setActivity(parentActivity);
                 }
-                // Creates a dummy node (a merge node), to substitute the activity's initial node. This maintains the
-                // original structure, and the edges can keep their guards. No tracing comments are needed.
+
+                // Creates a decision node to substitute the activity's initial node. This maintains the original
+                // structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof InitialNode initialNode) {
                     // Create dummy node to substitute the initial node, and redirect the relevant edges.
-                    MergeNode initialNodeSub = FileHelper.FACTORY.createMergeNode();
+                    DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
                     for (ActivityEdge outgoingEdge: new ArrayList<>(initialNode.getOutgoings())) {
                         outgoingEdge.setSource(initialNodeSub);
                     }
@@ -159,8 +161,8 @@ public class FlattenUMLActivity {
                     initialNode.destroy();
                 }
 
-                // Creates a dummy node (a merge node), to substitute the activity's final node. This maintains the
-                // original structure, and the edges can keep their guards. No tracing comments are needed.
+                // Creates a merge node to substitute the activity's final node. This maintains the original structure,
+                // and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
                     // Create dummy node to substitute the activity final node, and redirect the relevant edges.
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
