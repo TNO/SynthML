@@ -16,9 +16,10 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 
@@ -27,7 +28,6 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.pokayoke.uml.profile.util.UMLActivityUtils;
 
 /** Flattens nested UML activities. */
@@ -144,119 +144,36 @@ public class FlattenUMLActivity {
                 for (ActivityEdge edge: node.getIncomings()) {
                     edge.setActivity(parentActivity);
                 }
-                // Create a new edge for every pair of an outgoing edge from the activity's initial node and an
-                // incoming edge to the call behavior action. The edges are properly connected and given the
-                // appropriate properties, like guards. Name and tracing comment for the new edges are added.
+
+                // Creates a decision node to substitute the activity's initial node. This maintains the original
+                // structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof InitialNode initialNode) {
-                    for (ActivityEdge outgoingEdge: initialNode.getOutgoings()) {
-                        for (ActivityEdge incomingEdge: callBehaviorActionToReplace.getIncomings()) {
-                            ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
-                            newEdge.setSource(incomingEdge.getSource());
-                            newEdge.setTarget(outgoingEdge.getTarget());
-
-                            // The incoming guard of the new edge is set to the conjunction of both the guards of the
-                            // incoming edge of the call behavior action and the incoming guard of the outgoing edge of
-                            // the initial node. The outgoing guard of the new edge is set to the outgoing guard of the
-                            // outgoing edge.
-                            List<String> incomingGuardList = new ArrayList<>();
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
-                            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
-                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
-                            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
-                            newEdge.setActivity(parentActivity);
-
-                            // Add a name for the newly added edge.
-                            newEdge.setName(incomingEdge.getName() + "__" + outgoingEdge.getName());
-
-                            // Extract the IDs of the outer edge.
-                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
-
-                            // Add IDs for the newly added edge with the IDs of the outer edge.
-                            for (String outerEdgeID: outerEdgeIDs) {
-                                IDHelper.addTracingComment(newEdge, outerEdgeID);
-                            }
-
-                            // Extract the IDs of the inner edge.
-                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
-
-                            // Add IDs for the newly added edge with the IDs of the inner edge.
-                            for (String innerEdgeID: innerEdgeIDs) {
-                                IDHelper.addTracingComment(newEdge, innerEdgeID);
-                            }
-
-                            // Add the structure info as a comment to the new edge.
-                            structureInfoHelper.addStructureStartInfo(newEdge);
-                        }
-                    }
-
-                    // Destroy the initial node and the redundant edges.
+                    // Create dummy node to substitute the initial node, and redirect the relevant edges.
+                    DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
                     for (ActivityEdge outgoingEdge: new ArrayList<>(initialNode.getOutgoings())) {
-                        outgoingEdge.destroy();
+                        outgoingEdge.setSource(initialNodeSub);
                     }
                     for (ActivityEdge incomingEdge: new ArrayList<>(callBehaviorActionToReplace.getIncomings())) {
-                        incomingEdge.destroy();
+                        incomingEdge.setTarget(initialNodeSub);
                     }
+
+                    // Destroy the initial node.
                     initialNode.destroy();
                 }
 
-                // Create a new edge for every pair of an incoming edge to the activity's final node and an outgoing
-                // edge of the call behavior action. The edges are properly connected and given the appropriate
-                // properties, like guards. Name and tracing comment for the new edges are added.
+                // Creates a merge node to substitute the activity's final node. This maintains the original structure,
+                // and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
-                    for (ActivityEdge incomingEdge: finalNode.getIncomings()) {
-                        for (ActivityEdge outgoingEdge: callBehaviorActionToReplace.getOutgoings()) {
-                            ControlFlow newEdge = FileHelper.FACTORY.createControlFlow();
-                            newEdge.setSource(incomingEdge.getSource());
-                            newEdge.setTarget(outgoingEdge.getTarget());
-
-                            // The incoming guard of the new edge is set to the conjunction of both the guards of the
-                            // incoming edge of the final node and the incoming guard of the outgoing edge of the call
-                            // behavior action. The outgoing guard of the new edge is set to the outgoing guard of the
-                            // outgoing edge.
-                            List<String> incomingGuardList = new ArrayList<>();
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
-                            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
-                            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
-                            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
-                            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
-                            newEdge.setActivity(parentActivity);
-
-                            // Add a name for the newly added edge.
-                            newEdge.setName(outgoingEdge.getName() + "__" + incomingEdge.getName());
-
-                            // Extract the IDs of the outer edge.
-                            List<String> outerEdgeIDs = IDHelper.extractIDsFromTracingComment(outgoingEdge);
-
-                            // Add IDs for the newly added edge with the IDs of the outer edge.
-                            for (String outerEdgeID: outerEdgeIDs) {
-                                IDHelper.addTracingComment(newEdge, outerEdgeID);
-                            }
-
-                            // Extract the IDs of the inner edge.
-                            List<String> innerEdgeIDs = IDHelper.extractIDsFromTracingComment(incomingEdge);
-
-                            // Add IDs for the newly added edge with the IDs of the inner edge.
-                            for (String innerEdgeID: innerEdgeIDs) {
-                                IDHelper.addTracingComment(newEdge, innerEdgeID);
-                            }
-
-                            // Add the structure info as a comment to the new edge.
-                            structureInfoHelper.addStructureEndInfo(newEdge);
-                        }
-                    }
-
-                    // Destroy the final node and the redundant edges.
+                    // Create dummy node to substitute the activity final node, and redirect the relevant edges.
+                    MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
                     for (ActivityEdge incomingEdge: new ArrayList<>(finalNode.getIncomings())) {
-                        incomingEdge.destroy();
+                        incomingEdge.setTarget(finalNodeSub);
                     }
                     for (ActivityEdge outgoingEdge: new ArrayList<>(callBehaviorActionToReplace.getOutgoings())) {
-                        outgoingEdge.destroy();
+                        outgoingEdge.setSource(finalNodeSub);
                     }
+
+                    // Destroy the final node.
                     finalNode.destroy();
                 }
             }
@@ -276,24 +193,5 @@ public class FlattenUMLActivity {
         source.eResource().getContents().addAll(copier.copyAll(stereotypeApplications));
         copier.copyReferences();
         return result;
-    }
-
-    /**
-     * Compute the conjunction of guards passed as arguments.
-     *
-     * @param guards The list containing the guards.
-     * @return The string with the guards conjunction.
-     */
-    private static String computeGuardConjunction(List<String> guards) {
-        String newGuard = null;
-        for (String guard: guards) {
-            if (guard != null && newGuard == null) {
-                newGuard = guard;
-            } else if (guard != null) {
-                newGuard = String.format("(%s) and (%s)", guard, newGuard);
-            }
-        }
-
-        return newGuard;
     }
 }
