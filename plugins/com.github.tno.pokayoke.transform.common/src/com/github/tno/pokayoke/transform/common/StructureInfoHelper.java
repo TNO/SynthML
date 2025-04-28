@@ -35,10 +35,10 @@ public class StructureInfoHelper {
 
         for (ActivityNode node: activity.getNodes()) {
             if (node instanceof InitialNode initialNode) {
-                initialNode.getOutgoings().forEach(this::addStructureStartInfo);
+                addStructureStartInfo(initialNode.getOutgoings().get(0));
             }
             if (node instanceof FinalNode finalNode) {
-                finalNode.getIncomings().forEach(this::addStructureEndInfo);
+                addStructureEndInfo(finalNode.getIncomings().get(0));
             }
         }
     }

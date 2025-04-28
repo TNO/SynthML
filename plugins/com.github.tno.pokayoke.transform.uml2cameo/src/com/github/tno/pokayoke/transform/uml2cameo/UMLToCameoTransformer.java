@@ -244,10 +244,8 @@ public class UMLToCameoTransformer {
         ForkNode forkNode = FileHelper.FACTORY.createForkNode();
         forkNode.setActivity(mainActivity);
 
-        // Relocate all outgoing edges out of the initial node to go out of the fork node instead.
-        for (ActivityEdge edge: new ArrayList<>(initialNode.getOutgoings())) {
-            edge.setSource(forkNode);
-        }
+        // Relocate the outgoing edge out of the initial node to go out of the fork node instead.
+        initialNode.getOutgoings().get(0).setSource(forkNode);
 
         // Add an edge between the initial node and the new fork node.
         ControlFlow initToForkFlow = FileHelper.FACTORY.createControlFlow();
@@ -397,9 +395,9 @@ public class UMLToCameoTransformer {
         if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
             transformAction(activity, action, acquireSignal);
         } else if (action.getBehavior() instanceof OpaqueBehavior behavior) {
-            // Check whether 'action' has any outgoing guards on any incoming edges.
-            boolean incomingEdgesHaveOutgoingGuards = action.getIncomings().stream()
-                    .anyMatch(edge -> PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)edge) != null);
+            // Check whether 'action' has an outgoing guard on the incoming edge.
+            boolean incomingEdgeHasOutgoingGuard = PokaYokeUmlProfileUtil
+                    .getOutgoingGuard((ControlFlow)action.getIncomings().get(0)) != null;
 
             // If the action has outgoing guards on incoming edges, we must translate these outgoing guards in such a
             // way that the called behavior can only be performed if the outgoing guards hold. To do that, we can't
@@ -407,7 +405,7 @@ public class UMLToCameoTransformer {
             // behavior as an opaque action, and consider the outgoing guards to be extra action guards. To do this
             // translation, we first shadow the call behavior node by lifting the guard, effects, and atomicity of the
             // called behavior to the call node, and then translate the call node as an action.
-            if (incomingEdgesHaveOutgoingGuards) {
+            if (incomingEdgeHasOutgoingGuard) {
                 PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(behavior));
                 PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(behavior));
                 PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(behavior));
@@ -440,15 +438,11 @@ public class UMLToCameoTransformer {
         replacementActionNode.setBehavior(newActivity);
         replacementActionNode.setName(actionName);
 
-        // Relocate all incoming edges into the action to the replacement action.
-        for (ActivityEdge edge: new ArrayList<>(action.getIncomings())) {
-            edge.setTarget(replacementActionNode);
-        }
+        // Relocate the incoming edge into the action to the replacement action.
+        action.getIncomings().get(0).setTarget(replacementActionNode);
 
-        // Relocate all outgoing edges out of the action to the replacement action.
-        for (ActivityEdge edge: new ArrayList<>(action.getOutgoings())) {
-            edge.setSource(replacementActionNode);
-        }
+        // Relocate the outgoing edge out of the action to the replacement action.
+        action.getOutgoings().get(0).setSource(replacementActionNode);
 
         // Remove the old action that is now replaced.
         action.destroy();
@@ -530,10 +524,8 @@ public class UMLToCameoTransformer {
         decisionEvaluationProgram.append("branch = random.choice(branches)\n");
         decisionEvaluationNode.getBodies().add(decisionEvaluationProgram.toString());
 
-        // Redirect the incoming edges into the decision node to go into the new evaluation node instead.
-        for (ActivityEdge incomingEdge: new ArrayList<>(decisionNode.getIncomings())) {
-            incomingEdge.setTarget(decisionEvaluationNode);
-        }
+        // Redirect the incoming edge into the decision node to go into the new evaluation node instead.
+        decisionNode.getIncomings().get(0).setTarget(decisionEvaluationNode);
 
         // Define the control flow from the new evaluator node to the decision node.
         ControlFlow evaluationToDecisionFlow = FileHelper.FACTORY.createControlFlow();
