@@ -551,46 +551,51 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         // Check number of incoming and outgoing edges.
         if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
             if (node.getIncomings().size() != 1) {
-                error(String.format("Nodes of type '%s' should have exactly one incoming edge, but got %s.",
-                        node.getClass().getSimpleName(), node.getIncomings().size()), node, null);
+                error(String.format("Node of type '%s' should have exactly one incoming edge, but got %s.",
+                        node.getClass().getSimpleName(), node.getIncomings().size()), node,
+                        UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() != 1) {
-                error(String.format("Nodes of type '%s' should have exactly one outgoing edge, but got %s.",
-                        node.getClass().getSimpleName(), node.getOutgoings().size()), node, null);
+                error(String.format("Node of type '%s' should have exactly one outgoing edge, but got %s.",
+                        node.getClass().getSimpleName(), node.getOutgoings().size()), node,
+                        UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
             }
         } else if (node instanceof DecisionNode || node instanceof ForkNode) {
             if (node.getIncomings().size() != 1) {
-                error(String.format("Nodes of type '%s' should have exactly one incoming edge, but got %s.",
-                        node.getClass().getSimpleName(), node.getIncomings().size()), node, null);
+                error(String.format("Node of type '%s' should have exactly one incoming edge, but got %s.",
+                        node.getClass().getSimpleName(), node.getIncomings().size()), node,
+                        UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() == 0) {
-                error(String.format("Nodes of type '%s' should have at least one outgoing edge.",
-                        node.getClass().getSimpleName()), node, null);
+                error(String.format("Node of type '%s' should have at least one outgoing edge.",
+                        node.getClass().getSimpleName()), node, UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
             }
         } else if (node instanceof MergeNode || node instanceof JoinNode) {
             if (node.getIncomings().size() == 0) {
-                error(String.format("Nodes of type '%s' should have at least one incoming edge.",
-                        node.getClass().getSimpleName()), node, null);
+                error(String.format("Node of type '%s' should have at least one incoming edge.",
+                        node.getClass().getSimpleName()), node, UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() != 1) {
-                error(String.format("Nodes of type '%s' should have exactly one outgoing edge, but got %s.",
-                        node.getClass().getSimpleName(), node.getOutgoings().size()), node, null);
+                error(String.format("Node of type '%s' should have exactly one outgoing edge, but got %s.",
+                        node.getClass().getSimpleName(), node.getOutgoings().size()), node,
+                        UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
             }
         } else if (node instanceof InitialNode) {
             if (node.getIncomings().size() != 0) {
-                error("Initial nodes should have no incoming edges.", node, null);
+                error("Initial node should have no incoming edges.", node, UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() != 1) {
-                error(String.format("Initial nodes should have exactly one outgoing edge, but got %s.",
-                        node.getOutgoings().size()), node, null);
+                error(String.format("Initial node should have exactly one outgoing edge, but got %s.",
+                        node.getOutgoings().size()), node, UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
             }
         } else if (node instanceof ActivityFinalNode) {
             if (node.getIncomings().size() != 1) {
-                error(String.format("Final nodes should have exactly one incoming edge, but got %s.",
-                        node.getIncomings().size()), node, null);
+                error(String.format("Activity final node should have exactly one incoming edge, but got %s.",
+                        node.getIncomings().size()), node, UMLPackage.Literals.ACTIVITY_NODE__INCOMING);
             }
             if (node.getOutgoings().size() != 0) {
-                error("Final nodes should have no outgoing edges.", node, null);
+                error("Activity final node should have no outgoing edges.", node,
+                        UMLPackage.Literals.ACTIVITY_NODE__OUTGOING);
             }
         } else {
             error(String.format("Unsupported node type: '%s'", node.getClass().getSimpleName()), null);
