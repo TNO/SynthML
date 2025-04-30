@@ -161,14 +161,9 @@ public class PostProcessActivity {
                     PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
                     PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
 
-                    // Redirect all incoming/outgoing control flow edges, and destroy the original action.
-                    for (ActivityEdge edge: List.copyOf(action.getIncomings())) {
-                        edge.setTarget(replacementAction);
-                    }
-
-                    for (ActivityEdge edge: List.copyOf(action.getOutgoings())) {
-                        edge.setSource(replacementAction);
-                    }
+                    // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                    action.getIncomings().get(0).setTarget(replacementAction);
+                    action.getOutgoings().get(0).setSource(replacementAction);
 
                     action.destroy();
 

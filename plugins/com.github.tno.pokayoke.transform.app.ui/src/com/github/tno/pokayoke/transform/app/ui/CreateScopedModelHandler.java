@@ -154,9 +154,9 @@ public class CreateScopedModelHandler {
                 OpaqueAction oAction = UMLFactory.eINSTANCE.createOpaqueAction();
                 oAction.setName(cbAction.getName());
                 cbAction.getActivity().getOwnedNodes().add(oAction);
-                // Copy the incomings and outgoings to avoid ConcurrentModificationException
-                new LinkedList<>(cbAction.getIncomings()).forEach(e -> e.setTarget(oAction));
-                new LinkedList<>(cbAction.getOutgoings()).forEach(e -> e.setSource(oAction));
+                // Update the incoming and outgoing edges.
+                cbAction.getIncomings().get(0).setTarget(oAction);
+                cbAction.getOutgoings().get(0).setSource(oAction);
                 cbAction.destroy();
             } else if (cbAction.getBehavior() instanceof OpaqueBehavior) {
                 throw new RuntimeException("Call opaque behavior actions are currently unsupported.");

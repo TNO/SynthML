@@ -148,14 +148,12 @@ public class FlattenUMLActivity {
                 // Creates a decision node to substitute the activity's initial node. This maintains the original
                 // structure, and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof InitialNode initialNode) {
-                    // Create dummy node to substitute the initial node, and redirect the relevant edges.
+                    // Create dummy node to substitute the initial node, and redirect the relevant edges. An initial
+                    // node must have only one outgoing edge, and a call behavior action node must have only one
+                    // incoming edge.
                     DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
-                    for (ActivityEdge outgoingEdge: new ArrayList<>(initialNode.getOutgoings())) {
-                        outgoingEdge.setSource(initialNodeSub);
-                    }
-                    for (ActivityEdge incomingEdge: new ArrayList<>(callBehaviorActionToReplace.getIncomings())) {
-                        incomingEdge.setTarget(initialNodeSub);
-                    }
+                    initialNode.getOutgoings().get(0).setSource(initialNodeSub);
+                    callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
 
                     // Destroy the initial node.
                     initialNode.destroy();
@@ -164,14 +162,12 @@ public class FlattenUMLActivity {
                 // Creates a merge node to substitute the activity's final node. This maintains the original structure,
                 // and the edges can keep their guards. No tracing comments are needed.
                 if (node instanceof ActivityFinalNode finalNode) {
-                    // Create dummy node to substitute the activity final node, and redirect the relevant edges.
+                    // Create dummy node to substitute the activity final node, and redirect the relevant edges. A final
+                    // node must have only one incoming edge, and a call behavior action node must have only one
+                    // outgoing edge.
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
-                    for (ActivityEdge incomingEdge: new ArrayList<>(finalNode.getIncomings())) {
-                        incomingEdge.setTarget(finalNodeSub);
-                    }
-                    for (ActivityEdge outgoingEdge: new ArrayList<>(callBehaviorActionToReplace.getOutgoings())) {
-                        outgoingEdge.setSource(finalNodeSub);
-                    }
+                    finalNode.getIncomings().get(0).setTarget(finalNodeSub);
+                    callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
 
                     // Destroy the final node.
                     finalNode.destroy();

@@ -95,11 +95,9 @@ public class EquivalentActionsIntoMergePattern {
         newMergeNode.setActivity(mergeNode.getActivity());
         newMergeNode.setName(mergeNode.getName());
 
-        // Redirect all incoming control flows of the action nodes in this pattern to target the new merge node instead.
+        // Redirect the incoming control flow of the action nodes in this pattern to target the new merge node instead.
         for (Action action: actionNodes) {
-            for (ActivityEdge controlFlow: List.copyOf(action.getIncomings())) {
-                controlFlow.setTarget(newMergeNode);
-            }
+            action.getIncomings().get(0).setTarget(newMergeNode);
         }
 
         // Remove all outgoing control flows of the action nodes in this pattern.
