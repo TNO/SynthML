@@ -38,7 +38,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     /**
-     * Checks whether two CIF automata are weak-trace equivalent, considering state annotations.
+     * Checks whether two CIF state space automata are weak-trace equivalent, considering state annotations.
      *
      * @param automaton1 The first CIF automaton.
      * @param stateAnnotations1 The map from CIF locations to their state annotations, for the first model.
@@ -81,7 +81,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
             Verify.verify(projectedLocations1.size() == 1, "Epsilon reachability found extra locations.");
             Verify.verify(projectedLocations2.size() == 1, "Epsilon reachability found extra locations.");
 
-            // If projections are not equivalent, the two models are not equivalent.
+            // Check that the pair of states is equivalent.
             if (!areEquivalentLocations(projectedLocations1.get(0), stateAnnotations1, projectedLocations2.get(0),
                     stateAnnotations2))
             {
@@ -96,7 +96,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
                     // the two models are different. Note that this is different from checking the sizes of the target
                     // sets, which can be different. This works only if the size of one is zero while the size of the
                     // other is not zero.
-                    if (targetLocations1.size() > 0 != targetLocations2.size() > 0) {
+                    if (targetLocations1.isEmpty() != targetLocations2.isEmpty()) {
                         return false;
                     } else if (targetLocations1.size() > 0) {
                         // Add the next pair to the queue, if not already visited.
@@ -184,7 +184,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
                     // Add target location and perform a recursive call.
                     Location target = edge.getTarget();
                     epsilonReachedLocations.add(target);
-                    epsilonReach(edge.getTarget(), epsilonEvents, epsilonReachedLocations);
+                    epsilonReach(target, epsilonEvents, epsilonReachedLocations);
                 }
             }
         }
