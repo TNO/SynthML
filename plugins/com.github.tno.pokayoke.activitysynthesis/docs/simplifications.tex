@@ -146,6 +146,7 @@ We write $c \in \Config$ to denote a typical configuration, such that $c = (\Sig
 
 Any edge $\coreedge$ is said to be \emph{enabled in $c$} if $\coreedge \in \Sigma$ and $\outgoingguard(\coreedge)(\sigma)$ holds, i.e., if $\coreedge$ has a token in $c$ and if the outgoing guard of $\coreedge$ holds in $c$.
 If $c$ is clear from the context, we may just say that $\coreedge$ is \emph{enabled}.
+A (firing) schedule for core activity $\coreActivity$ is a \emph{finite} \footnote{\ap{do we need infinite?}} sequence of edges $e_i$ such that $e_1$ is fireable in the initial configuration of $\coreActivity$, and each  $e_i$ is fireable from the configuration reached by starting in the initial configuration and firing $e_j$ for $1\leq j \leq i$ in the schedule.
 
 \subsection{Additional Notation}
 \label{subsec:notation}
@@ -156,19 +157,27 @@ We use the following symbols and notation for the set of predecessors and succes
 \begin{itemize}
 \item[] $^\bullet e = \{ n \mid (n, e) \in F \} =$ the set of input nodes of $e$
 \item[] $e \, ^\bullet = \{ n \mid (e, n) \in F \} =$ the set of output nodes of $e$
-\item[] $^\bullet n = \{ n \mid (e, n) \in F \} =$ the set of input edges of $n$
-\item[] $n \, ^\bullet = \{ n \mid (e, n) \in F \} =$ the set of output edges of $n$
+\item[] $^\bullet n = \{ e \mid (e, n) \in F \} =$ the set of input edges of $n$
+\item[] $n \, ^\bullet = \{ e \mid (n, e) \in F \} =$ the set of output edges of $n$
 \end{itemize}
 With slight abuse of notation, we extend this notation to sets of nodes and edges. 
 
 A core activity $\coreActivity$ is \emph{safe} if all configurations reachable by legal sequences of edge firings from the initial configuration have either zero or one tokens in every edge. 
-We assume that all considered core activities are safe.
+Note that edges already have at most one token by the definition of configuration: every core activity is safe by definition.
+Further, the core activity is ordinary in the Petri net sense: all edges have a weight equal to 1; for this reason, we largely disregard edge weights. 
 
-For every core activity $\coreActivity$, the language of $\coreActivity$, denoted $L(\coreActivity)$, is the set of all legal sequences $\omega \in T^*$ of edges firings starting from the initial configuration of tokens $c_0$. 
+For every core activity $\coreActivity$, the language of $\coreActivity$, denoted $L(\coreActivity)$, is the set of all legal sequences $\omega \in \mathcal{N}^*$ of edges firings starting from the initial configuration of tokens $c_0$. 
 Let $X$ be a set of nodes of core activity $\coreActivity$. 
 We use $\coreActivity | X$ for the core activity obtained by restricting the underlying graph to $X$, and $\coreActivity - X$ to denote $\coreActivity | \bar{X}$, where $\bar{X}$ denotes the complement of $X$. 
 This notation is also used for core activity states and firing schedules. 
 For example, $\coreActivity - \{ e_1, e_2 \}$ refers to what is left of activity $\coreActivity$ once one removes the edges $e_1$ and $e_2$.
+Finally, for a core activity $\coreActivity$ and $X \subset \mathcal{N}$, we define $L(\coreActivity) \mid X$ to be the set of all schedules of $\coreActivity$ with all pairs containing a transition \emph{not} from $X$ deleted. 
+Further, $L(\coreActivity) - X = L(\coreActivity) \mid (\mathcal{N} \setminus X) $.
+Note that this simply means that $L(\coreActivity) \mid X$ contains the same language of $L(\coreActivity)$ where each occurrence of nodes in $X$ and every edge $e$ whose source is in $X$ have been projected away from each sequence $\omega$. 
+The firings, and the overall dynamics of the activity remains the same: just its sequence output is ``cleaned'' from the elements of $X$ and from any edge whose source is within $X$. 
+
+\smallskip
+
 We draw inspiration from \cite{sloan96reduction} for the following definition of equivalence of core activities. 
 
 \paragraph{Equivalence of Core Activities}
@@ -185,8 +194,11 @@ We say that the (simplified) core activity $\coreActivity'$ is equivalent to act
 $$
 L(\coreActivity) | U = L(\coreActivity') | U.
 $$
-
 \end{definition}
+
+\paragraph{Deadlock Preserving Equivalence}
+\ap{prove that this notion is dealock preserving. }
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -214,7 +226,7 @@ then edges $e_1$ and $e_2$ can be replaced by a single edge $e_F$ with input set
 \end{figure}
 
 \begin{proof}
-We must show that $L(\coreActivity) - \{ e_1, e_2 \} \subseteq L(\coreActivity') - \{ e_F \}$ and that $L(\coreActivity) -\{ e_1, e_2 \} \supseteq L(\coreActivity') - \{ e_F \}$. 
+To satisfy Definition~\ref{def:equivalence-of-core-activities}, we must show that $L(\coreActivity) - \{ e_1, e_2 \} \subseteq L(\coreActivity') - \{ e_F \}$ and that $L(\coreActivity) -\{ e_1, e_2 \} \supseteq L(\coreActivity') - \{ e_F \}$. 
 For simplicity, let us assume that node $n$ does not have a guard. 
 In presence of a guard, it is sufficient to conjunct it with either the outgoing guard $g_2$ or the incoming guard $g_3$.
 
