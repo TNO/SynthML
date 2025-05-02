@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.app;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -181,30 +180,27 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     private Set<Location> getEpsilonReachableLocations(Set<Location> locations, Set<String> epsilonEvents) {
-        // Perform epsilon reachability computation for all locations, for all epsilon events.
-        LinkedHashSet<Location> epsilonReachableLocs = new LinkedHashSet<>();
-        for (Location loc: locations) {
-            Set<Location> epsilonReachedLocs = epsilonReach(loc, epsilonEvents,
-                    new LinkedHashSet<>(Arrays.asList(loc)));
-            epsilonReachableLocs.addAll(epsilonReachedLocs);
-        }
-        return epsilonReachableLocs;
-    }
+        Set<Location> visited = new LinkedHashSet<>(locations);
+        Queue<Location> queue = new LinkedList<>(locations);
 
-    private Set<Location> epsilonReach(Location loc, Set<String> epsilonEvents, Set<Location> epsilonReachedLocations) {
-        // Perform epsilon reachability computation for the current location, for all epsilon events.
-        for (Edge edge: loc.getEdges()) {
-            Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
-            for (Event edgeEvent: eventsOnEdge) {
-                if (epsilonEvents.contains(CifTextUtils.getAbsName(edgeEvent))) {
-                    // Add target location and perform a recursive call.
-                    Location target = CifEdgeUtils.getTarget(edge);
-                    epsilonReachedLocations.add(target);
-                    epsilonReach(target, epsilonEvents, epsilonReachedLocations);
+        while (!queue.isEmpty()) {
+            Location currentLoc = queue.remove();
+
+            for (Edge edge: currentLoc.getEdges()) {
+                Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
+                for (Event edgeEvent: eventsOnEdge) {
+                    if (epsilonEvents.contains(CifTextUtils.getAbsName(edgeEvent))) {
+                        // Add target location if not yet visited.
+                        Location target = CifEdgeUtils.getTarget(edge);
+                        if (!visited.contains(target)) {
+                            queue.add(target);
+                            visited.add(target);
+                        }
+                    }
                 }
             }
         }
-        return epsilonReachedLocations;
+        return visited;
     }
 
     private List<Location> projectLocations(Set<Location> locations, Map<Location, Annotation> locToAnnotations) {
