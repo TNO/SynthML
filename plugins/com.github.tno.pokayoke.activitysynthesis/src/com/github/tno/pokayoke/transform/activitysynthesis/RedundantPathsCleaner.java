@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -90,14 +91,11 @@ public class RedundantPathsCleaner {
         for (Location initialLoc: initialLocs) {
             // Compute shortest path(s) to marked locations. Get the marked location(s) and the corresponding distance
             // map(s).
-            Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps = findClosestMarkedLocations(initialLoc,
+            Map<Location, Integer> minDistance = computeUncontrollableAwareMinDistance(initialLoc,
                     automa.getLocations());
 
-            // Sanity check: there must exist a path from the initial location to (at least) a marked location.
-            Verify.verify(!markedLocsToDistanceMaps.isEmpty());
-
             // Mark the shortest paths as essential.
-            markEssentialLocationAndEdges(markedLocsToDistanceMaps);
+//            markEssentialLocationAndEdges(minDistance);
         }
 
         // Remove every non-essential, redundant element.
@@ -137,9 +135,11 @@ public class RedundantPathsCleaner {
                     backwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(loc);
                     neighborsEdges.computeIfAbsent(Pair.of(loc, loc), v -> new LinkedHashSet<>()).add(edge);
                 } else {
-                    forwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(edge.getTarget());
-                    backwardNeighbors.computeIfAbsent(edge.getTarget(), v -> new LinkedHashSet<>()).add(loc);
-                    neighborsEdges.computeIfAbsent(Pair.of(loc, edge.getTarget()), v -> new LinkedHashSet<>())
+                    forwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(CifEdgeUtils.getTarget(edge));
+                    backwardNeighbors.computeIfAbsent(CifEdgeUtils.getTarget(edge), v -> new LinkedHashSet<>())
+                            .add(loc);
+                    neighborsEdges
+                            .computeIfAbsent(Pair.of(loc, CifEdgeUtils.getTarget(edge)), v -> new LinkedHashSet<>())
                             .add(edge);
                 }
             }
@@ -154,53 +154,39 @@ public class RedundantPathsCleaner {
         }
     }
 
-    private Map<Location, Map<Location, Integer>> findClosestMarkedLocations(Location initialLoc,
+    private Map<Location, Integer> computeUncontrollableAwareMinDistance(Location initialLoc,
             List<Location> allLocations)
     {
-        Integer minDistanceInitialToMarked = Integer.MAX_VALUE;
-        Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps = new LinkedHashMap<>();
+        Map<Location, Integer> minDistance = allLocations.stream()
+                .collect(Collectors.toMap(l -> l, l -> Integer.MAX_VALUE));
 
         for (Location markedLoc: markedLocs) {
             // Get the minimum distances from the marked location to every other location.
-            Map<Location, Integer> minDistance = computeUncontrollableAwareMinDistance(markedLoc, allLocations);
-            int currentMinDistance = minDistance.get(initialLoc);
+            Map<Location, Integer> currDistance = dijkstra(markedLoc, allLocations, backwardNeighbors);
 
-            if (currentMinDistance == Integer.MAX_VALUE) {
-                // If the current initial location cannot reach the current marked location (for instance, as part
-                // of a disjoint graph) do not store any location distance map.
-                continue;
-            }
-
-            if (currentMinDistance == 0) {
-                // If the initial location is also marked, no need to process the distance map.
-                markedLocsToDistanceMaps.put(markedLoc, minDistance);
-            } else {
-                // Update the distance of the initial location with the shortest path(s), and store the location
-                // distance map.
-                if (minDistanceInitialToMarked >= currentMinDistance) {
-                    minDistanceInitialToMarked = currentMinDistance;
-                    minDistance.put(initialLoc, minDistanceInitialToMarked);
-                    markedLocsToDistanceMaps.put(markedLoc, minDistance);
+            // Update minimum distance map.
+            if (currDistance.get(initialLoc) < minDistance.get(initialLoc)) {
+                // Replace map.
+                minDistance = currDistance;
+            } else if (currDistance.get(initialLoc) == minDistance.get(initialLoc)) {
+                // Merge maps.
+                for (Location loc: allLocations) {
+                    if (currDistance.get(loc) < minDistance.get(loc)) {
+                        minDistance.put(loc, currDistance.get(loc));
+                    }
                 }
             }
         }
-        return markedLocsToDistanceMaps;
-    }
 
-    /**
-     * First, uses Dijkstra algorithm to compute the minimum distance from the start location to every location. Then,
-     * uses a BFS to update the distances when an uncontrollable edge is found. Return the uncontrollable-event-aware
-     * distance of all locations from the start location.
-     *
-     * @param startLoc The start location for the shortest path algorithms.
-     * @param allLocations The list of all locations of the automaton.
-     * @return The map from each location to its distance to the start location.
-     */
-    private Map<Location, Integer> computeUncontrollableAwareMinDistance(Location startLoc,
-            List<Location> allLocations)
-    {
-        Map<Location, Integer> minDistance = dijkstra(startLoc, allLocations, backwardNeighbors);
-        updateLocationDistance(startLoc, minDistance);
+        // Sanity check: there exists at least one path to a marked location.
+        Verify.verify(minDistance.get(initialLoc) < Integer.MAX_VALUE);
+
+        // Use a BFS to update the distances when an uncontrollable edge is found. Return the uncontrollable-event-aware
+        // distance of all locations from the start location.
+        for (Location markedLoc: markedLocs) {
+            updateLocationDistance(markedLoc, minDistance);
+        }
+
         return minDistance;
     }
 
@@ -256,12 +242,12 @@ public class RedundantPathsCleaner {
 
     private void updateLocationDistance(Location startLoc, Map<Location, Integer> minDistance) {
         // Run a BFS and update the distance map if a location has any uncontrollable edges with a larger distance.
-        Queue<Location> currentLocs = new LinkedList<>();
-        currentLocs.add(startLoc);
+        Queue<Location> queue = new LinkedList<>();
+        queue.add(startLoc);
         Set<Location> visited = new LinkedHashSet<>();
-        while (!currentLocs.isEmpty()) {
+        while (!queue.isEmpty()) {
             // Get the first element of the queue, and analyze its neighbors.
-            Location currentLoc = currentLocs.poll();
+            Location currentLoc = queue.poll();
 
             // If this node was already visited, skip it.
             if (visited.contains(currentLoc)) {
@@ -287,8 +273,8 @@ public class RedundantPathsCleaner {
 
             // Add all backwards neighbors, if not already visited.
             for (Location neighbor: backwardNeighbors.get(currentLoc)) {
-                if (visited.contains(neighbor)) {
-                    currentLocs.add(neighbor);
+                if (!visited.contains(neighbor)) {
+                    queue.add(neighbor);
                 }
             }
 
@@ -298,6 +284,7 @@ public class RedundantPathsCleaner {
     }
 
     private void markEssentialLocationAndEdges(Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps) {
+        // TODO: update with only minDistance.
         for (Entry<Location, Map<Location, Integer>> entry: markedLocsToDistanceMaps.entrySet()) {
             Location markedLoc = entry.getKey();
             Map<Location, Integer> minDistance = entry.getValue();
