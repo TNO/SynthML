@@ -128,39 +128,6 @@ public class RedundantPathsCleaner {
         }
     }
 
-    private Map<Location, Map<Location, Integer>> findClosestMarkedLocations(Location initialLoc,
-            List<Location> allLocations)
-    {
-        Integer minDistanceInitialToMarked = Integer.MAX_VALUE;
-        Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps = new LinkedHashMap<>();
-
-        for (Location markedLoc: markedLocs) {
-            // Get the distances from the marked location to every other location.
-            Map<Location, Integer> locDistance = computeLocationsDistance(markedLoc, allLocations);
-            int currentMinDistance = locDistance.get(initialLoc);
-
-            if (currentMinDistance == Integer.MAX_VALUE) {
-                // If the current initial location cannot reach the current marked location (for instance, as part
-                // of a disjoint graph) do not store any location distance map.
-                continue;
-            }
-
-            if (currentMinDistance == 0) {
-                // If the initial location is also marked, no need to process the distance map.
-                markedLocsToDistanceMaps.put(markedLoc, locDistance);
-            } else {
-                // Update the distance of the initial location with the shortest path(s), and store the location
-                // distance map.
-                if (minDistanceInitialToMarked >= currentMinDistance) {
-                    minDistanceInitialToMarked = currentMinDistance;
-                    locDistance.put(initialLoc, minDistanceInitialToMarked);
-                    markedLocsToDistanceMaps.put(markedLoc, locDistance);
-                }
-            }
-        }
-        return markedLocsToDistanceMaps;
-    }
-
     private void computeNeighbors(List<Location> locations) {
         // Computes the forward and backward neighbors for every location.
         for (Location loc: locations) {
@@ -187,16 +154,51 @@ public class RedundantPathsCleaner {
         }
     }
 
+    private Map<Location, Map<Location, Integer>> findClosestMarkedLocations(Location initialLoc,
+            List<Location> allLocations)
+    {
+        Integer minDistanceInitialToMarked = Integer.MAX_VALUE;
+        Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps = new LinkedHashMap<>();
+
+        for (Location markedLoc: markedLocs) {
+            // Get the minimum distances from the marked location to every other location.
+            Map<Location, Integer> minDistance = computeUncontrollableAwareMinDistance(markedLoc, allLocations);
+            int currentMinDistance = minDistance.get(initialLoc);
+
+            if (currentMinDistance == Integer.MAX_VALUE) {
+                // If the current initial location cannot reach the current marked location (for instance, as part
+                // of a disjoint graph) do not store any location distance map.
+                continue;
+            }
+
+            if (currentMinDistance == 0) {
+                // If the initial location is also marked, no need to process the distance map.
+                markedLocsToDistanceMaps.put(markedLoc, minDistance);
+            } else {
+                // Update the distance of the initial location with the shortest path(s), and store the location
+                // distance map.
+                if (minDistanceInitialToMarked >= currentMinDistance) {
+                    minDistanceInitialToMarked = currentMinDistance;
+                    minDistance.put(initialLoc, minDistanceInitialToMarked);
+                    markedLocsToDistanceMaps.put(markedLoc, minDistance);
+                }
+            }
+        }
+        return markedLocsToDistanceMaps;
+    }
+
     /**
      * First, uses Dijkstra algorithm to compute the minimum distance from the start location to every location. Then,
-     * uses a BFS to update the distances when an uncontrollable edge is found. Return the uncontrollable-events-aware
+     * uses a BFS to update the distances when an uncontrollable edge is found. Return the uncontrollable-event-aware
      * distance of all locations from the start location.
      *
      * @param startLoc The start location for the shortest path algorithms.
      * @param allLocations The list of all locations of the automaton.
      * @return The map from each location to its distance to the start location.
      */
-    private Map<Location, Integer> computeLocationsDistance(Location startLoc, List<Location> allLocations) {
+    private Map<Location, Integer> computeUncontrollableAwareMinDistance(Location startLoc,
+            List<Location> allLocations)
+    {
         Map<Location, Integer> locDistance = dijkstra(startLoc, allLocations, backwardNeighbors);
         updateLocationDistance(startLoc, locDistance);
         return locDistance;
@@ -205,42 +207,42 @@ public class RedundantPathsCleaner {
     private static Map<Location, Integer> dijkstra(Location startLoc, List<Location> allLocations,
             Map<Location, Set<Location>> neighbors)
     {
-        // Store the location distance from the start location.
-        Map<Location, Integer> locationDistance = new LinkedHashMap<>();
+        // Store the location minimum distance from the start location.
+        Map<Location, Integer> minDistance = new LinkedHashMap<>();
 
         // PriorityQueue to store pairs (distance, location) to be processed.
         PriorityQueue<Location> pq = new PriorityQueue<>(
-                Comparator.comparingInt(p -> locationDistance.getOrDefault(p, Integer.MAX_VALUE)));
+                Comparator.comparingInt(p -> minDistance.getOrDefault(p, Integer.MAX_VALUE)));
 
-        // Initialization: set distance to max, and start location to zero; add all locations to the queue.
+        // Initialization: set distance to maximum value, and start location to zero; add all locations to the queue.
         for (Location loc: allLocations) {
             if (loc.equals(startLoc)) {
-                locationDistance.put(loc, 0);
+                minDistance.put(loc, 0);
             } else {
-                locationDistance.put(loc, Integer.MAX_VALUE);
+                minDistance.put(loc, Integer.MAX_VALUE);
             }
             pq.offer(loc);
         }
-        locationDistance.put(startLoc, 0);
+        minDistance.put(startLoc, 0);
 
         while (!pq.isEmpty()) {
             System.out.println("Current pq size: " + pq.size());
 
             // Get the location with the minimum distance.
             Location currentLoc = pq.poll();
-            int currentDist = locationDistance.get(currentLoc);
+            int currentDist = minDistance.get(currentLoc);
 
             // Explore all the neighbors that are not in the queue.
             for (Location neighbor: neighbors.get(currentLoc)) {
                 if (pq.contains(neighbor)) {
-                    int neighborDist = locationDistance.get(neighbor);
+                    int neighborDist = minDistance.get(neighbor);
                     int currentDistPlusOne = (currentDist == Integer.MAX_VALUE) ? Integer.MAX_VALUE : currentDist + 1;
 
                     // If there is a shorter path to the neighbor through the current node, update
                     // the distance and add the pair to the queue.
                     if (currentDistPlusOne < neighborDist) {
                         neighborDist = currentDistPlusOne;
-                        locationDistance.put(neighbor, neighborDist);
+                        minDistance.put(neighbor, neighborDist);
 
                         // Update location distance in the priority queue.
                         pq.remove(neighbor);
@@ -250,12 +252,11 @@ public class RedundantPathsCleaner {
             }
         }
 
-        return locationDistance;
+        return minDistance;
     }
 
     private void updateLocationDistance(Location startLoc, Map<Location, Integer> minDistance) {
-        // After computing the distance, run a BFS and update the distance map if a location has any uncontrollable
-        // edges with a larger distance.
+        // Run a BFS and update the distance map if a location has any uncontrollable edges with a larger distance.
         Queue<Location> currentLocs = new LinkedList<>();
         currentLocs.add(startLoc);
         Set<Location> visited = new LinkedHashSet<>();
