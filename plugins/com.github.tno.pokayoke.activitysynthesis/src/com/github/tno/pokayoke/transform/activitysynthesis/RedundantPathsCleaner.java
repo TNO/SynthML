@@ -71,7 +71,7 @@ public class RedundantPathsCleaner {
      * @param outputFolderPath The path to the folder in which the transformation result is to be written.
      */
     public void clean(Specification model, CifBddSpec bddSpec, Path outputFilePath, Path outputFolderPath) {
-        // Sanity check. Model should contain only one automaton.
+        // Sanity check: the CIF model should contain only one automaton.
         Verify.verify(model.getComponents().size() == 1, "Found more than one component.");
         Verify.verify(model.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
 
@@ -199,9 +199,9 @@ public class RedundantPathsCleaner {
     private Map<Location, Integer> computeUncontrollableAwareMinDistance(Location startLoc,
             List<Location> allLocations)
     {
-        Map<Location, Integer> locDistance = dijkstra(startLoc, allLocations, backwardNeighbors);
-        updateLocationDistance(startLoc, locDistance);
-        return locDistance;
+        Map<Location, Integer> minDistance = dijkstra(startLoc, allLocations, backwardNeighbors);
+        updateLocationDistance(startLoc, minDistance);
+        return minDistance;
     }
 
     private static Map<Location, Integer> dijkstra(Location startLoc, List<Location> allLocations,
@@ -214,7 +214,8 @@ public class RedundantPathsCleaner {
         PriorityQueue<Location> pq = new PriorityQueue<>(
                 Comparator.comparingInt(p -> minDistance.getOrDefault(p, Integer.MAX_VALUE)));
 
-        // Initialization: set distance to maximum value, and start location to zero; add all locations to the queue.
+        // Initialization: set the distance of the start location to zero and of every other location to the maximum
+        // value; add all locations to the queue.
         for (Location loc: allLocations) {
             if (loc.equals(startLoc)) {
                 minDistance.put(loc, 0);
@@ -226,8 +227,6 @@ public class RedundantPathsCleaner {
         minDistance.put(startLoc, 0);
 
         while (!pq.isEmpty()) {
-            System.out.println("Current pq size: " + pq.size());
-
             // Get the location with the minimum distance.
             Location currentLoc = pq.poll();
             int currentDist = minDistance.get(currentLoc);
@@ -301,15 +300,15 @@ public class RedundantPathsCleaner {
     private void markEssentialLocationAndEdges(Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps) {
         for (Entry<Location, Map<Location, Integer>> entry: markedLocsToDistanceMaps.entrySet()) {
             Location markedLoc = entry.getKey();
-            Map<Location, Integer> locDistance = entry.getValue();
-            markEssentialLocationAndEdges(markedLoc, locDistance);
+            Map<Location, Integer> minDistance = entry.getValue();
+            markEssentialLocationAndEdges(markedLoc, minDistance);
         }
     }
 
-    private void markEssentialLocationAndEdges(Location currentLoc, Map<Location, Integer> locDistance) {
+    private void markEssentialLocationAndEdges(Location currentLoc, Map<Location, Integer> minDistance) {
         // Mark the current location as essential, and get its depth.
         essentialLocs.add(currentLoc);
-        int currentDist = locDistance.get(currentLoc);
+        int currentDist = minDistance.get(currentLoc);
 
         if (forwardNeighbors.get(currentLoc).isEmpty()) {
             // Add empty set for marked location.
@@ -318,12 +317,12 @@ public class RedundantPathsCleaner {
 
         for (Location neighbor: backwardNeighbors.get(currentLoc)) {
             // Only consider paths that improve the reachability.
-            if (locDistance.get(neighbor) == currentDist + 1) {
+            if (minDistance.get(neighbor) == currentDist + 1) {
                 // Mark the edge as essential; add it to the neighbor, since we are using backwards reachability.
                 for (Edge edge: neighborsEdges.get(Pair.of(neighbor, currentLoc))) {
                     Verify.verify(edge != null);
                     essentialLocsToEssentialEdges.computeIfAbsent(neighbor, k -> new LinkedHashSet<>()).add(edge);
-                    markEssentialLocationAndEdges(neighbor, locDistance);
+                    markEssentialLocationAndEdges(neighbor, minDistance);
                 }
             }
         }
