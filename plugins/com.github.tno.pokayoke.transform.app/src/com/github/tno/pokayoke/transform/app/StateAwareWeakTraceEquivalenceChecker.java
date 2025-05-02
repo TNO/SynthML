@@ -229,30 +229,20 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     private Set<Location> getNextLocations(Set<Location> sourceLocations, List<Event> events) {
-        // Get next location for all source locations, for all events.
+        Set<String> eventsAbsNames = events.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
         LinkedHashSet<Location> targetLocations = new LinkedHashSet<>();
-        for (Location loc: sourceLocations) {
-            for (Event event: events) {
-                Set<Location> targets = getNext(loc, event);
-                targetLocations.addAll(targets);
-            }
-        }
-        return targetLocations;
-    }
 
-    private Set<Location> getNext(Location loc, Event event) {
-        // Get next locations starting from the current location, using the current event.
-        Set<Location> nextLocations = new LinkedHashSet<>();
-        for (Edge edge: loc.getEdges()) {
-            Set<Event> locEvents = CifEventUtils.getEvents(edge);
-            for (Event locEvent: locEvents) {
-                // Comparison is by name, since the events might be different object.
-                if (CifTextUtils.getAbsName(event).equals(CifTextUtils.getAbsName(locEvent))) {
-                    nextLocations.add(CifEdgeUtils.getTarget(edge));
+        for (Location loc: sourceLocations) {
+            for (Edge edge: loc.getEdges()) {
+                Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
+                for (Event event: eventsOnEdge) {
+                    // Comparison is by name, since the events might be different object.
+                    if (eventsAbsNames.contains(CifTextUtils.getAbsName(event))) {
+                        targetLocations.add(CifEdgeUtils.getTarget(edge));
+                    }
                 }
             }
         }
-
-        return nextLocations;
+        return targetLocations;
     }
 }
