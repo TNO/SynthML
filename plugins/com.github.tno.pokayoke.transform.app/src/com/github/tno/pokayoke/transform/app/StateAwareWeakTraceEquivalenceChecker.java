@@ -93,7 +93,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
                 return false;
             }
 
-            // Find next locations for each event in the compatible event set.
+            // The pair of states is equivalent. Check also all pairs of states reachable from this pair.
             for (Pair<List<Event>, List<Event>> events: pairedEvents) {
                 Set<Location> targetLocations1 = getNextLocations(epsilonReachableLocations1, events.getLeft());
                 Set<Location> targetLocations2 = getNextLocations(epsilonReachableLocations2, events.getRight());
