@@ -12,7 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -95,7 +94,7 @@ public class RedundantPathsCleaner {
                     automa.getLocations());
 
             // Mark the shortest paths as essential.
-//            markEssentialLocationAndEdges(minDistance);
+            markEssentialLocationAndEdges(initialLoc, minDistance);
         }
 
         // Remove every non-essential, redundant element.
@@ -283,14 +282,6 @@ public class RedundantPathsCleaner {
         }
     }
 
-    private void markEssentialLocationAndEdges(Map<Location, Map<Location, Integer>> markedLocsToDistanceMaps) {
-        // TODO: update with only minDistance.
-        for (Entry<Location, Map<Location, Integer>> entry: markedLocsToDistanceMaps.entrySet()) {
-            Location markedLoc = entry.getKey();
-            Map<Location, Integer> minDistance = entry.getValue();
-            markEssentialLocationAndEdges(markedLoc, minDistance);
-        }
-    }
 
     private void markEssentialLocationAndEdges(Location currentLoc, Map<Location, Integer> minDistance) {
         // Mark the current location as essential, and get its depth.
@@ -302,13 +293,13 @@ public class RedundantPathsCleaner {
             essentialLocsToEssentialEdges.put(currentLoc, new LinkedHashSet<>());
         }
 
-        for (Location neighbor: backwardNeighbors.get(currentLoc)) {
+        for (Location neighbor: forwardNeighbors.get(currentLoc)) {
             // Only consider paths that improve the reachability.
-            if (minDistance.get(neighbor) == currentDist + 1) {
-                // Mark the edge as essential; add it to the neighbor, since we are using backwards reachability.
-                for (Edge edge: neighborsEdges.get(Pair.of(neighbor, currentLoc))) {
+            if (minDistance.get(neighbor) == currentDist - 1) {
+                // Mark the edge as essential.
+                for (Edge edge: neighborsEdges.get(Pair.of(currentLoc, neighbor))) {
                     Verify.verify(edge != null);
-                    essentialLocsToEssentialEdges.computeIfAbsent(neighbor, k -> new LinkedHashSet<>()).add(edge);
+                    essentialLocsToEssentialEdges.computeIfAbsent(currentLoc, k -> new LinkedHashSet<>()).add(edge);
                     markEssentialLocationAndEdges(neighbor, minDistance);
                 }
             }
