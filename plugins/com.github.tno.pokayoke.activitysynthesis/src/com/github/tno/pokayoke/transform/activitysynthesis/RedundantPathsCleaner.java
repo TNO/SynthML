@@ -256,6 +256,7 @@ public class RedundantPathsCleaner {
             // Update the location distance if one of the forward neighbors is connected through an uncontrollable edge
             // with a larger distance.
             int currentLocDistance = minDistance.get(currentLoc);
+            int minDistForwardNeighbors = Integer.MAX_VALUE;
             for (Location neighbor: forwardNeighbors.get(currentLoc)) {
                 for (Edge edge: neighborsEdges.get(Pair.of(currentLoc, neighbor))) {
                     List<Event> events = new ArrayList<>(CifEventUtils.getEvents(edge));
@@ -266,9 +267,22 @@ public class RedundantPathsCleaner {
                         currentLocDistance = (minDistance.get(neighbor) == Integer.MAX_VALUE) ? Integer.MAX_VALUE
                                 : minDistance.get(neighbor) + 1;
                     }
+
+                    // Keep track of the minimum distance of any next-step neighbor.
+                    if (minDistForwardNeighbors > minDistance.get(neighbor)) {
+                        minDistForwardNeighbors = minDistance.get(neighbor);
+                    }
                 }
             }
-            minDistance.put(currentLoc, currentLocDistance);
+
+            // If there is no neighbor, the minimum distance of the neighbors is the maximum integer value, which will
+            // overflow when adding +1. In this way, the distance remains the same. If there are neighbors and have a
+            // distance greater than the current+1, the distance of the current location is updated. If all the
+            // neighbors have distance equal to the maximum value, and the current location's distance is smaller than
+            // the maximum value, the distance remains unchanged. This can only happen if the neighbors have an epsilon
+            // loop or cycle: this situation is taken care in the method
+            // TODO:
+            minDistance.put(currentLoc, Math.max(currentLocDistance, minDistForwardNeighbors + 1));
 
             // Add all backwards neighbors, if not already visited.
             for (Location neighbor: backwardNeighbors.get(currentLoc)) {
@@ -282,25 +296,35 @@ public class RedundantPathsCleaner {
         }
     }
 
-
     private void markEssentialLocationAndEdges(Location currentLoc, Map<Location, Integer> minDistance) {
         // Mark the current location as essential, and get its depth.
         essentialLocs.add(currentLoc);
-        int currentDist = minDistance.get(currentLoc);
 
         if (forwardNeighbors.get(currentLoc).isEmpty()) {
             // Add empty set for marked location.
             essentialLocsToEssentialEdges.put(currentLoc, new LinkedHashSet<>());
         }
 
-        for (Location neighbor: forwardNeighbors.get(currentLoc)) {
-            // Only consider paths that improve the reachability.
-            if (minDistance.get(neighbor) == currentDist - 1) {
-                // Mark the edge as essential.
-                for (Edge edge: neighborsEdges.get(Pair.of(currentLoc, neighbor))) {
-                    Verify.verify(edge != null);
-                    essentialLocsToEssentialEdges.computeIfAbsent(currentLoc, k -> new LinkedHashSet<>()).add(edge);
-                    markEssentialLocationAndEdges(neighbor, minDistance);
+        // Find forward neighbors with minimum distance.
+        int minDistNeighbors = Integer.MAX_VALUE;
+        Set<Location> nextStepNeighbors = new LinkedHashSet<>();
+        for (Location loc: forwardNeighbors.get(currentLoc)) {
+            if (minDistance.get(loc) < minDistNeighbors) {
+                minDistNeighbors = minDistance.get(loc);
+                nextStepNeighbors = new LinkedHashSet<>();
+                nextStepNeighbors.add(loc);
+            } else if (minDistance.get(loc) == minDistNeighbors) {
+                nextStepNeighbors.add(loc);
+            }
+        }
+
+        for (Edge edge: currentLoc.getEdges()) {
+            // If uncontrollable or the target is the next step in the shortest path, mark the edge as essential.
+            List<Event> events = new ArrayList<>(CifEventUtils.getEvents(edge));
+            if (!events.get(0).getControllable() || minDistance.get(CifEdgeUtils.getTarget(edge)) == minDistNeighbors) {
+                essentialLocsToEssentialEdges.computeIfAbsent(currentLoc, k -> new LinkedHashSet<>()).add(edge);
+                if (!essentialLocs.contains(CifEdgeUtils.getTarget(edge))) {
+                    markEssentialLocationAndEdges(CifEdgeUtils.getTarget(edge), minDistance);
                 }
             }
         }
