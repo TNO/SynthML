@@ -37,7 +37,6 @@ import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
@@ -364,7 +363,7 @@ public class FullSynthesisApp {
 
         // Translate final UML model to CIF and get its state space.
         Pair<Specification, UmlToCifTranslator> stateSpaceAndTranslator = translatePostSynthesisUmlToStateSpace(
-                filePrefix, localOutputPath);
+                translator.getActivity(), filePrefix, localOutputPath);
         Specification stateSpacePostSynthChain = stateSpaceAndTranslator.getLeft();
         UmlToCifTranslator translatorPostSynth = stateSpaceAndTranslator.getRight();
 
@@ -392,16 +391,12 @@ public class FullSynthesisApp {
         return areEquivalentModels;
     }
 
-    private static Pair<Specification, UmlToCifTranslator> translatePostSynthesisUmlToStateSpace(String filePrefix,
-            Path localOutputPath) throws CoreException
+    private static Pair<Specification, UmlToCifTranslator> translatePostSynthesisUmlToStateSpace(Activity activity,
+            String filePrefix, Path localOutputPath) throws CoreException
     {
-        // Find final UML file.
-        Path finalUmlModel = localOutputPath.resolve(filePrefix + ".19.labelsremoved.uml");
-        Model synthUmlFile = FileHelper.loadModel(finalUmlModel.toString());
-
         // Translation of final UML file to CIF.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(synthUmlFile,
-                filePrefix + ".99", localOutputPath);
+        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(activity, filePrefix + ".99",
+                localOutputPath);
 
         // Find state space post-synthesis chain file.
         Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
@@ -410,13 +405,11 @@ public class FullSynthesisApp {
         return Pair.of(stateSpacePostSynthChain, umlToCifTranslatorPostSynth);
     }
 
-    private static UmlToCifTranslator translateAndGenerateStateSpace(Model synthUmlFile, String filePrefix,
+    private static UmlToCifTranslator translateAndGenerateStateSpace(Activity activity, String filePrefix,
             Path outputFolderPath) throws CoreException
     {
         // Translate UML file to CIF.
-        Activity concreteActivity = (Activity)((BehavioredClassifier)synthUmlFile.getPackagedElements().get(0))
-                .getClassifierBehavior();
-        UmlToCifTranslatorPostSynth umlToCifTranslatorPostSynth = new UmlToCifTranslatorPostSynth(concreteActivity);
+        UmlToCifTranslatorPostSynth umlToCifTranslatorPostSynth = new UmlToCifTranslatorPostSynth(activity);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.finalUmlToCif.cif");
         try {
