@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
 import org.eclipse.escet.cif.metamodel.cif.Invariant;
@@ -197,7 +198,7 @@ public class UmlToCifTranslator {
      * @return The set of UML properties names.
      */
     public Set<String> getVariableNames() {
-        return variableMap.keySet().stream().map(p -> p.getName()).collect(Collectors.toSet());
+        return variableMap.values().stream().map(p -> CifTextUtils.getAbsName(p)).collect(Collectors.toSet());
     }
 
     /**
