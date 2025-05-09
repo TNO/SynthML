@@ -29,7 +29,6 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Update;
 import org.eclipse.escet.cif.metamodel.cif.declarations.AlgVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
-import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
@@ -41,7 +40,6 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.UnaryOperator;
 import org.eclipse.escet.cif.metamodel.cif.types.CifType;
 import org.eclipse.escet.cif.metamodel.cif.types.IntType;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
-import org.eclipse.escet.cif.parser.ast.AInvariant;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.Pair;
@@ -55,8 +53,6 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Enumeration;
-import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -67,7 +63,6 @@ import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
@@ -81,10 +76,9 @@ import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
 
 /** Translates UML synthesis specifications to CIF specifications. */
-public class UmlToCifTranslator {
+public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The name of the atomicity variable used in translated CIF specifications. */
     public static final String ATOMICITY_VARIABLE_NAME = "__activeAction";
 
@@ -112,29 +106,11 @@ public class UmlToCifTranslator {
     /** The input UML activity to translate. */
     private final Activity activity;
 
-    /** The context that allows querying the UML model of the input UML activity to translate. */
-    private final CifContext context;
-
-    /** The translator for UML annotations (guards, updates, invariants, etc.). */
-    private final UmlAnnotationsToCif translator;
-
     /** The translated precondition CIF variable. */
     private AlgVariable preconditionVariable;
 
     /** The translated postcondition CIF variable. */
     private AlgVariable postconditionVariable;
-
-    /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
-    private final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
-
-    /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
-    private final BiMap<EnumerationLiteral, EnumLiteral> enumLiteralMap = HashBiMap.create();
-
-    /** The mapping from UML properties to corresponding translated CIF discrete variables. */
-    private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
-
-    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
-    private final Map<Event, RedefinableElement> startEventMap = new LinkedHashMap<>();
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
@@ -152,9 +128,9 @@ public class UmlToCifTranslator {
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
     public UmlToCifTranslator(Activity activity) {
+        super(new CifContext(activity.getModel()));
+
         this.activity = activity;
-        this.context = new CifContext(activity.getModel());
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
     }
 
     /**
@@ -295,9 +271,6 @@ public class UmlToCifTranslator {
         List<EnumDecl> cifEnums = translateEnumerations();
         cifSpec.getDeclarations().addAll(cifEnums);
 
-        // Translate all UML enumeration literals.
-        translateEnumerationLiterals();
-
         // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
@@ -372,85 +345,6 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Translates all UML enumerations that are in context to CIF enumeration declarations.
-     *
-     * @return The translated CIF enumeration declarations.
-     */
-    private List<EnumDecl> translateEnumerations() {
-        List<Enumeration> umlEnums = context.getAllEnumerations();
-        List<EnumDecl> cifEnums = new ArrayList<>(umlEnums.size());
-
-        for (Enumeration umlEnum: umlEnums) {
-            EnumDecl cifEnum = CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null);
-            cifEnums.add(cifEnum);
-            enumMap.put(umlEnum, cifEnum);
-        }
-
-        return cifEnums;
-    }
-
-    /**
-     * Translates all UML enumeration literals that are in context to CIF enumeration literals.
-     *
-     * @return The translated CIF enumeration literals.
-     */
-    private List<EnumLiteral> translateEnumerationLiterals() {
-        List<EnumerationLiteral> umlLiterals = context.getAllEnumerationLiterals();
-        List<EnumLiteral> cifLiterals = new ArrayList<>(umlLiterals.size());
-
-        for (EnumerationLiteral umlLiteral: umlLiterals) {
-            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
-            cifLiterals.add(cifLiteral);
-            enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
-            enumLiteralMap.put(umlLiteral, cifLiteral);
-        }
-
-        return cifLiterals;
-    }
-
-    /**
-     * Translates all UML properties that are in context to CIF discrete variables.
-     *
-     * @return The translated CIF discrete variables.
-     */
-    private List<DiscVariable> translateProperties() {
-        List<Property> umlProperties = context.getAllDeclaredProperties();
-        List<DiscVariable> cifVariables = new ArrayList<>(umlProperties.size());
-
-        for (Property umlProperty: umlProperties) {
-            cifVariables.add(translateProperty(umlProperty));
-        }
-
-        return cifVariables;
-    }
-
-    /**
-     * Translates a given UML property to a CIF discrete variable.
-     *
-     * @param umlProperty The UML property to translate.
-     * @return The translated CIF discrete variable.
-     */
-    private DiscVariable translateProperty(Property umlProperty) {
-        DiscVariable cifVariable = CifConstructors.newDiscVariable();
-        cifVariable.setName(umlProperty.getName());
-        cifVariable.setType(translator.translateType(umlProperty.getType()));
-        variableMap.put(umlProperty, cifVariable);
-
-        // Determine the default value(s) of the CIF variable.
-        if (PokaYokeUmlProfileUtil.hasDefaultValue(umlProperty)) {
-            // Translate the UML default property value.
-            ValueSpecification umlDefaultValue = umlProperty.getDefaultValue();
-            Expression cifDefaultValueExpr = translator.translate(CifParserHelper.parseExpression(umlDefaultValue));
-            cifVariable.setValue(CifConstructors.newVariableValue(null, ImmutableList.of(cifDefaultValueExpr)));
-        } else {
-            // Indicate that the CIF variable can have any value by default.
-            cifVariable.setValue(CifConstructors.newVariableValue());
-        }
-
-        return cifVariable;
-    }
-
-    /**
      * Translates all UML opaque behaviors that are in context as actions, to CIF events and corresponding CIF edges.
      *
      * @return The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
@@ -519,7 +413,11 @@ public class UmlToCifTranslator {
         // Obtain the guard and effects of the current action.
         Expression guard = getGuard(umlAction);
         List<List<Update>> effects = getEffects(umlAction);
-        Verify.verify(!effects.isEmpty(), "Expected at least one effect, but found none.");
+
+        // Ensure there is at least one effect.
+        if (effects.isEmpty()) {
+            effects = List.of(List.of());
+        }
 
         // Check that a node with effects does not have incoming guards on its outgoing edges.
         if (effects.stream().flatMap(updates -> updates.stream()).findAny().isPresent()
@@ -710,7 +608,7 @@ public class UmlToCifTranslator {
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
                 if (startEventMap.containsKey(cifEvent)) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
-                        cifEdge.getGuards().add(translateStateInvariantConstraint(precondition));
+                        cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
                 }
             }
@@ -726,7 +624,7 @@ public class UmlToCifTranslator {
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
                 if (startEventMap.containsKey(cifEvent)) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
-                        cifEdge.getGuards().add(translateStateInvariantConstraint(postcondition));
+                        cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
                 }
             }
@@ -889,8 +787,7 @@ public class UmlToCifTranslator {
 
             // Add a guard expressing that the outgoing guard of the current incoming UML control flow must hold.
             if (PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incoming) != null) {
-                startEdge.getGuards()
-                        .add(translator.translate(CifParserHelper.parseOutgoingGuard((ControlFlow)incoming)));
+                startEdge.getGuards().add(getOutgoingGuard(incoming));
             }
 
             // Add an update that consumes the token on the current incoming UML control flow.
@@ -946,61 +843,10 @@ public class UmlToCifTranslator {
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
                             "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
 
-                    endEdge.getGuards()
-                            .add(translator.translate(CifParserHelper.parseIncomingGuard((ControlFlow)outgoing)));
+                    endEdge.getGuards().add(getIncomingGuard((ControlFlow)outgoing));
                 }
             }
         }
-    }
-
-    /**
-     * Gives the guard of the given UML element. If the element is a control flow, uses the incoming guard.
-     *
-     * @param element The UML element.
-     * @return The guard of the given UML element.
-     */
-    public Expression getGuard(RedefinableElement element) {
-        AExpression guard;
-        if (element instanceof ControlFlow controlFlow) {
-            guard = CifParserHelper.parseIncomingGuard(controlFlow);
-        } else {
-            guard = CifParserHelper.parseGuard(element);
-        }
-
-        if (guard == null) {
-            return CifValueUtils.makeTrue();
-        }
-        return translator.translate(guard);
-    }
-
-    /**
-     * Gives the original guard corresponding to the given CIF event, where original means: as specified in the UML
-     * model (e.g., without atomicity variables and other auxiliary constructs that the transformation may have added).
-     *
-     * @param event The CIF event, which must have been translated for some UML element in the input UML model.
-     * @return The original guard corresponding to the given CIF event.
-     */
-    public Expression getGuard(Event event) {
-        RedefinableElement element = startEventMap.get(event);
-        Preconditions.checkNotNull(element,
-                "Expected a CIF event that has been translated for some UML element in the input UML model.");
-        return getGuard(element);
-    }
-
-    /**
-     * Gives all effects of the given UML element. Every effect consists of a list of updates.
-     *
-     * @param action The UML element.
-     * @return All effects of the given UML element. There is always at least one effect.
-     */
-    private List<List<Update>> getEffects(RedefinableElement action) {
-        List<List<Update>> effects = CifParserHelper.parseEffects(action).stream().map(translator::translate).toList();
-
-        if (effects.isEmpty()) {
-            effects = List.of(List.of());
-        }
-
-        return effects;
     }
 
     /**
@@ -1336,7 +1182,7 @@ public class UmlToCifTranslator {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
             cifAlgVar.setName(umlConstraint.getName());
             cifAlgVar.setType(CifConstructors.newBoolType());
-            cifAlgVar.setValue(translateStateInvariantConstraint(umlConstraint));
+            cifAlgVar.setValue(getStateInvariant(umlConstraint));
             cifConstraintVars.add(cifAlgVar);
         }
 
@@ -1506,8 +1352,7 @@ public class UmlToCifTranslator {
     private List<Invariant> translateRequirement(Constraint umlConstraint) {
         String constraintName = umlConstraint.getName();
 
-        List<Invariant> cifInvariants = translator.translate(CifParserHelper.parseInvariant(umlConstraint));
-        Verify.verify(!cifInvariants.isEmpty(), "Expected at least one translated invariant but got none.");
+        List<Invariant> cifInvariants = getInvariants(umlConstraint);
 
         // Determine the names of the translated CIF invariants, if any name is set.
         if (!Strings.isNullOrEmpty(constraintName)) {
@@ -1521,30 +1366,5 @@ public class UmlToCifTranslator {
         }
 
         return cifInvariants;
-    }
-
-    /**
-     * Translates a UML constraint to a CIF expression, assuming that the UML constraint is a state invariant.
-     *
-     * @param umlConstraint The UML constraint to translate.
-     * @return The translated CIF expression, which is the state invariant predicate.
-     */
-    public Expression translateStateInvariantConstraint(Constraint umlConstraint) {
-        AInvariant cifInvariant = CifParserHelper.parseInvariant(umlConstraint);
-        Preconditions.checkArgument(cifInvariant.invKind == null && cifInvariant.events == null,
-                "Expected a state invariant.");
-        return translator.translate(cifInvariant.predicate);
-    }
-
-    /**
-     * Translates a collection of UML constraints to a single CIF expression, assuming that all given UML constraints
-     * are state invariants.
-     *
-     * @param umlConstraints The UML constraints to translate.
-     * @return The translated CIF expression, which is the conjunction of all state invariant predicates.
-     */
-    public Expression translateStateInvariantConstraints(Collection<Constraint> umlConstraints) {
-        List<Expression> cifConstraints = umlConstraints.stream().map(this::translateStateInvariantConstraint).toList();
-        return CifValueUtils.createConjunction(cifConstraints);
     }
 }
