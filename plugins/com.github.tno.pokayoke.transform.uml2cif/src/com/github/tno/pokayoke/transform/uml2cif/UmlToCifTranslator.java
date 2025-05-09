@@ -786,7 +786,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             startEdge.getGuards().add(guard);
 
             // Add a guard expressing that the outgoing guard of the current incoming UML control flow must hold.
-            if (PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incoming) != null) {
+            if (PokaYokeUmlProfileUtil.getOutgoingGuard(incoming) != null) {
                 startEdge.getGuards().add(getOutgoingGuard(incoming));
             }
 
@@ -837,13 +837,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoing) != null) {
+                if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
                             "Expected the source nodes of guarded outgoing control flows to have no defined effects.");
 
-                    endEdge.getGuards().add(getIncomingGuard((ControlFlow)outgoing));
+                    endEdge.getGuards().add(getIncomingGuard(outgoing));
                 }
             }
         }

@@ -83,13 +83,13 @@ public class PostProcessActivity {
             // Add a new control flow from source to target.
             ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
             List<String> incomingGuardList = new ArrayList<>();
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge));
             String newIncomingGuard = computeGuardConjunction(incomingGuardList);
             PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
             PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
+                    PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();

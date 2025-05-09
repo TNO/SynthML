@@ -96,14 +96,22 @@ public class PokaYokeUmlProfileUtil {
                 .map(st -> (String)element.getValue(st, PROP_FORMAL_ELEMENT_GUARD)).orElse(null);
     }
 
-    public static String getIncomingGuard(ControlFlow controlFlow) {
-        ValueSpecification guard = controlFlow.getGuard();
-        return guard == null ? null : guard.stringValue();
+    public static String getIncomingGuard(ActivityEdge edge) {
+        if (edge instanceof ControlFlow controlFlow) {
+            ValueSpecification guard = controlFlow.getGuard();
+            return guard == null ? null : guard.stringValue();
+        } else {
+            throw new RuntimeException(String.format("Expected a control flow, but got '%s'.", edge));
+        }
     }
 
-    public static String getOutgoingGuard(ControlFlow controlFlow) {
-        return getAppliedStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE)
-                .map(st -> (String)controlFlow.getValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD)).orElse(null);
+    public static String getOutgoingGuard(ActivityEdge edge) {
+        if (edge instanceof ControlFlow controlFlow) {
+            return getAppliedStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE)
+                    .map(st -> (String)controlFlow.getValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD)).orElse(null);
+        } else {
+            throw new RuntimeException(String.format("Expected a control flow, but got '%s'.", edge));
+        }
     }
 
     /**
