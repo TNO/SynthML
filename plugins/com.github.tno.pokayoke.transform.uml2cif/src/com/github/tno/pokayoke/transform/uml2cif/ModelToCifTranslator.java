@@ -108,17 +108,16 @@ public abstract class ModelToCifTranslator {
         List<EnumDecl> cifEnums = new ArrayList<>(umlEnums.size());
 
         for (Enumeration umlEnum: umlEnums) {
-            enumMap.computeIfAbsent(umlEnum, t -> CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null));
-            cifEnums.add(enumMap.get(umlEnum));
+            EnumDecl cifEnum = CifConstructors.newEnumDecl(null, null, umlEnum.getName(), null);
+            cifEnums.add(cifEnum);
+            enumMap.put(umlEnum, cifEnum);
         }
 
         // Translates all UML enumeration literals that are in context to CIF enumeration literals.
         for (EnumerationLiteral umlLiteral: context.getAllEnumerationLiterals()) {
-            enumLiteralMap.computeIfAbsent(umlLiteral, t -> {
-                EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
-                enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
-                return cifLiteral;
-            });
+            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
+            enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
+            enumLiteralMap.put(umlLiteral, cifLiteral);
         }
 
         return cifEnums;
@@ -134,8 +133,9 @@ public abstract class ModelToCifTranslator {
         List<DiscVariable> cifVariables = new ArrayList<>(umlProperties.size());
 
         for (Property umlProperty: umlProperties) {
-            variableMap.computeIfAbsent(umlProperty, t -> translateProperty(umlProperty));
-            cifVariables.add(variableMap.get(umlProperty));
+            DiscVariable cifVariable = translateProperty(umlProperty);
+            cifVariables.add(cifVariable);
+            variableMap.put(umlProperty, cifVariable);
         }
 
         return cifVariables;
