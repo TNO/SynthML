@@ -16,6 +16,7 @@ import org.eclipse.escet.cif.common.AnnotationEqHashWrap;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
+import org.eclipse.escet.cif.eventbased.automata.AutomatonHelper;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
@@ -213,8 +214,8 @@ public class StateAwareWeakTraceEquivalenceChecker {
         while (!toExpand.isEmpty()) {
             Location loc = toExpand.remove();
             for (Edge incomingEdge: locToIncomingEdges.get(loc)) {
-                if (coreachables.add(CifEdgeUtils.getSource(e))) {
-                    toExpand.add(CifEdgeUtils.getSource(e));
+                if (coreachables.add(CifEdgeUtils.getSource(incomingEdge))) {
+                    toExpand.add(CifEdgeUtils.getSource(incomingEdge));
                 }
             }
         }
@@ -288,7 +289,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
             for (Edge edge: currentLoc.getEdges()) {
                 Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
                 for (Event eventOnEdge: eventsOnEdge) {
-                    if (epsilonEvents.contains(CifTextUtils.getAbsName(edgeEvent))) {
+                    if (epsilonEvents.contains(CifTextUtils.getAbsName(eventOnEdge))) {
                         // Add target location if not yet visited.
                         Location target = CifEdgeUtils.getTarget(edge);
                         if (!visited.contains(target)) {
