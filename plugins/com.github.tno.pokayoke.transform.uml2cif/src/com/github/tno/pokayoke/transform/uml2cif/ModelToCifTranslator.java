@@ -98,7 +98,8 @@ public abstract class ModelToCifTranslator {
     }
 
     /**
-     * Translates all UML enumerations that are in context to CIF enumeration declarations.
+     * Translates all UML enumerations that are in context to CIF enumeration declarations. This method should be called
+     * at most once.
      *
      * @return The translated CIF enumeration declarations.
      */
@@ -124,7 +125,8 @@ public abstract class ModelToCifTranslator {
     }
 
     /**
-     * Translates all UML properties that are in context to CIF discrete variables.
+     * Translates all UML properties that are in context to CIF discrete variables. This method should be called at most
+     * once.
      *
      * @return The translated CIF discrete variables.
      */
