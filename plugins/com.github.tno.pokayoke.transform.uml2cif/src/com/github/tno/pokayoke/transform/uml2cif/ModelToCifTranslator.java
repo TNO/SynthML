@@ -190,20 +190,6 @@ public abstract class ModelToCifTranslator {
     }
 
     /**
-     * Gives the outgoing guard of the given UML activity edge.
-     *
-     * @param edge The UML activity edge.
-     * @return The outgoing guard of the given UML activity edge.
-     */
-    public Expression getOutgoingGuard(ActivityEdge edge) {
-        if (edge instanceof ControlFlow controlFlow) {
-            return translateExpression(CifParserHelper.parseOutgoingGuard(controlFlow));
-        } else {
-            throw new RuntimeException(String.format("Expected a control flow, but got '%s'.", edge));
-        }
-    }
-
-    /**
      * Gives the incoming guard of the given UML activity edge.
      *
      * @param edge The UML activity edge.
@@ -212,6 +198,20 @@ public abstract class ModelToCifTranslator {
     public Expression getIncomingGuard(ActivityEdge edge) {
         if (edge instanceof ControlFlow controlFlow) {
             return translateExpression(CifParserHelper.parseIncomingGuard(controlFlow));
+        } else {
+            throw new RuntimeException(String.format("Expected a control flow, but got '%s'.", edge));
+        }
+    }
+
+    /**
+     * Gives the outgoing guard of the given UML activity edge.
+     *
+     * @param edge The UML activity edge.
+     * @return The outgoing guard of the given UML activity edge.
+     */
+    public Expression getOutgoingGuard(ActivityEdge edge) {
+        if (edge instanceof ControlFlow controlFlow) {
+            return translateExpression(CifParserHelper.parseOutgoingGuard(controlFlow));
         } else {
             throw new RuntimeException(String.format("Expected a control flow, but got '%s'.", edge));
         }
