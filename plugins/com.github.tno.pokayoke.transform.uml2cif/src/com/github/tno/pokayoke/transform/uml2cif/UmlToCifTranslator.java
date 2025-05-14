@@ -193,9 +193,9 @@ public class UmlToCifTranslator {
     }
 
     /**
-     * Returns the set containing the names of UML properties.
+     * Returns the set containing the absolute names of the CIF discrete variables.
      *
-     * @return The set of UML properties names.
+     * @return The set of CIF discrete variables absolute names.
      */
     public Set<String> getVariableNames() {
         return variableMap.values().stream().map(p -> CifTextUtils.getAbsName(p)).collect(Collectors.toSet());
