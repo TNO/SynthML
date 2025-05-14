@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -36,12 +37,12 @@ public class StateAwareWeakTraceEquivalenceChecker {
      * Checks whether two CIF state space automata are weak-trace equivalent, considering state annotations.
      *
      * @param automaton1 The first CIF automaton.
-     * @param stateAnnotations1 The map from CIF locations to their projected state annotations, for the first model.
-     *     The state annotations contain solely the relevant information used for comparison of the model states.
+     * @param stateAnnotations1 The map from CIF states to their projected state annotations, for the first model. The
+     *     state annotations contain solely the relevant information used for comparison of the model states.
      * @param epsilonEvents1 The set containing events that represent an epsilon transition for the first model.
      * @param automaton2 The second CIF automaton.
-     * @param stateAnnotations2 The map from CIF locations to their projected state annotations, for the second model.
-     *     The state annotations contain solely the relevant information used for comparison of the model states.
+     * @param stateAnnotations2 The map from CIF states to their projected state annotations, for the second model. The
+     *     state annotations contain solely the relevant information used for comparison of the model states.
      * @param epsilonEvents2 The set containing events that represent an epsilon transition for the second model.
      * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two automata. All events
      *     in the first list of events are equivalent to all the events in the second list of events.
@@ -57,21 +58,21 @@ public class StateAwareWeakTraceEquivalenceChecker {
         Verify.verify(areDisjointEventSets(
                 pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), epsilonEvents2));
 
-        // Sanity check: marked locations should not have outgoing edges. Computes the set of marked locations.
-        Set<Location> markedLocations1 = new LinkedHashSet<>();
-        Set<Location> markedLocations2 = new LinkedHashSet<>();
-        Verify.verify(!markedLocsHaveOutgoingEdges(automaton1, markedLocations1),
-                "Automaton 1 has outgoing edges from marked locations.");
-        Verify.verify(!markedLocsHaveOutgoingEdges(automaton2, markedLocations2),
-                "Automaton 2 has outgoing edges from marked locations.");
+        // Sanity check: marked states should not have outgoing edges. Computes the set of marked locations.
+        Set<Location> markedStates1 = new LinkedHashSet<>();
+        Set<Location> markedStates2 = new LinkedHashSet<>();
+        Verify.verify(!markedStatesHaveOutgoingEdges(automaton1, markedStates1),
+                "Automaton 1 has outgoing edges from marked states.");
+        Verify.verify(!markedStatesHaveOutgoingEdges(automaton2, markedStates2),
+                "Automaton 2 has outgoing edges from marked states.");
 
-        // Sanity check: all locations should be able to reach a marked location (be non-blocking).
-        Map<Location, Set<Edge>> locToIncomingLoc1 = computeIncomingEdgesPerLoc(automaton1);
-        Map<Location, Set<Edge>> locToIncomingLoc2 = computeIncomingEdgesPerLoc(automaton2);
-        Verify.verify(getBlockingLocsCount(automaton1, markedLocations1, locToIncomingLoc1) != 0,
-                "Model 1 contains blocking locations.");
-        Verify.verify(getBlockingLocsCount(automaton2, markedLocations2, locToIncomingLoc2) != 0,
-                "Model 2 contains blocking locations.");
+        // Sanity check: all states should be able to reach a marked state (be non-blocking).
+        Map<Location, Set<Edge>> stateToIncomingEdges1 = computeIncomingEdgesPerState(automaton1);
+        Map<Location, Set<Edge>> stateToIncomingEdges2 = computeIncomingEdgesPerState(automaton2);
+        Verify.verify(getBlockingStatesCount(automaton1, markedStates1, stateToIncomingEdges1) == 0,
+                "Model 1 contains blocking states.");
+        Verify.verify(getBlockingStatesCount(automaton2, markedStates2, stateToIncomingEdges2) == 0,
+                "Model 2 contains blocking states.");
 
         // Initialize queue. If null, the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(automaton1, stateAnnotations1, automaton2,
@@ -93,47 +94,47 @@ public class StateAwareWeakTraceEquivalenceChecker {
             // Pop first element of the queue.
             Pair<Set<Location>, Set<Location>> currentPair = queue.remove();
 
-            // Compute epsilon-reachable locations and their projections.
-            Set<Location> epsilonReachableLocations1 = getEpsilonReachableLocations(currentPair.getLeft(),
+            // Compute epsilon-reachable states from the current pair.
+            Set<Location> epsilonReachableStates1 = getEpsilonReachableStates(currentPair.getLeft(),
                     absNamesEpsEvents1);
-            Set<Location> epsilonReachableLocations2 = getEpsilonReachableLocations(currentPair.getRight(),
+            Set<Location> epsilonReachableStates2 = getEpsilonReachableStates(currentPair.getRight(),
                     absNamesEpsEvents2);
-            List<Location> projectedLocations1 = projectLocations(epsilonReachableLocations1, stateAnnotations1);
-            List<Location> projectedLocations2 = projectLocations(epsilonReachableLocations2, stateAnnotations2);
 
-            // Sanity check: the locations should represent the same external state, since epsilon transitions may only
+            // Sanity check: the states should represent the same external state, since epsilon transitions may only
             // change internal state.
-            Verify.verify(projectedLocations1.size() == 1, "Epsilon reachability found extra locations.");
-            Verify.verify(projectedLocations2.size() == 1, "Epsilon reachability found extra locations.");
+            Verify.verify(areAllEquivalent(epsilonReachableStates1, stateAnnotations1),
+                    "Epsilon reachability found multiple external states.");
+            Verify.verify(areAllEquivalent(epsilonReachableStates2, stateAnnotations2),
+                    "Epsilon reachability found multiple external states.");
 
-            // Check if any epsilon reachable location is marked, for both automata.
-            boolean anyMarked1 = epsilonReachableLocations1.stream().anyMatch(markedLocations1::contains);
-            boolean anyMarked2 = epsilonReachableLocations2.stream().anyMatch(markedLocations2::contains);
+            // Check if any epsilon reachable state is marked, for both automata.
+            boolean anyMarked1 = epsilonReachableStates1.stream().anyMatch(markedStates1::contains);
+            boolean anyMarked2 = epsilonReachableStates2.stream().anyMatch(markedStates2::contains);
             if (anyMarked1 != anyMarked2) {
                 return false;
             }
 
-            // Check that the pair of states is equivalent.
-            if (!areEquivalentLocations(projectedLocations1.get(0), stateAnnotations1, projectedLocations2.get(0),
-                    stateAnnotations2))
+            // Check that the pair of sets of epsilon reached states is equivalent.
+            if (!areEquivalentStates((new ArrayList<>(epsilonReachableStates1)).get(0), stateAnnotations1,
+                    (new ArrayList<>(epsilonReachableStates2)).get(0), stateAnnotations2))
             {
                 return false;
             }
 
             // The pair of states is equivalent. Check also all pairs of states reachable from this pair.
             for (Pair<List<Event>, List<Event>> events: pairedEvents) {
-                Set<Location> targetLocations1 = getNextLocations(epsilonReachableLocations1, events.getLeft());
-                Set<Location> targetLocations2 = getNextLocations(epsilonReachableLocations2, events.getRight());
+                Set<Location> targetStates1 = getNextStates(epsilonReachableStates1, events.getLeft());
+                Set<Location> targetStates2 = getNextStates(epsilonReachableStates2, events.getRight());
 
-                // If one location can reach some target with this action, but the other location cannot reach any,
+                // If one set of states can reach some target with this action, but the other set cannot reach any,
                 // the two models are different. Note that this is different from checking the sizes of the target
                 // sets, which can be different. This works only if the size of one is zero while the size of the
                 // other is not zero.
-                if (targetLocations1.isEmpty() != targetLocations2.isEmpty()) {
+                if (targetStates1.isEmpty() != targetStates2.isEmpty()) {
                     return false;
-                } else if (targetLocations1.size() > 0) {
+                } else if (targetStates1.size() > 0) {
                     // Add the next pair to the queue, if not already visited.
-                    Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetLocations1, targetLocations2);
+                    Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetStates1, targetStates2);
                     if (!visitedPairs.contains(nextPair)) {
                         visitedPairs.add(nextPair);
                         queue.add(nextPair);
@@ -158,18 +159,18 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     /**
-     * Compute the set of marked locations and checks whether any marked location has outgoing edges.
+     * Compute the set of marked states and checks whether any marked state has outgoing edges.
      *
      * @param automa The automaton to check.
-     * @param markedLocs The set containing marked locations, modified in-place.
-     * @return {@code true} if any marked location has outgoing edges, {@code false} otherwise.
+     * @param markedStates The set containing marked states, modified in-place.
+     * @return {@code true} if any marked state has outgoing edges, {@code false} otherwise.
      */
-    private boolean markedLocsHaveOutgoingEdges(Automaton automa, Set<Location> markedLocs) {
+    private boolean markedStatesHaveOutgoingEdges(Automaton automa, Set<Location> markedStates) {
         boolean hasOutgoing = false;
-        for (Location loc: automa.getLocations()) {
-            if (CifLocationHelper.isMarked(loc)) {
-                markedLocs.add(loc);
-                if (!loc.getEdges().isEmpty()) {
+        for (Location state: automa.getLocations()) {
+            if (CifLocationHelper.isMarked(state)) {
+                markedStates.add(state);
+                if (!state.getEdges().isEmpty()) {
                     hasOutgoing = true;
                 }
             }
@@ -177,48 +178,48 @@ public class StateAwareWeakTraceEquivalenceChecker {
         return hasOutgoing;
     }
 
-    private Map<Location, Set<Edge>> computeIncomingEdgesPerLoc(Automaton automa) {
-        Map<Location, Set<Edge>> locToIncomingEdge = new LinkedHashMap<>();
-        for (Location loc: automa.getLocations()) {
-            locToIncomingEdge.computeIfAbsent(loc, k -> new LinkedHashSet<>());
-            for (Edge edge: loc.getEdges()) {
-                locToIncomingEdge.computeIfAbsent(CifEdgeUtils.getTarget(edge), k -> new LinkedHashSet<>()).add(edge);
+    private Map<Location, Set<Edge>> computeIncomingEdgesPerState(Automaton automa) {
+        Map<Location, Set<Edge>> stateToIncomingEdge = new LinkedHashMap<>();
+        for (Location state: automa.getLocations()) {
+            stateToIncomingEdge.computeIfAbsent(state, k -> new LinkedHashSet<>());
+            for (Edge edge: state.getEdges()) {
+                stateToIncomingEdge.computeIfAbsent(CifEdgeUtils.getTarget(edge), k -> new LinkedHashSet<>()).add(edge);
             }
         }
-        return locToIncomingEdge;
+        return stateToIncomingEdge;
     }
 
     /**
-     * Find non-blocking locations and the number of blocking locations in an automaton. See also
+     * Find non-blocking states and the number of blocking states in an automaton. See also
      * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param automa Automaton to search.
-     * @param markedLocs The set of marked locations of the automaton.
-     * @param locToIncomingEdges The map from locations to their incoming edges.
-     * @return The number of blocking locations in the automaton.
+     * @param markedStates The set of marked states of the automaton.
+     * @param stateToIncomingEdges The map from states to their incoming edges.
+     * @return The number of blocking states in the automaton.
      */
-    public static int getBlockingLocsCount(Automaton automa, Set<Location> markedLocs,
-            Map<Location, Set<Edge>> locToIncomingEdges)
+    public static int getBlockingStatesCount(Automaton automa, Set<Location> markedStates,
+            Map<Location, Set<Edge>> stateToIncomingEdges)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
         Set<Location> nonblocking = new LinkedHashSet<>();
 
         // Add all marked states.
-        int locCount = automa.getLocations().size();
-        toExpand.addAll(markedLocs);
-        nonblocking.addAll(markedLocs);
+        int stateCount = automa.getLocations().size();
+        toExpand.addAll(markedStates);
+        nonblocking.addAll(markedStates);
 
-        // Expand the marked states to all non-blocking locations.
+        // Expand the marked states to all non-blocking states.
         while (!toExpand.isEmpty()) {
-            Location loc = toExpand.remove();
-            for (Edge incomingEdge: locToIncomingEdges.get(loc)) {
+            Location state = toExpand.remove();
+            for (Edge incomingEdge: stateToIncomingEdges.get(state)) {
                 Location edgeSource = CifEdgeUtils.getSource(incomingEdge);
                 if (nonblocking.add(edgeSource)) {
                     toExpand.add(edgeSource);
                 }
             }
         }
-        return locCount - nonblocking.size();
+        return stateCount - nonblocking.size();
     }
 
     private Queue<Pair<Set<Location>, Set<Location>>> initializeQueue(Automaton automaton1,
@@ -226,50 +227,48 @@ public class StateAwareWeakTraceEquivalenceChecker {
     {
         Queue<Pair<Set<Location>, Set<Location>>> queue = new LinkedList<>();
 
-        // Find initial locations of the first automaton. The check whether the location is initial assumes that the
-        // automaton is generated by the state space exploration.
-        Set<Location> initialLoc1 = new LinkedHashSet<>();
-        for (Location loc: automaton1.getLocations()) {
-            if (CifLocationHelper.isInitial(loc)) {
-                initialLoc1.add(loc);
+        // Find initial states of the first automaton.
+        Set<Location> initialStates1 = new LinkedHashSet<>();
+        for (Location state: automaton1.getLocations()) {
+            if (CifLocationHelper.isInitial(state)) {
+                initialStates1.add(state);
             }
         }
 
-        // Find initial locations of the second automaton. The check whether the location is initial assumes that the
-        // automaton is generated by the state space exploration.
-        Set<Location> initialLoc2 = new LinkedHashSet<>();
-        for (Location loc: automaton2.getLocations()) {
-            if (CifLocationHelper.isInitial(loc)) {
-                initialLoc2.add(loc);
+        // Find initial states of the second automaton.
+        Set<Location> initialStates2 = new LinkedHashSet<>();
+        for (Location state: automaton2.getLocations()) {
+            if (CifLocationHelper.isInitial(state)) {
+                initialStates2.add(state);
             }
         }
 
         // Loop over all initial states of the two automata, find the equivalent ones (i.e. have the same annotations),
         // and pair them together.
         Set<Location> visited = new LinkedHashSet<>();
-        for (Location loc1: initialLoc1) {
-            for (Location loc2: initialLoc2) {
-                if (areEquivalentLocations(loc1, annotations1, loc2, annotations2)) {
-                    queue.add(Pair.of(Set.of(loc1), Set.of(loc2)));
-                    visited.add(loc1);
-                    visited.add(loc2);
+        for (Location state1: initialStates1) {
+            for (Location state2: initialStates2) {
+                if (areEquivalentStates(state1, annotations1, state2, annotations2)) {
+                    queue.add(Pair.of(Set.of(state1), Set.of(state2)));
+                    visited.add(state1);
+                    visited.add(state2);
                 }
             }
         }
 
         // All initial states must be used in some initial pair. If not, return null.
-        if (visited.size() == initialLoc1.size() + initialLoc2.size()) {
+        if (visited.size() == initialStates1.size() + initialStates2.size()) {
             return queue;
         } else {
             return null;
         }
     }
 
-    private boolean areEquivalentLocations(Location loc1, Map<Location, Annotation> stateAnnotations1, Location loc2,
+    private boolean areEquivalentStates(Location state1, Map<Location, Annotation> stateAnnotations1, Location state2,
             Map<Location, Annotation> stateAnnotations2)
     {
-        // Locations are equivalent if their annotations are equivalent.
-        return areEquivalentAnnotations(stateAnnotations1.get(loc1), stateAnnotations2.get(loc2));
+        // States are equivalent if their annotations are equivalent.
+        return areEquivalentAnnotations(stateAnnotations1.get(state1), stateAnnotations2.get(state2));
     }
 
     private boolean areEquivalentAnnotations(Annotation ann1, Annotation ann2) {
@@ -278,18 +277,18 @@ public class StateAwareWeakTraceEquivalenceChecker {
         return annotationWrapped1.equals(annotationWrapped2);
     }
 
-    private Set<Location> getEpsilonReachableLocations(Set<Location> locations, Set<String> epsilonEvents) {
-        Set<Location> visited = new LinkedHashSet<>(locations);
-        Queue<Location> queue = new LinkedList<>(locations);
+    private Set<Location> getEpsilonReachableStates(Set<Location> states, Set<String> epsilonEvents) {
+        Set<Location> visited = new LinkedHashSet<>(states);
+        Queue<Location> queue = new LinkedList<>(states);
 
         while (!queue.isEmpty()) {
-            Location currentLoc = queue.remove();
+            Location currentState = queue.remove();
 
-            for (Edge edge: currentLoc.getEdges()) {
+            for (Edge edge: currentState.getEdges()) {
                 Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
                 for (Event eventOnEdge: eventsOnEdge) {
                     if (epsilonEvents.contains(CifTextUtils.getAbsName(eventOnEdge))) {
-                        // Add target location if not yet visited.
+                        // Add target state if not yet visited.
                         Location target = CifEdgeUtils.getTarget(edge);
                         if (!visited.contains(target)) {
                             queue.add(target);
@@ -302,45 +301,35 @@ public class StateAwareWeakTraceEquivalenceChecker {
         return visited;
     }
 
-    private List<Location> projectLocations(Set<Location> locations, Map<Location, Annotation> locToAnnotations) {
-        // Find the projection for all locations, and store them in two dedicated lists.
-        List<Annotation> projectedAnnotationsAllLocations = new LinkedList<>();
-        List<Location> projectedLocations = new LinkedList<>();
+    private boolean areAllEquivalent(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
+        // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
+        // there is one non-equivalent state, return false.
+        List<Location> statesList = new ArrayList<>(states);
+        Annotation firstStateAnnotation = stateAnnotations.get(statesList.get(0));
 
-        for (Location loc: locations) {
-            if (projectedAnnotationsAllLocations.isEmpty()) {
-                // This location is the first equivalent location that is encountered, so add the location and its
-                // annotation.
-                projectedAnnotationsAllLocations.add(locToAnnotations.get(loc));
-                projectedLocations.add(loc);
-            } else {
-                // If no equivalent location is present yet, add this location and its annotation.
-                if (!projectedAnnotationsAllLocations.stream()
-                        .anyMatch(s -> areEquivalentAnnotations(s, locToAnnotations.get(loc))))
-                {
-                    projectedAnnotationsAllLocations.add(locToAnnotations.get(loc));
-                    projectedLocations.add(loc);
-                }
+        for (int i = 1; i < statesList.size(); i++) {
+            if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(statesList.get(i)))) {
+                return false;
             }
         }
-        return projectedLocations;
+        return true;
     }
 
-    private Set<Location> getNextLocations(Set<Location> sourceLocations, List<Event> events) {
+    private Set<Location> getNextStates(Set<Location> sourceStates, List<Event> events) {
         Set<String> eventsAbsNames = events.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
-        LinkedHashSet<Location> targetLocations = new LinkedHashSet<>();
+        LinkedHashSet<Location> targetStates = new LinkedHashSet<>();
 
-        for (Location loc: sourceLocations) {
-            for (Edge edge: loc.getEdges()) {
+        for (Location state: sourceStates) {
+            for (Edge edge: state.getEdges()) {
                 Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
                 for (Event event: eventsOnEdge) {
                     // Comparison is by name, since the events might be different object.
                     if (eventsAbsNames.contains(CifTextUtils.getAbsName(event))) {
-                        targetLocations.add(CifEdgeUtils.getTarget(edge));
+                        targetStates.add(CifEdgeUtils.getTarget(edge));
                     }
                 }
             }
         }
-        return targetLocations;
+        return targetStates;
     }
 }
