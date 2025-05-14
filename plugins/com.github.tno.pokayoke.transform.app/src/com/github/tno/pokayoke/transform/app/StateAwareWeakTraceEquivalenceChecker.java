@@ -58,12 +58,14 @@ public class StateAwareWeakTraceEquivalenceChecker {
         Verify.verify(areDisjointEventSets(
                 pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), epsilonEvents2));
 
-        // Sanity check: marked states should not have outgoing edges. Computes the set of marked locations.
-        Set<Location> markedStates1 = new LinkedHashSet<>();
-        Set<Location> markedStates2 = new LinkedHashSet<>();
-        Verify.verify(!markedStatesHaveOutgoingEdges(automaton1, markedStates1),
+        // Sanity check: marked states should not have outgoing edges.
+        Set<Location> markedStates1 = automaton1.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
+                .collect(Collectors.toSet());
+        Set<Location> markedStates2 = automaton2.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
+                .collect(Collectors.toSet());
+        Verify.verify(markedStates1.stream().allMatch(s -> s.getEdges().isEmpty()),
                 "Automaton 1 has outgoing edges from marked states.");
-        Verify.verify(!markedStatesHaveOutgoingEdges(automaton2, markedStates2),
+        Verify.verify(markedStates2.stream().allMatch(s -> s.getEdges().isEmpty()),
                 "Automaton 2 has outgoing edges from marked states.");
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
@@ -156,26 +158,6 @@ public class StateAwareWeakTraceEquivalenceChecker {
             }
         }
         return true;
-    }
-
-    /**
-     * Compute the set of marked states and checks whether any marked state has outgoing edges.
-     *
-     * @param automa The automaton to check.
-     * @param markedStates The set containing marked states, modified in-place.
-     * @return {@code true} if any marked state has outgoing edges, {@code false} otherwise.
-     */
-    private boolean markedStatesHaveOutgoingEdges(Automaton automa, Set<Location> markedStates) {
-        boolean hasOutgoing = false;
-        for (Location state: automa.getLocations()) {
-            if (CifLocationHelper.isMarked(state)) {
-                markedStates.add(state);
-                if (!state.getEdges().isEmpty()) {
-                    hasOutgoing = true;
-                }
-            }
-        }
-        return hasOutgoing;
     }
 
     private Map<Location, Set<Edge>> computeIncomingEdgesPerState(Automaton automa) {
