@@ -104,7 +104,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
             List<Location> projectedLocations1 = projectLocations(epsilonReachableLocations1, stateAnnotations1);
             List<Location> projectedLocations2 = projectLocations(epsilonReachableLocations2, stateAnnotations2);
 
-            // Sanity check: the locations projections should collapse into just one location.
+            // Sanity check: the locations should represent the same external state, since epsilon transitions may only change internal state.
             Verify.verify(projectedLocations1.size() == 1, "Epsilon reachability found extra locations.");
             Verify.verify(projectedLocations2.size() == 1, "Epsilon reachability found extra locations.");
 
@@ -190,7 +190,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
     /**
      * Find co-reachable locations and the number of non-co-reachable locations in an automaton. See also
-     * AutomatonHelper#getNonCoreachableCount.
+     * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param automa Automaton to search.
      * @param coreachables Co-reachable locations of the automaton, modified in-place.
@@ -212,7 +212,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
         // Expand the marked states to all co-reachable states.
         while (!toExpand.isEmpty()) {
             Location loc = toExpand.remove();
-            for (Edge e: locToIncomingEdges.get(loc)) {
+            for (Edge incomingEdge: locToIncomingEdges.get(loc)) {
                 if (coreachables.add(CifEdgeUtils.getSource(e))) {
                     toExpand.add(CifEdgeUtils.getSource(e));
                 }
@@ -287,7 +287,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
             for (Edge edge: currentLoc.getEdges()) {
                 Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
-                for (Event edgeEvent: eventsOnEdge) {
+                for (Event eventOnEdge: eventsOnEdge) {
                     if (epsilonEvents.contains(CifTextUtils.getAbsName(edgeEvent))) {
                         // Add target location if not yet visited.
                         Location target = CifEdgeUtils.getTarget(edge);
