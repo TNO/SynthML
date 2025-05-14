@@ -60,22 +60,18 @@ public class StateAwareWeakTraceEquivalenceChecker {
         // Sanity check: marked locations should not have outgoing edges. Computes the set of marked locations.
         Set<Location> markedLocations1 = new LinkedHashSet<>();
         Set<Location> markedLocations2 = new LinkedHashSet<>();
-        Verify.verify(markedLocsHaveOutgoingEdges(automaton1, markedLocations1),
+        Verify.verify(!markedLocsHaveOutgoingEdges(automaton1, markedLocations1),
                 "Automaton 1 has outgoing edges from marked locations.");
-        Verify.verify(markedLocsHaveOutgoingEdges(automaton2, markedLocations2),
+        Verify.verify(!markedLocsHaveOutgoingEdges(automaton2, markedLocations2),
                 "Automaton 2 has outgoing edges from marked locations.");
 
-        // Sanity check: all locations should be able to reach a marked location (be co-reachable).
-        Map<Location, Set<Edge>> locToIncomingLoc1 = new LinkedHashMap<>();
-        Map<Location, Set<Edge>> locToIncomingLoc2 = new LinkedHashMap<>();
-        computeIncomingEdgesPerLoc(automaton1, locToIncomingLoc1);
-        computeIncomingEdgesPerLoc(automaton2, locToIncomingLoc2);
-        Verify.verify(
-                getNonCoReachableLocsCount(automaton1, new LinkedHashSet<>(), markedLocations1, locToIncomingLoc1) != 0,
-                "Model 1 contains non co-reachable locations.");
-        Verify.verify(
-                getNonCoReachableLocsCount(automaton2, new LinkedHashSet<>(), markedLocations2, locToIncomingLoc2) != 0,
-                "Model 2 contains non co-reachable locations.");
+        // Sanity check: all locations should be able to reach a marked location (be non-blocking).
+        Map<Location, Set<Edge>> locToIncomingLoc1 = computeIncomingEdgesPerLoc(automaton1);
+        Map<Location, Set<Edge>> locToIncomingLoc2 = computeIncomingEdgesPerLoc(automaton2);
+        Verify.verify(getBlockingLocsCount(automaton1, markedLocations1, locToIncomingLoc1) != 0,
+                "Model 1 contains blocking locations.");
+        Verify.verify(getBlockingLocsCount(automaton2, markedLocations2, locToIncomingLoc2) != 0,
+                "Model 2 contains blocking locations.");
 
         // Initialize queue. If null, the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(automaton1, stateAnnotations1, automaton2,
@@ -105,7 +101,8 @@ public class StateAwareWeakTraceEquivalenceChecker {
             List<Location> projectedLocations1 = projectLocations(epsilonReachableLocations1, stateAnnotations1);
             List<Location> projectedLocations2 = projectLocations(epsilonReachableLocations2, stateAnnotations2);
 
-            // Sanity check: the locations should represent the same external state, since epsilon transitions may only change internal state.
+            // Sanity check: the locations should represent the same external state, since epsilon transitions may only
+            // change internal state.
             Verify.verify(projectedLocations1.size() == 1, "Epsilon reachability found extra locations.");
             Verify.verify(projectedLocations2.size() == 1, "Epsilon reachability found extra locations.");
 
@@ -180,46 +177,48 @@ public class StateAwareWeakTraceEquivalenceChecker {
         return hasOutgoing;
     }
 
-    private void computeIncomingEdgesPerLoc(Automaton automa, Map<Location, Set<Edge>> locToIncomingEdge) {
+    private Map<Location, Set<Edge>> computeIncomingEdgesPerLoc(Automaton automa) {
+        Map<Location, Set<Edge>> locToIncomingEdge = new LinkedHashMap<>();
         for (Location loc: automa.getLocations()) {
             locToIncomingEdge.computeIfAbsent(loc, k -> new LinkedHashSet<>());
             for (Edge edge: loc.getEdges()) {
                 locToIncomingEdge.computeIfAbsent(CifEdgeUtils.getTarget(edge), k -> new LinkedHashSet<>()).add(edge);
             }
         }
+        return locToIncomingEdge;
     }
 
     /**
-     * Find co-reachable locations and the number of non-co-reachable locations in an automaton. See also
+     * Find non-blocking locations and the number of blocking locations in an automaton. See also
      * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param automa Automaton to search.
-     * @param coreachables Co-reachable locations of the automaton, modified in-place.
      * @param markedLocs The set of marked locations of the automaton.
      * @param locToIncomingEdges The map from locations to their incoming edges.
-     * @return The number of non-co-reachable locations in the automaton.
+     * @return The number of blocking locations in the automaton.
      */
-    public static int getNonCoReachableLocsCount(Automaton automa, Set<Location> coreachables, Set<Location> markedLocs,
+    public static int getBlockingLocsCount(Automaton automa, Set<Location> markedLocs,
             Map<Location, Set<Edge>> locToIncomingEdges)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
-        coreachables.clear();
+        Set<Location> nonblocking = new LinkedHashSet<>();
 
         // Add all marked states.
         int locCount = automa.getLocations().size();
         toExpand.addAll(markedLocs);
-        coreachables.addAll(markedLocs);
+        nonblocking.addAll(markedLocs);
 
-        // Expand the marked states to all co-reachable states.
+        // Expand the marked states to all non-blocking locations.
         while (!toExpand.isEmpty()) {
             Location loc = toExpand.remove();
             for (Edge incomingEdge: locToIncomingEdges.get(loc)) {
-                if (coreachables.add(CifEdgeUtils.getSource(incomingEdge))) {
-                    toExpand.add(CifEdgeUtils.getSource(incomingEdge));
+                Location edgeSource = CifEdgeUtils.getSource(incomingEdge);
+                if (nonblocking.add(edgeSource)) {
+                    toExpand.add(edgeSource);
                 }
             }
         }
-        return locCount - coreachables.size();
+        return locCount - nonblocking.size();
     }
 
     private Queue<Pair<Set<Location>, Set<Location>>> initializeQueue(Automaton automaton1,
@@ -310,13 +309,12 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
         for (Location loc: locations) {
             if (projectedAnnotationsAllLocations.isEmpty()) {
-                // Add the first annotation and the first location into the lists, as a representative element of the
-                // sets.
+                // This location is the first equivalent location that is encountered, so add the location and its
+                // annotation.
                 projectedAnnotationsAllLocations.add(locToAnnotations.get(loc));
                 projectedLocations.add(loc);
             } else {
-                // If there is one element in the projected annotations list which is equivalent to the current one, do
-                // not add to the list.
+                // If no equivalent location is present yet, add this location and its annotation.
                 if (!projectedAnnotationsAllLocations.stream()
                         .anyMatch(s -> areEquivalentAnnotations(s, locToAnnotations.get(loc))))
                 {
