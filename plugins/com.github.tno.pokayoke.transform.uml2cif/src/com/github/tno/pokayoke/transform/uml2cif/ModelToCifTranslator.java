@@ -38,8 +38,8 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Base functionality for transforming models (e.g., Petri nets or activities) to CIF, in the context of a UML
- * specification of enumerations and properties.
+ * Base functionality for transforming models (e.g., Petri nets or activities) to CIF, in the context of Poka Yoke UML
+ * specifications.
  */
 public abstract class ModelToCifTranslator {
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
