@@ -139,7 +139,7 @@ public class UmlToCifTranslator {
     private final Map<Event, RedefinableElement> startEventMap = new LinkedHashMap<>();
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
-    private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
+    protected final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
 
     /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
@@ -151,7 +151,7 @@ public class UmlToCifTranslator {
     private final BiMap<Event, Edge> eventEdgeMap = HashBiMap.create();
 
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
-    private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
+    protected final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
     /** The one-to-many mapping from normalized names of UML elements to their corresponding CIF events. */
     private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
@@ -693,7 +693,7 @@ public class UmlToCifTranslator {
      * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
+    protected Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
         // Translate all activity control flows.
@@ -717,7 +717,7 @@ public class UmlToCifTranslator {
      * @param controlFlow The UML control flow to translate.
      * @return The translated CIF variable.
      */
-    private DiscVariable translateActivityControlFlow(ActivityEdge controlFlow) {
+    protected DiscVariable translateActivityControlFlow(ActivityEdge controlFlow) {
         // Create a Boolean CIF variable for the UML control flow.
         DiscVariable cifVariable = CifConstructors.newDiscVariable();
         cifVariable.setName(String.format("%s__%s", CONTROLFLOW_PREFIX, IDHelper.getID(controlFlow)));
@@ -800,7 +800,7 @@ public class UmlToCifTranslator {
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    protected BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
+    private BiMap<Event, Edge> translateActivityAndNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
         // Translate the UML activity node as an action.
@@ -831,7 +831,7 @@ public class UmlToCifTranslator {
      * @param controllableStartEvents Whether to translate the CIF start events as controllable events.
      * @return The translated CIF events and corresponding CIF edges as a one-to-one mapping.
      */
-    protected BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean isAtomic,
+    private BiMap<Event, Edge> translateActivityOrNode(ActivityNode node, boolean isAtomic,
             boolean controllableStartEvents)
     {
         // Find all combinations of incoming and outgoing UML control flows to translate CIF events/edges for, as pairs.
@@ -1219,7 +1219,7 @@ public class UmlToCifTranslator {
      *
      * @return The translated CIF requirement automata.
      */
-    private List<Automaton> translateOccurrenceConstraints() {
+    protected List<Automaton> translateOccurrenceConstraints() {
         List<Automaton> cifAutomata = new ArrayList<>();
 
         for (Constraint umlConstraint: activity.getOwnedRules()) {
@@ -1385,7 +1385,7 @@ public class UmlToCifTranslator {
      * @param umlConstraints The collection of UML pre/postconditions to translate.
      * @return The translated Boolean-typed CIF algebraic variables.
      */
-    private List<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
+    protected List<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
         // Define an algebraic CIF variable for every UML constraint, whose value is the state invariant predicate.
         List<AlgVariable> cifConstraintVars = new ArrayList<>(umlConstraints.size());
 
@@ -1408,7 +1408,7 @@ public class UmlToCifTranslator {
      * @param varName The name of the CIF algebraic variable that is the result of the combination.
      * @return The combined CIF algebraic variable.
      */
-    private AlgVariable combinePrePostconditionVariables(Collection<AlgVariable> cifAlgVars, String varName) {
+    protected AlgVariable combinePrePostconditionVariables(Collection<AlgVariable> cifAlgVars, String varName) {
         Expression cifCombinedExpr = CifValueUtils.createConjunction(cifAlgVars.stream().map(
                 var -> (Expression)CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), var))
                 .toList());
