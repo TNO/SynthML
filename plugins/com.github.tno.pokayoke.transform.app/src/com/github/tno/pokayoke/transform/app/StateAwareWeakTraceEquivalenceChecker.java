@@ -128,7 +128,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
                 Set<Location> targetStates1 = getNextStates(epsilonReachableStates1, events.getLeft());
                 Set<Location> targetStates2 = getNextStates(epsilonReachableStates2, events.getRight());
 
-                // If one set of states can reach some target with this action, but the other set cannot reach any,
+                // If one set of states can reach some target with this event, but the other set cannot reach any,
                 // the two models are different. Note that this is different from checking the sizes of the target
                 // sets, which can be different. This works only if the size of one is zero while the size of the
                 // other is not zero.
@@ -172,7 +172,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
     }
 
     /**
-     * Find non-blocking states and the number of blocking states in an automaton. See also
+     * Find the number of blocking states in the given state space.. See also
      * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param automa Automaton to search.
@@ -299,7 +299,7 @@ public class StateAwareWeakTraceEquivalenceChecker {
 
     private Set<Location> getNextStates(Set<Location> sourceStates, List<Event> events) {
         Set<String> eventsAbsNames = events.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
-        LinkedHashSet<Location> targetStates = new LinkedHashSet<>();
+        Set<Location> nextStates = new LinkedHashSet<>();
 
         for (Location state: sourceStates) {
             for (Edge edge: state.getEdges()) {
