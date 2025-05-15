@@ -58,23 +58,23 @@ public class StateAwareWeakTraceEquivalenceChecker {
         Verify.verify(areDisjointEventSets(
                 pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), epsilonEvents2));
 
-        // Sanity check: marked states should not have outgoing edges.
+        // Sanity check: marked states should not have outgoing transitions.
         Set<Location> markedStates1 = stateSpace1.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
                 .collect(Collectors.toSet());
         Set<Location> markedStates2 = stateSpace2.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
                 .collect(Collectors.toSet());
         Verify.verify(markedStates1.stream().allMatch(s -> s.getEdges().isEmpty()),
-                "State space 1 has outgoing edges from marked states.");
+                "State space 1 has outgoing transitions from marked states.");
         Verify.verify(markedStates2.stream().allMatch(s -> s.getEdges().isEmpty()),
-                "State space 2 has outgoing edges from marked states.");
+                "State space 2 has outgoing transitions from marked states.");
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
-        Map<Location, Set<Edge>> stateToIncomingEdges1 = computeIncomingEdgesPerState(stateSpace1);
-        Map<Location, Set<Edge>> stateToIncomingEdges2 = computeIncomingEdgesPerState(stateSpace2);
-        Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingEdges1) == 0,
-                "Model 1 contains blocking states.");
-        Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingEdges2) == 0,
-                "Model 2 contains blocking states.");
+        Map<Location, Set<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
+        Map<Location, Set<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
+        Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
+                "State space 1 contains blocking states.");
+        Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
+                "State space 2 contains blocking states.");
 
         // Initialize queue. If null, the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -160,15 +160,16 @@ public class StateAwareWeakTraceEquivalenceChecker {
         return true;
     }
 
-    private Map<Location, Set<Edge>> computeIncomingEdgesPerState(Automaton stateSpace) {
-        Map<Location, Set<Edge>> stateToIncomingEdge = new LinkedHashMap<>();
+    private Map<Location, Set<Edge>> computeIncomingTransitionsPerState(Automaton stateSpace) {
+        Map<Location, Set<Edge>> stateToIncomingTrans = new LinkedHashMap<>();
         for (Location state: stateSpace.getLocations()) {
-            stateToIncomingEdge.computeIfAbsent(state, k -> new LinkedHashSet<>());
-            for (Edge edge: state.getEdges()) {
-                stateToIncomingEdge.computeIfAbsent(CifEdgeUtils.getTarget(edge), k -> new LinkedHashSet<>()).add(edge);
+            stateToIncomingTrans.computeIfAbsent(state, k -> new LinkedHashSet<>());
+            for (Edge transition: state.getEdges()) {
+                stateToIncomingTrans.computeIfAbsent(CifEdgeUtils.getTarget(transition), k -> new LinkedHashSet<>())
+                        .add(transition);
             }
         }
-        return stateToIncomingEdge;
+        return stateToIncomingTrans;
     }
 
     /**
@@ -177,11 +178,11 @@ public class StateAwareWeakTraceEquivalenceChecker {
      *
      * @param stateSpace State space to search.
      * @param markedStates The set of marked states of the state space.
-     * @param stateToIncomingEdges The map from states to their incoming edges.
+     * @param stateToIncomingTrans The map from states to their incoming transitions.
      * @return The number of blocking states in the state space.
      */
     public static int getBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
-            Map<Location, Set<Edge>> stateToIncomingEdges)
+            Map<Location, Set<Edge>> stateToIncomingTrans)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
         Set<Location> nonblocking = new LinkedHashSet<>();
@@ -194,10 +195,10 @@ public class StateAwareWeakTraceEquivalenceChecker {
         // Expand the marked states to all non-blocking states.
         while (!toExpand.isEmpty()) {
             Location state = toExpand.remove();
-            for (Edge incomingEdge: stateToIncomingEdges.get(state)) {
-                Location edgeSource = CifEdgeUtils.getSource(incomingEdge);
-                if (nonblocking.add(edgeSource)) {
-                    toExpand.add(edgeSource);
+            for (Edge incomingTrans: stateToIncomingTrans.get(state)) {
+                Location transitionSource = CifEdgeUtils.getSource(incomingTrans);
+                if (nonblocking.add(transitionSource)) {
+                    toExpand.add(transitionSource);
                 }
             }
         }
@@ -267,12 +268,12 @@ public class StateAwareWeakTraceEquivalenceChecker {
         while (!queue.isEmpty()) {
             Location currentState = queue.remove();
 
-            for (Edge edge: currentState.getEdges()) {
-                Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
-                for (Event eventOnEdge: eventsOnEdge) {
-                    if (epsilonEvents.contains(CifTextUtils.getAbsName(eventOnEdge))) {
+            for (Edge transition: currentState.getEdges()) {
+                Set<Event> eventsOnTrans = CifEventUtils.getEvents(transition);
+                for (Event eventOnTrans: eventsOnTrans) {
+                    if (epsilonEvents.contains(CifTextUtils.getAbsName(eventOnTrans))) {
                         // Add target state if not yet visited.
-                        Location target = CifEdgeUtils.getTarget(edge);
+                        Location target = CifEdgeUtils.getTarget(transition);
                         if (!visited.contains(target)) {
                             queue.add(target);
                             visited.add(target);
@@ -303,12 +304,12 @@ public class StateAwareWeakTraceEquivalenceChecker {
         Set<Location> nextStates = new LinkedHashSet<>();
 
         for (Location state: sourceStates) {
-            for (Edge edge: state.getEdges()) {
-                Set<Event> eventsOnEdge = CifEventUtils.getEvents(edge);
-                for (Event event: eventsOnEdge) {
+            for (Edge transition: state.getEdges()) {
+                Set<Event> eventsOnTransition = CifEventUtils.getEvents(transition);
+                for (Event event: eventsOnTransition) {
                     // Comparison is by name, since the events might be different object.
                     if (eventsAbsNames.contains(CifTextUtils.getAbsName(event))) {
-                        nextStates.add(CifEdgeUtils.getTarget(edge));
+                        nextStates.add(CifEdgeUtils.getTarget(transition));
                     }
                 }
             }
