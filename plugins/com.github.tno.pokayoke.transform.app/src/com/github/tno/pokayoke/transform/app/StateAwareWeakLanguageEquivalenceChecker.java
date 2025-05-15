@@ -39,24 +39,24 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      * @param stateSpace1 The first CIF state space.
      * @param stateAnnotations1 The map from CIF states to their projected state annotations, for the first model. The
      *     state annotations contain solely the relevant information used for comparison of the model states.
-     * @param epsilonEvents1 The set containing events that represent an epsilon transition for the first model.
+     * @param tauEvents1 The set containing events that represent a tau transition for the first model.
      * @param stateSpace2 The second CIF state space.
      * @param stateAnnotations2 The map from CIF states to their projected state annotations, for the second model. The
      *     state annotations contain solely the relevant information used for comparison of the model states.
-     * @param epsilonEvents2 The set containing events that represent an epsilon transition for the second model.
+     * @param tauEvents2 The set containing events that represent a tau transition for the second model.
      * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
      *     All events in the first list of events are equivalent to all the events in the second list of events.
      * @return {@code true} if the two state space automata are language equivalent, {@code false} otherwise.
      */
-    public boolean check(Automaton stateSpace1, Map<Location, Annotation> stateAnnotations1, Set<Event> epsilonEvents1,
-            Automaton stateSpace2, Map<Location, Annotation> stateAnnotations2, Set<Event> epsilonEvents2,
+    public boolean check(Automaton stateSpace1, Map<Location, Annotation> stateAnnotations1, Set<Event> tauEvents1,
+            Automaton stateSpace2, Map<Location, Annotation> stateAnnotations2, Set<Event> tauEvents2,
             Set<Pair<List<Event>, List<Event>>> pairedEvents)
     {
-        // Sanity check: epsilon events and non-epsilon events must be disjoint.
+        // Sanity check: tau events and non-tau events must be disjoint.
         Verify.verify(areDisjointEventSets(
-                pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()), epsilonEvents1));
+                pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()), tauEvents1));
         Verify.verify(areDisjointEventSets(
-                pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), epsilonEvents2));
+                pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), tauEvents2));
 
         // Sanity check: marked states should not have outgoing transitions.
         Set<Location> markedStates1 = stateSpace1.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
@@ -86,47 +86,45 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         Set<Pair<Set<Location>, Set<Location>>> visitedPairs = new LinkedHashSet<>();
         visitedPairs.addAll(queue);
 
-        // Get absolute names of epsilon events.
-        Set<String> absNamesEpsEvents1 = epsilonEvents1.stream().map(e -> CifTextUtils.getAbsName(e))
+        // Get absolute names of tau events.
+        Set<String> absNamesTauEvents1 = tauEvents1.stream().map(e -> CifTextUtils.getAbsName(e))
                 .collect(Collectors.toSet());
-        Set<String> absNamesEpsEvents2 = epsilonEvents2.stream().map(e -> CifTextUtils.getAbsName(e))
+        Set<String> absNamesTauEvents2 = tauEvents2.stream().map(e -> CifTextUtils.getAbsName(e))
                 .collect(Collectors.toSet());
 
         while (!queue.isEmpty()) {
             // Pop first element of the queue.
             Pair<Set<Location>, Set<Location>> currentPair = queue.remove();
 
-            // Compute epsilon-reachable states from the current pair.
-            Set<Location> epsilonReachableStates1 = getEpsilonReachableStates(currentPair.getLeft(),
-                    absNamesEpsEvents1);
-            Set<Location> epsilonReachableStates2 = getEpsilonReachableStates(currentPair.getRight(),
-                    absNamesEpsEvents2);
+            // Compute tau-reachable states from the current pair.
+            Set<Location> tauReachableStates1 = getTauReachableStates(currentPair.getLeft(), absNamesTauEvents1);
+            Set<Location> tauReachableStates2 = getTauReachableStates(currentPair.getRight(), absNamesTauEvents2);
 
-            // Sanity check: the states should represent the same external state, since epsilon transitions may only
+            // Sanity check: the states should represent the same external state, since tau transitions may only
             // change internal state.
-            Verify.verify(areAllEquivalent(epsilonReachableStates1, stateAnnotations1),
-                    "Epsilon reachability found multiple external states.");
-            Verify.verify(areAllEquivalent(epsilonReachableStates2, stateAnnotations2),
-                    "Epsilon reachability found multiple external states.");
+            Verify.verify(areAllEquivalent(tauReachableStates1, stateAnnotations1),
+                    "Tau reachability found multiple external states.");
+            Verify.verify(areAllEquivalent(tauReachableStates2, stateAnnotations2),
+                    "Tau reachability found multiple external states.");
 
-            // Check if any epsilon reachable state is marked, for both state spaces.
-            boolean anyMarked1 = epsilonReachableStates1.stream().anyMatch(markedStates1::contains);
-            boolean anyMarked2 = epsilonReachableStates2.stream().anyMatch(markedStates2::contains);
+            // Check if any tau reachable state is marked, for both state spaces.
+            boolean anyMarked1 = tauReachableStates1.stream().anyMatch(markedStates1::contains);
+            boolean anyMarked2 = tauReachableStates2.stream().anyMatch(markedStates2::contains);
             if (anyMarked1 != anyMarked2) {
                 return false;
             }
 
-            // Check that the pair of sets of epsilon reached states is equivalent.
-            if (!areEquivalentStates((new ArrayList<>(epsilonReachableStates1)).get(0), stateAnnotations1,
-                    (new ArrayList<>(epsilonReachableStates2)).get(0), stateAnnotations2))
+            // Check that the pair of sets of tau reached states is equivalent.
+            if (!areEquivalentStates((new ArrayList<>(tauReachableStates1)).get(0), stateAnnotations1,
+                    (new ArrayList<>(tauReachableStates2)).get(0), stateAnnotations2))
             {
                 return false;
             }
 
             // The pair of states is equivalent. Check also all pairs of states reachable from this pair.
             for (Pair<List<Event>, List<Event>> events: pairedEvents) {
-                Set<Location> targetStates1 = getNextStates(epsilonReachableStates1, events.getLeft());
-                Set<Location> targetStates2 = getNextStates(epsilonReachableStates2, events.getRight());
+                Set<Location> targetStates1 = getNextStates(tauReachableStates1, events.getLeft());
+                Set<Location> targetStates2 = getNextStates(tauReachableStates2, events.getRight());
 
                 // If one set of states can reach some target with this event, but the other set cannot reach any,
                 // the two models are different. Note that this is different from checking the sizes of the target
@@ -261,7 +259,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         return annotationWrapped1.equals(annotationWrapped2);
     }
 
-    private Set<Location> getEpsilonReachableStates(Set<Location> states, Set<String> epsilonEvents) {
+    private Set<Location> getTauReachableStates(Set<Location> states, Set<String> tauEvents) {
         Set<Location> visited = new LinkedHashSet<>(states);
         Queue<Location> queue = new LinkedList<>(states);
 
@@ -271,7 +269,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             for (Edge transition: currentState.getEdges()) {
                 Set<Event> eventsOnTrans = CifEventUtils.getEvents(transition);
                 for (Event eventOnTrans: eventsOnTrans) {
-                    if (epsilonEvents.contains(CifTextUtils.getAbsName(eventOnTrans))) {
+                    if (tauEvents.contains(CifTextUtils.getAbsName(eventOnTrans))) {
                         // Add target state if not yet visited.
                         Location target = CifEdgeUtils.getTarget(transition);
                         if (!visited.contains(target)) {
