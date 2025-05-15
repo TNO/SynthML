@@ -276,11 +276,11 @@ public class RedundantPathsCleaner {
             }
 
             // If there is no neighbor, the minimum distance of the neighbors is the maximum integer value, which will
-            // overflow when adding +1. In this way, the distance remains the same. If there are neighbors and have a
-            // distance greater than the current+1, the distance of the current location is updated. If all the
-            // neighbors have distance equal to the maximum value, and the current location's distance is smaller than
-            // the maximum value, the distance remains unchanged. This can only happen if the neighbors have an epsilon
-            // loop or cycle: this situation is taken care in the method
+            // overflow when adding +1. In this way, the max operation preserves the current distance. If there are
+            // neighbors and have a distance greater than the current+1, the distance of the current location is
+            // updated. If all the neighbors have distance equal to the maximum value, and the current location's
+            // distance is smaller than the maximum value, the distance remains unchanged. This can only happen if the
+            // neighbors have an uncontrollable loop or cycle: this situation is taken care in the method
             // TODO:
             minDistance.put(currentLoc, Math.max(currentLocDistance, minDistForwardNeighbors + 1));
 
