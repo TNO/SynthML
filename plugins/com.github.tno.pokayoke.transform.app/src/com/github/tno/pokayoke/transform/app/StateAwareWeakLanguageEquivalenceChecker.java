@@ -3,6 +3,7 @@ package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -115,8 +116,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             }
 
             // Check that the pair of sets of tau reached states is equivalent.
-            if (!areEquivalentStates((new ArrayList<>(tauReachableStates1)).get(0), stateAnnotations1,
-                    (new ArrayList<>(tauReachableStates2)).get(0), stateAnnotations2))
+            if (!areEquivalentStates(tauReachableStates1.iterator().next(), stateAnnotations1,
+                    tauReachableStates2.iterator().next(), stateAnnotations2))
             {
                 return false;
             }
@@ -286,11 +287,11 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     private boolean areAllEquivalent(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
         // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
         // there is one non-equivalent state, return false.
-        List<Location> statesList = new ArrayList<>(states);
-        Annotation firstStateAnnotation = stateAnnotations.get(statesList.get(0));
+        Iterator<Location> values = states.iterator();
+        Annotation firstStateAnnotation = stateAnnotations.get(values.next());
 
-        for (int i = 1; i < statesList.size(); i++) {
-            if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(statesList.get(i)))) {
+        while (values.hasNext()) {
+            if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(values.next()))) {
                 return false;
             }
         }
