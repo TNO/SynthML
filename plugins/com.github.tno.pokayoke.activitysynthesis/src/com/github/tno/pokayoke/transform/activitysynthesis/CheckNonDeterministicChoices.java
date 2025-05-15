@@ -61,7 +61,7 @@ public class CheckNonDeterministicChoices {
         // each pair only once, so not for commuted pairs.
         for (ActivityEdge edge: node.getOutgoings()) {
             // Get the guard of the edge as a BDD.
-            Expression cifGuard = translator.getGuard(edge);
+            Expression cifGuard = translator.getIncomingGuard(edge);
             BDD bddGuard;
             try {
                 bddGuard = CifToBddConverter.convertPred(cifGuard, false, bddSpec);

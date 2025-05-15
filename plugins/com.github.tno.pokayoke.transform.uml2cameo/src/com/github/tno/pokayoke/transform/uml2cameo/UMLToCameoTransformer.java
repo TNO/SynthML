@@ -397,7 +397,7 @@ public class UMLToCameoTransformer {
         } else if (action.getBehavior() instanceof OpaqueBehavior behavior) {
             // Check whether 'action' has an outgoing guard on the incoming edge.
             boolean incomingEdgeHasOutgoingGuard = PokaYokeUmlProfileUtil
-                    .getOutgoingGuard((ControlFlow)action.getIncomings().get(0)) != null;
+                    .getOutgoingGuard(action.getIncomings().get(0)) != null;
 
             // If the action has an outgoing guard on the incoming edge, we must translate the outgoing guard in such a
             // way that the called behavior can only be performed if the outgoing guard holds. To do that, we can't
