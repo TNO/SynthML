@@ -69,8 +69,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                 "State space 2 has outgoing transitions from marked states.");
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
-        Map<Location, Set<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
-        Map<Location, Set<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
+        Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
+        Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
         Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
                 "State space 1 contains blocking states.");
         Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
@@ -158,12 +158,12 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         return true;
     }
 
-    private Map<Location, Set<Edge>> computeIncomingTransitionsPerState(Automaton stateSpace) {
-        Map<Location, Set<Edge>> stateToIncomingTrans = new LinkedHashMap<>();
+    private Map<Location, List<Edge>> computeIncomingTransitionsPerState(Automaton stateSpace) {
+        Map<Location, List<Edge>> stateToIncomingTrans = new LinkedHashMap<>();
         for (Location state: stateSpace.getLocations()) {
-            stateToIncomingTrans.computeIfAbsent(state, k -> new LinkedHashSet<>());
+            stateToIncomingTrans.computeIfAbsent(state, k -> new ArrayList<>());
             for (Edge transition: state.getEdges()) {
-                stateToIncomingTrans.computeIfAbsent(CifEdgeUtils.getTarget(transition), k -> new LinkedHashSet<>())
+                stateToIncomingTrans.computeIfAbsent(CifEdgeUtils.getTarget(transition), k -> new ArrayList<>())
                         .add(transition);
             }
         }
@@ -180,7 +180,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      * @return The number of blocking states in the state space.
      */
     public static int getBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
-            Map<Location, Set<Edge>> stateToIncomingTrans)
+            Map<Location, List<Edge>> stateToIncomingTrans)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
         Set<Location> nonblocking = new LinkedHashSet<>();
