@@ -88,8 +88,7 @@ public class PostProcessActivity {
             incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge));
             String newIncomingGuard = computeGuardConjunction(incomingGuardList);
             PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
-            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                    PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge));
+            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge, PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
