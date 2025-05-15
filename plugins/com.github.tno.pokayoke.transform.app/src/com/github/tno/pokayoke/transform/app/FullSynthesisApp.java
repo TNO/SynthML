@@ -383,7 +383,7 @@ public class FullSynthesisApp {
         Automaton automaton1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
         Automaton automaton2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
 
-        StateAwareWeakTraceEquivalenceChecker sawteChecker = new StateAwareWeakTraceEquivalenceChecker();
+        StateAwareWeakLanguageEquivalenceChecker sawteChecker = new StateAwareWeakLanguageEquivalenceChecker();
         boolean areEquivalentModels = sawteChecker.check(automaton1, result.stateAnnotations1(),
                 translator.getEventsToIgnore(), automaton2, result.stateAnnotations2(),
                 translatorPostSynth.getEventsToIgnore(), result.pairedEvents());
