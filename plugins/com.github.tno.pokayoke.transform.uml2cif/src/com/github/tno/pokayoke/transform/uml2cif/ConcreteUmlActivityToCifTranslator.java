@@ -34,6 +34,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.IntervalConstraint;
+import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
@@ -181,6 +182,14 @@ public class ConcreteUmlActivityToCifTranslator extends UmlToCifTranslator {
         }
 
         return Pair.pair(newVariables, newEventEdges);
+    }
+
+    @Override
+    protected ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
+            boolean controllableStartEvent)
+    {
+        // All CIF start events should be controllable, since we want to compute guards for performing them.
+        return super.translateAsAction(umlElement, name, isAtomic, true);
     }
 
     /**

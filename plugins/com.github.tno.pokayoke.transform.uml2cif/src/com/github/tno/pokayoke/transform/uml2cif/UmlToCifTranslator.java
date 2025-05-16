@@ -390,7 +390,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param controllableStartEvent Whether the created CIF start event should be controllable.
      * @return An action translation result.
      */
-    private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
+    protected ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent)
     {
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
@@ -505,7 +505,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      *     atomic and deterministic, then this list is empty, since then the created start event also ends the action.
      * @param eventEdges The translated CIF events with their corresponding CIF edges as a one-to-one mapping.
      */
-    private record ActionTranslationResult(Event startEvent, List<Event> endEvents, BiMap<Event, Edge> eventEdges) {
+    protected record ActionTranslationResult(Event startEvent, List<Event> endEvents, BiMap<Event, Edge> eventEdges) {
     }
 
     /**
