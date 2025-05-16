@@ -275,7 +275,9 @@ public class PokaYokeProfileServices {
         String guards = label.isEmpty() ? "" : System.getProperty("line.separator");
         String incomingGuard = getIncomingGuard(controlFlow);
         String outgoingGuard = getOutgoingGuard(controlFlow);
-        if (!Strings.isNullOrEmpty(outgoingGuard) || !Strings.isNullOrEmpty(incomingGuard)) {
+        if (!(Strings.isNullOrEmpty(outgoingGuard) || outgoingGuard.equals("true"))
+                || !(Strings.isNullOrEmpty(incomingGuard) || incomingGuard.equals("true")))
+        {
             if (Strings.isNullOrEmpty(incomingGuard)) {
                 incomingGuard = "true";
             }

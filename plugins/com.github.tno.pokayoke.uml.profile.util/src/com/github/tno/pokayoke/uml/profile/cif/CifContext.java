@@ -53,6 +53,9 @@ public class CifContext {
         }
     }
 
+    /** The UML model whose context to consider. */
+    private final Model model;
+
     /**
      * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
      * that are declared in composite data types may be referenced in different ways when they are instantiated multiple
@@ -113,7 +116,7 @@ public class CifContext {
     }
 
     public CifContext(Element element) {
-        Model model = element.getModel();
+        this.model = element.getModel();
 
         // Collect declared elements as set.
         declaredElements = getDeclaredElements(model).asOrderedSet();
@@ -153,6 +156,15 @@ public class CifContext {
             // identifiers.
             addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
         }
+    }
+
+    /**
+     * Gives the UML model whose context to consider.
+     *
+     * @return The UML model whose context to consider.
+     */
+    public Model getModel() {
+        return model;
     }
 
     /**

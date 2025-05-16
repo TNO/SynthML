@@ -83,13 +83,12 @@ public class PostProcessActivity {
             // Add a new control flow from source to target.
             ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
             List<String> incomingGuardList = new ArrayList<>();
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge));
+            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge));
             String newIncomingGuard = computeGuardConjunction(incomingGuardList);
             PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
-            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge,
-                    PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)outgoingEdge));
+            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge, PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge));
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
@@ -161,14 +160,9 @@ public class PostProcessActivity {
                     PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
                     PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
 
-                    // Redirect all incoming/outgoing control flow edges, and destroy the original action.
-                    for (ActivityEdge edge: List.copyOf(action.getIncomings())) {
-                        edge.setTarget(replacementAction);
-                    }
-
-                    for (ActivityEdge edge: List.copyOf(action.getOutgoings())) {
-                        edge.setSource(replacementAction);
-                    }
+                    // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                    action.getIncomings().get(0).setTarget(replacementAction);
+                    action.getOutgoings().get(0).setSource(replacementAction);
 
                     action.destroy();
 
