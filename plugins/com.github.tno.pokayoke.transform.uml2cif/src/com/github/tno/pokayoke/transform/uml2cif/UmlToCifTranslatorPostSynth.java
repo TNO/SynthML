@@ -2,10 +2,8 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -20,7 +18,6 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.AlgVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.EnumDecl;
-import org.eclipse.escet.cif.metamodel.cif.declarations.EnumLiteral;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryExpression;
 import org.eclipse.escet.cif.metamodel.cif.expressions.BinaryOperator;
@@ -34,16 +31,11 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.Enumeration;
-import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.IntervalConstraint;
-import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
 import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
@@ -58,9 +50,6 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
     /** The input UML activity to translate. */
     private Activity activity;
 
-    /** The context that allows querying the UML model of the input UML activity to translate. */
-    private final CifContext context;
-
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     protected UmlAnnotationsToCif translator;
 
@@ -69,18 +58,6 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
 
     /** The translated postcondition CIF variable. */
     private AlgVariable postconditionVariable;
-
-    /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
-    private final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
-
-    /** The mapping from UML enumeration literals to corresponding translated CIF enumeration literals. */
-    private final BiMap<EnumerationLiteral, EnumLiteral> enumLiteralMap = HashBiMap.create();
-
-    /** The mapping from UML properties to corresponding translated CIF discrete variables. */
-    private final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
-
-    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
-    private final Map<Event, RedefinableElement> startEventMap = new LinkedHashMap<>();
 
     /** The list containing the token configuration related to the initial node. */
     private List<AlgVariable> initialNodeConfig = new ArrayList<>();
@@ -91,7 +68,6 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
     public UmlToCifTranslatorPostSynth(Activity activity) {
         super(activity);
         this.activity = activity;
-        this.context = new CifContext(activity.getModel());
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
     }
 
@@ -136,9 +112,6 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
         // Translate all UML enumerations.
         List<EnumDecl> cifEnums = translateEnumerations();
         cifSpec.getDeclarations().addAll(cifEnums);
-
-        // Translate all UML enumeration literals.
-        translateEnumerationLiterals();
 
         // Create the CIF plant for the UML activity to translate. Keeping the same activity name is needed for the
         // language equivalence check.
@@ -402,7 +375,7 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
         initialNodeConfig.add(tokenOnOutgoing);
 
         // If the control flow has an incoming guard, add it to the list of extra preconditions.
-        if (PokaYokeUmlProfileUtil.getIncomingGuard((ControlFlow)outgoing) != null) {
+        if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
             cifAlgVar.setName(node.getName());
             cifAlgVar.setType(CifConstructors.newBoolType());
@@ -431,7 +404,7 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
         finalNodeConfig.add(tokenOnOutgoing);
 
         // If the control flow has an incoming guard, add it to the list of extra postconditions.
-        if (PokaYokeUmlProfileUtil.getOutgoingGuard((ControlFlow)incoming) != null) {
+        if (PokaYokeUmlProfileUtil.getOutgoingGuard(incoming) != null) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
             cifAlgVar.setName(node.getName());
             cifAlgVar.setType(CifConstructors.newBoolType());
