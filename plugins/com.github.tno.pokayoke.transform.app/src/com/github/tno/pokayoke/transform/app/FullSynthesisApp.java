@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,24 +27,19 @@ import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Model;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
-import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.activitysynthesis.ControlFlowHelper;
-import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpdateToText;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
@@ -68,7 +61,6 @@ import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
 
@@ -270,16 +262,9 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
         nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);
 
-        // Compute choice guards.
-        ChoiceActionGuardComputation guardComputation = new ChoiceActionGuardComputation(uncontrolledSystemGuards,
-                controlledSystemGuards, stateInfo);
-        Map<Arc, BDD> arcToBdd = guardComputation.computeChoiceGuards(petriNet);
-        Map<Arc, Expression> arcToGuard = ChoiceActionGuardComputationHelper.convertToExpr(arcToBdd, cifBddSpec);
-
         // Clean up all BDD references.
         uncontrolledSystemGuards.values().forEach(BDD::free);
         controlledSystemGuards.values().forEach(BDD::free);
-        arcToBdd.values().forEach(BDD::free);
         stateInfo.values().forEach(BDD::free);
 
         // Translate PNML into UML activity.
@@ -287,21 +272,6 @@ public class FullSynthesisApp {
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
-
-        // Get a map from UML control flows to the choice guards that have been computed for them.
-        Map<ControlFlow, Expression> controlFlowToGuard = new LinkedHashMap<>();
-        arcToGuard.forEach((arc, guard) -> controlFlowToGuard.put(petriNet2Activity.getArcMapping().get(arc), guard));
-
-        // Convert CIF expression of choice guards into CIF expression text.
-        ConvertExpressionUpdateToText converter = new ConvertExpressionUpdateToText();
-        Map<ControlFlow, String> controlFlowToTextualGuard = new LinkedHashMap<>();
-        controlFlowToGuard.forEach((controlFlow, guard) -> controlFlowToTextualGuard.put(controlFlow,
-                converter.convertExpressions(cifSpec, Arrays.asList(guard))));
-
-        // Add the computed choice guards to their corresponding UML control flows.
-        Path choiceGuardsAddedUMLOutputPath = outputFolderPath.resolve(filePrefix + ".15.choiceguardsadded.uml");
-        ControlFlowHelper.addGuards(controlFlowToTextualGuard);
-        FileHelper.storeModel(activity.getModel(), choiceGuardsAddedUMLOutputPath.toString());
 
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
         Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
