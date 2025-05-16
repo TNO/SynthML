@@ -44,7 +44,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /** Translates UML synthesis specifications to CIF specifications. */
-public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
+public class ConcreteUmlActivityToCifTranslator extends UmlToCifTranslator {
     public static final String INITIAL_NODE_CALLED = "__initial_node_called";
 
     /** The input UML activity to translate. */
@@ -65,7 +65,7 @@ public class UmlToCifTranslatorPostSynth extends UmlToCifTranslator {
     /** The list containing the token configuration related to the final node. */
     private List<AlgVariable> finalNodeConfig = new ArrayList<>();
 
-    public UmlToCifTranslatorPostSynth(Activity activity) {
+    public ConcreteUmlActivityToCifTranslator(Activity activity) {
         super(activity);
         this.activity = activity;
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
