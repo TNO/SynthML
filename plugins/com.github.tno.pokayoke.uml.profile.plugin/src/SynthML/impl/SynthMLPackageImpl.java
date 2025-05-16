@@ -1,11 +1,11 @@
 /**
  */
-package PokaYoke.impl;
+package SynthML.impl;
 
-import PokaYoke.FormalControlFlow;
-import PokaYoke.FormalElement;
-import PokaYoke.PokaYokeFactory;
-import PokaYoke.PokaYokePackage;
+import SynthML.FormalControlFlow;
+import SynthML.FormalElement;
+import SynthML.SynthMLFactory;
+import SynthML.SynthMLPackage;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -25,7 +25,7 @@ import org.eclipse.uml2.uml.UMLPackage;
  * <!-- end-user-doc -->
  * @generated
  */
-public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage {
+public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -51,12 +51,12 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
-	 * @see PokaYoke.PokaYokePackage#eNS_URI
+	 * @see SynthML.SynthMLPackage#eNS_URI
 	 * @see #init()
 	 * @generated
 	 */
-	private PokaYokePackageImpl() {
-		super(eNS_URI, PokaYokeFactory.eINSTANCE);
+	private SynthMLPackageImpl() {
+		super(eNS_URI, SynthMLFactory.eINSTANCE);
 	}
 	/**
 	 * <!-- begin-user-doc -->
@@ -68,7 +68,7 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	/**
 	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
 	 *
-	 * <p>This method is used to initialize {@link PokaYokePackage#eINSTANCE} when that field is accessed.
+	 * <p>This method is used to initialize {@link SynthMLPackage#eINSTANCE} when that field is accessed.
 	 * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -77,12 +77,12 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @see #initializePackageContents()
 	 * @generated
 	 */
-	public static PokaYokePackage init() {
-		if (isInited) return (PokaYokePackage)EPackage.Registry.INSTANCE.getEPackage(PokaYokePackage.eNS_URI);
+	public static SynthMLPackage init() {
+		if (isInited) return (SynthMLPackage)EPackage.Registry.INSTANCE.getEPackage(SynthMLPackage.eNS_URI);
 
 		// Obtain or create and register package
-		Object registeredPokaYokePackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		PokaYokePackageImpl thePokaYokePackage = registeredPokaYokePackage instanceof PokaYokePackageImpl ? (PokaYokePackageImpl)registeredPokaYokePackage : new PokaYokePackageImpl();
+		Object registeredSynthMLPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+		SynthMLPackageImpl theSynthMLPackage = registeredSynthMLPackage instanceof SynthMLPackageImpl ? (SynthMLPackageImpl)registeredSynthMLPackage : new SynthMLPackageImpl();
 
 		isInited = true;
 
@@ -92,17 +92,17 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		EcorePackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
-		thePokaYokePackage.createPackageContents();
+		theSynthMLPackage.createPackageContents();
 
 		// Initialize created meta-data
-		thePokaYokePackage.initializePackageContents();
+		theSynthMLPackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
-		thePokaYokePackage.freeze();
+		theSynthMLPackage.freeze();
 
 		// Update the registry and return the package
-		EPackage.Registry.INSTANCE.put(PokaYokePackage.eNS_URI, thePokaYokePackage);
-		return thePokaYokePackage;
+		EPackage.Registry.INSTANCE.put(SynthMLPackage.eNS_URI, theSynthMLPackage);
+		return theSynthMLPackage;
 	}
 
 	/**
@@ -191,8 +191,8 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 	 * @generated
 	 */
 	@Override
-	public PokaYokeFactory getPokaYokeFactory() {
-		return (PokaYokeFactory)getEFactoryInstance();
+	public SynthMLFactory getSynthMLFactory() {
+		return (SynthMLFactory)getEFactoryInstance();
 	}
 
 	/**
@@ -273,4 +273,4 @@ public class PokaYokePackageImpl extends EPackageImpl implements PokaYokePackage
 		createResource(eNS_URI);
 	}
 
-} //PokaYokePackageImpl
+} //SynthMLPackageImpl

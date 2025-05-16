@@ -1,6 +1,6 @@
 /**
  */
-package PokaYoke;
+package SynthML;
 
 import org.eclipse.emf.common.util.EList;
 
@@ -17,13 +17,13 @@ import org.eclipse.uml2.uml.RedefinableElement;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}</li>
- *   <li>{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}</li>
- *   <li>{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
- *   <li>{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}</li>
+ *   <li>{@link SynthML.FormalElement#getGuard <em>Guard</em>}</li>
+ *   <li>{@link SynthML.FormalElement#getEffects <em>Effects</em>}</li>
+ *   <li>{@link SynthML.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
+ *   <li>{@link SynthML.FormalElement#isAtomic <em>Atomic</em>}</li>
  * </ul>
  *
- * @see PokaYoke.PokaYokePackage#getFormalElement()
+ * @see SynthML.SynthMLPackage#getFormalElement()
  * @model
  * @generated
  */
@@ -34,14 +34,14 @@ public interface FormalElement extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Guard</em>' attribute.
 	 * @see #setGuard(String)
-	 * @see PokaYoke.PokaYokePackage#getFormalElement_Guard()
+	 * @see SynthML.SynthMLPackage#getFormalElement_Guard()
 	 * @model dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
 	String getGuard();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}' attribute.
+	 * Sets the value of the '{@link SynthML.FormalElement#getGuard <em>Guard</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Guard</em>' attribute.
@@ -56,7 +56,7 @@ public interface FormalElement extends EObject {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Effects</em>' attribute list.
-	 * @see PokaYoke.PokaYokePackage#getFormalElement_Effects()
+	 * @see SynthML.SynthMLPackage#getFormalElement_Effects()
 	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
@@ -68,14 +68,14 @@ public interface FormalElement extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Base Redefinable Element</em>' reference.
 	 * @see #setBase_RedefinableElement(RedefinableElement)
-	 * @see PokaYoke.PokaYokePackage#getFormalElement_Base_RedefinableElement()
+	 * @see SynthML.SynthMLPackage#getFormalElement_Base_RedefinableElement()
 	 * @model required="true" ordered="false"
 	 * @generated
 	 */
 	RedefinableElement getBase_RedefinableElement();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}' reference.
+	 * Sets the value of the '{@link SynthML.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Base Redefinable Element</em>' reference.
@@ -91,14 +91,14 @@ public interface FormalElement extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Atomic</em>' attribute.
 	 * @see #setAtomic(boolean)
-	 * @see PokaYoke.PokaYokePackage#getFormalElement_Atomic()
+	 * @see SynthML.SynthMLPackage#getFormalElement_Atomic()
 	 * @model default="false" dataType="org.eclipse.uml2.types.Boolean" ordered="false"
 	 * @generated
 	 */
 	boolean isAtomic();
 
 	/**
-	 * Sets the value of the '{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}' attribute.
+	 * Sets the value of the '{@link SynthML.FormalElement#isAtomic <em>Atomic</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Atomic</em>' attribute.

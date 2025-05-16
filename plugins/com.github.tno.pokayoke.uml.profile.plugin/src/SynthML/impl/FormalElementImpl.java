@@ -1,9 +1,9 @@
 /**
  */
-package PokaYoke.impl;
+package SynthML.impl;
 
-import PokaYoke.FormalElement;
-import PokaYoke.PokaYokePackage;
+import SynthML.FormalElement;
+import SynthML.SynthMLPackage;
 
 import java.util.Collection;
 
@@ -29,10 +29,10 @@ import org.eclipse.uml2.uml.RedefinableElement;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link PokaYoke.impl.FormalElementImpl#getGuard <em>Guard</em>}</li>
- *   <li>{@link PokaYoke.impl.FormalElementImpl#getEffects <em>Effects</em>}</li>
- *   <li>{@link PokaYoke.impl.FormalElementImpl#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
- *   <li>{@link PokaYoke.impl.FormalElementImpl#isAtomic <em>Atomic</em>}</li>
+ *   <li>{@link SynthML.impl.FormalElementImpl#getGuard <em>Guard</em>}</li>
+ *   <li>{@link SynthML.impl.FormalElementImpl#getEffects <em>Effects</em>}</li>
+ *   <li>{@link SynthML.impl.FormalElementImpl#getBase_RedefinableElement <em>Base Redefinable Element</em>}</li>
+ *   <li>{@link SynthML.impl.FormalElementImpl#isAtomic <em>Atomic</em>}</li>
  * </ul>
  *
  * @generated
@@ -114,7 +114,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PokaYokePackage.Literals.FORMAL_ELEMENT;
+		return SynthMLPackage.Literals.FORMAL_ELEMENT;
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 		String oldGuard = guard;
 		guard = newGuard;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__GUARD, oldGuard, guard));
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_ELEMENT__GUARD, oldGuard, guard));
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	@Override
 	public EList<String> getEffects() {
 		if (effects == null) {
-			effects = new EDataTypeEList<String>(String.class, this, PokaYokePackage.FORMAL_ELEMENT__EFFECTS);
+			effects = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_ELEMENT__EFFECTS);
 		}
 		return effects;
 	}
@@ -165,7 +165,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 			base_RedefinableElement = (RedefinableElement)eResolveProxy(oldBase_RedefinableElement);
 			if (base_RedefinableElement != oldBase_RedefinableElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
 			}
 		}
 		return base_RedefinableElement;
@@ -190,7 +190,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 		RedefinableElement oldBase_RedefinableElement = base_RedefinableElement;
 		base_RedefinableElement = newBase_RedefinableElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT, oldBase_RedefinableElement, base_RedefinableElement));
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 		boolean oldAtomic = atomic;
 		atomic = newAtomic;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_ELEMENT__ATOMIC, oldAtomic, atomic));
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_ELEMENT__ATOMIC, oldAtomic, atomic));
 	}
 
 	/**
@@ -224,14 +224,14 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
+			case SynthMLPackage.FORMAL_ELEMENT__GUARD:
 				return getGuard();
-			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
+			case SynthMLPackage.FORMAL_ELEMENT__EFFECTS:
 				return getEffects();
-			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+			case SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				if (resolve) return getBase_RedefinableElement();
 				return basicGetBase_RedefinableElement();
-			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
+			case SynthMLPackage.FORMAL_ELEMENT__ATOMIC:
 				return isAtomic();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -246,17 +246,17 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
+			case SynthMLPackage.FORMAL_ELEMENT__GUARD:
 				setGuard((String)newValue);
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
+			case SynthMLPackage.FORMAL_ELEMENT__EFFECTS:
 				getEffects().clear();
 				getEffects().addAll((Collection<? extends String>)newValue);
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+			case SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				setBase_RedefinableElement((RedefinableElement)newValue);
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
+			case SynthMLPackage.FORMAL_ELEMENT__ATOMIC:
 				setAtomic((Boolean)newValue);
 				return;
 		}
@@ -271,16 +271,16 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
+			case SynthMLPackage.FORMAL_ELEMENT__GUARD:
 				setGuard(GUARD_EDEFAULT);
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
+			case SynthMLPackage.FORMAL_ELEMENT__EFFECTS:
 				getEffects().clear();
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+			case SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				setBase_RedefinableElement((RedefinableElement)null);
 				return;
-			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
+			case SynthMLPackage.FORMAL_ELEMENT__ATOMIC:
 				setAtomic(ATOMIC_EDEFAULT);
 				return;
 		}
@@ -295,13 +295,13 @@ public class FormalElementImpl extends MinimalEObjectImpl.Container implements F
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_ELEMENT__GUARD:
+			case SynthMLPackage.FORMAL_ELEMENT__GUARD:
 				return GUARD_EDEFAULT == null ? guard != null : !GUARD_EDEFAULT.equals(guard);
-			case PokaYokePackage.FORMAL_ELEMENT__EFFECTS:
+			case SynthMLPackage.FORMAL_ELEMENT__EFFECTS:
 				return effects != null && !effects.isEmpty();
-			case PokaYokePackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
+			case SynthMLPackage.FORMAL_ELEMENT__BASE_REDEFINABLE_ELEMENT:
 				return base_RedefinableElement != null;
-			case PokaYokePackage.FORMAL_ELEMENT__ATOMIC:
+			case SynthMLPackage.FORMAL_ELEMENT__ATOMIC:
 				return atomic != ATOMIC_EDEFAULT;
 		}
 		return super.eIsSet(featureID);

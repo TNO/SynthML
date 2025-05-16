@@ -1,8 +1,8 @@
 /**
  */
-package PokaYoke.util;
+package SynthML.util;
 
-import PokaYoke.*;
+import SynthML.*;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
@@ -16,17 +16,17 @@ import org.eclipse.emf.ecore.EObject;
  * The <b>Adapter Factory</b> for the model.
  * It provides an adapter <code>createXXX</code> method for each class of the model.
  * <!-- end-user-doc -->
- * @see PokaYoke.PokaYokePackage
+ * @see SynthML.SynthMLPackage
  * @generated
  */
-public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
+public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 	/**
 	 * The cached model package.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected static PokaYokePackage modelPackage;
+	protected static SynthMLPackage modelPackage;
 
 	/**
 	 * Creates an instance of the adapter factory.
@@ -34,9 +34,9 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public PokaYokeAdapterFactory() {
+	public SynthMLAdapterFactory() {
 		if (modelPackage == null) {
-			modelPackage = PokaYokePackage.eINSTANCE;
+			modelPackage = SynthMLPackage.eINSTANCE;
 		}
 	}
 
@@ -65,8 +65,8 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected PokaYokeSwitch<Adapter> modelSwitch =
-		new PokaYokeSwitch<Adapter>() {
+	protected SynthMLSwitch<Adapter> modelSwitch =
+		new SynthMLSwitch<Adapter>() {
 			@Override
 			public Adapter caseFormalElement(FormalElement object) {
 				return createFormalElementAdapter();
@@ -96,13 +96,13 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link PokaYoke.FormalElement <em>Formal Element</em>}'.
+	 * Creates a new adapter for an object of class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see PokaYoke.FormalElement
+	 * @see SynthML.FormalElement
 	 * @generated
 	 */
 	public Adapter createFormalElementAdapter() {
@@ -110,13 +110,13 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link PokaYoke.FormalControlFlow <em>Formal Control Flow</em>}'.
+	 * Creates a new adapter for an object of class '{@link SynthML.FormalControlFlow <em>Formal Control Flow</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see PokaYoke.FormalControlFlow
+	 * @see SynthML.FormalControlFlow
 	 * @generated
 	 */
 	public Adapter createFormalControlFlowAdapter() {
@@ -135,4 +135,4 @@ public class PokaYokeAdapterFactory extends AdapterFactoryImpl {
 		return null;
 	}
 
-} //PokaYokeAdapterFactory
+} //SynthMLAdapterFactory

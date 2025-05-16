@@ -1,6 +1,6 @@
 /**
  */
-package PokaYoke;
+package SynthML;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -19,18 +19,18 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * @see PokaYoke.PokaYokeFactory
+ * @see SynthML.SynthMLFactory
  * @model kind="package"
  * @generated
  */
-public interface PokaYokePackage extends EPackage {
+public interface SynthMLPackage extends EPackage {
 	/**
 	 * The package name.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNAME = "PokaYoke";
+	String eNAME = "SynthML";
 
 	/**
 	 * The package namespace URI.
@@ -38,7 +38,7 @@ public interface PokaYokePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "https://github.com/TNO/PokaYoke/0.0.1/";
+	String eNS_URI = "https://github.com/TNO/SynthML/";
 
 	/**
 	 * The package namespace name.
@@ -46,7 +46,7 @@ public interface PokaYokePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "PokaYoke";
+	String eNS_PREFIX = "SynthML";
 
 	/**
 	 * The singleton instance of the package.
@@ -54,14 +54,14 @@ public interface PokaYokePackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	PokaYokePackage eINSTANCE = PokaYoke.impl.PokaYokePackageImpl.init();
+	SynthMLPackage eINSTANCE = SynthML.impl.SynthMLPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link PokaYoke.impl.FormalElementImpl <em>Formal Element</em>}' class.
+	 * The meta object id for the '{@link SynthML.impl.FormalElementImpl <em>Formal Element</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see PokaYoke.impl.FormalElementImpl
-	 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalElement()
+	 * @see SynthML.impl.FormalElementImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalElement()
 	 * @generated
 	 */
 	int FORMAL_ELEMENT = 0;
@@ -121,11 +121,11 @@ public interface PokaYokePackage extends EPackage {
 	int FORMAL_ELEMENT_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link PokaYoke.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
+	 * The meta object id for the '{@link SynthML.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see PokaYoke.impl.FormalControlFlowImpl
-	 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalControlFlow()
+	 * @see SynthML.impl.FormalControlFlowImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalControlFlow()
 	 * @generated
 	 */
 	int FORMAL_CONTROL_FLOW = 1;
@@ -168,86 +168,86 @@ public interface PokaYokePackage extends EPackage {
 
 
 	/**
-	 * Returns the meta object for class '{@link PokaYoke.FormalElement <em>Formal Element</em>}'.
+	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Formal Element</em>'.
-	 * @see PokaYoke.FormalElement
+	 * @see SynthML.FormalElement
 	 * @generated
 	 */
 	EClass getFormalElement();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#getGuard <em>Guard</em>}'.
+	 * Returns the meta object for the attribute '{@link SynthML.FormalElement#getGuard <em>Guard</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Guard</em>'.
-	 * @see PokaYoke.FormalElement#getGuard()
+	 * @see SynthML.FormalElement#getGuard()
 	 * @see #getFormalElement()
 	 * @generated
 	 */
 	EAttribute getFormalElement_Guard();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link PokaYoke.FormalElement#getEffects <em>Effects</em>}'.
+	 * Returns the meta object for the attribute list '{@link SynthML.FormalElement#getEffects <em>Effects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Effects</em>'.
-	 * @see PokaYoke.FormalElement#getEffects()
+	 * @see SynthML.FormalElement#getEffects()
 	 * @see #getFormalElement()
 	 * @generated
 	 */
 	EAttribute getFormalElement_Effects();
 
 	/**
-	 * Returns the meta object for the reference '{@link PokaYoke.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}'.
+	 * Returns the meta object for the reference '{@link SynthML.FormalElement#getBase_RedefinableElement <em>Base Redefinable Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Base Redefinable Element</em>'.
-	 * @see PokaYoke.FormalElement#getBase_RedefinableElement()
+	 * @see SynthML.FormalElement#getBase_RedefinableElement()
 	 * @see #getFormalElement()
 	 * @generated
 	 */
 	EReference getFormalElement_Base_RedefinableElement();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.FormalElement#isAtomic <em>Atomic</em>}'.
+	 * Returns the meta object for the attribute '{@link SynthML.FormalElement#isAtomic <em>Atomic</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Atomic</em>'.
-	 * @see PokaYoke.FormalElement#isAtomic()
+	 * @see SynthML.FormalElement#isAtomic()
 	 * @see #getFormalElement()
 	 * @generated
 	 */
 	EAttribute getFormalElement_Atomic();
 
 	/**
-	 * Returns the meta object for class '{@link PokaYoke.FormalControlFlow <em>Formal Control Flow</em>}'.
+	 * Returns the meta object for class '{@link SynthML.FormalControlFlow <em>Formal Control Flow</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Formal Control Flow</em>'.
-	 * @see PokaYoke.FormalControlFlow
+	 * @see SynthML.FormalControlFlow
 	 * @generated
 	 */
 	EClass getFormalControlFlow();
 
 	/**
-	 * Returns the meta object for the attribute '{@link PokaYoke.FormalControlFlow#getOutgoingGuard <em>Outgoing Guard</em>}'.
+	 * Returns the meta object for the attribute '{@link SynthML.FormalControlFlow#getOutgoingGuard <em>Outgoing Guard</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Outgoing Guard</em>'.
-	 * @see PokaYoke.FormalControlFlow#getOutgoingGuard()
+	 * @see SynthML.FormalControlFlow#getOutgoingGuard()
 	 * @see #getFormalControlFlow()
 	 * @generated
 	 */
 	EAttribute getFormalControlFlow_OutgoingGuard();
 
 	/**
-	 * Returns the meta object for the reference '{@link PokaYoke.FormalControlFlow#getBase_ControlFlow <em>Base Control Flow</em>}'.
+	 * Returns the meta object for the reference '{@link SynthML.FormalControlFlow#getBase_ControlFlow <em>Base Control Flow</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Base Control Flow</em>'.
-	 * @see PokaYoke.FormalControlFlow#getBase_ControlFlow()
+	 * @see SynthML.FormalControlFlow#getBase_ControlFlow()
 	 * @see #getFormalControlFlow()
 	 * @generated
 	 */
@@ -260,7 +260,7 @@ public interface PokaYokePackage extends EPackage {
 	 * @return the factory that creates the instances of the model.
 	 * @generated
 	 */
-	PokaYokeFactory getPokaYokeFactory();
+	SynthMLFactory getSynthMLFactory();
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -277,11 +277,11 @@ public interface PokaYokePackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link PokaYoke.impl.FormalElementImpl <em>Formal Element</em>}' class.
+		 * The meta object literal for the '{@link SynthML.impl.FormalElementImpl <em>Formal Element</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see PokaYoke.impl.FormalElementImpl
-		 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalElement()
+		 * @see SynthML.impl.FormalElementImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalElement()
 		 * @generated
 		 */
 		EClass FORMAL_ELEMENT = eINSTANCE.getFormalElement();
@@ -319,11 +319,11 @@ public interface PokaYokePackage extends EPackage {
 		EAttribute FORMAL_ELEMENT__ATOMIC = eINSTANCE.getFormalElement_Atomic();
 
 		/**
-		 * The meta object literal for the '{@link PokaYoke.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
+		 * The meta object literal for the '{@link SynthML.impl.FormalControlFlowImpl <em>Formal Control Flow</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see PokaYoke.impl.FormalControlFlowImpl
-		 * @see PokaYoke.impl.PokaYokePackageImpl#getFormalControlFlow()
+		 * @see SynthML.impl.FormalControlFlowImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalControlFlow()
 		 * @generated
 		 */
 		EClass FORMAL_CONTROL_FLOW = eINSTANCE.getFormalControlFlow();
@@ -346,4 +346,4 @@ public interface PokaYokePackage extends EPackage {
 
 	}
 
-} //PokaYokePackage
+} //SynthMLPackage

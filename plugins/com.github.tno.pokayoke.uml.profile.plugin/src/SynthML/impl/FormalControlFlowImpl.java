@@ -1,9 +1,9 @@
 /**
  */
-package PokaYoke.impl;
+package SynthML.impl;
 
-import PokaYoke.FormalControlFlow;
-import PokaYoke.PokaYokePackage;
+import SynthML.FormalControlFlow;
+import SynthML.SynthMLPackage;
 
 import org.eclipse.emf.common.notify.Notification;
 
@@ -23,8 +23,8 @@ import org.eclipse.uml2.uml.ControlFlow;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link PokaYoke.impl.FormalControlFlowImpl#getOutgoingGuard <em>Outgoing Guard</em>}</li>
- *   <li>{@link PokaYoke.impl.FormalControlFlowImpl#getBase_ControlFlow <em>Base Control Flow</em>}</li>
+ *   <li>{@link SynthML.impl.FormalControlFlowImpl#getOutgoingGuard <em>Outgoing Guard</em>}</li>
+ *   <li>{@link SynthML.impl.FormalControlFlowImpl#getBase_ControlFlow <em>Base Control Flow</em>}</li>
  * </ul>
  *
  * @generated
@@ -76,7 +76,7 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PokaYokePackage.Literals.FORMAL_CONTROL_FLOW;
+		return SynthMLPackage.Literals.FORMAL_CONTROL_FLOW;
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 		String oldOutgoingGuard = outgoingGuard;
 		outgoingGuard = newOutgoingGuard;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD, oldOutgoingGuard, outgoingGuard));
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD, oldOutgoingGuard, outgoingGuard));
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 			base_ControlFlow = (ControlFlow)eResolveProxy(oldBase_ControlFlow);
 			if (base_ControlFlow != oldBase_ControlFlow) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW, oldBase_ControlFlow, base_ControlFlow));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW, oldBase_ControlFlow, base_ControlFlow));
 			}
 		}
 		return base_ControlFlow;
@@ -139,7 +139,7 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 		ControlFlow oldBase_ControlFlow = base_ControlFlow;
 		base_ControlFlow = newBase_ControlFlow;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW, oldBase_ControlFlow, base_ControlFlow));
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW, oldBase_ControlFlow, base_ControlFlow));
 	}
 
 	/**
@@ -150,9 +150,9 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
 				return getOutgoingGuard();
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
 				if (resolve) return getBase_ControlFlow();
 				return basicGetBase_ControlFlow();
 		}
@@ -167,10 +167,10 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
 				setOutgoingGuard((String)newValue);
 				return;
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
 				setBase_ControlFlow((ControlFlow)newValue);
 				return;
 		}
@@ -185,10 +185,10 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
 				setOutgoingGuard(OUTGOING_GUARD_EDEFAULT);
 				return;
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
 				setBase_ControlFlow((ControlFlow)null);
 				return;
 		}
@@ -203,9 +203,9 @@ public class FormalControlFlowImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__OUTGOING_GUARD:
 				return OUTGOING_GUARD_EDEFAULT == null ? outgoingGuard != null : !OUTGOING_GUARD_EDEFAULT.equals(outgoingGuard);
-			case PokaYokePackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
+			case SynthMLPackage.FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW:
 				return base_ControlFlow != null;
 		}
 		return super.eIsSet(featureID);

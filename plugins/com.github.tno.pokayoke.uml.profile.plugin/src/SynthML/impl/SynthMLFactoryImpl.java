@@ -1,8 +1,8 @@
 /**
  */
-package PokaYoke.impl;
+package SynthML.impl;
 
-import PokaYoke.*;
+import SynthML.*;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -18,24 +18,24 @@ import org.eclipse.emf.ecore.plugin.EcorePlugin;
  * <!-- end-user-doc -->
  * @generated
  */
-public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory {
+public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 	/**
 	 * Creates the default factory implementation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static PokaYokeFactory init() {
+	public static SynthMLFactory init() {
 		try {
-			PokaYokeFactory thePokaYokeFactory = (PokaYokeFactory)EPackage.Registry.INSTANCE.getEFactory(PokaYokePackage.eNS_URI);
-			if (thePokaYokeFactory != null) {
-				return thePokaYokeFactory;
+			SynthMLFactory theSynthMLFactory = (SynthMLFactory)EPackage.Registry.INSTANCE.getEFactory(SynthMLPackage.eNS_URI);
+			if (theSynthMLFactory != null) {
+				return theSynthMLFactory;
 			}
 		}
 		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
-		return new PokaYokeFactoryImpl();
+		return new SynthMLFactoryImpl();
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public PokaYokeFactoryImpl() {
+	public SynthMLFactoryImpl() {
 		super();
 	}
 
@@ -56,8 +56,8 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case PokaYokePackage.FORMAL_ELEMENT: return createFormalElement();
-			case PokaYokePackage.FORMAL_CONTROL_FLOW: return createFormalControlFlow();
+			case SynthMLPackage.FORMAL_ELEMENT: return createFormalElement();
+			case SynthMLPackage.FORMAL_CONTROL_FLOW: return createFormalControlFlow();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -91,8 +91,8 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * @generated
 	 */
 	@Override
-	public PokaYokePackage getPokaYokePackage() {
-		return (PokaYokePackage)getEPackage();
+	public SynthMLPackage getSynthMLPackage() {
+		return (SynthMLPackage)getEPackage();
 	}
 
 	/**
@@ -102,8 +102,8 @@ public class PokaYokeFactoryImpl extends EFactoryImpl implements PokaYokeFactory
 	 * @generated
 	 */
 	@Deprecated
-	public static PokaYokePackage getPackage() {
-		return PokaYokePackage.eINSTANCE;
+	public static SynthMLPackage getPackage() {
+		return SynthMLPackage.eINSTANCE;
 	}
 
-} //PokaYokeFactoryImpl
+} //SynthMLFactoryImpl

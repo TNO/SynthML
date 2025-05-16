@@ -1,8 +1,8 @@
 /**
  */
-package PokaYoke.util;
+package SynthML.util;
 
-import PokaYoke.*;
+import SynthML.*;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -19,17 +19,17 @@ import org.eclipse.emf.ecore.util.Switch;
  * until a non-null result is returned,
  * which is the result of the switch.
  * <!-- end-user-doc -->
- * @see PokaYoke.PokaYokePackage
+ * @see SynthML.SynthMLPackage
  * @generated
  */
-public class PokaYokeSwitch<T> extends Switch<T> {
+public class SynthMLSwitch<T> extends Switch<T> {
 	/**
 	 * The cached model package
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected static PokaYokePackage modelPackage;
+	protected static SynthMLPackage modelPackage;
 
 	/**
 	 * Creates an instance of the switch.
@@ -37,9 +37,9 @@ public class PokaYokeSwitch<T> extends Switch<T> {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public PokaYokeSwitch() {
+	public SynthMLSwitch() {
 		if (modelPackage == null) {
-			modelPackage = PokaYokePackage.eINSTANCE;
+			modelPackage = SynthMLPackage.eINSTANCE;
 		}
 	}
 
@@ -66,13 +66,13 @@ public class PokaYokeSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case PokaYokePackage.FORMAL_ELEMENT: {
+			case SynthMLPackage.FORMAL_ELEMENT: {
 				FormalElement formalElement = (FormalElement)theEObject;
 				T result = caseFormalElement(formalElement);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PokaYokePackage.FORMAL_CONTROL_FLOW: {
+			case SynthMLPackage.FORMAL_CONTROL_FLOW: {
 				FormalControlFlow formalControlFlow = (FormalControlFlow)theEObject;
 				T result = caseFormalControlFlow(formalControlFlow);
 				if (result == null) result = defaultCase(theEObject);
@@ -128,4 +128,4 @@ public class PokaYokeSwitch<T> extends Switch<T> {
 		return null;
 	}
 
-} //PokaYokeSwitch
+} //SynthMLSwitch
