@@ -287,10 +287,10 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
         // there is one non-equivalent state, return false.
         Iterator<Location> statesIter = states.iterator();
-        Annotation firstStateAnnotation = stateAnnotations.get(values.next());
+        Annotation firstStateAnnotation = stateAnnotations.get(statesIter.next());
 
-        while (values.hasNext()) {
-            if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(values.next()))) {
+        while (statesIter.hasNext()) {
+            if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(statesIter.next()))) {
                 return false;
             }
         }
