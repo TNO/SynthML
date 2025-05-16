@@ -28,8 +28,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
-import PokaYoke.FormalControlFlow;
-import PokaYoke.FormalElement;
+import SynthML.FormalControlFlow;
+import SynthML.FormalElement;
 
 /**
  * The services class used by VSM.

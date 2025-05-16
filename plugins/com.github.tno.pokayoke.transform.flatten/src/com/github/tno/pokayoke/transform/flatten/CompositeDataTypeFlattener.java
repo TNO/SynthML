@@ -63,7 +63,7 @@ import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Objects;
 import com.google.common.base.Verify;
 
-import PokaYoke.PokaYokePackage;
+import SynthML.SynthMLPackage;
 
 /** Composite data type flattener. */
 public class CompositeDataTypeFlattener {
@@ -126,7 +126,7 @@ public class CompositeDataTypeFlattener {
             PrimitiveType integerType)
     {
         return (object instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
-                || object instanceof PokaYokePackage || (object instanceof PrimitiveType primitive
+                || object instanceof SynthMLPackage || (object instanceof PrimitiveType primitive
                         && (primitive == booleanType || primitive == integerType)));
     }
 

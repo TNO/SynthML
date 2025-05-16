@@ -17,7 +17,7 @@ import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import PokaYoke.FormalElement;
+import SynthML.FormalElement;
 
 public class ApplyPokaYokeUmlProfile {
     private ApplyPokaYokeUmlProfile() {

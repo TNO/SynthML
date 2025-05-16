@@ -31,27 +31,26 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
-import PokaYoke.FormalControlFlow;
-import PokaYoke.FormalElement;
-import PokaYoke.PokaYokePackage;
+import SynthML.FormalControlFlow;
+import SynthML.FormalElement;
+import SynthML.SynthMLPackage;
 
 public class PokaYokeUmlProfileUtil {
-    private static final String ST_FORMAL_ELEMENT = PokaYokePackage.Literals.FORMAL_ELEMENT.getName();
+    private static final String ST_FORMAL_ELEMENT = SynthMLPackage.Literals.FORMAL_ELEMENT.getName();
 
-    private static final String PROP_FORMAL_ELEMENT_GUARD = PokaYokePackage.Literals.FORMAL_ELEMENT__GUARD.getName();
+    private static final String PROP_FORMAL_ELEMENT_GUARD = SynthMLPackage.Literals.FORMAL_ELEMENT__GUARD.getName();
 
-    private static final String PROP_FORMAL_ELEMENT_EFFECTS = PokaYokePackage.Literals.FORMAL_ELEMENT__EFFECTS
+    private static final String PROP_FORMAL_ELEMENT_EFFECTS = SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS.getName();
+
+    private static final String PROP_FORMAL_ELEMENT_ATOMIC = SynthMLPackage.Literals.FORMAL_ELEMENT__ATOMIC.getName();
+
+    private static final String ST_FORMAL_CONTROL_FLOW = SynthMLPackage.Literals.FORMAL_CONTROL_FLOW.getName();
+
+    private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
             .getName();
 
-    private static final String PROP_FORMAL_ELEMENT_ATOMIC = PokaYokePackage.Literals.FORMAL_ELEMENT__ATOMIC.getName();
-
-    private static final String ST_FORMAL_CONTROL_FLOW = PokaYokePackage.Literals.FORMAL_CONTROL_FLOW.getName();
-
-    private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = PokaYokePackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
-            .getName();
-
-    /** Qualified name for the {@link PokaYokePackage Poka Yoke} profile. */
-    public static final String POKA_YOKE_PROFILE = PokaYokePackage.eNAME;
+    /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
+    public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
     /** Qualified name for the {@link FormalElement} stereotype. */
     public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -372,7 +371,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     private static Profile getPokaYokeProfile(Element context) {
-        URI uri = UMLPlugin.getEPackageNsURIToProfileLocationMap().get(PokaYokePackage.eNS_URI);
+        URI uri = UMLPlugin.getEPackageNsURIToProfileLocationMap().get(SynthMLPackage.eNS_URI);
         Resource resource = context.eResource();
         ResourceSet resourceSet = resource == null ? null : resource.getResourceSet();
         if (resourceSet == null) {
