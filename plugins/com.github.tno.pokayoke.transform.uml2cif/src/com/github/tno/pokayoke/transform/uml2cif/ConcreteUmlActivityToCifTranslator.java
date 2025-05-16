@@ -47,18 +47,6 @@ import com.google.common.collect.HashBiMap;
 public class ConcreteUmlActivityToCifTranslator extends UmlToCifTranslator {
     public static final String INITIAL_NODE_CALLED = "__initial_node_called";
 
-    /** The input UML activity to translate. */
-    private Activity activity;
-
-    /** The translator for UML annotations (guards, updates, invariants, etc.). */
-    protected UmlAnnotationsToCif translator;
-
-    /** The translated precondition CIF variable. */
-    private AlgVariable preconditionVariable;
-
-    /** The translated postcondition CIF variable. */
-    private AlgVariable postconditionVariable;
-
     /** The list containing the token configuration related to the initial node. */
     private List<AlgVariable> initialNodeConfig = new ArrayList<>();
 
@@ -67,8 +55,6 @@ public class ConcreteUmlActivityToCifTranslator extends UmlToCifTranslator {
 
     public ConcreteUmlActivityToCifTranslator(Activity activity) {
         super(activity);
-        this.activity = activity;
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
     }
 
     /**

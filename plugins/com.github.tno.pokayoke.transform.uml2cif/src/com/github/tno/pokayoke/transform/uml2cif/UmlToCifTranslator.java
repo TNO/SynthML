@@ -104,13 +104,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public static final String CONTROLFLOW_PREFIX = "__controlflow";
 
     /** The input UML activity to translate. */
-    private final Activity activity;
+    protected final Activity activity;
 
     /** The translated precondition CIF variable. */
-    private AlgVariable preconditionVariable;
+    protected AlgVariable preconditionVariable;
 
     /** The translated postcondition CIF variable. */
-    private AlgVariable postconditionVariable;
+    protected AlgVariable postconditionVariable;
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     protected final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
