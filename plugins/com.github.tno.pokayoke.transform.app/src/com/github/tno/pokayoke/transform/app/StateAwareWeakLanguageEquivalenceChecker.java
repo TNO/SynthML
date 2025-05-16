@@ -226,8 +226,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         }
 
         // Loop over all initial states of the two state spaces, find the equivalent ones (i.e. have the same
-        // annotations),
-        // and pair them together.
+        // annotations), and pair them together.
         Set<Location> visited = new LinkedHashSet<>();
         for (Location state1: initialStates1) {
             for (Location state2: initialStates2) {
@@ -287,7 +286,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     private boolean areAllEquivalent(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
         // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
         // there is one non-equivalent state, return false.
-        Iterator<Location> values = states.iterator();
+        Iterator<Location> statesIter = states.iterator();
         Annotation firstStateAnnotation = stateAnnotations.get(values.next());
 
         while (values.hasNext()) {
