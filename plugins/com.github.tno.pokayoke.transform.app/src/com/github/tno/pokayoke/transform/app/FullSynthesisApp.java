@@ -62,6 +62,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslato
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
+import com.github.tno.pokayoke.transform.uml2cif.ConcreteUmlActivityToCifTranslator;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
@@ -325,6 +326,17 @@ public class FullSynthesisApp {
         Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".19.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
+
+        // Translating synthesized activity to CIF, for guard computation.
+        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".20.labelsremoved.cif");
+        UmlToCifTranslator umlActivityToCifTranslator = new ConcreteUmlActivityToCifTranslator(activity);
+        Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifTranslatedActivity, umlActivityToCifPath.toString(), outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
