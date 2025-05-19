@@ -5,7 +5,7 @@
       <metamodel href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
       <metamodel href="http://www.eclipse.org/sirius/1.1.0#/"/>
       <metamodel href="http://www.eclipse.org/sirius/diagram/1.1.0#/"/>
-      <metamodel href="../../com.github.tno.pokayoke.uml.profile.plugin/model/PokaYoke.ecore#/"/>
+      <metamodel href="../../com.github.tno.synthml.uml.profile.plugin/model/SynthML.ecore#/"/>
       <layers name="PY_Decorations" optional="false">
         <decorationDescriptionsSet>
           <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="DC_FormalElement" preconditionExpression="service:element.decorateFormalElement(diagram)" imageExpression="/com.github.tno.synthml.uml.profile.design/icons/pokayoke3.png">
@@ -205,7 +205,7 @@
   </ownedViewpoints>
   <extensions xsi:type="properties:ViewExtensionDescription" name="PokaYokeProperties">
     <metamodels href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
-    <metamodels href="../../com.github.tno.pokayoke.uml.profile.plugin/model/PokaYoke.ecore#/"/>
+    <metamodels href="../../com.github.tno.synthml.uml.profile.plugin/model/SynthML.ecore#/"/>
     <categories name="PR_PokaYoke">
       <pages name="PR_OpaqueActionPage" labelExpression="Poka Yoke" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_CallBehaviorActionPage" labelExpression="Poka Yoke" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0"/>
