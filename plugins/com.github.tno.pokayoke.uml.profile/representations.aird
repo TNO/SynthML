@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
   <viewpoint:DAnalysis uid="_6JpQEM_tEe6QioSmOybrPw" selectedViews="_6L5S0M_tEe6QioSmOybrPw _6Pjq0M_tEe6QioSmOybrPw _6PvRAM_tEe6QioSmOybrPw _6P0wkM_tEe6QioSmOybrPw _6P2lwM_tEe6QioSmOybrPw _6P8FUM_tEe6QioSmOybrPw" version="15.2.0.202303281325">
-    <semanticResources>pokayoke.profile.uml</semanticResources>
+    <semanticResources>synthml.profile.uml</semanticResources>
     <semanticResources>pathmap://UML_METAMODELS/UML.metamodel.uml</semanticResources>
     <semanticResources>pathmap://UML_METAMODELS/Ecore.metamodel.uml</semanticResources>
     <semanticResources>pathmap://UML_PROFILES/Ecore.profile.uml</semanticResources>
@@ -27,7 +27,7 @@
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']"/>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1747404640367">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
-        <target xmi:type="uml:Profile" href="pokayoke.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+        <target xmi:type="uml:Profile" href="synthml.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
       </ownedRepresentationDescriptors>
     </ownedViews>
   </viewpoint:DAnalysis>
@@ -125,8 +125,8 @@
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="__ChDgc_tEe6QioSmOybrPw"/>
     </ownedAnnotationEntries>
     <ownedDiagramElements xmi:type="diagram:DNodeList" uid="__BMN0M_tEe6QioSmOybrPw" name="«Stereotype» &#xA;SynthML :: FormalElement" outgoingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
-      <target xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
-      <semanticElements xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
+      <target xmi:type="uml:Stereotype" href="synthml.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
+      <semanticElements xmi:type="uml:Stereotype" href="synthml.profile.uml#_-PN0YMDxEe6C9dKnjVMyDQ"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
@@ -135,25 +135,25 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']"/>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="__BiMEM_tEe6QioSmOybrPw" name="guard : String [0..1]">
-        <target xmi:type="uml:Property" href="pokayoke.profile.uml#_Kxg3UMDyEe6C9dKnjVMyDQ"/>
-        <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_Kxg3UMDyEe6C9dKnjVMyDQ"/>
+        <target xmi:type="uml:Property" href="synthml.profile.uml#_Kxg3UMDyEe6C9dKnjVMyDQ"/>
+        <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_Kxg3UMDyEe6C9dKnjVMyDQ"/>
         <ownedStyle xmi:type="diagram:Square" uid="__BkBQM_tEe6QioSmOybrPw" labelAlignment="LEFT">
           <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="__BkoUM_tEe6QioSmOybrPw" name="effects : String [*]">
-        <target xmi:type="uml:Property" href="pokayoke.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
-        <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
+        <target xmi:type="uml:Property" href="synthml.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
+        <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_d-0ZsMDyEe6C9dKnjVMyDQ"/>
         <ownedStyle xmi:type="diagram:Square" uid="__BkoUc_tEe6QioSmOybrPw" labelAlignment="LEFT">
           <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_PsObYGUVEe-AGoeleYNWcA" name="atomic : Boolean [0..1] = false">
-        <target xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
-        <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
-        <semanticElements xmi:type="uml:LiteralBoolean" href="pokayoke.profile.uml#_V2SJ4GUVEe-AGoeleYNWcA"/>
+        <target xmi:type="uml:Property" href="synthml.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
+        <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_OQsRgGUVEe-AGoeleYNWcA"/>
+        <semanticElements xmi:type="uml:LiteralBoolean" href="synthml.profile.uml#_V2SJ4GUVEe-AGoeleYNWcA"/>
         <ownedStyle xmi:type="diagram:Square" uid="_PsPCcGUVEe-AGoeleYNWcA" labelAlignment="LEFT">
           <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
         </ownedStyle>
@@ -161,8 +161,8 @@
       </ownedElements>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_UKH38OX-Ee6ZO_SxkN1pjA" sourceNode="__BMN0M_tEe6QioSmOybrPw" targetNode="_qQmbImm5Ee-S7IuSQSKmQw">
-      <target xmi:type="uml:Extension" href="pokayoke.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
-      <semanticElements xmi:type="uml:Extension" href="pokayoke.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
+      <target xmi:type="uml:Extension" href="synthml.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
+      <semanticElements xmi:type="uml:Extension" href="synthml.profile.uml#_UKC_ceX-Ee6ZO_SxkN1pjA"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_UKH38eX-Ee6ZO_SxkN1pjA" targetArrow="InputFillClosedArrow" size="2" routingStyle="tree">
         <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@edgeMappings[name='PD_Extension']/@style"/>
         <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_UKH38uX-Ee6ZO_SxkN1pjA"/>
@@ -170,8 +170,8 @@
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@edgeMappings[name='PD_Extension']"/>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_qQmbImm5Ee-S7IuSQSKmQw" name="«Metaclass»&#xA;RedefinableElement" incomingEdges="_UKH38OX-Ee6ZO_SxkN1pjA">
-      <target xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
-      <semanticElements xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
+      <target xmi:type="uml:ElementImport" href="synthml.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
+      <semanticElements xmi:type="uml:ElementImport" href="synthml.profile.uml#_p8VbUGm5Ee-S7IuSQSKmQw"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
@@ -181,8 +181,8 @@
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']"/>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_V4Wk8v28Ee-zidGPk6WbNA" name="«Stereotype» &#xA;SynthML :: FormalControlFlow" outgoingEdges="_akEtNP28Ee-zidGPk6WbNA">
-      <target xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_U091UP28Ee-zidGPk6WbNA"/>
-      <semanticElements xmi:type="uml:Stereotype" href="pokayoke.profile.uml#_U091UP28Ee-zidGPk6WbNA"/>
+      <target xmi:type="uml:Stereotype" href="synthml.profile.uml#_U091UP28Ee-zidGPk6WbNA"/>
+      <semanticElements xmi:type="uml:Stereotype" href="synthml.profile.uml#_U091UP28Ee-zidGPk6WbNA"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
@@ -191,8 +191,8 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']"/>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_aAzBAP28Ee-zidGPk6WbNA" name="outgoingGuard : String [0..1]">
-        <target xmi:type="uml:Property" href="pokayoke.profile.uml#_Y65I4P28Ee-zidGPk6WbNA"/>
-        <semanticElements xmi:type="uml:Property" href="pokayoke.profile.uml#_Y65I4P28Ee-zidGPk6WbNA"/>
+        <target xmi:type="uml:Property" href="synthml.profile.uml#_Y65I4P28Ee-zidGPk6WbNA"/>
+        <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_Y65I4P28Ee-zidGPk6WbNA"/>
         <ownedStyle xmi:type="diagram:Square" uid="_aAzoEP28Ee-zidGPk6WbNA" labelAlignment="LEFT">
           <description xmi:type="style:SquareDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@subNodeMappings[name='PD_Property']/@style"/>
         </ownedStyle>
@@ -200,8 +200,8 @@
       </ownedElements>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_XQwiUv28Ee-zidGPk6WbNA" name="«Metaclass»&#xA;ControlFlow" incomingEdges="_akEtNP28Ee-zidGPk6WbNA">
-      <target xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_XDe7UP28Ee-zidGPk6WbNA"/>
-      <semanticElements xmi:type="uml:ElementImport" href="pokayoke.profile.uml#_XDe7UP28Ee-zidGPk6WbNA"/>
+      <target xmi:type="uml:ElementImport" href="synthml.profile.uml#_XDe7UP28Ee-zidGPk6WbNA"/>
+      <semanticElements xmi:type="uml:ElementImport" href="synthml.profile.uml#_XDe7UP28Ee-zidGPk6WbNA"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
@@ -211,8 +211,8 @@
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']"/>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_akEtNP28Ee-zidGPk6WbNA" sourceNode="_V4Wk8v28Ee-zidGPk6WbNA" targetNode="_XQwiUv28Ee-zidGPk6WbNA">
-      <target xmi:type="uml:Extension" href="pokayoke.profile.uml#_aj9Ycf28Ee-zidGPk6WbNA"/>
-      <semanticElements xmi:type="uml:Extension" href="pokayoke.profile.uml#_aj9Ycf28Ee-zidGPk6WbNA"/>
+      <target xmi:type="uml:Extension" href="synthml.profile.uml#_aj9Ycf28Ee-zidGPk6WbNA"/>
+      <semanticElements xmi:type="uml:Extension" href="synthml.profile.uml#_aj9Ycf28Ee-zidGPk6WbNA"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_akFUQP28Ee-zidGPk6WbNA" targetArrow="InputFillClosedArrow" size="2" routingStyle="tree">
         <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@edgeMappings[name='PD_Extension']/@style"/>
         <centerLabelStyle xmi:type="diagram:CenterLabelStyle" uid="_akFUQf28Ee-zidGPk6WbNA"/>
@@ -222,6 +222,6 @@
     <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
     <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="__AiGgM_tEe6QioSmOybrPw"/>
     <activatedLayers xmi:type="description_1:Layer" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer"/>
-    <target xmi:type="uml:Profile" href="pokayoke.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    <target xmi:type="uml:Profile" href="synthml.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
   </diagram:DSemanticDiagram>
 </xmi:XMI>
