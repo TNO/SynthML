@@ -18,8 +18,8 @@
   </packagedElement>
   <profileApplication xmi:id="14">
     <eAnnotations xmi:id="15" source="http://www.eclipse.org/uml2/2.0.0/UML">
-      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+      <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
     </eAnnotations>
-    <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
   </profileApplication>
 </uml:Model>

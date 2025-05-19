@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_lzBbwGUHEe-ozYJaiv7rRg" name="NewModel">
     <packagedElement xmi:type="uml:Class" xmi:id="_9LahoGqxEe-p_p2iQq3wLQ" name="Machine" visibility="public" classifierBehavior="_mc1bcGqyEe-p_p2iQq3wLQ" isActive="true">
       <ownedAttribute xmi:id="_cQzDQGrIEe-p_p2iQq3wLQ" name="a_executed" visibility="public">
@@ -57,25 +57,25 @@
     </packagedElement>
     <profileApplication xmi:id="_vGIMgGqyEe-p_p2iQq3wLQ">
       <eAnnotations xmi:id="_vGL24GqyEe-p_p2iQq3wLQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_7EAeUGqzEe-p_p2iQq3wLQ" guard="true" base_RedefinableElement="_sZN6UGqyEe-p_p2iQq3wLQ">
+  <SynthML:FormalElement xmi:id="_7EAeUGqzEe-p_p2iQq3wLQ" guard="true" base_RedefinableElement="_sZN6UGqyEe-p_p2iQq3wLQ">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_P8YSUHWfEe-hWPBWRQQu4g" guard="a_executed = true" base_RedefinableElement="_CR108HWfEe-hWPBWRQQu4g" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_P8YSUHWfEe-hWPBWRQQu4g" guard="a_executed = true" base_RedefinableElement="_CR108HWfEe-hWPBWRQQu4g" atomic="true">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_Wss0QICPEe-Na-k4aRHa_A" guard="true" base_RedefinableElement="_TnsyMICPEe-Na-k4aRHa_A">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_Wss0QICPEe-Na-k4aRHa_A" guard="true" base_RedefinableElement="_TnsyMICPEe-Na-k4aRHa_A">
     <effects>c_executed := true</effects>
     <effects>c_executed := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_bM0JcICPEe-Na-k4aRHa_A" guard="c_executed = true" base_RedefinableElement="_Zm6ioICPEe-Na-k4aRHa_A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_bM0JcICPEe-Na-k4aRHa_A" guard="c_executed = true" base_RedefinableElement="_Zm6ioICPEe-Na-k4aRHa_A" atomic="true">
     <effects>d_executed := true</effects>
     <effects>d_executed := true</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>
