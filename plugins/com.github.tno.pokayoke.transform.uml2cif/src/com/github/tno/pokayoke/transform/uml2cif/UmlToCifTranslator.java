@@ -76,6 +76,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 
 /** Translates UML synthesis specifications to CIF specifications. */
 public class UmlToCifTranslator extends ModelToCifTranslator {
@@ -251,6 +252,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return result;
+    }
+
+    /**
+     * Gives the one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables.
+     *
+     * @return The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables.
+     */
+    public BiMap<ActivityEdge, DiscVariable> getControlFlowMap() {
+        return ImmutableBiMap.copyOf(controlFlowMap);
     }
 
     /**
