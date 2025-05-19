@@ -17,6 +17,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.RedefinableElement;
 
@@ -64,15 +65,41 @@ public class OutgoingGuardComputation extends GuardComputation {
         // TODO compute outgoing guard for every control flow.
         for (ActivityEdge edge: translator.getActivity().getEdges()) {
             if (edge instanceof ControlFlow controlFlow) {
-                System.out.println("Computing outgoing guard for control flow to: " + controlFlow.getTarget());
+                ActivityNode target = controlFlow.getTarget();
 
-                // TODO
-                BDD uncontrolledConstraint = getTokenRemovalConstraint(uncontrolledStates, controlFlow, cifBddSpec);
-                BDD controlledConstraint = getTokenRemovalConstraint(controlledStates, controlFlow, cifBddSpec);
+                System.out.println("Computing outgoing guard for control flow to: " + target);
+
+                // TODO compute guard
+                BDD guardUncontrolled = cifBddSpec.factory.zero();
+                BDD guardControlled = cifBddSpec.factory.zero();
+
+                // TODO note that 'target' may have multiple CIF start events. We should consider them all.
+                for (CifBddEdge cifEdge: cifBddSpec.edges) {
+                    // TODO properly handle end events of atomic non-deteterministic actions.
+
+                    // What can 'cifEdge' be:
+                    // - The start+end event of an atomic deterministic action -> take edge (case 1)
+                    // - The start event of an atomic non-deterministic action -> don't take edge
+                    // - The start event of a non-atomic action -> take edge (case 1)
+                    // - The end event of an atomic non-deterministic action -> take start + end event  (case 2)
+                    // - The end event of a non-atomic action -> don't take edge
+
+                    // So:
+                    // - if 'cifEdge' is the start event of an atomic deterministic or non-atomic action, take the edge
+                    // - if 'cifEdge' is the end event of an atomic non-deterministic action, take both start+end edge
+                    // - otherwise, don't take the edge
+
+                    if (cifEdge.event.getControllable() && startEventMap.get(cifEdge.event).equals(target)) {
+                        guardUncontrolled = guardUncontrolled
+                                .orWith(applyBackward(cifEdge, uncontrolledStates.id(), uncontrolledStates));
+                        guardControlled = guardControlled
+                                .orWith(applyBackward(cifEdge, controlledStates.id(), controlledStates));
+                    }
+                }
 
                 // Try to compute an outgoing guard that is independent of internal variables.
-                BDD abstractControlled = controlledConstraint.exist(internalVars);
-                BDD abstractUncontrolled = uncontrolledConstraint.exist(internalVars);
+                BDD abstractControlled = guardControlled.exist(internalVars);
+                BDD abstractUncontrolled = guardUncontrolled.exist(internalVars);
                 BDD outgoingGuard = abstractControlled.simplify(abstractUncontrolled);
                 abstractControlled.free();
                 abstractUncontrolled.free();
@@ -84,42 +111,5 @@ public class OutgoingGuardComputation extends GuardComputation {
 
         // TODO Auto-generated method stub
         return null;
-    }
-
-    // TODO
-    private BDD getTokenRemovalConstraint(BDD states, ControlFlow controlFlow, CifBddSpec cifBddSpec) {
-        // Partition 'states' into two parts: one where the control flow holds a token, and one where it doesn't.
-        BDD tokenConstraint = getTokenConstraint(controlFlow, cifBddSpec);
-        BDD statesWithToken = states.and(tokenConstraint);
-        BDD statesWithoutToken = states.id().andWith(tokenConstraint.not());
-        tokenConstraint.free();
-
-        // Find all states in 'statesWithToken' in which a transition is enabled that leads to 'statesWithoutToken'.
-        BDD exitStates = cifBddSpec.factory.zero();
-
-        for (CifBddEdge edge: cifBddSpec.edges) {
-            // TODO special case: end events of atomic nondeterministic actions.
-            BDD sourceStates = applyBackward(edge, statesWithoutToken.id(), states);
-            exitStates = exitStates.orWith(sourceStates.andWith(statesWithToken.id()));
-        }
-
-        // Free intermediate BDDs.
-        statesWithToken.free();
-        statesWithoutToken.free();
-
-        return exitStates;
-    }
-
-    private BDD getTokenConstraint(ControlFlow controlFlow, CifBddSpec cifBddSpec) {
-        // Construct a CIF predicate expressing that the given control flow must hold a token.
-        Expression constraint = CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(),
-                translator.getControlFlowMap().get(controlFlow));
-
-        // Convert the CIF constraint to a BDD predicate.
-        try {
-            return CifToBddConverter.convertPred(constraint, false, cifBddSpec);
-        } catch (UnsupportedPredicateException e) {
-            throw new RuntimeException("Unsupported predicate: " + e.getMessage());
-        }
     }
 }
