@@ -43,6 +43,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocation
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
+import com.github.tno.pokayoke.transform.activitysynthesis.OutgoingGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -307,6 +308,9 @@ public class FullSynthesisApp {
         } finally {
             AppEnv.unregisterApplication();
         }
+
+        // TODO compute guards
+        new OutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
