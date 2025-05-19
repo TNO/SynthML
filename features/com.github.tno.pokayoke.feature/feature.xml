@@ -110,7 +110,7 @@
          unpack="false"/>
 
    <plugin
-         id="com.github.tno.pokayoke.uml.profile.util"
+         id="com.github.tno.synthml.uml.profile.util"
          download-size="0"
          install-size="0"
          version="0.0.0"

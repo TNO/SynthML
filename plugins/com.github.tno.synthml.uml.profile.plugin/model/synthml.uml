@@ -6,7 +6,7 @@
         <eAnnotations xmi:id="_zgoqcTJfEfC83LEDTNCw2g" source="UMLDesignerProfileVersion">
           <details xmi:id="_zgoqcjJfEfC83LEDTNCw2g" key="Version" value="0.0.8"/>
           <details xmi:id="_zgoqczJfEfC83LEDTNCw2g" key="Date" value="2025-05-16"/>
-          <details xmi:id="_zgoqdDJfEfC83LEDTNCw2g" key="Author" value="Poka Yoke"/>
+          <details xmi:id="_zgoqdDJfEfC83LEDTNCw2g" key="Author" value="SynthML"/>
           <details xmi:id="_zgoqdTJfEfC83LEDTNCw2g" key="Copyright" value="TNO"/>
           <details xmi:id="_zgoqdjJfEfC83LEDTNCw2g" key="Comment" value="UML profile for SynthML modeling"/>
         </eAnnotations>

@@ -21,9 +21,9 @@ import org.obeonetwork.dsl.uml2.core.internal.services.DirectEditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
+import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

@@ -15,7 +15,7 @@ import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.Interval;
 import org.eclipse.uml2.uml.IntervalConstraint;
 
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
 
 /**
  * A dependency orderer for abstract activities, which determines the order in which abstract activities should be

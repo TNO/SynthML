@@ -25,7 +25,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="_6P8FUM_tEe6QioSmOybrPw">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="PokaYoke Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1747404640367">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="SynthML Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1747404640367">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
         <target xmi:type="uml:Profile" href="synthml.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
       </ownedRepresentationDescriptors>
