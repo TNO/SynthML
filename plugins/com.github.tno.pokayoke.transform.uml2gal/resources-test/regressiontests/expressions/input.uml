@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_qitPAPyxEe6PXdoEuB4CNA" name="Expressions">
     <packagedElement xmi:type="uml:Class" xmi:id="_vw5LIPyxEe6PXdoEuB4CNA" name="Context" visibility="public" classifierBehavior="_aLnRgPzBEe6_EqZz5uEyNA" isActive="true">
       <ownedAttribute xmi:id="_3LJWMPyxEe6PXdoEuB4CNA" name="myBool" visibility="public">
@@ -34,14 +34,14 @@
     </packagedElement>
     <profileApplication xmi:id="_JgrIwPzCEe6_EqZz5uEyNA">
       <eAnnotations xmi:id="_JgtlAPzCEe6_EqZz5uEyNA" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = Left" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA" atomic="true">
+  <SynthML:FormalElement xmi:id="_JguzIPzCEe6_EqZz5uEyNA" guard="not myBool and myBool = false and myEnum = Left" base_RedefinableElement="_jx_V4PzBEe6_EqZz5uEyNA" atomic="true">
     <effects>myEnum := Right,&#xD;
 myBool := (true != not true) and (myEnum = Right or myBool = (false and false))&#xD;
 </effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

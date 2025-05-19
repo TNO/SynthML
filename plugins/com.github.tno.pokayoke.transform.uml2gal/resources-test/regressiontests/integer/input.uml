@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_mxOBEPGSEe6asLMew-pIxQ" name="MyModel">
     <packagedElement xmi:type="uml:Class" xmi:id="_ti5wQPGSEe6asLMew-pIxQ" name="Context" visibility="public" classifierBehavior="_15g14PGSEe6asLMew-pIxQ" isActive="true">
       <ownedAttribute xmi:id="_xn4ooPGSEe6asLMew-pIxQ" name="intA1" visibility="public" type="_VD050AetEe-uToQqJyLVrg">
@@ -62,14 +62,14 @@
     </packagedElement>
     <profileApplication xmi:id="_KNaz8PGTEe6asLMew-pIxQ">
       <eAnnotations xmi:id="_KNdQMPGTEe6asLMew-pIxQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_KNd3QPGTEe6asLMew-pIxQ" guard="intA2 &lt; 8" base_RedefinableElement="_CVWrgPGTEe6asLMew-pIxQ" atomic="true">
+  <SynthML:FormalElement xmi:id="_KNd3QPGTEe6asLMew-pIxQ" guard="intA2 &lt; 8" base_RedefinableElement="_CVWrgPGTEe6asLMew-pIxQ" atomic="true">
     <effects>intA1 := intA1 + 1,&#xD;
 intB1 := 16&#xD;
 </effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>
