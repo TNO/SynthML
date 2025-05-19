@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.uml.profile.design;
+package com.github.tno.synthml.uml.profile.design;
 
 import java.util.Collection;
 

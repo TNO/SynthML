@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.uml.profile.design;
+package com.github.tno.synthml.uml.profile.design;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +22,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
     /** The plug-in ID. */
-    public static final String PLUGIN_ID = "com.github.tno.pokayoke.uml.profile.design";
+    public static final String PLUGIN_ID = "com.github.tno.synthml.uml.profile.design";
 
     /** The shared instance. */
     private static Activator plugin;

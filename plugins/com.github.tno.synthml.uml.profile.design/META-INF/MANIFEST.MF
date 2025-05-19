@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: com.github.tno.pokayoke.uml.profile.design;singleton:=true
+Bundle-SymbolicName: com.github.tno.synthml.uml.profile.design;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Export-Package: com.github.tno.pokayoke.uml.profile.design
-Bundle-Activator: com.github.tno.pokayoke.uml.profile.design.Activator
+Export-Package: com.github.tno.synthml.uml.profile.design
+Bundle-Activator: com.github.tno.synthml.uml.profile.design.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui;bundle-version="3.203.100",
  org.eclipse.core.runtime;bundle-version="3.27.0",
@@ -26,4 +26,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.203.100",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: %providerName
-Automatic-Module-Name: com.github.tno.pokayoke.uml.profile.design
+Automatic-Module-Name: com.github.tno.synthml.uml.profile.design

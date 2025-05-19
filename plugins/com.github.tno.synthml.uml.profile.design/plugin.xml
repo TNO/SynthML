@@ -2,8 +2,8 @@
 <?eclipse version="3.0"?>
 <plugin>
   <extension point="org.eclipse.sirius.componentization">
-    <component class="com.github.tno.pokayoke.uml.profile.design.Activator"
-               id="com.github.tno.pokayoke.uml.profile.design"
+    <component class="com.github.tno.synthml.uml.profile.design.Activator"
+               id="com.github.tno.synthml.uml.profile.design"
 	       name="pokayoke">
     </component>
   </extension>

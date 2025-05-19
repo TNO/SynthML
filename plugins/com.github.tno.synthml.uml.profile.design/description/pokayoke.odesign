@@ -8,7 +8,7 @@
       <metamodel href="../../com.github.tno.pokayoke.uml.profile.plugin/model/PokaYoke.ecore#/"/>
       <layers name="PY_Decorations" optional="false">
         <decorationDescriptionsSet>
-          <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="DC_FormalElement" preconditionExpression="service:element.decorateFormalElement(diagram)" imageExpression="/com.github.tno.pokayoke.uml.profile.design/icons/pokayoke3.png">
+          <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="DC_FormalElement" preconditionExpression="service:element.decorateFormalElement(diagram)" imageExpression="/com.github.tno.synthml.uml.profile.design/icons/pokayoke3.png">
             <mappings xsi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_CallBehaviorAction']"/>
             <mappings xsi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_OpaqueAction']"/>
           </decorationDescriptions>
@@ -201,7 +201,7 @@
         </toolSections>
       </layers>
     </ownedRepresentationExtensions>
-    <ownedJavaExtensions qualifiedClassName="com.github.tno.pokayoke.uml.profile.design.PokaYokeProfileServices"/>
+    <ownedJavaExtensions qualifiedClassName="com.github.tno.synthml.uml.profile.design.PokaYokeProfileServices"/>
   </ownedViewpoints>
   <extensions xsi:type="properties:ViewExtensionDescription" name="PokaYokeProperties">
     <metamodels href="http://www.eclipse.org/uml2/5.0.0/UML#/"/>
