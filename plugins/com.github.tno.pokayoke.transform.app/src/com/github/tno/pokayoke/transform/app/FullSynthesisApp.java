@@ -372,20 +372,9 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // Post-process the CIF specification to eliminate all if-updates.
-        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
-        elimIfUpdates.transform(cifSpec);
-        Path cifPostProcessedSpecPath = localOutputPath.resolve(filePrefix + "99.02.postprocessed.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), localOutputPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-
         // Perform state space generation.
-        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + "99.04.ctrlsys.statespace.cif");
-        String[] stateSpaceGenerationArgs = new String[] {cifPostProcessedSpecPath.toString(),
+        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + "99.02.ctrlsys.statespace.cif");
+        String[] stateSpaceGenerationArgs = new String[] {cifSpecPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
         AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
@@ -397,9 +386,8 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // Find state space post-synthesis chain file.
-        Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
-        Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(stateSpacePostSynthChainPath);
+        // Load state space post-synthesis chain file.
+        Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
         // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
