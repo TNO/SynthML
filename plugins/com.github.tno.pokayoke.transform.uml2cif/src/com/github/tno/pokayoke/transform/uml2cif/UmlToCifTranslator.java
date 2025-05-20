@@ -501,7 +501,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 || umlElement instanceof OpaqueBehavior)
         {
             // Add the event to the corresponding normalized name. More events may correspond to the same name.
-            normalizedNamesToEvents.computeIfAbsent(normalizeNames(umlAction, "", 0), k -> new ArrayList<>())
+            normalizedNamesToEvents.computeIfAbsent(normalizeNames(umlAction, ""), k -> new ArrayList<>())
                     .add(cifStartEvent);
         } else {
             internalEvents.add(cifStartEvent);
@@ -544,7 +544,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         || umlElement instanceof OpaqueBehavior)
                 {
                     normalizedNamesToEvents
-                            .computeIfAbsent(normalizeNames(umlAction, outcomeSuffix, i + 1), k -> new ArrayList<>())
+                            .computeIfAbsent(normalizeNames(umlAction, outcomeSuffix + String.valueOf(i + 1)),
+                                    k -> new ArrayList<>())
                             .add(cifEndEvent);
                 } else {
                     internalEvents.add(cifEndEvent);
@@ -1514,11 +1515,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * element.
      *
      * @param umlElement The UML element.
-     * @param extraString A string that is added to the normalized name; it can be empty.
-     * @param resultNumber An integer that marks the effect number, if the UML element has effects.
+     * @param postfix A string that is added to the normalized name; it can be empty.
      * @return The normalized name of the UML element.
      */
-    private String normalizeNames(NamedElement umlElement, String extraString, int resultNumber) {
+    private String normalizeNames(NamedElement umlElement, String postfix) {
         // Get to the (nested) called behavior.
         while (umlElement instanceof CallBehaviorAction cbAction) {
             umlElement = cbAction.getBehavior();
@@ -1526,7 +1526,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // If name contains the post-synthesis identifier for the start or end of a non-atomic action, replace it with
         // its original non-atomic action identifier. The identifiers are defined in
-        // PostProcessActivity#rewriteLeftoverNonAtomicActions.
+        // PostProcessActivity.rewriteLeftoverNonAtomicActions.
         String elementName = umlElement.getName();
         if (elementName.contains("_start")) {
             umlElement.setName(elementName.replace("_start", ""));
@@ -1535,17 +1535,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // If this element has effects, return the element name with the effect number.
-        if (resultNumber > 0) {
-            return "__UML_element_" + umlElement.getName() + extraString + String.valueOf(resultNumber);
-        } else {
+        if (postfix.isEmpty()) {
             return "__UML_element_" + umlElement.getName();
+        } else {
+            return "__UML_element_" + umlElement.getName() + postfix;
         }
     }
 
     /**
      * Create the token configuration for the initial node of the activity: the token is placed on the control flow
-     * whose source is the initial node. Add also its incoming guards, if present. Assumes the initial node has a unique
-     * outgoing control flow, as per the validation model requirement.
+     * whose source is the initial node. Add also its incoming guards, if present.
      *
      * @param node The UML activity initial node.
      */
