@@ -32,22 +32,22 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     }
 
     /**
-     * Prepares two CIF models for the language equivalence check. Performs sanity checks, removes irrelevant state
-     * annotations, and maps the events of one automaton to the events of the other. Returns a record containing the
-     * mapped events, and the filtered state annotations.
+     * Prepares two CIF models for the language equivalence check. Performs sanity checks, removes internal variables
+     * from state annotations, and maps the events of one automaton to the events of the other. Returns a record
+     * containing the mapped events, and the filtered state annotations.
      *
      * @param model1 The first CIF model.
      * @param namesToEvents1 The map from names of UML elements to CIF events, for the first automaton.
-     * @param epsilonEvents1 The set of events that represent epsilon transitions, for the first automaton.
+     * @param tauEvents1 The set of events that represent tau transitions, for the first automaton.
      * @param model2 The second CIF model.
      * @param namesToEvents2 The map from names of UML elements to CIF events, for the second automaton.
-     * @param epsilonEvents2 The set of events that represent epsilon transitions, for the second automaton.
+     * @param tauEvents2 The set of events that represent tau transitions, for the second automaton.
      * @param synthVariableNames The set containing synthesis variables names.
      * @return The model preparation result.
      */
     public static ModelPreparationResult prepareModels(Specification model1, Map<String, List<Event>> namesToEvents1,
-            Set<Event> epsilonEvents1, Specification model2, Map<String, List<Event>> namesToEvents2,
-            Set<Event> epsilonEvents2, Set<String> synthVariableNames)
+            Set<Event> tauEvents1, Specification model2, Map<String, List<Event>> namesToEvents2, Set<Event> tauEvents2,
+            Set<String> synthVariableNames)
     {
         // Sanity checks. The models should only have one component, an automaton.
         Verify.verify(model1.getComponents().size() == 1, "Found more than one component.");
@@ -58,13 +58,13 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Automaton automaton1 = (Automaton)model1.getComponents().get(0);
         Automaton automaton2 = (Automaton)model2.getComponents().get(0);
 
-        // Filter irrelevant information from state annotations.
+        // Filter internal variables from state annotations.
         Map<Location, Annotation> filteredStateAnn1 = cleanStateAnnotations(model1, synthVariableNames);
         Map<Location, Annotation> filteredStateAnn2 = cleanStateAnnotations(model2, synthVariableNames);
 
-        // Sanity check: check that the epsilon and non-epsilon events represent the entire automaton alphabet.
-        Verify.verify(checkAlphabetCoverage(automaton1, namesToEvents1, epsilonEvents1));
-        Verify.verify(checkAlphabetCoverage(automaton2, namesToEvents2, epsilonEvents2));
+        // Sanity check: check that the tau and non-tau events represent the entire automaton alphabet.
+        Verify.verify(checkAlphabetCoverage(automaton1, namesToEvents1, tauEvents1));
+        Verify.verify(checkAlphabetCoverage(automaton2, namesToEvents2, tauEvents2));
 
         // Filter unused events from automaton alphabet.
         Set<String> unusedEvents1 = cleanAutomatonAlphabet(automaton1);
@@ -88,7 +88,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         locToAnnotations.values().stream().forEach(
                 a -> Verify.verify(a.size() == 1, "Found state that doesn't have exactly one state annotation."));
 
-        // Clean the state annotations from irrelevant state info.
+        // Clean the state annotations from internal variables.
         Map<Location, Annotation> locToFilteredAnnotations = filterRelevantAnnotations(locToAnnotations,
                 synthVariableNames);
 
@@ -125,13 +125,13 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     }
 
     private static boolean checkAlphabetCoverage(Automaton automa, Map<String, List<Event>> namesToEvents,
-            Set<Event> epsilonEvents)
+            Set<Event> tauEvents)
     {
-        // Check that the alphabet of the automaton is equal to the union of non-epsilon and the epsilon events. This
-        // check is performed by absolute names, since they are different objects.
+        // Check that the alphabet of the automaton is equal to the union of non-tau and the tau events. This check is
+        // performed by absolute names, since they are different objects.
         Set<Event> eventsMerged = new LinkedHashSet<>();
         namesToEvents.values().forEach(e -> eventsMerged.addAll(e));
-        eventsMerged.addAll(epsilonEvents);
+        eventsMerged.addAll(tauEvents);
 
         Set<Event> automaAlphabet = CifEventUtils.getAlphabet(automa);
         Set<String> absNamesAutoma = automaAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
