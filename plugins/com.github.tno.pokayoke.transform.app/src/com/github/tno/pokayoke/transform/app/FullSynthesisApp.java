@@ -361,8 +361,41 @@ public class FullSynthesisApp {
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
         // Translate final UML model to CIF and get its state space.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(translator.getActivity(),
-                filePrefix + ".99", localOutputPath);
+        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
+                TranslationPurpose.LANGUAGE_EQUIVALENCE);
+        Specification cifSpec = umlToCifTranslatorPostSynth.translate();
+        Path cifSpecPath = localOutputPath.resolve(filePrefix + "99.01.finalUmlToCif.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), localOutputPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
+        // Post-process the CIF specification to eliminate all if-updates.
+        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
+        elimIfUpdates.transform(cifSpec);
+        Path cifPostProcessedSpecPath = localOutputPath.resolve(filePrefix + "99.02.postprocessed.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), localOutputPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
+        // Perform state space generation.
+        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + "99.04.ctrlsys.statespace.cif");
+        String[] stateSpaceGenerationArgs = new String[] {cifPostProcessedSpecPath.toString(),
+                "--output=" + cifStateSpacePath.toString()};
+        AppStream explorerAppStream = new MemAppStream();
+        AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
+                explorerAppStream, explorerAppStream);
+        ExplorerApplication explorerApp = new ExplorerApplication(explorerAppStreams);
+        int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
+        if (exitCode != 0) {
+            throw new RuntimeException(
+                    "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
+        }
 
         // Find state space post-synthesis chain file.
         Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
@@ -392,48 +425,5 @@ public class FullSynthesisApp {
                 umlToCifTranslatorPostSynth.getEventsToIgnore(), result.pairedEvents());
 
         return areEquivalentModels;
-    }
-
-    private static UmlToCifTranslator translateAndGenerateStateSpace(Activity activity, String filePrefix,
-            Path outputFolderPath) throws CoreException
-    {
-        // Translate UML file to CIF.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(activity,
-                TranslationPurpose.LANGUAGE_EQUIVALENCE);
-        Specification cifSpec = umlToCifTranslatorPostSynth.translate();
-        Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.finalUmlToCif.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-
-        // Post-process the CIF specification to eliminate all if-updates.
-        ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
-        elimIfUpdates.transform(cifSpec);
-        Path cifPostProcessedSpecPath = outputFolderPath.resolve(filePrefix + ".02.postprocessed.cif");
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
-
-        // Perform state space generation.
-        Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif");
-        String[] stateSpaceGenerationArgs = new String[] {cifPostProcessedSpecPath.toString(),
-                "--output=" + cifStateSpacePath.toString()};
-        AppStream explorerAppStream = new MemAppStream();
-        AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
-                explorerAppStream, explorerAppStream);
-        ExplorerApplication explorerApp = new ExplorerApplication(explorerAppStreams);
-        int exitCode = explorerApp.run(stateSpaceGenerationArgs, false);
-        if (exitCode != 0) {
-            throw new RuntimeException(
-                    "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
-        }
-
-        return umlToCifTranslatorPostSynth;
     }
 }
