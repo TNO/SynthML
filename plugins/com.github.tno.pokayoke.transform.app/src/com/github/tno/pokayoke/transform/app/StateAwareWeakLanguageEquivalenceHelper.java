@@ -94,12 +94,13 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         for (Entry<Location, List<Annotation>> locToAnnotation: locToAnnotations.entrySet()) {
             Location loc = locToAnnotation.getKey();
             List<Annotation> annotations = locToAnnotation.getValue();
+            Annotation annotation = annotations.get(0);
 
             // Filter and create new annotation.
-            List<AnnotationArgument> filteredArgs = annotations.get(0).getArguments().stream()
+            List<AnnotationArgument> filteredArgs = annotation.getArguments().stream()
                     .filter(arg -> externalVariableNames.contains(arg.getName())).toList();
-            Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredArgs, annotations.get(0).getName(),
-                    annotations.get(0).getPosition());
+            Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredArgs, annotation.getName(),
+                    annotation.getPosition());
             locToFilteredAnnotations.put(loc, filteredAnnotation);
         }
 
