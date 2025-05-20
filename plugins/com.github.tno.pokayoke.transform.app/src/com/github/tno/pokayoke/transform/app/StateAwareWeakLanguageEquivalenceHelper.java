@@ -33,21 +33,21 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
     /**
      * Prepares two CIF models for the language equivalence check. Performs sanity checks, removes internal variables
-     * from state annotations, and maps the events of one automaton to the events of the other. Returns a record
+     * from state annotations, and maps the events of one state space to the events of the other. Returns a record
      * containing the mapped events, and the filtered state annotations.
      *
      * @param model1 The first CIF model.
-     * @param namesToEvents1 The map from names of UML elements to CIF events, for the first automaton.
-     * @param tauEvents1 The set of events that represent tau transitions, for the first automaton.
+     * @param namesToEvents1 The map from names of UML elements to CIF events, for the first state space.
+     * @param tauEvents1 The set of events that represent tau transitions, for the first state space.
      * @param model2 The second CIF model.
-     * @param namesToEvents2 The map from names of UML elements to CIF events, for the second automaton.
-     * @param tauEvents2 The set of events that represent tau transitions, for the second automaton.
-     * @param synthVariableNames The set containing synthesis variables names.
+     * @param namesToEvents2 The map from names of UML elements to CIF events, for the second state space.
+     * @param tauEvents2 The set of events that represent tau transitions, for the second state space.
+     * @param externalVariableNames The set containing external variables names.
      * @return The model preparation result.
      */
     public static ModelPreparationResult prepareModels(Specification model1, Map<String, List<Event>> namesToEvents1,
             Set<Event> tauEvents1, Specification model2, Map<String, List<Event>> namesToEvents2, Set<Event> tauEvents2,
-            Set<String> synthVariableNames)
+            Set<String> externalVariableNames)
     {
         // Sanity checks. The models should only have one component, an automaton.
         Verify.verify(model1.getComponents().size() == 1, "Found more than one component.");
@@ -55,20 +55,20 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Verify.verify(model1.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
         Verify.verify(model2.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
 
-        Automaton automaton1 = (Automaton)model1.getComponents().get(0);
-        Automaton automaton2 = (Automaton)model2.getComponents().get(0);
+        Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
+        Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
 
         // Filter internal variables from state annotations.
-        Map<Location, Annotation> filteredStateAnn1 = cleanStateAnnotations(model1, synthVariableNames);
-        Map<Location, Annotation> filteredStateAnn2 = cleanStateAnnotations(model2, synthVariableNames);
+        Map<Location, Annotation> filteredStateAnn1 = cleanStateAnnotations(model1, externalVariableNames);
+        Map<Location, Annotation> filteredStateAnn2 = cleanStateAnnotations(model2, externalVariableNames);
 
-        // Sanity check: check that the tau and non-tau events represent the entire automaton alphabet.
-        Verify.verify(checkAlphabetCoverage(automaton1, namesToEvents1, tauEvents1));
-        Verify.verify(checkAlphabetCoverage(automaton2, namesToEvents2, tauEvents2));
+        // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
+        Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1));
+        Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2));
 
-        // Filter unused events from automaton alphabet.
-        Set<String> unusedEvents1 = cleanAutomatonAlphabet(automaton1);
-        Set<String> unusedEvents2 = cleanAutomatonAlphabet(automaton2);
+        // Filter unused events from the state space alphabet.
+        Set<String> unusedEvents1 = removeUnusedEvents(stateSpace1);
+        Set<String> unusedEvents2 = removeUnusedEvents(stateSpace2);
 
         // Check that the two alphabets are compatible, and create a set of pairs with the corresponding list of events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = getPairedEvents(namesToEvents1, unusedEvents1,
@@ -78,7 +78,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     }
 
     private static Map<Location, Annotation> cleanStateAnnotations(Specification model,
-            Set<String> synthVariableNames)
+            Set<String> externalVariableNames)
     {
         // Get state annotations for the CIF model.
         Map<Location, List<Annotation>> locToAnnotations = StateAnnotationHelper.getStateAnnotations(model);
@@ -90,13 +90,13 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
         // Clean the state annotations from internal variables.
         Map<Location, Annotation> locToFilteredAnnotations = filterRelevantAnnotations(locToAnnotations,
-                synthVariableNames);
+                externalVariableNames);
 
         return locToFilteredAnnotations;
     }
 
     private static Map<Location, Annotation> filterRelevantAnnotations(Map<Location, List<Annotation>> locToAnnotations,
-            Set<String> synthVariableNames)
+            Set<String> externalVariableNames)
     {
         Map<Location, Annotation> locToFilteredAnnotations = new LinkedHashMap<>();
 
@@ -106,7 +106,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
             // Filter and create new annotation.
             List<AnnotationArgument> filteredList = annotations.get(0).getArguments().stream()
-                    .filter(arg -> synthVariableNames.contains(arg.getName())).toList();
+                    .filter(arg -> externalVariableNames.contains(arg.getName())).toList();
             Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredList, annotations.get(0).getName(),
                     annotations.get(0).getPosition());
             locToFilteredAnnotations.put(loc, filteredAnnotation);
@@ -115,7 +115,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
-    private static Set<String> cleanAutomatonAlphabet(Automaton automa) {
+    private static Set<String> removeUnusedEvents(Automaton automa) {
         // Removes the unused events from the alphabet, and returns the unused events names.
         Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(automa);
         automa.setAlphabet(null);
@@ -127,7 +127,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     private static boolean checkAlphabetCoverage(Automaton automa, Map<String, List<Event>> namesToEvents,
             Set<Event> tauEvents)
     {
-        // Check that the alphabet of the automaton is equal to the union of non-tau and the tau events. This check is
+        // Check that the alphabet of the state space is equal to the union of non-tau and the tau events. This check is
         // performed by absolute names, since they are different objects.
         Set<Event> eventsMerged = new LinkedHashSet<>();
         namesToEvents.values().forEach(e -> eventsMerged.addAll(e));
@@ -142,6 +142,17 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return absNamesAutoma.equals(absNamesEventsMerged);
     }
 
+    /**
+     * Compute the events from two state spaces that represent the same UML element, and pair them together. If the
+     * events in one state space are not related to any event in the other state space, return 'null' to indicate that
+     * the two state spaces are not compatible.
+     *
+     * @param namesToEvents1 The map from the name of the UML element to the list of events related to it.
+     * @param unusedEvents1 Names of events that are not used in the first state space.
+     * @param namesToEvents2 The map from the name of the UML element to the list of events related to it.
+     * @param unusedEvents2 Names of events that are not used in the second state space.
+     * @return A set of paired (lists of) events.
+     */
     private static Set<Pair<List<Event>, List<Event>>> getPairedEvents(Map<String, List<Event>> namesToEvents1,
             Set<String> unusedEvents1, Map<String, List<Event>> namesToEvents2, Set<String> unusedEvents2)
     {
@@ -156,6 +167,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                     .toList();
             List<Event> usedEvents2 = events2.stream().filter(e -> !unusedEvents2.contains(CifTextUtils.getAbsName(e)))
                     .toList();
+
             // Remove the item from the second map, to later check that all items from the second map have been looped
             // through.
             namesToEvents2.remove(umlElementName);
@@ -171,16 +183,16 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             }
         }
 
-        // If second map is not empty, the two automata are not compatible.
+        // If second map is not empty, the two state spaces are not compatible.
         return namesToEvents2.isEmpty() ? pairedEvents : null;
     }
 
     /**
      * The result of the manipulation of the two CIF models.
      *
-     * @param pairedEvents The set containing the corresponding events from the two automata, stored in pairs.
-     * @param stateAnnotations1 The filtered state annotations for the first automaton.
-     * @param stateAnnotations2 The filtered state annotations for the second automaton.
+     * @param pairedEvents The set containing the corresponding events from the two state spaces, stored in pairs.
+     * @param stateAnnotations1 The filtered state annotations for the first state space.
+     * @param stateAnnotations2 The filtered state annotations for the second state space.
      */
     record ModelPreparationResult(Set<Pair<List<Event>, List<Event>>> pairedEvents,
             Map<Location, Annotation> stateAnnotations1, Map<Location, Annotation> stateAnnotations2)
