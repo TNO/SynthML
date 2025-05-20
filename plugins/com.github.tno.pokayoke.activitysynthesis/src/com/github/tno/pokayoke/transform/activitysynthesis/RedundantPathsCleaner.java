@@ -6,18 +6,15 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -30,10 +27,12 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.app.framework.AppEnv;
 
 import com.google.common.base.Verify;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * Removes redundant paths from any initial CIF locations to any CIF marked location. Assumes the input is generated
- * from CIF state space exploration.
+ * from the CIF state space explorer.
  */
 public class RedundantPathsCleaner {
     /** The set of locations that belong to a shortest path; these are called essential or non-redundant. */
@@ -48,14 +47,11 @@ public class RedundantPathsCleaner {
     /** The set of all marked locations of the automaton. */
     private Set<Location> markedLocs = new LinkedHashSet<>();
 
-    /** The map from any location to all one-step forward reachable locations. */
-    private Map<Location, Set<Location>> forwardNeighbors = new LinkedHashMap<>();
+    /** The map from locations to their children and the connecting edges. */
+    Map<Location, Map<Location, Edge>> childrenToEdges = new LinkedHashMap<>();
 
-    /** The map from any location to all one-step backward reachable locations. */
-    private Map<Location, Set<Location>> backwardNeighbors = new LinkedHashMap<>();
-
-    /** The map from a pair of locations to the set of edges connecting them. */
-    private Map<Pair<Location, Location>, Set<Edge>> neighborsEdges = new LinkedHashMap<>();
+    /** The one-to-one mapping from locations to the corresponding NodeInfo object. */
+    BiMap<Location, NodeInfo> locationNodeInfoMap = HashBiMap.create();
 
     public RedundantPathsCleaner() {
         // Static class.
@@ -84,17 +80,17 @@ public class RedundantPathsCleaner {
         Verify.verify(initialLocs != null && !initialLocs.isEmpty(), "Found empty initial set.");
         Verify.verify(markedLocs != null && !markedLocs.isEmpty(), "Found empty target set.");
 
-        // Compute a map of forward and backward neighbors for each location.
-        computeNeighbors(automa.getLocations());
+        // Create NodeInfo objects for all locations.
+        createNodeInfos(automa.getLocations());
 
+        // Call the minimum sub-graph algorithm.
+        Set<NodeInfo> markedNodeInfo = markedLocs.stream().map(m -> locationNodeInfoMap.get(m))
+                .collect(Collectors.toSet());
+        computeMinSubGraph(markedNodeInfo);
+
+        // Mark the minimum sub-graphs as essential.
         for (Location initialLoc: initialLocs) {
-            // Compute shortest path(s) to marked locations. Get the marked location(s) and the corresponding distance
-            // map(s).
-            Map<Location, Integer> minDistance = computeUncontrollableAwareMinDistance(initialLoc,
-                    automa.getLocations());
-
-            // Mark the shortest paths as essential.
-            markEssentialLocationAndEdges(initialLoc, minDistance);
+            markEssentialLocationAndEdges(initialLoc);
         }
 
         // Remove every non-essential, redundant element.
@@ -125,206 +121,139 @@ public class RedundantPathsCleaner {
         }
     }
 
-    private void computeNeighbors(List<Location> locations) {
-        // Computes the forward and backward neighbors for every location.
+    private void createNodeInfos(List<Location> locations) {
+        // For all locations, create a NodeInfo object, and fills its fields with empty values. Store it in a map
+        // for later handling.
         for (Location loc: locations) {
+            NodeInfo emptyNodeInfo = new NodeInfo(loc, new LinkedHashSet<>(), new LinkedHashSet<>(),
+                    new LinkedHashMap<>(), new ArrayList<>());
+            emptyNodeInfo.getMinSubGraphs().add(new LinkedHashSet<>());
+            locationNodeInfoMap.put(loc, emptyNodeInfo);
+        }
+
+        for (Location loc: locations) {
+            // Computes the forward and backward neighbors for every location.
+            NodeInfo currentNodeInfo = locationNodeInfoMap.get(loc);
+
             for (Edge edge: loc.getEdges()) {
+                // Update current NodeInfo fields.
                 if (CifEdgeUtils.isSelfLoop(edge)) {
-                    forwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(loc);
-                    backwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(loc);
-                    neighborsEdges.computeIfAbsent(Pair.of(loc, loc), v -> new LinkedHashSet<>()).add(edge);
+                    currentNodeInfo.getChildren().add(currentNodeInfo);
+                    currentNodeInfo.getParents().add(currentNodeInfo);
+                    currentNodeInfo.getChildrenToEdges().computeIfAbsent(currentNodeInfo, v -> new LinkedHashSet<>())
+                            .add(edge);
                 } else {
-                    forwardNeighbors.computeIfAbsent(loc, v -> new LinkedHashSet<>()).add(CifEdgeUtils.getTarget(edge));
-                    backwardNeighbors.computeIfAbsent(CifEdgeUtils.getTarget(edge), v -> new LinkedHashSet<>())
-                            .add(loc);
-                    neighborsEdges
-                            .computeIfAbsent(Pair.of(loc, CifEdgeUtils.getTarget(edge)), v -> new LinkedHashSet<>())
+                    NodeInfo targetNodeInfo = locationNodeInfoMap.get(CifEdgeUtils.getTarget(edge));
+                    currentNodeInfo.getChildren().add(targetNodeInfo);
+                    targetNodeInfo.getParents().add(currentNodeInfo);
+                    currentNodeInfo.getChildrenToEdges().computeIfAbsent(targetNodeInfo, v -> new LinkedHashSet<>())
                             .add(edge);
                 }
             }
-
-            // If location is initial (marked), set backwards (forward) neighbors to the empty set.
-            if (initialLocs.contains(loc) && backwardNeighbors.get(loc) == null) {
-                backwardNeighbors.put(loc, new LinkedHashSet<>());
-            }
-            if (markedLocs.contains(loc) && forwardNeighbors.get(loc) == null) {
-                forwardNeighbors.put(loc, new LinkedHashSet<>());
-            }
         }
     }
 
-    private Map<Location, Integer> computeUncontrollableAwareMinDistance(Location initialLoc,
-            List<Location> allLocations)
-    {
-        Map<Location, Integer> minDistance = allLocations.stream()
-                .collect(Collectors.toMap(l -> l, l -> Integer.MAX_VALUE));
+    /**
+     * Description. TODO
+     *
+     * @param markedNodeInfo The set containing the NodeInfo objects corresponding to marked locations.
+     */
+    private void computeMinSubGraph(Set<NodeInfo> markedNodeInfo) {
+        // Run a BFS-like algorithm and update the minimum sub-graph of each NodeInfo object.
+        Queue<NodeInfo> queue = new LinkedList<>();
+        queue.addAll(markedNodeInfo);
 
-        for (Location markedLoc: markedLocs) {
-            // Get the minimum distances from the marked location to every other location.
-            Map<Location, Integer> currDistance = dijkstra(markedLoc, allLocations, backwardNeighbors);
-
-            // Update minimum distance map.
-            if (currDistance.get(initialLoc) < minDistance.get(initialLoc)) {
-                // Replace map.
-                minDistance = currDistance;
-            } else if (currDistance.get(initialLoc) == minDistance.get(initialLoc)) {
-                // Merge maps.
-                for (Location loc: allLocations) {
-                    if (currDistance.get(loc) < minDistance.get(loc)) {
-                        minDistance.put(loc, currDistance.get(loc));
-                    }
-                }
-            }
-        }
-
-        // Sanity check: there exists at least one path to a marked location.
-        Verify.verify(minDistance.get(initialLoc) < Integer.MAX_VALUE);
-
-        // Use a BFS to update the distances when an uncontrollable edge is found. Return the uncontrollable-event-aware
-        // distance of all locations from the start location.
-        for (Location markedLoc: markedLocs) {
-            updateLocationDistance(markedLoc, minDistance);
-        }
-
-        return minDistance;
-    }
-
-    private static Map<Location, Integer> dijkstra(Location startLoc, List<Location> allLocations,
-            Map<Location, Set<Location>> neighbors)
-    {
-        // Store the location minimum distance from the start location.
-        Map<Location, Integer> minDistance = new LinkedHashMap<>();
-
-        // PriorityQueue to store pairs (distance, location) to be processed.
-        PriorityQueue<Location> pq = new PriorityQueue<>(
-                Comparator.comparingInt(p -> minDistance.getOrDefault(p, Integer.MAX_VALUE)));
-
-        // Initialization: set the distance of the start location to zero and of every other location to the maximum
-        // value; add all locations to the queue.
-        for (Location loc: allLocations) {
-            if (loc.equals(startLoc)) {
-                minDistance.put(loc, 0);
-            } else {
-                minDistance.put(loc, Integer.MAX_VALUE);
-            }
-            pq.offer(loc);
-        }
-        minDistance.put(startLoc, 0);
-
-        while (!pq.isEmpty()) {
-            // Get the location with the minimum distance.
-            Location currentLoc = pq.poll();
-            int currentDist = minDistance.get(currentLoc);
-
-            // Explore all the neighbors that are not in the queue.
-            for (Location neighbor: neighbors.get(currentLoc)) {
-                if (pq.contains(neighbor)) {
-                    int neighborDist = minDistance.get(neighbor);
-                    int currentDistPlusOne = (currentDist == Integer.MAX_VALUE) ? Integer.MAX_VALUE : currentDist + 1;
-
-                    // If there is a shorter path to the neighbor through the current node, update
-                    // the distance and add the pair to the queue.
-                    if (currentDistPlusOne < neighborDist) {
-                        neighborDist = currentDistPlusOne;
-                        minDistance.put(neighbor, neighborDist);
-
-                        // Update location distance in the priority queue.
-                        pq.remove(neighbor);
-                        pq.offer(neighbor);
-                    }
-                }
-            }
-        }
-
-        return minDistance;
-    }
-
-    private void updateLocationDistance(Location startLoc, Map<Location, Integer> minDistance) {
-        // Run a BFS and update the distance map if a location has any uncontrollable edges with a larger distance.
-        Queue<Location> queue = new LinkedList<>();
-        queue.add(startLoc);
-        Set<Location> visited = new LinkedHashSet<>();
         while (!queue.isEmpty()) {
             // Get the first element of the queue, and analyze its neighbors.
-            Location currentLoc = queue.poll();
+            NodeInfo currentNodeInfo = queue.poll();
 
-            // If this node was already visited, skip it.
-            if (visited.contains(currentLoc)) {
-                continue;
-            }
+            Set<NodeInfo> children = currentNodeInfo.getChildren();
+            int minChildSubGraphSize = Integer.MAX_VALUE;
+            Set<NodeInfo> chosenChildren = new LinkedHashSet<>();
 
-            // Update the location distance if one of the forward neighbors is connected through an uncontrollable edge
-            // with a larger distance.
-            int currentLocDistance = minDistance.get(currentLoc);
-            int minDistForwardNeighbors = Integer.MAX_VALUE;
-            for (Location neighbor: forwardNeighbors.get(currentLoc)) {
-                for (Edge edge: neighborsEdges.get(Pair.of(currentLoc, neighbor))) {
-                    List<Event> events = new ArrayList<>(CifEventUtils.getEvents(edge));
+            // All sub-graphs have the same size: get the size of the first one (could be zero if empty set).
+            int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).size();
 
-                    // If the forward neighbor is not in the direct path to the current marked location, the minimum
-                    // distance map is set to max value of integers.
-                    if (!events.get(0).getControllable() && minDistance.get(neighbor) >= currentLocDistance) {
-                        currentLocDistance = (minDistance.get(neighbor) == Integer.MAX_VALUE) ? Integer.MAX_VALUE
-                                : minDistance.get(neighbor) + 1;
-                    }
+            // For each child, get its minimum sub-graph and compare it with the current NodeInfo sub-graph. If the edge
+            // connecting the two locations is uncontrollable, perform the union of the sub-graphs, since we must
+            // consider each uncontrollable edge for all locations. If the edge is controllable, compare the size of the
+            // sub-graph and choose the children with the minimum sub-graph; update the current NodeInfo considering the
+            // smallest sub-graph of its children.
+            for (NodeInfo child: children) {
+                List<Set<Object>> childMinSubGraphs = child.getMinSubGraphs();
+                int childMinSubGraphSize = childMinSubGraphs.isEmpty() ? 0 : childMinSubGraphs.get(0).size();
 
-                    // Keep track of the minimum distance of any next-step neighbor.
-                    if (minDistForwardNeighbors > minDistance.get(neighbor)) {
-                        minDistForwardNeighbors = minDistance.get(neighbor);
+                for (Edge childEdge: currentNodeInfo.getChildrenToEdges().get(child)) {
+                    List<Event> events = new ArrayList<>(CifEventUtils.getEvents(childEdge));
+
+                    if (!events.get(0).getControllable()) {
+                        // Union of the current node sub-graphs and the child's sub-graphs.
+                        for (Set<Object> currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
+                            for (Set<Object> childMinSubGraph: childMinSubGraphs) {
+                                currentMinSubGraph.add(child);
+                                currentMinSubGraph.add(childEdge);
+                                currentMinSubGraph.addAll(childMinSubGraph);
+                            }
+                        }
+                    } else {
+                        // Choose the child with smallest sub-graph.
+                        if (minChildSubGraphSize > childMinSubGraphSize) {
+                            chosenChildren = new LinkedHashSet<>();
+                            chosenChildren.add(child);
+                        } else if (minChildSubGraphSize == childMinSubGraphSize) {
+                            chosenChildren.add(child);
+                        }
                     }
                 }
             }
 
-            // If there is no neighbor, the minimum distance of the neighbors is the maximum integer value, which will
-            // overflow when adding +1. In this way, the max operation preserves the current distance. If there are
-            // neighbors and have a distance greater than the current+1, the distance of the current location is
-            // updated. If all the neighbors have distance equal to the maximum value, and the current location's
-            // distance is smaller than the maximum value, the distance remains unchanged. This can only happen if the
-            // neighbors have an uncontrollable loop or cycle: this situation is taken care in the method
-            // TODO:
-            minDistance.put(currentLoc, Math.max(currentLocDistance, minDistForwardNeighbors + 1));
-
-            // Add all backwards neighbors, if not already visited.
-            for (Location neighbor: backwardNeighbors.get(currentLoc)) {
-                if (!visited.contains(neighbor)) {
-                    queue.add(neighbor);
+            // TODO: update description. Add sub-graph of the chosen controllable children.
+            List<Set<Object>> allUpdatedMinSubGraphsList = new ArrayList<>();
+            for (Set<Object> currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
+                for (NodeInfo child: chosenChildren) {
+                    for (Set<Object> childMinSubGraph: child.getMinSubGraphs()) {
+                        Set<Object> updatedMinSubGraph = new LinkedHashSet<>(currentMinSubGraph);
+                        updatedMinSubGraph.add(child);
+                        updatedMinSubGraph.addAll(currentNodeInfo.getChildrenToEdges().get(child));
+                        updatedMinSubGraph.addAll(childMinSubGraph);
+                        allUpdatedMinSubGraphsList.add(updatedMinSubGraph);
+                    }
                 }
             }
 
-            // Mark the current location as visited.
-            visited.add(currentLoc);
+            if (!allUpdatedMinSubGraphsList.isEmpty()) {
+                currentNodeInfo.setMinSubGraphs(allUpdatedMinSubGraphsList);
+            }
+
+            // If current NodeInfo sub-graph has been updated, or if the current NodeInfo corresponds to a marked
+            // location, add the current NodeInfo parents to the queue.
+            if (sizePreUnion == 0 || sizePreUnion != currentNodeInfo.getMinSubGraphs().get(0).size()) {
+                queue.addAll(currentNodeInfo.getParents());
+            }
         }
     }
 
-    private void markEssentialLocationAndEdges(Location currentLoc, Map<Location, Integer> minDistance) {
-        // Mark the current location as essential, and get its depth.
+    private void markEssentialLocationAndEdges(Location currentLoc) {
         essentialLocs.add(currentLoc);
 
-        if (forwardNeighbors.get(currentLoc).isEmpty()) {
+        if (locationNodeInfoMap.get(currentLoc).getMinSubGraphs().isEmpty()) {
             // Add empty set for marked location.
             essentialLocsToEssentialEdges.put(currentLoc, new LinkedHashSet<>());
         }
 
-        // Find forward neighbors with minimum distance.
-        int minDistNeighbors = Integer.MAX_VALUE;
-        Set<Location> nextStepNeighbors = new LinkedHashSet<>();
-        for (Location loc: forwardNeighbors.get(currentLoc)) {
-            if (minDistance.get(loc) < minDistNeighbors) {
-                minDistNeighbors = minDistance.get(loc);
-                nextStepNeighbors = new LinkedHashSet<>();
-                nextStepNeighbors.add(loc);
-            } else if (minDistance.get(loc) == minDistNeighbors) {
-                nextStepNeighbors.add(loc);
-            }
-        }
-
-        for (Edge edge: currentLoc.getEdges()) {
-            // If uncontrollable or the target is the next step in the shortest path, mark the edge as essential.
-            List<Event> events = new ArrayList<>(CifEventUtils.getEvents(edge));
-            if (!events.get(0).getControllable() || minDistance.get(CifEdgeUtils.getTarget(edge)) == minDistNeighbors) {
-                essentialLocsToEssentialEdges.computeIfAbsent(currentLoc, k -> new LinkedHashSet<>()).add(edge);
-                if (!essentialLocs.contains(CifEdgeUtils.getTarget(edge))) {
-                    markEssentialLocationAndEdges(CifEdgeUtils.getTarget(edge), minDistance);
+        for (Set<Object> minSubGraph: locationNodeInfoMap.get(currentLoc).getMinSubGraphs()) {
+            for (Object element: minSubGraph) {
+                // If the current element is an edge, add it to the map from essential location to essential edges; if
+                // it is a location, call recursively the method.
+                if (element instanceof Edge edge) {
+                    essentialLocsToEssentialEdges.computeIfAbsent(currentLoc, k -> new LinkedHashSet<>()).add(edge);
+                } else if (element instanceof NodeInfo nodeInfo) {
+                    Location nextLoc = locationNodeInfoMap.inverse().get(nodeInfo);
+                    if (!essentialLocs.contains(nextLoc)) {
+                        markEssentialLocationAndEdges(nextLoc);
+                    }
+                } else {
+                    throw new RuntimeException("Found unsupported element in sub-graph.");
                 }
             }
         }
