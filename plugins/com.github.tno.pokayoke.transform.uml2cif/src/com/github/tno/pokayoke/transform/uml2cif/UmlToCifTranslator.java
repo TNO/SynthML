@@ -1556,7 +1556,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         DiscVariableExpression tokenOnControlflowExpr = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(outgoingVariable.getType()), outgoingVariable);
         AlgVariable tokenOnOutgoing = CifConstructors.newAlgVariable();
-        tokenOnOutgoing.setName("token_on_first_controlflow");
+        tokenOnOutgoing.setName("__token_on_first_controlflow");
         tokenOnOutgoing.setType(CifConstructors.newBoolType());
         tokenOnOutgoing.setValue(tokenOnControlflowExpr);
         initialNodeConfig.add(tokenOnOutgoing);
@@ -1585,7 +1585,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         DiscVariableExpression tokenOnControlflowExpr = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
         AlgVariable tokenOnIncoming = CifConstructors.newAlgVariable();
-        tokenOnIncoming.setName("token_on_last_controlflow");
+        tokenOnIncoming.setName("__token_on_last_controlflow");
         tokenOnIncoming.setType(CifConstructors.newBoolType());
         tokenOnIncoming.setValue(tokenOnControlflowExpr);
         finalNodeConfig.add(tokenOnIncoming);
