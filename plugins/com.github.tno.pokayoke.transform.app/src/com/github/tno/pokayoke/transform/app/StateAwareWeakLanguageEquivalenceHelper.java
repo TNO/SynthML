@@ -67,8 +67,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2));
 
         // Filter unused events from the state space alphabet.
-        Set<String> unusedEvents1 = removeUnusedEvents(stateSpace1);
-        Set<String> unusedEvents2 = removeUnusedEvents(stateSpace2);
+        Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
+        Set<String> unusedEvents2 = removeAndGetUnusedEvents(stateSpace2);
 
         // Check that the two alphabets are compatible, and create a set of pairs with the corresponding list of events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = getPairedEvents(namesToEvents1, unusedEvents1,
@@ -107,16 +107,16 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
-    private static Set<String> removeUnusedEvents(Automaton automa) {
+    private static Set<String> removeAndGetUnusedEvents(Automaton stateSpace) {
         // Removes the unused events from the alphabet, and returns the unused events names.
-        Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(automa);
-        automa.setAlphabet(null);
-        Set<Event> postFilterAlphabet = CifEventUtils.getAlphabet(automa);
+        Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        stateSpace.setAlphabet(null);
+        Set<Event> postFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
         preFilterAlphabet.removeAll(postFilterAlphabet);
         return preFilterAlphabet.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
     }
 
-    private static boolean checkAlphabetCoverage(Automaton automa, Map<String, List<Event>> namesToEvents,
+    private static boolean checkAlphabetCoverage(Automaton stateSpace, Map<String, List<Event>> namesToEvents,
             Set<Event> tauEvents)
     {
         // Check that the alphabet of the state space is equal to the union of non-tau and the tau events. This check is
@@ -125,19 +125,19 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         namesToEvents.values().forEach(e -> eventsMerged.addAll(e));
         eventsMerged.addAll(tauEvents);
 
-        Set<Event> automaAlphabet = CifEventUtils.getAlphabet(automa);
-        Set<String> absNamesAutoma = automaAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
+        Set<Event> stateSpaceAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        Set<String> absNamesStateSpace = stateSpaceAlphabet.stream().map(e -> CifTextUtils.getAbsName(e))
                 .collect(Collectors.toSet());
         Set<String> absNamesEventsMerged = eventsMerged.stream().map(e -> CifTextUtils.getAbsName(e))
                 .collect(Collectors.toSet());
 
-        return absNamesAutoma.equals(absNamesEventsMerged);
+        return absNamesStateSpace.equals(absNamesEventsMerged);
     }
 
     /**
      * Compute the events from two state spaces that represent the same UML element, and pair them together. If the
      * events in one state space are not related to any event in the other state space, return 'null' to indicate that
-     * the two state spaces are not compatible.
+     * the two state spaces are not equivalent.
      *
      * @param namesToEvents1 The map from the name of the UML element to the list of events related to it.
      * @param unusedEvents1 Names of events that are not used in the first state space.
@@ -169,20 +169,21 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 pairedEvents.add(Pair.of(usedEvents1, usedEvents2));
             } else if (usedEvents1.isEmpty() != usedEvents2.isEmpty()) {
                 // If one set of events is empty and the other is not, one model can have a transition while the other
-                // model cannot; this means that the two models are not compatible. Return 'null' to signal that the two
-                // event sets are not compatible.
+                // model cannot; this means that the two state spaces are not equivalent. Return 'null' to signal that
+                // the two event sets are not compatible.
                 return null;
             }
         }
 
-        // If second map is not empty, the two state spaces are not compatible.
+        // If second map is not empty, the two state spaces are not equivalent.
         return namesToEvents2.isEmpty() ? pairedEvents : null;
     }
 
     /**
-     * The result of the manipulation of the two CIF models.
+     * The result of the preparation of the two CIF state spaces.
      *
-     * @param pairedEvents The set containing the corresponding events from the two state spaces, stored in pairs.
+     * @param pairedEvents The set containing the corresponding events from the two state spaces, stored in pairs. If
+     *     'null', the two state spaces are not equivalent.
      * @param stateAnnotations1 The filtered state annotations for the first state space.
      * @param stateAnnotations2 The filtered state annotations for the second state space.
      */
