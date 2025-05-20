@@ -147,6 +147,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The list containing the token configuration related to the final node. */
     private List<AlgVariable> finalNodeConfig = new ArrayList<>();
 
+    public static enum TranslationPurpose {
+        SYNTHESIS, LANGUAGE_EQUIVALENCE;
+    }
+
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
         super(new CifContext(activity.getModel()));
         this.activity = activity;
@@ -298,10 +302,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return result;
-    }
-
-    public static enum TranslationPurpose {
-        SYNTHESIS, LANGUAGE_EQUIVALENCE;
     }
 
     /**
