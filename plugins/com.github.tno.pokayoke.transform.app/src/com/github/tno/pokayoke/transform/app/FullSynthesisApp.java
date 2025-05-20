@@ -392,9 +392,9 @@ public class FullSynthesisApp {
         // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
+                translator.getNormalizedNameToEventsMap(), translator.getInternalEvents(), stateSpacePostSynthChain,
                 umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
-                umlToCifTranslatorPostSynth.getEventsToIgnore(), translator.getVariableNames());
+                umlToCifTranslatorPostSynth.getInternalEvents(), translator.getVariableNames());
 
         // If the corresponding events from one state space to the other is 'null', the two state spaces are not
         // language equivalent, so return false.
@@ -409,8 +409,8 @@ public class FullSynthesisApp {
         // Perform the language equivalence check and return the result.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         boolean areEquivalentModels = checker.check(stateSpace1, result.stateAnnotations1(),
-                translator.getEventsToIgnore(), stateSpace2, result.stateAnnotations2(),
-                umlToCifTranslatorPostSynth.getEventsToIgnore(), result.pairedEvents());
+                translator.getInternalEvents(), stateSpace2, result.stateAnnotations2(),
+                umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
 
         return areEquivalentModels;
     }

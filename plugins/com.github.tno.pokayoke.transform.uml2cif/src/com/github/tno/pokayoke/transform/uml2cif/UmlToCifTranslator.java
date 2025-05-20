@@ -135,8 +135,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The one-to-many mapping from normalized names of UML elements to their corresponding CIF events. */
     private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
 
-    /** The set containing CIF tau-events, i.e. events that make irrelevant changes to the state. */
-    private final Set<Event> cifEventsToIgnore = new LinkedHashSet<>();
+    /**
+     * The internal events of the generated CIF specification, i.e. events that are not observable from the UML model
+     * point-of-view.
+     */
+    private final Set<Event> internalEvents = new LinkedHashSet<>();
 
     /** The list containing the token configuration related to the initial node. */
     private List<AlgVariable> initialNodeConfig = new ArrayList<>();
@@ -169,12 +172,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the set containing the events corresponding to tau transitions, e.g. going over a join node.
+     * Returns the set containing the internal events, e.g. going over a join node.
      *
-     * @return The set of events corresponding to tau transitions.
+     * @return The set of internal events.
      */
-    public Set<Event> getEventsToIgnore() {
-        return cifEventsToIgnore;
+    public Set<Event> getInternalEvents() {
+        return internalEvents;
     }
 
     /**
@@ -510,7 +513,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             normalizedNamesToEvents.computeIfAbsent(normalizeNames(umlAction, "", 0), k -> new ArrayList<>())
                     .add(cifStartEvent);
         } else {
-            cifEventsToIgnore.add(cifStartEvent);
+            internalEvents.add(cifStartEvent);
         }
 
         // Create a CIF edge for this start event.
@@ -553,7 +556,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             .computeIfAbsent(normalizeNames(umlAction, outcomeSuffix, i + 1), k -> new ArrayList<>())
                             .add(cifEndEvent);
                 } else {
-                    cifEventsToIgnore.add(cifEndEvent);
+                    internalEvents.add(cifEndEvent);
                 }
 
                 // Make the CIF edge for the uncontrollable end event.
