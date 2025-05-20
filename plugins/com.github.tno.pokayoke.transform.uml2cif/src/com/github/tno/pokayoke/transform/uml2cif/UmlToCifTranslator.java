@@ -300,15 +300,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return result;
     }
 
-    /**
-     * Returns the translation purpose parameter.
-     *
-     * @return The translation purpose enumeration.
-     */
-    public TranslationPurpose getTranslationPurpose() {
-        return translationPurpose;
-    }
-
     public static enum TranslationPurpose {
         SYNTHESIS, LANGUAGE_EQUIVALENCE;
     }
