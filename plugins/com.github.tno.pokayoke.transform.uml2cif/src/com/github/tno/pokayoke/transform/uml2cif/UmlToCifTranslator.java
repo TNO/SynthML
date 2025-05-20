@@ -135,7 +135,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The one-to-many mapping from normalized names of UML elements to their corresponding CIF events. */
     private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
 
-    /** The set containing CIF epsilon-events, i.e. events that make irrelevant changes to the state. */
+    /** The set containing CIF tau-events, i.e. events that make irrelevant changes to the state. */
     private final Set<Event> cifEventsToIgnore = new LinkedHashSet<>();
 
     /** The list containing the token configuration related to the initial node. */
@@ -169,9 +169,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the set containing the events corresponding to epsilon transitions, e.g. going over a join node.
+     * Returns the set containing the events corresponding to tau transitions, e.g. going over a join node.
      *
-     * @return The set of events corresponding to epsilon transitions.
+     * @return The set of events corresponding to tau transitions.
      */
     public Set<Event> getEventsToIgnore() {
         return cifEventsToIgnore;
@@ -1592,10 +1592,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         DiscVariableExpression tokenOnControlflowExpr = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
         AlgVariable tokenOnIncoming = CifConstructors.newAlgVariable();
-        tokenOnOutgoing.setName("token_on_last_controlflow");
-        tokenOnOutgoing.setType(CifConstructors.newBoolType());
-        tokenOnOutgoing.setValue(tokenOnControlflowExpr);
-        finalNodeConfig.add(tokenOnOutgoing);
+        tokenOnIncoming.setName("token_on_last_controlflow");
+        tokenOnIncoming.setType(CifConstructors.newBoolType());
+        tokenOnIncoming.setValue(tokenOnControlflowExpr);
+        finalNodeConfig.add(tokenOnIncoming);
 
         // If the control flow has an outgoing guard, add it to the list of extra postconditions.
         if (PokaYokeUmlProfileUtil.getOutgoingGuard(incoming) != null) {
