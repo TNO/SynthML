@@ -59,8 +59,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
 
         // Filter internal variables from state annotations.
-        Map<Location, Annotation> filteredStateAnn1 = cleanStateAnnotations(model1, externalVariableNames);
-        Map<Location, Annotation> filteredStateAnn2 = cleanStateAnnotations(model2, externalVariableNames);
+        Map<Location, Annotation> filteredStateAnn1 = filterStateAnnotations(model1, externalVariableNames);
+        Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
         // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
         Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1));
@@ -77,7 +77,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return new ModelPreparationResult(pairedEvents, filteredStateAnn1, filteredStateAnn2);
     }
 
-    private static Map<Location, Annotation> cleanStateAnnotations(Specification model,
+    private static Map<Location, Annotation> filterStateAnnotations(Specification model,
             Set<String> externalVariableNames)
     {
         // Get state annotations for the CIF model.
@@ -88,16 +88,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         locToAnnotations.values().stream().forEach(
                 a -> Verify.verify(a.size() == 1, "Found state that doesn't have exactly one state annotation."));
 
-        // Clean the state annotations from internal variables.
-        Map<Location, Annotation> locToFilteredAnnotations = filterRelevantAnnotations(locToAnnotations,
-                externalVariableNames);
-
-        return locToFilteredAnnotations;
-    }
-
-    private static Map<Location, Annotation> filterRelevantAnnotations(Map<Location, List<Annotation>> locToAnnotations,
-            Set<String> externalVariableNames)
-    {
+        // Filter the state annotations from internal variables.
         Map<Location, Annotation> locToFilteredAnnotations = new LinkedHashMap<>();
 
         for (Entry<Location, List<Annotation>> locToAnnotation: locToAnnotations.entrySet()) {
@@ -105,9 +96,9 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             List<Annotation> annotations = locToAnnotation.getValue();
 
             // Filter and create new annotation.
-            List<AnnotationArgument> filteredList = annotations.get(0).getArguments().stream()
+            List<AnnotationArgument> filteredArgs = annotations.get(0).getArguments().stream()
                     .filter(arg -> externalVariableNames.contains(arg.getName())).toList();
-            Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredList, annotations.get(0).getName(),
+            Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredArgs, annotations.get(0).getName(),
                     annotations.get(0).getPosition());
             locToFilteredAnnotations.put(loc, filteredAnnotation);
         }
