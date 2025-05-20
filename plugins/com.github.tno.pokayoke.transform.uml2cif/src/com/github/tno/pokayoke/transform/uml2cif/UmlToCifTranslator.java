@@ -305,8 +305,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the UML synthesis specifications to a CIF specification. If the translation purpose is
-     * {@link TranslationPurpose#LANGUAGE_EQUIVALENCE}, skip the translation of opaque behaviors and requirements.
+     * Translates the UML synthesis specifications to a CIF specification.
      *
      * @return The translated CIF specification.
      * @throws CoreException In case the input UML model is invalid.
@@ -590,8 +589,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates all concrete UML activities that are in context to CIF variables, and CIF events with their
-     * corresponding CIF edges. If the translation purpose is {@link TranslationPurpose#LANGUAGE_EQUIVALENCE}, translate
-     * the class activity in a dedicated manner.
+     * corresponding CIF edges.
      *
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
@@ -1344,9 +1342,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /**
      * Translates the UML activity postconditions to a CIF algebraic variable. Extra postconditions are added expressing
      * that no non-atomic and atomic non-deterministic actions may be active, that all occurrence constraints must be
-     * satisfied, and that no control flow of any translated concrete activity holds a token. If the translation purpose
-     * is {@link TranslationPurpose#LANGUAGE_EQUIVALENCE}, skips the variables related to the final node, since these
-     * are translated in a dedicated manner in {@link UmlToCifTranslator#createFinalNodeConfiguration}.
+     * satisfied, and that no control flow of any translated concrete activity holds a token.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
      * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
