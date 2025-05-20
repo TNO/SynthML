@@ -52,7 +52,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
-import com.github.tno.pokayoke.transform.app.LanguageEquivalenceCheckHelper.ModelPreparationResult;
+import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -391,7 +391,7 @@ public class FullSynthesisApp {
 
         // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
-        ModelPreparationResult result = LanguageEquivalenceCheckHelper.prepareModels(stateSpaceGenerated,
+        ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
                 translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
                 umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
                 umlToCifTranslatorPostSynth.getEventsToIgnore(), translator.getVariableNames());
