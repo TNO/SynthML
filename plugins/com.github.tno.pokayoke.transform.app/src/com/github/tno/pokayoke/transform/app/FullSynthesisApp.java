@@ -367,25 +367,27 @@ public class FullSynthesisApp {
         Specification stateSpacePostSynthChain = stateSpaceAndTranslator.getLeft();
         UmlToCifTranslator translatorPostSynth = stateSpaceAndTranslator.getRight();
 
-        // Project the state annotations to keep only the external variables, and get the epsilon and non-epsilon events before the language equivalence
-        // check.
+        // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
+        // the language equivalence check.
         ModelPreparationResult result = LanguageEquivalenceCheckHelper.prepareModels(stateSpaceGenerated,
                 translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
                 translatorPostSynth.getNormalizedNameToEventsMap(), translatorPostSynth.getEventsToIgnore(),
                 translator.getVariableNames());
 
-        // If the corresponding events from one automaton to the other is 'null', the two automata are not language
-        // equivalent, so return false.
+        // If the corresponding events from one state space to the other is 'null', the two state spaces are not
+        // language equivalent, so return false.
         if (result.pairedEvents() == null) {
             return false;
         }
 
-        Automaton automaton1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
-        Automaton automaton2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
+        // Get the two state space automata to compare.
+        Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
+        Automaton stateSpace2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
 
-        StateAwareWeakLanguageEquivalenceChecker sawteChecker = new StateAwareWeakLanguageEquivalenceChecker();
-        boolean areEquivalentModels = sawteChecker.check(automaton1, result.stateAnnotations1(),
-                translator.getEventsToIgnore(), automaton2, result.stateAnnotations2(),
+        // Perform the language equivalence check and return the result.
+        StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
+        boolean areEquivalentModels = checker.check(stateSpace1, result.stateAnnotations1(),
+                translator.getEventsToIgnore(), stateSpace2, result.stateAnnotations2(),
                 translatorPostSynth.getEventsToIgnore(), result.pairedEvents());
 
         return areEquivalentModels;
