@@ -386,8 +386,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(postconditionVariable);
         cifPlant.getMarkeds().add(getTranslatedPostcondition());
 
-        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
-        // taken.
+        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
         List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
         cifSpec.getInvariants().addAll(cifDisableConstraints);
 
@@ -1569,8 +1568,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Create the token configuration for the final node of the activity: the token is placed on the control flow whose
-     * target is the final node. Add also its outgoing guards, if present. Assumes the final node has a unique incoming
-     * control flow, as per the validation model requirement.
+     * target is the final node. Add also its outgoing guards, if present.
      *
      * @param node The UML activity final node.
      */
