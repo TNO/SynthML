@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
@@ -362,17 +361,19 @@ public class FullSynthesisApp {
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
         // Translate final UML model to CIF and get its state space.
-        Pair<Specification, UmlToCifTranslator> stateSpaceAndTranslator = translatePostSynthesisUmlToStateSpace(
-                translator.getActivity(), filePrefix, localOutputPath);
-        Specification stateSpacePostSynthChain = stateSpaceAndTranslator.getLeft();
-        UmlToCifTranslator translatorPostSynth = stateSpaceAndTranslator.getRight();
+        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(translator.getActivity(),
+                filePrefix + ".99", localOutputPath);
+
+        // Find state space post-synthesis chain file.
+        Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
+        Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(stateSpacePostSynthChainPath);
 
         // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = LanguageEquivalenceCheckHelper.prepareModels(stateSpaceGenerated,
                 translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
-                translatorPostSynth.getNormalizedNameToEventsMap(), translatorPostSynth.getEventsToIgnore(),
-                translator.getVariableNames());
+                umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
+                umlToCifTranslatorPostSynth.getEventsToIgnore(), translator.getVariableNames());
 
         // If the corresponding events from one state space to the other is 'null', the two state spaces are not
         // language equivalent, so return false.
@@ -388,23 +389,9 @@ public class FullSynthesisApp {
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         boolean areEquivalentModels = checker.check(stateSpace1, result.stateAnnotations1(),
                 translator.getEventsToIgnore(), stateSpace2, result.stateAnnotations2(),
-                translatorPostSynth.getEventsToIgnore(), result.pairedEvents());
+                umlToCifTranslatorPostSynth.getEventsToIgnore(), result.pairedEvents());
 
         return areEquivalentModels;
-    }
-
-    private static Pair<Specification, UmlToCifTranslator> translatePostSynthesisUmlToStateSpace(Activity activity,
-            String filePrefix, Path localOutputPath) throws CoreException
-    {
-        // Translation of final UML file to CIF.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = translateAndGenerateStateSpace(activity, filePrefix + ".99",
-                localOutputPath);
-
-        // Find state space post-synthesis chain file.
-        Path stateSpacePostSynthChainPath = localOutputPath.resolve(filePrefix + ".99.04.ctrlsys.statespace.cif");
-        Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(stateSpacePostSynthChainPath);
-
-        return Pair.of(stateSpacePostSynthChain, umlToCifTranslatorPostSynth);
     }
 
     private static UmlToCifTranslator translateAndGenerateStateSpace(Activity activity, String filePrefix,
