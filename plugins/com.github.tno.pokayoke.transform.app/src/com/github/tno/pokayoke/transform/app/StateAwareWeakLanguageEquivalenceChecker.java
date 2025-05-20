@@ -77,7 +77,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
                 "State space 2 contains blocking states.");
 
-        // Initialize queue. If null, the models are not equivalent.
+        // Initialize queue. If 'null', the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
                 stateAnnotations2);
         if (queue == null) {
@@ -238,7 +238,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             }
         }
 
-        // All initial states must be used in some initial pair. If not, return null.
+        // All initial states must be used in some initial pair. If not, return 'null'.
         if (visited.size() == initialStates1.size() + initialStates2.size()) {
             return queue;
         } else {

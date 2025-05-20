@@ -357,7 +357,7 @@ public class FullSynthesisApp {
     private static boolean performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
             UmlToCifTranslator translator) throws CoreException
     {
-        // Find state space UML file.
+        // Load state space UML file.
         Specification stateSpaceGenerated = CifFileHelper
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
@@ -367,14 +367,14 @@ public class FullSynthesisApp {
         Specification stateSpacePostSynthChain = stateSpaceAndTranslator.getLeft();
         UmlToCifTranslator translatorPostSynth = stateSpaceAndTranslator.getRight();
 
-        // Clean the state annotations, and get the epsilon and non-epsilon events before the language equivalence
+        // Project the state annotations to keep only the external variables, and get the epsilon and non-epsilon events before the language equivalence
         // check.
         ModelPreparationResult result = LanguageEquivalenceCheckHelper.prepareModels(stateSpaceGenerated,
                 translator.getNormalizedNameToEventsMap(), translator.getEventsToIgnore(), stateSpacePostSynthChain,
                 translatorPostSynth.getNormalizedNameToEventsMap(), translatorPostSynth.getEventsToIgnore(),
                 translator.getVariableNames());
 
-        // If the corresponding events from one automaton to the other is null, the two automata are not language
+        // If the corresponding events from one automaton to the other is 'null', the two automata are not language
         // equivalent, so return false.
         if (result.pairedEvents() == null) {
             return false;

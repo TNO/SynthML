@@ -114,7 +114,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The translated postcondition CIF variable. */
     private AlgVariable postconditionVariable;
 
-    /** The enumeration defining the translation purpose, at the beginning or at the end of synthesis chain. */
+    /** The purpose for which UML is translated to CIF. */
     private final TranslationPurpose translationPurpose;
 
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
@@ -606,7 +606,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
-            if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity.equals(this.activity)) {
+            if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
                 Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translatePostSynthChainConcreteActivity(activity);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
@@ -1591,18 +1591,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         DiscVariable incomingVariable = controlFlowMap.get(incoming);
         DiscVariableExpression tokenOnControlflowExpr = CifConstructors.newDiscVariableExpression(null,
                 EcoreUtil.copy(incomingVariable.getType()), incomingVariable);
-        AlgVariable tokenOnOutgoing = CifConstructors.newAlgVariable();
+        AlgVariable tokenOnIncoming = CifConstructors.newAlgVariable();
         tokenOnOutgoing.setName("token_on_last_controlflow");
         tokenOnOutgoing.setType(CifConstructors.newBoolType());
         tokenOnOutgoing.setValue(tokenOnControlflowExpr);
         finalNodeConfig.add(tokenOnOutgoing);
 
-        // If the control flow has an incoming guard, add it to the list of extra postconditions.
+        // If the control flow has an outgoing guard, add it to the list of extra postconditions.
         if (PokaYokeUmlProfileUtil.getOutgoingGuard(incoming) != null) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
             cifAlgVar.setName(node.getName());
             cifAlgVar.setType(CifConstructors.newBoolType());
-            cifAlgVar.setValue(translator.translate(CifParserHelper.parseIncomingGuard((ControlFlow)incoming)));
+            cifAlgVar.setValue(translator.translate(CifParserHelper.parseOutgoingGuard((ControlFlow)incoming)));
             finalNodeConfig.add(cifAlgVar);
         }
     }
