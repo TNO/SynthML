@@ -501,7 +501,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 || umlElement instanceof OpaqueBehavior)
         {
             // Add the event to the corresponding normalized name. More events may correspond to the same name.
-            normalizedNamesToEvents.computeIfAbsent(normalizeNames(umlAction, ""), k -> new ArrayList<>())
+            normalizedNamesToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
                     .add(cifStartEvent);
         } else {
             internalEvents.add(cifStartEvent);
@@ -544,7 +544,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         || umlElement instanceof OpaqueBehavior)
                 {
                     normalizedNamesToEvents
-                            .computeIfAbsent(normalizeNames(umlAction, outcomeSuffix + String.valueOf(i + 1)),
+                            .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
                                     k -> new ArrayList<>())
                             .add(cifEndEvent);
                 } else {
@@ -1518,7 +1518,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param postfix A string that is added to the normalized name; it can be empty.
      * @return The normalized name of the UML element.
      */
-    private String normalizeNames(NamedElement umlElement, String postfix) {
+    private String normalizeName(NamedElement umlElement, String postfix) {
         // Get to the (nested) called behavior.
         while (umlElement instanceof CallBehaviorAction cbAction) {
             umlElement = cbAction.getBehavior();
