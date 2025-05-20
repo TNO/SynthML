@@ -66,7 +66,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslatorPostSynth;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.TranslationPurpose;
 import com.github.tno.pokayoke.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -118,7 +118,7 @@ public class FullSynthesisApp {
             List<String> warnings) throws IOException, CoreException
     {
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -409,7 +409,8 @@ public class FullSynthesisApp {
             Path outputFolderPath) throws CoreException
     {
         // Translate UML file to CIF.
-        UmlToCifTranslatorPostSynth umlToCifTranslatorPostSynth = new UmlToCifTranslatorPostSynth(activity);
+        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(activity,
+                TranslationPurpose.LANGUAGE_EQUIVALENCE);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.finalUmlToCif.cif");
         try {
