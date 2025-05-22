@@ -10,17 +10,22 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
+import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
+import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
+import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.javabdd.BDD;
@@ -65,6 +70,7 @@ public class OutgoingGuardComputation extends GuardComputation {
 
         // TODO obtain CIF event maps.
         Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
+        Map<Event, List<Event>> nonAtomicEventMap = translator.getNonAtomicEvents();
         Map<Event, List<Event>> nonDeterministicEventMap = translator.getNonDeterministicEvents();
 
         // TODO helper function
@@ -78,6 +84,8 @@ public class OutgoingGuardComputation extends GuardComputation {
 
         // TODO explain why guards can't become 'false'.
 
+        // TODO for relprev, don't consider states where activeAction=1
+
         // TODO compute outgoing guard for every control flow.
         for (ActivityEdge controlFlow: translator.getActivity().getEdges()) {
             ActivityNode target = controlFlow.getTarget();
@@ -85,7 +93,6 @@ public class OutgoingGuardComputation extends GuardComputation {
             // TODO not sure about this. We still remove a token then....
             // We will not execute the activity final node.
             if (target instanceof ActivityFinalNode) {
-
                 // TODO probably we must consider all controlled system states where there is a token on 'controlFlow'
                 // in which the activity postcondition holds. I.e., in which you are marked. From those states you
                 // can finish the activity. Same with uncontrolled states, and then simplify.
@@ -102,9 +109,12 @@ public class OutgoingGuardComputation extends GuardComputation {
             // and the uncontrolled system. In case 'target' is atomic and non-deterministic, we need to do two backward
             // steps: for the end+start event. Otherwise, we only need to so the start event.
 
-            // TODO also callable for control nodes?
+            // TODO Control nodes are non-atomic by default...
+            boolean isAtomic = target instanceof ControlNode ? true : PokaYokeUmlProfileUtil.isAtomic(target);
+            boolean isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(target);
+
             // If 'target' is atomic and non-deterministic, then we must consider both start and end edges.
-            if (PokaYokeUmlProfileUtil.isAtomic(target) && !PokaYokeUmlProfileUtil.isDeterministic(target)) {
+            if (isAtomic && !isDeterministic) {
                 for (Event startEvent: startEventMap.get(target)) {
                     CifBddEdge startEdge = getCorrespondingEdge.apply(startEvent);
 
@@ -129,6 +139,10 @@ public class OutgoingGuardComputation extends GuardComputation {
                 }
             }
 
+            System.out.println("Uncontrolled guard: " + bddToString(guardUncontrolled, cifBddSpec));
+            System.out.println("Controlled guard: " + bddToString(guardControlled, cifBddSpec));
+            System.out.println("Nonabstract outgoing guard: " + bddToString(guardControlled.simplify(guardUncontrolled), cifBddSpec));
+
             // Try to compute an outgoing guard that is independent of internal variables.
             BDD abstractControlled = guardControlled.exist(internalVars);
             BDD abstractUncontrolled = guardUncontrolled.exist(internalVars);
@@ -136,7 +150,20 @@ public class OutgoingGuardComputation extends GuardComputation {
             abstractControlled.free();
             abstractUncontrolled.free();
 
-            // TODO two checks that the guard is correct.
+            // Sanity check: the computed outgoing guard indeed does not depend on internal variables.
+            BDD abstractOutgoingGuard = outgoingGuard.exist(internalVars);
+            Verify.verify(abstractOutgoingGuard.equals(outgoingGuard),
+                    "Expected the computed outgoing guard to not depend on internal variables.");
+            abstractOutgoingGuard.free();
+
+            // Make sure that the computed outgoing guard is still correct.
+            BDD guardCheck = guardUncontrolled.and(outgoingGuard);
+            if (!guardCheck.equals(guardControlled)) {
+                throw new RuntimeException(
+                        "Expected the computed outgoing guard to be correct, without depending on internal variables.");
+            }
+
+            guardCheck.free();
 
             // Free intermediate BDDs.
             guardUncontrolled.free();
@@ -150,6 +177,24 @@ public class OutgoingGuardComputation extends GuardComputation {
         return null;
     }
 
+    // TODO doc
+    private BDD getTokenConstraint(ActivityEdge controlFlow, CifBddSpec cifBddSpec) {
+        // Obtain the (Boolean) CIF variable that corresponds to the given control flow.
+        DiscVariable variable = translator.getControlFlowMap().get(controlFlow);
+
+        // Construct a CIF constraint expressing that the obtained CIF variable must be true.
+        Expression constraint = CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(),
+                variable);
+
+        // Convert the CIF constraint to a BDD predicate.
+        try {
+            return CifToBddConverter.convertPred(constraint, false, cifBddSpec);
+        } catch (UnsupportedPredicateException e) {
+            throw new RuntimeException("Unsupported predicate: " + e.getMessage());
+        }
+    }
+
+    // TODO doc
     private static <T, U> Map<U, List<T>> reverse(Map<T, U> map) {
         Map<U, List<T>> result = new LinkedHashMap<>();
 

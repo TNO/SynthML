@@ -136,8 +136,8 @@ public class ConcreteUmlActivityToCifTranslator extends UmlToCifTranslator {
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
-        List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
-        cifSpec.getComponents().addAll(cifRequirementAutomata);
+//        List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
+//        cifSpec.getComponents().addAll(cifRequirementAutomata);
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
