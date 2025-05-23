@@ -44,6 +44,18 @@ import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 
+//TODO what about intermediate/virtual control flows for non-atomic actions?
+// -> CIF data-based synthesis takes care of that. We now take over the computed guards more-or-less directly.
+
+// TODO explain why guards can't become 'false'.
+// -> The synthesized activity should have all safe action sequences, plus perhaps some more since we got rid of data
+// for PN synthesis. The goal of guard computation is to get rid of these unsafe action sequences, and keep only the
+// safe ones. We do this by translating the activity to CIF, perform data-based synthesis again, and process the
+// synthesized guards for activity node execution. During the translation, we make all CIF events controllable. So we
+// give the second synthesis round full control over when activity nodes are executed. If some safe action sequence gets
+// disabled anyway, then this sequence must also not have been possible after the first round of synthesis, since the
+// activity that we work with was a result of that round of synthesis.
+
 public class IncomingOutgoingGuardComputation extends GuardComputation {
     private final UmlToCifTranslator translator;
 
