@@ -44,18 +44,7 @@ import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 
-//TODO what about intermediate/virtual control flows for non-atomic actions?
-// -> CIF data-based synthesis takes care of that. We now take over the computed guards more-or-less directly.
-
-// TODO explain why guards can't become 'false'.
-// -> The synthesized activity should have all safe action sequences, plus perhaps some more since we got rid of data
-// for PN synthesis. The goal of guard computation is to get rid of these unsafe action sequences, and keep only the
-// safe ones. We do this by translating the activity to CIF, perform data-based synthesis again, and process the
-// synthesized guards for activity node execution. During the translation, we make all CIF events controllable. So we
-// give the second synthesis round full control over when activity nodes are executed. If some safe action sequence gets
-// disabled anyway, then this sequence must also not have been possible after the first round of synthesis, since the
-// activity that we work with was a result of that round of synthesis.
-
+/** Computes incoming and outgoing guards for synthesized UML activities. */
 public class IncomingOutgoingGuardComputation extends GuardComputation {
     private final UmlToCifTranslator translator;
 
@@ -88,10 +77,11 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         // Obtain the set of all internal BDD variables.
         BDDVarSet internalVars = getInternalBDDVars(cifBddSpec);
 
-        // TODO doc obtain CIF event maps.
+        // Obtain the mapping from UML (activity) elements to all the CIF start events created for them.
         Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
 
-        // TODO doc obtain activity or node mapping (incoming, outgoing)-transition pairs.
+        // Obtain the mapping from all incoming/outgoing control flow pairs of translated OR-type activity nodes,
+        // to the CIF start events created for them.
         BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = translator.getActivityOrNodeMapping();
 
         // TODO helper function
@@ -166,20 +156,44 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         return null;
     }
 
-    // TODO doc Compute guard for the specified CIF/BDD edge.
+    /**
+     * Computes a guard for the given CIF/BDD edge.
+     *
+     * @param edge The CIF/BDD edge to compute the guard for.
+     * @param controlledStates The set of all controlled system states.
+     * @param internalVars The set of BDD variables from which the computed guard should be independent.
+     * @return The computed guard.
+     */
     private BDD computeGuard(CifBddEdge edge, BDD controlledStates, BDDVarSet internalVars) {
-        // We compute the guard for 'edge' inductively: assuming we execute the activity in a controlled manner up to
-        // the execution of 'edge', we now have to compute the (extra) guard that ensures that the execution of 'edge'
-        // ends up in a controlled state again.
+        // We compute guards inductively: assuming we execute the activity in a controlled manner up to the execution of
+        // 'edge', we now have to compute the (extra) guard that ensures that the execution of 'edge' ends up in a
+        // controlled system state again. If we do this consistently, then every activity execution will be safe (under
+        // the guards that we compute for the activity) by induction on the length of the execution trace.
+
+        // Thus, let us consider all controlled system states where the uncontrolled system guard of 'edge' holds. Of
+        // these system states, we must only keep the ones from which the application of 'edge' ends up in a controlled
+        // system state again. We can compute the guard of 'edge' as described above, from these two sets of states.
         BDD uncontrolledGuard = controlledStates.and(edge.guard);
         BDD controlledGuard = applyBackward(edge, controlledStates.id(), controlledStates);
         BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
+
+        // Free intermediate BDDs.
         controlledGuard.free();
         uncontrolledGuard.free();
+
         return guard;
     }
 
-    // TODO doc Try compute a guard that is independent of internal variables
+    /**
+     * Tries to compute a BDD predicate that is equivalent to {@code controlledGuard.simplify(uncontrolledGuard)} but
+     * does not depend on any variables in {@code internalVars}. If such a predicate does not exist, a runtime exception
+     * is thrown instead.
+     *
+     * @param uncontrolledGuard The predicate to simplify against.
+     * @param controlledGuard The predicate to simplify.
+     * @param internalVars The set of BDD variables from which the computed predicate should be independent.
+     * @return The computed predicate.
+     */
     private BDD computeGuard(BDD uncontrolledGuard, BDD controlledGuard, BDDVarSet internalVars) {
         // Try to compute a guard that is independent of internal variables.
         BDD abstractControlled = controlledGuard.exist(internalVars);
@@ -202,6 +216,16 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         }
 
         guardCheck.free();
+
+        // Make sure the computed guard is satisfiable. Note that it should never be possible to compute a 'false'
+        // guard. Otherwise, there must be a safe action sequence that is now disabled with respect to the synthesized
+        // supervisor that was used earlier, to synthesize the activity structure. However, since we've now made all CIF
+        // events controllable for guard computation, we gave synthesis full control over the activity execution. Hence,
+        // there must then be something in the structure of the synthesized activity that disables the action sequence.
+        // But the activity structure follows from the state space of the earlier synthesized supervisor. Contradiction.
+        if (guard.isZero()) {
+            throw new RuntimeException("Expected the computed guard to be satisfiable, but got 'false'.");
+        }
 
         return guard;
     }
