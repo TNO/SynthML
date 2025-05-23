@@ -41,6 +41,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministic
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
+import com.github.tno.pokayoke.transform.activitysynthesis.IncomingOutgoingGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.activitysynthesis.OutgoingGuardComputation;
@@ -310,7 +311,8 @@ public class FullSynthesisApp {
         }
 
         // TODO compute guards
-        new OutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        //new OutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        new IncomingOutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);

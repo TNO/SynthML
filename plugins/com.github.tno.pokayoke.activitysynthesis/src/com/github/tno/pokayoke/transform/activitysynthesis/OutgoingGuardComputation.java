@@ -99,6 +99,10 @@ public class OutgoingGuardComputation extends GuardComputation {
                 continue;
             }
 
+            if (!(target instanceof ControlNode)) {
+                continue;
+            }
+
             System.out.println("Computing outgoing guard for control flow to: " + target);
 
             // TODO compute guard

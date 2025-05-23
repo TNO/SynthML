@@ -128,6 +128,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
     protected final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
+    // TODO Wytse
+    protected final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
+
     public UmlToCifTranslator(Activity activity) {
         super(new CifContext(activity.getModel()));
 
@@ -261,6 +264,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public BiMap<ActivityEdge, DiscVariable> getControlFlowMap() {
         return ImmutableBiMap.copyOf(controlFlowMap);
+    }
+
+    // TODO doc
+    public BiMap<Pair<ActivityEdge, ActivityEdge>, Event> getActivityOrNodeMapping() {
+        return ImmutableBiMap.copyOf(activityOrNodeMapping);
     }
 
     /**
@@ -706,13 +714,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // If there is at most one control flow pair, then we can translate the node as an AND-type node (which is
-        // slightly simpler and gives slightly nicer event names), since that's semantically equivalent to translating
-        // it as an OR-type node.
-        if (controlFlowPairs.size() <= 1) {
-            return translateActivityAndNode(node, isAtomic, controllableStartEvents);
-        }
-
         // For every collected pair of control flows, translate the UML activity node.
         BiMap<Event, Edge> result = HashBiMap.create();
         int count = 0;
@@ -730,6 +731,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Collect the CIF start and end events of the translated UML activity node.
             Event startEvent = translationResult.startEvent;
             List<Event> endEvents = translationResult.endEvents;
+
+            // TODO Wytse
+            activityOrNodeMapping.put(pair, startEvent);
 
             // Collect the newly created CIF edges of the translated UML activity node.
             BiMap<Event, Edge> newEventEdges = translationResult.eventEdges;

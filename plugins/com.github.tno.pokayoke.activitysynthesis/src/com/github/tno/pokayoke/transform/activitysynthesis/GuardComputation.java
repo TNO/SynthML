@@ -139,8 +139,9 @@ public abstract class GuardComputation {
             updates.put(edge, edge.update.id());
         }
 
-        // Also make a copy of the initialization predicate, as data-based synthesis will free it.
+        // Also make a copy of the initialization and marked predicate, as data-based synthesis will free them.
         BDD initialPlantInv = cifBddSpec.initialPlantInv.id();
+        BDD marked = cifBddSpec.marked.id();
 
         // Apply data-based synthesis.
         CifDataSynthesisSettings settings = (CifDataSynthesisSettings)cifBddSpec.settings;
@@ -155,8 +156,9 @@ public abstract class GuardComputation {
             edge.update = updates.get(edge);
         }
 
-        // Restore the initialization predicate, since the original was freed.
+        // Restore the initialization and marked predicate, since the original was freed.
         cifBddSpec.initialPlantInv = initialPlantInv;
+        cifBddSpec.marked = marked;
 
         return synthResult;
     }
@@ -194,8 +196,14 @@ public abstract class GuardComputation {
             }
         }
 
+        // Determine the initialization predicate.
+        BDD initPredicate = cifBddSpec.initialPlantInv.id();
+        if (synthResult.initialOutput != null) {
+            initPredicate = initPredicate.andWith(synthResult.initialOutput);
+        }
+
         // Construct the controlled behavior predicate of the system with a forward search.
-        BDD controlledBehavior = reachForward(cifBddSpec, cifBddSpec.initialPlantInv.id(), null, false);
+        BDD controlledBehavior = reachForward(cifBddSpec, initPredicate, null, false);
 
         // Restore the uncontrolled system guards of the edges.
         for (CifBddEdge edge: cifBddSpec.edges) {
