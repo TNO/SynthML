@@ -170,9 +170,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the map from the normalized name of the UML element to a list of CIF events that refer to it.
+     * Returns the map from the normalized name of a UML element to a list of CIF events that refer to it.
      *
-     * @return The map from the normalized names of UML elements to CIF events.
+     * @return The map from the normalized name of a UML element to the corresponding CIF events.
      */
     public Map<String, List<Event>> getNormalizedNameToEventsMap() {
         return normalizedNamesToEvents;
@@ -1413,7 +1413,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // For every control flow of a translated concrete activity, define an extra postcondition that expresses that
         // the control flow must not hold a token.
         for (var entry: controlFlowMap.entrySet()) {
-            // Exclude the token on the final node incoming edge if translating after synthesis chain.
+            // Exclude the token on the final node incoming edge if translating after synthesis chain. If we are
+            // translating a concrete activity (post synthesis chain), we want to stop the activity execution when we
+            // reach the control flow located just above the final node.
             if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
                     && !(entry.getKey().getTarget() instanceof FinalNode))
             {
