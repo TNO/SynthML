@@ -185,12 +185,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the set containing the absolute names of the CIF discrete variables.
+     * Returns the set containing the non-escaped absolute names of the CIF discrete variables.
      *
-     * @return The set of CIF discrete variables absolute names.
+     * @return The set of CIF discrete variables non-escaped absolute names.
      */
     public Set<String> getVariableNames() {
-        return variableMap.values().stream().map(p -> CifTextUtils.getAbsName(p)).collect(Collectors.toSet());
+        return variableMap.values().stream().map(p -> CifTextUtils.getAbsName(p, false)).collect(Collectors.toSet());
     }
 
     /**
@@ -1554,11 +1554,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         initialNodeConfig.add(tokenOnOutgoing);
 
         // If the control flow has an incoming guard, add it to the list of extra preconditions.
-        if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
+        AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoing);
+        if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
-            cifAlgVar.setName(node.getName());
+            cifAlgVar.setName("__initial_node_incoming_guard");
             cifAlgVar.setType(CifConstructors.newBoolType());
-            cifAlgVar.setValue(translator.translate(CifParserHelper.parseIncomingGuard((ControlFlow)outgoing)));
+            cifAlgVar.setValue(translator.translate(incomingGuard));
             initialNodeConfig.add(cifAlgVar);
         }
     }
@@ -1582,11 +1583,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         finalNodeConfig.add(tokenOnIncoming);
 
         // If the control flow has an outgoing guard, add it to the list of extra postconditions.
-        if (PokaYokeUmlProfileUtil.getOutgoingGuard(incoming) != null) {
+        AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard((ControlFlow)incoming);
+        if (outgoingGuard != null && !(outgoingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
-            cifAlgVar.setName(node.getName());
+            cifAlgVar.setName("__final_node_outgoing_guard");
             cifAlgVar.setType(CifConstructors.newBoolType());
-            cifAlgVar.setValue(translator.translate(CifParserHelper.parseOutgoingGuard((ControlFlow)incoming)));
+            cifAlgVar.setValue(translator.translate(outgoingGuard));
             finalNodeConfig.add(cifAlgVar);
         }
     }

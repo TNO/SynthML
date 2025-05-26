@@ -42,7 +42,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      * @param model2 The second CIF model.
      * @param namesToEvents2 The map from names of UML elements to CIF events, for the second state space.
      * @param tauEvents2 The set of events that represent tau transitions, for the second state space.
-     * @param externalVariableNames The set containing external variable names.
+     * @param externalVariableNames The set containing non-escaped external variable names.
      * @return The model preparation result.
      */
     public static ModelPreparationResult prepareModels(Specification model1, Map<String, List<Event>> namesToEvents1,
@@ -96,7 +96,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             List<Annotation> annotations = locToAnnotation.getValue();
             Annotation annotation = annotations.get(0);
 
-            // Filter and create new annotation.
+            // Filter and create new annotation. External variable names are not escaped.
             List<AnnotationArgument> filteredArgs = annotation.getArguments().stream()
                     .filter(arg -> externalVariableNames.contains(arg.getName())).toList();
             Annotation filteredAnnotation = CifConstructors.newAnnotation(filteredArgs, annotation.getName(),
