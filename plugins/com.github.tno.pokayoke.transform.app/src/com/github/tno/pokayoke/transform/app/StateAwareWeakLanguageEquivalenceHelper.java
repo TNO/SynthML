@@ -42,7 +42,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      * @param model2 The second CIF model.
      * @param namesToEvents2 The map from names of UML elements to CIF events, for the second state space.
      * @param tauEvents2 The set of events that represent tau transitions, for the second state space.
-     * @param externalVariableNames The set containing external variables names.
+     * @param externalVariableNames The set containing external variable names.
      * @return The model preparation result.
      */
     public static ModelPreparationResult prepareModels(Specification model1, Map<String, List<Event>> namesToEvents1,
@@ -66,7 +66,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1));
         Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2));
 
-        // Filter unused events from the state space alphabet.
+        // Filter unused events from the state space alphabets.
         Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
         Set<String> unusedEvents2 = removeAndGetUnusedEvents(stateSpace2);
 
@@ -88,7 +88,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         locToAnnotations.values().stream().forEach(
                 a -> Verify.verify(a.size() == 1, "Found state that doesn't have exactly one state annotation."));
 
-        // Filter the state annotations from internal variables.
+        // Filter the state annotations, by removing the internal variables from them.
         Map<Location, Annotation> locToFilteredAnnotations = new LinkedHashMap<>();
 
         for (Entry<Location, List<Annotation>> locToAnnotation: locToAnnotations.entrySet()) {
