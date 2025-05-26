@@ -132,7 +132,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
-    /** The one-to-many mapping from normalized names of UML elements to their corresponding CIF events. */
+    /**
+     * The one-to-many mapping from normalized names (see {@link this#normalizeName}) of UML elements to their
+     * corresponding CIF events.
+     */
     private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
 
     /**
