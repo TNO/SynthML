@@ -604,11 +604,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
             if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
-                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translatePostSynthChainConcreteActivity(activity);
+                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, true);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
             } else {
-                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
+                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, false);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
             }
@@ -618,12 +618,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
+     * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges. If
+     * the activity is the synthesized activity, the initial and final node are not translated, since we place the first
+     * token after the initial node, and the last token before the final node. Their guards are added to the
+     * preconditions and postconditions, respectively.
      *
      * @param activity The concrete UML activity to translate.
+     * @param isSynthesizedActivity If {@code true}, it signals that the activity is the synthesized one.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity,
+            boolean isSynthesizedActivity)
+    {
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
         // Translate all activity control flows.
@@ -632,44 +638,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             newVariables.add(translateActivityControlFlow(controlFlow));
         }
 
-        // Translate all activity nodes.
+        // Translate all activity nodes. If the activity is the synthesized one, do not translate the initial and final
+        // node; computes the configurations for the initial and final nodes.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
-            newEventEdges.putAll(translateActivityNode(node));
-        }
-
-        return Pair.pair(newVariables, newEventEdges);
-    }
-
-    /**
-     * Translates the post-synthesis-chain concrete UML activity to CIF variables, and CIF events with their
-     * corresponding CIF edges. The initial and final node are not translated, since we place the first token after the
-     * initial node, and the last token before the final node. Their guards are added to the preconditions and
-     * postconditions, respectively.
-     *
-     * @param activity The concrete UML activity to translate.
-     * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
-     */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translatePostSynthChainConcreteActivity(Activity activity) {
-        Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
-
-        // Translate all activity control flows.
-        Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
-        for (ActivityEdge controlFlow: activity.getEdges()) {
-            DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
-            if (controlFlow.getSource() instanceof InitialNode) {
-                cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
-            }
-            newVariables.add(cifControlFlowVar);
-        }
-
-        // Translate all activity nodes but the initial and final node. Computes the configurations for the initial and
-        // final nodes.
-        BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
-        for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof InitialNode initialNode) {
+            if (node instanceof InitialNode initialNode && isSynthesizedActivity) {
                 createInitialNodeConfiguration(initialNode);
-            } else if (node instanceof FinalNode finalNode) {
+            } else if (node instanceof FinalNode finalNode && isSynthesizedActivity) {
                 createFinalNodeConfiguration(finalNode);
             } else {
                 newEventEdges.putAll(translateActivityNode(node));
