@@ -368,8 +368,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
-        List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
-        cifSpec.getComponents().addAll(cifRequirementAutomata);
+        if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+            List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
+            cifSpec.getComponents().addAll(cifRequirementAutomata);
+        }
 
         // Translate all preconditions of the input UML activity as an initial predicate in CIF.
         Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
@@ -1529,7 +1531,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             umlElement.setName(elementName.replace("_end", NONATOMIC_OUTCOME_SUFFIX));
         }
 
-        return "__UML_element_" + umlElement.getName() + postfix;
+        return "UML_element__" + umlElement.getName() + postfix;
     }
 
     /**
