@@ -105,6 +105,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The prefix of a CIF variable indicating that a translated UML control flow holds a token. */
     public static final String CONTROLFLOW_PREFIX = "__controlflow";
 
+    /** The suffix of an action that encodes the start of a non-atomic action. */
+    public static final String START_ACTION_SUFFIX = "__start";
+
+    /** The suffix of an action that encodes the end of a non-atomic action. */
+    public static final String END_ACTION_SUFFIX = "__end";
+
     /** The input UML activity to translate. */
     private final Activity activity;
 
@@ -1504,13 +1510,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // If name contains the post-synthesis identifier for the start or end of a non-atomic action, replace it with
-        // its original non-atomic action identifier. The identifiers are defined in
-        // PostProcessActivity.rewriteLeftoverNonAtomicActions.
+        // its original non-atomic action identifier.
         String elementName = umlElement.getName();
-        if (elementName.contains("_start")) {
-            umlElement.setName(elementName.replace("_start", ""));
-        } else if (elementName.contains("_end")) {
-            umlElement.setName(elementName.replace("_end", NONATOMIC_OUTCOME_SUFFIX));
+        if (elementName.contains(START_ACTION_SUFFIX)) {
+            umlElement.setName(elementName.replace(START_ACTION_SUFFIX, ""));
+        } else if (elementName.contains(END_ACTION_SUFFIX)) {
+            umlElement.setName(elementName.replace(END_ACTION_SUFFIX, NONATOMIC_OUTCOME_SUFFIX));
         }
 
         return "UML_element__" + umlElement.getName() + postfix;
