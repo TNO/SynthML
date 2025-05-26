@@ -143,7 +143,9 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      * @param unusedEvents1 Names of events that are not used in the first state space.
      * @param namesToEvents2 The map from the name of the UML element to the list of events related to it.
      * @param unusedEvents2 Names of events that are not used in the second state space.
-     * @return A set of paired (lists of) events.
+     * @return The set containing pairs of corresponding (lists of) events for the two state space automata. All events
+     *     in the first list of events are equivalent to all the events in the second list of events. If 'null', the two
+     *     state spaces are not equivalent.
      */
     private static Set<Pair<List<Event>, List<Event>>> getPairedEvents(Map<String, List<Event>> namesToEvents1,
             Set<String> unusedEvents1, Map<String, List<Event>> namesToEvents2, Set<String> unusedEvents2)

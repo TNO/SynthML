@@ -1529,12 +1529,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             umlElement.setName(elementName.replace("_end", NONATOMIC_OUTCOME_SUFFIX));
         }
 
-        // If this element has effects, return the element name with the effect number.
-        if (postfix.isEmpty()) {
-            return "__UML_element_" + umlElement.getName();
-        } else {
-            return "__UML_element_" + umlElement.getName() + postfix;
-        }
+        return "__UML_element_" + umlElement.getName() + postfix;
     }
 
     /**

@@ -46,18 +46,16 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      *     state annotations contain solely the relevant information used for comparison of the model states.
      * @param tauEvents2 The set containing events that represent a tau transition for the second model.
      * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
-     *     All events in the first list of events are equivalent to all the events in the second list of events. If
-     *     'null', the two state spaces are not equivalent.
+     *     All events in the first list of events are equivalent to all the events in the second list of events.
      * @return {@code true} if the two state space automata are language equivalent, {@code false} otherwise.
      */
+    @SuppressWarnings("null")
     public boolean check(Automaton stateSpace1, Map<Location, Annotation> stateAnnotations1, Set<Event> tauEvents1,
             Automaton stateSpace2, Map<Location, Annotation> stateAnnotations2, Set<Event> tauEvents2,
             Set<Pair<List<Event>, List<Event>>> pairedEvents)
     {
-        // Sanity check: if paired events is 'null' the two state spaces are not equivalent.
-        if (pairedEvents == null) {
-            return false;
-        }
+        // Sanity check: paired events should not be null.
+        Verify.verify(pairedEvents != null, "Paired events cannot be null.");
 
         // Sanity check: tau events and non-tau events must be disjoint.
         Verify.verify(areDisjointEventSets(
