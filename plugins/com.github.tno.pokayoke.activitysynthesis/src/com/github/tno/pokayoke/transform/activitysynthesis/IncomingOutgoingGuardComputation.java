@@ -46,8 +46,14 @@ import com.google.common.collect.BiMap;
 
 /** Computes incoming and outgoing guards for synthesized UML activities. */
 public class IncomingOutgoingGuardComputation extends GuardComputation {
+    /** The UML-to-CIF translator to use for guard computation. */
     private final UmlToCifTranslator translator;
 
+    /**
+     * Constructs a new {@link IncomingOutgoingGuardComputation}.
+     *
+     * @param translator The UML-to-CIF translator to use for guard computation.
+     */
     public IncomingOutgoingGuardComputation(UmlToCifTranslator translator) {
         this.translator = translator;
     }
@@ -59,6 +65,21 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
 
     @Override
     public Map<ControlFlow, BDD> computeGuards(Specification specification) {
+        // Obtain the mapping from UML (activity) elements to all the CIF start events created for them.
+        Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
+
+        // Helper function for obtaining the single CIF start event of a given UML element.
+        Function<RedefinableElement, Event> getSingleStartEvent = element -> {
+            List<Event> startEvents = startEventMap.get(element);
+            int nrOfStartEvents = startEvents.size();
+            Verify.verify(nrOfStartEvents == 1, "Expected a single start event, but got " + nrOfStartEvents + ".");
+            return startEvents.get(0);
+        };
+
+        // Obtain the mapping from all incoming/outgoing control flow pairs of translated OR-type activity nodes,
+        // to the CIF start events created for these control flow pairs.
+        BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = translator.getActivityOrNodeMapping();
+
         // Define the configuration for performing data-based synthesis and symbolic reachability searches.
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
@@ -71,32 +92,19 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         CifToBddConverter converter = new CifToBddConverter("Guard computation");
         CifBddSpec cifBddSpec = converter.convert(specification, settings, factory);
 
+        // Helper function for obtaining the corresponding single CIF/BDD edge of a CIF event.
+        Function<Event, CifBddEdge> getCorrespondingEdge = event -> {
+            List<CifBddEdge> edges = cifBddSpec.eventEdges.get(event);
+            int nrOfEdges = edges.size();
+            Verify.verify(nrOfEdges == 1, "Expected a single CIF/BDD edge, but got " + nrOfEdges + ".");
+            return edges.get(0);
+        };
+
         // Find all controlled system states.
         BDD controlledStates = computeControlledBehavior(cifBddSpec);
 
         // Obtain the set of all internal BDD variables.
         BDDVarSet internalVars = getInternalBDDVars(cifBddSpec);
-
-        // Obtain the mapping from UML (activity) elements to all the CIF start events created for them.
-        Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
-
-        // Obtain the mapping from all incoming/outgoing control flow pairs of translated OR-type activity nodes,
-        // to the CIF start events created for them.
-        BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = translator.getActivityOrNodeMapping();
-
-        // TODO helper function
-        Function<RedefinableElement, Event> getSingleStartEvent = element -> {
-            List<Event> startEvents = startEventMap.get(element);
-            Verify.verify(startEvents.size() == 1);
-            return startEvents.get(0);
-        };
-
-        // TODO helper function
-        Function<Event, CifBddEdge> getCorrespondingEdge = event -> {
-            List<CifBddEdge> edges = cifBddSpec.eventEdges.get(event);
-            Verify.verify(edges.size() == 1);
-            return edges.get(0);
-        };
 
         System.out.println("Computing guards for: " + translator.getActivity());
 
@@ -152,7 +160,7 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
             System.out.println();
         }
 
-        // TODO Auto-generated method stub
+        // TODO don't return anything, but add the computed guards to the UML activity directly.
         return null;
     }
 
@@ -185,14 +193,14 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
     }
 
     /**
-     * Tries to compute a BDD predicate that is equivalent to {@code controlledGuard.simplify(uncontrolledGuard)} but
-     * does not depend on any variables in {@code internalVars}. If such a predicate does not exist, a runtime exception
-     * is thrown instead.
+     * Tries to compute a guard as a BDD predicate that is equivalent to
+     * {@code controlledGuard.simplify(uncontrolledGuard)}, but does not depend on any variables in
+     * {@code internalVars}. If such a predicate does not exist, a runtime exception will be thrown instead.
      *
-     * @param uncontrolledGuard The predicate to simplify against.
-     * @param controlledGuard The predicate to simplify.
+     * @param uncontrolledGuard The uncontrolled system guard to simplify against.
+     * @param controlledGuard The controlled system guard to simplify.
      * @param internalVars The set of BDD variables from which the computed predicate should be independent.
-     * @return The computed predicate.
+     * @return The computed guard.
      */
     private BDD computeGuard(BDD uncontrolledGuard, BDD controlledGuard, BDDVarSet internalVars) {
         // Try to compute a guard that is independent of internal variables.
@@ -230,16 +238,22 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         return guard;
     }
 
-    // TODO doc
+    /**
+     * Computes a BDD predicate expressing that the given UML control flow holds a token.
+     *
+     * @param controlFlow The input UML control flow.
+     * @param cifBddSpec The input CIF/BDD specification.
+     * @return The computed BDD predicate.
+     */
     private BDD getTokenConstraint(ActivityEdge controlFlow, CifBddSpec cifBddSpec) {
-        // Obtain the (Boolean) CIF variable that corresponds to the given control flow.
+        // Obtain the (Boolean) CIF variable that corresponds to the given UML control flow.
         DiscVariable variable = translator.getControlFlowMap().get(controlFlow);
 
         // Construct a CIF constraint expressing that the obtained CIF variable must be true.
         Expression constraint = CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(),
                 variable);
 
-        // Convert the CIF constraint to a BDD predicate.
+        // Convert this CIF constraint to a BDD predicate.
         try {
             return CifToBddConverter.convertPred(constraint, false, cifBddSpec);
         } catch (UnsupportedPredicateException e) {
@@ -247,7 +261,12 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         }
     }
 
-    // TODO javadoc
+    /**
+     * Computes all combinations of incoming and outgoing control flows of the given UML activity node.
+     *
+     * @param node The input UML node.
+     * @return The set of all incoming/outgoing control flow pairs of the given UML activity node.
+     */
     private Set<Pair<ActivityEdge, ActivityEdge>> getControlFlowPairs(ActivityNode node) {
         Set<Pair<ActivityEdge, ActivityEdge>> pairs = new LinkedHashSet<>();
 
@@ -260,7 +279,14 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         return pairs;
     }
 
-    // TODO doc
+    /**
+     * Helper function, to reverse the given mapping.
+     *
+     * @param <T> The domain of map to reverse.
+     * @param <U> The codomain the the map to reverse.
+     * @param map The map to reverse.
+     * @return The reversed map.
+     */
     private static <T, U> Map<U, List<T>> reverse(Map<T, U> map) {
         Map<U, List<T>> result = new LinkedHashMap<>();
 
