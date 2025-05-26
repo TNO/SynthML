@@ -335,4 +335,10 @@ public abstract class GuardComputation {
     protected String bddToString(BDD bdd, CifBddSpec cifBddSpec) {
         return CifTextUtils.exprToStr(BddToCif.bddToCifPred(bdd, cifBddSpec));
     }
+
+    // TODO remove
+    protected String toUmlGuard(BDD bdd, CifBddSpec cifBddSpec) {
+        String replace = getTranslator().getPlantName() + ".";
+        return bddToString(bdd, cifBddSpec).replaceAll(replace, "");
+    }
 }

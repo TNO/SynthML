@@ -41,6 +41,7 @@ import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.javabdd.BDDVarSet;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 
@@ -111,26 +112,34 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         for (ActivityNode node: translator.getActivity().getNodes()) {
             System.out.println("Computing guard for: " + node);
 
-            if (node instanceof DecisionNode decisionNode) {
-                for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(decisionNode)) {
+            if (node instanceof DecisionNode) {
+                for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(node)) {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
-                    System.out.println("incoming guard: " + bddToString(guard, cifBddSpec));
+                    String guardAsString = toUmlGuard(guard, cifBddSpec);
+                    PokaYokeUmlProfileUtil.setIncomingGuard(pair.right, guardAsString);
+                    System.out.println("incoming guard: " + guardAsString);
                 }
-            } else if (node instanceof MergeNode mergeNode) {
-                for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(mergeNode)) {
+            } else if (node instanceof MergeNode) {
+                for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(node)) {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
-                    System.out.println("outgoing guard: " + bddToString(guard, cifBddSpec));
+                    String guardAsString = toUmlGuard(guard, cifBddSpec);
+                    PokaYokeUmlProfileUtil.setOutgoingGuard(pair.left, guardAsString);
+                    System.out.println("outgoing guard: " + guardAsString);
                 }
-            } else if (node instanceof ForkNode forkNode) {
-                CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(forkNode));
+            } else if (node instanceof ForkNode) {
+                CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                System.out.println("outgoing guard: " + bddToString(guard, cifBddSpec));
-            } else if (node instanceof JoinNode joinNode) {
-                CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(joinNode));
+                String guardAsString = toUmlGuard(guard, cifBddSpec);
+                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
+                System.out.println("outgoing guard: " + guardAsString);
+            } else if (node instanceof JoinNode) {
+                CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                System.out.println("incoming guard: " + bddToString(guard, cifBddSpec));
+                String guardAsString = toUmlGuard(guard, cifBddSpec);
+                PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), guardAsString);
+                System.out.println("incoming guard: " + guardAsString);
             } else if (node instanceof InitialNode) {
                 for (ActivityEdge outgoing: node.getOutgoings()) {
                     BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
@@ -138,7 +147,9 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
                     BDD controlledGuard = uncontrolledGuard.and(controlledStates);
                     BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                     controlledGuard.free();
-                    System.out.println("incoming guard: " + bddToString(guard, cifBddSpec));
+                    String guardAsString = toUmlGuard(guard, cifBddSpec);
+                    PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), guardAsString);
+                    System.out.println("incoming guard: " + guardAsString);
                 }
             } else if (node instanceof ActivityFinalNode) {
                 for (ActivityEdge incoming: node.getIncomings()) {
@@ -147,12 +158,16 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
                     BDD controlledGuard = uncontrolledGuard.and(cifBddSpec.marked);
                     BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                     controlledGuard.free();
-                    System.out.println("outgoing guard: " + bddToString(guard, cifBddSpec));
+                    String guardAsString = toUmlGuard(guard, cifBddSpec);
+                    PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
+                    System.out.println("outgoing guard: " + guardAsString);
                 }
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                System.out.println("outgoing guard: " + bddToString(guard, cifBddSpec));
+                String guardAsString = toUmlGuard(guard, cifBddSpec);
+                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
+                System.out.println("outgoing guard: " + guardAsString);
             } else {
                 throw new RuntimeException("Unknown activity node: " + node);
             }

@@ -44,7 +44,6 @@ import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelpe
 import com.github.tno.pokayoke.transform.activitysynthesis.IncomingOutgoingGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
-import com.github.tno.pokayoke.transform.activitysynthesis.OutgoingGuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -310,9 +309,10 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // TODO compute guards
-        //new OutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        // Computing guards.
         new IncomingOutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.uml");
+        FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);

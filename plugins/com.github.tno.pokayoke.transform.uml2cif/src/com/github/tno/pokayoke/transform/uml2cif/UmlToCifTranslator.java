@@ -271,6 +271,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return ImmutableBiMap.copyOf(activityOrNodeMapping);
     }
 
+    // TODO doc
+    public String getPlantName() {
+        return activity.getContext().getName();
+    }
+
     /**
      * Translates the UML synthesis specifications to a CIF specification.
      *
@@ -292,7 +297,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
-        cifPlant.setName(activity.getContext().getName());
+        cifPlant.setName(getPlantName());
         cifSpec.getComponents().add(cifPlant);
 
         // Translate all UML properties.

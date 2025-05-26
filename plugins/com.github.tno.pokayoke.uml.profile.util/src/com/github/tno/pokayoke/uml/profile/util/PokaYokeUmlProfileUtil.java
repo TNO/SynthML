@@ -294,7 +294,7 @@ public class PokaYokeUmlProfileUtil {
      * @param controlFlow The control flow to set the outgoing guard on.
      * @param newGuard The new outgoing guard.
      */
-    public static void setOutgoingGuard(ControlFlow controlFlow, String newGuard) {
+    public static void setOutgoingGuard(ActivityEdge controlFlow, String newGuard) {
         if (Strings.isNullOrEmpty(newGuard)) {
             PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
             return;
