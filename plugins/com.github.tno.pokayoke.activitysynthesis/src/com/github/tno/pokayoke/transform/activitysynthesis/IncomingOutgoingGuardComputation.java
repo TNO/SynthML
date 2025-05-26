@@ -28,7 +28,6 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -64,8 +63,7 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         return translator;
     }
 
-    @Override
-    public Map<ControlFlow, BDD> computeGuards(Specification specification) {
+    public void computeGuards(Specification specification) {
         // Obtain the mapping from UML (activity) elements to all the CIF start events created for them.
         Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
 
@@ -174,9 +172,6 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
 
             System.out.println();
         }
-
-        // TODO don't return anything, but add the computed guards to the UML activity directly.
-        return null;
     }
 
     /**

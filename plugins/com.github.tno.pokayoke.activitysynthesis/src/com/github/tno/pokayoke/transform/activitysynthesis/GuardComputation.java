@@ -19,9 +19,7 @@ import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
-import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
-import org.eclipse.uml2.uml.ControlFlow;
 
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDVarSet;
@@ -31,8 +29,6 @@ import com.google.common.collect.Sets;
 
 public abstract class GuardComputation {
     public abstract UmlToCifTranslator getTranslator();
-
-    public abstract Map<ControlFlow, BDD> computeGuards(Specification specification);
 
     /**
      * Computes the set of all forward reachable states from the given predicate, using all edges in the given CIF/BDD
