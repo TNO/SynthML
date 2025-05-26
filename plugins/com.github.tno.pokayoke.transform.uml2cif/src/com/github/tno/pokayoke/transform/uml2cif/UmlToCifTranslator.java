@@ -133,8 +133,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
     /**
-     * The one-to-many mapping from normalized names (see {@link this#normalizeName}) of UML elements to their
-     * corresponding CIF events.
+     * The one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their corresponding
+     * CIF events.
      */
     private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
 
@@ -143,12 +143,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * point-of-view.
      */
     private final Set<Event> internalEvents = new LinkedHashSet<>();
-
-    /** The list containing the token configuration related to the initial node. */
-    private List<AlgVariable> initialNodeConfig = new ArrayList<>();
-
-    /** The list containing the token configuration related to the final node. */
-    private List<AlgVariable> finalNodeConfig = new ArrayList<>();
 
     public static enum TranslationPurpose {
         SYNTHESIS, LANGUAGE_EQUIVALENCE;
@@ -1267,8 +1261,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
         List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
 
-        // Add the initial node configuration.
-        preconditionVars.addAll(initialNodeConfig);
+        // Compute the synthesized activity's initial node configuration and add it to the preconditions.
+        for (ActivityNode node: activity.getNodes()) {
+            if (node instanceof InitialNode initialNode) {
+                preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
+            }
+        }
 
         // Combine the activity preconditions with initial node preconditions.
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
@@ -1411,8 +1409,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Add the final node configuration.
-        postconditionVars.addAll(finalNodeConfig);
+        // Compute the synthesized activity's final node configuration and add it to the preconditions.
+        for (ActivityNode node: activity.getNodes()) {
+            if (node instanceof FinalNode finalNode) {
+                postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
+            }
+        }
 
         // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is the
         // conjunction of all these defined postcondition variables (which are all Boolean typed).
@@ -1519,8 +1521,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * whose source is the initial node. Add also its incoming guards, if present.
      *
      * @param node The UML activity initial node.
+     * @return The list of CIF algebraic variables representing the initial node token configuration.
      */
-    private void createInitialNodeConfiguration(InitialNode node) {
+    private List<AlgVariable> createInitialNodeConfiguration(InitialNode node) {
+        List<AlgVariable> initialNodeConfig = new ArrayList<>();
+
         // Create a new algebraic variable out of the discrete one, for later use in the preconditions.
         Verify.verify(node.getOutgoings().size() == 1, "Expected unique outgoing control flow from initial node.");
         ActivityEdge outgoing = node.getOutgoings().get(0);
@@ -1542,6 +1547,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             cifAlgVar.setValue(translator.translate(incomingGuard));
             initialNodeConfig.add(cifAlgVar);
         }
+
+        return initialNodeConfig;
     }
 
     /**
@@ -1549,8 +1556,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * target is the final node. Add also its outgoing guards, if present.
      *
      * @param node The UML activity final node.
+     * @return The list of CIF algebraic variables representing the final node token configuration.
      */
-    private void createFinalNodeConfiguration(FinalNode node) {
+    private List<AlgVariable> createFinalNodeConfiguration(FinalNode node) {
+        List<AlgVariable> finalNodeConfig = new ArrayList<>();
+
         // Create a new algebraic variable out of the discrete one, for later use in the postconditions.
         ActivityEdge incoming = node.getIncomings().get(0);
         DiscVariable incomingVariable = controlFlowMap.get(incoming);
@@ -1571,5 +1581,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             cifAlgVar.setValue(translator.translate(outgoingGuard));
             finalNodeConfig.add(cifAlgVar);
         }
+
+        return finalNodeConfig;
     }
 }
