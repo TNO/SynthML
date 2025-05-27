@@ -346,7 +346,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
-        if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             // Translate all UML opaque behaviors.
             BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
             for (var entry: cifEventEdges.entrySet()) {
@@ -375,7 +375,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
-        if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             // Translate all occurrence constraints of the input UML activity.
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
@@ -388,7 +388,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
-        if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             // Translate all postconditions of the input UML activity as a marked predicate in CIF.
             Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
                     cifAtomicityVar);
@@ -405,7 +405,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Translate all UML class constraints as CIF invariants.
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
-        } else if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        } else if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
             List<AlgVariable> postconditionVars = null;
             for (ActivityNode node: activity.getNodes()) {
@@ -626,11 +626,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
-            if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
+            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
                 Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, true);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
-            } else {
+            } else if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                 Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, false);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
@@ -1425,7 +1425,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Exclude the token on the final node incoming edge if translating after synthesis chain. If we are
             // translating a concrete activity (post synthesis chain), we want to stop the activity execution when we
             // reach the control flow located just above the final node.
-            if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
+            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
                     && !(entry.getKey().getTarget() instanceof FinalNode))
             {
                 DiscVariable cifControlFlowVar = entry.getValue();
