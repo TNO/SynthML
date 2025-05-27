@@ -50,7 +50,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.ConvertExpressionUpda
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
-import com.github.tno.pokayoke.transform.activitysynthesis.RedundantPathsCleaner;
+import com.github.tno.pokayoke.transform.activitysynthesis.RedundantPathsRemover;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -169,7 +169,7 @@ public class FullSynthesisApp {
 
         // Remove redundant paths from the CIF state space.
         Path essentialModelPath = outputFolderPath.resolve(filePrefix + ".045.statespace.essential.cif");
-        RedundantPathsCleaner redundantPathsCleaner = new RedundantPathsCleaner();
+        RedundantPathsRemover redundantPathsCleaner = new RedundantPathsRemover();
         redundantPathsCleaner.clean(CifFileHelper.loadCifSpec(cifStateSpacePath),
                 cifBddSpec, essentialModelPath, outputFolderPath);
 
