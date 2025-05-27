@@ -41,10 +41,10 @@ public class RedundantPathsRemover {
     /** The map from essential locations to their essential edges. */
     private Map<Location, Set<Edge>> essentialLocsToEssentialEdges = new LinkedHashMap<>();
 
-    /** The set of all initial locations of the automaton. */
+    /** The set of all initial locations of the state space. */
     private Set<Location> initialLocs = new LinkedHashSet<>();
 
-    /** The set of all marked locations of the automaton. */
+    /** The set of all marked locations of the state space. */
     private Set<Location> markedLocs = new LinkedHashSet<>();
 
     /** The map from locations to their children and the connecting edges. */
@@ -71,17 +71,17 @@ public class RedundantPathsRemover {
         Verify.verify(model.getComponents().size() == 1, "Found more than one component.");
         Verify.verify(model.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
 
-        Automaton automa = (Automaton)model.getComponents().get(0);
+        Automaton stateSpace = (Automaton)model.getComponents().get(0);
 
         // Compute initial and marked locations.
-        findInitialAndMarkedLocations(automa);
+        findInitialAndMarkedLocations(stateSpace);
 
         // Sanity check: initial and marked locations must not be empty.
         Verify.verify(initialLocs != null && !initialLocs.isEmpty(), "Found empty initial set.");
         Verify.verify(markedLocs != null && !markedLocs.isEmpty(), "Found empty target set.");
 
         // Create NodeInfo objects for all locations.
-        createNodeInfos(automa.getLocations());
+        createNodeInfos(stateSpace.getLocations());
 
         // Call the minimum sub-graph algorithm.
         Set<NodeInfo> markedNodeInfo = markedLocs.stream().map(m -> locationNodeInfoMap.get(m))
@@ -94,7 +94,7 @@ public class RedundantPathsRemover {
         }
 
         // Remove every non-essential, redundant element.
-        removeRedundantElements(automa);
+        removeRedundantElements(stateSpace);
 
         // Write the essential model.
         try {
@@ -105,16 +105,16 @@ public class RedundantPathsRemover {
         }
     }
 
-    private void findInitialAndMarkedLocations(Automaton automaton) {
-        // Find initial locations of the automaton.
-        for (Location loc: automaton.getLocations()) {
+    private void findInitialAndMarkedLocations(Automaton stateSpace) {
+        // Find initial locations of the state space.
+        for (Location loc: stateSpace.getLocations()) {
             if (CifLocationHelper.isInitial(loc)) {
                 initialLocs.add(loc);
             }
         }
 
-        // Find marked locations of the automaton.
-        for (Location loc: automaton.getLocations()) {
+        // Find marked locations of the state space.
+        for (Location loc: stateSpace.getLocations()) {
             if (CifLocationHelper.isMarked(loc)) {
                 markedLocs.add(loc);
             }
@@ -259,10 +259,10 @@ public class RedundantPathsRemover {
         }
     }
 
-    private void removeRedundantElements(Automaton automa) {
+    private void removeRedundantElements(Automaton stateSpace) {
         // Remove all redundant locations and redundant edges of essential locations.
         Set<Location> locsToRemove = new LinkedHashSet<>();
-        for (Location loc: automa.getLocations()) {
+        for (Location loc: stateSpace.getLocations()) {
             if (!essentialLocs.contains(loc)) {
                 locsToRemove.add(loc);
             } else {
@@ -277,6 +277,6 @@ public class RedundantPathsRemover {
                 loc.getEdges().removeAll(edgesToRemove);
             }
         }
-        automa.getLocations().removeAll(locsToRemove);
+        stateSpace.getLocations().removeAll(locsToRemove);
     }
 }
