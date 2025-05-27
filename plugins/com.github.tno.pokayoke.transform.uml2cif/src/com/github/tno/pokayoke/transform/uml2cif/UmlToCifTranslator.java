@@ -317,7 +317,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public Specification translate() throws CoreException {
         // The post-synthesis chain models may contain some UML elements whose names include with double underscores,
         // e.g. non-atomic start/end opaque actions. Avoid model validation in this case.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             // Validate the UML input model.
             ValidationHelper.validateModel(activity.getModel());
         }
@@ -627,6 +627,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
             if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
+                // For the language equivalence check, we do not translate other activities. The translation of other
+                // concrete activities implies the translation of all its nodes, e.g. call behavior actions to some
+                // opaque behavior. These nodes are mixed with the current activity nodes, resulting in a wrong
+                // translation. With vertical scaling, this needs to be carefully evaluated again.
                 Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, true);
                 newVariables.addAll(result.left);
                 newEventEdges.putAll(result.right);
