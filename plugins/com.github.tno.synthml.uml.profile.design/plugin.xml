@@ -4,7 +4,7 @@
   <extension point="org.eclipse.sirius.componentization">
     <component class="com.github.tno.synthml.uml.profile.design.Activator"
                id="com.github.tno.synthml.uml.profile.design"
-	       name="pokayoke">
+	       name="synthml">
     </component>
   </extension>
 </plugin>

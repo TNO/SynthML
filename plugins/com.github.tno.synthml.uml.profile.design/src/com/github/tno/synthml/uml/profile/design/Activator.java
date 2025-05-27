@@ -39,8 +39,8 @@ public class Activator extends AbstractUIPlugin {
         super.start(context);
         plugin = this;
         viewpoints = new HashSet<>();
-        viewpoints.addAll(
-                ViewpointRegistry.getInstance().registerFromPlugin(PLUGIN_ID + "/description/pokayoke.odesign"));
+        viewpoints
+                .addAll(ViewpointRegistry.getInstance().registerFromPlugin(PLUGIN_ID + "/description/synthml.odesign"));
 
         // Automatically validate all diagrams on load and save
         SessionManager.INSTANCE.addSessionsListener(new SessionManagerListener.Stub() {
