@@ -105,10 +105,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The prefix of a CIF variable indicating that a translated UML control flow holds a token. */
     public static final String CONTROLFLOW_PREFIX = "__controlflow";
 
-    /** The suffix of an action that encodes the start of a non-atomic action. */
+    /** The suffix of a UML element name that encodes the start of a non-atomic action. */
     public static final String START_ACTION_SUFFIX = "__start";
 
-    /** The suffix of an action that encodes the end of a non-atomic action. */
+    /** The suffix of a UML element name that encodes the end of a non-atomic action. */
     public static final String END_ACTION_SUFFIX = "__end";
 
     /** The input UML activity to translate. */
@@ -170,7 +170,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the map from the normalized name of a UML element to a list of CIF events that refer to it.
+     * Returns the map from the normalized name (see {@link #normalizeName}) of a UML element to a list of CIF events
+     * that refer to it.
      *
      * @return The map from the normalized name of a UML element to the corresponding CIF events.
      */
@@ -370,8 +371,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
-        // Translate all occurrence constraints of the input UML activity.
         if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+            // Translate all occurrence constraints of the input UML activity.
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
@@ -383,19 +384,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
-        // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                cifAtomicityVar);
-        cifPlant.getDeclarations().addAll(postconditions.left);
-        postconditionVariable = postconditions.right;
-        cifPlant.getDeclarations().add(postconditionVariable);
-        cifPlant.getMarkeds().add(getTranslatedPostcondition());
-
-        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
-        List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
-        cifSpec.getInvariants().addAll(cifDisableConstraints);
-
         if (this.translationPurpose == TranslationPurpose.SYNTHESIS) {
+            // Translate all postconditions of the input UML activity as a marked predicate in CIF.
+            Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
+                    cifAtomicityVar);
+            cifPlant.getDeclarations().addAll(postconditions.left);
+            postconditionVariable = postconditions.right;
+            cifPlant.getDeclarations().add(postconditionVariable);
+            cifPlant.getMarkeds().add(getTranslatedPostcondition());
+
+            // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
+            // taken.
+            List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
+            cifSpec.getInvariants().addAll(cifDisableConstraints);
+
             // Translate all UML class constraints as CIF invariants.
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
@@ -635,17 +637,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate all activity control flows.
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
         for (ActivityEdge controlFlow: activity.getEdges()) {
-            newVariables.add(translateActivityControlFlow(controlFlow));
+            DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
+            if (controlFlow.getSource() instanceof InitialNode && isSynthesizedActivity) {
+                cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
+            }
+            newVariables.add(cifControlFlowVar);
         }
 
         // Translate all activity nodes. If the activity is the synthesized one, do not translate the initial and final
-        // node; computes the configurations for the initial and final nodes.
+        // node; the configurations for the initial and final nodes are considered during the pre- and postcondition
+        // computation.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
             if (node instanceof InitialNode initialNode && isSynthesizedActivity) {
-                createInitialNodeConfiguration(initialNode);
+                continue;
             } else if (node instanceof FinalNode finalNode && isSynthesizedActivity) {
-                createFinalNodeConfiguration(finalNode);
+                continue;
             } else {
                 newEventEdges.putAll(translateActivityNode(node));
             }
@@ -1269,7 +1276,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Compute the synthesized activity's initial node configuration and add it to the preconditions.
         for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof InitialNode initialNode) {
+            if (node instanceof InitialNode initialNode
+                    && translationPurpose.equals(TranslationPurpose.LANGUAGE_EQUIVALENCE))
+            {
                 preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
             }
         }
@@ -1417,7 +1426,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Compute the synthesized activity's final node configuration and add it to the preconditions.
         for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof FinalNode finalNode) {
+            if (node instanceof FinalNode finalNode
+                    && translationPurpose.equals(TranslationPurpose.LANGUAGE_EQUIVALENCE))
+            {
                 postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
             }
         }
@@ -1543,7 +1554,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         tokenOnOutgoing.setValue(tokenOnControlflowExpr);
         initialNodeConfig.add(tokenOnOutgoing);
 
-        // If the control flow has an incoming guard, add it to the list of extra preconditions.
+        // If the control flow has a nontrivial incoming guard, add it to the list of extra preconditions.
         AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoing);
         if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
@@ -1577,7 +1588,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         tokenOnIncoming.setValue(tokenOnControlflowExpr);
         finalNodeConfig.add(tokenOnIncoming);
 
-        // If the control flow has an outgoing guard, add it to the list of extra postconditions.
+        // If the control flow has a nontrivial outgoing guard, add it to the list of extra postconditions.
         AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard((ControlFlow)incoming);
         if (outgoingGuard != null && !(outgoingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
