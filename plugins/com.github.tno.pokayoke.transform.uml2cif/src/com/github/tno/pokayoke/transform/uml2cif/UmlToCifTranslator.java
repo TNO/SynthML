@@ -315,8 +315,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @throws CoreException In case the input UML model is invalid.
      */
     public Specification translate() throws CoreException {
-        // Validate the UML input model.
-        ValidationHelper.validateModel(activity.getModel());
+        // The post-synthesis chain models may contain some UML elements whose names include with double underscores,
+        // e.g. non-atomic start/end opaque actions. Avoid model validation in this case.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            // Validate the UML input model.
+            ValidationHelper.validateModel(activity.getModel());
+        }
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
@@ -401,6 +405,23 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Translate all UML class constraints as CIF invariants.
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
+        } else if (this.translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
+            List<AlgVariable> postconditionVars = null;
+            for (ActivityNode node: activity.getNodes()) {
+                if (node instanceof FinalNode finalNode) {
+                    postconditionVars = createFinalNodeConfiguration(finalNode);
+                }
+            }
+
+            // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is
+            // the conjunction of all these defined postcondition variables (which are all Boolean typed).
+            AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
+
+            cifPlant.getDeclarations().addAll(postconditionVars);
+            postconditionVariable = postconditionVar;
+            cifPlant.getDeclarations().add(postconditionVariable);
+            cifPlant.getMarkeds().add(getTranslatedPostcondition());
         }
 
         return cifSpec;
@@ -1421,15 +1442,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
                         cifExtraPostcondition);
                 postconditionVars.add(cifAlgVar);
-            }
-        }
-
-        // Compute the synthesized activity's final node configuration and add it to the preconditions.
-        for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof FinalNode finalNode
-                    && translationPurpose.equals(TranslationPurpose.LANGUAGE_EQUIVALENCE))
-            {
-                postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
             }
         }
 
