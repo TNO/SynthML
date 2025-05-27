@@ -170,7 +170,7 @@ public class FullSynthesisApp {
         // Remove redundant paths from the CIF state space.
         Path essentialModelPath = outputFolderPath.resolve(filePrefix + ".045.statespace.essential.cif");
         RedundantPathsRemover redundantPathsCleaner = new RedundantPathsRemover();
-        redundantPathsCleaner.clean(CifFileHelper.loadCifSpec(cifStateSpacePath),
+        redundantPathsCleaner.simplify(CifFileHelper.loadCifSpec(cifStateSpacePath),
                 cifBddSpec, essentialModelPath, outputFolderPath);
 
         // Transform the state space by creating a single (initial) source and a single (marked) sink location.

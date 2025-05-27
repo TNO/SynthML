@@ -34,7 +34,7 @@ import com.google.common.collect.HashBiMap;
  * Removes redundant paths from any initial CIF locations to any CIF marked location. Assumes the input is generated
  * from the CIF state space explorer.
  */
-public class RedundantPathsCleaner {
+public class RedundantPathsRemover {
     /** The set of locations that belong to a shortest path; these are called essential or non-redundant. */
     private Set<Location> essentialLocs = new LinkedHashSet<>();
 
@@ -53,7 +53,7 @@ public class RedundantPathsCleaner {
     /** The one-to-one mapping from locations to the corresponding NodeInfo object. */
     BiMap<Location, NodeInfo> locationNodeInfoMap = HashBiMap.create();
 
-    public RedundantPathsCleaner() {
+    public RedundantPathsRemover() {
         // Static class.
     }
 
@@ -66,7 +66,7 @@ public class RedundantPathsCleaner {
      * @param outputFilePath The path to the output file to write the transformation result to.
      * @param outputFolderPath The path to the folder in which the transformation result is to be written.
      */
-    public void clean(Specification model, CifBddSpec bddSpec, Path outputFilePath, Path outputFolderPath) {
+    public void simplify(Specification model, CifBddSpec bddSpec, Path outputFilePath, Path outputFolderPath) {
         // Sanity check: the CIF model should contain only one automaton.
         Verify.verify(model.getComponents().size() == 1, "Found more than one component.");
         Verify.verify(model.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
