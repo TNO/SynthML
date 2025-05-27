@@ -42,9 +42,9 @@
         <setEntry value="com.github.tno.pokayoke.transform.region2statemapping@default:default"/>
         <setEntry value="com.github.tno.pokayoke.transform.uml2gal@default:default"/>
         <setEntry value="com.github.tno.pokayoke.transform.uml@default:default"/>
-        <setEntry value="com.github.tno.pokayoke.uml.profile.design@default:default"/>
-        <setEntry value="com.github.tno.pokayoke.uml.profile.plugin@default:default"/>
-        <setEntry value="com.github.tno.pokayoke.uml.profile.util@default:default"/>
+        <setEntry value="com.github.tno.synthml.uml.profile.design@default:default"/>
+        <setEntry value="com.github.tno.synthml.uml.profile.plugin@default:default"/>
+        <setEntry value="com.github.tno.synthml.uml.profile.util@default:default"/>
         <setEntry value="org.eclipse.escet.cif.parser@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>

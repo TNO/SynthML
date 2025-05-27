@@ -54,16 +54,16 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.uml.profile.cif.ACifObjectToString;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
+import com.github.tno.synthml.uml.profile.cif.ACifObjectToString;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Objects;
 import com.google.common.base.Verify;
 
-import PokaYoke.PokaYokePackage;
+import SynthML.SynthMLPackage;
 
 /** Composite data type flattener. */
 public class CompositeDataTypeFlattener {
@@ -126,7 +126,7 @@ public class CompositeDataTypeFlattener {
             PrimitiveType integerType)
     {
         return (object instanceof Profile profile && profile.getName().equals(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE)
-                || object instanceof PokaYokePackage || (object instanceof PrimitiveType primitive
+                || object instanceof SynthMLPackage || (object instanceof PrimitiveType primitive
                         && (primitive == booleanType || primitive == integerType)));
     }
 

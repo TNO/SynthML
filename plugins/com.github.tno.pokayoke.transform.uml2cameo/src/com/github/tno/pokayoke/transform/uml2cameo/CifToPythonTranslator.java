@@ -15,8 +15,8 @@ import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
-import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
 
 /** Translates basic CIF expressions and updates to Python. */
 public class CifToPythonTranslator extends ACifObjectWalker<String> {
