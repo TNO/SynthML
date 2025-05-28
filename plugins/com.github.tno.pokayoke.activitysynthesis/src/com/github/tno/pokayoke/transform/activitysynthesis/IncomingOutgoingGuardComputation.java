@@ -105,72 +105,61 @@ public class IncomingOutgoingGuardComputation extends GuardComputation {
         // Obtain the set of all internal BDD variables.
         BDDVarSet internalVars = getInternalBDDVars(cifBddSpec);
 
-        System.out.println("Computing guards for: " + translator.getActivity());
-
+        // Compute guards for every activity node, and put these on the appropriate control flows in the activity.
         for (ActivityNode node: translator.getActivity().getNodes()) {
-            System.out.println("Computing guard for: " + node);
-
+            // Do a case distinction on the type of activity node, and compute guards according to this node type.
             if (node instanceof DecisionNode) {
+                // Compute an incoming guard for every outgoing control flow of the decision node.
                 for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(node)) {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
-                    String guardAsString = toUmlGuard(guard, cifBddSpec);
-                    PokaYokeUmlProfileUtil.setIncomingGuard(pair.right, guardAsString);
-                    System.out.println("incoming guard: " + guardAsString);
+                    PokaYokeUmlProfileUtil.setIncomingGuard(pair.right, toUmlGuard(guard, cifBddSpec));
                 }
             } else if (node instanceof MergeNode) {
+                // Compute an outgoing guard for every incoming control flow of the merge node.
                 for (Pair<ActivityEdge, ActivityEdge> pair: getControlFlowPairs(node)) {
                     CifBddEdge edge = getCorrespondingEdge.apply(activityOrNodeMapping.get(pair));
                     BDD guard = computeGuard(edge, controlledStates, internalVars);
-                    String guardAsString = toUmlGuard(guard, cifBddSpec);
-                    PokaYokeUmlProfileUtil.setOutgoingGuard(pair.left, guardAsString);
-                    System.out.println("outgoing guard: " + guardAsString);
+                    PokaYokeUmlProfileUtil.setOutgoingGuard(pair.left, toUmlGuard(guard, cifBddSpec));
                 }
             } else if (node instanceof ForkNode) {
+                // Compute an outgoing guard for the (single) incoming control flow of the fork node.
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                String guardAsString = toUmlGuard(guard, cifBddSpec);
-                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
-                System.out.println("outgoing guard: " + guardAsString);
+                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof JoinNode) {
+                // Compute an incoming guard for the (single) outgoing control flow of the join node.
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                String guardAsString = toUmlGuard(guard, cifBddSpec);
-                PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), guardAsString);
-                System.out.println("incoming guard: " + guardAsString);
+                PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof InitialNode) {
+                // Compute an incoming guard for every outgoing control flow of the initial node.
                 for (ActivityEdge outgoing: node.getOutgoings()) {
                     BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
                     BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id().andWith(tokenConstraint);
                     BDD controlledGuard = uncontrolledGuard.and(controlledStates);
                     BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                     controlledGuard.free();
-                    String guardAsString = toUmlGuard(guard, cifBddSpec);
-                    PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), guardAsString);
-                    System.out.println("incoming guard: " + guardAsString);
+                    PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), toUmlGuard(guard, cifBddSpec));
                 }
             } else if (node instanceof ActivityFinalNode) {
+                // Compute an outgoing guard for every incoming control flow of the final node.
                 for (ActivityEdge incoming: node.getIncomings()) {
                     BDD tokenConstraint = getTokenConstraint(incoming, cifBddSpec);
                     BDD uncontrolledGuard = controlledStates.id().andWith(tokenConstraint);
                     BDD controlledGuard = uncontrolledGuard.and(cifBddSpec.marked);
                     BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
                     controlledGuard.free();
-                    String guardAsString = toUmlGuard(guard, cifBddSpec);
-                    PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
-                    System.out.println("outgoing guard: " + guardAsString);
+                    PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
                 }
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
+                // Compute an outgoing guard for the (single) incoming control flow of the action node.
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                String guardAsString = toUmlGuard(guard, cifBddSpec);
-                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), guardAsString);
-                System.out.println("outgoing guard: " + guardAsString);
+                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
             } else {
                 throw new RuntimeException("Unknown activity node: " + node);
             }
-
-            System.out.println();
         }
     }
 
