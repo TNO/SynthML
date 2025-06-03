@@ -107,15 +107,6 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
-    private static Set<String> removeAndGetUnusedEvents(Automaton stateSpace) {
-        // Removes the unused events from the alphabet, and returns the unused events names.
-        Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
-        stateSpace.setAlphabet(null);
-        Set<Event> postFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
-        preFilterAlphabet.removeAll(postFilterAlphabet);
-        return preFilterAlphabet.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
-    }
-
     private static boolean checkAlphabetCoverage(Automaton stateSpace, Map<String, List<Event>> namesToEvents,
             Set<Event> tauEvents)
     {
@@ -132,6 +123,15 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 .collect(Collectors.toSet());
 
         return absNamesStateSpace.equals(absNamesEventsMerged);
+    }
+
+    private static Set<String> removeAndGetUnusedEvents(Automaton stateSpace) {
+        // Removes the unused events from the alphabet, and returns the unused events names.
+        Set<Event> preFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        stateSpace.setAlphabet(null);
+        Set<Event> postFilterAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        preFilterAlphabet.removeAll(postFilterAlphabet);
+        return preFilterAlphabet.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
     }
 
     /**
