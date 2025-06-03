@@ -1428,27 +1428,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // For every control flow of a translated concrete activity, define an extra postcondition that expresses that
         // the control flow must not hold a token.
         for (var entry: controlFlowMap.entrySet()) {
-            // Exclude the token on the final node incoming edge if translating after synthesis chain. If we are
-            // translating a concrete activity (post synthesis chain), we want to stop the activity execution when we
-            // reach the control flow located just above the final node.
-            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
-                    && !(entry.getKey().getTarget() instanceof FinalNode))
-            {
-                DiscVariable cifControlFlowVar = entry.getValue();
+            DiscVariable cifControlFlowVar = entry.getValue();
 
-                // First define the postcondition expression.
-                UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
-                cifExtraPostcondition.setChild(CifConstructors.newDiscVariableExpression(null,
-                        CifConstructors.newBoolType(), cifControlFlowVar));
-                cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
-                cifExtraPostcondition.setType(CifConstructors.newBoolType());
+            // First define the postcondition expression.
+            UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+            cifExtraPostcondition.setChild(
+                    CifConstructors.newDiscVariableExpression(null, CifConstructors.newBoolType(), cifControlFlowVar));
+            cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
-                // Then define an extra CIF algebraic variable for the extra postcondition.
-                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
-                        cifExtraPostcondition);
-                postconditionVars.add(cifAlgVar);
-            }
+            // Then define an extra CIF algebraic variable for the extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
+            postconditionVars.add(cifAlgVar);
         }
 
         // Combine all defined postcondition variables to a single algebraic postcondition variable, whose value is the
