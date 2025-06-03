@@ -316,12 +316,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @throws CoreException In case the input UML model is invalid.
      */
     public Specification translate() throws CoreException {
-        // The post-synthesis chain models may contain some UML elements whose names include with double underscores,
-        // e.g. non-atomic start/end opaque actions. Avoid model validation in this case.
-        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            // Validate the UML input model.
-            ValidationHelper.validateModel(activity.getModel());
-        }
+        // Validate the UML input model.
+        ValidationHelper.validateModel(activity.getModel());
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
