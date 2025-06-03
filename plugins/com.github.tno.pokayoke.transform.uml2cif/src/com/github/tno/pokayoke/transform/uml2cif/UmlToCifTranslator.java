@@ -1534,9 +1534,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         String elementName = umlElement.getName();
         if (elementName.endsWith(START_ACTION_SUFFIX)) {
             umlElement.setName(elementName.substring(0, elementName.lastIndexOf(START_ACTION_SUFFIX)));
-        } else if (elementName.endsWith(END_ACTION_SUFFIX)) {
-            umlElement.setName(
-                    elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX)) + NONATOMIC_OUTCOME_SUFFIX);
+        } else if (elementName.contains(END_ACTION_SUFFIX)) {
+            umlElement.setName(elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX))
+                    + NONATOMIC_OUTCOME_SUFFIX
+                    + elementName.substring(elementName.lastIndexOf(END_ACTION_SUFFIX) + END_ACTION_SUFFIX.length()));
         }
 
         return "UML_element__" + umlElement.getName() + postfix;
