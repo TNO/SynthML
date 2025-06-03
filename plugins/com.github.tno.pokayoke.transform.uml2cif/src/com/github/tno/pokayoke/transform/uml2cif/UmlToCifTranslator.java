@@ -1534,10 +1534,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // If name contains the post-synthesis identifier for the start or end of a non-atomic action, replace it with
         // its original non-atomic action identifier.
         String elementName = umlElement.getName();
-        if (elementName.contains(START_ACTION_SUFFIX)) {
-            umlElement.setName(elementName.replace(START_ACTION_SUFFIX, ""));
-        } else if (elementName.contains(END_ACTION_SUFFIX)) {
-            umlElement.setName(elementName.replace(END_ACTION_SUFFIX, NONATOMIC_OUTCOME_SUFFIX));
+        if (elementName.endsWith(START_ACTION_SUFFIX)) {
+            umlElement.setName(elementName.substring(0, elementName.lastIndexOf(START_ACTION_SUFFIX)));
+        } else if (elementName.endsWith(END_ACTION_SUFFIX)) {
+            umlElement.setName(
+                    elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX)) + NONATOMIC_OUTCOME_SUFFIX);
         }
 
         return "UML_element__" + umlElement.getName() + postfix;
