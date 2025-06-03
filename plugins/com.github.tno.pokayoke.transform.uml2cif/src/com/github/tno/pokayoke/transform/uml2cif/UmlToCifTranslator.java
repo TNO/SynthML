@@ -170,16 +170,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their corresponding CIF events.
+     * Returns the one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their
+     * corresponding CIF events.
      *
      * @return The mapping.
      */
     public Map<String, List<Event>> getNormalizedNameToEventsMap() {
-        return normalizedNamesToEvents;
+        return normalizedNameToEvents;
     }
 
     /**
-     * Returns the internal events of the generated CIF specification, i.e. events that are not observable from the UML model point-of-view.
+     * Returns the internal events of the generated CIF specification, i.e. events that are not observable from the UML
+     * model point-of-view.
      *
      * @return The set of internal events.
      */
@@ -527,7 +529,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 || umlElement instanceof OpaqueBehavior)
         {
             // Add the event to the corresponding normalized name. More events may correspond to the same name.
-            normalizedNamesToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
+            normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
                     .add(cifStartEvent);
         } else {
             internalEvents.add(cifStartEvent);
@@ -569,7 +571,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                         || umlElement instanceof OpaqueBehavior)
                 {
-                    normalizedNamesToEvents
+                    normalizedNameToEvents
                             .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
                                     k -> new ArrayList<>())
                             .add(cifEndEvent);
