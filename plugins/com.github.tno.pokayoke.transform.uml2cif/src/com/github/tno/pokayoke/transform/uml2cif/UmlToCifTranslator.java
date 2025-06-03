@@ -1576,7 +1576,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoing);
         if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
-            cifAlgVar.setName("__initial_node_incoming_guard");
+            cifAlgVar.setName("__initial_node_condition");
             cifAlgVar.setType(CifConstructors.newBoolType());
             cifAlgVar.setValue(translator.translate(incomingGuard));
             initialNodeConfig.add(cifAlgVar);
@@ -1611,7 +1611,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         AExpression outgoingGuard = CifParserHelper.parseOutgoingGuard((ControlFlow)incoming);
         if (outgoingGuard != null && !(outgoingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable();
-            cifAlgVar.setName("__final_node_outgoing_guard");
+            cifAlgVar.setName("__final_node_condition");
             cifAlgVar.setType(CifConstructors.newBoolType());
             cifAlgVar.setValue(translator.translate(outgoingGuard));
             finalNodeConfig.add(cifAlgVar);
