@@ -106,10 +106,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public static final String CONTROLFLOW_PREFIX = "__controlflow";
 
     /** The suffix of a UML element name that encodes the start of a non-atomic action. */
-    public static final String START_ACTION_SUFFIX = "__start";
+    public static final String START_ACTION_SUFFIX = "_start";
 
     /** The suffix of a UML element name that encodes the end of a non-atomic action. */
-    public static final String END_ACTION_SUFFIX = "__end";
+    public static final String END_ACTION_SUFFIX = "_end";
 
     /** The input UML activity to translate. */
     private final Activity activity;
