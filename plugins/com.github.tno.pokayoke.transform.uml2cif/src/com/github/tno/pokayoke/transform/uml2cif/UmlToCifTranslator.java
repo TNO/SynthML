@@ -628,19 +628,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
-            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity == this.activity) {
-                // For the language equivalence check, we do not translate other activities. The translation of other
-                // concrete activities implies the translation of all its nodes, e.g. call behavior actions to some
-                // opaque behavior. These nodes are mixed with the current activity nodes, resulting in a wrong
-                // translation. With vertical scaling, this needs to be carefully evaluated again.
-                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, true);
-                newVariables.addAll(result.left);
-                newEventEdges.putAll(result.right);
-            } else if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-                Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity, false);
-                newVariables.addAll(result.left);
-                newEventEdges.putAll(result.right);
-            }
+            Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
+            newVariables.addAll(result.left);
+            newEventEdges.putAll(result.right);
         }
 
         return Pair.pair(newVariables, newEventEdges);
@@ -653,32 +643,44 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * preconditions and postconditions, respectively.
      *
      * @param activity The concrete UML activity to translate.
-     * @param isSynthesizedActivity If {@code true}, it signals that the activity is the synthesized one.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity,
-            boolean isSynthesizedActivity)
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity)
+
     {
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
+
+        // For the language equivalence check, we do not translate other activities than the one that is synthesised by
+        // the synthesis chain. The translation of other concrete activities implies the translation of all its nodes,
+        // e.g. call behavior actions to some opaque behavior. These nodes are mixed with the current activity nodes,
+        // resulting in a wrong translation. So, if the translation purpose is language equivalence and the activity is
+        // not the synthesised one, return a pair of an empty set and an empty bimap. With vertical scaling, this needs
+        // to be carefully evaluated again.
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity != this.activity) {
+            return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
+        }
 
         // Translate all activity control flows.
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
         for (ActivityEdge controlFlow: activity.getEdges()) {
             DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
-            if (controlFlow.getSource() instanceof InitialNode && isSynthesizedActivity) {
+            if (controlFlow.getSource() instanceof InitialNode
+                    && translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE)
+            {
+                // For the language equivalence, we place a token in the control flow that leaves the initial node.
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
             newVariables.add(cifControlFlowVar);
         }
 
-        // Translate all activity nodes. If the activity is the synthesized one, do not translate the initial and final
-        // node; the configurations for the initial and final nodes are considered during the pre- and postcondition
-        // computation.
+        // Translate all activity nodes. If the translation is for the language equivalence check, do not translate the
+        // initial and final node; the configurations for the initial and final nodes are considered during the pre- and
+        // postcondition computation.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof InitialNode initialNode && isSynthesizedActivity) {
-                continue;
-            } else if (node instanceof FinalNode finalNode && isSynthesizedActivity) {
+            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
+                    && (node instanceof InitialNode || node instanceof FinalNode))
+            {
                 continue;
             } else {
                 newEventEdges.putAll(translateActivityNode(node));
