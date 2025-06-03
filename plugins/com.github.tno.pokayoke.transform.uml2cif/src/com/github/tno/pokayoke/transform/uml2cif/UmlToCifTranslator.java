@@ -1304,7 +1304,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Compute the synthesized activity's initial node configuration and add it to the preconditions.
         for (ActivityNode node: activity.getNodes()) {
             if (node instanceof InitialNode initialNode
-                    && translationPurpose.equals(TranslationPurpose.LANGUAGE_EQUIVALENCE))
+                    && translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE)
             {
                 preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
             }
