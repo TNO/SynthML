@@ -186,8 +186,9 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     /**
      * The result of the preparation of the two CIF state spaces.
      *
-     * @param pairedEvents The set containing the corresponding events from the two state spaces, stored in pairs. If
-     *     'null', the two state spaces are not equivalent.
+     * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
+     *     All events in the first list of events are equivalent to all the events in the second list of events. If
+     *     {@code null}, the two state spaces are not equivalent.
      * @param stateAnnotations1 The filtered state annotations for the first state space.
      * @param stateAnnotations2 The filtered state annotations for the second state space.
      */

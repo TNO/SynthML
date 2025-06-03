@@ -142,7 +142,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * The one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their corresponding
      * CIF events.
      */
-    private final Map<String, List<Event>> normalizedNamesToEvents = new LinkedHashMap<>();
+    private final Map<String, List<Event>> normalizedNameToEvents = new LinkedHashMap<>();
 
     /**
      * The internal events of the generated CIF specification, i.e. events that are not observable from the UML model
@@ -170,17 +170,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Returns the map from the normalized name (see {@link #normalizeName}) of a UML element to a list of CIF events
-     * that refer to it.
+     * Returns the one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their corresponding CIF events.
      *
-     * @return The map from the normalized name of a UML element to the corresponding CIF events.
+     * @return The mapping.
      */
     public Map<String, List<Event>> getNormalizedNameToEventsMap() {
         return normalizedNamesToEvents;
     }
 
     /**
-     * Returns the set containing the internal events, e.g. going over a join node.
+     * Returns the internal events of the generated CIF specification, i.e. events that are not observable from the UML model point-of-view.
      *
      * @return The set of internal events.
      */
@@ -346,8 +345,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
+        // Translate all UML opaque behaviors.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            // Translate all UML opaque behaviors.
             BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
             for (var entry: cifEventEdges.entrySet()) {
                 cifSpec.getDeclarations().add(entry.getKey());
@@ -418,6 +417,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // the conjunction of all these defined postcondition variables (which are all Boolean typed).
             AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
 
+            // Add postcondition variables and marking predicate to the model.
             cifPlant.getDeclarations().addAll(postconditionVars);
             postconditionVariable = postconditionVar;
             cifPlant.getDeclarations().add(postconditionVariable);
@@ -1531,8 +1531,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @return The normalized name of the UML element.
      */
     private String normalizeName(NamedElement umlElement, String postfix) {
-        // Get to the (nested) called behavior.
-        while (umlElement instanceof CallBehaviorAction cbAction) {
+        // Get to the called behavior.
+        if (umlElement instanceof CallBehaviorAction cbAction) {
             umlElement = cbAction.getBehavior();
         }
 
@@ -1594,6 +1594,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<AlgVariable> finalNodeConfig = new ArrayList<>();
 
         // Create a new algebraic variable out of the discrete one, for later use in the postconditions.
+        Verify.verify(node.getIncomings().size() == 1, "Expected unique incoming control flow to final node.");
         ActivityEdge incoming = node.getIncomings().get(0);
         DiscVariable incomingVariable = controlFlowMap.get(incoming);
         DiscVariableExpression tokenOnControlflowExpr = CifConstructors.newDiscVariableExpression(null,

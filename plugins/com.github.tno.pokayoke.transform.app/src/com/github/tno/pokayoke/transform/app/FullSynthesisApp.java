@@ -389,7 +389,7 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
-        // Project the state annotations to keep only the external variables, and get the tau and non-tau events before
+        // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
                 translator.getNormalizedNameToEventsMap(), translator.getInternalEvents(), stateSpacePostSynthChain,

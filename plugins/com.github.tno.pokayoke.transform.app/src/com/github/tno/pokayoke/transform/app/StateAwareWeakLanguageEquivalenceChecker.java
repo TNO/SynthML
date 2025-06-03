@@ -38,11 +38,11 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      * Checks whether two CIF state space automata are weak-language equivalent, considering state annotations.
      *
      * @param stateSpace1 The first CIF state space.
-     * @param stateAnnotations1 The map from CIF states to their projected state annotations, for the first model. The
+     * @param stateAnnotations1 The map from CIF states to their filtered state annotations, for the first model. The
      *     state annotations contain solely the relevant information used for comparison of the model states.
      * @param tauEvents1 The set containing events that represent a tau transition for the first model.
      * @param stateSpace2 The second CIF state space.
-     * @param stateAnnotations2 The map from CIF states to their projected state annotations, for the second model. The
+     * @param stateAnnotations2 The map from CIF states to their filtered state annotations, for the second model. The
      *     state annotations contain solely the relevant information used for comparison of the model states.
      * @param tauEvents2 The set containing events that represent a tau transition for the second model.
      * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
