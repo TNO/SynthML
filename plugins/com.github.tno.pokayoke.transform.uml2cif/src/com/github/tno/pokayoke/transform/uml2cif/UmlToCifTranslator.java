@@ -1302,11 +1302,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
 
         // Compute the synthesized activity's initial node configuration and add it to the preconditions.
-        for (ActivityNode node: activity.getNodes()) {
-            if (node instanceof InitialNode initialNode
-                    && translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE)
-            {
-                preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            for (ActivityNode node: activity.getNodes()) {
+                if (node instanceof InitialNode initialNode) {
+                    preconditionVars.addAll(createInitialNodeConfiguration(initialNode));
+                }
             }
         }
 
