@@ -385,25 +385,31 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
+        // Translate all postconditions of the input UML activity as a marked predicate in CIF.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            // Translate all postconditions of the input UML activity as a marked predicate in CIF.
             Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
                     cifAtomicityVar);
             cifPlant.getDeclarations().addAll(postconditions.left);
             postconditionVariable = postconditions.right;
             cifPlant.getDeclarations().add(postconditionVariable);
             cifPlant.getMarkeds().add(getTranslatedPostcondition());
+        }
 
-            // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
-            // taken.
+        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
+        // taken.
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
             cifSpec.getInvariants().addAll(cifDisableConstraints);
+        }
 
-            // Translate all UML class constraints as CIF invariants.
+        // Translate all UML class constraints as CIF invariants.
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
-        } else if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
+        }
+
+        // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<AlgVariable> postconditionVars = null;
             for (ActivityNode node: activity.getNodes()) {
                 if (node instanceof FinalNode finalNode) {
