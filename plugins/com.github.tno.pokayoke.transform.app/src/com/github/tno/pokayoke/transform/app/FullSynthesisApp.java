@@ -362,7 +362,7 @@ public class FullSynthesisApp {
         UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
                 TranslationPurpose.LANGUAGE_EQUIVALENCE);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
-        Path cifSpecPath = localOutputPath.resolve(filePrefix + "99.01.finalUmlToCif.cif");
+        Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {
             AppEnv.registerSimple();
             CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), localOutputPath.toString());
@@ -371,7 +371,7 @@ public class FullSynthesisApp {
         }
 
         // Perform state space generation.
-        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + "99.02.ctrlsys.statespace.cif");
+        Path cifStateSpacePath = localOutputPath.resolve(filePrefix + ".99.02.ctrlsys.statespace.cif");
         String[] stateSpaceGenerationArgs = new String[] {cifSpecPath.toString(),
                 "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
