@@ -1,0 +1,11 @@
+automaton statespace:
+  alphabet;
+  @state(Class1 = "*", Class1.__controlflow__15 = true, Class1.init = false, Class1.val = false)
+  location loc1:
+    initial;
+    marked;
+  @state(Class1 = "*", Class1.__controlflow__15 = true, Class1.init = false, Class1.val = true)
+  location loc2:
+    initial;
+    marked;
+end
