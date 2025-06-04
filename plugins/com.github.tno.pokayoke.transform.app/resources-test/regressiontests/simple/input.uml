@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_YvCF8Bd0Ee-SDZ3U5sFKhw" name="Model">
     <nameExpression xmi:id="_ErnJABd2Ee-SDZ3U5sFKhw" name="literals">
       <operand xmi:type="uml:LiteralInteger" xmi:id="_HzW9EBd2Ee-SDZ3U5sFKhw" name=""/>
@@ -134,31 +134,31 @@
     </packagedElement>
     <profileApplication xmi:id="_kVE8ABd0Ee-SDZ3U5sFKhw">
       <eAnnotations xmi:id="_kVH_UBd0Ee-SDZ3U5sFKhw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_wYKr4GqhEe-qao499TBi1A" guard="not robotPrepared" base_RedefinableElement="__QuDEBd0Ee-SDZ3U5sFKhw" atomic="true">
+  <SynthML:FormalElement xmi:id="_wYKr4GqhEe-qao499TBi1A" guard="not robotPrepared" base_RedefinableElement="__QuDEBd0Ee-SDZ3U5sFKhw" atomic="true">
     <effects>robotPrepared := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr4WqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="_DiNtcBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYKr4WqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="_DiNtcBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>robotLocation := Location1</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr4mqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="_HUY-kBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYKr4mqhEe-qao499TBi1A" guard="robotPrepared" base_RedefinableElement="_HUY-kBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>robotLocation := Location2</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr42qhEe-qao499TBi1A" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="_K-l_cBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYKr42qhEe-qao499TBi1A" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="_K-l_cBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>productCorrectlyPlaced := Unknown</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYKr5GqhEe-qao499TBi1A" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="_P33bgBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYKr5GqhEe-qao499TBi1A" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="_P33bgBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>robotHasProduct := false, location2HasProduct := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYLS8GqhEe-qao499TBi1A" guard="not location2Prepared" base_RedefinableElement="_UmoQsBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYLS8GqhEe-qao499TBi1A" guard="not location2Prepared" base_RedefinableElement="_UmoQsBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>location2Prepared := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_wYLS8WqhEe-qao499TBi1A" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="_Y-YUEBd1Ee-SDZ3U5sFKhw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_wYLS8WqhEe-qao499TBi1A" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="_Y-YUEBd1Ee-SDZ3U5sFKhw" atomic="true">
     <effects>productCorrectlyPlaced := True</effects>
     <effects>productCorrectlyPlaced := False</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

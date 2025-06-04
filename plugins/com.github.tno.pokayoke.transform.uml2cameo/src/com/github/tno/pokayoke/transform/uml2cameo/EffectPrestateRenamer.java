@@ -9,8 +9,8 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.cif.CifExpressionRenamer;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifExpressionRenamer;
 
 /**
  * Renames all variables on the right-hand sides of {@link AAssignmentUpdate assignment updates} by prefixing them with

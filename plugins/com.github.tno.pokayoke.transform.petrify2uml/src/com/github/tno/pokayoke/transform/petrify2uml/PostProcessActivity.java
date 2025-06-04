@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.escet.common.java.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -26,7 +26,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsI
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 

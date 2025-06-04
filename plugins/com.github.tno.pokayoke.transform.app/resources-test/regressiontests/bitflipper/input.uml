@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_ZgAmYMd9Ee--jc4lXL-BHw" name="BitFlipper">
     <packagedElement xmi:type="uml:Class" xmi:id="_c2oj8Md9Ee--jc4lXL-BHw" name="ActiveClass" classifierBehavior="_jGcVIMd9Ee--jc4lXL-BHw" isActive="true">
       <ownedAttribute xmi:id="_J_Wn8O9pEe-OWbsCeUFhqQ" name="init" visibility="public">
@@ -34,18 +34,18 @@
     </packagedElement>
     <profileApplication xmi:id="_gkpt0Md9Ee--jc4lXL-BHw">
       <eAnnotations xmi:id="_gksKEMd9Ee--jc4lXL-BHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_2jwCYMd9Ee--jc4lXL-BHw" guard="init" base_RedefinableElement="_0_1_oMd9Ee--jc4lXL-BHw" atomic="true">
+  <SynthML:FormalElement xmi:id="_2jwCYMd9Ee--jc4lXL-BHw" guard="init" base_RedefinableElement="_0_1_oMd9Ee--jc4lXL-BHw" atomic="true">
     <effects>bit := not bit</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_TccX8MkeEe-FBs3p21lQgw" guard="not init" base_RedefinableElement="_QZQ60MkeEe-FBs3p21lQgw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_TccX8MkeEe-FBs3p21lQgw" guard="not init" base_RedefinableElement="_QZQ60MkeEe-FBs3p21lQgw" atomic="true">
     <effects>init := true, &#xD;
 bit := true</effects>
     <effects>init := true,&#xD;
 bit := false</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

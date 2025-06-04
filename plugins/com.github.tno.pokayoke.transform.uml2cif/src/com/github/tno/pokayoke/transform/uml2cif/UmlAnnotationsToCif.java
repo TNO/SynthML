@@ -39,9 +39,9 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
-import com.github.tno.pokayoke.uml.profile.cif.ACifObjectWalker;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Verify;
 
 /** Translates UML annotations like guards and effects in UML synthesis specifications to CIF. */

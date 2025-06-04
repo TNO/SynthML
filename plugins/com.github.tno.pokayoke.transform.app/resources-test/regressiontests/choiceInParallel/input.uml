@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_ZEU08Bd-Ee-TFtQPmfUP2A" name="Model">
     <nameExpression xmi:id="_sjzP8Bd_Ee-TFtQPmfUP2A" name="literals">
       <operand xmi:type="uml:LiteralInteger" xmi:id="_uKHGcBd_Ee-TFtQPmfUP2A" name=""/>
@@ -99,28 +99,28 @@
     </packagedElement>
     <profileApplication xmi:id="_p4LMoBd-Ee-TFtQPmfUP2A">
       <eAnnotations xmi:id="_p4OP8Bd-Ee-TFtQPmfUP2A" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_sYjbsGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="__V22MBd-Ee-TFtQPmfUP2A" atomic="true">
+  <SynthML:FormalElement xmi:id="_sYjbsGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and not Is_Computer_On" base_RedefinableElement="__V22MBd-Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Computer_On := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="_DsYxkBd_Ee-TFtQPmfUP2A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_sYkCwGqhEe-qao499TBi1A" guard="not Is_Computer_Ready and Is_Computer_On" base_RedefinableElement="_DsYxkBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Computer_Ready := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwWqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="_IWUKEBd_Ee-TFtQPmfUP2A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_sYkCwWqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Coffee" base_RedefinableElement="_IWUKEBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCwmqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="_NPjJ4Bd_Ee-TFtQPmfUP2A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_sYkCwmqhEe-qao499TBi1A" guard="not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Tea" base_RedefinableElement="_NPjJ4Bd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Has_Drank_Coffee_or_Tea := true, Coffee_or_Tea:= Unknown</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCw2qhEe-qao499TBi1A" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="_R67T4Bd_Ee-TFtQPmfUP2A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_sYkCw2qhEe-qao499TBi1A" guard="Has_Drank_Coffee_or_Tea and Is_Computer_Ready" base_RedefinableElement="_R67T4Bd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Is_Ready_to_Work:= true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_sYkCxGqhEe-qao499TBi1A" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="_WE8dQBd_Ee-TFtQPmfUP2A" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_sYkCxGqhEe-qao499TBi1A" guard="Is_Computer_On and not Has_Drank_Coffee_or_Tea and Coffee_or_Tea = Unknown" base_RedefinableElement="_WE8dQBd_Ee-TFtQPmfUP2A" atomic="true">
     <effects>Coffee_or_Tea:= Coffee</effects>
     <effects>Coffee_or_Tea:= Tea</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

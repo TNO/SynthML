@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_G4L5IPQ_Ee-C4MKlHZKtHw" name="NewModel">
     <packagedElement xmi:type="uml:Class" xmi:id="_I_rxIPQ_Ee-C4MKlHZKtHw" name="Class1" classifierBehavior="_J4bXAPQ_Ee-C4MKlHZKtHw" isActive="true">
       <ownedAttribute xmi:id="_njxlkPQ_Ee-C4MKlHZKtHw" name="init">
@@ -60,17 +60,17 @@
     </packagedElement>
     <profileApplication xmi:id="_b2mMwPQ_Ee-C4MKlHZKtHw">
       <eAnnotations xmi:id="_b2s6cPQ_Ee-C4MKlHZKtHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_b3Xo0PQ_Ee-C4MKlHZKtHw" guard="true" base_RedefinableElement="_Ven-EPQ_Ee-C4MKlHZKtHw" atomic="true">
+  <SynthML:FormalElement xmi:id="_b3Xo0PQ_Ee-C4MKlHZKtHw" guard="true" base_RedefinableElement="_Ven-EPQ_Ee-C4MKlHZKtHw" atomic="true">
     <effects>val := not val</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalControlFlow xmi:id="_whbykP5PEe-8grzMx7bmSw" outgoingGuard="init" base_ControlFlow="_nGs9gP5PEe-8grzMx7bmSw"/>
-  <PokaYoke:FormalControlFlow xmi:id="_5vuRoP5QEe-8grzMx7bmSw" outgoingGuard="init"/>
-  <PokaYoke:FormalElement xmi:id="_mQHVYAokEfCXvv6_cIbHbQ" guard="not init" base_RedefinableElement="_kCiqkAokEfCXvv6_cIbHbQ" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalControlFlow xmi:id="_whbykP5PEe-8grzMx7bmSw" outgoingGuard="init" base_ControlFlow="_nGs9gP5PEe-8grzMx7bmSw"/>
+  <SynthML:FormalControlFlow xmi:id="_5vuRoP5QEe-8grzMx7bmSw" outgoingGuard="init"/>
+  <SynthML:FormalElement xmi:id="_mQHVYAokEfCXvv6_cIbHbQ" guard="not init" base_RedefinableElement="_kCiqkAokEfCXvv6_cIbHbQ" atomic="true">
     <effects>init := true, val := false</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>
