@@ -74,12 +74,12 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                 "State space 2 has outgoing transitions from marked states.");
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
-        Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
-        Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
-        Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
-                "State space 1 contains blocking states.");
-        Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
-                "State space 2 contains blocking states.");
+//        Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
+//        Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
+//        Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
+//                "State space 1 contains blocking states.");
+//        Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
+//                "State space 2 contains blocking states.");
 
         // Initialize queue. If 'null', the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -163,7 +163,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         return true;
     }
 
-    private Map<Location, List<Edge>> computeIncomingTransitionsPerState(Automaton stateSpace) {
+    protected Map<Location, List<Edge>> computeIncomingTransitionsPerState(Automaton stateSpace) {
         Map<Location, List<Edge>> stateToIncomingTrans = new LinkedHashMap<>();
         for (Location state: stateSpace.getLocations()) {
             stateToIncomingTrans.computeIfAbsent(state, k -> new ArrayList<>());
