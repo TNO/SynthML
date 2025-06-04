@@ -372,8 +372,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
+        // Translate all occurrence constraints of the input UML activity.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            // Translate all occurrence constraints of the input UML activity.
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
@@ -422,6 +422,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             cifPlant.getMarkeds().add(getTranslatedPostcondition());
         }
 
+        // Return the final CIF specification.
         return cifSpec;
     }
 
@@ -633,17 +634,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges. If
-     * the activity is the synthesized activity, the initial and final node are not translated, since we place the first
-     * token after the initial node, and the last token before the final node. Their guards are added to the
-     * preconditions and postconditions, respectively.
+     * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
      *
      * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
-    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity)
-
-    {
+    private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
         // For the language equivalence check, we do not translate other activities than the one that is synthesised by
@@ -1533,7 +1529,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // its original non-atomic action identifier.
         String elementName = umlElement.getName();
         if (elementName.endsWith(START_ACTION_SUFFIX)) {
-            umlElement.setName(elementName.substring(0, elementName.lastIndexOf(START_ACTION_SUFFIX)));
+            umlElement.setName(elementName.substring(0, elementName.length() - START_ACTION_SUFFIX.length()));
         } else if (elementName.contains(END_ACTION_SUFFIX)) {
             umlElement.setName(elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX))
                     + NONATOMIC_OUTCOME_SUFFIX
