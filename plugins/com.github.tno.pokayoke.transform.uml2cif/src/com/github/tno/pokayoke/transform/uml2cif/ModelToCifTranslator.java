@@ -58,7 +58,7 @@ public abstract class ModelToCifTranslator {
     protected final CifContext context;
 
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
-    private final UmlAnnotationsToCif translator;
+    protected final UmlAnnotationsToCif translator;
 
     /**
      * Constructs a new {@link ModelToCifTranslator}.

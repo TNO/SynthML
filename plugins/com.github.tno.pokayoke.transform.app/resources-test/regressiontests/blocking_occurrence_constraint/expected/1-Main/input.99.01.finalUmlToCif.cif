@@ -1,0 +1,31 @@
+uncontrollable __node__CallBehaviorAction__31;
+uncontrollable __node__CallBehaviorAction__32;
+uncontrollable __node__DecisionNode__34__0;
+uncontrollable __node__DecisionNode__34__1;
+uncontrollable __node__MergeNode__35__0;
+uncontrollable __node__MergeNode__35__1;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  disc bool __controlflow__23;
+  disc bool __controlflow__25;
+  disc bool __controlflow__27;
+  disc bool __controlflow__28;
+  disc bool __controlflow__29;
+  disc bool __controlflow__30 = true;
+  alg bool __token_on_first_controlflow = __controlflow__30;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__29;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__31 when not field1, __controlflow__23, not __controlflow__27 do field2 := true, __controlflow__23 := false, __controlflow__27 := true;
+    edge __node__CallBehaviorAction__32 when field1, __controlflow__25, not __controlflow__28 do field2 := true, __controlflow__25 := false, __controlflow__28 := true;
+    edge __node__DecisionNode__34__0 when true, __controlflow__30, not __controlflow__23, true do __controlflow__30 := false, __controlflow__23 := true;
+    edge __node__DecisionNode__34__1 when true, __controlflow__30, not __controlflow__25, true do __controlflow__30 := false, __controlflow__25 := true;
+    edge __node__MergeNode__35__0 when true, __controlflow__27, not __controlflow__29 do __controlflow__27 := false, __controlflow__29 := true;
+    edge __node__MergeNode__35__1 when true, __controlflow__28, not __controlflow__29 do __controlflow__28 := false, __controlflow__29 := true;
+end
