@@ -235,6 +235,12 @@ public class CifContext {
                 .map(DataType.class::cast).toList();
     }
 
+    public List<DataType> getAllPrimitiveDataTypes() {
+        return getDeclaredElements().stream()
+                .filter(e -> e instanceof DataType d && PokaYokeTypeUtil.isPrimitiveType(d))
+                .map(DataType.class::cast).toList();
+    }
+
     public List<Activity> getAllConcreteActivities() {
         return getDeclaredElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
                 .map(Activity.class::cast).toList();

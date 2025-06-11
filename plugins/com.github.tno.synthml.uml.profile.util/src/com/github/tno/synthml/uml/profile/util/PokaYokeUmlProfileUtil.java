@@ -49,12 +49,20 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
             .getName();
 
+    private static final String ST_FORMAL_ACTION = SynthMLPackage.Literals.FORMAL_ACTION.getName();
+
+    private static final String PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS = SynthMLPackage.Literals.FORMAL_ACTION__TEMPLATE_PARAMETERS
+            .getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
     /** Qualified name for the {@link FormalElement} stereotype. */
     public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_ELEMENT;
+
+    /** Qualified name for the {@link FormalAction} stereotype. */
+    public static final String FORMAL_ACTION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_FORMAL_ACTION;
 
     /** Qualified name for the {@link FormalControlFlow} stereotype. */
     public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -195,6 +203,48 @@ public class PokaYokeUmlProfileUtil {
         } else {
             ECollections.setEList(value, newValue);
         }
+    }
+
+    public static boolean isSetTemplateParameters(CallBehaviorAction element) {
+        return getAppliedStereotype(element, FORMAL_ACTION_STEREOTYPE)
+                .map(st -> element.hasValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS)).orElse(false);
+    }
+
+    /**
+     * Returns the contents of the {@link FormalAction#getTemplateParameters() templateParameters} if the
+     * {@link FormalAction} stereotype is applied on {@code element}, and an empty list otherwise. The returned list is
+     * a copy of the template parameters and as such, modifications to the list are not reflected on the
+     * {@code element}. Instead, use the {@link #setTemplateParameters(CallBehaviorAction, List)} method to set the new
+     * value on the {@code element}.
+     *
+     * @param element The element to get the property from.
+     * @return The new property value.
+     * @see #setTemplateParameters(CallBehaviorAction, List)
+     */
+    @SuppressWarnings("unchecked")
+    public static List<String> getTemplateParameters(CallBehaviorAction element) {
+        return getAppliedStereotype(element, FORMAL_ACTION_STEREOTYPE)
+                .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS)))
+                .orElse(new ArrayList<>());
+    }
+
+    /**
+     * Sets {@code newValue} as contents of the {@link FormalAction#getTemplateParameters() templateParameters}. We are
+     * using a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly
+     * create the stereotype on read, but explicitly create it on write.
+     *
+     * @param element The element to set the property on.
+     * @param newValue The new property value.
+     */
+    @SuppressWarnings("unchecked")
+    public static void setTemplateParameters(CallBehaviorAction element, List<String> newValue) {
+        if (newValue == null || newValue.isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ACTION_STEREOTYPE);
+            return;
+        }
+        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ACTION));
+        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS);
+        ECollections.setEList(value, newValue);
     }
 
     public static boolean isAtomic(RedefinableElement element) {
