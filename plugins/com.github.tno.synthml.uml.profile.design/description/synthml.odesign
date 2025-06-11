@@ -222,12 +222,12 @@
     <metamodels href="../../com.github.tno.synthml.uml.profile.plugin/model/SynthML.ecore#/"/>
     <categories name="PR_SynthML">
       <pages name="PR_OpaqueActionPage" labelExpression="SynthML" domainClass="uml::OpaqueAction" groups="//@extensions.0/@categories.0/@groups.0"/>
-      <pages name="PR_CallBehaviorActionPage" labelExpression="SynthML" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0 //@extensions.0/@categories.0/@groups.5"/>
+      <pages name="PR_CallBehaviorActionPage" labelExpression="SynthML" domainClass="uml::CallBehaviorAction" groups="//@extensions.0/@categories.0/@groups.0 //@extensions.0/@categories.0/@groups.4"/>
       <pages name="PR_OpaqueBehaviorPage" labelExpression="SynthML" domainClass="uml::OpaqueBehavior" groups="//@extensions.0/@categories.0/@groups.0"/>
       <pages name="PR_ControlFlowPage" labelExpression="SynthML" domainClass="uml::ControlFlow" groups="//@extensions.0/@categories.0/@groups.1"/>
       <pages name="PR_PropertyPage" labelExpression="SynthML" domainClass="uml::Property" groups="//@extensions.0/@categories.0/@groups.2"/>
       <pages name="PR_PrimitiveTypePage" labelExpression="SynthML" domainClass="uml::PrimitiveType" groups="//@extensions.0/@categories.0/@groups.3"/>
-      <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity" groups="//@extensions.0/@categories.0/@groups.4"/>
+      <pages name="PR_ActivityPage" labelExpression="SynthML" domainClass="uml::Activity"/>
       <groups name="PR_FormalElementGroup" labelExpression="General" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextDescription" name="PR_AC_Name" labelExpression="Name:" helpExpression="The Name of the Action" valueExpression="feature:name">
           <initialOperation>
@@ -323,34 +323,6 @@
             <labelFontFormat>bold</labelFontFormat>
           </style>
         </controls>
-      </groups>
-      <groups name="PR_ActivityGroup" labelExpression="General" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:ListDescription" name="PR_Parameters" labelExpression="Parameters:" helpExpression="Parameters on activities" valueExpression="aql:(if self.oclIsTypeOf(uml::Activity) then self else self.target endif).ownedTemplateSignature.oclAsType(uml::RedefinableTemplateSignature).econtents()" displayExpression="aql:input.getAllSemanticElements()">
-          <onClickOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:self"/>
-          </onClickOperation>
-          <actions imageExpression="/org.obeonetwork.dsl.uml2.core.design/icons/properties/create.gif">
-            <initialOperation>
-              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:self"/>
-            </initialOperation>
-          </actions>
-          <actions imageExpression="/org.obeonetwork.dsl.uml2.core.design/icons/properties/unset.gif">
-            <initialOperation>
-              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:self"/>
-            </initialOperation>
-          </actions>
-          <actions imageExpression="/org.obeonetwork.dsl.uml2.core.design/icons/properties/up.gif">
-            <initialOperation>
-              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:self"/>
-            </initialOperation>
-          </actions>
-          <actions imageExpression="/org.obeonetwork.dsl.uml2.core.design/icons/properties/down.gif">
-            <initialOperation>
-              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="var:self"/>
-            </initialOperation>
-          </actions>
-        </controls>
-        <controls xsi:type="properties-ext-widgets-reference:ExtReferenceDescription" name="PR_REFParameters" labelExpression="REFParams" referenceNameExpression="aql:(if self.oclIsTypeOf(uml::Activity) then self else self.target endif).ownedTemplateSignature.oclAsType(uml::RedefinableTemplateSignature).parameter"/>
       </groups>
       <groups name="PR_TemplateParamersGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
         <controls xsi:type="properties:TextAreaDescription" name="PR_CB_TemplateParameters" labelExpression="Template Parameters" helpExpression="The Template Parameters of the Called Activity" valueExpression="service:self.getTemplateParameters()">
