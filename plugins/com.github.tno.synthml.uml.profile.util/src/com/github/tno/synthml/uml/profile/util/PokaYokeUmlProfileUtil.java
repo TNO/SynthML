@@ -51,7 +51,7 @@ public class PokaYokeUmlProfileUtil {
 
     private static final String ST_FORMAL_ACTION = SynthMLPackage.Literals.FORMAL_ACTION.getName();
 
-    private static final String PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS = SynthMLPackage.Literals.FORMAL_ACTION__TEMPLATE_PARAMETERS
+    private static final String PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS = SynthMLPackage.Literals.FORMAL_ACTION__TEMPLATE_ARGUMENTS
             .getName();
 
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
@@ -207,11 +207,11 @@ public class PokaYokeUmlProfileUtil {
 
     public static boolean isSetTemplateParameters(CallBehaviorAction element) {
         return getAppliedStereotype(element, FORMAL_ACTION_STEREOTYPE)
-                .map(st -> element.hasValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS)).orElse(false);
+                .map(st -> element.hasValue(st, PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS)).orElse(false);
     }
 
     /**
-     * Returns the contents of the {@link FormalAction#getTemplateParameters() templateParameters} if the
+     * Returns the contents of the {@link FormalAction#getTemplateParameters() templateArguments} if the
      * {@link FormalAction} stereotype is applied on {@code element}, and an empty list otherwise. The returned list is
      * a copy of the template parameters and as such, modifications to the list are not reflected on the
      * {@code element}. Instead, use the {@link #setTemplateParameters(CallBehaviorAction, List)} method to set the new
@@ -224,12 +224,12 @@ public class PokaYokeUmlProfileUtil {
     @SuppressWarnings("unchecked")
     public static List<String> getTemplateParameters(CallBehaviorAction element) {
         return getAppliedStereotype(element, FORMAL_ACTION_STEREOTYPE)
-                .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS)))
+                .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS)))
                 .orElse(new ArrayList<>());
     }
 
     /**
-     * Sets {@code newValue} as contents of the {@link FormalAction#getTemplateParameters() templateParameters}. We are
+     * Sets {@code newValue} as contents of the {@link FormalAction#getTemplateParameters() templateArguments}. We are
      * using a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly
      * create the stereotype on read, but explicitly create it on write.
      *
@@ -243,7 +243,7 @@ public class PokaYokeUmlProfileUtil {
             return;
         }
         Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ACTION));
-        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_PARAMETERS);
+        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS);
         ECollections.setEList(value, newValue);
     }
 

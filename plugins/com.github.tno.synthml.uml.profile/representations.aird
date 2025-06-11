@@ -278,7 +278,7 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']"/>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_C9p-0EU0EfCzkK6SaMHPKQ" name="templateParameters : String [*]">
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_C9p-0EU0EfCzkK6SaMHPKQ" name="templateArguments : String [*]">
         <target xmi:type="uml:Property" href="synthml.profile.uml#_C9m7gEU0EfCzkK6SaMHPKQ"/>
         <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_C9m7gEU0EfCzkK6SaMHPKQ"/>
         <ownedStyle xmi:type="diagram:Square" uid="_C9p-0UU0EfCzkK6SaMHPKQ" labelAlignment="LEFT">

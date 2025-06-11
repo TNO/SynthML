@@ -36,7 +36,7 @@
         </eClassifiers>
         <eClassifiers xmi:type="ecore:EClass" xmi:id="_FQI9okXeEfC-DI7T5m7fUg" name="FormalAction">
           <eAnnotations xmi:id="_FQI9o0XeEfC-DI7T5m7fUg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="__yS2EEUzEfCzkK6SaMHPKQ"/>
-          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_FQI9pEXeEfC-DI7T5m7fUg" name="templateParameters" ordered="false" unique="false" upperBound="-1">
+          <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_FQI9pEXeEfC-DI7T5m7fUg" name="templateArguments" ordered="false" unique="false" upperBound="-1">
             <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
           </eStructuralFeatures>
           <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_FQI9pkXeEfC-DI7T5m7fUg" name="base_CallBehaviorAction" ordered="false" lowerBound="1">
@@ -92,7 +92,7 @@
       <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_aj9Ycv28Ee-zidGPk6WbNA" name="extension_FormalControlFlow" type="_U091UP28Ee-zidGPk6WbNA" association="_aj9Ycf28Ee-zidGPk6WbNA"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Stereotype" xmi:id="__yS2EEUzEfCzkK6SaMHPKQ" name="FormalAction">
-      <ownedAttribute xmi:id="_C9m7gEU0EfCzkK6SaMHPKQ" name="templateParameters" isUnique="false">
+      <ownedAttribute xmi:id="_C9m7gEU0EfCzkK6SaMHPKQ" name="templateArguments" isUnique="false">
         <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D0Sr4EU0EfCzkK6SaMHPKQ"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_frL10EXaEfC-DI7T5m7fUg" value="*"/>

@@ -194,38 +194,38 @@ public class PokaYokeProfileServices {
      */
     public String getActivityName(Activity activity) {
         final TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
-        final StringBuffer templateParameters = new StringBuffer();
+        final StringBuffer templateArguments = new StringBuffer();
         if (ownedTemplateSignature != null) {
-            templateParameters.append("<");
+            templateArguments.append("<");
             final List<TemplateParameter> ownedTemplateParameters = ownedTemplateSignature.getOwnedParameters();
             boolean first = true;
             for (final TemplateParameter templateParameter: ownedTemplateParameters) {
                 if (first) {
                     first = false;
                 } else {
-                    templateParameters.append(", "); //$NON-NLS-1$
+                    templateArguments.append(", "); //$NON-NLS-1$
                 }
                 final ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
                 if (parameterableElement instanceof NamedElement) {
                     final NamedElement classTempate = (NamedElement)parameterableElement;
-                    templateParameters.append(classTempate.getName());
+                    templateArguments.append(classTempate.getName());
                 }
                 if (templateParameter instanceof ClassifierTemplateParameter classifier) {
                     var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
                     if (firstClassifier.isPresent()) {
-                        templateParameters.append(":").append(firstClassifier.get().getName());
+                        templateArguments.append(":").append(firstClassifier.get().getName());
                     }
                 }
             }
 
-            templateParameters.append(">");
+            templateArguments.append(">");
         }
 
         String namedElement = DisplayLabelSwitch.computeStereotypes(activity)
                 + (activity.getName() == null ? "" : activity.getName()); //$NON-NLS-1$
 
-        if (templateParameters != null) {
-            return DisplayLabelSwitch.computeStereotypes(activity) + namedElement + templateParameters;
+        if (templateArguments != null) {
+            return DisplayLabelSwitch.computeStereotypes(activity) + namedElement + templateArguments;
         }
         return namedElement;
     }

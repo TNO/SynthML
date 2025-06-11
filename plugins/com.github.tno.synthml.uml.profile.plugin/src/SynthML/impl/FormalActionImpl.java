@@ -44,7 +44,7 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<String> templateParameters;
+	protected EList<String> templateArguments;
 
 	/**
 	 * The cached value of the '{@link #getBase_CallBehaviorAction() <em>Base Call Behavior Action</em>}' reference.
@@ -82,10 +82,10 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	 */
 	@Override
 	public EList<String> getTemplateParameters() {
-		if (templateParameters == null) {
-			templateParameters = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS);
+		if (templateArguments == null) {
+			templateArguments = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS);
 		}
-		return templateParameters;
+		return templateArguments;
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS:
-				return templateParameters != null && !templateParameters.isEmpty();
+				return templateArguments != null && !templateArguments.isEmpty();
 			case SynthMLPackage.FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				return base_CallBehaviorAction != null;
 		}
@@ -209,8 +209,8 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 		if (eIsProxy()) return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (templateParameters: ");
-		result.append(templateParameters);
+		result.append(" (templateArguments: ");
+		result.append(templateArguments);
 		result.append(')');
 		return result.toString();
 	}
