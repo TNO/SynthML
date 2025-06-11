@@ -17,5 +17,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalControlFlow/outgoingGuard"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalControlFlow/base_ControlFlow"/>
     </genClasses>
+    <genClasses ecoreClass="SynthML.ecore#//FormalAction">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalAction/templateParameters"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalAction/base_CallBehaviorAction"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

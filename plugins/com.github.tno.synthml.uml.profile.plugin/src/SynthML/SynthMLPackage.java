@@ -166,6 +166,52 @@ public interface SynthMLPackage extends EPackage {
 	 */
 	int FORMAL_CONTROL_FLOW_OPERATION_COUNT = 0;
 
+	/**
+	 * The meta object id for the '{@link SynthML.impl.FormalActionImpl <em>Formal Action</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see SynthML.impl.FormalActionImpl
+	 * @see SynthML.impl.SynthMLPackageImpl#getFormalAction()
+	 * @generated
+	 */
+	int FORMAL_ACTION = 2;
+
+	/**
+	 * The feature id for the '<em><b>Template Parameters</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTION__TEMPLATE_PARAMETERS = 0;
+
+	/**
+	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION = 1;
+
+	/**
+	 * The number of structural features of the '<em>Formal Action</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTION_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Formal Action</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FORMAL_ACTION_OPERATION_COUNT = 0;
+
 
 	/**
 	 * Returns the meta object for class '{@link SynthML.FormalElement <em>Formal Element</em>}'.
@@ -252,6 +298,38 @@ public interface SynthMLPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getFormalControlFlow_Base_ControlFlow();
+
+	/**
+	 * Returns the meta object for class '{@link SynthML.FormalAction <em>Formal Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Formal Action</em>'.
+	 * @see SynthML.FormalAction
+	 * @generated
+	 */
+	EClass getFormalAction();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link SynthML.FormalAction#getTemplateParameters <em>Template Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Template Parameters</em>'.
+	 * @see SynthML.FormalAction#getTemplateParameters()
+	 * @see #getFormalAction()
+	 * @generated
+	 */
+	EAttribute getFormalAction_TemplateParameters();
+
+	/**
+	 * Returns the meta object for the reference '{@link SynthML.FormalAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Base Call Behavior Action</em>'.
+	 * @see SynthML.FormalAction#getBase_CallBehaviorAction()
+	 * @see #getFormalAction()
+	 * @generated
+	 */
+	EReference getFormalAction_Base_CallBehaviorAction();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -343,6 +421,32 @@ public interface SynthMLPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW = eINSTANCE.getFormalControlFlow_Base_ControlFlow();
+
+		/**
+		 * The meta object literal for the '{@link SynthML.impl.FormalActionImpl <em>Formal Action</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see SynthML.impl.FormalActionImpl
+		 * @see SynthML.impl.SynthMLPackageImpl#getFormalAction()
+		 * @generated
+		 */
+		EClass FORMAL_ACTION = eINSTANCE.getFormalAction();
+
+		/**
+		 * The meta object literal for the '<em><b>Template Parameters</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FORMAL_ACTION__TEMPLATE_PARAMETERS = eINSTANCE.getFormalAction_TemplateParameters();
+
+		/**
+		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION = eINSTANCE.getFormalAction_Base_CallBehaviorAction();
 
 	}
 

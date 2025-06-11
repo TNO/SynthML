@@ -2,6 +2,7 @@
  */
 package SynthML.impl;
 
+import SynthML.FormalAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
 import SynthML.SynthMLFactory;
@@ -39,6 +40,13 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	private EClass formalControlFlowEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass formalActionEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -191,6 +199,36 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getFormalAction() {
+		return formalActionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getFormalAction_TemplateParameters() {
+		return (EAttribute)formalActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFormalAction_Base_CallBehaviorAction() {
+		return (EReference)formalActionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public SynthMLFactory getSynthMLFactory() {
 		return (SynthMLFactory)getEFactoryInstance();
 	}
@@ -223,6 +261,10 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		formalControlFlowEClass = createEClass(FORMAL_CONTROL_FLOW);
 		createEAttribute(formalControlFlowEClass, FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
 		createEReference(formalControlFlowEClass, FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW);
+
+		formalActionEClass = createEClass(FORMAL_ACTION);
+		createEAttribute(formalActionEClass, FORMAL_ACTION__TEMPLATE_PARAMETERS);
+		createEReference(formalActionEClass, FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION);
 	}
 
 	/**
@@ -268,6 +310,10 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		initEClass(formalControlFlowEClass, FormalControlFlow.class, "FormalControlFlow", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getFormalControlFlow_OutgoingGuard(), theTypesPackage.getString(), "outgoingGuard", null, 0, 1, FormalControlFlow.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEReference(getFormalControlFlow_Base_ControlFlow(), theUMLPackage.getControlFlow(), null, "base_ControlFlow", null, 1, 1, FormalControlFlow.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+
+		initEClass(formalActionEClass, FormalAction.class, "FormalAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFormalAction_TemplateParameters(), theTypesPackage.getString(), "templateParameters", null, 0, -1, FormalAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getFormalAction_Base_CallBehaviorAction(), theUMLPackage.getCallBehaviorAction(), null, "base_CallBehaviorAction", null, 1, 1, FormalAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
