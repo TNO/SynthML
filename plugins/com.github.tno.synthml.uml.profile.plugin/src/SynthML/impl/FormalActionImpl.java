@@ -29,7 +29,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link SynthML.impl.FormalActionImpl#getTemplateParameters <em>Template Parameters</em>}</li>
+ *   <li>{@link SynthML.impl.FormalActionImpl#getTemplateArguments <em>Template Arguments</em>}</li>
  *   <li>{@link SynthML.impl.FormalActionImpl#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
@@ -37,10 +37,10 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  */
 public class FormalActionImpl extends MinimalEObjectImpl.Container implements FormalAction {
 	/**
-	 * The cached value of the '{@link #getTemplateParameters() <em>Template Parameters</em>}' attribute list.
+	 * The cached value of the '{@link #getTemplateArguments() <em>Template Arguments</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getTemplateParameters()
+	 * @see #getTemplateArguments()
 	 * @generated
 	 * @ordered
 	 */
@@ -81,9 +81,9 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	 * @generated
 	 */
 	@Override
-	public EList<String> getTemplateParameters() {
+	public EList<String> getTemplateArguments() {
 		if (templateArguments == null) {
-			templateArguments = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS);
+			templateArguments = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_ACTION__TEMPLATE_ARGUMENTS);
 		}
 		return templateArguments;
 	}
@@ -136,8 +136,8 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS:
-				return getTemplateParameters();
+			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_ARGUMENTS:
+				return getTemplateArguments();
 			case SynthMLPackage.FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				if (resolve) return getBase_CallBehaviorAction();
 				return basicGetBase_CallBehaviorAction();
@@ -154,9 +154,9 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS:
-				getTemplateParameters().clear();
-				getTemplateParameters().addAll((Collection<? extends String>)newValue);
+			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_ARGUMENTS:
+				getTemplateArguments().clear();
+				getTemplateArguments().addAll((Collection<? extends String>)newValue);
 				return;
 			case SynthMLPackage.FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				setBase_CallBehaviorAction((CallBehaviorAction)newValue);
@@ -173,8 +173,8 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS:
-				getTemplateParameters().clear();
+			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_ARGUMENTS:
+				getTemplateArguments().clear();
 				return;
 			case SynthMLPackage.FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				setBase_CallBehaviorAction((CallBehaviorAction)null);
@@ -191,7 +191,7 @@ public class FormalActionImpl extends MinimalEObjectImpl.Container implements Fo
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_PARAMETERS:
+			case SynthMLPackage.FORMAL_ACTION__TEMPLATE_ARGUMENTS:
 				return templateArguments != null && !templateArguments.isEmpty();
 			case SynthMLPackage.FORMAL_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				return base_CallBehaviorAction != null;

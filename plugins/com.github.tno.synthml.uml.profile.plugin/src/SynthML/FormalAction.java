@@ -17,7 +17,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link SynthML.FormalAction#getTemplateParameters <em>Template Parameters</em>}</li>
+ *   <li>{@link SynthML.FormalAction#getTemplateArguments <em>Template Arguments</em>}</li>
  *   <li>{@link SynthML.FormalAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
@@ -27,16 +27,16 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  */
 public interface FormalAction extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Template Parameters</b></em>' attribute list.
+	 * Returns the value of the '<em><b>Template Arguments</b></em>' attribute list.
 	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Template Parameters</em>' attribute list.
-	 * @see SynthML.SynthMLPackage#getFormalAction_TemplateParameters()
+	 * @return the value of the '<em>Template Arguments</em>' attribute list.
+	 * @see SynthML.SynthMLPackage#getFormalAction_TemplateArguments()
 	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
-	EList<String> getTemplateParameters();
+	EList<String> getTemplateArguments();
 
 	/**
 	 * Returns the value of the '<em><b>Base Call Behavior Action</b></em>' reference.

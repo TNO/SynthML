@@ -177,13 +177,13 @@ public interface SynthMLPackage extends EPackage {
 	int FORMAL_ACTION = 2;
 
 	/**
-	 * The feature id for the '<em><b>Template Parameters</b></em>' attribute list.
+	 * The feature id for the '<em><b>Template Arguments</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FORMAL_ACTION__TEMPLATE_PARAMETERS = 0;
+	int FORMAL_ACTION__TEMPLATE_ARGUMENTS = 0;
 
 	/**
 	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
@@ -310,15 +310,15 @@ public interface SynthMLPackage extends EPackage {
 	EClass getFormalAction();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link SynthML.FormalAction#getTemplateParameters <em>Template Parameters</em>}'.
+	 * Returns the meta object for the attribute list '{@link SynthML.FormalAction#getTemplateArguments <em>Template Arguments</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Template Parameters</em>'.
-	 * @see SynthML.FormalAction#getTemplateParameters()
+	 * @return the meta object for the attribute list '<em>Template Arguments</em>'.
+	 * @see SynthML.FormalAction#getTemplateArguments()
 	 * @see #getFormalAction()
 	 * @generated
 	 */
-	EAttribute getFormalAction_TemplateParameters();
+	EAttribute getFormalAction_TemplateArguments();
 
 	/**
 	 * Returns the meta object for the reference '{@link SynthML.FormalAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
@@ -433,12 +433,12 @@ public interface SynthMLPackage extends EPackage {
 		EClass FORMAL_ACTION = eINSTANCE.getFormalAction();
 
 		/**
-		 * The meta object literal for the '<em><b>Template Parameters</b></em>' attribute list feature.
+		 * The meta object literal for the '<em><b>Template Arguments</b></em>' attribute list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute FORMAL_ACTION__TEMPLATE_PARAMETERS = eINSTANCE.getFormalAction_TemplateParameters();
+		EAttribute FORMAL_ACTION__TEMPLATE_ARGUMENTS = eINSTANCE.getFormalAction_TemplateArguments();
 
 		/**
 		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.
