@@ -97,9 +97,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The prefix of a CIF variable that encodes (part of) the activity precondition. */
     public static final String PRECONDITION_PREFIX = "__precondition";
 
-    /** The prefix of a CIF variable that encodes (part of) the activity postcondition. */
-    public static final String POSTCONDITION_PREFIX = "__postcondition";
-
     /** The prefix of a CIF event that has been created for a concrete activity node. */
     public static final String NODE_PREFIX = "__node";
 
@@ -118,8 +115,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The translated precondition CIF variable. */
     private AlgVariable preconditionVariable;
 
-    /** The translated postcondition CIF variable. */
-    private AlgVariable postconditionVariable;
+    /**
+     * The translated postcondition CIF variable, for each postcondition purpose for which a postcondition CIF variable
+     * has been created so far.
+     */
+    private Map<PostConditionKind, AlgVariable> postconditionVariables = new LinkedHashMap<>();
 
     /** The purpose for which UML is translated to CIF. */
     private final TranslationPurpose translationPurpose;
@@ -213,14 +213,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives the CIF postcondition of the translated activity.
+     * Gives the CIF postcondition of the translated activity, for the given postcondition kind.
      *
-     * @return The CIF postcondition of the translated activity.
+     * @param kind The postcondition kind for which to return the postcondition expression.
+     * @return The CIF postcondition of the translated activity, for the given postcondition kind.
      */
-    public Expression getTranslatedPostcondition() {
-        // XXX
-        Verify.verifyNotNull(postconditionVariable, "Expected a translated postcondition CIF variable.");
-        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), postconditionVariable);
+    public Expression getTranslatedPostcondition(PostConditionKind kind) {
+        AlgVariable algVar = postconditionVariables.get(kind);
+        Verify.verifyNotNull(algVar, "Expected a translated postcondition CIF variable for kind " + kind + ".");
+        return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), algVar);
     }
 
     /**
@@ -420,20 +421,49 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().add(preconditionVariable);
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
-        // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        // XXX doc: THIS NEEDS UPDATING AFTER THE BRAINSTORM DISCUSSION. either here or inside the method.
-        Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
-                cifAtomicityVar);
-        cifPlant.getDeclarations().addAll(postconditions.left);
-        postconditionVariable = postconditions.right;
-        cifPlant.getDeclarations().add(postconditionVariable);
-        cifPlant.getMarkeds().add(getTranslatedPostcondition());
+        // Translate all postconditions of the input UML activity.
+        switch (translationPurpose) {
+            case LANGUAGE_EQUIVALENCE:
+            case SYNTHESIS: {
+                // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
+                // It is used as marking predicate, and later also to disable events when the postcondition holds.
+                Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
+                        cifAtomicityVar, PostConditionKind.SINGLE);
+                cifPlant.getDeclarations().addAll(postconditions.left);
+                postconditionVariables.put(PostConditionKind.SINGLE, postconditions.right);
+                cifPlant.getDeclarations().add(postconditions.right);
 
-        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
-        // taken.
-        // XXX doc: disable events needed for guard computation
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.SINGLE));
+                break;
+            }
+
+            case GUARD_COMPUTATION: {
+                // Translate postconditions twice, once to determine the postcondition without structure, and once to
+                // determine the postcondition with structure. Both are later used for disable different events when
+                // different postconditions hold. The postcondition with structure is used as marking predicate.
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                break;
+            }
+
+            default:
+                throw new AssertionError("Unknown translation purpose: " + translationPurpose);
+        }
+
+        // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be taken.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
+            List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements();
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
 
@@ -1396,26 +1426,37 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
      * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
      *     no atomic non-deterministic actions are present.
+     * @param kind The kind of postcondition to translate.
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the postcondition, together
      *     with the CIF algebraic variable that encodes the entire postcondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
-            DiscVariable cifAtomicityVar)
+            DiscVariable cifAtomicityVar, PostConditionKind kind)
     {
         // Initialize the list of postcondition variables for the partial conditions.
         List<AlgVariable> postconditionVars = new ArrayList<>();
 
+        // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
+        // 'without structure' postcondition.
+        if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION && kind == PostConditionKind.WITH_STRUCTURE) {
+            Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
+                    CifConstructors.newBoolType(), condition);
+            postconditionVars.add(cifAlgVar);
+        }
+
         // Translate the user-specified activity postconditions. For the language equivalence check, these conditions
         // have already been included in the structure and guards, and we want to check that it was done correctly, so
-        // we don't translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // we don't translate them again. For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE) {
             postconditionVars.addAll(translateUserSpecifiedPrePostconditions(activity.getPostconditions()));
         }
 
         // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
         // action must not be active. For the language equivalence check, these conditions have already been included in
         // the structure and guards, and we want to check that it was done correctly, so we don't translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE) {
             for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
                 // First define the postcondition expression.
                 UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
@@ -1425,9 +1466,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
                 // Then define an extra CIF algebraic variable for the extra postcondition.
-                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        POSTCONDITION_PREFIX + cifNonAtomicVar.getName(), null, CifConstructors.newBoolType(),
-                        cifExtraPostcondition);
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifNonAtomicVar.getName(),
+                        null, CifConstructors.newBoolType(), cifExtraPostcondition);
                 postconditionVars.add(cifAlgVar);
             }
         }
@@ -1435,8 +1475,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // If the atomicity variable has been added, then define an extra postcondition that expresses that no
         // atomic non-deterministic action must be active. For the language equivalence check, these conditions have
         // already been included in the structure and guards, and we want to check that it was done correctly, so we
-        // don't translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && cifAtomicityVar != null) {
+        // don't translate them again. For guard computation, these are not part of the structure postconditions.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE
+                && cifAtomicityVar != null)
+        {
             // First define the postcondition expression.
             BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
             cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
@@ -1446,19 +1488,19 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
             // Then define an extra CIF algebraic variable for this extra postcondition.
-            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
-                    cifExtraPostcondition);
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifAtomicityVar.getName(), null,
+                    CifConstructors.newBoolType(), cifExtraPostcondition);
             postconditionVars.add(cifAlgVar);
         }
 
         // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
         // predicate of the corresponding CIF requirement automata must hold. For the language equivalence check, these
         // conditions have already been included in the structure and guards, and we want to check that it was done
-        // correctly, so we don't translate them again.
+        // correctly, so we don't translate them again. For guard computation, these are not part of the structure
+        // postconditions.
         if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             Verify.verify(occurrenceConstraintMap.isEmpty());
-        } else {
+        } else if (kind != PostConditionKind.WITH_STRUCTURE) {
             for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
                 for (Automaton cifRequirement: entry.getValue()) {
                     // First define the postcondition expression.
@@ -1467,51 +1509,49 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
                     // Then define an extra CIF algebraic variable for this extra postcondition.
                     AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                            POSTCONDITION_PREFIX + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
+                            kind.prefix + "__" + cifRequirement.getName(), null, CifConstructors.newBoolType(),
                             cifExtraPostcondition);
                     postconditionVars.add(cifAlgVar);
                 }
             }
         }
 
-        // For every control flow of a translated concrete activity, define an extra postcondition that expresses that
-        // the control flow must not hold a token. For the language equivalence check, these conditions have already
-        // been included in the structure and guards, and we want to check that it was done correctly, so we don't
-        // translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        // Define extra postconditions for control flows of translated concrete activities that must not hold a token.
+        // For the language equivalence check, these conditions have already been included in the structure and guards,
+        // and we want to check that it was done correctly, so we don't translate them again. For guard computation,
+        // these are part of the structure postconditions.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITHOUT_STRUCTURE)
+        {
             for (var entry: controlFlowMap.entrySet()) {
-                // TODO doc
-                // If guard computation, we still want to have the token on the "last" control flow as a condition to
-                // finish the activity execution. So, if the purpose is guard computation, do *not* add the condition
-                // that the control flow should not have a token. The token is added just outside this for-loop.
-                // Alternatively, we could modify the postcondition expression, instead of adding the "continue"
-                // statement.
+                // For synthesis, we don't want any tokens on control flows of called activities. For guard computation,
+                // we also want no tokens on control flows, except for the incoming control flow into the final node.
+                // That last case is handled later in this method, so that particular control flow is excluded here.
                 boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof FinalNode;
-
                 if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
                     continue;
-                } else {
-                    DiscVariable cifControlFlowVar = entry.getValue();
-
-                    // First define the postcondition expression.
-                    UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
-                    cifExtraPostcondition.setChild(CifConstructors.newDiscVariableExpression(null,
-                            CifConstructors.newBoolType(), cifControlFlowVar));
-                    cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
-                    cifExtraPostcondition.setType(CifConstructors.newBoolType());
-
-                    // Then define an extra CIF algebraic variable for the extra postcondition.
-                    AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                            POSTCONDITION_PREFIX + cifControlFlowVar.getName(), null, CifConstructors.newBoolType(),
-                            cifExtraPostcondition);
-                    postconditionVars.add(cifAlgVar);
                 }
+
+                // Get the control flow variable for the control flow that must not have a token.
+                DiscVariable cifControlFlowVar = entry.getValue();
+
+                // Define the postcondition expression.
+                UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
+                cifExtraPostcondition.setChild(CifConstructors.newDiscVariableExpression(null,
+                        CifConstructors.newBoolType(), cifControlFlowVar));
+                cifExtraPostcondition.setOperator(UnaryOperator.INVERSE);
+                cifExtraPostcondition.setType(CifConstructors.newBoolType());
+
+                // Define a CIF algebraic variable for the postcondition.
+                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + cifControlFlowVar.getName(),
+                        null, CifConstructors.newBoolType(), cifExtraPostcondition);
+                postconditionVars.add(cifAlgVar);
             }
         }
 
         // If we already have a synthesized activity, add the postcondition that a token must be placed at the 'final'
-        // control flow leading to the final node.
-        if (translationPurpose != TranslationPurpose.SYNTHESIS) {
+        // control flow leading to the final node. For guard computation, this is part of the structure postcondition.
+        if (translationPurpose != TranslationPurpose.SYNTHESIS && kind != PostConditionKind.WITHOUT_STRUCTURE) {
             for (ActivityNode node: activity.getNodes()) {
                 if (node instanceof FinalNode finalNode) {
                     postconditionVars.addAll(createFinalNodeConfiguration(finalNode));
@@ -1519,24 +1559,31 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Combine the user-specified and/or additional preconditions.
-        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, POSTCONDITION_PREFIX);
+        // Combine the user-specified and/or additional postconditions.
+        AlgVariable postconditionVar = combinePrePostconditionVariables(postconditionVars, kind.prefix);
         return Pair.pair(postconditionVars, postconditionVar);
     }
 
     /**
-     * Creates CIF state/event exclusion invariant requirements to disable all events whenever the activity
+     * Creates CIF state/event exclusion invariant requirements to disable all events whenever the relevant activity
      * postcondition holds.
      *
-     * @param cifPostconditionVar The CIF postcondition variable, which must be non-{@code null}.
      * @return The created CIF requirement invariants.
      */
-    private List<Invariant> createDisableEventsWhenDoneRequirements(AlgVariable cifPostconditionVar) {
-        Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
-
+    private List<Invariant> createDisableEventsWhenDoneRequirements() {
         List<Invariant> cifInvariants = new ArrayList<>(eventEdgeMap.size());
 
         for (Event cifEvent: eventEdgeMap.keySet()) {
+            // Determine post condition variable to use.
+            PostConditionKind kind = switch (translationPurpose) {
+                case GUARD_COMPUTATION -> internalEvents.contains(cifEvent) ? PostConditionKind.WITH_STRUCTURE
+                        : PostConditionKind.WITHOUT_STRUCTURE;
+                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+            };
+            AlgVariable cifPostconditionVar = postconditionVariables.get(kind);
+            Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
+
+            // Add the requirement.
             Invariant cifInvariant = CifConstructors.newInvariant();
             cifInvariant.setEvent(CifConstructors.newEventExpression(cifEvent, null, CifConstructors.newBoolType()));
             cifInvariant.setInvKind(InvKind.EVENT_DISABLES);
@@ -1686,5 +1733,33 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return finalNodeConfig;
+    }
+
+    /** Postcondition kind. */
+    public static enum PostConditionKind {
+        /**
+         * For {@link TranslationPurpose#SYNTHESIS} and {@link TranslationPurpose#LANGUAGE_EQUIVALENCE}, there is only
+         * one single kind of postcondition.
+         */
+        SINGLE("__postcondition"),
+
+        /**
+         * For {@link TranslationPurpose#GUARD_COMPUTATION}, the postcondition without activity structure token
+         * constraints.
+         */
+        WITHOUT_STRUCTURE("__postcondition_without_structure"),
+
+        /**
+         * For {@link TranslationPurpose#GUARD_COMPUTATION}, the postcondition with activity structure token
+         * constraints.
+         */
+        WITH_STRUCTURE("__postcondition_with_structure");
+
+        /** The prefix of the CIF variable that encodes (part of) the postcondition. */
+        protected final String prefix; // POSTCONDITION_PREFIX = "";
+
+        private PostConditionKind(String prefix) {
+            this.prefix = prefix;
+        }
     }
 }

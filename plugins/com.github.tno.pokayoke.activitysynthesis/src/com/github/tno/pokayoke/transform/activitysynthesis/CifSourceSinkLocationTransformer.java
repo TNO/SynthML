@@ -26,6 +26,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 
 import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.PostConditionKind;
 import com.google.common.base.Preconditions;
 
 /**
@@ -178,7 +179,7 @@ public class CifSourceSinkLocationTransformer {
     {
         // Obtain the preconditions and postconditions of the translated CIF specification.
         Expression precondition = translator.getTranslatedPrecondition();
-        Expression postcondition = translator.getTranslatedPostcondition();
+        Expression postcondition = translator.getTranslatedPostcondition(PostConditionKind.SINGLE);
 
         // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
         try {
