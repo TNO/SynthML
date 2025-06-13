@@ -151,8 +151,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     private final Set<Event> internalEvents = new LinkedHashSet<>();
 
-    // TODO Wytse
-    protected final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
+    /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
+    private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
@@ -218,6 +218,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @return The CIF postcondition of the translated activity.
      */
     public Expression getTranslatedPostcondition() {
+        // XXX
         Verify.verifyNotNull(postconditionVariable, "Expected a translated postcondition CIF variable.");
         return CifConstructors.newAlgVariableExpression(null, CifConstructors.newBoolType(), postconditionVariable);
     }
@@ -272,12 +273,21 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         return ImmutableBiMap.copyOf(controlFlowMap);
     }
 
-    // TODO doc
+    /**
+     * Returns the mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start
+     * events.
+     *
+     * @return The mapping.
+     */
     public BiMap<Pair<ActivityEdge, ActivityEdge>, Event> getActivityOrNodeMapping() {
         return ImmutableBiMap.copyOf(activityOrNodeMapping);
     }
 
-    // TODO doc
+    /**
+     * Returns the name of the created CIF plant automaton.
+     *
+     * @return The plant automaton name.
+     */
     public String getPlantName() {
         return activity.getContext().getName();
     }
@@ -366,8 +376,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
-        // Translate all UML opaque behaviors.
-        // TODO doc: this should make sense only for synthesis
+        // Translate all UML opaque behaviors. These are only translated for synthesis. For other purposes, the
+        // already-synthesized activity is used, and call behaviors to opaque behaviors are inlined.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
             for (var entry: cifEventEdges.entrySet()) {
@@ -376,11 +386,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Translate all UML concrete activities.
+        // Translate all UML concrete activities, or only some of them, depending on the translation purpose.
         Pair<Set<DiscVariable>, BiMap<Event, Edge>> translatedActivities = translateActivities();
-
         cifPlant.getDeclarations().addAll(translatedActivities.left);
-
         for (var entry: translatedActivities.right.entrySet()) {
             cifSpec.getDeclarations().add(entry.getKey());
             cifLocation.getEdges().add(entry.getValue());
@@ -396,14 +404,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<DiscVariable> cifNonAtomicVars = encodeNonAtomicActionConstraints();
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
-        // Translate all occurrence constraints of the input UML activity.
-        // TODO doc: occurrence constraints are not needed for equivalence, but needed for guard computation.
+        // Translate all occurrence constraints of the input UML activity. For the language equivalence check, the
+        // constraints have already been included in the structure and guards, and we want to check that it was done
+        // correctly, so we don't translate them.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
 
-        // Translate all preconditions of the input UML activity as an initial predicate in CIF.
+        // Translate all preconditions of the input UML activity as an initialization predicate in CIF, and also add
+        // any additional required preconditions as needed.
         Pair<List<AlgVariable>, AlgVariable> preconditions = translatePreconditions();
         cifPlant.getDeclarations().addAll(preconditions.left);
         preconditionVariable = preconditions.right;
@@ -411,7 +421,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
-        // TODO doc: THIS NEEDS UPDATING AFTER THE BRAINSTORM DISCUSSION. either here or inside the method.
+        // XXX doc: THIS NEEDS UPDATING AFTER THE BRAINSTORM DISCUSSION. either here or inside the method.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
                     cifAtomicityVar);
@@ -423,20 +433,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
         // taken.
-        // TODO doc: disable events needed for guard computation
+        // XXX doc: disable events needed for guard computation
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
 
-        // Translate all UML class constraints as CIF invariants.
-        // TODO doc: requirements needed for guard computation
+        // Translate all UML class constraints as CIF invariants. For the language equivalence check, the constraints
+        // have already been included in the structure and guards, and we want to check that it was done correctly, so
+        // we don't translate them again.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
         }
 
         // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
+        // XXX
         // TODO doc: this specific snippet is only useful for the language equivalence check. we might want to hide all
         // this mess inside a separate method, since the three translation purposes need different conditions.
         if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
@@ -655,7 +667,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates all concrete UML activities that are in context to CIF variables, and CIF events with their
-     * corresponding CIF edges.
+     * corresponding CIF edges. Depending on the translation purpose, not all concrete activities may be translated.
      *
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
@@ -675,6 +687,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
+     * Depending on the translation purpose, the activities may or may not be translated.
      *
      * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
@@ -1326,14 +1339,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the UML activity preconditions to a CIF algebraic variable. Adds the extra initial configuration
-     * conditions if present.
+     * Translates the UML activity preconditions to CIF algebraic variables. Adds extra preconditions if needed.
      *
      * @return A pair consisting of auxiliary CIF algebraic variables that encode parts of the precondition, together
      *     with the CIF algebraic variable that encodes the entire precondition.
      */
     private Pair<List<AlgVariable>, AlgVariable> translatePreconditions() {
-        List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
+        // Translate the user-specified activity preconditions.
+        List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(activity.getPreconditions());
 
         // Compute the synthesized activity's initial node configuration and add it to the preconditions.
         if (translationPurpose != TranslationPurpose.SYNTHESIS) {
@@ -1344,19 +1357,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
         }
 
-        // Combine the activity preconditions with initial node preconditions.
+        // Combine the user-specified and additional preconditions.
         AlgVariable preconditionVar = combinePrePostconditionVariables(preconditionVars, PRECONDITION_PREFIX);
         return Pair.pair(preconditionVars, preconditionVar);
     }
 
     /**
-     * Translates a given collection of preconditions or postconditions to a set of CIF algebraic variables, one for
-     * every pre/postcondition, whose values are the state invariant predicates of the corresponding pre/postcondition.
+     * Translates a given collection of user-specified preconditions or postconditions to a set of CIF algebraic
+     * variables, one for each user-specified pre/postcondition, whose values are the state invariant predicates of the
+     * corresponding user-specified pre/postcondition.
      *
-     * @param umlConstraints The collection of UML pre/postconditions to translate.
+     * @param umlConstraints The collection of user-specified UML pre/postconditions to translate.
      * @return The translated Boolean-typed CIF algebraic variables.
      */
-    private List<AlgVariable> translatePrePostconditions(Collection<Constraint> umlConstraints) {
+    private List<AlgVariable> translateUserSpecifiedPrePostconditions(Collection<Constraint> umlConstraints) {
         // Define an algebraic CIF variable for every UML constraint, whose value is the state invariant predicate.
         List<AlgVariable> cifConstraintVars = new ArrayList<>(umlConstraints.size());
 
@@ -1393,9 +1407,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the UML activity postconditions to a CIF algebraic variable. Extra postconditions are added expressing
-     * that no non-atomic and atomic non-deterministic actions may be active, that all occurrence constraints must be
-     * satisfied, and that no control flow of any translated concrete activity holds a token.
+     * Translates the UML activity postconditions to CIF algebraic variables. Adds extra postconditions if needed.
      *
      * @param cifNonAtomicVars The internal CIF variables created for non-atomic actions.
      * @param cifAtomicityVar The internal CIF variable created for atomic non-deterministic actions. Is {@code null} if
@@ -1406,7 +1418,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private Pair<List<AlgVariable>, AlgVariable> translatePostconditions(List<DiscVariable> cifNonAtomicVars,
             DiscVariable cifAtomicityVar)
     {
-        List<AlgVariable> postconditionVars = translatePrePostconditions(activity.getPostconditions());
+        // Translate the user-specified activity postconditions.
+        List<AlgVariable> postconditionVars = translateUserSpecifiedPrePostconditions(activity.getPostconditions());
 
         // For every translated non-atomic action, define an extra postcondition that expresses that the non-atomic
         // action must not be active.
