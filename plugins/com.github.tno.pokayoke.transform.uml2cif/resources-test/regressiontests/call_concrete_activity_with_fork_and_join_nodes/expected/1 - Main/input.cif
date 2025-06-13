@@ -1,7 +1,7 @@
 controllable initialize;
 uncontrollable initialize__na_result_1;
-controllable __node__InitialNode__31;
-uncontrollable __node__ActivityFinalNode__32;
+controllable __node__InitialNode__31__0;
+uncontrollable __node__ActivityFinalNode__32__0;
 uncontrollable __node__OpaqueAction__33;
 uncontrollable __node__OpaqueAction__33__result_1;
 uncontrollable __node__OpaqueAction__33__result_2;
@@ -43,8 +43,8 @@ plant automaton Context:
     marked;
     edge initialize when not init, __activeAction = 0, not __nonAtomicActive__initialize do __nonAtomicActive__initialize := true;
     edge initialize__na_result_1 when __activeAction = 0, __nonAtomicActive__initialize do init := true, count := 1, __nonAtomicActive__initialize := false;
-    edge __node__InitialNode__31 when true, not __controlflow__25, init, __activeAction = 0 do __controlflow__25 := true;
-    edge __node__ActivityFinalNode__32 when true, __controlflow__30, __activeAction = 0 do __controlflow__30 := false;
+    edge __node__InitialNode__31__0 when true, not __controlflow__25, init, __activeAction = 0 do __controlflow__25 := true;
+    edge __node__ActivityFinalNode__32__0 when true, __controlflow__30, __activeAction = 0 do __controlflow__30 := false;
     edge __node__OpaqueAction__33 when true, __controlflow__26, not __controlflow__28, __activeAction = 0 do __controlflow__26 := false, __activeAction := 1;
     edge __node__OpaqueAction__33__result_1 when not __controlflow__28, __activeAction = 1 do count := count + 1, __controlflow__28 := true, __activeAction := 0;
     edge __node__OpaqueAction__33__result_2 when not __controlflow__28, __activeAction = 1 do count := count + 1, __controlflow__28 := true, __activeAction := 0;
@@ -67,12 +67,12 @@ requirement automaton occurrences_main__20__IncrByTwo__22:
   location:
     initial;
     marked;
-    edge __node__InitialNode__31 when __occurrences < 1 do __occurrences := __occurrences + 1;
+    edge __node__InitialNode__31__0 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
 requirement invariant Context.__postcondition disables initialize;
 requirement invariant Context.__postcondition disables initialize__na_result_1;
-requirement invariant Context.__postcondition disables __node__InitialNode__31;
-requirement invariant Context.__postcondition disables __node__ActivityFinalNode__32;
+requirement invariant Context.__postcondition disables __node__InitialNode__31__0;
+requirement invariant Context.__postcondition disables __node__ActivityFinalNode__32__0;
 requirement invariant Context.__postcondition disables __node__OpaqueAction__33;
 requirement invariant Context.__postcondition disables __node__OpaqueAction__33__result_1;
 requirement invariant Context.__postcondition disables __node__OpaqueAction__33__result_2;
