@@ -155,7 +155,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     protected final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
     public static enum TranslationPurpose {
-        SYNTHESIS, LANGUAGE_EQUIVALENCE, GUARD_COMPUTATION;
+        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
@@ -353,7 +353,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Create the CIF plant for the UML activity to translate.
         Automaton cifPlant = CifConstructors.newAutomaton();
         cifPlant.setKind(SupKind.PLANT);
-        cifPlant.setName(activity.getContext().getName());
+        cifPlant.setName(getPlantName());
         cifSpec.getComponents().add(cifPlant);
 
         // Translate all UML properties.
@@ -869,14 +869,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
             }
         }
-
-        // TODO This is Wytse's update. I think this is needed because we want to update the "activityOrNode" map.
-//        // If there is at most one control flow pair, then we can translate the node as an AND-type node (which is
-//        // slightly simpler and gives slightly nicer event names), since that's semantically equivalent to translating
-//        // it as an OR-type node.
-//        if (controlFlowPairs.size() <= 1) {
-//            return translateActivityAndNode(node, isAtomic, controllableStartEvents);
-//        }
 
         // For every collected pair of control flows, translate the UML activity node.
         BiMap<Event, Edge> result = HashBiMap.create();
