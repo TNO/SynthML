@@ -19,11 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.TranslationPurpose;
-<<<<<<< HEAD
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-=======
 import com.github.tno.synthml.uml.profile.cif.CifContext;
->>>>>>> refs/remotes/origin/main
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
