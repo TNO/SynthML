@@ -1,0 +1,38 @@
+uncontrollable __node__CallBehaviorAction__27;
+uncontrollable __node__CallBehaviorAction__27__na_result_1;
+uncontrollable __node__CallBehaviorAction__27__na_result_2;
+uncontrollable __node__CallBehaviorAction__28;
+uncontrollable __node__CallBehaviorAction__28__na_result_1;
+uncontrollable __node__CallBehaviorAction__28__na_result_2;
+uncontrollable __node__JoinNode__31;
+uncontrollable __node__ForkNode__32;
+plant automaton Machine:
+  disc bool a_executed in any;
+  disc bool b_executed in any;
+  disc bool __controlflow__21;
+  disc bool __controlflow__22;
+  disc bool __controlflow__23;
+  disc bool __controlflow__24;
+  disc bool __controlflow__25;
+  disc bool __controlflow__26 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__27;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__28;
+  alg bool Precondition = not a_executed and not b_executed;
+  alg bool __token_on_first_controlflow = __controlflow__26;
+  alg bool __precondition = Precondition and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__25;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__27 when true, __controlflow__21, not __controlflow__23, not __nonAtomicActive____node__CallBehaviorAction__27 do __controlflow__21 := false, __nonAtomicActive____node__CallBehaviorAction__27 := true;
+    edge __node__CallBehaviorAction__27__na_result_1 when not __controlflow__23, __nonAtomicActive____node__CallBehaviorAction__27 do a_executed := true, __controlflow__23 := true, __nonAtomicActive____node__CallBehaviorAction__27 := false;
+    edge __node__CallBehaviorAction__27__na_result_2 when not __controlflow__23, __nonAtomicActive____node__CallBehaviorAction__27 do a_executed := true, __controlflow__23 := true, __nonAtomicActive____node__CallBehaviorAction__27 := false;
+    edge __node__CallBehaviorAction__28 when true, __controlflow__22, not __controlflow__24, not __nonAtomicActive____node__CallBehaviorAction__28 do __controlflow__22 := false, __nonAtomicActive____node__CallBehaviorAction__28 := true;
+    edge __node__CallBehaviorAction__28__na_result_1 when not __controlflow__24, __nonAtomicActive____node__CallBehaviorAction__28 do b_executed := true, __controlflow__24 := true, __nonAtomicActive____node__CallBehaviorAction__28 := false;
+    edge __node__CallBehaviorAction__28__na_result_2 when not __controlflow__24, __nonAtomicActive____node__CallBehaviorAction__28 do b_executed := true, __controlflow__24 := true, __nonAtomicActive____node__CallBehaviorAction__28 := false;
+    edge __node__JoinNode__31 when true, __controlflow__23, __controlflow__24, not __controlflow__25 do __controlflow__23 := false, __controlflow__24 := false, __controlflow__25 := true;
+    edge __node__ForkNode__32 when true, __controlflow__26, not __controlflow__21, not __controlflow__22 do __controlflow__26 := false, __controlflow__21 := true, __controlflow__22 := true;
+end

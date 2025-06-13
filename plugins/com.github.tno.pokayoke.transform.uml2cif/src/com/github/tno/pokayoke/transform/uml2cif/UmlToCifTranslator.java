@@ -70,9 +70,9 @@ import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -151,11 +151,16 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     private final Set<Event> internalEvents = new LinkedHashSet<>();
 
+<<<<<<< HEAD
     // TODO Wytse
     protected final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
     public static enum TranslationPurpose {
         SYNTHESIS, LANGUAGE_EQUIVALENCE, GUARD_COMPUTATION;
+=======
+    public static enum TranslationPurpose {
+        SYNTHESIS, LANGUAGE_EQUIVALENCE;
+>>>>>>> refs/remotes/origin/main
     }
 
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
@@ -367,7 +372,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getLocations().add(cifLocation);
 
         // Translate all UML opaque behaviors.
+<<<<<<< HEAD
         // TODO doc: this should make sense only for synthesis
+=======
+>>>>>>> refs/remotes/origin/main
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             BiMap<Event, Edge> cifEventEdges = translateOpaqueBehaviors();
             for (var entry: cifEventEdges.entrySet()) {
@@ -397,8 +405,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getDeclarations().addAll(cifNonAtomicVars);
 
         // Translate all occurrence constraints of the input UML activity.
+<<<<<<< HEAD
         // TODO doc: occurrence constraints are not needed for equivalence, but needed for guard computation.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+=======
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+>>>>>>> refs/remotes/origin/main
             List<Automaton> cifRequirementAutomata = translateOccurrenceConstraints();
             cifSpec.getComponents().addAll(cifRequirementAutomata);
         }
@@ -411,8 +423,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifPlant.getInitials().add(getTranslatedPrecondition());
 
         // Translate all postconditions of the input UML activity as a marked predicate in CIF.
+<<<<<<< HEAD
         // TODO doc: THIS NEEDS UPDATING AFTER THE BRAINSTORM DISCUSSION. either here or inside the method.
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+=======
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+>>>>>>> refs/remotes/origin/main
             Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
                     cifAtomicityVar);
             cifPlant.getDeclarations().addAll(postconditions.left);
@@ -423,22 +439,33 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Create extra requirements to ensure that, whenever the postcondition holds, no further steps can be
         // taken.
+<<<<<<< HEAD
         // TODO doc: disable events needed for guard computation
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+=======
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+>>>>>>> refs/remotes/origin/main
             List<Invariant> cifDisableConstraints = createDisableEventsWhenDoneRequirements(postconditionVariable);
             cifSpec.getInvariants().addAll(cifDisableConstraints);
         }
 
         // Translate all UML class constraints as CIF invariants.
+<<<<<<< HEAD
         // TODO doc: requirements needed for guard computation
         if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+=======
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+>>>>>>> refs/remotes/origin/main
             List<Invariant> cifRequirementInvariants = translateRequirements();
             cifPlant.getInvariants().addAll(cifRequirementInvariants);
         }
 
         // Add a postcondition that represents the placement of a token on the final node's incoming control flow.
+<<<<<<< HEAD
         // TODO doc: this specific snippet is only useful for the language equivalence check. we might want to hide all
         // this mess inside a separate method, since the three translation purposes need different conditions.
+=======
+>>>>>>> refs/remotes/origin/main
         if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             List<AlgVariable> postconditionVars = null;
             for (ActivityNode node: activity.getNodes()) {
@@ -688,11 +715,15 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // resulting in a wrong translation. So, if the translation purpose is language equivalence and the activity is
         // not the synthesised one, return a pair of an empty set and an empty bimap. With vertical scaling, this needs
         // to be carefully evaluated again.
+<<<<<<< HEAD
 
         // TODO doc: translate only the "current" activity if language equivalence or guard computation. the latter
         // should
         // be changed when vertical scaling is there.
         if (translationPurpose != TranslationPurpose.SYNTHESIS && activity != this.activity) {
+=======
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE && activity != this.activity) {
+>>>>>>> refs/remotes/origin/main
             return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
         }
 
@@ -700,7 +731,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
         for (ActivityEdge controlFlow: activity.getEdges()) {
             DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
+<<<<<<< HEAD
             if (controlFlow.getSource() instanceof InitialNode && translationPurpose != TranslationPurpose.SYNTHESIS) {
+=======
+            if (controlFlow.getSource() instanceof InitialNode
+                    && translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE)
+            {
+>>>>>>> refs/remotes/origin/main
                 // For the language equivalence, we place a token in the control flow that leaves the initial node.
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
@@ -712,11 +749,17 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // postcondition computation.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
+<<<<<<< HEAD
             if (translationPurpose != TranslationPurpose.SYNTHESIS
                     && (node instanceof InitialNode || node instanceof FinalNode))
             {
                 // TODO doc: we should only "take" the initial and final nodes during synthesis. the other two purposes
                 // should start execution after the initial node and stop execution before the final node.
+=======
+            if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE
+                    && (node instanceof InitialNode || node instanceof FinalNode))
+            {
+>>>>>>> refs/remotes/origin/main
                 continue;
             } else {
                 newEventEdges.putAll(translateActivityNode(node));
@@ -1344,7 +1387,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<AlgVariable> preconditionVars = translatePrePostconditions(activity.getPreconditions());
 
         // Compute the synthesized activity's initial node configuration and add it to the preconditions.
+<<<<<<< HEAD
         if (translationPurpose != TranslationPurpose.SYNTHESIS) {
+=======
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+>>>>>>> refs/remotes/origin/main
             for (ActivityNode node: activity.getNodes()) {
                 if (node instanceof InitialNode initialNode) {
                     preconditionVars.addAll(createInitialNodeConfiguration(initialNode));

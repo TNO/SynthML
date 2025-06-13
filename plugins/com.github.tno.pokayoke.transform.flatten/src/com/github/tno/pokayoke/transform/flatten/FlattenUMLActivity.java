@@ -28,7 +28,7 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.common.StructureInfoHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
-import com.github.tno.pokayoke.uml.profile.util.UMLActivityUtils;
+import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
 
 /** Flattens nested UML activities. */
 public class FlattenUMLActivity {

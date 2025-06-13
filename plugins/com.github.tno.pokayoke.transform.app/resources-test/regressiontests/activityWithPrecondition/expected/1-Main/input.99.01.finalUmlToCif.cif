@@ -1,0 +1,18 @@
+enum Number = First, Second, Third;
+uncontrollable __node__CallBehaviorAction__19;
+plant automaton Class:
+  disc Number element in any;
+  disc bool __controlflow__17;
+  disc bool __controlflow__18 = true;
+  alg bool precond = element = First;
+  alg bool __token_on_first_controlflow = __controlflow__18;
+  alg bool __precondition = precond and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__17;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__19 when element != Third, __controlflow__18, not __controlflow__17 do element := Second, __controlflow__18 := false, __controlflow__17 := true;
+end

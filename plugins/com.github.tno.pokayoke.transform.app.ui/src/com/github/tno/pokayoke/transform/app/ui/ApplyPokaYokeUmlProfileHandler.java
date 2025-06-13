@@ -16,7 +16,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-import com.github.tno.pokayoke.uml.profile.transform.ApplyPokaYokeUmlProfile;
+import com.github.tno.synthml.uml.profile.transform.ApplyPokaYokeUmlProfile;
 
 /** Menu action handler for applying the Poka Yoke UML profile to an existing UML file. */
 public class ApplyPokaYokeUmlProfileHandler {

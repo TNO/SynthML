@@ -1,0 +1,15 @@
+plant automaton Class1:
+  disc bool init = false;
+  disc bool val in any;
+  disc bool __controlflow__15 = true;
+  alg bool prec = not init;
+  alg bool __token_on_first_controlflow = __controlflow__15;
+  alg bool __precondition = prec and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__15;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+end

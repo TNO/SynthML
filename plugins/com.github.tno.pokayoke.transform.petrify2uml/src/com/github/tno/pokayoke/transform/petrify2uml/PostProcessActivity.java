@@ -25,7 +25,8 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 
@@ -156,7 +157,7 @@ public class PostProcessActivity {
                     // If so, we replace the action by an opaque action that keeps the guard of the original action.
                     OpaqueAction replacementAction = UMLFactory.eINSTANCE.createOpaqueAction();
                     replacementAction.setActivity(activity);
-                    replacementAction.setName(behavior.getName() + "_start");
+                    replacementAction.setName(behavior.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                     PokaYokeUmlProfileUtil.setAtomic(replacementAction, true);
                     PokaYokeUmlProfileUtil.setGuard(replacementAction, PokaYokeUmlProfileUtil.getGuard(behavior));
 
@@ -189,7 +190,8 @@ public class PostProcessActivity {
                         }
 
                         // Rename the current action, set its guard to 'true', and retain the original relevant effect.
-                        action.setName(actionName.replace(nonAtomicOutcomeSuffix, "_end"));
+                        action.setName(
+                                actionName.replace(nonAtomicOutcomeSuffix, UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(actionElement)

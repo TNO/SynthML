@@ -53,12 +53,12 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
-import com.github.tno.pokayoke.uml.profile.util.UMLActivityUtils;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
+import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 

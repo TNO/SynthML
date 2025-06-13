@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_EzH8kI3JEe6_8e6M7syDNw" name="ExampleModel">
     <packagedElement xmi:type="uml:Class" xmi:id="_btLdgI3JEe6_8e6M7syDNw" name="ExampleClass" classifierBehavior="_EDdIQI3LEe6_8e6M7syDNw" isActive="true">
       <ownedAttribute xmi:id="_AcpZoI3LEe6_8e6M7syDNw" name="inputLocation" type="_iJrxcI3KEe6_8e6M7syDNw"/>
@@ -68,23 +68,23 @@
     </packagedElement>
     <profileApplication xmi:id="_IKL68PyWEe6JbLeUfj0rXg">
       <eAnnotations xmi:id="_IKPlUPyWEe6JbLeUfj0rXg" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_IK3QYPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw" atomic="true">
+  <SynthML:FormalElement xmi:id="_IK3QYPyWEe6JbLeUfj0rXg" guard="not robot1_claimed" base_RedefinableElement="_Rj_8II3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot1_claimed := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_IK33cPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_IK33cPyWEe6JbLeUfj0rXg" guard="not robot2_claimed" base_RedefinableElement="_SkzR0I3LEe6_8e6M7syDNw" atomic="true">
     <effects>robot2_claimed := true</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_IK33cfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJAI-XEe6xDuEp1zNm9g" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_IK33cfyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJAI-XEe6xDuEp1zNm9g" atomic="true">
     <effects>robot1_claimed := false,
 robot2_claimed := false</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_IK4egPyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJA4-XEe6xDuEp1zNm9g" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_IK4egPyWEe6JbLeUfj0rXg" guard="true" base_RedefinableElement="_sJCJA4-XEe6xDuEp1zNm9g" atomic="true">
     <effects>robot1_claimed := false,
 robot2_claimed := false</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>
