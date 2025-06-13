@@ -498,10 +498,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private ActionTranslationResult translateAsAction(RedefinableElement umlElement, String name, boolean isAtomic,
             boolean controllableStartEvent)
     {
+        // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
+        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
         if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
             controllableStartEvent = true;
         }
 
+        // Initialize mapping of new events to their edges.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create();
 
         // Find the action to translate. If the UML element is a call behavior action that is not shadowed (i.e., has no
@@ -642,7 +645,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates all concrete UML activities that are in context to CIF variables, and CIF events with their
-     * corresponding CIF edges. Depending on the translation purpose, not all concrete activities may be translated.
+     * corresponding CIF edges. Depending on the translation purpose, only some of the concrete activities may be
+     * translated.
      *
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
@@ -662,24 +666,20 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /**
      * Translates a given concrete UML activity to CIF variables, and CIF events with their corresponding CIF edges.
-     * Depending on the translation purpose, the activities may or may not be translated.
+     * Depending on the translation purpose, the activity may or may not be translated.
      *
      * @param activity The concrete UML activity to translate.
      * @return The translated CIF variables, and CIF events with their corresponding CIF edges.
      */
     private Pair<Set<DiscVariable>, BiMap<Event, Edge>> translateConcreteActivity(Activity activity) {
+        // Sanity check.
         Preconditions.checkArgument(!activity.isAbstract(), "Expected a concrete activity.");
 
-        // For the language equivalence check, we do not translate other activities than the one that is synthesised by
-        // the synthesis chain. The translation of other concrete activities implies the translation of all its nodes,
-        // e.g. call behavior actions to some opaque behavior. These nodes are mixed with the current activity nodes,
-        // resulting in a wrong translation. So, if the translation purpose is language equivalence and the activity is
-        // not the synthesised one, return a pair of an empty set and an empty bimap. With vertical scaling, this needs
-        // to be carefully evaluated again.
-
-        // TODO doc: translate only the "current" activity if language equivalence or guard computation. the latter
-        // should
-        // be changed when vertical scaling is there.
+        // For the guard computation and language equivalence check, we are only concerned with the single activity
+        // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
+        // being synthesized. The translation of other concrete activities would imply the translation of all its nodes,
+        // e.g., call behavior actions to some opaque behavior, as well as opaque actions. These nodes would interleave
+        // and interfere with the current activity nodes. For vertical scaling, this needs to be carefully re-evaluated.
         if (translationPurpose != TranslationPurpose.SYNTHESIS && activity != this.activity) {
             return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
         }
@@ -687,30 +687,37 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate all activity control flows.
         Set<DiscVariable> newVariables = new LinkedHashSet<>(activity.getEdges().size());
         for (ActivityEdge controlFlow: activity.getEdges()) {
+            // Translate the control flow.
             DiscVariable cifControlFlowVar = translateActivityControlFlow(controlFlow);
-            if (controlFlow.getSource() instanceof InitialNode && translationPurpose != TranslationPurpose.SYNTHESIS) {
-                // For the language equivalence, we place a token in the control flow that leaves the initial node.
+            newVariables.add(cifControlFlowVar);
+
+            // For the activity being synthesized, place a token in the control flow that leaves the initial node.
+            if (translationPurpose != TranslationPurpose.SYNTHESIS && controlFlow.getSource() instanceof InitialNode) {
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
-            newVariables.add(cifControlFlowVar);
         }
 
-        // Translate all activity nodes. If the translation is for the language equivalence check, do not translate the
-        // initial and final node; the configurations for the initial and final nodes are considered during the pre- and
-        // postcondition computation.
+        // Translate all activity nodes.
         BiMap<Event, Edge> newEventEdges = HashBiMap.create(activity.getNodes().size());
         for (ActivityNode node: activity.getNodes()) {
+            // For synthesis, we include the initial and final nodes of activities that may be called by the abstract
+            // activity for which we're synthesizing the body. For other purposes, we've already excluded other
+            // activities than the one being synthesized (see above), and now also exclude the initial and final nodes,
+            // as the token configurations for these are considered while translating pre- and postconditions. That is,
+            // for the other purposes, we start with a token on the control flow coming from the initial node, and thus
+            // never 'execute' the initial node. Similarly, we end with a token on the control flow going into the final
+            // node, and thus never 'execute' the final node.
             if (translationPurpose != TranslationPurpose.SYNTHESIS
                     && (node instanceof InitialNode || node instanceof FinalNode))
             {
-                // TODO doc: we should only "take" the initial and final nodes during synthesis. the other two purposes
-                // should start execution after the initial node and stop execution before the final node.
                 continue;
-            } else {
-                newEventEdges.putAll(translateActivityNode(node));
             }
+
+            // Translate the activity node.
+            newEventEdges.putAll(translateActivityNode(node));
         }
 
+        // Return the new control flow token variables, and new events with their edges.
         return Pair.pair(newVariables, newEventEdges);
     }
 
@@ -876,7 +883,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             Event startEvent = translationResult.startEvent;
             List<Event> endEvents = translationResult.endEvents;
 
-            // TODO Wytse
+            // Add control flow and start event to the mapping.
             activityOrNodeMapping.put(pair, startEvent);
 
             // Collect the newly created CIF edges of the translated UML activity node.
@@ -1324,7 +1331,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate the user-specified activity preconditions.
         List<AlgVariable> preconditionVars = translateUserSpecifiedPrePostconditions(activity.getPreconditions());
 
-        // Compute the synthesized activity's initial node configuration and add it to the preconditions.
+        // Add the synthesized activity's initial node configuration.
         if (translationPurpose != TranslationPurpose.SYNTHESIS) {
             for (ActivityNode node: activity.getNodes()) {
                 if (node instanceof InitialNode initialNode) {
@@ -1429,29 +1436,29 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // atomic non-deterministic action must be active. For the language equivalence check, these conditions have
         // already been included in the structure and guards, and we want to check that it was done correctly, so we
         // don't translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            if (cifAtomicityVar != null) {
-                // First define the postcondition expression.
-                BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
-                cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
-                        EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
-                cifExtraPostcondition.setOperator(BinaryOperator.EQUAL);
-                cifExtraPostcondition.setRight(CifValueUtils.makeInt(0));
-                cifExtraPostcondition.setType(CifConstructors.newBoolType());
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && cifAtomicityVar != null) {
+            // First define the postcondition expression.
+            BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
+            cifExtraPostcondition.setLeft(CifConstructors.newDiscVariableExpression(null,
+                    EcoreUtil.copy(cifAtomicityVar.getType()), cifAtomicityVar));
+            cifExtraPostcondition.setOperator(BinaryOperator.EQUAL);
+            cifExtraPostcondition.setRight(CifValueUtils.makeInt(0));
+            cifExtraPostcondition.setType(CifConstructors.newBoolType());
 
-                // Then define an extra CIF algebraic variable for this extra postcondition.
-                AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
-                        POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
-                        cifExtraPostcondition);
-                postconditionVars.add(cifAlgVar);
-            }
+            // Then define an extra CIF algebraic variable for this extra postcondition.
+            AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null,
+                    POSTCONDITION_PREFIX + cifAtomicityVar.getName(), null, CifConstructors.newBoolType(),
+                    cifExtraPostcondition);
+            postconditionVars.add(cifAlgVar);
         }
 
         // For every translated occurrence constraint, define an extra postcondition that expresses that the marked
         // predicate of the corresponding CIF requirement automata must hold. For the language equivalence check, these
         // conditions have already been included in the structure and guards, and we want to check that it was done
         // correctly, so we don't translate them again.
-        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+        if (translationPurpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            Verify.verify(occurrenceConstraintMap.isEmpty());
+        } else {
             for (Entry<IntervalConstraint, List<Automaton>> entry: occurrenceConstraintMap.entrySet()) {
                 for (Automaton cifRequirement: entry.getValue()) {
                     // First define the postcondition expression.
@@ -1475,11 +1482,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             for (var entry: controlFlowMap.entrySet()) {
                 // TODO doc
                 // If guard computation, we still want to have the token on the "last" control flow as a condition to
-                // finish
-                // the activity execution. So, if the purpose is guard computation, do *not* add the condition that the
-                // control flow should not have a token. The token is added just outside this for-loop. Alternatively,
-                // we
-                // could modify the postcondition expression, instead of adding the "continue" statement.
+                // finish the activity execution. So, if the purpose is guard computation, do *not* add the condition
+                // that the control flow should not have a token. The token is added just outside this for-loop.
+                // Alternatively, we could modify the postcondition expression, instead of adding the "continue"
+                // statement.
                 boolean isIncomingToFinalNode = entry.getKey().getTarget() instanceof FinalNode;
 
                 if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION && isIncomingToFinalNode) {
