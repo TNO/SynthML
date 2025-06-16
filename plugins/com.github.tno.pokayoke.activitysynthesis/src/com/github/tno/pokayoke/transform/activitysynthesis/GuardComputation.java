@@ -267,9 +267,9 @@ public class GuardComputation {
     }
 
     /**
-     * Computes all combinations of incoming and outgoing control flows of the given UML activity node.
+     * Computes all combinations of incoming and outgoing control flows of the given UML activity 'or'-type node.
      *
-     * @param node The input UML node.
+     * @param node The input UML node. Should be an 'or'-type node.
      * @return The set of all incoming/outgoing control flow pairs of the given UML activity node.
      */
     private Set<Pair<ActivityEdge, ActivityEdge>> getControlFlowPairs(ActivityNode node) {
