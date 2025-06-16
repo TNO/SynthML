@@ -15,6 +15,13 @@ import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import com.github.javabdd.BDD;
 import com.google.common.base.Verify;
 
+/**
+ * Helper methods for guard computation. These are needed because synthesis in CIF frees too many BDDs during synthesis.
+ * Once that is resolved in CIF, we shouldn't need this class anymore.
+ *
+ * @see <a href="https://gitlab.eclipse.org/eclipse/escet/escet/-/issues/1200">ESCET issue #1200</a>
+ * @see <a href="https://gitlab.eclipse.org/eclipse/escet/escet/-/issues/1201">ESCET issue #1201</a>
+ */
 public class GuardComputationHelper {
     private GuardComputationHelper() {
         // Static class.
