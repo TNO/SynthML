@@ -51,7 +51,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.Sets;
 
 /** Computes incoming and outgoing guards for synthesized UML activities. */
-public class GuardComputation extends GuardComputationHelper {
+public class GuardComputation {
     /** The UML-to-CIF translator to use for guard computation. */
     private final UmlToCifTranslator translator;
 
@@ -62,11 +62,6 @@ public class GuardComputation extends GuardComputationHelper {
      */
     public GuardComputation(UmlToCifTranslator translator) {
         this.translator = translator;
-    }
-
-    @Override
-    public UmlToCifTranslator getTranslator() {
-        return translator;
     }
 
     public void computeGuards(Specification specification) {
@@ -106,7 +101,7 @@ public class GuardComputation extends GuardComputationHelper {
         };
 
         // Find all controlled system states.
-        BDD controlledStates = computeControlledBehavior(cifBddSpec);
+        BDD controlledStates = GuardComputationHelper.computeControlledBehavior(cifBddSpec);
 
         // Obtain the set of all internal BDD variables.
         BDDVarSet internalVars = getInternalBDDVars(cifBddSpec);
@@ -187,7 +182,7 @@ public class GuardComputation extends GuardComputationHelper {
         // these system states, we must only keep the ones from which the application of 'edge' ends up in a controlled
         // system state again. We can compute the guard of 'edge' as described above, from these two sets of states.
         BDD uncontrolledGuard = controlledStates.and(edge.guard);
-        BDD controlledGuard = applyBackward(edge, controlledStates.id(), controlledStates);
+        BDD controlledGuard = GuardComputationHelper.applyBackward(edge, controlledStates.id(), controlledStates);
         BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
 
         // Free intermediate BDDs.
@@ -311,7 +306,7 @@ public class GuardComputation extends GuardComputationHelper {
      * @return The set of all BDD variables that are created for user-defined properties in UML.
      */
     private BDDVarSet getExternalBDDVars(CifBddSpec cifBddSpec) {
-        return getVarSetOf(getTranslator().getPropertyMap().values(), cifBddSpec);
+        return getVarSetOf(translator.getPropertyMap().values(), cifBddSpec);
     }
 
     /**
@@ -352,7 +347,7 @@ public class GuardComputation extends GuardComputationHelper {
 
         // Turn the textual representation into a SynthML-compatible expression.
         // XXX a string replacement is not very robust. would be better to translate the CIF expression tree ourselves.
-        String plantPrefix = getTranslator().getPlantName() + ".";
+        String plantPrefix = translator.getPlantName() + ".";
         return text.replaceAll(plantPrefix, "");
     }
 
