@@ -42,7 +42,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministic
 import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
-import com.github.tno.pokayoke.transform.activitysynthesis.IncomingOutgoingGuardComputation;
+import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
@@ -320,7 +320,7 @@ public class FullSynthesisApp {
         }
 
         // Computing guards.
-        new IncomingOutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
