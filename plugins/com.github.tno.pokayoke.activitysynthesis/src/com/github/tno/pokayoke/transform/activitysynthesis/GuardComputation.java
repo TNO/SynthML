@@ -126,14 +126,16 @@ public class GuardComputation {
                 }
             } else if (node instanceof ForkNode) {
                 // Compute an outgoing guard for the (single) incoming control flow of the fork node.
+                ActivityEdge incoming = Lists.single(node.getIncomings());
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
+                PokaYokeUmlProfileUtil.setOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof JoinNode) {
                 // Compute an incoming guard for the (single) outgoing control flow of the join node.
+                ActivityEdge outgoing = Lists.single(node.getOutgoings());
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), toUmlGuard(guard, cifBddSpec));
+                PokaYokeUmlProfileUtil.setIncomingGuard(outgoing, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof InitialNode) {
                 // Compute an incoming guard for every outgoing control flow of the initial node.
                 ActivityEdge outgoing = Lists.single(node.getOutgoings());
@@ -154,9 +156,10 @@ public class GuardComputation {
                 PokaYokeUmlProfileUtil.setOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
                 // Compute an outgoing guard for the (single) incoming control flow of the action node.
+                ActivityEdge incoming = Lists.single(node.getIncomings());
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
-                PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
+                PokaYokeUmlProfileUtil.setOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else {
                 throw new RuntimeException("Unknown activity node: " + node);
             }
