@@ -43,6 +43,7 @@ import com.google.common.collect.ImmutableMap;
  * specifications.
  */
 public abstract class ModelToCifTranslator {
+    // XXX could eliminate this base class, as we won't do Petrinet to CIF as derived class anymore. make new issue?
     /** The mapping from UML enumerations to corresponding translated CIF enumeration declarations. */
     protected final BiMap<Enumeration, EnumDecl> enumMap = HashBiMap.create();
 
