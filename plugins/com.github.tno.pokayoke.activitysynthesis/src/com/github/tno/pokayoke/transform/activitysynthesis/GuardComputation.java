@@ -285,7 +285,7 @@ public abstract class GuardComputation {
         Set<Integer> externalVars = Arrays.stream(getExternalBDDVars(cifBddSpec).toArray()).boxed()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        // Determine the set of all internal BDD variables (i.e., all variables except the internal ones).
+        // Determine the set of all internal BDD variables (i.e., all variables except the external ones).
         Set<Integer> internalVars = Sets.difference(allVars, externalVars);
 
         // Convert this set of internal variables to a 'BDDVarSet', and return it.
@@ -327,14 +327,20 @@ public abstract class GuardComputation {
         return cifBddSpec.variables[index].domain.set();
     }
 
-    // TODO remove later
-    protected String bddToString(BDD bdd, CifBddSpec cifBddSpec) {
-        return CifTextUtils.exprToStr(BddToCif.bddToCifPred(bdd, cifBddSpec));
-    }
-
-    // TODO remove
+    /**
+     * Computes a SynthML-compatible guard for the given BDD.
+     *
+     * @param bdd The BDD to convert to a SynthML-compatible guard.
+     * @param cifBddSpec The CIF/BDD specification.
+     * @return The SynthML-compatible guard.
+     */
     protected String toUmlGuard(BDD bdd, CifBddSpec cifBddSpec) {
-        String replace = getTranslator().getPlantName() + ".";
-        return bddToString(bdd, cifBddSpec).replaceAll(replace, "");
+        // Convert BDD to a textual representation closely resembling CIF ASCII syntax.
+        String text = CifTextUtils.exprToStr(BddToCif.bddToCifPred(bdd, cifBddSpec));
+
+        // Turn the textual representation into a SynthML-compatible expression.
+        // XXX a string replacement is not very robust. would be better to translate the CIF expression tree ourselves.
+        String plantPrefix = getTranslator().getPlantName() + ".";
+        return text.replaceAll(plantPrefix, "");
     }
 }
