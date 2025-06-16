@@ -170,12 +170,14 @@ public class FullSynthesisApp {
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
         // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
+        // XXX do we still need this mapping?
         CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifBddSpec,
                 umlToCifTranslator);
 
         // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
         // technically invalid, since it may then have locations with state annotations as well as locations without
         // state annotations. However, this is still fine for our internal analysis.
+        // XXX do we still need the state annotations, or can we just not generate them to begin with?
         Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.annotreduced.cif");
         Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
         StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
@@ -184,6 +186,7 @@ public class FullSynthesisApp {
         // Perform event-based automaton projection. Note that we can't use the state space with reduced state
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
         // input the earlier version of the CIF specification that still has all state annotations.
+        // XXX may need to change this based on changes to earlier steps
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
@@ -244,6 +247,7 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Obtain the composite state mapping.
+        // XXX we don't need state mappings anymore.
         Map<Location, List<Annotation>> annotationFromReducedSP = StateAnnotationHelper
                 .getStateAnnotations(cifReducedStateSpace);
         Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
@@ -257,6 +261,7 @@ public class FullSynthesisApp {
                 .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
 
         // Rewrite all rewritable non-atomic patterns in the Petri Net.
+        // XXX does this still work? do we need state information here?
         Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
                 minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
@@ -292,6 +297,7 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
+        // XXX is simplification valid? there are no guards yet?
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".18.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
@@ -302,7 +308,7 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Translating synthesized activity to CIF, for guard computation.
-        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".20.labelsremoved.cif");
+        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".20.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
                 TranslationPurpose.GUARD_COMPUTATION);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
@@ -315,7 +321,7 @@ public class FullSynthesisApp {
 
         // Computing guards.
         new IncomingOutgoingGuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.
