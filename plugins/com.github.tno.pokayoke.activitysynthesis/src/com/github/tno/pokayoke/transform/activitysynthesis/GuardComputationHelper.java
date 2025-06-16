@@ -28,45 +28,45 @@ public class GuardComputationHelper {
     }
 
     /**
-     * Computes the set of all forward reachable states from the given predicate, using all edges in the given CIF/BDD
-     * specification. This method will ensure that the error, guard, and update predicates of the edges are not freed.
+     * Computes the controlled behavior predicate of the given system. This computation will ensure that the error,
+     * guard, and update predicates of the CIF/BDD edges are not freed.
      *
      * @param cifBddSpec The input CIF/BDD specification.
-     * @param predicate The predicate from which to start exploring, which will be {@link BDD#free freed} afterwards.
-     * @param restriction The predicate that indicates the upper bound on the reachable states, or {@code null} in case
-     *     there is no such upper bound (which is equivalent to providing the BDD 'true' as the upper bound).
-     * @param badStates Whether the given predicate represents bad states ({@code true}) or good states ({@code false}).
-     * @return The set of forward reachable states, as a BDD predicate.
+     * @return The computed controlled behavior predicate.
      */
-    private static BDD reachForward(CifBddSpec cifBddSpec, BDD predicate, BDD restriction, boolean badStates) {
-        int nrOfEdges = cifBddSpec.edges.size();
+    public static BDD computeControlledBehavior(CifBddSpec cifBddSpec) {
+        // Apply data-based synthesis.
+        CifDataSynthesisResult synthResult = synthesize(cifBddSpec);
 
-        // Make a copy of all error, guard, and update predicates as the reachability computation will free them.
-        Map<CifBddEdge, BDD> errors = new LinkedHashMap<>(nrOfEdges);
-        Map<CifBddEdge, BDD> guards = new LinkedHashMap<>(nrOfEdges);
-        Map<CifBddEdge, BDD> updates = new LinkedHashMap<>(nrOfEdges);
+        // Update the guard of edges with a controllable event to consider the corresponding controlled system guard.
+        // Store a copy of the uncontrolled guard, to restore later.
+        Map<CifBddEdge, BDD> guards = new LinkedHashMap<>(cifBddSpec.edges.size());
 
         for (CifBddEdge edge: cifBddSpec.edges) {
-            errors.put(edge, edge.error.id());
-            guards.put(edge, edge.guard.id());
-            updates.put(edge, edge.update.id());
+            if (edge.event.getControllable()) {
+                guards.put(edge, edge.guard.id());
+                edge.guard = edge.guard.andWith(synthResult.outputGuards.get(edge.event));
+            }
         }
 
-        // Compute all forward reachable states.
-        cifBddSpec.edges.forEach(edge -> edge.initApply(true));
-        CifBddReachability reach = new CifBddReachability(cifBddSpec, "forward search", "predicate",
-                restriction != null ? "restriction" : null, restriction, badStates, true, true, true, false);
-        BDD reachableStates = reach.performReachability(predicate);
-        cifBddSpec.edges.forEach(edge -> edge.cleanupApply());
+        // Determine the initialization predicate.
+        BDD initPredicate = cifBddSpec.initialPlantInv.id();
+        if (synthResult.initialOutput != null) {
+            initPredicate = initPredicate.andWith(synthResult.initialOutput);
+        }
 
-        // Restore the copy of the error, guard, and update predicates, since the originals were freed.
+        // Construct the controlled behavior predicate of the system with a forward search.
+        BDD controlledBehavior = reachForward(cifBddSpec, initPredicate, null, false);
+
+        // Restore the uncontrolled system guards of the edges.
         for (CifBddEdge edge: cifBddSpec.edges) {
-            edge.error = errors.get(edge);
-            edge.guard = guards.get(edge);
-            edge.update = updates.get(edge);
+            if (edge.event.getControllable()) {
+                edge.guard.free();
+                edge.guard = guards.get(edge);
+            }
         }
 
-        return reachableStates;
+        return controlledBehavior;
     }
 
     /**
@@ -115,45 +115,45 @@ public class GuardComputationHelper {
     }
 
     /**
-     * Computes the controlled behavior predicate of the given system. This computation will ensure that the error,
-     * guard, and update predicates of the CIF/BDD edges are not freed.
+     * Computes the set of all forward reachable states from the given predicate, using all edges in the given CIF/BDD
+     * specification. This method will ensure that the error, guard, and update predicates of the edges are not freed.
      *
      * @param cifBddSpec The input CIF/BDD specification.
-     * @return The computed controlled behavior predicate.
+     * @param predicate The predicate from which to start exploring, which will be {@link BDD#free freed} afterwards.
+     * @param restriction The predicate that indicates the upper bound on the reachable states, or {@code null} in case
+     *     there is no such upper bound (which is equivalent to providing the BDD 'true' as the upper bound).
+     * @param badStates Whether the given predicate represents bad states ({@code true}) or good states ({@code false}).
+     * @return The set of forward reachable states, as a BDD predicate.
      */
-    public static BDD computeControlledBehavior(CifBddSpec cifBddSpec) {
-        // Apply data-based synthesis.
-        CifDataSynthesisResult synthResult = synthesize(cifBddSpec);
+    private static BDD reachForward(CifBddSpec cifBddSpec, BDD predicate, BDD restriction, boolean badStates) {
+        int nrOfEdges = cifBddSpec.edges.size();
 
-        // Update the guard of edges with a controllable event to consider the corresponding controlled system guard.
-        // Store a copy of the uncontrolled guard, to restore later.
-        Map<CifBddEdge, BDD> guards = new LinkedHashMap<>(cifBddSpec.edges.size());
+        // Make a copy of all error, guard, and update predicates as the reachability computation will free them.
+        Map<CifBddEdge, BDD> errors = new LinkedHashMap<>(nrOfEdges);
+        Map<CifBddEdge, BDD> guards = new LinkedHashMap<>(nrOfEdges);
+        Map<CifBddEdge, BDD> updates = new LinkedHashMap<>(nrOfEdges);
 
         for (CifBddEdge edge: cifBddSpec.edges) {
-            if (edge.event.getControllable()) {
-                guards.put(edge, edge.guard.id());
-                edge.guard = edge.guard.andWith(synthResult.outputGuards.get(edge.event));
-            }
+            errors.put(edge, edge.error.id());
+            guards.put(edge, edge.guard.id());
+            updates.put(edge, edge.update.id());
         }
 
-        // Determine the initialization predicate.
-        BDD initPredicate = cifBddSpec.initialPlantInv.id();
-        if (synthResult.initialOutput != null) {
-            initPredicate = initPredicate.andWith(synthResult.initialOutput);
-        }
+        // Compute all forward reachable states.
+        cifBddSpec.edges.forEach(edge -> edge.initApply(true));
+        CifBddReachability reach = new CifBddReachability(cifBddSpec, "forward search", "predicate",
+                restriction != null ? "restriction" : null, restriction, badStates, true, true, true, false);
+        BDD reachableStates = reach.performReachability(predicate);
+        cifBddSpec.edges.forEach(edge -> edge.cleanupApply());
 
-        // Construct the controlled behavior predicate of the system with a forward search.
-        BDD controlledBehavior = reachForward(cifBddSpec, initPredicate, null, false);
-
-        // Restore the uncontrolled system guards of the edges.
+        // Restore the copy of the error, guard, and update predicates, since the originals were freed.
         for (CifBddEdge edge: cifBddSpec.edges) {
-            if (edge.event.getControllable()) {
-                edge.guard.free();
-                edge.guard = guards.get(edge);
-            }
+            edge.error = errors.get(edge);
+            edge.guard = guards.get(edge);
+            edge.update = updates.get(edge);
         }
 
-        return controlledBehavior;
+        return reachableStates;
     }
 
     /**
