@@ -290,7 +290,7 @@ public class GuardComputation extends GuardComputationHelper {
      * @param cifBddSpec The input CIF/BDD specification.
      * @return The set of all BDD variables that are internal, i.e., not created for user-defined properties in UML.
      */
-    protected final BDDVarSet getInternalBDDVars(CifBddSpec cifBddSpec) {
+    private BDDVarSet getInternalBDDVars(CifBddSpec cifBddSpec) {
         // Obtain the (Java) sets of all BDD variables, and of all internal BDD variables.
         Set<Integer> allVars = Arrays.stream(cifBddSpec.varSetOld.toArray()).boxed()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -310,7 +310,7 @@ public class GuardComputation extends GuardComputationHelper {
      * @param cifBddSpec The input CIF/BDD specification.
      * @return The set of all BDD variables that are created for user-defined properties in UML.
      */
-    protected final BDDVarSet getExternalBDDVars(CifBddSpec cifBddSpec) {
+    private BDDVarSet getExternalBDDVars(CifBddSpec cifBddSpec) {
         return getVarSetOf(getTranslator().getPropertyMap().values(), cifBddSpec);
     }
 
@@ -346,7 +346,7 @@ public class GuardComputation extends GuardComputationHelper {
      * @param cifBddSpec The CIF/BDD specification.
      * @return The SynthML-compatible guard.
      */
-    protected String toUmlGuard(BDD bdd, CifBddSpec cifBddSpec) {
+    private String toUmlGuard(BDD bdd, CifBddSpec cifBddSpec) {
         // Convert BDD to a textual representation closely resembling CIF ASCII syntax.
         String text = CifTextUtils.exprToStr(BddToCif.bddToCifPred(bdd, cifBddSpec));
 
