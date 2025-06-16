@@ -28,6 +28,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.DiscVariable;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
+import org.eclipse.escet.common.java.Lists;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -135,24 +136,22 @@ public class GuardComputation {
                 PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof InitialNode) {
                 // Compute an incoming guard for every outgoing control flow of the initial node.
-                for (ActivityEdge outgoing: node.getOutgoings()) {
-                    BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
-                    BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id().andWith(tokenConstraint);
-                    BDD controlledGuard = uncontrolledGuard.and(controlledStates);
-                    BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
-                    controlledGuard.free();
-                    PokaYokeUmlProfileUtil.setIncomingGuard(node.getOutgoings().get(0), toUmlGuard(guard, cifBddSpec));
-                }
+                ActivityEdge outgoing = Lists.single(node.getOutgoings());
+                BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
+                BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id().andWith(tokenConstraint);
+                BDD controlledGuard = uncontrolledGuard.and(controlledStates);
+                BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
+                controlledGuard.free();
+                PokaYokeUmlProfileUtil.setIncomingGuard(outgoing, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof ActivityFinalNode) {
                 // Compute an outgoing guard for every incoming control flow of the final node.
-                for (ActivityEdge incoming: node.getIncomings()) {
-                    BDD tokenConstraint = getTokenConstraint(incoming, cifBddSpec);
-                    BDD uncontrolledGuard = controlledStates.id().andWith(tokenConstraint);
-                    BDD controlledGuard = uncontrolledGuard.and(cifBddSpec.marked);
-                    BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
-                    controlledGuard.free();
-                    PokaYokeUmlProfileUtil.setOutgoingGuard(node.getIncomings().get(0), toUmlGuard(guard, cifBddSpec));
-                }
+                ActivityEdge incoming = Lists.single(node.getIncomings());
+                BDD tokenConstraint = getTokenConstraint(incoming, cifBddSpec);
+                BDD uncontrolledGuard = controlledStates.id().andWith(tokenConstraint);
+                BDD controlledGuard = uncontrolledGuard.and(cifBddSpec.marked);
+                BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
+                controlledGuard.free();
+                PokaYokeUmlProfileUtil.setOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
                 // Compute an outgoing guard for the (single) incoming control flow of the action node.
                 CifBddEdge edge = getCorrespondingEdge.apply(getSingleStartEvent.apply(node));
