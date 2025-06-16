@@ -27,7 +27,7 @@ import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 
-public abstract class GuardComputation {
+public abstract class GuardComputationHelper {
     public abstract UmlToCifTranslator getTranslator();
 
     /**
