@@ -31,7 +31,7 @@ public class GuardComputationHelper {
      * @param badStates Whether the given predicate represents bad states ({@code true}) or good states ({@code false}).
      * @return The set of forward reachable states, as a BDD predicate.
      */
-    public static BDD reachForward(CifBddSpec cifBddSpec, BDD predicate, BDD restriction, boolean badStates) {
+    private static BDD reachForward(CifBddSpec cifBddSpec, BDD predicate, BDD restriction, boolean badStates) {
         int nrOfEdges = cifBddSpec.edges.size();
 
         // Make a copy of all error, guard, and update predicates as the reachability computation will free them.
@@ -63,55 +63,13 @@ public class GuardComputationHelper {
     }
 
     /**
-     * Computes the set of all backward reachable states from the given predicate, using all edges in the given CIF/BDD
-     * specification. This method will ensure that the error, guard, and update predicates of the edges are not freed.
-     *
-     * @param cifBddSpec The input CIF/BDD specification.
-     * @param predicate The predicate from which to start exploring, which will be {@link BDD#free freed} afterwards.
-     * @param restriction The predicate that indicates the upper bound on the reachable states, or {@code null} in case
-     *     there is no such upper bound (which is equivalent to providing the BDD 'true' as the upper bound).
-     * @param badStates Whether the given predicate represents bad states ({@code true}) or good states ({@code false}).
-     * @return The set of backward reachable states, as a BDD predicate.
-     */
-    public static BDD reachBackward(CifBddSpec cifBddSpec, BDD predicate, BDD restriction, boolean badStates) {
-        int nrOfEdges = cifBddSpec.edges.size();
-
-        // Make a copy of all error, guard, and update predicates as the reachability computation will free them.
-        Map<CifBddEdge, BDD> errors = new LinkedHashMap<>(nrOfEdges);
-        Map<CifBddEdge, BDD> guards = new LinkedHashMap<>(nrOfEdges);
-        Map<CifBddEdge, BDD> updates = new LinkedHashMap<>(nrOfEdges);
-
-        for (CifBddEdge edge: cifBddSpec.edges) {
-            errors.put(edge, edge.error.id());
-            guards.put(edge, edge.guard.id());
-            updates.put(edge, edge.update.id());
-        }
-
-        // Compute all backward reachable states.
-        cifBddSpec.edges.forEach(edge -> edge.initApply(false));
-        CifBddReachability reach = new CifBddReachability(cifBddSpec, "backward search", "predicate",
-                restriction != null ? "restriction" : null, restriction, badStates, false, true, true, false);
-        BDD reachableStates = reach.performReachability(predicate);
-        cifBddSpec.edges.forEach(edge -> edge.cleanupApply());
-
-        // Restore the copy of the error, guard, and update predicates, since the originals were freed.
-        for (CifBddEdge edge: cifBddSpec.edges) {
-            edge.error = errors.get(edge);
-            edge.guard = guards.get(edge);
-            edge.update = updates.get(edge);
-        }
-
-        return reachableStates;
-    }
-
-    /**
      * Applies data-based synthesis to the given CIF/BDD specification. This method will ensure that the error, guard,
      * and update predicates of the edges are not freed.
      *
      * @param cifBddSpec The input CIF/BDD specification.
      * @return The data-based synthesis result.
      */
-    public static CifDataSynthesisResult synthesize(CifBddSpec cifBddSpec) {
+    private static CifDataSynthesisResult synthesize(CifBddSpec cifBddSpec) {
         int nrOfEdges = cifBddSpec.edges.size();
 
         // Make a copy of all error, guard, and update predicates as data-based synthesis will free them.
@@ -147,17 +105,6 @@ public class GuardComputationHelper {
         cifBddSpec.marked = marked;
 
         return synthResult;
-    }
-
-    /**
-     * Computes the uncontrolled behavior predicate of the given system. This computation will ensure that the error,
-     * guard, and update predicates of the CIF/BDD edges are not freed.
-     *
-     * @param cifBddSpec The input CIF/BDD specification.
-     * @return The computed uncontrolled behavior predicate.
-     */
-    public static BDD computeUncontrolledBehavior(CifBddSpec cifBddSpec) {
-        return reachForward(cifBddSpec, cifBddSpec.initialPlantInv.id(), null, false);
     }
 
     /**
@@ -200,36 +147,6 @@ public class GuardComputationHelper {
         }
 
         return controlledBehavior;
-    }
-
-    /**
-     * Applies the given CIF/BDD edge forward.
-     *
-     * @param edge The input CIF/BDD edge.
-     * @param predicate The predicate to which to apply the edge, which will be {@link BDD#free freed} by this method.
-     * @param restriction The predicate that indicates the upper bound on the reached states, or {@code null} in case
-     *     there is no such upper bound (which is equivalent to providing the BDD 'true' as the upper bound).
-     * @return The predicate describing the states that are forward reachable from the given edge.
-     */
-    public static BDD applyForward(CifBddEdge edge, BDD predicate, BDD restriction) {
-        // Make a copy of the error, guard, and update predicates of the edge, since edge application will free them.
-        BDD error = edge.error.id();
-        BDD guard = edge.guard.id();
-        BDD update = edge.update.id();
-
-        // Apply the given edge forward on the specified predicate.
-        edge.initApply(true);
-        edge.preApply(true, restriction);
-        BDD result = edge.apply(predicate, false, true, restriction, true);
-        edge.postApply(true);
-        edge.cleanupApply();
-
-        // Restore the copy of the error, guard, and update predicates of the edge, since the originals were freed.
-        edge.error = error;
-        edge.guard = guard;
-        edge.update = update;
-
-        return result;
     }
 
     /**
