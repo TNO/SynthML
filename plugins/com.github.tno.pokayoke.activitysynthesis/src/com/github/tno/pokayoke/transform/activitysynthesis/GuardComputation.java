@@ -45,16 +45,16 @@ import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
 
 /** Computes incoming and outgoing guards for synthesized UML activities. */
-public class IncomingOutgoingGuardComputation extends GuardComputationHelper {
+public class GuardComputation extends GuardComputationHelper {
     /** The UML-to-CIF translator to use for guard computation. */
     private final UmlToCifTranslator translator;
 
     /**
-     * Constructs a new {@link IncomingOutgoingGuardComputation}.
+     * Constructs a new {@link GuardComputation}.
      *
      * @param translator The UML-to-CIF translator to use for guard computation.
      */
-    public IncomingOutgoingGuardComputation(UmlToCifTranslator translator) {
+    public GuardComputation(UmlToCifTranslator translator) {
         this.translator = translator;
     }
 
