@@ -351,7 +351,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Specification translate() throws CoreException {
         // Validate the UML input model.
-        ValidationHelper.validateModel(activity.getModel());
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+            ValidationHelper.validateModel(activity.getModel());
+        }
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
@@ -585,9 +587,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                 || umlElement instanceof OpaqueBehavior)
         {
-            // Add the event to the corresponding normalized name. More events may correspond to the same name.
-            normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
-                    .add(cifStartEvent);
+            if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
+                // Add the event to the corresponding normalized name. More events may correspond to the same name.
+                normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
+                        .add(cifStartEvent);
+            }
         } else {
             internalEvents.add(cifStartEvent);
         }
@@ -628,10 +632,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                         || umlElement instanceof OpaqueBehavior)
                 {
-                    normalizedNameToEvents
-                            .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
-                                    k -> new ArrayList<>())
-                            .add(cifEndEvent);
+                    if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
+                        normalizedNameToEvents
+                                .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
+                                        k -> new ArrayList<>())
+                                .add(cifEndEvent);
+                    }
                 } else {
                     internalEvents.add(cifEndEvent);
                 }
@@ -785,6 +791,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         } else if (node instanceof ForkNode || node instanceof JoinNode) {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
+            // TODO doc: If the call behavior is shadowed, translate it as is. Otherwise, translate the called behavior.
             if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
             } else {
@@ -1235,6 +1242,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                // TODO doc: for vertical scaling this needs to be carefully re-evaluated.
                 if (umlElement instanceof Activity umlActivity) {
                     if (!umlActivity.isAbstract()) {
                         Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
@@ -1250,8 +1258,28 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                     }
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
-                    List<Event> cifStartEvents = startEventMap.entrySet().stream()
-                            .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey).toList();
+                    List<Event> cifStartEvents;
+                    if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+                        cifStartEvents = startEventMap.entrySet().stream()
+                                .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey)
+                                .toList();
+                    } else if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
+                        // TODO doc: If the purpose is guard computation, the model does not have any opaque behavior,
+                        // but rather call behavior or opaque actions. The constrained element of the occurrence
+                        // constraint needs to refer to the correct call behavior or opaque action.
+                        cifStartEvents = startEventMap.entrySet().stream().filter(entry ->
+                        // TODO doc: for merged non atomic actions.
+                        (entry.getValue() instanceof CallBehaviorAction cbAction
+                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
+                                // TODO doc: for non-merged non atomic actions.
+                                || (entry.getValue() instanceof OpaqueAction oAction
+                                        && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
+                                .map(Entry::getKey).toList();
+                    } else {
+                        throw new AssertionError("Unexpected translation purpose: " + translationPurpose);
+                    }
+
+                    Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
 
                     String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
                             IDHelper.getID(umlConstraint), umlOpaqueBehavior.getName(),
@@ -1575,9 +1603,28 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         for (Event cifEvent: eventEdgeMap.keySet()) {
             // Determine post condition variable to use.
+            // TODO : updated logic for end events that need to finish execution.
             PostConditionKind kind = switch (translationPurpose) {
-                case GUARD_COMPUTATION -> internalEvents.contains(cifEvent) ? PostConditionKind.WITH_STRUCTURE
-                        : PostConditionKind.WITHOUT_STRUCTURE;
+                case GUARD_COMPUTATION -> {
+                    if (internalEvents.contains(cifEvent)) {
+                        // TODO doc
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    } else if (startEventMap.containsKey(cifEvent)
+                            && startEventMap.get(cifEvent) instanceof CallBehaviorAction)
+                    {
+                        // TODO doc
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else if (startEventMap.containsKey(cifEvent)
+                            && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
+                            && oAction.getName().endsWith(START_ACTION_SUFFIX))
+                    {
+                        // TODO doc
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else {
+                        // TODO doc
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    }
+                }
                 case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
             };
             AlgVariable cifPostconditionVar = postconditionVariables.get(kind);
