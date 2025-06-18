@@ -139,7 +139,7 @@ public class GuardComputation {
                 BDD guard = computeGuard(edge, controlledStates, internalVars);
                 PokaYokeUmlProfileUtil.setIncomingGuard(outgoing, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof InitialNode) {
-                // Compute an incoming guard for every outgoing control flow of the initial node.
+                // Compute an incoming guard for the (single) outgoing control flow of the initial node.
                 ActivityEdge outgoing = Lists.single(node.getOutgoings());
                 BDD tokenConstraint = getTokenConstraint(outgoing, cifBddSpec);
                 BDD uncontrolledGuard = cifBddSpec.initialPlantInv.id().andWith(tokenConstraint);
@@ -148,12 +148,19 @@ public class GuardComputation {
                 controlledGuard.free();
                 PokaYokeUmlProfileUtil.setIncomingGuard(outgoing, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof ActivityFinalNode) {
-                // Compute an outgoing guard for every incoming control flow of the final node.
+                // Compute an outgoing guard for the (single) incoming control flow of the final node. In the UML
+                // activity, we can only take the final node if there is a token in the incoming control flow to the
+                // final node. We assume we arrive there only if that concerns a controlled system state. Hence, the
+                // uncontrolled guard consists of the conjunction of these two predicates. For the final node to be
+                // taken, the marker predicate must also hold. Hence, we add this via conjunction for the controlled
+                // system guard. We then compute the extra condition needed for the final node to be taken. We check
+                // that this extra guard is always 'true', since if it is not 'true', there is a deadlock.
                 ActivityEdge incoming = Lists.single(node.getIncomings());
                 BDD tokenConstraint = getTokenConstraint(incoming, cifBddSpec);
                 BDD uncontrolledGuard = controlledStates.id().andWith(tokenConstraint);
                 BDD controlledGuard = uncontrolledGuard.and(cifBddSpec.marked);
                 BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
+                Verify.verify(guard.isOne());
                 controlledGuard.free();
                 PokaYokeUmlProfileUtil.setOutgoingGuard(incoming, toUmlGuard(guard, cifBddSpec));
             } else if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
