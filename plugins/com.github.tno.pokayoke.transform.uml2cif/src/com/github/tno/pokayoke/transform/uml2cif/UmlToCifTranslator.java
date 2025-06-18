@@ -351,6 +351,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Specification translate() throws CoreException {
         // Validate the UML input model.
+        //
+        // Ideally, we check this always, as the UML models resulting from synthesis should also be valid. Currently, we
+        // do it only for the input to synthesis, as we generate some names during synthesis that are invalid. This is
+        // to be improved in the future.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
         }
@@ -544,10 +548,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         RedefinableElement umlAction;
 
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
+            // Opaque behavior, opaque action, or shadowed call behavior, with our stereotype.
             umlAction = umlElement;
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
+            // Non-shadowed call behavior action. Translate the called behavior, inlining it.
             umlAction = cbAction.getBehavior();
         } else {
+            // Other nodes.
             umlAction = umlElement;
         }
 
@@ -587,6 +594,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                 || umlElement instanceof OpaqueBehavior)
         {
+            // We normalize for synthesis and language equivalence check purposes, as the models generated for those
+            // purposes these need to be compared by the language equivalence check. We don't do it for guard
+            // computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to detect
+            // opaque actions that originated from split non-deterministic actions that haven't been merged back.
+            // Later, we want to get rid of the name-based approach and have earlier steps produce the relevant
+            // information, so that we know which actions represent starts/ends, but until then we keep basing this
+            // on the names.
             if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
                 // Add the event to the corresponding normalized name. More events may correspond to the same name.
                 normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
@@ -632,6 +646,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                         || umlElement instanceof OpaqueBehavior)
                 {
+                    // We normalize for synthesis and language equivalence check purposes, as the models generated for
+                    // those purposes these need to be compared by the language equivalence check. We don't do it for
+                    // guard computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to
+                    // detect opaque actions that originated from split non-deterministic actions that haven't been
+                    // merged back. Later, we want to get rid of the name-based approach and have earlier steps produce
+                    // the relevant information, so that we know which actions represent starts/ends, but until then we
+                    // keep basing this on the names.
                     if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
                         normalizedNameToEvents
                                 .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
@@ -791,10 +812,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         } else if (node instanceof ForkNode || node instanceof JoinNode) {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
-            // TODO doc: If the call behavior is shadowed, translate it as is. Otherwise, translate the called behavior.
             if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+                // The call behavior shadows the called behavior. We use the guards/effects of the call behavior node
+                // and ignore the called behavior.
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
             } else {
+                // We translate the called behavior, inlining it. We do transform on the call node, to ensure that
+                // each call gets a unique action.
                 Behavior behavior = callNode.getBehavior();
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(behavior), false);
             }
@@ -1242,8 +1266,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
-                // TODO doc: for vertical scaling this needs to be carefully re-evaluated.
                 if (umlElement instanceof Activity umlActivity) {
+                    // For vertical scaling, we need to carefully re-evaluate this, since called activities may be
+                    // inlined or may be merged back to call behaviors of the activities. Both cases need to be handled
+                    // for the different translation purposes, similar to below for opaque behaviors.
                     if (!umlActivity.isAbstract()) {
                         Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
@@ -1260,18 +1286,25 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
                     List<Event> cifStartEvents;
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+                        // For synthesis, we directly translate the opaque behaviors, so we simply look up their
+                        // associated start events.
                         cifStartEvents = startEventMap.entrySet().stream()
                                 .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey)
                                 .toList();
                     } else if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
-                        // TODO doc: If the purpose is guard computation, the model does not have any opaque behavior,
-                        // but rather call behavior or opaque actions. The constrained element of the occurrence
-                        // constraint needs to refer to the correct call behavior or opaque action.
+                        // For guard computation, we don't directly translate the opaque behaviors. Instead, we inline
+                        // call behaviors to such opaque behaviors. Furthermore, some non-atomic opaque behaviors may
+                        // have separate start and end opaque actions that could not be merged back into call behaviors
+                        // to the original opaque behaviors. The occurrence constraints still refer to the original
+                        // opaque behaviors, and for both cases we have to find the relevant CIF events.
                         cifStartEvents = startEventMap.entrySet().stream().filter(entry ->
-                        // TODO doc: for merged non atomic actions.
+                        // Include all CIF events for call behavior actions that call the constrained opaque behavior.
+                        // This includes all atomic opaque behaviors, as well as merged-back non-atomic ones.
                         (entry.getValue() instanceof CallBehaviorAction cbAction
                                 && cbAction.getBehavior().equals(umlOpaqueBehavior))
-                                // TODO doc: for non-merged non atomic actions.
+                                // Include all CIF events for opaque actions that represent start actions of
+                                // non-deterministic opaque behaviors. These are the ones that couldn't be merged back
+                                // to call behavior actions that call the constrained opaque behavior.
                                 || (entry.getValue() instanceof OpaqueAction oAction
                                         && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
                                 .map(Entry::getKey).toList();
@@ -1279,8 +1312,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         throw new AssertionError("Unexpected translation purpose: " + translationPurpose);
                     }
 
+                    // Sanity check: we must have found at least some start event.
                     Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
 
+                    // Create interval automaton for the occurrence constraint.
                     String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
                             IDHelper.getID(umlConstraint), umlOpaqueBehavior.getName(),
                             IDHelper.getID(umlOpaqueBehavior));
@@ -1602,31 +1637,45 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         List<Invariant> cifInvariants = new ArrayList<>(eventEdgeMap.size());
 
         for (Event cifEvent: eventEdgeMap.keySet()) {
-            // Determine post condition variable to use.
-            // TODO : updated logic for end events that need to finish execution.
+            // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
                     if (internalEvents.contains(cifEvent)) {
-                        // TODO doc
+                        // We must allow internal actions after the user-defined postconditions etc hold, to ensure
+                        // that the token can still pass through merge/join/etc nodes and the token can still reach
+                        // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (startEventMap.containsKey(cifEvent)
                             && startEventMap.get(cifEvent) instanceof CallBehaviorAction)
                     {
-                        // TODO doc
+                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
+                        // of the actions that the user defined. This case handles events that start such actions
+                        // through a call behavior action.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else if (startEventMap.containsKey(cifEvent)
                             && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
                             && oAction.getName().endsWith(START_ACTION_SUFFIX))
                     {
-                        // TODO doc
+                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
+                        // of the actions that the user defined. This case handles events that start such actions
+                        // through an opaque action, which only applies to non-atomic actions that couldn't be merged
+                        // back to a call behavior to the original opaque behavior.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
-                        // TODO doc
+                        // We must allow finishing non-atomic/non-deterministic actions, by allowing their end events.
+                        Verify.verify(startEventMap.containsKey(cifEvent));
+                        Verify.verify(startEventMap.get(cifEvent) instanceof OpaqueAction);
+                        Verify.verify(
+                                ((OpaqueAction)startEventMap.get(cifEvent)).getName().contains(END_ACTION_SUFFIX));
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }
+
+                // If there is only one postcondition, there is nothing to choose.
                 case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
             };
+
+            // Get the associated postcondition algebraic variable.
             AlgVariable cifPostconditionVar = postconditionVariables.get(kind);
             Preconditions.checkNotNull(cifPostconditionVar, "Expected a non-null postcondition variable.");
 
