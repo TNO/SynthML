@@ -201,6 +201,8 @@
     <requirement
         name="org.eclipse.sirius.specifier.feature.group"/>
     <requirement
+        name="org.eclipse.tm.terminal.feature.feature.group"/>
+    <requirement
         name="org.obeonetwork.dsl.uml2.runtime.sdk.feature.feature.group"/>
     <repository
         url="https://checkstyle.org/eclipse-cs-update-site/updates/${eclipse-checkstyle.version.major}.x/${eclipse-checkstyle.version.major}.${eclipse-checkstyle.version.minor}.x"/>
