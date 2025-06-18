@@ -1,12 +1,19 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.common.java.Exceptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,6 +41,15 @@ class FullSynthesisAppRegressionTest extends RegressionTest {
 
     @Override
     protected void actTest(Path inputPath, Path outputPath) throws IOException, CoreException {
-        FullSynthesisApp.performFullSynthesis(inputPath, outputPath, new ArrayList<>());
+        try {
+            FullSynthesisApp.performFullSynthesis(inputPath, outputPath, new ArrayList<>());
+        } catch (Throwable e) {
+            Path exceptionPath = outputPath.resolve("exception.txt");
+            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(exceptionPath.toFile()));
+                 Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8))
+            {
+                writer.write(Exceptions.exToStr(e));
+            }
+        }
     }
 }
