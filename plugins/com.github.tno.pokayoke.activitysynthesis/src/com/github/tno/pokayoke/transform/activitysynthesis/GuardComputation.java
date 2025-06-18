@@ -66,7 +66,9 @@ public class GuardComputation {
     }
 
     public void computeGuards(Specification specification) {
-        // Obtain the mapping from UML (activity) elements to all the CIF start events created for them.
+        // Obtain the mapping from UML (activity) elements to all the CIF start events created for them. Note that we
+        // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
+        // flows.
         Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
 
         // Helper function for obtaining the single CIF start event of a given UML element.
