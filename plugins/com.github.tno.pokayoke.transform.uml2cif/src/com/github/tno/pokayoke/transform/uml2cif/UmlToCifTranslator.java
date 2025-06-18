@@ -1291,6 +1291,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         cifStartEvents = startEventMap.entrySet().stream()
                                 .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey)
                                 .toList();
+
+                        // Sanity check: we must have found at least one start event.
+                        Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
                     } else if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
                         // For guard computation, we don't directly translate the opaque behaviors. Instead, we inline
                         // call behaviors to such opaque behaviors. Furthermore, some non-atomic opaque behaviors may
@@ -1308,12 +1311,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                                 || (entry.getValue() instanceof OpaqueAction oAction
                                         && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
                                 .map(Entry::getKey).toList();
+
+                        // We don't check whether we found at least one start event. In case of unused actions, these
+                        // won't have been translated, and we thus don't get any start events. That is OK, if we don't
+                        // have to do the action. If we must do the action, we have to have at least one event, to track
+                        // the occurrences and enforce the constraint.
+                        if (min > 0) {
+                            Verify.verify(!cifStartEvents.isEmpty(),
+                                    "Found no CIF start events for mandatory opaque behavior: " + umlOpaqueBehavior);
+                        }
                     } else {
                         throw new AssertionError("Unexpected translation purpose: " + translationPurpose);
                     }
-
-                    // Sanity check: we must have found at least some start event.
-                    Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
 
                     // Create interval automaton for the occurrence constraint.
                     String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
