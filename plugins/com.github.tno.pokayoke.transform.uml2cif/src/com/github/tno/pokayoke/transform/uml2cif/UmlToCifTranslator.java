@@ -1662,11 +1662,22 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // back to a call behavior to the original opaque behavior.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
-                        // We must allow finishing non-atomic/non-deterministic actions, by allowing their end events.
-                        Verify.verify(startEventMap.containsKey(cifEvent));
-                        Verify.verify(startEventMap.get(cifEvent) instanceof OpaqueAction);
-                        Verify.verify(
-                                ((OpaqueAction)startEventMap.get(cifEvent)).getName().contains(END_ACTION_SUFFIX));
+                        // We must allow finishing non-atomic/non-deterministic actions.
+                        if (startEventMap.containsKey(cifEvent)) {
+                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
+                            // behavior to the original opaque behavior, but instead is left as an opaque action.
+                            RedefinableElement umlElem = startEventMap.get(cifEvent);
+                            Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
+                            Verify.verify(((OpaqueAction)umlElem).getName().contains(END_ACTION_SUFFIX),
+                                    cifEvent.getName());
+                        } else {
+                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
+                            boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
+                                    .anyMatch(events -> events.contains(cifEvent));
+                            boolean isNonDeterministicEnd = nonDeterministicEventMap.values().stream()
+                                    .anyMatch(events -> events.contains(cifEvent));
+                            Verify.verify(isNonAtomicEnd || isNonDeterministicEnd, cifEvent.getName());
+                        }
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }
