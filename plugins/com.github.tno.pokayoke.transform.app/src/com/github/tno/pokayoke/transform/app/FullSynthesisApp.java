@@ -8,11 +8,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.cif2cif.ElimIfUpdates;
 import org.eclipse.escet.cif.common.CifCollectUtils;
@@ -24,9 +22,7 @@ import org.eclipse.escet.cif.eventbased.apps.ProjectionApplication;
 import org.eclipse.escet.cif.explorer.app.ExplorerApplication;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
-import org.eclipse.escet.cif.metamodel.cif.annotations.Annotation;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
-import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
@@ -39,13 +35,11 @@ import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
-import com.github.tno.pokayoke.transform.activitysynthesis.ChoiceActionGuardComputationHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
-import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -57,7 +51,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
-import com.github.tno.pokayoke.transform.region2statemapping.ExtractRegionStateMapping;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
@@ -66,7 +59,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
-import fr.lip6.move.pnml.ptnet.Place;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -171,17 +163,9 @@ public class FullSynthesisApp {
 
         // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
         // XXX do we still need this mapping?
+        // Andrea: I think this is still relevant. It adds the pre and post conditions to the system guards.
         CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifBddSpec,
                 umlToCifTranslator);
-
-        // Remove state annotations from intermediate states. Note that this removal might make the CIF specification
-        // technically invalid, since it may then have locations with state annotations as well as locations without
-        // state annotations. However, this is still fine for our internal analysis.
-        // XXX do we still need the state annotations, or can we just not generate them to begin with?
-        Path cifAnnotReducedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.annotreduced.cif");
-        Specification cifReducedStateSpace = EcoreUtil.copy(cifStateSpace);
-        StateAnnotationHelper.reduceStateAnnotations(cifReducedStateSpace, cifAnnotReducedStateSpacePath,
-                outputFolderPath);
 
         // Perform event-based automaton projection. Note that we can't use the state space with reduced state
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
@@ -238,43 +222,22 @@ public class FullSynthesisApp {
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
-        // Extract region-state mapping.
-        Map<Place, Set<String>> regionMap = ExtractRegionStateMapping.extract(petrifyInput, petriNet);
-
         // Remove the self-loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".12.loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
-        // Obtain the composite state mapping.
-        // XXX we don't need state mappings anymore.
-        Map<Location, List<Annotation>> annotationFromReducedSP = StateAnnotationHelper
-                .getStateAnnotations(cifReducedStateSpace);
-        Specification cifProjectedStateSpace = CifFileHelper.loadCifSpec(cifProjectedStateSpacePath);
-        Map<Location, List<Annotation>> annotationFromProjectedSP = StateAnnotationHelper
-                .getStateAnnotations(cifProjectedStateSpace);
-        Map<Location, List<Annotation>> annotationFromMinimizedSP = StateAnnotationHelper
-                .getStateAnnotations(cifMinimizedStateSpace);
-        Map<Location, List<Annotation>> minimizedToProjected = StateAnnotationHelper
-                .getCompositeStateAnnotations(annotationFromMinimizedSP, annotationFromProjectedSP);
-        Map<Location, List<Annotation>> minimizedToReduced = StateAnnotationHelper
-                .getCompositeStateAnnotations(minimizedToProjected, annotationFromReducedSP);
-
         // Rewrite all rewritable non-atomic patterns in the Petri Net.
-        // XXX does this still work? do we need state information here?
-        Map<Place, BDD> stateInfo = ChoiceActionGuardComputationHelper.computeStateInformation(regionMap,
-                minimizedToReduced, cifMinimizedStateSpace, cifBddSpec);
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
-        nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);
+//        nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);
 
         // Clean up all BDD references.
         uncontrolledSystemGuards.values().forEach(BDD::free);
         controlledSystemGuards.values().forEach(BDD::free);
-        stateInfo.values().forEach(BDD::free);
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
