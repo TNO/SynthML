@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,12 +12,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 
 import com.github.javabdd.BDD;
 import com.google.common.base.Preconditions;
 
+import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -25,14 +28,6 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Rewriter for non-atomic patterns in Petri Nets. */
 public class NonAtomicPatternRewriter {
-    // XXX don't use tau anymore
-
-    /** The prefix of a tau transition. */
-    public static final String TAU_PREFIX = "__tau_";
-
-    /** The number of tau transitions that have been introduced by this rewriter. */
-    private int tauCounter = 0;
-
     /** A mapping from names of non-atomic start events to the names of their corresponding end events. */
     private final Map<String, List<String>> nonAtomicEventMap;
 
@@ -141,22 +136,52 @@ public class NonAtomicPatternRewriter {
             }
         }
 
-        return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions));
+        // Get the end places. Ensure that the end places have no incoming arcs starting from other transitions.
+        List<Place> endPlaces = new LinkedList<>();
+        for (Transition endTransition: endTransitions) {
+            if (endTransition.getOutArcs().size() != 1) {
+                return Optional.empty();
+            }
+
+            Place endPlace = (Place)endTransition.getOutArcs().get(0).getTarget();
+
+            for (Arc incomingArcToEndPlace: endPlace.getInArcs()) {
+                if (!(endTransitions).contains(incomingArcToEndPlace.getSource())) {
+                    return Optional.empty();
+                }
+            }
+
+            endPlaces.add(endPlace);
+        }
+
+        return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions, endPlaces));
     }
 
     /**
-     * Rewrites the given list of non-atomic patterns, by renaming their end transitions to tau.
+     * Rewrites the given list of non-atomic patterns, by connecting the intermediate place to the transitions after the
+     * end places, skipping the end transitions and related arcs.
      *
      * @param patterns The non-atomic patterns to rewrite, which are modified in-place.
      */
     private void rewritePatterns(List<NonAtomicPattern> patterns) {
         for (NonAtomicPattern pattern: patterns) {
-            for (Transition endTransition: pattern.endTransitions) {
-                String newName = TAU_PREFIX + tauCounter;
-                endTransition.getName().setText(newName);
-                endTransition.setId(newName);
-                tauCounter++;
+            // First, remove the intermediate place's outgoing arcs.
+            EcoreUtil.deleteAll(pattern.intermediatePlace.getOutArcs(), true);
+            pattern.intermediatePlace.getOutArcs().clear();
+
+            // Remove all the end transitions and their outgoing arcs.
+            pattern.endTransitions.stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
+            EcoreUtil.deleteAll(pattern.endTransitions, true);
+
+            // Connect the intermediate place with the outgoing arcs from the end places.
+            for (Place endPlace: pattern.endPlaces) {
+                for (Arc outArc: new LinkedList<>(endPlace.getOutArcs())) {
+                    outArc.setSource(pattern.intermediatePlace);
+                }
             }
+
+            // Remove end places.
+            EcoreUtil.deleteAll(pattern.endPlaces, true);
         }
     }
 
@@ -233,9 +258,10 @@ public class NonAtomicPatternRewriter {
      * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
      *     executing.
      * @param endTransitions All transitions that end the execution of the non-atomic action.
+     * @param endPlaces The places after the end transitions.
      */
-    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace,
-            List<Transition> endTransitions)
+    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
+            List<Place> endPlaces)
     {
     }
 }
