@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -31,12 +30,10 @@ import org.eclipse.escet.common.app.framework.io.MemAppStream;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
-import com.github.javabdd.BDD;
 import com.github.tno.pokayoke.transform.activitysynthesis.AbstractActivityDependencyOrderer;
 import com.github.tno.pokayoke.transform.activitysynthesis.CIFDataSynthesisHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministicChoices;
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.activitysynthesis.EventGuardUpdateHelper;
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
@@ -127,14 +124,8 @@ public class FullSynthesisApp {
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
 
-        // Get the BDDs of uncontrolled system guards before performing synthesis.
-        Map<String, BDD> uncontrolledSystemGuards = EventGuardUpdateHelper.collectUncontrolledSystemGuards(cifBddSpec,
-                umlToCifTranslator);
-
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
-        Map<String, BDD> controlledSystemGuards = EventGuardUpdateHelper
-                .collectControlledSystemGuards(cifSynthesisResult);
 
         // Convert synthesis result back to CIF.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
@@ -161,16 +152,9 @@ public class FullSynthesisApp {
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
 
-        // Extend the uncontrollable system guards mapping with all auxiliary events that were introduced so far.
-        // XXX do we still need this mapping?
-        // Andrea: I think this is still relevant. It adds the pre and post conditions to the system guards.
-        CifSourceSinkLocationTransformer.addAuxiliarySystemGuards(uncontrolledSystemGuards, cifBddSpec,
-                umlToCifTranslator);
-
         // Perform event-based automaton projection. Note that we can't use the state space with reduced state
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
         // input the earlier version of the CIF specification that still has all state annotations.
-        // XXX may need to change this based on changes to earlier steps
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
@@ -229,23 +213,24 @@ public class FullSynthesisApp {
 
         // Rewrite all rewritable non-atomic patterns in the Petri Net.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
+
+        // XXX Step to be rewritten: directly remove the mergable patterns, do not do the tau renaming.
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
+        // TODO doc: edges between start and end of non-atomic patterns cannot have any guard, so we can merge these
+        // patterns here (before the second round of synthesis).
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
-//        nonAtomicPatternRewriter.updateMappings(nonAtomicPatterns, stateInfo, uncontrolledSystemGuards);
-
-        // Clean up all BDD references.
-        uncontrolledSystemGuards.values().forEach(BDD::free);
-        controlledSystemGuards.values().forEach(BDD::free);
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
+        // XXX Step to be rewritten: create opaque actions for every transition, later to be properly handled in 16.
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
+        // XXX Step to be rewritten
         Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
@@ -260,7 +245,6 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
-        // XXX is simplification valid? there are no guards yet?
         Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".18.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
