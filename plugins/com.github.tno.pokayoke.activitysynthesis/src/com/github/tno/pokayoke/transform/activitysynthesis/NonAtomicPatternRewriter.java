@@ -16,9 +16,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 
-import com.github.javabdd.BDD;
-import com.google.common.base.Preconditions;
-
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -182,45 +179,6 @@ public class NonAtomicPatternRewriter {
 
             // Remove end places.
             EcoreUtil.deleteAll(pattern.endPlaces, true);
-        }
-    }
-
-    /**
-     * Updates the given state information mapping and the uncontrollable system guards mapping, based on the given list
-     * of non-atomic patterns that have been rewritten.
-     *
-     * @param patterns The non-atomic patterns which have been rewritten.
-     * @param stateInfo The state information mapping, which is modified in-place.
-     * @param uncontrollableSystemGuards The uncontrollable system guards mapping, which is modified in-place.
-     */
-    public void updateMappings(List<NonAtomicPattern> patterns, Map<Place, BDD> stateInfo,
-            Map<String, BDD> uncontrollableSystemGuards)
-    {
-        // Determine the updated state information and new uncontrollable system guards for every non-atomic pattern.
-        for (NonAtomicPattern pattern: patterns) {
-            // Firstly, compute an uncontrollable system guard for every end/tau transition. This guard is defined to be
-            // the conjunction of the state predicates of all target places of the tau transition. That is, the guard
-            // only allows the tau transition to be taken from the system states that you would be in when you'd perform
-            // the corresponding end event (with its effects) of the non-atomic action.
-            for (Transition endTransition: pattern.endTransitions) {
-                // Check whether the current transition is indeed a tau transition, i.e., has indeed been rewritten.
-                String transitionName = endTransition.getName().getText();
-                Preconditions.checkArgument(transitionName.contains(TAU_PREFIX),
-                        String.format("Expected to find a tau transition, but got '%s'.", transitionName));
-
-                // Compute the uncontrollable system guard.
-                BDD newGuard = endTransition.getOutArcs().stream().map(arc -> stateInfo.get(arc.getTarget()).id())
-                        .reduce(BDD::andWith).get();
-                uncontrollableSystemGuards.put(transitionName, newGuard);
-            }
-
-            // Secondly, compute the new state information predicate of the intermediate place of the current pattern.
-            // This new predicate is defined to be the disjunction of the new uncontrollable system guards of all tau
-            // transitions. That is, this predicate captures all system states that you could be in when you'd perform
-            // one of the end events (with their effects) of the non-atomic action.
-            BDD newStateInfoPredicate = pattern.endTransitions.stream()
-                    .map(t -> uncontrollableSystemGuards.get(t.getName().getText()).id()).reduce(BDD::orWith).get();
-            stateInfo.put(pattern.intermediatePlace, newStateInfoPredicate);
         }
     }
 
