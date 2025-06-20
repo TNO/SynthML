@@ -172,6 +172,7 @@ public class PNML2UMLTranslator {
         Action action;
 
         if (behavior != null) {
+            // XXX remove 'then'. remove context.
             CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
             callAction.setBehavior(behavior);
             action = callAction;

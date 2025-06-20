@@ -155,6 +155,7 @@ public class FullSynthesisApp {
         // Perform event-based automaton projection. Note that we can't use the state space with reduced state
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
         // input the earlier version of the CIF specification that still has all state annotations.
+        // XXX simplify comment.
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
@@ -230,7 +231,9 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
-        // XXX Step to be rewritten
+        // XXX Step to be rewritten. Do what we did in 14, here now with call behaviors introduction and left-over
+        // start/end.
+        // XXX internal actions assert that are really internal actions (rather than not matching any 'if')
         Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,

@@ -146,6 +146,13 @@ public class PostProcessActivity {
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             List<String> warnings)
     {
+
+        // TODO for every opaque action do
+        // A) transform to call behavior if merged
+        // B) add guard and effects if not-merged
+        // C) assert that it is an internal action that will be removed later
+        // D) throw error if neither of the previous.
+
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof Action action && !rewrittenActions.contains(action)) {
