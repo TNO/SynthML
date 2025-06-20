@@ -25,6 +25,8 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Rewriter for non-atomic patterns in Petri Nets. */
 public class NonAtomicPatternRewriter {
+    // XXX don't use tau anymore
+
     /** The prefix of a tau transition. */
     public static final String TAU_PREFIX = "__tau_";
 
