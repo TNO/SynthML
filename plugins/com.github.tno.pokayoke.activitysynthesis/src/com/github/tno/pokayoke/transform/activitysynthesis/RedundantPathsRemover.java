@@ -6,6 +6,7 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.position.metamodel.position.PositionObject;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.BiMap;
@@ -53,6 +55,9 @@ public class RedundantPathsRemover {
     /** The one-to-one mapping from states to the corresponding NodeInfo object. */
     BiMap<Location, NodeInfo> stateNodeInfoMap = HashBiMap.create();
 
+    /** The one-to-one mapping from states and edges to their index. */
+    private BiMap<PositionObject, Integer> statesAndEdgesToIndex = HashBiMap.create();
+
     public RedundantPathsRemover() {
         // Static class.
     }
@@ -79,6 +84,9 @@ public class RedundantPathsRemover {
         // Sanity check: initial and marked states must not be empty.
         Verify.verify(initialStates != null && !initialStates.isEmpty(), "Found empty initial set.");
         Verify.verify(markedStates != null && !markedStates.isEmpty(), "Found empty target set.");
+
+        // Create map from states and edges to indexes for the bitsets.
+        enumerateElements(stateSpace);
 
         // Create NodeInfo objects for all states.
         createNodeInfos(stateSpace.getLocations());
@@ -117,13 +125,33 @@ public class RedundantPathsRemover {
         }
     }
 
+    private void enumerateElements(Automaton stateSpace) {
+        int counter = 0;
+        Set<PositionObject> visited = new LinkedHashSet<>();
+        for (Location state: stateSpace.getLocations()) {
+            if (!visited.contains(state)) {
+                statesAndEdgesToIndex.put(state, counter);
+                counter++;
+                visited.add(state);
+                for (Edge edge: state.getEdges()) {
+                    if (!visited.contains(edge)) {
+                        statesAndEdgesToIndex.put(edge, counter);
+                        counter++;
+                        visited.add(edge);
+                    }
+                }
+            }
+        }
+    }
+
     private void createNodeInfos(List<Location> states) {
-        // For all states, create a NodeInfo object, and fills its fields with empty values. Store it in a map
-        // for later handling.
+        // For all states, create a NodeInfo object, and fills its fields with empty values. Store it in a map for later
+        // handling.
+        int graphSize = statesAndEdgesToIndex.size();
         for (Location state: states) {
             NodeInfo emptyNodeInfo = new NodeInfo(state, new LinkedHashSet<>(), new LinkedHashSet<>(),
                     new LinkedHashMap<>(), new ArrayList<>());
-            emptyNodeInfo.getMinSubGraphs().add(new LinkedHashSet<>());
+            emptyNodeInfo.getMinSubGraphs().add(new BitSet(graphSize));
             stateNodeInfoMap.put(state, emptyNodeInfo);
         }
 
@@ -168,27 +196,27 @@ public class RedundantPathsRemover {
             Set<NodeInfo> chosenChildren = new LinkedHashSet<>();
 
             // All minimum sub-graphs have the same size: get the size of the first one (could be zero if empty set).
-            int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).size();
+            int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).cardinality();
 
-            // For each child, get its minimum sub-graph and compare it with the current NodeInfo sub-graph. If the edge
-            // connecting the two states is uncontrollable, perform the union of the sub-graphs, since we must
-            // consider each uncontrollable edge for all states. If the edge is controllable, compare the size of the
-            // sub-graph and choose the children with the minimum sub-graph; update the current NodeInfo considering the
-            // smallest sub-graph of its children.
+            // For each child, get its minimum sub-graph and compare it with the current NodeInfo sub-graph.
+            // A) If the edge connecting the two states is uncontrollable, perform the union of the sub-graphs, since we
+            // must consider each uncontrollable edge for all states. Otherwise,
+            // B) If the edge is controllable, compare the size of the sub-graph and choose the children with the
+            // minimum sub-graph; update the current NodeInfo considering the smallest sub-graph of its children.
             for (NodeInfo child: children) {
-                List<Set<Object>> childMinSubGraphs = child.getMinSubGraphs();
-                int currentChildMinSubGraphSize = childMinSubGraphs.isEmpty() ? 0 : childMinSubGraphs.get(0).size();
+                List<BitSet> childMinSubGraphs = child.getMinSubGraphs();
+                int currentChildMinSubGraphSize = childMinSubGraphs.get(0).cardinality();
 
                 for (Edge childEdge: currentNodeInfo.getChildrenToEdges().get(child)) {
                     List<Event> events = new ArrayList<>(CifEventUtils.getEvents(childEdge));
 
                     if (!events.get(0).getControllable()) {
                         // Union of the current node sub-graphs and the child's sub-graphs.
-                        for (Set<Object> currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
-                            for (Set<Object> childMinSubGraph: childMinSubGraphs) {
-                                currentMinSubGraph.add(child);
-                                currentMinSubGraph.add(childEdge);
-                                currentMinSubGraph.addAll(childMinSubGraph);
+                        for (BitSet currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
+                            for (BitSet childMinSubGraph: childMinSubGraphs) {
+                                currentMinSubGraph.set(statesAndEdgesToIndex.get(child.getLocation()));
+                                currentMinSubGraph.set(statesAndEdgesToIndex.get(childEdge));
+                                currentMinSubGraph.or(childMinSubGraph); // Add the children bitset to the current one.
                             }
                         }
                     } else {
@@ -204,14 +232,18 @@ public class RedundantPathsRemover {
             }
 
             // Add sub-graph of the chosen controllable children to the current node info.
-            List<Set<Object>> allUpdatedMinSubGraphsList = new ArrayList<>();
-            for (Set<Object> currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
+            List<BitSet> allUpdatedMinSubGraphsList = new ArrayList<>();
+            for (BitSet currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
                 for (NodeInfo child: chosenChildren) {
-                    for (Set<Object> childMinSubGraph: child.getMinSubGraphs()) {
-                        Set<Object> updatedMinSubGraph = new LinkedHashSet<>(currentMinSubGraph);
-                        updatedMinSubGraph.add(child);
-                        updatedMinSubGraph.addAll(currentNodeInfo.getChildrenToEdges().get(child));
-                        updatedMinSubGraph.addAll(childMinSubGraph);
+                    for (BitSet childMinSubGraph: child.getMinSubGraphs()) {
+                        BitSet updatedMinSubGraph = new BitSet(statesAndEdgesToIndex.size());
+                        updatedMinSubGraph.or(currentMinSubGraph); // Copy current min sub-graph.
+                        updatedMinSubGraph.set(statesAndEdgesToIndex.get(child.getLocation())); // Add child.
+                        for (Edge edge: currentNodeInfo.getChildrenToEdges().get(child)) {
+                            // Add the edges connecting the current node to the child.
+                            updatedMinSubGraph.set(statesAndEdgesToIndex.get(edge));
+                        }
+                        updatedMinSubGraph.or(childMinSubGraph); // Add the children bitset to the current bitset.
                         allUpdatedMinSubGraphsList.add(updatedMinSubGraph);
                     }
                 }
@@ -223,13 +255,14 @@ public class RedundantPathsRemover {
 
             // If current NodeInfo sub-graph has been updated, or if the current NodeInfo corresponds to a marked
             // state, add the current NodeInfo parents to the queue.
-            if (sizePreUnion == 0 || sizePreUnion != currentNodeInfo.getMinSubGraphs().get(0).size()) {
+            if (sizePreUnion == 0 || sizePreUnion != currentNodeInfo.getMinSubGraphs().get(0).cardinality()) {
                 queue.addAll(currentNodeInfo.getParents());
             }
         }
     }
 
     private void markEssentialStatesAndEdges(Location currentState) {
+        // Mark the current state as essential.
         essentialStates.add(currentState);
 
         if (stateNodeInfoMap.get(currentState).getMinSubGraphs().isEmpty()) {
@@ -237,19 +270,25 @@ public class RedundantPathsRemover {
             essentialStatesToEssentialEdges.put(currentState, new LinkedHashSet<>());
         }
 
-        for (Set<Object> minSubGraph: stateNodeInfoMap.get(currentState).getMinSubGraphs()) {
-            for (Object element: minSubGraph) {
+        for (BitSet minSubGraph: stateNodeInfoMap.get(currentState).getMinSubGraphs()) {
+            for (int i = minSubGraph.nextSetBit(0); i >= 0; i = minSubGraph.nextSetBit(i + 1)) {
+                // Get the next element indexed in the bitset.
+                PositionObject stateOrEdge = statesAndEdgesToIndex.inverse().get(i);
+
                 // If the current element is an edge, add it to the map from essential state to essential edges; if
                 // it is a state, call recursively the method.
-                if (element instanceof Edge edge) {
+                if (stateOrEdge instanceof Edge edge) {
                     essentialStatesToEssentialEdges.computeIfAbsent(currentState, k -> new LinkedHashSet<>()).add(edge);
-                } else if (element instanceof NodeInfo nodeInfo) {
-                    Location nextState = stateNodeInfoMap.inverse().get(nodeInfo);
+                } else if (stateOrEdge instanceof Location nextState) {
                     if (!essentialStates.contains(nextState)) {
                         markEssentialStatesAndEdges(nextState);
                     }
                 } else {
                     throw new RuntimeException("Found unsupported element in sub-graph.");
+                }
+
+                if (i == Integer.MAX_VALUE) {
+                    break; // or (i+1) would overflow
                 }
             }
         }
