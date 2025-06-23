@@ -12,7 +12,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 
 /**
- *
+ * Helper class containing information about the minimum sub graph for a location.
  */
 public class NodeInfo {
     private Location location;
@@ -36,42 +36,54 @@ public class NodeInfo {
     }
 
     /**
-     * @return the location
+     * Return the location field.
+     *
+     * @return The location.
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * @return the children
+     * Return the set of children of the current location.
+     *
+     * @return The children set.
      */
     public Set<NodeInfo> getChildren() {
         return children;
     }
 
     /**
-     * @return the childrenToEdges
+     * Return the map from children to the edges connecting the location to them.
+     *
+     * @return The map from children to edges.
      */
     public Map<NodeInfo, Set<Edge>> getChildrenToEdges() {
         return childrenToEdges;
     }
 
     /**
-     * @return the parents
+     * Return the set of parents of the current location.
+     *
+     * @return The parents set.
      */
     public Set<NodeInfo> getParents() {
         return parents;
     }
 
     /**
-     * @return the minSubGraphs
+     * Return the (list of) minimum sub graph of the current location, as a set of graph elements.
+     *
+     * @return The list of sub graphs.
      */
     public List<Set<Object>> getMinSubGraphs() {
         return minSubGraphs;
     }
 
     /**
-     * @param minSubGraphs the minSubGraphs to set
+     * Sets the (list of) minimum sub graph of the current location, as a set of graph elements.
+     *
+     * @param minSubGraphs The list of minimum sub graphs to set.
      */
     public void setMinSubGraphs(List<Set<Object>> minSubGraphs) {
         this.minSubGraphs = minSubGraphs;
