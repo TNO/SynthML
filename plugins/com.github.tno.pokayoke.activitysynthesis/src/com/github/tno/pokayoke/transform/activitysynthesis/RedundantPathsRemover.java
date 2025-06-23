@@ -31,8 +31,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Removes redundant paths from any initial CIF states to any CIF marked state. Assumes the input is generated
- * from the CIF state space explorer.
+ * Removes redundant paths from any initial CIF states to any CIF marked state. Assumes the input is generated from the
+ * CIF state space explorer.
  */
 public class RedundantPathsRemover {
     /** The set of states that belong to a shortest path; these are called essential or non-redundant. */
@@ -106,15 +106,11 @@ public class RedundantPathsRemover {
     }
 
     private void findInitialAndMarkedStates(Automaton stateSpace) {
-        // Find initial states of the state space.
+        // Find initial and marked states of the state space.
         for (Location state: stateSpace.getLocations()) {
             if (CifLocationHelper.isInitial(state)) {
                 initialStates.add(state);
             }
-        }
-
-        // Find marked states of the state space.
-        for (Location state: stateSpace.getLocations()) {
             if (CifLocationHelper.isMarked(state)) {
                 markedStates.add(state);
             }
@@ -154,7 +150,7 @@ public class RedundantPathsRemover {
     }
 
     /**
-     * Description. TODO
+     * Computes the minimum sub-graph for the backward reachable states starting from a set of (marked) states.
      *
      * @param markedNodeInfo The set containing the NodeInfo objects corresponding to marked states.
      */
@@ -171,7 +167,7 @@ public class RedundantPathsRemover {
             int minChildSubGraphSize = Integer.MAX_VALUE;
             Set<NodeInfo> chosenChildren = new LinkedHashSet<>();
 
-            // All sub-graphs have the same size: get the size of the first one (could be zero if empty set).
+            // All minimum sub-graphs have the same size: get the size of the first one (could be zero if empty set).
             int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).size();
 
             // For each child, get its minimum sub-graph and compare it with the current NodeInfo sub-graph. If the edge
@@ -181,7 +177,7 @@ public class RedundantPathsRemover {
             // smallest sub-graph of its children.
             for (NodeInfo child: children) {
                 List<Set<Object>> childMinSubGraphs = child.getMinSubGraphs();
-                int childMinSubGraphSize = childMinSubGraphs.isEmpty() ? 0 : childMinSubGraphs.get(0).size();
+                int currentChildMinSubGraphSize = childMinSubGraphs.isEmpty() ? 0 : childMinSubGraphs.get(0).size();
 
                 for (Edge childEdge: currentNodeInfo.getChildrenToEdges().get(child)) {
                     List<Event> events = new ArrayList<>(CifEventUtils.getEvents(childEdge));
@@ -197,17 +193,17 @@ public class RedundantPathsRemover {
                         }
                     } else {
                         // Choose the child with smallest sub-graph.
-                        if (minChildSubGraphSize > childMinSubGraphSize) {
+                        if (minChildSubGraphSize > currentChildMinSubGraphSize) {
                             chosenChildren = new LinkedHashSet<>();
                             chosenChildren.add(child);
-                        } else if (minChildSubGraphSize == childMinSubGraphSize) {
+                        } else if (minChildSubGraphSize == currentChildMinSubGraphSize) {
                             chosenChildren.add(child);
                         }
                     }
                 }
             }
 
-            // TODO: update description. Add sub-graph of the chosen controllable children.
+            // Add sub-graph of the chosen controllable children to the current node info.
             List<Set<Object>> allUpdatedMinSubGraphsList = new ArrayList<>();
             for (Set<Object> currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
                 for (NodeInfo child: chosenChildren) {
