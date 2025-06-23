@@ -154,7 +154,7 @@ public class FullSynthesisApp {
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
-        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
+        Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
@@ -169,7 +169,7 @@ public class FullSynthesisApp {
 
         // Perform DFA minimization.
         Path cifMinimizedStateSpacePath = outputFolderPath
-                .resolve(filePrefix + ".08.statespace.projected.minimized.cif");
+                .resolve(filePrefix + ".07.statespace.projected.minimized.cif");
         String[] dfaMinimizationArgs = new String[] {cifProjectedStateSpacePath.toString(),
                 "--output=" + cifMinimizedStateSpacePath.toString()};
         AppStream dfaMinimizationAppStream = new MemAppStream();
@@ -183,13 +183,13 @@ public class FullSynthesisApp {
         }
 
         // Translate the CIF state space to Petrify input.
-        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".09.g");
+        Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".08.g");
         Specification cifMinimizedStateSpace = CifFileHelper.loadCifSpec(cifMinimizedStateSpacePath);
         List<String> petrifyInput = Cif2Petrify.transform(cifMinimizedStateSpace);
         Files.write(petrifyInputPath, petrifyInput);
 
         // Petrify the state space.
-        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".10.out");
+        Path petrifyOutputPath = outputFolderPath.resolve(filePrefix + ".09.out");
         Path petrifyLogPath = outputFolderPath.resolve("petrify.log");
         Path petrifyErrorPath = outputFolderPath.resolve("petrify.err");
         PetrifyHelper.convertToPetriNet(petrifyInputPath, petrifyOutputPath,
@@ -200,12 +200,12 @@ public class FullSynthesisApp {
         List<String> petrifyOutput = PetrifyHelper.readFile(petrifyOutputPath.toString());
 
         // Translate Petrify output into PNML.
-        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.pnml");
+        Path pnmlWithLoopOutputPath = outputFolderPath.resolve(filePrefix + ".10.pnml");
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Remove the self-loop that was added for petrification.
-        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".12.loopremoved.pnml");
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
@@ -213,7 +213,7 @@ public class FullSynthesisApp {
         // that can be merged, by removing the end-action transitions and connecting the start-action transition to the
         // subsequent places. Note that CIF edges between start and end of non-atomic patterns cannot have any guard, so
         // we can merge these patterns here (before the second round of synthesis).
-        Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
+        Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
@@ -221,7 +221,7 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity. The translation is agnostic: every transition in the Petri net is
         // translated into an empty UML opaque action.
-        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
+        Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
@@ -229,7 +229,7 @@ public class FullSynthesisApp {
         // Transform opaque actions into call behaviors when needed (i.e. when non-atomic behaviors or when re-written
         // in previous step) or update opaque actions by adding corresponding guards (start action) and effects (end
         // action).
-        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
+        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".14.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
@@ -238,22 +238,22 @@ public class FullSynthesisApp {
 
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
-                .resolve(filePrefix + ".17.internalactionsremoved.uml");
+                .resolve(filePrefix + ".15.internalactionsremoved.uml");
         PostProcessActivity.removeInternalActions(activity);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
-        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".18.simplified.uml");
+        Path umlSimplifiedOutputPath = outputFolderPath.resolve(filePrefix + ".16.simplified.uml");
         PostProcessActivity.simplify(activity);
         FileHelper.storeModel(activity.getModel(), umlSimplifiedOutputPath.toString());
 
         // Post-process the activity to remove the names of edges and nodes.
-        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".19.labelsremoved.uml");
+        Path umlLabelsRemovedOutputPath = outputFolderPath.resolve(filePrefix + ".17.labelsremoved.uml");
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
         // Translating synthesized activity to CIF, for guard computation.
-        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".20.guardcomputation.cif");
+        Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
                 TranslationPurpose.GUARD_COMPUTATION);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
@@ -266,7 +266,7 @@ public class FullSynthesisApp {
 
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".21.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.
