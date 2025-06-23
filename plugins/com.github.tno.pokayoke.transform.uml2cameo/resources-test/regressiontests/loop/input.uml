@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_VfeX0EZ9Ee6sBZ7qA2kCLg" name="MyModel">
     <packagedElement xmi:type="uml:Class" xmi:id="_UU4OsGRSEe6PU57shoVyvw" name="MyClass" classifierBehavior="_zxqCwFGHEe6vfoQ8SCm9OQ" isActive="true">
       <ownedAttribute xmi:id="_3OuSUGaKEe6brK4DOE-dfg" name="Value">
@@ -42,15 +42,15 @@
     </packagedElement>
     <profileApplication xmi:id="_2-f5UPDUEe6BGqs4B_9jqA">
       <eAnnotations xmi:id="_2-kx0PDUEe6BGqs4B_9jqA" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_2_NrAPDUEe6BGqs4B_9jqA" guard="true" base_RedefinableElement="_XamZYGaKEe6brK4DOE-dfg" atomic="true">
+  <SynthML:FormalElement xmi:id="_2_NrAPDUEe6BGqs4B_9jqA" guard="true" base_RedefinableElement="_XamZYGaKEe6brK4DOE-dfg" atomic="true">
     <effects>Value := false</effects>
-  </PokaYoke:FormalElement>
-  <PokaYoke:FormalElement xmi:id="_2_OSEPDUEe6BGqs4B_9jqA" guard="true" base_RedefinableElement="_ROQuwGaREe6brK4DOE-dfg" atomic="true">
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_2_OSEPDUEe6BGqs4B_9jqA" guard="true" base_RedefinableElement="_ROQuwGaREe6brK4DOE-dfg" atomic="true">
     <effects>Value := true</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

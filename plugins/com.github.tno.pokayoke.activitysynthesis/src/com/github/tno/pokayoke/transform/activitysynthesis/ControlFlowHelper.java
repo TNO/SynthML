@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.eclipse.uml2.uml.ControlFlow;
 
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /** Helper for adding incoming guards to UML control flows. */
 public class ControlFlowHelper {

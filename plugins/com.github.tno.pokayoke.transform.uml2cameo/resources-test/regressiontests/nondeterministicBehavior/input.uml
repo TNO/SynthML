@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:PokaYoke="https://github.com/TNO/PokaYoke/0.0.1/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
   <uml:Model xmi:id="_nDvJYIVLEe-HIdCvg2MCoQ" name="Model">
     <packagedElement xmi:type="uml:Class" xmi:id="_qT55oIVLEe-HIdCvg2MCoQ" name="Context" visibility="public" classifierBehavior="_NK_84IVjEe-brqUl3sLwIA" isActive="true">
       <ownedAttribute xmi:id="_snhiEIVLEe-HIdCvg2MCoQ" name="field1" visibility="public">
@@ -44,15 +44,15 @@
     </packagedElement>
     <profileApplication xmi:id="_tWJioIVLEe-HIdCvg2MCoQ">
       <eAnnotations xmi:id="_tWL-4IVLEe-HIdCvg2MCoQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/PokaYoke/0.0.1/#/"/>
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
-      <appliedProfile href="platform:/plugin/com.github.tno.pokayoke.uml.profile.plugin/model/pokayoke.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <PokaYoke:FormalElement xmi:id="_x9eTEIVLEe-HIdCvg2MCoQ" guard="not field1" base_RedefinableElement="_w8FHgIVLEe-HIdCvg2MCoQ" atomic="true">
+  <SynthML:FormalElement xmi:id="_x9eTEIVLEe-HIdCvg2MCoQ" guard="not field1" base_RedefinableElement="_w8FHgIVLEe-HIdCvg2MCoQ" atomic="true">
     <effects>field2 := 1,&#xD;
 field3 := false</effects>
     <effects>field2 := 12,&#xD;
 field3 := true</effects>
-  </PokaYoke:FormalElement>
+  </SynthML:FormalElement>
 </xmi:XMI>

@@ -41,10 +41,10 @@ import org.json.JSONObject;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
-import com.github.tno.pokayoke.uml.profile.cif.CifContext;
-import com.github.tno.pokayoke.uml.profile.cif.CifParserHelper;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeTypeUtil;
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
@@ -331,12 +331,10 @@ public class Uml2GalTranslator {
 
         // Check that a node with effects does not have incoming guards on its outgoing edges.
         if (updates.size() > 0) {
-            for (ActivityEdge outgoingEdge: node.getOutgoings()) {
-                AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)outgoingEdge);
-                if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
-                    throw new RuntimeException(String.format(
-                            "Edge leaving node '%s' with effects has not-null/true incoming guard.", node.getName()));
-                }
+            AExpression incomingGuard = CifParserHelper.parseIncomingGuard((ControlFlow)node.getOutgoings().get(0));
+            if (incomingGuard != null && !(incomingGuard instanceof ABoolExpression aBoolExpr && aBoolExpr.value)) {
+                throw new RuntimeException(String.format(
+                        "Edge leaving node '%s' with effects has not-null/true incoming guard.", node.getName()));
             }
         }
 

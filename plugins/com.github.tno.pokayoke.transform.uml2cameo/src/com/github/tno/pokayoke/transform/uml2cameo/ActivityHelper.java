@@ -29,7 +29,7 @@ import org.eclipse.uml2.uml.Trigger;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.uml.profile.util.UmlPrimitiveType;
+import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 

@@ -1,0 +1,11 @@
+automaton statespace:
+  alphabet;
+  @state(Context = "*", Context.__controlflow__7 = true, Context.field = false)
+  location loc1:
+    initial;
+    marked;
+  @state(Context = "*", Context.__controlflow__7 = true, Context.field = true)
+  location loc2:
+    initial;
+    marked;
+end

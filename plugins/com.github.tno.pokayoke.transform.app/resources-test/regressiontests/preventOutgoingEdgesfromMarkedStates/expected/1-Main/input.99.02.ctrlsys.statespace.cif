@@ -1,0 +1,11 @@
+uncontrollable __node__CallBehaviorAction__14;
+automaton statespace:
+  alphabet __node__CallBehaviorAction__14;
+  @state(Class = "*", Class.__controlflow__12 = false, Class.__controlflow__13 = true, Class.element = "First")
+  location loc1:
+    initial;
+    edge __node__CallBehaviorAction__14 goto loc2;
+  @state(Class = "*", Class.__controlflow__12 = true, Class.__controlflow__13 = false, Class.element = "Second")
+  location loc2:
+    marked;
+end

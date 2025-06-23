@@ -13,7 +13,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.UMLFactory;
 
-import com.github.tno.pokayoke.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 /**
@@ -95,11 +95,9 @@ public class EquivalentActionsIntoMergePattern {
         newMergeNode.setActivity(mergeNode.getActivity());
         newMergeNode.setName(mergeNode.getName());
 
-        // Redirect all incoming control flows of the action nodes in this pattern to target the new merge node instead.
+        // Redirect the incoming control flow of the action nodes in this pattern to target the new merge node instead.
         for (Action action: actionNodes) {
-            for (ActivityEdge controlFlow: List.copyOf(action.getIncomings())) {
-                controlFlow.setTarget(newMergeNode);
-            }
+            action.getIncomings().get(0).setTarget(newMergeNode);
         }
 
         // Remove all outgoing control flows of the action nodes in this pattern.

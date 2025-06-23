@@ -1,0 +1,33 @@
+uncontrollable __node__CallBehaviorAction__20;
+uncontrollable __node__CallBehaviorAction__20__result_1;
+uncontrollable __node__CallBehaviorAction__20__result_2;
+uncontrollable __node__DecisionNode__22__0;
+uncontrollable __node__DecisionNode__22__1;
+uncontrollable __node__MergeNode__24__0;
+uncontrollable __node__MergeNode__24__1;
+plant automaton Context:
+  disc bool field in any;
+  disc bool __controlflow__13;
+  disc bool __controlflow__15;
+  disc bool __controlflow__16;
+  disc bool __controlflow__18 = true;
+  disc bool __controlflow__19;
+  disc int[0..1] __activeAction;
+  alg bool precondition = not field;
+  alg bool __token_on_first_controlflow = __controlflow__18;
+  alg bool __precondition = precondition and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__16;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__20 when true, __controlflow__19, not __controlflow__15, __activeAction = 0 do __controlflow__19 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__20__result_1 when not __controlflow__15, __activeAction = 1 do field := true, __controlflow__15 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__20__result_2 when not __controlflow__15, __activeAction = 1 do field := false, __controlflow__15 := true, __activeAction := 0;
+    edge __node__DecisionNode__22__0 when true, __controlflow__15, not __controlflow__13, not field, __activeAction = 0 do __controlflow__15 := false, __controlflow__13 := true;
+    edge __node__DecisionNode__22__1 when true, __controlflow__15, not __controlflow__16, field, __activeAction = 0 do __controlflow__15 := false, __controlflow__16 := true;
+    edge __node__MergeNode__24__0 when true, __controlflow__18, not __controlflow__19, __activeAction = 0 do __controlflow__18 := false, __controlflow__19 := true;
+    edge __node__MergeNode__24__1 when true, __controlflow__13, not __controlflow__19, __activeAction = 0 do __controlflow__13 := false, __controlflow__19 := true;
+end

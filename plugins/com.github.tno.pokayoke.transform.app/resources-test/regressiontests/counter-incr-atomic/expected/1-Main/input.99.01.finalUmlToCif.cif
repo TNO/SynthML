@@ -1,0 +1,40 @@
+uncontrollable __node__CallBehaviorAction__31;
+uncontrollable __node__CallBehaviorAction__32;
+uncontrollable __node__CallBehaviorAction__33;
+uncontrollable __node__CallBehaviorAction__33__result_1;
+uncontrollable __node__CallBehaviorAction__33__result_2;
+uncontrollable __node__DecisionNode__35__0;
+uncontrollable __node__DecisionNode__35__1;
+uncontrollable __node__MergeNode__36__0;
+uncontrollable __node__MergeNode__36__1;
+plant automaton Context:
+  disc bool init in any;
+  disc int[0..3] count in any;
+  disc bool __controlflow__22;
+  disc bool __controlflow__24;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27;
+  disc bool __controlflow__28;
+  disc bool __controlflow__29;
+  disc bool __controlflow__30 = true;
+  disc int[0..1] __activeAction;
+  alg bool Pre = not init and count = 0;
+  alg bool __token_on_first_controlflow = __controlflow__30;
+  alg bool __precondition = Pre and __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__29;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__31 when init, __controlflow__22, not __controlflow__27, __activeAction = 0 do count := count + 1, __controlflow__22 := false, __controlflow__27 := true;
+    edge __node__CallBehaviorAction__32 when init, __controlflow__24, not __controlflow__28, __activeAction = 0 do count := count + 2, __controlflow__24 := false, __controlflow__28 := true;
+    edge __node__CallBehaviorAction__33 when not init, __controlflow__30, not __controlflow__26, __activeAction = 0 do __controlflow__30 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__33__result_1 when not __controlflow__26, __activeAction = 1 do init := true, count := 1, __controlflow__26 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__33__result_2 when not __controlflow__26, __activeAction = 1 do init := true, count := 2, __controlflow__26 := true, __activeAction := 0;
+    edge __node__DecisionNode__35__0 when true, __controlflow__26, not __controlflow__22, count = 0 or count = 2, __activeAction = 0 do __controlflow__26 := false, __controlflow__22 := true;
+    edge __node__DecisionNode__35__1 when true, __controlflow__26, not __controlflow__24, count = 1 or count = 3, __activeAction = 0 do __controlflow__26 := false, __controlflow__24 := true;
+    edge __node__MergeNode__36__0 when true, __controlflow__27, not __controlflow__29, __activeAction = 0 do __controlflow__27 := false, __controlflow__29 := true;
+    edge __node__MergeNode__36__1 when true, __controlflow__28, not __controlflow__29, __activeAction = 0 do __controlflow__28 := false, __controlflow__29 := true;
+end
