@@ -155,7 +155,7 @@ public class FullSynthesisApp {
         // Perform event-based automaton projection. Note that we can't use the state space with reduced state
         // annotations from the previous step as input here, since that CIF specification might be invalid. Therefore we
         // input the earlier version of the CIF specification that still has all state annotations.
-        // XXX simplify comment.
+        // TODO simplify comment.
         String preservedEvents = getPreservedEvents(cifStateSpace);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".07.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
@@ -215,7 +215,7 @@ public class FullSynthesisApp {
         // Rewrite all rewritable non-atomic patterns in the Petri Net.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".13.nonatomicsreduced.pnml");
 
-        // XXX Step to be rewritten: directly remove the mergable patterns, do not do the tau renaming.
+        // TODO doc: step rewritten: directly remove the mergable patterns, do not do the tau renaming.
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
         // TODO doc: edges between start and end of non-atomic patterns cannot have any guard, so we can merge these
@@ -225,15 +225,15 @@ public class FullSynthesisApp {
 
         // Translate PNML into UML activity.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".14.uml");
-        // XXX Step to be rewritten: create opaque actions for every transition, later to be properly handled in 16.
+        // TODO doc: step rewritten: create opaque actions for every transition, later to be properly handled in 16.
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Rewrite any leftover non-atomic actions that weren't reduced earlier on the Petri Net level.
-        // XXX Step to be rewritten. Do what we did in 14, here now with call behaviors introduction and left-over
-        // start/end.
-        // XXX internal actions assert that are really internal actions (rather than not matching any 'if')
+        // TODO doc: step rewritten. Transform opaque actions into call behaviors when needed (i.e. when non-atomic
+        // behaviors or when re-written in previous step) or update opaque actions with correspondoing guards (start
+        // action) and effects (end action).
         Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".16.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
