@@ -258,7 +258,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                 for (var entry: startEventMap.entrySet()) {
                     RedefinableElement umlElement = entry.getValue();
 
-                    if (umlElement.getName().equals(event)) {
+                    if (umlElement.getName() != null && umlElement.getName().equals(event)) {
                         Event cifEvent = entry.getKey();
 
                         Invariant cifInvariant = CifConstructors.newInvariant();
