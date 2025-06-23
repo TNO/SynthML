@@ -4,6 +4,7 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,10 +24,10 @@ public class NodeInfo {
 
     private Map<NodeInfo, Set<Edge>> childrenToEdges;
 
-    private List<Set<Object>> minSubGraphs;
+    private List<BitSet> minSubGraphs;
 
     public NodeInfo(Location loc, Set<NodeInfo> children, Set<NodeInfo> parents,
-            Map<NodeInfo, Set<Edge>> childrenToEdges, List<Set<Object>> minSubGraphs)
+            Map<NodeInfo, Set<Edge>> childrenToEdges, List<BitSet> minSubGraphs)
     {
         this.location = loc;
         this.children = children;
@@ -76,7 +77,7 @@ public class NodeInfo {
      *
      * @return The list of sub graphs.
      */
-    public List<Set<Object>> getMinSubGraphs() {
+    public List<BitSet> getMinSubGraphs() {
         return minSubGraphs;
     }
 
@@ -85,7 +86,7 @@ public class NodeInfo {
      *
      * @param minSubGraphs The list of minimum sub graphs to set.
      */
-    public void setMinSubGraphs(List<Set<Object>> minSubGraphs) {
+    public void setMinSubGraphs(List<BitSet> minSubGraphs) {
         this.minSubGraphs = minSubGraphs;
     }
 }
