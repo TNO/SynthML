@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
@@ -166,13 +167,14 @@ public class PostProcessActivity {
                             "Expected only opaque actions, found: " + action.getClass().getSimpleName());
                 }
 
-                // If action is related to an atomic opaque behavior, or if it is the start of a rewritten non-atomic
-                // action, transform it to a call behavior.
+                // Rewrite/adapt the opaque action, if needed.
                 String actionName = action.getName();
                 Behavior behavior = context.getOpaqueBehavior(actionName);
                 if (behavior != null
                         && (PokaYokeUmlProfileUtil.isAtomic(behavior) || rewrittenActions.contains(action)))
                 {
+                    // Atomic opaque behavior, or start of a rewritten non-atomic action. Transform it to a call
+                    // behavior.
                     CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                     callAction.setBehavior(behavior);
                     callAction.setActivity(activity);
@@ -183,12 +185,13 @@ public class PostProcessActivity {
                     action.getOutgoings().get(0).setSource(callAction);
                     action.destroy();
                 } else if (behavior != null) {
-                    // The action is the start of a non-atomic behavior, so add its guards to the opaque action.
+                    // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
+                    // opaque action.
                     action.setName(behavior.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                     PokaYokeUmlProfileUtil.setAtomic(action, true);
                     PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(behavior));
 
-                    // Add a warning that the current non-atomic start action has not been fully merged.
+                    // Add a warning that the non-atomic start action has not been fully merged.
                     warnings.add(String.format(
                             "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
                             behavior.getName(), actionName));
@@ -199,17 +202,20 @@ public class PostProcessActivity {
                     Verify.verify(actionName.contains(nonAtomicOutcomeSuffix),
                             "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
-                    // The action is the end of a non-atomic action, so add its effects to the opaque action.
+                    // The action is the end of a non-rewritten non-atomic action. Add its effects to the opaque action.
+
                     // Find the UML element for the non-atomic action, and the index to the relevant effect.
                     Pair<RedefinableElement, Integer> actionAndEffectIndex = endEventMap.get(actionName);
                     Verify.verifyNotNull(actionAndEffectIndex, String
                             .format("Expected the CIF end event '%s' to map to a non-atomic UML element.", actionName));
 
-                    // Determine the UML element that has the guard and effects of the current action.
+                    // Determine the UML opaque behavior that has the guard and effects of the current action.
                     RedefinableElement actionElement = actionAndEffectIndex.left;
                     if (actionElement instanceof CallBehaviorAction cbAction) {
                         actionElement = cbAction.getBehavior();
                     }
+                    Verify.verify(actionElement instanceof OpaqueBehavior,
+                            "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
 
                     // Rename the current action, set its guard to 'true', and retain the original relevant effect.
                     action.setName(actionName.replace(nonAtomicOutcomeSuffix, UmlToCifTranslator.END_ACTION_SUFFIX));
@@ -218,7 +224,7 @@ public class PostProcessActivity {
                     String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(actionAndEffectIndex.right);
                     PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
-                    // Add a warning that the current non-atomic end action has not been fully merged.
+                    // Add a warning that the non-atomic end action has not been fully merged.
                     warnings.add(String.format(
                             "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
                             actionElement.getName(), action.getName()));
