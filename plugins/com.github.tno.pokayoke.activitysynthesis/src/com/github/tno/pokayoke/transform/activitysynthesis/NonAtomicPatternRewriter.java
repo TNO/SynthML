@@ -54,7 +54,7 @@ public class NonAtomicPatternRewriter {
     }
 
     /**
-     * Finds and rewrites all non-atomic patterns in the given Petri Net, by renaming all their end transitions to tau.
+     * Finds all non-atomic patterns in the given Petri Net that can be rewritten, and rewrites them.
      *
      * @param petriNet The Petri Net to rewrite, which is modified in-place.
      * @return The list of non-atomic patterns that have been rewritten.
@@ -114,7 +114,8 @@ public class NonAtomicPatternRewriter {
             return Optional.empty();
         }
 
-        // Check whether all outgoing transitions of the intermediate place are for ending the non-atomic action.
+        // Check whether all outgoing transitions of the intermediate place are for ending the non-atomic action, and
+        // there are exactly as many as expected, without duplicates.
         List<Transition> endTransitions = sorted(
                 intermediatePlace.getOutArcs().stream().map(a -> (Transition)a.getTarget()));
 
@@ -133,24 +134,29 @@ public class NonAtomicPatternRewriter {
             }
         }
 
-        // Get the end places. Ensure that the end places have no incoming arcs starting from other transitions.
-        List<Place> endPlaces = new LinkedList<>();
+        // Check whether none of the end transitions start a fork pattern. This prevents combinations of fork and
+        // choice after the end transitions, which would be difficult to merge back.
         for (Transition endTransition: endTransitions) {
             if (endTransition.getOutArcs().size() != 1) {
                 return Optional.empty();
             }
+        }
 
+        // Get the end places.
+        List<Place> endPlaces = new LinkedList<>();
+        for (Transition endTransition: endTransitions) {
             Place endPlace = (Place)endTransition.getOutArcs().get(0).getTarget();
-
-            for (Arc incomingArcToEndPlace: endPlace.getInArcs()) {
-                if (!(endTransitions).contains(incomingArcToEndPlace.getSource())) {
-                    return Optional.empty();
-                }
-            }
-
             endPlaces.add(endPlace);
         }
 
+        // Ensure that the end places have no incoming arcs starting from other transitions.
+        for (Place endPlace: endPlaces) {
+            if (endPlace.getInArcs().size() != 1) {
+                return Optional.empty();
+            }
+        }
+
+        // Return the information about the non-atomic pattern that can be rewritten.
         return Optional.of(new NonAtomicPattern(transition, intermediatePlace, endTransitions, endPlaces));
     }
 
