@@ -26,7 +26,6 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -36,8 +35,6 @@ import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-
-import fr.lip6.move.pnml.ptnet.PetriNet;
 
 public class PostProcessActivity {
     private PostProcessActivity() {
@@ -143,17 +140,17 @@ public class PostProcessActivity {
     }
 
     /**
-     * Rewrites all actions in the given activity which start or end a non-atomic action, that have not been rewritten
-     * as {@link NonAtomicPatternRewriter#findAndRewritePatterns(PetriNet) non-atomic patterns}.
+     * Finalize all opaque actions in the given activity. They may for instance become call behavior actions, or get
+     * extra guards/effects.
      *
-     * @param activity The activity to rewrite.
-     * @param rewrittenActions All actions that have already been rewritten (on Petri Net level).
+     * @param activity The activity for which to finalize the opaque actions.
+     * @param rewrittenNonAtomicActions All non-atomic actions that have already been rewritten (on Petri Net level).
      * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
      *     elements and the index of the corresponding effect of the end event.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    public static void rewriteLeftoverNonAtomicActions(Activity activity, Set<Action> rewrittenActions,
+    public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             List<String> warnings)
     {
@@ -171,7 +168,7 @@ public class PostProcessActivity {
                 String actionName = action.getName();
                 Behavior behavior = context.getOpaqueBehavior(actionName);
                 if (behavior != null
-                        && (PokaYokeUmlProfileUtil.isAtomic(behavior) || rewrittenActions.contains(action)))
+                        && (PokaYokeUmlProfileUtil.isAtomic(behavior) || rewrittenNonAtomicActions.contains(action)))
                 {
                     // Atomic opaque behavior, or start of a rewritten non-atomic action. Transform it to a call
                     // behavior.
@@ -197,7 +194,7 @@ public class PostProcessActivity {
                             behavior.getName(), actionName));
                 } else if (!isInternalAction(action)) {
                     // Sanity check.
-                    Verify.verify(!rewrittenActions.contains(action),
+                    Verify.verify(!rewrittenNonAtomicActions.contains(action),
                             "The end of a non-atomic action is contained in the set of rewritten actions.");
                     Verify.verify(actionName.contains(nonAtomicOutcomeSuffix),
                             "End of non-atomic action name does not contain the non-atomic outcome suffix.");

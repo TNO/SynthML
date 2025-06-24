@@ -224,15 +224,16 @@ public class FullSynthesisApp {
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Transform opaque actions into call behaviors when applicable (i.e., when they correspond to atomic opaque
-        // behaviors or non-atomic ones that have been re-written in the previous step). For non-atomic ones that
-        // couldn't be rewritten, add guards guards (for start action) and effects (for end actions).
-        Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".14.nonatomicsrewritten.uml");
-        PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
+        // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
+        // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
+        // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
+        Path opaqueActionsFinalizedOutputPath = outputFolderPath
+                .resolve(filePrefix + ".14.opaque_actions_finalized.uml");
+        PostProcessActivity.finalizeOpaqueActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
                 umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
-        FileHelper.storeModel(activity.getModel(), nonAtomicsRewrittenOutputPath.toString());
+        FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
