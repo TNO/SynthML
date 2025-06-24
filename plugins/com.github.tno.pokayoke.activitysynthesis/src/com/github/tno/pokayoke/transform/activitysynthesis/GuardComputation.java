@@ -85,9 +85,9 @@ public class GuardComputation {
 
         // Define the configuration for performing data-based synthesis and symbolic reachability searches.
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
-        settings.setDoForwardReach(true);
-        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
+        settings.setDoForwardReach(true); // Get correct and intuitive result.
+        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL); // Best performance.
+        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class)); // We do custom context-aware simplification.
 
         // Convert the CIF specification to a CIF/BDD specification.
         CifToBddConverter.preprocess(specification, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
