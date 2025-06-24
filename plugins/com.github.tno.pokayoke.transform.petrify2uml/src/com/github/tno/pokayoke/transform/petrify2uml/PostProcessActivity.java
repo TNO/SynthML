@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -88,18 +86,20 @@ public class PostProcessActivity {
                     "Expected that an opaque action has exactly one ougoing edge.");
             ActivityEdge outgoingEdge = outgoingEdges.get(0);
 
+            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+                    "Expected no incoming guard for incoming edge to opaque action to remove.");
+            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+                    "Expected no outgoing guard for incoming edge to opaque action to remove.");
+            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+                    "Expected no incoming guard for outgoing edge from opaque action to remove.");
+            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+                    "Expected no outgoing guard for outgoing edge from opaque action to remove.");
+
             ActivityNode source = incomingEdge.getSource();
             ActivityNode target = outgoingEdge.getTarget();
 
             // Add a new control flow from source to target.
-            ControlFlow newEdge = PNML2UMLTranslator.createControlFlow(activity, source, target);
-            List<String> incomingGuardList = new ArrayList<>();
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge));
-            incomingGuardList.add(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge));
-            String newIncomingGuard = computeGuardConjunction(incomingGuardList);
-            PokaYokeUmlProfileUtil.setIncomingGuard(newEdge, newIncomingGuard);
-            PokaYokeUmlProfileUtil.setOutgoingGuard(newEdge, PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge));
+            PNML2UMLTranslator.createControlFlow(activity, source, target);
 
             // Destroy the action and its incoming and outgoing edges.
             incomingEdge.destroy();
@@ -229,25 +229,6 @@ public class PostProcessActivity {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
-    }
-
-    /**
-     * Compute the conjunction of guards passed as arguments.
-     *
-     * @param guards The list containing the guards.
-     * @return The string with the guards conjunction.
-     */
-    private static String computeGuardConjunction(List<String> guards) {
-        String newGuard = null;
-        for (String guard: guards) {
-            if (guard != null && newGuard == null) {
-                newGuard = guard;
-            } else if (guard != null) {
-                newGuard = String.format("(%s) and (%s)", guard, newGuard);
-            }
-        }
-
-        return newGuard;
     }
 
     private static boolean isInternalAction(Action action) {
