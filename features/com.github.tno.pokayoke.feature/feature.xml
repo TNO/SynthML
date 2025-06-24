@@ -68,13 +68,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.github.tno.pokayoke.transform.region2statemapping"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.github.tno.pokayoke.transform.uml2cameo"
          download-size="0"
          install-size="0"
