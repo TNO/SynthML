@@ -895,7 +895,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Translates the given UML activity node as an OR-type node.
+     * Translates the given UML activity node as an 'or'-type node.
      *
      * @param node The UML activity node to translate.
      * @param isAtomic Whether the UML activity node should be translated as an atomic action.

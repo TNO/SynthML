@@ -79,7 +79,7 @@ public class GuardComputation {
             return startEvents.get(0);
         };
 
-        // Obtain the mapping from all incoming/outgoing control flow pairs of translated OR-type activity nodes,
+        // Obtain the mapping from all incoming/outgoing control flow pairs of translated 'or'-type activity nodes,
         // to the CIF start events created for these control flow pairs.
         BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = translator.getActivityOrNodeMapping();
 
