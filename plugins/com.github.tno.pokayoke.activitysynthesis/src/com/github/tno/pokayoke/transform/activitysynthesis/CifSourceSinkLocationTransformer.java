@@ -4,13 +4,9 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
-import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifCollectUtils;
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.io.CifWriter;
@@ -20,13 +16,9 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
 
-import com.github.javabdd.BDD;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.PostConditionKind;
 import com.google.common.base.Preconditions;
 
 /**
@@ -162,31 +154,6 @@ public class CifSourceSinkLocationTransformer {
             edge.setTarget(newMarkedLocation);
             location.getEdges().add(edge);
             location.getMarkeds().clear();
-        }
-    }
-
-    /**
-     * Extends the given mapping of uncontrolled system guards with auxiliary events that were introduced as part of the
-     * {@link CifSourceSinkLocationTransformer 'single source and sink location' transformation}.
-     *
-     * @param uncontrolledSystemGuards The uncontrolled system guards mapping, which is modified in-place.
-     * @param bddSpec The CIF/BDD specification of {@code specification}.
-     * @param translator The UML to CIF translator that was used to translate the UML input model to the given CIF
-     *     specification.
-     */
-    public static void addAuxiliarySystemGuards(Map<String, BDD> uncontrolledSystemGuards, CifBddSpec bddSpec,
-            UmlToCifTranslator translator)
-    {
-        // Obtain the preconditions and postconditions of the translated CIF specification.
-        Expression precondition = translator.getTranslatedPrecondition();
-        Expression postcondition = translator.getTranslatedPostcondition(PostConditionKind.SINGLE);
-
-        // Extend the guard mapping with the start and end event, which map to the pre and postcondition BDDs, resp.
-        try {
-            uncontrolledSystemGuards.put(START_EVENT_NAME, CifToBddConverter.convertPred(precondition, true, bddSpec));
-            uncontrolledSystemGuards.put(END_EVENT_NAME, CifToBddConverter.convertPred(postcondition, false, bddSpec));
-        } catch (UnsupportedPredicateException ex) {
-            throw new RuntimeException("Failed to translate the pre/postcondition to a BDD: " + ex.getMessage(), ex);
         }
     }
 }
