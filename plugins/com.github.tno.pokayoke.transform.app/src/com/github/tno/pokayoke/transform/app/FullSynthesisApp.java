@@ -210,25 +210,23 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
-        // that can be merged, by removing the end-action transitions and connecting the start-action transition to the
-        // subsequent places. Note that CIF edges between start and end of non-atomic patterns cannot have any guard, so
-        // we can merge these patterns here (before the second round of synthesis).
+        // that can be merged, replacing their start and end transitions by a single transition.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
-        // Translate PNML into UML activity. The translation is agnostic: every transition in the Petri net is
-        // translated into an empty UML opaque action.
+        // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
+        // action.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Transform opaque actions into call behaviors when needed (i.e. when non-atomic behaviors or when re-written
-        // in previous step) or update opaque actions by adding corresponding guards (start action) and effects (end
-        // action).
+        // Transform opaque actions into call behaviors when applicable (i.e., when they correspond to atomic opaque
+        // behaviors or non-atomic ones that have been re-written in the previous step). For non-atomic ones that
+        // couldn't be rewritten, add guards guards (for start action) and effects (for end actions).
         Path nonAtomicsRewrittenOutputPath = outputFolderPath.resolve(filePrefix + ".14.nonatomicsrewritten.uml");
         PostProcessActivity.rewriteLeftoverNonAtomicActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
