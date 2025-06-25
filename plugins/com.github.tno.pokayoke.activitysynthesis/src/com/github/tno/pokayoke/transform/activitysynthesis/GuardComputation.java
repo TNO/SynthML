@@ -360,7 +360,6 @@ public class GuardComputation {
         String text = CifTextUtils.exprToStr(BddToCif.bddToCifPred(bdd, cifBddSpec));
 
         // Turn the textual representation into a SynthML-compatible expression.
-        // XXX a string replacement is not very robust. would be better to translate the CIF expression tree ourselves.
         String plantPrefix = translator.getPlantName() + ".";
         return text.replaceAll(plantPrefix, "");
     }
