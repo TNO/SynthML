@@ -235,7 +235,7 @@ public class PostProcessActivity {
     }
 
     private static boolean isInternalAction(Action action) {
-        return action.getName().contains(CifSourceSinkLocationTransformer.START_EVENT_NAME)
-                || action.getName().contains(CifSourceSinkLocationTransformer.END_EVENT_NAME);
+        return action.getName().equals(CifSourceSinkLocationTransformer.START_EVENT_NAME)
+                || action.getName().equals(CifSourceSinkLocationTransformer.END_EVENT_NAME);
     }
 }
