@@ -86,11 +86,11 @@ public class PostProcessActivity {
 
             Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
                     "Expected no incoming guard for incoming edge to opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+            Verify.verify(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge) == null,
                     "Expected no outgoing guard for incoming edge to opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge) == null,
                     "Expected no incoming guard for outgoing edge from opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+            Verify.verify(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge) == null,
                     "Expected no outgoing guard for outgoing edge from opaque action to remove.");
 
             ActivityNode source = incomingEdge.getSource();
