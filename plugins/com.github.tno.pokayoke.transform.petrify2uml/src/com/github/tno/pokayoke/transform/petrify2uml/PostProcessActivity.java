@@ -84,13 +84,13 @@ public class PostProcessActivity {
                     "Expected that an opaque action has exactly one ougoing edge.");
             ActivityEdge outgoingEdge = outgoingEdges.get(0);
 
-            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge) == null,
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
                     "Expected no incoming guard for incoming edge to opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge) == null,
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge)),
                     "Expected no outgoing guard for incoming edge to opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge) == null,
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge)),
                     "Expected no incoming guard for outgoing edge from opaque action to remove.");
-            Verify.verify(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge) == null,
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge)),
                     "Expected no outgoing guard for outgoing edge from opaque action to remove.");
 
             ActivityNode source = incomingEdge.getSource();
@@ -105,6 +105,10 @@ public class PostProcessActivity {
             action.destroy();
         }
         return numberOfActions;
+    }
+
+    private static boolean isNullOrTriviallyTrue(String s) {
+        return s == null || s.equals("true");
     }
 
     /**
