@@ -1,0 +1,86 @@
+controllable __node__DecisionNode__32__0;
+controllable __node__DecisionNode__32__1;
+controllable __node__MergeNode__33__0;
+controllable __node__MergeNode__33__1;
+controllable __node__CallBehaviorAction__35;
+controllable __node__CallBehaviorAction__36;
+controllable __node__CallBehaviorAction__37;
+uncontrollable __node__CallBehaviorAction__37__na_result_1;
+uncontrollable __node__CallBehaviorAction__37__na_result_2;
+plant automaton Context:
+  disc bool init in any;
+  disc int[0..3] count in any;
+  disc bool __controlflow__22;
+  disc bool __controlflow__24;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27;
+  disc bool __controlflow__28;
+  disc bool __controlflow__29;
+  disc bool __controlflow__30 = true;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__37;
+  alg bool Pre = not init and count = 0;
+  alg bool __token_on_first_controlflow = __controlflow__30;
+  alg bool __precondition = Pre and __token_on_first_controlflow;
+  alg bool Post = count = 3;
+  alg bool __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__37 = not __nonAtomicActive____node__CallBehaviorAction__37;
+  alg bool __postcondition_without_structure__occurrences__20__initialize__12 = occurrences__20__initialize__12.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__20__incr1__13 = occurrences__20__incr1__13.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__20__incr2__14 = occurrences__20__incr2__14.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Post and __postcondition_without_structure__nonAtomicActive____node__CallBehaviorAction__37 and (__postcondition_without_structure__occurrences__20__initialize__12 and (__postcondition_without_structure__occurrences__20__incr1__13 and __postcondition_without_structure__occurrences__20__incr2__14));
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__22 = not __controlflow__22;
+  alg bool __postcondition_with_structure__controlflow__24 = not __controlflow__24;
+  alg bool __postcondition_with_structure__controlflow__26 = not __controlflow__26;
+  alg bool __postcondition_with_structure__controlflow__27 = not __controlflow__27;
+  alg bool __postcondition_with_structure__controlflow__28 = not __controlflow__28;
+  alg bool __postcondition_with_structure__controlflow__30 = not __controlflow__30;
+  alg bool __token_on_last_controlflow = __controlflow__29;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and __postcondition_with_structure__controlflow__22 and (__postcondition_with_structure__controlflow__24 and __postcondition_with_structure__controlflow__26) and (__postcondition_with_structure__controlflow__27 and __postcondition_with_structure__controlflow__28 and (__postcondition_with_structure__controlflow__30 and __token_on_last_controlflow));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__32__0 when true, __controlflow__26, not __controlflow__22, true do __controlflow__26 := false, __controlflow__22 := true;
+    edge __node__DecisionNode__32__1 when true, __controlflow__26, not __controlflow__24, true do __controlflow__26 := false, __controlflow__24 := true;
+    edge __node__MergeNode__33__0 when true, __controlflow__27, not __controlflow__29 do __controlflow__27 := false, __controlflow__29 := true;
+    edge __node__MergeNode__33__1 when true, __controlflow__28, not __controlflow__29 do __controlflow__28 := false, __controlflow__29 := true;
+    edge __node__CallBehaviorAction__35 when init, __controlflow__24, not __controlflow__27 do count := count + 1, __controlflow__24 := false, __controlflow__27 := true;
+    edge __node__CallBehaviorAction__36 when init, __controlflow__22, not __controlflow__28 do count := count + 2, __controlflow__22 := false, __controlflow__28 := true;
+    edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __controlflow__26, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
+    edge __node__CallBehaviorAction__37__na_result_1 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 1, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
+    edge __node__CallBehaviorAction__37__na_result_2 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 2, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
+end
+requirement automaton occurrences__20__initialize__12:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__37 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences__20__incr1__13:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__35 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences__20__incr2__14:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__36 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__32__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__32__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__33__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__33__1;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__35;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__36;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__37;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__37__na_result_1;
+requirement invariant Context.__postcondition_with_structure disables __node__CallBehaviorAction__37__na_result_2;

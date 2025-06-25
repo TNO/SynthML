@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="14" isActive="true">
+      <nameExpression xmi:id="3" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="4" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="5" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="6" name="done_a" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="9" name="done_b" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="12" name="do_a"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="13" name="do_b"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="14" name="Main" postcondition="17" precondition="15" node="37 38 39 40 41 42 43 44 45 46 47 48">
+        <ownedRule xmi:id="15" name="Pre">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="16" name="">
+            <body>not done_a and not done_b</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="17" name="Post">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="18" name="">
+            <body>done_a</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="19" name="occurrences" constrainedElement="12 13">
+          <specification xmi:type="uml:Interval" xmi:id="20" name="" max="5" min="4"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="21" name="Decision__p2__to__do_a/1" target="48" source="40">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="22" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="23" name="Decision__p2__to__do_b" target="37" source="40">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="24" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" name="Fork__do_a/1__to__Merge__p3" target="41" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="26" name="do_a__to__Merge__p3" target="41" source="47"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" name="Merge__p3__to__Join____end" target="44" source="41"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="Fork__do_a/1__to__Merge__p4" target="42" source="45"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="do_b__na_result_1__to__Merge__p4" target="42" source="38"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" name="Merge__p4__to__Join____end" target="44" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Fork__do_b__to__do_a" target="47" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" name="Fork__do_b__to__do_b__na_result_1" target="38" source="46"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="do_a/1__to__Fork__do_a/1" target="45" source="48"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="do_b__to__Fork__do_b" target="46" source="37"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="Join____end__to__FinalNode__p7" target="43" source="44"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" name="InitialNode__p1__to__Decision__p2" target="40" source="39"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="37" name="do_b_start" incoming="23" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="38" name="do_b_end1" incoming="32" outgoing="29"/>
+        <node xmi:type="uml:InitialNode" xmi:id="39" name="InitialNode__p1" outgoing="36"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="40" name="Decision__p2" incoming="36" outgoing="21 23"/>
+        <node xmi:type="uml:MergeNode" xmi:id="41" name="Merge__p3" incoming="25 26" outgoing="27"/>
+        <node xmi:type="uml:MergeNode" xmi:id="42" name="Merge__p4" incoming="28 29" outgoing="30"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="43" name="FinalNode__p7" incoming="35"/>
+        <node xmi:type="uml:JoinNode" xmi:id="44" name="Join____end" incoming="27 30" outgoing="35"/>
+        <node xmi:type="uml:ForkNode" xmi:id="45" name="Fork__do_a/1" incoming="33" outgoing="25 28"/>
+        <node xmi:type="uml:ForkNode" xmi:id="46" name="Fork__do_b" incoming="34" outgoing="31 32"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="47" name="do_a" incoming="31" outgoing="26" behavior="12"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="48" name="do_a" incoming="21" outgoing="33" behavior="12"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="49">
+      <eAnnotations xmi:id="50" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="51" guard="not done_a" base_RedefinableElement="12" atomic="true">
+    <effects>done_a := true</effects>
+    <effects>done_a := true&#xD;
+</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="52" guard="not done_b" base_RedefinableElement="13">
+    <effects>done_b := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="53" guard="not done_b" base_RedefinableElement="37" atomic="true"/>
+  <SynthML:FormalElement xmi:id="54" guard="true" base_RedefinableElement="38" atomic="true">
+    <effects>done_b := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

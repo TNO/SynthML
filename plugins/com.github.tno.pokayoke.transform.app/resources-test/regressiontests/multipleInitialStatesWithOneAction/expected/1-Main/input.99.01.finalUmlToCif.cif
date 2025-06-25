@@ -1,8 +1,8 @@
-uncontrollable __node__CallBehaviorAction__17;
 uncontrollable __node__DecisionNode__19__0;
 uncontrollable __node__DecisionNode__19__1;
 uncontrollable __node__MergeNode__20__0;
 uncontrollable __node__MergeNode__20__1;
+uncontrollable __node__CallBehaviorAction__22;
 plant automaton Context:
   disc bool field in any;
   disc bool __controlflow__10;
@@ -19,9 +19,9 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__17 when not field, __controlflow__10, not __controlflow__13 do field := true, __controlflow__10 := false, __controlflow__13 := true;
-    edge __node__DecisionNode__19__0 when true, __controlflow__16, not __controlflow__10, true do __controlflow__16 := false, __controlflow__10 := true;
+    edge __node__DecisionNode__19__0 when true, __controlflow__16, not __controlflow__10, not field do __controlflow__16 := false, __controlflow__10 := true;
     edge __node__DecisionNode__19__1 when true, __controlflow__16, not __controlflow__14, field do __controlflow__16 := false, __controlflow__14 := true;
-    edge __node__MergeNode__20__0 when true, __controlflow__13, not __controlflow__12 do __controlflow__13 := false, __controlflow__12 := true;
-    edge __node__MergeNode__20__1 when true, __controlflow__14, not __controlflow__12 do __controlflow__14 := false, __controlflow__12 := true;
+    edge __node__MergeNode__20__0 when true, __controlflow__13, true, not __controlflow__12 do __controlflow__13 := false, __controlflow__12 := true;
+    edge __node__MergeNode__20__1 when true, __controlflow__14, true, not __controlflow__12 do __controlflow__14 := false, __controlflow__12 := true;
+    edge __node__CallBehaviorAction__22 when not field, __controlflow__10, true, not __controlflow__13 do field := true, __controlflow__10 := false, __controlflow__13 := true;
 end

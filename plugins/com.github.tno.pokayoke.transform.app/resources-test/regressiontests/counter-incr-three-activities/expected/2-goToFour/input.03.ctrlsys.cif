@@ -3,46 +3,46 @@ uncontrollable initialize__na_result_1;
 uncontrollable initialize__na_result_2;
 controllable incr1;
 controllable incr2;
-uncontrollable __node__CallBehaviorAction__35;
-uncontrollable __node__CallBehaviorAction__36;
-uncontrollable __node__CallBehaviorAction__37;
-uncontrollable __node__CallBehaviorAction__37__na_result_1;
-uncontrollable __node__CallBehaviorAction__37__na_result_2;
-controllable __node__InitialNode__38;
-uncontrollable __node__DecisionNode__39__0;
-uncontrollable __node__DecisionNode__39__1;
-uncontrollable __node__MergeNode__40__0;
-uncontrollable __node__MergeNode__40__1;
-uncontrollable __node__ActivityFinalNode__41;
+controllable __node__InitialNode__36__0;
+uncontrollable __node__DecisionNode__37__0;
+uncontrollable __node__DecisionNode__37__1;
+uncontrollable __node__MergeNode__38__0;
+uncontrollable __node__MergeNode__38__1;
+uncontrollable __node__ActivityFinalNode__39__0;
+uncontrollable __node__CallBehaviorAction__40;
+uncontrollable __node__CallBehaviorAction__41;
+uncontrollable __node__CallBehaviorAction__42;
+uncontrollable __node__CallBehaviorAction__42__na_result_1;
+uncontrollable __node__CallBehaviorAction__42__na_result_2;
 plant automaton Context:
   disc bool init in any;
   disc int[0..5] count in any;
   disc bool __controlflow__26;
-  disc bool __controlflow__27;
   disc bool __controlflow__28;
-  disc bool __controlflow__29;
   disc bool __controlflow__30;
   disc bool __controlflow__31;
+  disc bool __controlflow__32;
   disc bool __controlflow__33;
+  disc bool __controlflow__34;
   disc bool __nonAtomicActive__initialize;
-  disc bool __nonAtomicActive____node__CallBehaviorAction__37;
+  disc bool __nonAtomicActive____node__CallBehaviorAction__42;
   alg bool pre_goToFour = not init and count = 0;
   alg bool __precondition = pre_goToFour;
   alg bool post_goToFour = count = 4;
   alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__37 = not __nonAtomicActive____node__CallBehaviorAction__37;
-  alg bool __postcondition__occurrences_goToFour_twice__47__initialize__14 = occurrences_goToFour_twice__47__initialize__14.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour_twice__47__incr1__15 = occurrences_goToFour_twice__47__incr1__15.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour_twice__47__incr2__16 = occurrences_goToFour_twice__47__incr2__16.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour_none__49__goToThree__17 = occurrences_goToFour_none__49__goToThree__17.__occurrences >= 0;
+  alg bool __postcondition__nonAtomicActive____node__CallBehaviorAction__42 = not __nonAtomicActive____node__CallBehaviorAction__42;
+  alg bool __postcondition__occurrences_goToFour_twice__48__initialize__14 = occurrences_goToFour_twice__48__initialize__14.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour_twice__48__incr1__15 = occurrences_goToFour_twice__48__incr1__15.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour_twice__48__incr2__16 = occurrences_goToFour_twice__48__incr2__16.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour_none__50__goToThree__17 = occurrences_goToFour_none__50__goToThree__17.__occurrences >= 0;
   alg bool __postcondition__controlflow__26 = not __controlflow__26;
-  alg bool __postcondition__controlflow__27 = not __controlflow__27;
   alg bool __postcondition__controlflow__28 = not __controlflow__28;
-  alg bool __postcondition__controlflow__29 = not __controlflow__29;
   alg bool __postcondition__controlflow__30 = not __controlflow__30;
   alg bool __postcondition__controlflow__31 = not __controlflow__31;
+  alg bool __postcondition__controlflow__32 = not __controlflow__32;
   alg bool __postcondition__controlflow__33 = not __controlflow__33;
-  alg bool __postcondition = post_goToFour and (__postcondition__nonAtomicActive__initialize and __postcondition__nonAtomicActive____node__CallBehaviorAction__37) and (__postcondition__occurrences_goToFour_twice__47__initialize__14 and __postcondition__occurrences_goToFour_twice__47__incr1__15 and (__postcondition__occurrences_goToFour_twice__47__incr2__16 and __postcondition__occurrences_goToFour_none__49__goToThree__17)) and (__postcondition__controlflow__26 and (__postcondition__controlflow__27 and __postcondition__controlflow__28) and (__postcondition__controlflow__29 and __postcondition__controlflow__30 and (__postcondition__controlflow__31 and __postcondition__controlflow__33)));
+  alg bool __postcondition__controlflow__34 = not __controlflow__34;
+  alg bool __postcondition = post_goToFour and (__postcondition__nonAtomicActive__initialize and __postcondition__nonAtomicActive____node__CallBehaviorAction__42) and (__postcondition__occurrences_goToFour_twice__48__initialize__14 and __postcondition__occurrences_goToFour_twice__48__incr1__15 and (__postcondition__occurrences_goToFour_twice__48__incr2__16 and __postcondition__occurrences_goToFour_none__50__goToThree__17)) and (__postcondition__controlflow__26 and (__postcondition__controlflow__28 and __postcondition__controlflow__30) and (__postcondition__controlflow__31 and __postcondition__controlflow__32 and (__postcondition__controlflow__33 and __postcondition__controlflow__34)));
   initial __precondition;
   marked __postcondition;
   location:
@@ -53,19 +53,19 @@ plant automaton Context:
     edge initialize__na_result_2 when __nonAtomicActive__initialize do init := true, count := 2, __nonAtomicActive__initialize := false;
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
-    edge __node__CallBehaviorAction__35 when init, __controlflow__33, not __controlflow__27 do count := count + 1, __controlflow__33 := false, __controlflow__27 := true;
-    edge __node__CallBehaviorAction__36 when init, __controlflow__31, not __controlflow__28 do count := count + 2, __controlflow__31 := false, __controlflow__28 := true;
-    edge __node__CallBehaviorAction__37 when not init, __controlflow__30, not __controlflow__26, not __nonAtomicActive____node__CallBehaviorAction__37 do __controlflow__30 := false, __nonAtomicActive____node__CallBehaviorAction__37 := true;
-    edge __node__CallBehaviorAction__37__na_result_1 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 1, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
-    edge __node__CallBehaviorAction__37__na_result_2 when not __controlflow__26, __nonAtomicActive____node__CallBehaviorAction__37 do init := true, count := 2, __controlflow__26 := true, __nonAtomicActive____node__CallBehaviorAction__37 := false;
-    edge __node__InitialNode__38 when true, not __controlflow__30, not init and count = 0 do __controlflow__30 := true;
-    edge __node__DecisionNode__39__0 when true, __controlflow__26, not __controlflow__31, count = 1 or (count = 3 or count = 5) do __controlflow__26 := false, __controlflow__31 := true;
-    edge __node__DecisionNode__39__1 when true, __controlflow__26, not __controlflow__33, count = 0 or (count = 2 or count = 4) do __controlflow__26 := false, __controlflow__33 := true;
-    edge __node__MergeNode__40__0 when true, __controlflow__27, not __controlflow__29 do __controlflow__27 := false, __controlflow__29 := true;
-    edge __node__MergeNode__40__1 when true, __controlflow__28, not __controlflow__29 do __controlflow__28 := false, __controlflow__29 := true;
-    edge __node__ActivityFinalNode__41 when true, __controlflow__29, count = 3 do __controlflow__29 := false;
+    edge __node__InitialNode__36__0 when true, not __controlflow__34, true, not init and count = 0 do __controlflow__34 := true;
+    edge __node__DecisionNode__37__0 when true, __controlflow__30, not __controlflow__26, count = 1 or (count = 3 or count = 5) do __controlflow__30 := false, __controlflow__26 := true;
+    edge __node__DecisionNode__37__1 when true, __controlflow__30, not __controlflow__28, count = 0 or (count = 2 or count = 4) do __controlflow__30 := false, __controlflow__28 := true;
+    edge __node__MergeNode__38__0 when true, __controlflow__31, true, not __controlflow__33 do __controlflow__31 := false, __controlflow__33 := true;
+    edge __node__MergeNode__38__1 when true, __controlflow__32, true, not __controlflow__33 do __controlflow__32 := false, __controlflow__33 := true;
+    edge __node__ActivityFinalNode__39__0 when true, __controlflow__33, true, count = 3 do __controlflow__33 := false;
+    edge __node__CallBehaviorAction__40 when init, __controlflow__28, true, not __controlflow__31 do count := count + 1, __controlflow__28 := false, __controlflow__31 := true;
+    edge __node__CallBehaviorAction__41 when init, __controlflow__26, true, not __controlflow__32 do count := count + 2, __controlflow__26 := false, __controlflow__32 := true;
+    edge __node__CallBehaviorAction__42 when not init, __controlflow__34, true, not __controlflow__30, not __nonAtomicActive____node__CallBehaviorAction__42 do __controlflow__34 := false, __nonAtomicActive____node__CallBehaviorAction__42 := true;
+    edge __node__CallBehaviorAction__42__na_result_1 when not __controlflow__30, __nonAtomicActive____node__CallBehaviorAction__42 do init := true, count := 1, __controlflow__30 := true, __nonAtomicActive____node__CallBehaviorAction__42 := false;
+    edge __node__CallBehaviorAction__42__na_result_2 when not __controlflow__30, __nonAtomicActive____node__CallBehaviorAction__42 do init := true, count := 2, __controlflow__30 := true, __nonAtomicActive____node__CallBehaviorAction__42 := false;
 end
-supervisor automaton occurrences_goToFour_twice__47__initialize__14:
+supervisor automaton occurrences_goToFour_twice__48__initialize__14:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -73,7 +73,7 @@ supervisor automaton occurrences_goToFour_twice__47__initialize__14:
     marked;
     edge initialize when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-supervisor automaton occurrences_goToFour_twice__47__incr1__15:
+supervisor automaton occurrences_goToFour_twice__48__incr1__15:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -81,7 +81,7 @@ supervisor automaton occurrences_goToFour_twice__47__incr1__15:
     marked;
     edge incr1 when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-supervisor automaton occurrences_goToFour_twice__47__incr2__16:
+supervisor automaton occurrences_goToFour_twice__48__incr2__16:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -89,21 +89,21 @@ supervisor automaton occurrences_goToFour_twice__47__incr2__16:
     marked;
     edge incr2 when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-supervisor automaton occurrences_goToFour_none__49__goToThree__17:
+supervisor automaton occurrences_goToFour_none__50__goToThree__17:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
     initial;
     marked;
-    edge __node__InitialNode__38 when __occurrences < 0 do __occurrences := __occurrences + 1;
+    edge __node__InitialNode__36__0 when __occurrences < 0 do __occurrences := __occurrences + 1;
 end
 supervisor automaton sup:
-  alphabet initialize, incr1, incr2, __node__InitialNode__38;
+  alphabet initialize, incr1, incr2, __node__InitialNode__36__0;
   location:
     initial;
     marked;
-    edge __node__InitialNode__38 when false;
-    edge incr1 when not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 2 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 1 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init))) or (not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 3 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 1 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 3 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 1 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init))));
-    edge incr2 when not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 2 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences != 2 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 1 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 1 and Context.init)));
-    edge initialize when not Context.__controlflow__29 and (not Context.__controlflow__27 and not Context.__controlflow__28) and (Context.count = 0 and not Context.__controlflow__26 and (not Context.__controlflow__30 and not Context.__controlflow__31)) and (not Context.__controlflow__33 and not Context.__nonAtomicActive____node__CallBehaviorAction__37 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__49__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__47__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__47__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__47__initialize__14.__occurrences = 0 and not Context.init)));
+    edge __node__InitialNode__36__0 when false;
+    edge incr1 when not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 2 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 1 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init))) or (not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 3 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 1 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 3 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 1 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init))));
+    edge incr2 when not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 2 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences != 2 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init))) or not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 1 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 1 and Context.init)));
+    edge initialize when not Context.__controlflow__33 and (not Context.__controlflow__31 and not Context.__controlflow__32) and (Context.count = 0 and not Context.__controlflow__26 and (not Context.__controlflow__28 and not Context.__controlflow__30)) and (not Context.__controlflow__34 and not Context.__nonAtomicActive____node__CallBehaviorAction__42 and (not Context.__nonAtomicActive__initialize and occurrences_goToFour_none__50__goToThree__17.__occurrences = 0) and (occurrences_goToFour_twice__48__incr1__15.__occurrences = 0 and occurrences_goToFour_twice__48__incr2__16.__occurrences = 0 and (occurrences_goToFour_twice__48__initialize__14.__occurrences = 0 and not Context.init)));
 end

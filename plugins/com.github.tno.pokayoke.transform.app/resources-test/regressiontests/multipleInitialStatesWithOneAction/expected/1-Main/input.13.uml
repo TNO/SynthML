@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="7" isActive="true">
+      <ownedAttribute xmi:id="3" name="field" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="6" name="action">
+        <body>not field</body>
+        <body>field := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="7" name="Main" postcondition="8" node="20 21 22 23 24 25 26 27">
+        <ownedRule xmi:id="8" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="9" name="">
+            <body>field</body>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="10" name="InitialNode__p1__to____start" target="22" source="24"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="11" name="Decision__p2__to____end/1" target="21" source="25">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="12" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="13" name="Decision__p2__to__action" target="23" source="25">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="14" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="15" name="__start__to__Decision__p2" target="25" source="22"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="16" name="__end/1__to__Merge__p3" target="26" source="21"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="17" name="__end__to__Merge__p3" target="26" source="20"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="18" name="Merge__p3__to__FinalNode__p3" target="27" source="26"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="19" name="action__to____end" target="20" source="23"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="20" name="__end" incoming="19" outgoing="17"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="21" name="__end" incoming="11" outgoing="16"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="22" name="__start" incoming="10" outgoing="15"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="23" name="action" incoming="13" outgoing="19"/>
+        <node xmi:type="uml:InitialNode" xmi:id="24" name="InitialNode__p1" outgoing="10"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="25" name="Decision__p2" incoming="15" outgoing="11 13"/>
+        <node xmi:type="uml:MergeNode" xmi:id="26" name="Merge__p3" incoming="16 17" outgoing="18"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="27" name="FinalNode__p3" incoming="18"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="28">
+      <eAnnotations xmi:id="29" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="30" guard="not field" base_RedefinableElement="6" atomic="true">
+    <effects>field := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

@@ -1,0 +1,39 @@
+controllable __node__DecisionNode__17__0;
+controllable __node__DecisionNode__17__1;
+controllable __node__MergeNode__18__0;
+controllable __node__MergeNode__18__1;
+controllable __node__CallBehaviorAction__20;
+plant automaton Context:
+  disc bool field in any;
+  disc bool __controlflow__10;
+  disc bool __controlflow__12;
+  disc bool __controlflow__13;
+  disc bool __controlflow__14;
+  disc bool __controlflow__15 = true;
+  alg bool __token_on_first_controlflow = __controlflow__15;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool postcondition = field;
+  alg bool __postcondition_without_structure = postcondition;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__10 = not __controlflow__10;
+  alg bool __postcondition_with_structure__controlflow__13 = not __controlflow__13;
+  alg bool __postcondition_with_structure__controlflow__14 = not __controlflow__14;
+  alg bool __postcondition_with_structure__controlflow__15 = not __controlflow__15;
+  alg bool __token_on_last_controlflow = __controlflow__12;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__10 and __postcondition_with_structure__controlflow__13) and (__postcondition_with_structure__controlflow__14 and (__postcondition_with_structure__controlflow__15 and __token_on_last_controlflow));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__17__0 when true, __controlflow__15, not __controlflow__10, true do __controlflow__15 := false, __controlflow__10 := true;
+    edge __node__DecisionNode__17__1 when true, __controlflow__15, not __controlflow__14 do __controlflow__15 := false, __controlflow__14 := true;
+    edge __node__MergeNode__18__0 when true, __controlflow__13, not __controlflow__12 do __controlflow__13 := false, __controlflow__12 := true;
+    edge __node__MergeNode__18__1 when true, __controlflow__14, not __controlflow__12 do __controlflow__14 := false, __controlflow__12 := true;
+    edge __node__CallBehaviorAction__20 when not field, __controlflow__10, not __controlflow__13 do field := true, __controlflow__10 := false, __controlflow__13 := true;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__17__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__17__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__18__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__18__1;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__20;

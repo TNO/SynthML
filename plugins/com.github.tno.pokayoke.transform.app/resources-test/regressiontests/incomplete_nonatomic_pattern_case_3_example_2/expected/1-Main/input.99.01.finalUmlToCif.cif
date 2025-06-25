@@ -1,7 +1,5 @@
-uncontrollable __node__CallBehaviorAction__41;
-uncontrollable __node__CallBehaviorAction__42;
 uncontrollable __node__OpaqueAction__43;
-uncontrollable __node__CallBehaviorAction__44;
+uncontrollable __node__OpaqueAction__44;
 uncontrollable __node__DecisionNode__46__0;
 uncontrollable __node__DecisionNode__46__1;
 uncontrollable __node__MergeNode__47__0;
@@ -11,7 +9,9 @@ uncontrollable __node__MergeNode__48__1;
 uncontrollable __node__JoinNode__50;
 uncontrollable __node__ForkNode__51;
 uncontrollable __node__ForkNode__52;
-uncontrollable __node__OpaqueAction__53;
+uncontrollable __node__CallBehaviorAction__53;
+uncontrollable __node__CallBehaviorAction__54;
+uncontrollable __node__CallBehaviorAction__55;
 plant automaton Context:
   disc bool done_a in any;
   disc bool done_b in any;
@@ -30,9 +30,9 @@ plant automaton Context:
   disc bool __controlflow__37;
   disc bool __controlflow__38;
   disc bool __controlflow__39;
-  disc bool __controlflow__40 = true;
+  disc bool __controlflow__41 = true;
   alg bool Pre = not done_a and not done_b and not done_c;
-  alg bool __token_on_first_controlflow = __controlflow__40;
+  alg bool __token_on_first_controlflow = __controlflow__41;
   alg bool __precondition = Pre and __token_on_first_controlflow;
   alg bool __token_on_last_controlflow = __controlflow__39;
   alg bool __postcondition = __token_on_last_controlflow;
@@ -41,18 +41,18 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__41 when not done_a, __controlflow__34, not __controlflow__32 do done_a := true, __controlflow__34 := false, __controlflow__32 := true;
-    edge __node__CallBehaviorAction__42 when not done_a, __controlflow__24, not __controlflow__37 do done_a := true, __controlflow__24 := false, __controlflow__37 := true;
-    edge __node__OpaqueAction__43 when true, __controlflow__35, not __controlflow__29 do done_b := true, __controlflow__35 := false, __controlflow__29 := true;
-    edge __node__CallBehaviorAction__44 when done_a and not done_c, __controlflow__33, not __controlflow__36 do done_c := true, __controlflow__33 := false, __controlflow__36 := true;
-    edge __node__DecisionNode__46__0 when true, __controlflow__40, not __controlflow__24, true do __controlflow__40 := false, __controlflow__24 := true;
-    edge __node__DecisionNode__46__1 when true, __controlflow__40, not __controlflow__26, true do __controlflow__40 := false, __controlflow__26 := true;
-    edge __node__MergeNode__47__0 when true, __controlflow__28, not __controlflow__30 do __controlflow__28 := false, __controlflow__30 := true;
-    edge __node__MergeNode__47__1 when true, __controlflow__29, not __controlflow__30 do __controlflow__29 := false, __controlflow__30 := true;
-    edge __node__MergeNode__48__0 when true, __controlflow__31, not __controlflow__33 do __controlflow__31 := false, __controlflow__33 := true;
-    edge __node__MergeNode__48__1 when true, __controlflow__32, not __controlflow__33 do __controlflow__32 := false, __controlflow__33 := true;
-    edge __node__JoinNode__50 when true, __controlflow__30, __controlflow__36, not __controlflow__39 do __controlflow__30 := false, __controlflow__36 := false, __controlflow__39 := true;
-    edge __node__ForkNode__51 when true, __controlflow__37, not __controlflow__28, not __controlflow__31 do __controlflow__37 := false, __controlflow__28 := true, __controlflow__31 := true;
-    edge __node__ForkNode__52 when true, __controlflow__38, not __controlflow__34, not __controlflow__35 do __controlflow__38 := false, __controlflow__34 := true, __controlflow__35 := true;
-    edge __node__OpaqueAction__53 when not done_a and not done_b, __controlflow__26, not __controlflow__38 do __controlflow__26 := false, __controlflow__38 := true;
+    edge __node__OpaqueAction__43 when not done_a and not done_b, __controlflow__26, true, not __controlflow__38 do __controlflow__26 := false, __controlflow__38 := true;
+    edge __node__OpaqueAction__44 when true, __controlflow__35, true, not __controlflow__29 do done_b := true, __controlflow__35 := false, __controlflow__29 := true;
+    edge __node__DecisionNode__46__0 when true, __controlflow__41, not __controlflow__24, true do __controlflow__41 := false, __controlflow__24 := true;
+    edge __node__DecisionNode__46__1 when true, __controlflow__41, not __controlflow__26, true do __controlflow__41 := false, __controlflow__26 := true;
+    edge __node__MergeNode__47__0 when true, __controlflow__28, true, not __controlflow__30 do __controlflow__28 := false, __controlflow__30 := true;
+    edge __node__MergeNode__47__1 when true, __controlflow__29, true, not __controlflow__30 do __controlflow__29 := false, __controlflow__30 := true;
+    edge __node__MergeNode__48__0 when true, __controlflow__31, true, not __controlflow__33 do __controlflow__31 := false, __controlflow__33 := true;
+    edge __node__MergeNode__48__1 when true, __controlflow__32, true, not __controlflow__33 do __controlflow__32 := false, __controlflow__33 := true;
+    edge __node__JoinNode__50 when true, __controlflow__30, __controlflow__36, not __controlflow__39, true do __controlflow__30 := false, __controlflow__36 := false, __controlflow__39 := true;
+    edge __node__ForkNode__51 when true, __controlflow__37, true, not __controlflow__28, not __controlflow__31 do __controlflow__37 := false, __controlflow__28 := true, __controlflow__31 := true;
+    edge __node__ForkNode__52 when true, __controlflow__38, true, not __controlflow__34, not __controlflow__35 do __controlflow__38 := false, __controlflow__34 := true, __controlflow__35 := true;
+    edge __node__CallBehaviorAction__53 when not done_a, __controlflow__34, true, not __controlflow__32 do done_a := true, __controlflow__34 := false, __controlflow__32 := true;
+    edge __node__CallBehaviorAction__54 when not done_a, __controlflow__24, true, not __controlflow__37 do done_a := true, __controlflow__24 := false, __controlflow__37 := true;
+    edge __node__CallBehaviorAction__55 when done_a and not done_c, __controlflow__33, true, not __controlflow__36 do done_c := true, __controlflow__33 := false, __controlflow__36 := true;
 end

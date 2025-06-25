@@ -1,5 +1,5 @@
-controllable __node__InitialNode__34;
-uncontrollable __node__ActivityFinalNode__35;
+controllable __node__InitialNode__34__0;
+uncontrollable __node__ActivityFinalNode__35__0;
 uncontrollable __node__OpaqueAction__36;
 uncontrollable __node__OpaqueAction__37;
 uncontrollable __node__OpaqueAction__37__result_1;
@@ -11,7 +11,7 @@ uncontrollable __node__DecisionNode__39__1;
 controllable __start;
 controllable __end;
 automaton statespace:
-  alphabet __node__InitialNode__34, __node__ActivityFinalNode__35, __node__OpaqueAction__36, __node__OpaqueAction__37, __node__OpaqueAction__37__result_1, __node__OpaqueAction__37__result_2, __node__MergeNode__38__0, __node__MergeNode__38__1, __node__DecisionNode__39__0, __node__DecisionNode__39__1, __start, __end;
+  alphabet __node__InitialNode__34__0, __node__ActivityFinalNode__35__0, __node__OpaqueAction__36, __node__OpaqueAction__37, __node__OpaqueAction__37__result_1, __node__OpaqueAction__37__result_2, __node__MergeNode__38__0, __node__MergeNode__38__1, __node__DecisionNode__39__0, __node__DecisionNode__39__1, __start, __end;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = false, Class1.init = false, Class1.val = false, sup = "*")
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = false, Class1.init = false, Class1.val = true, sup = "*")
   location __init:
@@ -20,10 +20,10 @@ automaton statespace:
     edge __start goto loc2;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = false, Class1.init = false, Class1.val = false, sup = "*")
   location loc1:
-    edge __node__InitialNode__34 goto loc3;
+    edge __node__InitialNode__34__0 goto loc3;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = false, Class1.init = false, Class1.val = true, sup = "*")
   location loc2:
-    edge __node__InitialNode__34 goto loc4;
+    edge __node__InitialNode__34__0 goto loc4;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = true, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = false, Class1.init = false, Class1.val = false, sup = "*")
   location loc3:
     edge __node__OpaqueAction__37 goto loc5;
@@ -52,7 +52,7 @@ automaton statespace:
     edge __node__OpaqueAction__36 goto loc12;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = true, Class1.__controlflow__31 = false, Class1.init = true, Class1.val = true, sup = "*")
   location loc11:
-    edge __node__ActivityFinalNode__35 goto loc13;
+    edge __node__ActivityFinalNode__35__0 goto loc13;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__16 = false, Class1.__controlflow__19 = false, Class1.__controlflow__22 = false, Class1.__controlflow__25 = false, Class1.__controlflow__28 = false, Class1.__controlflow__31 = true, Class1.init = true, Class1.val = true, sup = "*")
   location loc12:
     edge __node__MergeNode__38__1 goto loc11;
