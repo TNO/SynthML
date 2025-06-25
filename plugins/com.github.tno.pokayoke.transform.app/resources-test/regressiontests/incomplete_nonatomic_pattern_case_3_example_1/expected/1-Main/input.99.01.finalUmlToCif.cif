@@ -1,8 +1,8 @@
-uncontrollable __node__CallBehaviorAction__28;
-uncontrollable __node__OpaqueAction__29;
-uncontrollable __node__JoinNode__32;
-uncontrollable __node__ForkNode__33;
-uncontrollable __node__OpaqueAction__34;
+uncontrollable __node__OpaqueAction__30;
+uncontrollable __node__OpaqueAction__31;
+uncontrollable __node__JoinNode__34;
+uncontrollable __node__ForkNode__35;
+uncontrollable __node__CallBehaviorAction__36;
 plant automaton Context:
   disc bool done_a in any;
   disc bool done_b in any;
@@ -12,9 +12,9 @@ plant automaton Context:
   disc bool __controlflow__24;
   disc bool __controlflow__25;
   disc bool __controlflow__26;
-  disc bool __controlflow__27 = true;
+  disc bool __controlflow__28 = true;
   alg bool Pre = not done_a and not done_b;
-  alg bool __token_on_first_controlflow = __controlflow__27;
+  alg bool __token_on_first_controlflow = __controlflow__28;
   alg bool __precondition = Pre and __token_on_first_controlflow;
   alg bool __token_on_last_controlflow = __controlflow__26;
   alg bool __postcondition = __token_on_last_controlflow;
@@ -23,9 +23,9 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__28 when not done_a, __controlflow__21, not __controlflow__23 do done_a := true, __controlflow__21 := false, __controlflow__23 := true;
-    edge __node__OpaqueAction__29 when true, __controlflow__22, not __controlflow__24 do done_b := true, __controlflow__22 := false, __controlflow__24 := true;
-    edge __node__JoinNode__32 when true, __controlflow__23, __controlflow__24, not __controlflow__26 do __controlflow__23 := false, __controlflow__24 := false, __controlflow__26 := true;
-    edge __node__ForkNode__33 when true, __controlflow__25, not __controlflow__21, not __controlflow__22 do __controlflow__25 := false, __controlflow__21 := true, __controlflow__22 := true;
-    edge __node__OpaqueAction__34 when not done_a and not done_b, __controlflow__27, not __controlflow__25 do __controlflow__27 := false, __controlflow__25 := true;
+    edge __node__OpaqueAction__30 when not done_a and not done_b, __controlflow__28, true, not __controlflow__25 do __controlflow__28 := false, __controlflow__25 := true;
+    edge __node__OpaqueAction__31 when true, __controlflow__22, true, not __controlflow__24 do done_b := true, __controlflow__22 := false, __controlflow__24 := true;
+    edge __node__JoinNode__34 when true, __controlflow__23, __controlflow__24, not __controlflow__26, true do __controlflow__23 := false, __controlflow__24 := false, __controlflow__26 := true;
+    edge __node__ForkNode__35 when true, __controlflow__25, true, not __controlflow__21, not __controlflow__22 do __controlflow__25 := false, __controlflow__21 := true, __controlflow__22 := true;
+    edge __node__CallBehaviorAction__36 when not done_a, __controlflow__21, true, not __controlflow__23 do done_a := true, __controlflow__21 := false, __controlflow__23 := true;
 end

@@ -1,9 +1,9 @@
-uncontrollable __node__CallBehaviorAction__22;
-uncontrollable __node__CallBehaviorAction__23;
-uncontrollable __node__DecisionNode__25__0;
-uncontrollable __node__DecisionNode__25__1;
-uncontrollable __node__MergeNode__26__0;
-uncontrollable __node__MergeNode__26__1;
+uncontrollable __node__DecisionNode__24__0;
+uncontrollable __node__DecisionNode__24__1;
+uncontrollable __node__MergeNode__25__0;
+uncontrollable __node__MergeNode__25__1;
+uncontrollable __node__CallBehaviorAction__27;
+uncontrollable __node__CallBehaviorAction__28;
 plant automaton Context:
   disc bool field1 in any;
   disc bool field2 = false;
@@ -22,10 +22,10 @@ plant automaton Context:
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__22 when not field1, __controlflow__14, not __controlflow__18 do field2 := true, __controlflow__14 := false, __controlflow__18 := true;
-    edge __node__CallBehaviorAction__23 when field1, __controlflow__16, not __controlflow__19 do field2 := true, __controlflow__16 := false, __controlflow__19 := true;
-    edge __node__DecisionNode__25__0 when true, __controlflow__21, not __controlflow__14, true do __controlflow__21 := false, __controlflow__14 := true;
-    edge __node__DecisionNode__25__1 when true, __controlflow__21, not __controlflow__16, true do __controlflow__21 := false, __controlflow__16 := true;
-    edge __node__MergeNode__26__0 when true, __controlflow__18, not __controlflow__20 do __controlflow__18 := false, __controlflow__20 := true;
-    edge __node__MergeNode__26__1 when true, __controlflow__19, not __controlflow__20 do __controlflow__19 := false, __controlflow__20 := true;
+    edge __node__DecisionNode__24__0 when true, __controlflow__21, not __controlflow__14, not field1 do __controlflow__21 := false, __controlflow__14 := true;
+    edge __node__DecisionNode__24__1 when true, __controlflow__21, not __controlflow__16, field1 do __controlflow__21 := false, __controlflow__16 := true;
+    edge __node__MergeNode__25__0 when true, __controlflow__18, true, not __controlflow__20 do __controlflow__18 := false, __controlflow__20 := true;
+    edge __node__MergeNode__25__1 when true, __controlflow__19, true, not __controlflow__20 do __controlflow__19 := false, __controlflow__20 := true;
+    edge __node__CallBehaviorAction__27 when not field1, __controlflow__14, true, not __controlflow__18 do field2 := true, __controlflow__14 := false, __controlflow__18 := true;
+    edge __node__CallBehaviorAction__28 when field1, __controlflow__16, true, not __controlflow__19 do field2 := true, __controlflow__16 := false, __controlflow__19 := true;
 end

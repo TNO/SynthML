@@ -1,0 +1,1 @@
+ERROR: End of non-atomic action name does not contain the non-atomic outcome suffix.

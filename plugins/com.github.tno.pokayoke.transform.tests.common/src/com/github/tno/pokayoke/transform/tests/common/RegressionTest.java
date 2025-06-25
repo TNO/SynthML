@@ -52,7 +52,7 @@ public abstract class RegressionTest {
      * @throws Exception Thrown when one of operations fails.
      */
     public void regressionTest(Path inputPath, Path expectedPath, Path outputPath, String message) throws Exception {
-        setUpTest(inputPath);
+        setUpTest(inputPath, outputPath);
         actTest(inputPath, outputPath);
         verifyTest(expectedPath, outputPath, message);
         tearDownTest(outputPath);
@@ -62,9 +62,17 @@ public abstract class RegressionTest {
      * Set up test.
      *
      * @param inputPath Path to the input file.
+     * @param outputPath Path for the actual output folder.
+     * @throws Exception Thrown when one of operations fails.
      */
-    private void setUpTest(Path inputPath) {
+    private void setUpTest(Path inputPath, Path outputPath) throws Exception {
+        // Make sure the input exists.
         PathAssertions.assertFileExists(inputPath, "Input for regression test must exist.");
+
+        // Cleanup the output, in case it already exists, for instance due to a previous run.
+        if (Files.isDirectory(outputPath)) {
+            FileUtils.deleteDirectory(outputPath.toFile());
+        }
     }
 
     /**

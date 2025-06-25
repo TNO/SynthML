@@ -1,0 +1,23 @@
+enum Number = First, Second, Third;
+controllable __node__CallBehaviorAction__16;
+plant automaton Class:
+  disc Number element in any;
+  disc bool __controlflow__12;
+  disc bool __controlflow__13 = true;
+  alg bool Pre = element = First;
+  alg bool __token_on_first_controlflow = __controlflow__13;
+  alg bool __precondition = Pre and __token_on_first_controlflow;
+  alg bool Post = element = Second;
+  alg bool __postcondition_without_structure = Post;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__13 = not __controlflow__13;
+  alg bool __token_on_last_controlflow = __controlflow__12;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__13 and __token_on_last_controlflow);
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__16 when element != Third, __controlflow__13, not __controlflow__12 do element := Second, __controlflow__13 := false, __controlflow__12 := true;
+end
+requirement invariant Class.__postcondition_without_structure disables __node__CallBehaviorAction__16;

@@ -1,5 +1,5 @@
 enum Number = First, Second, Third;
-uncontrollable __node__CallBehaviorAction__14;
+uncontrollable __node__CallBehaviorAction__17;
 plant automaton Class:
   disc Number element in any;
   disc bool __controlflow__12;
@@ -14,5 +14,5 @@ plant automaton Class:
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__14 when element != Third, __controlflow__13, not __controlflow__12 do element := Second, __controlflow__13 := false, __controlflow__12 := true;
+    edge __node__CallBehaviorAction__17 when element != Third, __controlflow__13, true, not __controlflow__12 do element := Second, __controlflow__13 := false, __controlflow__12 := true;
 end

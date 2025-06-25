@@ -255,10 +255,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
             InvKind cifInvKind = translateInvKind(invKind.get());
 
             for (String event: events) {
+                boolean found = false;
                 for (var entry: startEventMap.entrySet()) {
                     RedefinableElement umlElement = entry.getValue();
 
-                    if (umlElement.getName().equals(event)) {
+                    if (umlElement.getName() != null && umlElement.getName().equals(event)) {
                         Event cifEvent = entry.getKey();
 
                         Invariant cifInvariant = CifConstructors.newInvariant();
@@ -271,9 +272,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
                                 CifConstructors.newBoolType());
                         cifInvariant.setEvent(cifEventExpr);
 
+                        found = true;
                         break;
                     }
                 }
+                Verify.verify(found, "Could not find a UML element that matches the event: " + event);
             }
         }
 

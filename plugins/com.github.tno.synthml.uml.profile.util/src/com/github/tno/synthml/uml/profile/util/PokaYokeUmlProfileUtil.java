@@ -284,23 +284,26 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Applies the Poka Yoke UML Profile and sets the {@link FormalControlFlow#getOutgoingGuard()} property for
-     * {@code controlFlow}.
+     * {@code edge}.
      * <p>
      * The {@link FormalControlFlow} stereotype is removed if {@code newValue} is {@code null} or
      * {@link String#isEmpty() empty}.
      * </p>
      *
-     * @param controlFlow The control flow to set the outgoing guard on.
+     * @param edge The activity edge to set the outgoing guard on.
      * @param newGuard The new outgoing guard.
      */
-    public static void setOutgoingGuard(ControlFlow controlFlow, String newGuard) {
+    public static void setOutgoingGuard(ActivityEdge edge, String newGuard) {
+        if (!(edge instanceof ControlFlow)) {
+            throw new RuntimeException("Activity edges must be of type control flow.");
+        }
+
         if (Strings.isNullOrEmpty(newGuard)) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(controlFlow, FORMAL_CONTROL_FLOW_STEREOTYPE);
+            PokaYokeUmlProfileUtil.unapplyStereotype(edge, FORMAL_CONTROL_FLOW_STEREOTYPE);
             return;
         }
-        Stereotype st = applyStereotype(controlFlow,
-                getPokaYokeProfile(controlFlow).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
-        controlFlow.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newGuard);
+        Stereotype st = applyStereotype(edge, getPokaYokeProfile(edge).getOwnedStereotype(ST_FORMAL_CONTROL_FLOW));
+        edge.setValue(st, PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD, newGuard);
     }
 
     /**

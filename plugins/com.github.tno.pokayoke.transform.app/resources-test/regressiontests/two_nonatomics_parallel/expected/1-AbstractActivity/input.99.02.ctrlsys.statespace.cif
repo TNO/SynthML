@@ -1,55 +1,223 @@
-uncontrollable __node__CallBehaviorAction__27;
-uncontrollable __node__CallBehaviorAction__27__na_result_1;
-uncontrollable __node__CallBehaviorAction__27__na_result_2;
-uncontrollable __node__CallBehaviorAction__28;
-uncontrollable __node__CallBehaviorAction__28__na_result_1;
-uncontrollable __node__CallBehaviorAction__28__na_result_2;
-uncontrollable __node__JoinNode__31;
-uncontrollable __node__ForkNode__32;
+uncontrollable __node__OpaqueAction__43;
+uncontrollable __node__OpaqueAction__44;
+uncontrollable __node__OpaqueAction__45;
+uncontrollable __node__OpaqueAction__46;
+uncontrollable __node__OpaqueAction__47;
+uncontrollable __node__OpaqueAction__48;
+uncontrollable __node__DecisionNode__50__0;
+uncontrollable __node__DecisionNode__50__1;
+uncontrollable __node__DecisionNode__51__0;
+uncontrollable __node__DecisionNode__51__1;
+uncontrollable __node__MergeNode__52__0;
+uncontrollable __node__MergeNode__52__1;
+uncontrollable __node__MergeNode__53__0;
+uncontrollable __node__MergeNode__53__1;
+uncontrollable __node__JoinNode__55;
+uncontrollable __node__ForkNode__56;
 automaton statespace:
-  alphabet __node__CallBehaviorAction__27, __node__CallBehaviorAction__27__na_result_1, __node__CallBehaviorAction__27__na_result_2, __node__CallBehaviorAction__28, __node__CallBehaviorAction__28__na_result_1, __node__CallBehaviorAction__28__na_result_2, __node__JoinNode__31, __node__ForkNode__32;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = false, Machine.b_executed = false)
+  alphabet __node__OpaqueAction__43, __node__OpaqueAction__44, __node__OpaqueAction__45, __node__OpaqueAction__46, __node__OpaqueAction__47, __node__OpaqueAction__48, __node__DecisionNode__50__0, __node__DecisionNode__50__1, __node__DecisionNode__51__0, __node__DecisionNode__51__1, __node__MergeNode__52__0, __node__MergeNode__52__1, __node__MergeNode__53__0, __node__MergeNode__53__1, __node__JoinNode__55, __node__ForkNode__56;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = true, Machine.a_executed = false, Machine.b_executed = false)
   location loc1:
     initial;
-    edge __node__ForkNode__32 goto loc2;
-  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = false, Machine.b_executed = false)
+    edge __node__ForkNode__56 goto loc2;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc2:
-    edge __node__CallBehaviorAction__27 goto loc3;
-    edge __node__CallBehaviorAction__28 goto loc4;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = false, Machine.b_executed = false)
+    edge __node__OpaqueAction__43 goto loc3;
+    edge __node__OpaqueAction__46 goto loc4;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc3:
-    edge __node__CallBehaviorAction__27__na_result_1 goto loc5;
-    edge __node__CallBehaviorAction__27__na_result_2 goto loc5;
-    edge __node__CallBehaviorAction__28 goto loc6;
-  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = true, Machine.a_executed = false, Machine.b_executed = false)
+    edge __node__OpaqueAction__46 goto loc5;
+    edge __node__DecisionNode__50__0 goto loc6;
+    edge __node__DecisionNode__50__1 goto loc7;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc4:
-    edge __node__CallBehaviorAction__27 goto loc6;
-    edge __node__CallBehaviorAction__28__na_result_1 goto loc7;
-    edge __node__CallBehaviorAction__28__na_result_2 goto loc7;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = true, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = true, Machine.b_executed = false)
+    edge __node__OpaqueAction__43 goto loc5;
+    edge __node__DecisionNode__51__0 goto loc8;
+    edge __node__DecisionNode__51__1 goto loc9;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc5:
-    edge __node__CallBehaviorAction__28 goto loc8;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = true, Machine.a_executed = false, Machine.b_executed = false)
+    edge __node__DecisionNode__50__0 goto loc10;
+    edge __node__DecisionNode__50__1 goto loc11;
+    edge __node__DecisionNode__51__0 goto loc12;
+    edge __node__DecisionNode__51__1 goto loc13;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc6:
-    edge __node__CallBehaviorAction__27__na_result_1 goto loc8;
-    edge __node__CallBehaviorAction__27__na_result_2 goto loc8;
-    edge __node__CallBehaviorAction__28__na_result_1 goto loc9;
-    edge __node__CallBehaviorAction__28__na_result_2 goto loc9;
-  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = true, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = false, Machine.b_executed = true)
+    edge __node__OpaqueAction__44 goto loc14;
+    edge __node__OpaqueAction__46 goto loc10;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc7:
-    edge __node__CallBehaviorAction__27 goto loc9;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__24 = false, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = true, Machine.a_executed = true, Machine.b_executed = false)
+    edge __node__OpaqueAction__45 goto loc15;
+    edge __node__OpaqueAction__46 goto loc11;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc8:
-    edge __node__CallBehaviorAction__28__na_result_1 goto loc10;
-    edge __node__CallBehaviorAction__28__na_result_2 goto loc10;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = true, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = false, Machine.b_executed = true)
+    edge __node__OpaqueAction__43 goto loc12;
+    edge __node__OpaqueAction__47 goto loc16;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc9:
-    edge __node__CallBehaviorAction__27__na_result_1 goto loc10;
-    edge __node__CallBehaviorAction__27__na_result_2 goto loc10;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__24 = true, Machine.__controlflow__25 = false, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = true, Machine.b_executed = true)
+    edge __node__OpaqueAction__43 goto loc13;
+    edge __node__OpaqueAction__48 goto loc17;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc10:
-    edge __node__JoinNode__31 goto loc11;
-  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__24 = false, Machine.__controlflow__25 = true, Machine.__controlflow__26 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__27 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__28 = false, Machine.a_executed = true, Machine.b_executed = true)
+    edge __node__OpaqueAction__44 goto loc18;
+    edge __node__DecisionNode__51__0 goto loc19;
+    edge __node__DecisionNode__51__1 goto loc20;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc11:
+    edge __node__OpaqueAction__45 goto loc21;
+    edge __node__DecisionNode__51__0 goto loc22;
+    edge __node__DecisionNode__51__1 goto loc23;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc12:
+    edge __node__OpaqueAction__47 goto loc24;
+    edge __node__DecisionNode__50__0 goto loc19;
+    edge __node__DecisionNode__50__1 goto loc22;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc13:
+    edge __node__OpaqueAction__48 goto loc25;
+    edge __node__DecisionNode__50__0 goto loc20;
+    edge __node__DecisionNode__50__1 goto loc23;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc14:
+    edge __node__OpaqueAction__46 goto loc18;
+    edge __node__MergeNode__52__0 goto loc26;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc15:
+    edge __node__OpaqueAction__46 goto loc21;
+    edge __node__MergeNode__52__1 goto loc26;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc16:
+    edge __node__OpaqueAction__43 goto loc24;
+    edge __node__MergeNode__53__0 goto loc27;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc17:
+    edge __node__OpaqueAction__43 goto loc25;
+    edge __node__MergeNode__53__1 goto loc27;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc18:
+    edge __node__DecisionNode__51__0 goto loc28;
+    edge __node__DecisionNode__51__1 goto loc29;
+    edge __node__MergeNode__52__0 goto loc30;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc19:
+    edge __node__OpaqueAction__44 goto loc28;
+    edge __node__OpaqueAction__47 goto loc31;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc20:
+    edge __node__OpaqueAction__44 goto loc29;
+    edge __node__OpaqueAction__48 goto loc32;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc21:
+    edge __node__DecisionNode__51__0 goto loc33;
+    edge __node__DecisionNode__51__1 goto loc34;
+    edge __node__MergeNode__52__1 goto loc30;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc22:
+    edge __node__OpaqueAction__45 goto loc33;
+    edge __node__OpaqueAction__47 goto loc35;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = false)
+  location loc23:
+    edge __node__OpaqueAction__45 goto loc34;
+    edge __node__OpaqueAction__48 goto loc36;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc24:
+    edge __node__DecisionNode__50__0 goto loc31;
+    edge __node__DecisionNode__50__1 goto loc35;
+    edge __node__MergeNode__53__0 goto loc37;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc25:
+    edge __node__DecisionNode__50__0 goto loc32;
+    edge __node__DecisionNode__50__1 goto loc36;
+    edge __node__MergeNode__53__1 goto loc37;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = true, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc26:
+    edge __node__OpaqueAction__46 goto loc30;
+  @state(Machine = "*", Machine.__controlflow__21 = true, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc27:
+    edge __node__OpaqueAction__43 goto loc37;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc28:
+    edge __node__OpaqueAction__47 goto loc38;
+    edge __node__MergeNode__52__0 goto loc39;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc29:
+    edge __node__OpaqueAction__48 goto loc40;
+    edge __node__MergeNode__52__0 goto loc41;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = true, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc30:
+    edge __node__DecisionNode__51__0 goto loc39;
+    edge __node__DecisionNode__51__1 goto loc41;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc31:
+    edge __node__OpaqueAction__44 goto loc38;
+    edge __node__MergeNode__53__0 goto loc42;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc32:
+    edge __node__OpaqueAction__44 goto loc40;
+    edge __node__MergeNode__53__1 goto loc42;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc33:
+    edge __node__OpaqueAction__47 goto loc43;
+    edge __node__MergeNode__52__1 goto loc39;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc34:
+    edge __node__OpaqueAction__48 goto loc44;
+    edge __node__MergeNode__52__1 goto loc41;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc35:
+    edge __node__OpaqueAction__45 goto loc43;
+    edge __node__MergeNode__53__0 goto loc45;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc36:
+    edge __node__OpaqueAction__45 goto loc44;
+    edge __node__MergeNode__53__1 goto loc45;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = true, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc37:
+    edge __node__DecisionNode__50__0 goto loc42;
+    edge __node__DecisionNode__50__1 goto loc45;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc38:
+    edge __node__MergeNode__52__0 goto loc46;
+    edge __node__MergeNode__53__0 goto loc47;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = true, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc39:
+    edge __node__OpaqueAction__47 goto loc46;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc40:
+    edge __node__MergeNode__52__0 goto loc48;
+    edge __node__MergeNode__53__1 goto loc47;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = true, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = false)
+  location loc41:
+    edge __node__OpaqueAction__48 goto loc48;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = true, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc42:
+    edge __node__OpaqueAction__44 goto loc47;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc43:
+    edge __node__MergeNode__52__1 goto loc46;
+    edge __node__MergeNode__53__0 goto loc49;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc44:
+    edge __node__MergeNode__52__1 goto loc48;
+    edge __node__MergeNode__53__1 goto loc49;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = true, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = false, Machine.b_executed = true)
+  location loc45:
+    edge __node__OpaqueAction__45 goto loc49;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = true, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc46:
+    edge __node__MergeNode__53__0 goto loc50;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = true, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc47:
+    edge __node__MergeNode__52__0 goto loc50;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = true, Machine.__controlflow__38 = false, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc48:
+    edge __node__MergeNode__53__1 goto loc50;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = true, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc49:
+    edge __node__MergeNode__52__1 goto loc50;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = true, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = true, Machine.__controlflow__39 = false, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc50:
+    edge __node__JoinNode__55 goto loc51;
+  @state(Machine = "*", Machine.__controlflow__21 = false, Machine.__controlflow__22 = false, Machine.__controlflow__23 = false, Machine.__controlflow__25 = false, Machine.__controlflow__27 = false, Machine.__controlflow__28 = false, Machine.__controlflow__30 = false, Machine.__controlflow__32 = false, Machine.__controlflow__33 = false, Machine.__controlflow__34 = false, Machine.__controlflow__35 = false, Machine.__controlflow__36 = false, Machine.__controlflow__37 = false, Machine.__controlflow__38 = false, Machine.__controlflow__39 = true, Machine.__controlflow__41 = false, Machine.a_executed = true, Machine.b_executed = true)
+  location loc51:
     marked;
 end

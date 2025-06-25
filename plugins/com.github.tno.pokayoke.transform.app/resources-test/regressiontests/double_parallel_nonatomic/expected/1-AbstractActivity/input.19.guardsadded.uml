@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Machine" visibility="public" classifierBehavior="15" isActive="true">
+      <ownedAttribute xmi:id="3" name="a_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="6" name="b_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="9" name="c_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="12" name="d_executed" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="13" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="15" name="AbstractActivity" postcondition="21" precondition="19" node="69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92">
+        <nameExpression xmi:id="16" name="StringExpression1">
+          <operand xmi:type="uml:LiteralInteger" xmi:id="17" name="LiteralInteger1" value="1"/>
+          <operand xmi:type="uml:LiteralInteger" xmi:id="18" name="LiteralInteger0"/>
+        </nameExpression>
+        <ownedRule xmi:id="19" name="Precondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="20" name="" visibility="public">
+            <body>not a_executed and not b_executed and not c_executed and not d_executed</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="21" name="Postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="22" name="">
+            <body>a_executed = true and b_executed = true and c_executed = true and d_executed = true</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="23" name="IntervalConstraintA" constrainedElement="93">
+          <specification xmi:type="uml:Interval" xmi:id="24" name="IntervalA" max="17" min="18"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="25" name="IntervalConstraintB" constrainedElement="94">
+          <specification xmi:type="uml:Interval" xmi:id="26" name="IntervalB" max="17" min="18"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="27" name="IntervalConstraintC" constrainedElement="95">
+          <specification xmi:type="uml:Interval" xmi:id="28" name="IntervalC" max="17" min="18"/>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="29" name="IntervalConstraintD" constrainedElement="96">
+          <specification xmi:type="uml:Interval" xmi:id="30" name="IntervalD" max="17" min="18"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" target="82" source="73"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="82" source="74"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" target="91" source="82"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="83" source="79"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" target="83" source="80"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" target="91" source="83"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" target="69" source="92"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="75" source="92"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="70" source="85">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="40">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="71" source="85">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="42">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="85" source="69"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="76" source="86">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="45">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" target="77" source="86">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="47">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="48" target="86" source="75"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="49" target="87" source="70"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="50" target="87" source="71"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="51" target="72" source="87"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="52" target="88" source="76"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="53" target="88" source="77"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="54" target="78" source="88"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="55" target="73" source="89">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="56">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="57" target="74" source="89">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="58">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="59" target="89" source="72"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="60" target="79" source="90">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="61">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="62" target="80" source="90">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="63">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="64" target="90" source="78"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="65" target="84" source="91">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="66">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="67" target="92" source="81">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="68">
+            <language>CIF</language>
+            <body>true</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:OpaqueAction" xmi:id="69" name="NonAtomicA_start" incoming="37" outgoing="43"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="70" name="NonAtomicA_end1" incoming="39" outgoing="49"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="71" name="NonAtomicA_end2" incoming="41" outgoing="50"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="72" name="NonAtomicB_start" incoming="51" outgoing="59"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="73" name="NonAtomicB_end1" incoming="55" outgoing="31"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="74" name="NonAtomicB_end2" incoming="57" outgoing="32"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="75" name="NonAtomicC_start" incoming="38" outgoing="48"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="76" name="NonAtomicC_end1" incoming="44" outgoing="52"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="77" name="NonAtomicC_end2" incoming="46" outgoing="53"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="78" name="NonAtomicD_start" incoming="54" outgoing="64"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="79" name="NonAtomicD_end1" incoming="60" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="80" name="NonAtomicD_end2" incoming="62" outgoing="35"/>
+        <node xmi:type="uml:InitialNode" xmi:id="81" outgoing="67"/>
+        <node xmi:type="uml:MergeNode" xmi:id="82" incoming="31 32" outgoing="33"/>
+        <node xmi:type="uml:MergeNode" xmi:id="83" incoming="34 35" outgoing="36"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="84" incoming="65"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="85" incoming="43" outgoing="39 41"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="86" incoming="48" outgoing="44 46"/>
+        <node xmi:type="uml:MergeNode" xmi:id="87" incoming="49 50" outgoing="51"/>
+        <node xmi:type="uml:MergeNode" xmi:id="88" incoming="52 53" outgoing="54"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="89" incoming="59" outgoing="55 57"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="90" incoming="64" outgoing="60 62"/>
+        <node xmi:type="uml:JoinNode" xmi:id="91" incoming="33 36" outgoing="65"/>
+        <node xmi:type="uml:ForkNode" xmi:id="92" incoming="67" outgoing="37 38"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="93" name="NonAtomicA"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="94" name="NonAtomicB"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="95" name="NonAtomicC"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="96" name="NonAtomicD"/>
+    </packagedElement>
+    <profileApplication xmi:id="97">
+      <eAnnotations xmi:id="98" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalControlFlow xmi:id="99" outgoingGuard="true" base_ControlFlow="31"/>
+  <SynthML:FormalControlFlow xmi:id="100" outgoingGuard="true" base_ControlFlow="32"/>
+  <SynthML:FormalControlFlow xmi:id="101" outgoingGuard="true" base_ControlFlow="34"/>
+  <SynthML:FormalControlFlow xmi:id="102" outgoingGuard="true" base_ControlFlow="35"/>
+  <SynthML:FormalControlFlow xmi:id="103" outgoingGuard="true" base_ControlFlow="37"/>
+  <SynthML:FormalControlFlow xmi:id="104" outgoingGuard="true" base_ControlFlow="38"/>
+  <SynthML:FormalControlFlow xmi:id="105" outgoingGuard="true" base_ControlFlow="39"/>
+  <SynthML:FormalControlFlow xmi:id="106" outgoingGuard="true" base_ControlFlow="41"/>
+  <SynthML:FormalControlFlow xmi:id="107" outgoingGuard="true" base_ControlFlow="44"/>
+  <SynthML:FormalControlFlow xmi:id="108" outgoingGuard="true" base_ControlFlow="46"/>
+  <SynthML:FormalControlFlow xmi:id="109" outgoingGuard="true" base_ControlFlow="49"/>
+  <SynthML:FormalControlFlow xmi:id="110" outgoingGuard="true" base_ControlFlow="50"/>
+  <SynthML:FormalControlFlow xmi:id="111" outgoingGuard="true" base_ControlFlow="51"/>
+  <SynthML:FormalControlFlow xmi:id="112" outgoingGuard="true" base_ControlFlow="52"/>
+  <SynthML:FormalControlFlow xmi:id="113" outgoingGuard="true" base_ControlFlow="53"/>
+  <SynthML:FormalControlFlow xmi:id="114" outgoingGuard="true" base_ControlFlow="54"/>
+  <SynthML:FormalControlFlow xmi:id="115" outgoingGuard="true" base_ControlFlow="55"/>
+  <SynthML:FormalControlFlow xmi:id="116" outgoingGuard="true" base_ControlFlow="57"/>
+  <SynthML:FormalControlFlow xmi:id="117" outgoingGuard="true" base_ControlFlow="60"/>
+  <SynthML:FormalControlFlow xmi:id="118" outgoingGuard="true" base_ControlFlow="62"/>
+  <SynthML:FormalControlFlow xmi:id="119" outgoingGuard="true" base_ControlFlow="65"/>
+  <SynthML:FormalControlFlow xmi:id="120" outgoingGuard="true" base_ControlFlow="67"/>
+  <SynthML:FormalElement xmi:id="121" guard="true" base_RedefinableElement="69" atomic="true"/>
+  <SynthML:FormalElement xmi:id="122" guard="true" base_RedefinableElement="70" atomic="true">
+    <effects>a_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="123" guard="true" base_RedefinableElement="71" atomic="true">
+    <effects>a_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="124" guard="a_executed = true" base_RedefinableElement="72" atomic="true"/>
+  <SynthML:FormalElement xmi:id="125" guard="true" base_RedefinableElement="73" atomic="true">
+    <effects>b_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="126" guard="true" base_RedefinableElement="74" atomic="true">
+    <effects>b_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="127" guard="true" base_RedefinableElement="75" atomic="true"/>
+  <SynthML:FormalElement xmi:id="128" guard="true" base_RedefinableElement="76" atomic="true">
+    <effects>c_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="129" guard="true" base_RedefinableElement="77" atomic="true">
+    <effects>c_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="130" guard="c_executed = true" base_RedefinableElement="78" atomic="true"/>
+  <SynthML:FormalElement xmi:id="131" guard="true" base_RedefinableElement="79" atomic="true">
+    <effects>d_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="132" guard="true" base_RedefinableElement="80" atomic="true">
+    <effects>d_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="133" guard="true" base_RedefinableElement="93">
+    <effects>a_executed := true</effects>
+    <effects>a_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="134" guard="a_executed = true" base_RedefinableElement="94">
+    <effects>b_executed := true</effects>
+    <effects>b_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="135" guard="true" base_RedefinableElement="95">
+    <effects>c_executed := true</effects>
+    <effects>c_executed := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="136" guard="c_executed = true" base_RedefinableElement="96">
+    <effects>d_executed := true</effects>
+    <effects>d_executed := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

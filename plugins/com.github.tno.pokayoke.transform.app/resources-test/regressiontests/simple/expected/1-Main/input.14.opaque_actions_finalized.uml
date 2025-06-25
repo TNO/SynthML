@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <nameExpression xmi:id="2" name="literals">
+      <operand xmi:type="uml:LiteralInteger" xmi:id="3" name=""/>
+      <operand xmi:type="uml:LiteralInteger" xmi:id="4" name="" value="1"/>
+    </nameExpression>
+    <packagedElement xmi:type="uml:Class" xmi:id="5" name="Context" visibility="public" classifierBehavior="36" isActive="true">
+      <ownedRule xmi:id="6" name="Req1">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="7" name="">
+          <body>robot_move_to_location2 needs robotLocation = Location1 and location2Prepared</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="8" name="Req2">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="9" name="">
+          <body>robot_move_to_location1 needs robotLocation = Location2</body>
+        </specification>
+      </ownedRule>
+      <ownedRule xmi:id="10" name="Req3">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="11" name="">
+          <body>robot_adjust_product needs robotLocation = Location2</body>
+        </specification>
+      </ownedRule>
+      <ownedAttribute xmi:id="12" name="robotPrepared" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="13" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="15">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="16" name="location2Prepared" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="17" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="18" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="19">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="20" name="robotLocation" visibility="public" type="81">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="21" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="22" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="23">
+          <language>CIF</language>
+          <body>Location1</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="24" name="robotHasProduct" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="25" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="26" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="27">
+          <language>CIF</language>
+          <body>true</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="28" name="location2HasProduct" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="29" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="30" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="31">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="32" name="productCorrectlyPlaced" visibility="public" type="86">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="33" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="34" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="35">
+          <language>CIF</language>
+          <body>Unknown</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="36" name="Main" postcondition="37" node="59 60 61 62 63 64 65 66 67 68 69 70 71 72 73">
+        <ownedRule xmi:id="37" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="38" name="">
+            <body>not robotHasProduct and robotLocation = Location1 and location2HasProduct and productCorrectlyPlaced = True</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="39" name="happen_at_most_once" constrainedElement="74 76 78 79">
+          <specification xmi:type="uml:Interval" xmi:id="40" name="" max="4" min="3"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" name="InitialNode__p1__to____start" target="60" source="61"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" name="__end__to__FinalNode__p10" target="62" source="59"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" name="Fork____start__to__prepare_location2" target="68" source="65"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" name="Fork____start__to__prepare_robot" target="69" source="65"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" name="prepare_location2__to__Join__robot_move_to_location2" target="66" source="68"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" name="prepare_robot__to__Join__robot_move_to_location2" target="66" source="69"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="47" name="robot_move_to_location2__to__robot_release_product_at_location2" target="73" source="72"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="48" name="robot_adjust_product__to__Merge__p7" target="63" source="70"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="49" name="robot_release_product_at_location2__to__Merge__p7" target="63" source="73"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="50" name="Merge__p7__to__measure_product_position" target="67" source="63"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="51" name="Decision__p8__to__robot_adjust_product" target="70" source="64">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="52" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="53" name="Decision__p8__to__robot_move_to_location1" target="71" source="64">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="54" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="55" name="measure_product_position__to__Decision__p8" target="64" source="67"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="56" name="robot_move_to_location1__to____end" target="59" source="71"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="57" name="__start__to__Fork____start" target="65" source="60"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="58" name="Join__robot_move_to_location2__to__robot_move_to_location2" target="72" source="66"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="59" name="__end" incoming="56" outgoing="42"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="60" name="__start" incoming="41" outgoing="57"/>
+        <node xmi:type="uml:InitialNode" xmi:id="61" name="InitialNode__p1" outgoing="41"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="62" name="FinalNode__p10" incoming="42"/>
+        <node xmi:type="uml:MergeNode" xmi:id="63" name="Merge__p7" incoming="48 49" outgoing="50"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="64" name="Decision__p8" incoming="55" outgoing="51 53"/>
+        <node xmi:type="uml:ForkNode" xmi:id="65" name="Fork____start" incoming="57" outgoing="43 44"/>
+        <node xmi:type="uml:JoinNode" xmi:id="66" name="Join__robot_move_to_location2" incoming="45 46" outgoing="58"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="67" name="measure_product_position" incoming="50" outgoing="55" behavior="80"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="68" name="prepare_location2" incoming="43" outgoing="45" behavior="79"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="69" name="prepare_robot" incoming="44" outgoing="46" behavior="74"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="70" name="robot_adjust_product" incoming="51" outgoing="48" behavior="77"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="71" name="robot_move_to_location1" incoming="53" outgoing="56" behavior="75"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="72" name="robot_move_to_location2" incoming="58" outgoing="47" behavior="76"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="73" name="robot_release_product_at_location2" incoming="47" outgoing="49" behavior="78"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="74" name="prepare_robot">
+        <body>not robotPrepared</body>
+        <body>robotPrepared := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="75" name="robot_move_to_location1">
+        <body>robotPrepared</body>
+        <body>robotLocation := Location1</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="76" name="robot_move_to_location2">
+        <body>robotPrepared</body>
+        <body>robotLocation := Location2</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="77" name="robot_adjust_product">
+        <body>robotPrepared and productCorrectlyPlaced = False</body>
+        <body>productCorrectlyPlaced := Unknown</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="78" name="robot_release_product_at_location2">
+        <body>robotPrepared and robotLocation = Location2</body>
+        <body>robotHasProduct := false, location2HasProduct := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="79" name="prepare_location2">
+        <body>not location2Prepared</body>
+        <body>location2Prepared := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="80" name="measure_product_position">
+        <body>location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown</body>
+        <body>productCorrectlyPlaced := True</body>
+        <body>productCorrectlyPlaced := False</body>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="81" name="RobotLocation" visibility="public">
+      <ownedLiteral xmi:id="82" name="Location1">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="83"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="84" name="Location2">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="85" value="1"/>
+      </ownedLiteral>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="86" name="UnknownBool" visibility="public">
+      <ownedLiteral xmi:id="87" name="True">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="88"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="89" name="False">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="90" value="1"/>
+      </ownedLiteral>
+      <ownedLiteral xmi:id="91" name="Unknown">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="92" value="2"/>
+      </ownedLiteral>
+    </packagedElement>
+    <profileApplication xmi:id="93">
+      <eAnnotations xmi:id="94" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="95" guard="not robotPrepared" base_RedefinableElement="74" atomic="true">
+    <effects>robotPrepared := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="96" guard="robotPrepared" base_RedefinableElement="75" atomic="true">
+    <effects>robotLocation := Location1</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="97" guard="robotPrepared" base_RedefinableElement="76" atomic="true">
+    <effects>robotLocation := Location2</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="98" guard="robotPrepared and productCorrectlyPlaced = False" base_RedefinableElement="77" atomic="true">
+    <effects>productCorrectlyPlaced := Unknown</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="99" guard="robotPrepared and robotLocation = Location2" base_RedefinableElement="78" atomic="true">
+    <effects>robotHasProduct := false, location2HasProduct := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="100" guard="not location2Prepared" base_RedefinableElement="79" atomic="true">
+    <effects>location2Prepared := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="101" guard="location2Prepared and location2HasProduct and productCorrectlyPlaced = Unknown" base_RedefinableElement="80" atomic="true">
+    <effects>productCorrectlyPlaced := True</effects>
+    <effects>productCorrectlyPlaced := False</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

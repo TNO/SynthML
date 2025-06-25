@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="23" isActive="true">
+      <nameExpression xmi:id="3" name="literals">
+        <operand xmi:type="uml:LiteralInteger" xmi:id="4" name=""/>
+        <operand xmi:type="uml:LiteralInteger" xmi:id="5" name="" value="1"/>
+      </nameExpression>
+      <ownedAttribute xmi:id="6" name="field1" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="7" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="9" name="field2" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="10" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="11" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="12">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="13" name="flipped" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="14" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="15" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="16">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="17" name="mode" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="18" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="19" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="20" name="left">
+        <body>not field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="21" name="right">
+        <body>field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="22" name="flip"/>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="23" name="Main" postcondition="24" node="60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78">
+        <ownedRule xmi:id="24" name="postcondition">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="25" name="">
+            <body>field2 and flipped</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="26" name="occurrences" constrainedElement="20 21 22">
+          <specification xmi:type="uml:Interval" xmi:id="27" name="Interval1" max="5" min="4"/>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" target="61" source="67">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="29" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="30" target="76" source="67">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="31" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="32" target="78" source="67">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="33" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" target="63" source="68">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="35" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" target="65" source="68">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="37" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="38" target="68" source="61"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="69" source="76"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="69" source="78"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="60" source="69"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="42" target="70" source="63"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="70" source="65"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="44" target="75" source="71">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="45" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="46" target="77" source="71">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="47" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="48" target="71" source="70"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="49" target="62" source="72">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="50" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="51" target="64" source="72">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="52" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="53" target="72" source="60"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="54" target="73" source="62"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="55" target="73" source="64"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="56" target="73" source="75"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="57" target="73" source="77"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="58" target="74" source="73"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="59" target="67" source="66"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="60" name="flip_start" incoming="41" outgoing="53"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="61" name="flip_start" incoming="28" outgoing="38"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="62" name="flip_end1" incoming="49" outgoing="54"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="63" name="flip_end1" incoming="34" outgoing="42"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="64" name="flip_end2" incoming="51" outgoing="55"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="65" name="flip_end2" incoming="36" outgoing="43"/>
+        <node xmi:type="uml:InitialNode" xmi:id="66" outgoing="59"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="67" incoming="59" outgoing="28 30 32"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="68" incoming="38" outgoing="34 36"/>
+        <node xmi:type="uml:MergeNode" xmi:id="69" incoming="39 40" outgoing="41"/>
+        <node xmi:type="uml:MergeNode" xmi:id="70" incoming="42 43" outgoing="48"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="71" incoming="48" outgoing="44 46"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="72" incoming="53" outgoing="49 51"/>
+        <node xmi:type="uml:MergeNode" xmi:id="73" incoming="54 55 56 57" outgoing="58"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="74" incoming="58"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="75" name="left" incoming="44" outgoing="56" behavior="20"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="76" name="left" incoming="30" outgoing="39" behavior="20"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="77" name="right" incoming="46" outgoing="57" behavior="21"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="78" name="right" incoming="32" outgoing="40" behavior="21"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="79">
+      <eAnnotations xmi:id="80" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="81" guard="not field1 and not mode" base_RedefinableElement="20" atomic="true">
+    <effects>field2 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="82" guard="field1 and mode" base_RedefinableElement="21" atomic="true">
+    <effects>field2 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="83" base_RedefinableElement="22">
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="84" base_RedefinableElement="60" atomic="true"/>
+  <SynthML:FormalElement xmi:id="85" base_RedefinableElement="61" atomic="true"/>
+  <SynthML:FormalElement xmi:id="86" guard="true" base_RedefinableElement="62" atomic="true">
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="87" guard="true" base_RedefinableElement="63" atomic="true">
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="88" guard="true" base_RedefinableElement="64" atomic="true">
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="89" guard="true" base_RedefinableElement="65" atomic="true">
+    <effects>field1 := not field1,&#xD;
+flipped := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

@@ -36,6 +36,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Base functionality for transforming models (e.g., Petri nets or activities) to CIF, in the context of Poka Yoke UML
@@ -95,6 +96,17 @@ public abstract class ModelToCifTranslator {
      */
     public BiMap<Property, DiscVariable> getPropertyMap() {
         return ImmutableBiMap.copyOf(variableMap);
+    }
+
+    /**
+     * Gives the mapping from translated CIF start events to their corresponding UML elements for which they were
+     * created.
+     *
+     * @return The mapping from translated CIF start events to their corresponding UML elements for which they were
+     *     created.
+     */
+    public Map<Event, RedefinableElement> getStartEventMap() {
+        return ImmutableMap.copyOf(startEventMap);
     }
 
     /**

@@ -1,0 +1,89 @@
+controllable __node__DecisionNode__36__0;
+controllable __node__DecisionNode__36__1;
+controllable __node__MergeNode__37__0;
+controllable __node__MergeNode__37__1;
+controllable __node__JoinNode__39;
+controllable __node__ForkNode__40;
+controllable __node__CallBehaviorAction__41;
+controllable __node__CallBehaviorAction__42;
+controllable __node__CallBehaviorAction__43;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  disc bool __controlflow__23;
+  disc bool __controlflow__24;
+  disc bool __controlflow__26;
+  disc bool __controlflow__28;
+  disc bool __controlflow__29;
+  disc bool __controlflow__30;
+  disc bool __controlflow__31;
+  disc bool __controlflow__32;
+  disc bool __controlflow__33;
+  disc bool __controlflow__34 = true;
+  alg bool __token_on_first_controlflow = __controlflow__34;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool postcondition = field2;
+  alg bool __postcondition_without_structure__at_most_once__19__left__13 = at_most_once__19__left__13.__occurrences >= 0;
+  alg bool __postcondition_without_structure__at_most_once__19__right__14 = at_most_once__19__right__14.__occurrences >= 0;
+  alg bool __postcondition_without_structure__exactly_once__21__flip__15 = exactly_once__21__flip__15.__occurrences >= 1;
+  alg bool __postcondition_without_structure = postcondition and __postcondition_without_structure__at_most_once__19__left__13 and (__postcondition_without_structure__at_most_once__19__right__14 and __postcondition_without_structure__exactly_once__21__flip__15);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__23 = not __controlflow__23;
+  alg bool __postcondition_with_structure__controlflow__24 = not __controlflow__24;
+  alg bool __postcondition_with_structure__controlflow__26 = not __controlflow__26;
+  alg bool __postcondition_with_structure__controlflow__28 = not __controlflow__28;
+  alg bool __postcondition_with_structure__controlflow__29 = not __controlflow__29;
+  alg bool __postcondition_with_structure__controlflow__30 = not __controlflow__30;
+  alg bool __postcondition_with_structure__controlflow__31 = not __controlflow__31;
+  alg bool __postcondition_with_structure__controlflow__32 = not __controlflow__32;
+  alg bool __postcondition_with_structure__controlflow__34 = not __controlflow__34;
+  alg bool __token_on_last_controlflow = __controlflow__33;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and __postcondition_with_structure__controlflow__23 and (__postcondition_with_structure__controlflow__24 and (__postcondition_with_structure__controlflow__26 and __postcondition_with_structure__controlflow__28)) and (__postcondition_with_structure__controlflow__29 and (__postcondition_with_structure__controlflow__30 and __postcondition_with_structure__controlflow__31) and (__postcondition_with_structure__controlflow__32 and (__postcondition_with_structure__controlflow__34 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__36__0 when true, __controlflow__28, not __controlflow__24, true do __controlflow__28 := false, __controlflow__24 := true;
+    edge __node__DecisionNode__36__1 when true, __controlflow__28, not __controlflow__26, true do __controlflow__28 := false, __controlflow__26 := true;
+    edge __node__MergeNode__37__0 when true, __controlflow__30, not __controlflow__32 do __controlflow__30 := false, __controlflow__32 := true;
+    edge __node__MergeNode__37__1 when true, __controlflow__31, not __controlflow__32 do __controlflow__31 := false, __controlflow__32 := true;
+    edge __node__JoinNode__39 when true, __controlflow__29, __controlflow__32, not __controlflow__33 do __controlflow__29 := false, __controlflow__32 := false, __controlflow__33 := true;
+    edge __node__ForkNode__40 when true, __controlflow__34, not __controlflow__23, not __controlflow__28 do __controlflow__34 := false, __controlflow__23 := true, __controlflow__28 := true;
+    edge __node__CallBehaviorAction__41 when true, __controlflow__23, not __controlflow__29 do field1 := not field1, __controlflow__23 := false, __controlflow__29 := true;
+    edge __node__CallBehaviorAction__42 when not field1, __controlflow__24, not __controlflow__30 do field2 := true, __controlflow__24 := false, __controlflow__30 := true;
+    edge __node__CallBehaviorAction__43 when field1, __controlflow__26, not __controlflow__31 do field2 := true, __controlflow__26 := false, __controlflow__31 := true;
+end
+requirement automaton at_most_once__19__left__13:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__42 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton at_most_once__19__right__14:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__43 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton exactly_once__21__flip__15:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 1;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__41 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__36__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__36__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__37__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__37__1;
+requirement invariant Context.__postcondition_with_structure disables __node__JoinNode__39;
+requirement invariant Context.__postcondition_with_structure disables __node__ForkNode__40;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__41;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__42;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__43;
