@@ -154,6 +154,8 @@ public class FlattenUMLActivity {
                     DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
+                    initialNodeSub.setActivity(parentActivity);
+                    initialNodeSub.setName(initialNode.getName() + "__sub");
 
                     // Destroy the initial node.
                     initialNode.destroy();
@@ -168,6 +170,8 @@ public class FlattenUMLActivity {
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
                     finalNode.getIncomings().get(0).setTarget(finalNodeSub);
                     callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
+                    finalNodeSub.setActivity(parentActivity);
+                    finalNodeSub.setName(finalNode.getName() + "__sub");
 
                     // Destroy the final node.
                     finalNode.destroy();
