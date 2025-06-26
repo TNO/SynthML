@@ -68,8 +68,10 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -358,6 +360,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
         }
+
+        // Flatten UML activities and normalize IDs.
+        FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
+        flattener.transform();
+        FileHelper.normalizeIds(activity.getModel());
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
@@ -820,6 +827,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // We translate the called behavior, inlining it. We do transform on the call node, to ensure that
                 // each call gets a unique action.
                 Behavior behavior = callNode.getBehavior();
+
+                if (behavior instanceof Activity) {
+                    // Sanity check. After the flattening there shouldn't be any call behaviors to activities.
+                    throw new RuntimeException("Found a call behavior to an activity.");
+                }
+
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(behavior), false);
             }
         } else if (node instanceof OpaqueAction) {
