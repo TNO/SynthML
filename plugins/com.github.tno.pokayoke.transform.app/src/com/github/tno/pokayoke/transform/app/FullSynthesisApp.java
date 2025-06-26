@@ -212,8 +212,8 @@ public class FullSynthesisApp {
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
         // that can be merged, replacing their start and end transitions by a single transition. These patterns'
         // intermediate control flows cannot have guards and we can safely merge them, since 1) the patterns have no
-        // other actions between the start and end actions; 2) we only place outgoing guards in incoming control flows to
-        // actions. The end actions are uncontrollable, so synthesis will push the computed guards to whatever comes
+        // other actions between the start and end actions; 2) we only place outgoing guards in incoming control flows
+        // to actions. The end actions are uncontrollable, so synthesis will push the computed guards to whatever comes
         // before them: in this case, the start of the action.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
