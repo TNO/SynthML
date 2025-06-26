@@ -548,6 +548,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkNamingConventions(node, NamingConvention.OPTIONAL);
         }
 
+        // Check that call behavior actions call either an opaque behavior or a concrete activity.
+        if (node instanceof CallBehaviorAction cbAction) {
+            if (!(cbAction.getBehavior() instanceof OpaqueBehavior
+                    || (cbAction.getBehavior() instanceof Activity activity && !activity.isAbstract())))
+            {
+                error("Call behavior actions should call an opaque behavior or a concrete activity.", node,
+                        UMLPackage.Literals.CALL_BEHAVIOR_ACTION__BEHAVIOR);
+            }
+        }
+
         // Check number of incoming and outgoing edges.
         if (node instanceof CallBehaviorAction || node instanceof OpaqueAction) {
             if (node.getIncomings().size() != 1) {
