@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_G4L5IPQ_Ee-C4MKlHZKtHw" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_I_rxIPQ_Ee-C4MKlHZKtHw" name="Class1" classifierBehavior="_MnjtIPT3Ee-tssS07o9Dtw" isActive="true">
+      <ownedAttribute xmi:id="_njxlkPQ_Ee-C4MKlHZKtHw" name="init">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_oKwtEPQ_Ee-C4MKlHZKtHw" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_oKxUIPQ_Ee-C4MKlHZKtHw" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="__nsE0AooEfCWMtQZRernoA">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_MnjtIPT3Ee-tssS07o9Dtw" name="AbsActivity" isAbstract="true" postcondition="_U11WIPT3Ee-tssS07o9Dtw" precondition="_OBpFgPT3Ee-tssS07o9Dtw">
+        <ownedRule xmi:id="_OBpFgPT3Ee-tssS07o9Dtw" name="prec">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_RShncPT3Ee-tssS07o9Dtw" name="">
+            <body>not init</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_U11WIPT3Ee-tssS07o9Dtw" name="postc">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_WHADEPT3Ee-tssS07o9Dtw" name="">
+            <body>init</body>
+          </specification>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_KSiTYAooEfCWMtQZRernoA" name="ConcrActivity" node="_NEZXAAooEfCWMtQZRernoA _OLaCYAooEfCWMtQZRernoA _PlVpwAooEfCWMtQZRernoA _noQGgFJxEfChGrRphn9Hfg">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_zd7VMFKLEfCTgYNgVLk1nA" target="_PlVpwAooEfCWMtQZRernoA" source="_NEZXAAooEfCWMtQZRernoA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_zd7VMVKLEfCTgYNgVLk1nA" name="Initial1_To_Initialize_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_zd7VMlKLEfCTgYNgVLk1nA" name="Initial1_To_Initialize_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_0NLn4FKLEfCTgYNgVLk1nA" target="_noQGgFJxEfChGrRphn9Hfg" source="_PlVpwAooEfCWMtQZRernoA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_0NLn4VKLEfCTgYNgVLk1nA" name="Initialize_To_CallBehaviorAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_0NLn4lKLEfCTgYNgVLk1nA" name="Initialize_To_CallBehaviorAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_03vAwFKLEfCTgYNgVLk1nA" target="_OLaCYAooEfCWMtQZRernoA" source="_noQGgFJxEfChGrRphn9Hfg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_03vn0FKLEfCTgYNgVLk1nA" name="CallBehaviorAction1_To_ActivityFinal1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_03wO4FKLEfCTgYNgVLk1nA" name="CallBehaviorAction1_To_ActivityFinal1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_NEZXAAooEfCWMtQZRernoA" name="Initial1" outgoing="_zd7VMFKLEfCTgYNgVLk1nA"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_OLaCYAooEfCWMtQZRernoA" name="ActivityFinal1" incoming="_03vAwFKLEfCTgYNgVLk1nA"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_PlVpwAooEfCWMtQZRernoA" name="Initialize" incoming="_zd7VMFKLEfCTgYNgVLk1nA" outgoing="_0NLn4FKLEfCTgYNgVLk1nA">
+          <body>// TODO body of OpaqueAction2</body>
+        </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_noQGgFJxEfChGrRphn9Hfg" name="CallBehaviorAction1" incoming="_0NLn4FKLEfCTgYNgVLk1nA" outgoing="_03vAwFKLEfCTgYNgVLk1nA" behavior="_kR45kFJvEfCz55zPaa0Amg"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_kR45kFJvEfCz55zPaa0Amg" name="CalledActivity" node="_mGzz0FJvEfCz55zPaa0Amg _nJTLkFJvEfCz55zPaa0Amg _oopecFJvEfCz55zPaa0Amg _PFZSYFKKEfCTgYNgVLk1nA _Sikj4FKKEfCTgYNgVLk1nA _VodWwFKKEfCTgYNgVLk1nA">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_qYuU8FJvEfCz55zPaa0Amg" target="_Sikj4FKKEfCTgYNgVLk1nA" source="_mGzz0FJvEfCz55zPaa0Amg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_qYuU8VJvEfCz55zPaa0Amg" name="Initial1_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_qYvjEFJvEfCz55zPaa0Amg" name="Initial1_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_YKOI4FKKEfCTgYNgVLk1nA" target="_oopecFJvEfCz55zPaa0Amg" source="_Sikj4FKKEfCTgYNgVLk1nA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_YKOI4VKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_YKPXAFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_YraxcFKKEfCTgYNgVLk1nA" target="_PFZSYFKKEfCTgYNgVLk1nA" source="_Sikj4FKKEfCTgYNgVLk1nA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_YrbYgFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction2_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Yrb_kFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction2_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_ZbKzYFKKEfCTgYNgVLk1nA" target="_VodWwFKKEfCTgYNgVLk1nA" source="_PFZSYFKKEfCTgYNgVLk1nA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_ZbLacFKKEfCTgYNgVLk1nA" name="OpaqueAction2_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_ZbMBgFKKEfCTgYNgVLk1nA" name="OpaqueAction2_To_Join1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_aGnkIFKKEfCTgYNgVLk1nA" target="_VodWwFKKEfCTgYNgVLk1nA" source="_oopecFJvEfCz55zPaa0Amg">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_aGoLMFKKEfCTgYNgVLk1nA" name="OpaqueAction1_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_aGoyQFKKEfCTgYNgVLk1nA" name="OpaqueAction1_To_Join1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_aqPOkFKKEfCTgYNgVLk1nA" target="_nJTLkFJvEfCz55zPaa0Amg" source="_VodWwFKKEfCTgYNgVLk1nA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_aqP1oFKKEfCTgYNgVLk1nA" name="Join1_To_ActivityFinal1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_aqP1oVKKEfCTgYNgVLk1nA" name="Join1_To_ActivityFinal1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_mGzz0FJvEfCz55zPaa0Amg" name="Initial1" outgoing="_qYuU8FJvEfCz55zPaa0Amg"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_nJTLkFJvEfCz55zPaa0Amg" name="ActivityFinal1" incoming="_aqPOkFKKEfCTgYNgVLk1nA"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_oopecFJvEfCz55zPaa0Amg" name="OpaqueAction1" incoming="_YKOI4FKKEfCTgYNgVLk1nA" outgoing="_aGnkIFKKEfCTgYNgVLk1nA">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_PFZSYFKKEfCTgYNgVLk1nA" name="OpaqueAction2" incoming="_YraxcFKKEfCTgYNgVLk1nA" outgoing="_ZbKzYFKKEfCTgYNgVLk1nA">
+          <body>// TODO body of OpaqueAction2</body>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="_Sikj4FKKEfCTgYNgVLk1nA" name="Fork1" incoming="_qYuU8FJvEfCz55zPaa0Amg" outgoing="_YKOI4FKKEfCTgYNgVLk1nA _YraxcFKKEfCTgYNgVLk1nA"/>
+        <node xmi:type="uml:JoinNode" xmi:id="_VodWwFKKEfCTgYNgVLk1nA" name="Join1" incoming="_ZbKzYFKKEfCTgYNgVLk1nA _aGnkIFKKEfCTgYNgVLk1nA" outgoing="_aqPOkFKKEfCTgYNgVLk1nA">
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_VodWwVKKEfCTgYNgVLk1nA" name="Join1" value="true"/>
+        </node>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="_b2mMwPQ_Ee-C4MKlHZKtHw">
+      <eAnnotations xmi:id="_b2s6cPQ_Ee-C4MKlHZKtHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_TxT68AooEfCWMtQZRernoA" guard="not init" base_RedefinableElement="_PlVpwAooEfCWMtQZRernoA" atomic="true">
+    <effects>init := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_ARSjsFJwEfCz55zPaa0Amg" guard="true" base_RedefinableElement="_oopecFJvEfCz55zPaa0Amg" atomic="true"/>
+  <SynthML:FormalElement xmi:id="_bEGgEFKKEfCTgYNgVLk1nA" guard="true" base_RedefinableElement="_PFZSYFKKEfCTgYNgVLk1nA" atomic="true"/>
+</xmi:XMI>
