@@ -743,7 +743,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
         // being synthesized. The translation of other concrete activities would imply the translation of all its nodes,
         // e.g., call behavior actions to some opaque behavior, as well as opaque actions. These nodes would interleave
-        // and interfere with the current activity nodes. For vertical scaling, this needs to be carefully re-evaluated.
+        // and interfere with the current activity nodes. For vertical scaling, this is still valid: once the an
+        // activity has been synthesized, it contains the flattened called activities. Only the synthesized activity
+        // should be translated for guard computation and language equivalence check.
         if (translationPurpose != TranslationPurpose.SYNTHESIS && activity != this.activity) {
             return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
         }
@@ -820,6 +822,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
             if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+                // Sanity check. Translating a shadowed call behavior should occur only if translating for synthesis.
+                Verify.verify(translationPurpose == TranslationPurpose.SYNTHESIS,
+                        "Translating a shadowed call behavior is allowed only for synthesis translation purpose.");
+
                 // The call behavior shadows the called behavior. We use the guards/effects of the call behavior node
                 // and ignore the called behavior.
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
