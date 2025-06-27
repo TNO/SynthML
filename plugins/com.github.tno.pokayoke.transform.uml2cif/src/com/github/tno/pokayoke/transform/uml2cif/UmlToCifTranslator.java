@@ -1286,10 +1286,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof Activity umlActivity) {
-                    // For vertical scaling, we need to carefully re-evaluate this, since called activities may be
-                    // inlined or may be merged back to call behaviors of the activities. Both cases need to be handled
-                    // for the different translation purposes, similar to below for opaque behaviors.
                     if (!umlActivity.isAbstract()) {
+                        // The constraints are considered at a local level: this activity *directly* calls the
+                        // constrained activity. We do not include the initial nodes of the activities recursively, i.e.
+                        // this activity can call an activity that calls a constrained activity, and will *not* add to
+                        // the occurrence constraint count.
                         Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -1303,6 +1304,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                     }
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
+                    // The constraints are considered at a local level: this activity *directly* calls the
+                    // constrained behavior. We do not include the call nodes of the opaque behavior recursively, i.e.
+                    // this activity can call an activity that calls the constrained behavior, and will *not* add to the
+                    // occurrence constraint count.
                     List<Event> cifStartEvents;
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                         // For synthesis, we directly translate the opaque behaviors, so we simply look up their
