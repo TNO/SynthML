@@ -155,7 +155,7 @@ public class FlattenUMLActivity {
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
                     initialNodeSub.setActivity(parentActivity);
-                    initialNodeSub.setName(initialNode.getName() + "__sub");
+                    initialNodeSub.setName(initialNode.getName());
 
                     // Destroy the initial node.
                     initialNode.destroy();
@@ -171,7 +171,7 @@ public class FlattenUMLActivity {
                     finalNode.getIncomings().get(0).setTarget(finalNodeSub);
                     callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
                     finalNodeSub.setActivity(parentActivity);
-                    finalNodeSub.setName(finalNode.getName() + "__sub");
+                    finalNodeSub.setName(finalNode.getName());
 
                     // Destroy the final node.
                     finalNode.destroy();
