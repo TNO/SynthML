@@ -3,9 +3,7 @@ package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
@@ -23,7 +21,6 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
@@ -38,19 +35,9 @@ public class FlattenUMLActivity {
 
     private final StructureInfoHelper structureInfoHelper;
 
-    /**
-     * The map from a behavior (opaque behavior or activity) to their flattened call node. Opaque behaviors are related
-     * to their flattened call behavior action node, activities are related to their flattened initial node.
-     */
-    private static Map<RedefinableElement, RedefinableElement> flattenedStartBehaviors = new LinkedHashMap<>();
-
     public FlattenUMLActivity(Model model) {
         this.model = model;
         this.structureInfoHelper = new StructureInfoHelper();
-    }
-
-    public Map<RedefinableElement, RedefinableElement> getFlattenedStartBehaviors() {
-        return flattenedStartBehaviors;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
@@ -169,9 +156,6 @@ public class FlattenUMLActivity {
 
                     // Destroy the initial node.
                     initialNode.destroy();
-
-                    // Store the activity and the corresponding (new) initial node.
-                    flattenedStartBehaviors.put(childBehaviorCopy, initialNodeSub);
                 }
 
                 // Creates a merge node to substitute the activity's final node. This maintains the original structure,
@@ -188,11 +172,6 @@ public class FlattenUMLActivity {
 
                     // Destroy the final node.
                     finalNode.destroy();
-                }
-
-                // Store the new nodes that call the current behavior.
-                if (node instanceof CallBehaviorAction cbAction) {
-                    flattenedStartBehaviors.put(cbAction.getBehavior(), node);
                 }
             }
 
