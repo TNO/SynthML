@@ -22,6 +22,9 @@
             <body>init</body>
           </specification>
         </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_5A9j4FMjEfC1vs5cV8EfJw" name="AbsActivityAtMostOnce" constrainedElement="_kR45kFJvEfCz55zPaa0Amg _ZBbPsFWVEfCbq6IYDHb57A">
+          <specification xmi:type="uml:Interval" xmi:id="_kf76YFMkEfC1vs5cV8EfJw" name="" max="_Lf5FsFWHEfC8JorR1MW-Jw" min="_nEAZoFMkEfC1vs5cV8EfJw"/>
+        </ownedRule>
       </ownedBehavior>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_KSiTYAooEfCWMtQZRernoA" name="ConcrActivity" node="_NEZXAAooEfCWMtQZRernoA _OLaCYAooEfCWMtQZRernoA _PlVpwAooEfCWMtQZRernoA _noQGgFJxEfChGrRphn9Hfg">
         <edge xmi:type="uml:ControlFlow" xmi:id="_zd7VMFKLEfCTgYNgVLk1nA" target="_PlVpwAooEfCWMtQZRernoA" source="_NEZXAAooEfCWMtQZRernoA">
@@ -43,7 +46,7 @@
         </node>
         <node xmi:type="uml:CallBehaviorAction" xmi:id="_noQGgFJxEfChGrRphn9Hfg" name="CallBehaviorAction1" incoming="_0NLn4FKLEfCTgYNgVLk1nA" outgoing="_03vAwFKLEfCTgYNgVLk1nA" behavior="_kR45kFJvEfCz55zPaa0Amg"/>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="_kR45kFJvEfCz55zPaa0Amg" name="CalledActivity" node="_mGzz0FJvEfCz55zPaa0Amg _nJTLkFJvEfCz55zPaa0Amg _oopecFJvEfCz55zPaa0Amg _PFZSYFKKEfCTgYNgVLk1nA _Sikj4FKKEfCTgYNgVLk1nA _VodWwFKKEfCTgYNgVLk1nA">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_kR45kFJvEfCz55zPaa0Amg" name="CalledActivity" node="_mGzz0FJvEfCz55zPaa0Amg _nJTLkFJvEfCz55zPaa0Amg _oopecFJvEfCz55zPaa0Amg _Sikj4FKKEfCTgYNgVLk1nA _VodWwFKKEfCTgYNgVLk1nA _fEZewFWVEfCbq6IYDHb57A">
         <edge xmi:type="uml:ControlFlow" xmi:id="_qYuU8FJvEfCz55zPaa0Amg" target="_Sikj4FKKEfCTgYNgVLk1nA" source="_mGzz0FJvEfCz55zPaa0Amg">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_qYuU8VJvEfCz55zPaa0Amg" name="Initial1_To_OpaqueAction1_guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_qYvjEFJvEfCz55zPaa0Amg" name="Initial1_To_OpaqueAction1_weight"/>
@@ -51,14 +54,6 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="_YKOI4FKKEfCTgYNgVLk1nA" target="_oopecFJvEfCz55zPaa0Amg" source="_Sikj4FKKEfCTgYNgVLk1nA">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_YKOI4VKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction1_guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_YKPXAFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction1_weight"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="_YraxcFKKEfCTgYNgVLk1nA" target="_PFZSYFKKEfCTgYNgVLk1nA" source="_Sikj4FKKEfCTgYNgVLk1nA">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="_YrbYgFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction2_guard" value="true"/>
-          <weight xmi:type="uml:LiteralInteger" xmi:id="_Yrb_kFKKEfCTgYNgVLk1nA" name="Fork1_To_OpaqueAction2_weight"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="_ZbKzYFKKEfCTgYNgVLk1nA" target="_VodWwFKKEfCTgYNgVLk1nA" source="_PFZSYFKKEfCTgYNgVLk1nA">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="_ZbLacFKKEfCTgYNgVLk1nA" name="OpaqueAction2_To_Join1_guard" value="true"/>
-          <weight xmi:type="uml:LiteralInteger" xmi:id="_ZbMBgFKKEfCTgYNgVLk1nA" name="OpaqueAction2_To_Join1_weight"/>
         </edge>
         <edge xmi:type="uml:ControlFlow" xmi:id="_aGnkIFKKEfCTgYNgVLk1nA" target="_VodWwFKKEfCTgYNgVLk1nA" source="_oopecFJvEfCz55zPaa0Amg">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_aGoLMFKKEfCTgYNgVLk1nA" name="OpaqueAction1_To_Join1_guard" value="true"/>
@@ -68,20 +63,29 @@
           <guard xmi:type="uml:LiteralBoolean" xmi:id="_aqP1oFKKEfCTgYNgVLk1nA" name="Join1_To_ActivityFinal1_guard" value="true"/>
           <weight xmi:type="uml:LiteralInteger" xmi:id="_aqP1oVKKEfCTgYNgVLk1nA" name="Join1_To_ActivityFinal1_weight"/>
         </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_gczcIFWVEfCbq6IYDHb57A" target="_fEZewFWVEfCbq6IYDHb57A" source="_Sikj4FKKEfCTgYNgVLk1nA">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_gc0DMFWVEfCbq6IYDHb57A" name="Fork1_To__guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_gc1RUFWVEfCbq6IYDHb57A" name="Fork1_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_hl05sFWVEfCbq6IYDHb57A" target="_VodWwFKKEfCTgYNgVLk1nA" source="_fEZewFWVEfCbq6IYDHb57A">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_hl1gwFWVEfCbq6IYDHb57A" name="_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_hl2H0FWVEfCbq6IYDHb57A" name="_To_Join1_weight"/>
+        </edge>
         <node xmi:type="uml:InitialNode" xmi:id="_mGzz0FJvEfCz55zPaa0Amg" name="Initial1" outgoing="_qYuU8FJvEfCz55zPaa0Amg"/>
         <node xmi:type="uml:ActivityFinalNode" xmi:id="_nJTLkFJvEfCz55zPaa0Amg" name="ActivityFinal1" incoming="_aqPOkFKKEfCTgYNgVLk1nA"/>
         <node xmi:type="uml:OpaqueAction" xmi:id="_oopecFJvEfCz55zPaa0Amg" name="OpaqueAction1" incoming="_YKOI4FKKEfCTgYNgVLk1nA" outgoing="_aGnkIFKKEfCTgYNgVLk1nA">
           <body>// TODO body of OpaqueAction1</body>
         </node>
-        <node xmi:type="uml:OpaqueAction" xmi:id="_PFZSYFKKEfCTgYNgVLk1nA" name="OpaqueAction2" incoming="_YraxcFKKEfCTgYNgVLk1nA" outgoing="_ZbKzYFKKEfCTgYNgVLk1nA">
-          <body>// TODO body of OpaqueAction2</body>
-        </node>
-        <node xmi:type="uml:ForkNode" xmi:id="_Sikj4FKKEfCTgYNgVLk1nA" name="Fork1" incoming="_qYuU8FJvEfCz55zPaa0Amg" outgoing="_YKOI4FKKEfCTgYNgVLk1nA _YraxcFKKEfCTgYNgVLk1nA"/>
-        <node xmi:type="uml:JoinNode" xmi:id="_VodWwFKKEfCTgYNgVLk1nA" name="Join1" incoming="_ZbKzYFKKEfCTgYNgVLk1nA _aGnkIFKKEfCTgYNgVLk1nA" outgoing="_aqPOkFKKEfCTgYNgVLk1nA">
+        <node xmi:type="uml:ForkNode" xmi:id="_Sikj4FKKEfCTgYNgVLk1nA" name="Fork1" incoming="_qYuU8FJvEfCz55zPaa0Amg" outgoing="_YKOI4FKKEfCTgYNgVLk1nA _gczcIFWVEfCbq6IYDHb57A"/>
+        <node xmi:type="uml:JoinNode" xmi:id="_VodWwFKKEfCTgYNgVLk1nA" name="Join1" incoming="_aGnkIFKKEfCTgYNgVLk1nA _hl05sFWVEfCbq6IYDHb57A" outgoing="_aqPOkFKKEfCTgYNgVLk1nA">
           <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_VodWwVKKEfCTgYNgVLk1nA" name="Join1" value="true"/>
         </node>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_fEZewFWVEfCbq6IYDHb57A" incoming="_gczcIFWVEfCbq6IYDHb57A" outgoing="_hl05sFWVEfCbq6IYDHb57A" behavior="_ZBbPsFWVEfCbq6IYDHb57A"/>
       </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_ZBbPsFWVEfCbq6IYDHb57A" name="UselessOpaqueBehavior"/>
     </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_nEAZoFMkEfC1vs5cV8EfJw" name="LiteralZero"/>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_Lf5FsFWHEfC8JorR1MW-Jw" name="LiteralOne" value="1"/>
     <profileApplication xmi:id="_b2mMwPQ_Ee-C4MKlHZKtHw">
       <eAnnotations xmi:id="_b2s6cPQ_Ee-C4MKlHZKtHw" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
@@ -93,5 +97,5 @@
     <effects>init := true</effects>
   </SynthML:FormalElement>
   <SynthML:FormalElement xmi:id="_ARSjsFJwEfCz55zPaa0Amg" guard="true" base_RedefinableElement="_oopecFJvEfCz55zPaa0Amg" atomic="true"/>
-  <SynthML:FormalElement xmi:id="_bEGgEFKKEfCTgYNgVLk1nA" guard="true" base_RedefinableElement="_PFZSYFKKEfCTgYNgVLk1nA" atomic="true"/>
+  <SynthML:FormalElement xmi:id="_a4hUMFWVEfCbq6IYDHb57A" guard="true" base_RedefinableElement="_ZBbPsFWVEfCbq6IYDHb57A" atomic="true"/>
 </xmi:XMI>
