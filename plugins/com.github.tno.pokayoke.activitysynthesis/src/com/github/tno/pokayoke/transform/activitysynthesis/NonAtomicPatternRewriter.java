@@ -17,6 +17,8 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityNode;
 
+import com.google.common.base.Verify;
+
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -193,7 +195,7 @@ public class NonAtomicPatternRewriter {
      * Finds all activity actions corresponding to start or end transitions in the given list of rewritten patterns.
      *
      * @param patterns The rewritten non-atomic patterns on Petri Net level.
-     * @param transitionMap The mapping from Petri Net transitions to corresponding UML actions.
+     * @param transitionMap The mapping from Petri Net transitions to corresponding UML activity nodes.
      * @return All activity actions corresponding to start or end transitions in the given list of rewritten patterns.
      */
     public static Set<Action> getRewrittenActions(List<NonAtomicPattern> patterns,
@@ -204,7 +206,11 @@ public class NonAtomicPatternRewriter {
         for (NonAtomicPattern pattern: patterns) {
             // No need to add the end transitions, since the end transitions contained in pattern.endTransitions do not
             // correspond to any action in the UML model. They are removed in rewritePatterns.
-            rewrittenActions.add((Action)transitionMap.get(pattern.startTransition()));
+            ActivityNode startTransitionNode = transitionMap.get(pattern.startTransition());
+            Verify.verify(startTransitionNode instanceof Action,
+                    "The node representing the start of an action must be an opaque action, found "
+                            + startTransitionNode.getClass() + ".");
+            rewrittenActions.add((Action)startTransitionNode);
         }
 
         return rewrittenActions;
