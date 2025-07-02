@@ -362,9 +362,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         // Flatten UML activities and normalize IDs.
-        FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
-        flattener.transform();
-        FileHelper.normalizeIds(activity.getModel());
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+            FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
+            flattener.transform();
+            FileHelper.normalizeIds(activity.getModel());
+        }
 
         // Create the CIF specification to which the input UML model will be translated.
         Specification cifSpec = CifConstructors.newSpecification();
