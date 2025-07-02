@@ -743,7 +743,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
         // being synthesized. The translation of other concrete activities would imply the translation of all its nodes,
         // e.g., call behavior actions to some opaque behavior, as well as opaque actions. These nodes would interleave
-        // and interfere with the current activity nodes. For vertical scaling, this is still valid: once the an
+        // and interfere with the current activity nodes. For vertical scaling, this is still valid: once the
         // activity has been synthesized, it contains the flattened called activities. Only the synthesized activity
         // should be translated for guard computation and language equivalence check.
         if (translationPurpose != TranslationPurpose.SYNTHESIS && activity != this.activity) {
