@@ -11,10 +11,10 @@ plant automaton Context:
   alg bool __precondition = Pre;
   alg bool Post = done_c;
   alg bool __postcondition__nonAtomicActive__do_b = not __nonAtomicActive__do_b;
-  alg bool __postcondition__occurrences__22__do_a__15 = occurrences__22__do_a__15.__occurrences >= 0;
-  alg bool __postcondition__occurrences__22__do_b__16 = occurrences__22__do_b__16.__occurrences >= 0;
-  alg bool __postcondition__occurrences__22__do_c__24 = occurrences__22__do_c__24.__occurrences >= 0;
-  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__occurrences__22__do_a__15 and (__postcondition__occurrences__22__do_b__16 and __postcondition__occurrences__22__do_c__24));
+  alg bool __postcondition__occurrences__42__do_a__28 = occurrences__42__do_a__28.__occurrences >= 0;
+  alg bool __postcondition__occurrences__42__do_b__30 = occurrences__42__do_b__30.__occurrences >= 0;
+  alg bool __postcondition__occurrences__42__do_c__46 = occurrences__42__do_c__46.__occurrences >= 0;
+  alg bool __postcondition = Post and __postcondition__nonAtomicActive__do_b and (__postcondition__occurrences__42__do_a__28 and (__postcondition__occurrences__42__do_b__30 and __postcondition__occurrences__42__do_c__46));
   initial __precondition;
   marked __postcondition;
   location:
@@ -25,7 +25,7 @@ plant automaton Context:
     edge do_b__na_result_1 when __nonAtomicActive__do_b do done_b := true, __nonAtomicActive__do_b := false;
     edge do_c when done_a and not done_c do done_c := true;
 end
-requirement automaton occurrences__22__do_a__15:
+requirement automaton occurrences__42__do_a__28:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -33,7 +33,7 @@ requirement automaton occurrences__22__do_a__15:
     marked;
     edge do_a when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__22__do_b__16:
+requirement automaton occurrences__42__do_b__30:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -41,7 +41,7 @@ requirement automaton occurrences__22__do_b__16:
     marked;
     edge do_b when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__22__do_c__24:
+requirement automaton occurrences__42__do_c__46:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
