@@ -1,32 +1,32 @@
 enum Number = First, Second, Third;
-controllable __node__CallBehaviorAction__21;
+controllable __node__CallBehaviorAction__36;
 plant automaton Class:
   disc Number element in any;
-  disc bool __controlflow__17;
-  disc bool __controlflow__18 = true;
+  disc bool __controlflow__32;
+  disc bool __controlflow__33 = true;
   alg bool precond = element = First;
-  alg bool __token_on_first_controlflow = __controlflow__18;
+  alg bool __token_on_first_controlflow = __controlflow__33;
   alg bool __precondition = precond and __token_on_first_controlflow;
   alg bool postcond = element = Second;
-  alg bool __postcondition_without_structure__happens_at_most_once__15__change__9 = happens_at_most_once__15__change__9.__occurrences >= 0;
-  alg bool __postcondition_without_structure = postcond and __postcondition_without_structure__happens_at_most_once__15__change__9;
+  alg bool __postcondition_without_structure__happens_at_most_once__28__change__16 = happens_at_most_once__28__change__16.__occurrences >= 0;
+  alg bool __postcondition_without_structure = postcond and __postcondition_without_structure__happens_at_most_once__28__change__16;
   alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
-  alg bool __postcondition_with_structure__controlflow__18 = not __controlflow__18;
-  alg bool __token_on_last_controlflow = __controlflow__17;
-  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__18 and __token_on_last_controlflow);
+  alg bool __postcondition_with_structure__controlflow__33 = not __controlflow__33;
+  alg bool __token_on_last_controlflow = __controlflow__32;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__33 and __token_on_last_controlflow);
   initial __precondition;
   marked __postcondition_with_structure;
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__21 when element != Third, __controlflow__18, not __controlflow__17 do element := Second, __controlflow__18 := false, __controlflow__17 := true;
+    edge __node__CallBehaviorAction__36 when element != Third, __controlflow__33, not __controlflow__32 do element := Second, __controlflow__33 := false, __controlflow__32 := true;
 end
-requirement automaton happens_at_most_once__15__change__9:
+requirement automaton happens_at_most_once__28__change__16:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__21 when __occurrences < 1 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__36 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement invariant Class.__postcondition_without_structure disables __node__CallBehaviorAction__21;
+requirement invariant Class.__postcondition_without_structure disables __node__CallBehaviorAction__36;

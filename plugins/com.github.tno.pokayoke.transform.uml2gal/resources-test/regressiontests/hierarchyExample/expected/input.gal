@@ -48,29 +48,37 @@ gal ExampleModel__ExampleClass{
   transition __ActivityFinalNode_ExampleActivity__ActivityFinalNode__5 [ __init == 1 && __edge__6 == 1 ] {
     __edge__6 = 0    ;
   }
-  transition __OpaqueAction_ExampleActivity__CallBehaviorAction__DoOperation__process_Left__6 [ __init == 1 && true && __edge__10 == 1 && __edge__9 == 0 ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__InitialNode__6 [ __init == 1 && __edge__5 == 1 && __edge__7 == 0 ] {
+    __edge__5 = 0    ;
+    __edge__7 = 1    ;
+  }
+  transition __MergeNode_ExampleActivity__CallBehaviorAction__DoOperation__ActivityFinalNode__7 [ __init == 1 && __edge__8 == 1 && __edge__6 == 0 ] {
+    __edge__8 = 0    ;
+    __edge__6 = 1    ;
+  }
+  transition __OpaqueAction_ExampleActivity__CallBehaviorAction__DoOperation__process_Left__8 [ __init == 1 && true && __edge__10 == 1 && __edge__9 == 0 ] {
     robot1_claimed = 0    ;
     robot2_claimed = 0    ;
     __edge__10 = 0    ;
     __edge__9 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__7 [ __init == 1 && __edge__7 == 1 && __edge__10 == 0 && inputLocation == $Left ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__9 [ __init == 1 && __edge__7 == 1 && __edge__10 == 0 && inputLocation == $Left ] {
     __edge__7 = 0    ;
     __edge__10 = 1    ;
   }
-  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__8 [ __init == 1 && __edge__7 == 1 && __edge__11 == 0 && inputLocation == $Right ] {
+  transition __DecisionNode_ExampleActivity__CallBehaviorAction__DoOperation__DecisionNode__10 [ __init == 1 && __edge__7 == 1 && __edge__11 == 0 && inputLocation == $Right ] {
     __edge__7 = 0    ;
     __edge__11 = 1    ;
   }
-  transition __MergeNode_ExampleActivity__CallBehaviorAction__DoOperation__MergeNode__9 [ __init == 1 && __edge__12 == 1 && __edge__8 == 0 ] {
+  transition __MergeNode_ExampleActivity__CallBehaviorAction__DoOperation__MergeNode__11 [ __init == 1 && __edge__12 == 1 && __edge__8 == 0 ] {
     __edge__12 = 0    ;
     __edge__8 = 1    ;
   }
-  transition __MergeNode_ExampleActivity__CallBehaviorAction__DoOperation__MergeNode__10 [ __init == 1 && __edge__9 == 1 && __edge__8 == 0 ] {
+  transition __MergeNode_ExampleActivity__CallBehaviorAction__DoOperation__MergeNode__12 [ __init == 1 && __edge__9 == 1 && __edge__8 == 0 ] {
     __edge__9 = 0    ;
     __edge__8 = 1    ;
   }
-  transition __OpaqueAction_ExampleActivity__CallBehaviorAction__DoOperation__process_Right__11 [ __init == 1 && true && __edge__11 == 1 && __edge__12 == 0 ] {
+  transition __OpaqueAction_ExampleActivity__CallBehaviorAction__DoOperation__process_Right__13 [ __init == 1 && true && __edge__11 == 1 && __edge__12 == 0 ] {
     robot1_claimed = 0    ;
     robot2_claimed = 0    ;
     __edge__11 = 0    ;

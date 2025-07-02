@@ -5,31 +5,31 @@ controllable __start;
 controllable __end;
 automaton statespace:
   alphabet AtomicA, NonAtomicB, NonAtomicB__na_result_1, __start, __end;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 0, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 0, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
   location __init:
     initial;
     edge __start goto loc1;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 0, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 0, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
   location loc1:
     edge AtomicA goto loc2;
     edge NonAtomicB goto loc3;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 1, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 1, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
   location loc2:
     edge NonAtomicB goto loc4;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 0, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 0, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
   location loc3:
     edge AtomicA goto loc4;
     edge NonAtomicB__na_result_1 goto loc5;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 1, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 1, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = true, Machine.a_executed = true, Machine.b_executed = false, sup = "*")
   location loc4:
     edge NonAtomicB__na_result_1 goto loc6;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 0, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = true, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 0, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = true, sup = "*")
   location loc5:
     edge AtomicA goto loc6;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 1, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = true, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 1, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = true, sup = "*")
   location loc6:
     edge __end goto __done;
-  @state(IntervalConstraintA__17__AtomicA__21 = "*", IntervalConstraintA__17__AtomicA__21.__occurrences = 1, IntervalConstraintB__19__NonAtomicB__22 = "*", IntervalConstraintB__19__NonAtomicB__22.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = true, sup = "*")
+  @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 1, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = true, Machine.b_executed = true, sup = "*")
   location __done:
     marked;
 end

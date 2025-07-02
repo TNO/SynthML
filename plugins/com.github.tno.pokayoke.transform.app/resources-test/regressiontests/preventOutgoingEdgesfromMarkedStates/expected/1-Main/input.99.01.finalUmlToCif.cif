@@ -1,18 +1,18 @@
 enum Number = First, Second, Third;
-uncontrollable __node__CallBehaviorAction__17;
+uncontrollable __node__CallBehaviorAction__27;
 plant automaton Class:
   disc Number element in any;
-  disc bool __controlflow__12;
-  disc bool __controlflow__13 = true;
+  disc bool __controlflow__22;
+  disc bool __controlflow__23 = true;
   alg bool Pre = element = First;
-  alg bool __token_on_first_controlflow = __controlflow__13;
+  alg bool __token_on_first_controlflow = __controlflow__23;
   alg bool __precondition = Pre and __token_on_first_controlflow;
-  alg bool __token_on_last_controlflow = __controlflow__12;
+  alg bool __token_on_last_controlflow = __controlflow__22;
   alg bool __postcondition = __token_on_last_controlflow;
   initial __precondition;
   marked __postcondition;
   location:
     initial;
     marked;
-    edge __node__CallBehaviorAction__17 when element != Third, __controlflow__13, true, not __controlflow__12 do element := Second, __controlflow__13 := false, __controlflow__12 := true;
+    edge __node__CallBehaviorAction__27 when element != Third, __controlflow__23, true, not __controlflow__22 do element := Second, __controlflow__23 := false, __controlflow__22 := true;
 end

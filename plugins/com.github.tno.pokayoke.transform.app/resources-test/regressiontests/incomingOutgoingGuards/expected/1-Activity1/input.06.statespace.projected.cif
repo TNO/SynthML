@@ -1,8 +1,8 @@
-controllable __node__InitialNode__34__0;
+controllable __node__InitialNode__56__0;
 controllable __start;
 controllable __end;
 automaton projected:
-  alphabet __node__InitialNode__34__0, __start, __end;
+  alphabet __node__InitialNode__56__0, __start, __end;
   @state(statespace = "__init")
   location s1:
     initial;
@@ -10,7 +10,7 @@ automaton projected:
   @state(statespace = "loc2")
   @state(statespace = "loc1")
   location s2:
-    edge __node__InitialNode__34__0 goto s3;
+    edge __node__InitialNode__56__0 goto s3;
   @state(statespace = "loc4")
   @state(statespace = "loc3")
   @state(statespace = "loc6")
