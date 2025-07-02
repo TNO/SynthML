@@ -201,11 +201,9 @@ public class NonAtomicPatternRewriter {
         Set<Action> rewrittenActions = new LinkedHashSet<>();
 
         for (NonAtomicPattern pattern: patterns) {
+            // No need to add the end transitions, since the end transitions contained in pattern.endTransitions do not
+            // correspond to any action in the UML model. They are removed in rewritePatterns.
             rewrittenActions.add(transitionMap.get(pattern.startTransition()));
-
-            for (Transition endTransition: pattern.endTransitions()) {
-                rewrittenActions.add(transitionMap.get(endTransition));
-            }
         }
 
         return rewrittenActions;
