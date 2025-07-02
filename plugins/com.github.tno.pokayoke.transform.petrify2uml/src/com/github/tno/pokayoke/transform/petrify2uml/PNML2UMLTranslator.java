@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -160,14 +161,47 @@ public class PNML2UMLTranslator {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
-        // Create the UML action node.
-        Action action = UML_FACTORY.createOpaqueAction();
+        String transitionName = transition.getId();
+        ActivityNode node = null;
+        boolean replaceDoubleUnderscore = true; // Remove double underscores from node name to return a valid model.
 
-        action.setActivity(activity);
-        action.setName(transition.getId());
+        // The name of the node represents the type of node. In the future we might want to refer directly to the UML
+        // element, rather than using name matching.
+        if (transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__ForkNode")) {
+            // Create the fork node.
+            node = UML_FACTORY.createForkNode();
+        } else if (transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__JoinNode")) {
+            // Create the join node.
+            node = UML_FACTORY.createJoinNode();
+        } else if (transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__DecisionNode")
+                || transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__InitialNode"))
+        {
+            // Create the decision node.
+            node = UML_FACTORY.createDecisionNode();
+        } else if (transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__MergeNode")
+                || transitionName.startsWith(UmlToCifTranslator.NODE_PREFIX + "__ActivityFinalNode"))
+        {
+            // Create the merge node.
+            node = UML_FACTORY.createMergeNode();
+        } else {
+            // Create the UML action node for opaque actions, call behaviors and shadowed call behaviors.
+            node = UML_FACTORY.createOpaqueAction();
 
-        nodeMapping.put(action, transition);
-        transitionMapping.put(transition, action);
+            // All opaque actions should be atomic, since we have already split the start and end actions.
+            node.setActivity(activity);
+            PokaYokeUmlProfileUtil.setAtomic(node, true);
+            replaceDoubleUnderscore = false; // Actions need name matching for later handling.
+        }
+
+        node.setActivity(activity);
+        if (replaceDoubleUnderscore) {
+            node.setName(replaceDoubleUnderscores(transitionName));
+        } else {
+            node.setName(transitionName);
+        }
+
+        nodeMapping.put(node, transition);
+        transitionMapping.put(transition, node);
     }
 
     public static String replaceDoubleUnderscores(String name) {
