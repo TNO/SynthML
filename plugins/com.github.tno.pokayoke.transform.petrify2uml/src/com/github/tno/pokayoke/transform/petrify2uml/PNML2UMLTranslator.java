@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
@@ -167,6 +168,11 @@ public class PNML2UMLTranslator {
 
         nodeMapping.put(action, transition);
         transitionMapping.put(transition, action);
+    }
+
+    public static String replaceDoubleUnderscores(String name) {
+        return (name.equals(CifSourceSinkLocationTransformer.START_EVENT_NAME)
+                || name.equals(CifSourceSinkLocationTransformer.END_EVENT_NAME)) ? name : name.replaceAll("__", "_");
     }
 
     private void translate(Place place) {
