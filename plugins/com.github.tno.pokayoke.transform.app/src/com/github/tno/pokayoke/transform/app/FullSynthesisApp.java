@@ -236,7 +236,8 @@ public class FullSynthesisApp {
         PostProcessActivity.finalizeOpaqueActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
+                umlToCifTranslator.getStartEventMap(), umlToCifTranslator.getEndEventNameMap(),
+                UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
