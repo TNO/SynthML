@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.ActivityNode;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -196,14 +197,14 @@ public class NonAtomicPatternRewriter {
      * @return All activity actions corresponding to start or end transitions in the given list of rewritten patterns.
      */
     public static Set<Action> getRewrittenActions(List<NonAtomicPattern> patterns,
-            Map<Transition, Action> transitionMap)
+            Map<Transition, ActivityNode> transitionMap)
     {
         Set<Action> rewrittenActions = new LinkedHashSet<>();
 
         for (NonAtomicPattern pattern: patterns) {
             // No need to add the end transitions, since the end transitions contained in pattern.endTransitions do not
             // correspond to any action in the UML model. They are removed in rewritePatterns.
-            rewrittenActions.add(transitionMap.get(pattern.startTransition()));
+            rewrittenActions.add((Action)transitionMap.get(pattern.startTransition()));
         }
 
         return rewrittenActions;
