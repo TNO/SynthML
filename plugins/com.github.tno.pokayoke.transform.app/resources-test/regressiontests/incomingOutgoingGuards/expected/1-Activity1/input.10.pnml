@@ -11,9 +11,54 @@
           <text>__node__InitialNode__34__0</text>
         </name>
       </transition>
+      <transition id="__node__OpaqueAction__37">
+        <name>
+          <text>__node__OpaqueAction__37</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__35__0">
+        <name>
+          <text>__node__ActivityFinalNode__35__0</text>
+        </name>
+      </transition>
       <transition id="__end">
         <name>
           <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__36">
+        <name>
+          <text>__node__OpaqueAction__36</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__38__1">
+        <name>
+          <text>__node__MergeNode__38__1</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__37__result_2">
+        <name>
+          <text>__node__OpaqueAction__37__result_2</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__37__result_1">
+        <name>
+          <text>__node__OpaqueAction__37__result_1</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__39__0">
+        <name>
+          <text>__node__DecisionNode__39__0</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__39__1">
+        <name>
+          <text>__node__DecisionNode__39__1</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__38__0">
+        <name>
+          <text>__node__MergeNode__38__0</text>
         </name>
       </transition>
       <transition id="__loop">
@@ -21,14 +66,35 @@
           <text>__loop</text>
         </name>
       </transition>
-      <place id="p4">
+      <place id="p12">
         <name>
-          <text>p4</text>
+          <text>p12</text>
         </name>
       </place>
-      <arc id="__end__to__p4" source="__end" target="p4">
+      <arc id="__end__to__p12" source="__end" target="p12">
       </arc>
-      <arc id="__loop__to__p4" source="__loop" target="p4">
+      <arc id="__loop__to__p12" source="__loop" target="p12">
+      </arc>
+      <place id="p11">
+        <name>
+          <text>p11</text>
+        </name>
+      </place>
+      <arc id="__node__ActivityFinalNode__35__0__to__p11" source="__node__ActivityFinalNode__35__0" target="p11">
+      </arc>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__39__0__to__p8" source="__node__DecisionNode__39__0" target="p8">
+      </arc>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__39__1__to__p7" source="__node__DecisionNode__39__1" target="p7">
       </arc>
       <place id="p3">
         <name>
@@ -36,6 +102,43 @@
         </name>
       </place>
       <arc id="__node__InitialNode__34__0__to__p3" source="__node__InitialNode__34__0" target="p3">
+      </arc>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__38__0__to__p9" source="__node__MergeNode__38__0" target="p9">
+      </arc>
+      <arc id="__node__MergeNode__38__1__to__p9" source="__node__MergeNode__38__1" target="p9">
+      </arc>
+      <place id="p10">
+        <name>
+          <text>p10</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__36__to__p10" source="__node__OpaqueAction__36" target="p10">
+      </arc>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__37__to__p4" source="__node__OpaqueAction__37" target="p4">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__37__result_1__to__p5" source="__node__OpaqueAction__37__result_1" target="p5">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__37__result_2__to__p6" source="__node__OpaqueAction__37__result_2" target="p6">
       </arc>
       <place id="p2">
         <name>
@@ -54,11 +157,29 @@
       </place>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
+      <arc id="p10__to____node__MergeNode__38__1" source="p10" target="__node__MergeNode__38__1">
+      </arc>
+      <arc id="p11__to____end" source="p11" target="__end">
+      </arc>
+      <arc id="p12__to____loop" source="p12" target="__loop">
+      </arc>
       <arc id="p2__to____node__InitialNode__34__0" source="p2" target="__node__InitialNode__34__0">
       </arc>
-      <arc id="p3__to____end" source="p3" target="__end">
+      <arc id="p3__to____node__OpaqueAction__37" source="p3" target="__node__OpaqueAction__37">
       </arc>
-      <arc id="p4__to____loop" source="p4" target="__loop">
+      <arc id="p4__to____node__OpaqueAction__37__result_1" source="p4" target="__node__OpaqueAction__37__result_1">
+      </arc>
+      <arc id="p4__to____node__OpaqueAction__37__result_2" source="p4" target="__node__OpaqueAction__37__result_2">
+      </arc>
+      <arc id="p5__to____node__DecisionNode__39__1" source="p5" target="__node__DecisionNode__39__1">
+      </arc>
+      <arc id="p6__to____node__DecisionNode__39__0" source="p6" target="__node__DecisionNode__39__0">
+      </arc>
+      <arc id="p7__to____node__MergeNode__38__0" source="p7" target="__node__MergeNode__38__0">
+      </arc>
+      <arc id="p8__to____node__OpaqueAction__36" source="p8" target="__node__OpaqueAction__36">
+      </arc>
+      <arc id="p9__to____node__ActivityFinalNode__35__0" source="p9" target="__node__ActivityFinalNode__35__0">
       </arc>
     </page>
   </net>
