@@ -96,7 +96,8 @@ public class FlattenUMLActivity {
             if (node instanceof CallBehaviorAction action) {
                 Behavior behavior = action.getBehavior();
 
-                // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are considered leaves, as are call behavior actions that call opaque behaviors.
+                // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
+                // considered leaves, as are call behavior actions that call opaque behaviors.
                 if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
                     transformActivity(activity, action);
                 }
