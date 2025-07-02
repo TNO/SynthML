@@ -1674,11 +1674,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // We must allow finishing non-atomic/non-deterministic actions.
                         if (startEventMap.containsKey(cifEvent)) {
                             // End of a non-deterministic opaque behavior that couldn't be merged back to a call
-                            // behavior to the original opaque behavior, but instead is left as an opaque action.
+                            // behavior to the original opaque behavior, but instead is left as an opaque action. Also
+                            // opaque actions that after the flattening have the flattened name without any suffix.
                             RedefinableElement umlElem = startEventMap.get(cifEvent);
                             Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
-                            Verify.verify(((OpaqueAction)umlElem).getName().contains(END_ACTION_SUFFIX),
-                                    cifEvent.getName());
+                            Verify.verify(
+                                    ((OpaqueAction)umlElem).getName().contains(END_ACTION_SUFFIX)
+                                            || ((OpaqueAction)umlElem).getName().contains("OpaqueAction"),
+                                    "Element " + cifEvent.getName() + " is not the end of a non-deterministic action.");
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
                             boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
