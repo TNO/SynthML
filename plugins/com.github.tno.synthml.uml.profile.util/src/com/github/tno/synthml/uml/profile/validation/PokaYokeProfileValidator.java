@@ -904,7 +904,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         if (name.contains("__")) {
-            error("Name cannot not contain '__'", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
+            error("Name cannot contain '__'", element, UMLPackage.Literals.NAMED_ELEMENT__NAME);
         }
 
         if (convention == NamingConvention.IDENTIFIER && !IDENTIFIER_PATTERN.matcher(name).matches()) {
