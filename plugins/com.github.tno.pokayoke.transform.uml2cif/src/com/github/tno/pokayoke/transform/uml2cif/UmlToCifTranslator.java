@@ -1063,7 +1063,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // atomic deterministic action and it has no defined effects, which is needed to adhere to the execution
                 // semantics of activities. In practice, the UML activity node is likely a UML decision node and thus
                 // is atomic, deterministic, and has no effects. There are some validation checks just to be sure.
-                if (PokaYokeUmlProfileUtil.getIncomingGuard(outgoing) != null) {
+                if (!isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoing))) {
                     Verify.verify(endEdge.equals(startEdge),
                             "Expected the activity node to have been translated as an atomic deterministic action.");
                     Verify.verify(!PokaYokeUmlProfileUtil.isSetEffects(outgoing.getSource()),
@@ -1680,7 +1680,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
                             Verify.verify(
                                     ((OpaqueAction)umlElem).getName().contains(END_ACTION_SUFFIX)
-                                            || ((OpaqueAction)umlElem).getName().contains("OpaqueAction"),
+                                            || cifEvent.getName().contains("OpaqueAction"),
                                     "Element " + cifEvent.getName() + " is not the end of a non-deterministic action.");
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
@@ -1880,5 +1880,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         private PostConditionKind(String prefix) {
             this.prefix = prefix;
         }
+    }
+
+    public static boolean isNullOrTriviallyTrue(String s) {
+        return s == null || s.equals("true");
     }
 }
