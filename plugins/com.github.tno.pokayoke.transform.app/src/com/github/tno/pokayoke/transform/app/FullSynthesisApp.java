@@ -286,7 +286,7 @@ public class FullSynthesisApp {
     private static String getPreservedEvents(Specification spec) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
-        // Preserve only controllable events and non-controllable events that end a non-atomic action, and nodes from
+        // Preserve only controllable events, non-controllable events that end a non-atomic action, and nodes from
         // inlined activities. The choice is based on the nodes name: the UML to CIF translation adds the node prefix to
         // all nodes coming from inlined activities. In the future we might want to refer directly to the nodes instead
         // of using a string comparison.
