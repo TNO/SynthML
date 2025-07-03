@@ -6,9 +6,9 @@
           <text>__start</text>
         </name>
       </transition>
-      <transition id="__node__InitialNode__34__0">
+      <transition id="__node__InitialNode__56__0">
         <name>
-          <text>__node__InitialNode__34__0</text>
+          <text>__node__InitialNode__56__0</text>
         </name>
       </transition>
       <transition id="__node__OpaqueAction__37">
@@ -94,7 +94,7 @@
           <text>p3</text>
         </name>
       </place>
-      <arc id="__node__InitialNode__34__0__to__p3" source="__node__InitialNode__34__0" target="p3">
+      <arc id="__node__InitialNode__56__0__to__p3" source="__node__InitialNode__56__0" target="p3">
       </arc>
       <place id="p9">
         <name>
@@ -150,11 +150,15 @@
       </place>
       <arc id="p1__to____start" source="p1" target="__start">
       </arc>
+<<<<<<< HEAD
       <arc id="p10__to____node__MergeNode__38__1" source="p10" target="__node__MergeNode__38__1">
       </arc>
       <arc id="p11__to____end" source="p11" target="__end">
       </arc>
       <arc id="p2__to____node__InitialNode__34__0" source="p2" target="__node__InitialNode__34__0">
+=======
+      <arc id="p2__to____node__InitialNode__56__0" source="p2" target="__node__InitialNode__56__0">
+>>>>>>> refs/remotes/origin/main
       </arc>
       <arc id="p3__to____node__OpaqueAction__37" source="p3" target="__node__OpaqueAction__37">
       </arc>

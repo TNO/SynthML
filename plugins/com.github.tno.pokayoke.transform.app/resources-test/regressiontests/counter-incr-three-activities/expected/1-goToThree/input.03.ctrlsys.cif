@@ -11,10 +11,10 @@ plant automaton Context:
   alg bool __precondition = pre_goToThree;
   alg bool post_goToThree = count = 3;
   alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToThree_once__22__initialize__14 = occurrences_goToThree_once__22__initialize__14.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_once__22__incr1__15 = occurrences_goToThree_once__22__incr1__15.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToThree_once__22__incr2__16 = occurrences_goToThree_once__22__incr2__16.__occurrences >= 0;
-  alg bool __postcondition = post_goToThree and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToThree_once__22__initialize__14 and (__postcondition__occurrences_goToThree_once__22__incr1__15 and __postcondition__occurrences_goToThree_once__22__incr2__16));
+  alg bool __postcondition__occurrences_goToThree_once__42__initialize__26 = occurrences_goToThree_once__42__initialize__26.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToThree_once__42__incr1__28 = occurrences_goToThree_once__42__incr1__28.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToThree_once__42__incr2__30 = occurrences_goToThree_once__42__incr2__30.__occurrences >= 0;
+  alg bool __postcondition = post_goToThree and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToThree_once__42__initialize__26 and (__postcondition__occurrences_goToThree_once__42__incr1__28 and __postcondition__occurrences_goToThree_once__42__incr2__30));
   initial __precondition;
   marked __postcondition;
   location:
@@ -26,7 +26,7 @@ plant automaton Context:
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
 end
-supervisor automaton occurrences_goToThree_once__22__initialize__14:
+supervisor automaton occurrences_goToThree_once__42__initialize__26:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -34,7 +34,7 @@ supervisor automaton occurrences_goToThree_once__22__initialize__14:
     marked;
     edge initialize when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton occurrences_goToThree_once__22__incr1__15:
+supervisor automaton occurrences_goToThree_once__42__incr1__28:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -42,7 +42,7 @@ supervisor automaton occurrences_goToThree_once__22__incr1__15:
     marked;
     edge incr1 when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-supervisor automaton occurrences_goToThree_once__22__incr2__16:
+supervisor automaton occurrences_goToThree_once__42__incr2__30:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -55,7 +55,7 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge incr1 when not Context.__nonAtomicActive__initialize and (Context.count = 2 and occurrences_goToThree_once__22__initialize__14.__occurrences = 1) and (occurrences_goToThree_once__22__incr1__15.__occurrences = 0 and (occurrences_goToThree_once__22__incr2__16.__occurrences = 0 and Context.init));
-    edge incr2 when not Context.__nonAtomicActive__initialize and (Context.count = 1 and occurrences_goToThree_once__22__initialize__14.__occurrences = 1) and (occurrences_goToThree_once__22__incr1__15.__occurrences = 0 and (occurrences_goToThree_once__22__incr2__16.__occurrences = 0 and Context.init));
-    edge initialize when not Context.__nonAtomicActive__initialize and (Context.count = 0 and occurrences_goToThree_once__22__initialize__14.__occurrences = 0) and (occurrences_goToThree_once__22__incr1__15.__occurrences = 0 and (occurrences_goToThree_once__22__incr2__16.__occurrences = 0 and not Context.init));
+    edge incr1 when not Context.__nonAtomicActive__initialize and (Context.count = 2 and occurrences_goToThree_once__42__initialize__26.__occurrences = 1) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and Context.init));
+    edge incr2 when not Context.__nonAtomicActive__initialize and (Context.count = 1 and occurrences_goToThree_once__42__initialize__26.__occurrences = 1) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and Context.init));
+    edge initialize when not Context.__nonAtomicActive__initialize and (Context.count = 0 and occurrences_goToThree_once__42__initialize__26.__occurrences = 0) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and not Context.init));
 end

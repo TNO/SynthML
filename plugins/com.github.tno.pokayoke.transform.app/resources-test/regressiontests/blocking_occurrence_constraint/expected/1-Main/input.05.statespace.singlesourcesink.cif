@@ -5,26 +5,26 @@ controllable __start;
 controllable __end;
 automaton statespace:
   alphabet left, right, flip, __start, __end;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
   location __init:
     initial;
     edge __start goto loc1;
     edge __start goto loc2;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
   location loc1:
     edge left goto loc3;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")
   location loc2:
     edge right goto loc4;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 1, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 1, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
   location loc3:
     edge __end goto __done;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 1, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 1, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
   location loc4:
     edge __end goto __done;
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 1, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 0, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
-  @state(at_most_once__19__left__13 = "*", at_most_once__19__left__13.__occurrences = 0, at_most_once__19__right__14 = "*", at_most_once__19__right__14.__occurrences = 1, blocking__21__flip__15 = "*", blocking__21__flip__15.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 1, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, sup = "*")
+  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 1, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, sup = "*")
   location __done:
     marked;
 end

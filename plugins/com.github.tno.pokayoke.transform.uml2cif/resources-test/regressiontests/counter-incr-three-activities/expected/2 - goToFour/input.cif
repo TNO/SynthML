@@ -11,10 +11,10 @@ plant automaton Context:
   alg bool __precondition = pre_goToFour;
   alg bool post_goToFour = count = 4;
   alg bool __postcondition__nonAtomicActive__initialize = not __nonAtomicActive__initialize;
-  alg bool __postcondition__occurrences_goToFour__29__initialize__14 = occurrences_goToFour__29__initialize__14.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__29__incr1__15 = occurrences_goToFour__29__incr1__15.__occurrences >= 0;
-  alg bool __postcondition__occurrences_goToFour__29__incr2__16 = occurrences_goToFour__29__incr2__16.__occurrences >= 0;
-  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFour__29__initialize__14 and (__postcondition__occurrences_goToFour__29__incr1__15 and __postcondition__occurrences_goToFour__29__incr2__16));
+  alg bool __postcondition__occurrences_goToFour__83__initialize__38 = occurrences_goToFour__83__initialize__38.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour__83__incr1__41 = occurrences_goToFour__83__incr1__41.__occurrences >= 0;
+  alg bool __postcondition__occurrences_goToFour__83__incr2__44 = occurrences_goToFour__83__incr2__44.__occurrences >= 0;
+  alg bool __postcondition = post_goToFour and __postcondition__nonAtomicActive__initialize and (__postcondition__occurrences_goToFour__83__initialize__38 and (__postcondition__occurrences_goToFour__83__incr1__41 and __postcondition__occurrences_goToFour__83__incr2__44));
   initial __precondition;
   marked __postcondition;
   location:
@@ -26,7 +26,7 @@ plant automaton Context:
     edge incr1 when init do count := count + 1;
     edge incr2 when init do count := count + 2;
 end
-requirement automaton occurrences_goToFour__29__initialize__14:
+requirement automaton occurrences_goToFour__83__initialize__38:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -34,7 +34,7 @@ requirement automaton occurrences_goToFour__29__initialize__14:
     marked;
     edge initialize when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFour__29__incr1__15:
+requirement automaton occurrences_goToFour__83__incr1__41:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -42,7 +42,7 @@ requirement automaton occurrences_goToFour__29__incr1__15:
     marked;
     edge incr1 when __occurrences < 2 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences_goToFour__29__incr2__16:
+requirement automaton occurrences_goToFour__83__incr2__44:
   disc int[0..2] __occurrences;
   marked __occurrences >= 0;
   location:

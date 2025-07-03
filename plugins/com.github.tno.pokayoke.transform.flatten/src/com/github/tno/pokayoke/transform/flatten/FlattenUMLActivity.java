@@ -21,7 +21,6 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.OpaqueBehavior;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
@@ -97,11 +96,10 @@ public class FlattenUMLActivity {
             if (node instanceof CallBehaviorAction action) {
                 Behavior behavior = action.getBehavior();
 
-                // Do not flatten stereotyped CallBehaviorActions as they should be considered leafs.
+                // Translate only non-shadowed call behavior actions. Shadowed (stereotyped) call behavior actions are
+                // considered leaves, as are call behavior actions that call opaque behaviors.
                 if (behavior instanceof Activity activity && action.getAppliedStereotypes().isEmpty()) {
                     transformActivity(activity, action);
-                } else if (behavior instanceof OpaqueBehavior) {
-                    throw new RuntimeException("Call opaque behavior actions are currently unsupported.");
                 }
             }
         }
@@ -154,6 +152,8 @@ public class FlattenUMLActivity {
                     DecisionNode initialNodeSub = FileHelper.FACTORY.createDecisionNode();
                     initialNode.getOutgoings().get(0).setSource(initialNodeSub);
                     callBehaviorActionToReplace.getIncomings().get(0).setTarget(initialNodeSub);
+                    initialNodeSub.setActivity(parentActivity);
+                    initialNodeSub.setName(initialNode.getName());
 
                     // Destroy the initial node.
                     initialNode.destroy();
@@ -168,6 +168,8 @@ public class FlattenUMLActivity {
                     MergeNode finalNodeSub = FileHelper.FACTORY.createMergeNode();
                     finalNode.getIncomings().get(0).setTarget(finalNodeSub);
                     callBehaviorActionToReplace.getOutgoings().get(0).setSource(finalNodeSub);
+                    finalNodeSub.setActivity(parentActivity);
+                    finalNodeSub.setName(finalNode.getName());
 
                     // Destroy the final node.
                     finalNode.destroy();

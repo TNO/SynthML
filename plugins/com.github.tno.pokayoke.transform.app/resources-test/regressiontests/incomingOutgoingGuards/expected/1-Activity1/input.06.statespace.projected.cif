@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 controllable __node__InitialNode__34__0;
 uncontrollable __node__ActivityFinalNode__35__0;
 uncontrollable __node__OpaqueAction__36;
@@ -8,10 +9,17 @@ uncontrollable __node__MergeNode__38__0;
 uncontrollable __node__MergeNode__38__1;
 uncontrollable __node__DecisionNode__39__0;
 uncontrollable __node__DecisionNode__39__1;
+=======
+controllable __node__InitialNode__56__0;
+>>>>>>> refs/remotes/origin/main
 controllable __start;
 controllable __end;
 automaton projected:
+<<<<<<< HEAD
   alphabet __node__InitialNode__34__0, __node__ActivityFinalNode__35__0, __node__OpaqueAction__36, __node__OpaqueAction__37, __node__OpaqueAction__37__result_1, __node__OpaqueAction__37__result_2, __node__MergeNode__38__0, __node__MergeNode__38__1, __node__DecisionNode__39__0, __node__DecisionNode__39__1, __start, __end;
+=======
+  alphabet __node__InitialNode__56__0, __start, __end;
+>>>>>>> refs/remotes/origin/main
   @state(statespace = "__init")
   location s1:
     initial;
@@ -19,7 +27,7 @@ automaton projected:
   @state(statespace = "loc2")
   @state(statespace = "loc1")
   location s2:
-    edge __node__InitialNode__34__0 goto s3;
+    edge __node__InitialNode__56__0 goto s3;
   @state(statespace = "loc4")
   @state(statespace = "loc3")
   location s3:

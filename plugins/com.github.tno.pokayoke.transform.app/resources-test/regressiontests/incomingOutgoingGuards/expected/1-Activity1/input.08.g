@@ -1,7 +1,12 @@
 .model minimal
+<<<<<<< HEAD
 .dummy __start __node__InitialNode__34__0 __node__OpaqueAction__37 __node__ActivityFinalNode__35__0 __end __node__OpaqueAction__36 __node__MergeNode__38__1 __node__OpaqueAction__37__result_2 __node__OpaqueAction__37__result_1 __node__DecisionNode__39__0 __node__DecisionNode__39__1 __node__MergeNode__38__0 __loop
+=======
+.dummy __start __node__InitialNode__56__0 __end __loop
+>>>>>>> refs/remotes/origin/main
 .state graph
 s1 __start s2
+<<<<<<< HEAD
 s2 __node__InitialNode__34__0 s4
 s4 __node__OpaqueAction__37 s9
 s5 __node__ActivityFinalNode__35__0 s6
@@ -13,6 +18,10 @@ s9 __node__OpaqueAction__37__result_1 s11
 s10 __node__DecisionNode__39__0 s7
 s11 __node__DecisionNode__39__1 s12
 s12 __node__MergeNode__38__0 s5
+=======
+s2 __node__InitialNode__56__0 s4
+s4 __end s3
+>>>>>>> refs/remotes/origin/main
 s3 __loop s3
 .marking {s1}
 .end

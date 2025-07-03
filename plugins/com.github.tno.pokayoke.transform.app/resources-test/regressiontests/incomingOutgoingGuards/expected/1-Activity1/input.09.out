@@ -1,6 +1,11 @@
 .model minimal
+<<<<<<< HEAD
 .dummy  __start __node__InitialNode__34__0 __node__OpaqueAction__37 __node__ActivityFinalNode__35__0 __end __node__OpaqueAction__36 __node__MergeNode__38__1 __node__OpaqueAction__37__result_2 __node__OpaqueAction__37__result_1 __node__DecisionNode__39__0 __node__DecisionNode__39__1 __node__MergeNode__38__0 __loop
+=======
+.dummy  __start __node__InitialNode__56__0 __end __loop
+>>>>>>> refs/remotes/origin/main
 .graph
+<<<<<<< HEAD
 __end p12
 __loop p12
 __node__ActivityFinalNode__35__0 p11
@@ -13,8 +18,14 @@ __node__OpaqueAction__36 p10
 __node__OpaqueAction__37 p4
 __node__OpaqueAction__37__result_1 p5
 __node__OpaqueAction__37__result_2 p6
+=======
+__end p4
+__loop p4
+__node__InitialNode__56__0 p3
+>>>>>>> refs/remotes/origin/main
 __start p2
 p1 __start
+<<<<<<< HEAD
 p10 __node__MergeNode__38__1
 p11 __end
 p12 __loop
@@ -26,5 +37,10 @@ p6 __node__DecisionNode__39__0
 p7 __node__MergeNode__38__0
 p8 __node__OpaqueAction__36
 p9 __node__ActivityFinalNode__35__0
+=======
+p2 __node__InitialNode__56__0
+p3 __end
+p4 __loop
+>>>>>>> refs/remotes/origin/main
 .marking { p1 }
 .end

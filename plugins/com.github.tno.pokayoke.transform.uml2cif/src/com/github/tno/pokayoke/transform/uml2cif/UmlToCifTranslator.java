@@ -68,8 +68,10 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
+import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -357,6 +359,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // to be improved in the future.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
+        }
+
+        // Flatten UML activities and normalize IDs.
+        if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+            FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
+            flattener.transform();
+            FileHelper.normalizeIds(activity.getModel());
         }
 
         // Create the CIF specification to which the input UML model will be translated.
@@ -736,7 +745,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // currently being synthesized. Therefore, we do not translate other activities than the one that is currently
         // being synthesized. The translation of other concrete activities would imply the translation of all its nodes,
         // e.g., call behavior actions to some opaque behavior, as well as opaque actions. These nodes would interleave
-        // and interfere with the current activity nodes. For vertical scaling, this needs to be carefully re-evaluated.
+        // and interfere with the current activity nodes. For vertical scaling, this is still valid: once the
+        // activity has been synthesized, it contains the flattened called activities. Only the synthesized activity
+        // should be translated for guard computation and language equivalence check.
         if (translationPurpose != TranslationPurpose.SYNTHESIS && activity != this.activity) {
             return Pair.pair(new LinkedHashSet<>(), HashBiMap.create());
         }
@@ -813,6 +824,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             newEventEdges = translateActivityAndNode(node, true, false);
         } else if (node instanceof CallBehaviorAction callNode) {
             if (PokaYokeUmlProfileUtil.isFormalElement(callNode)) {
+                // Sanity check. Translating a shadowed call behavior should occur only if translating for synthesis.
+                Verify.verify(translationPurpose == TranslationPurpose.SYNTHESIS,
+                        "Translating a shadowed call behavior is allowed only for synthesis translation purpose.");
+
                 // The call behavior shadows the called behavior. We use the guards/effects of the call behavior node
                 // and ignore the called behavior.
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(callNode), false);
@@ -820,6 +835,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // We translate the called behavior, inlining it. We do transform on the call node, to ensure that
                 // each call gets a unique action.
                 Behavior behavior = callNode.getBehavior();
+
+                if (behavior instanceof Activity) {
+                    // Sanity check. After the flattening there shouldn't be any call behaviors to activities.
+                    throw new RuntimeException("Found a call behavior to an activity.");
+                }
+
                 newEventEdges = translateActivityAndNode(callNode, PokaYokeUmlProfileUtil.isAtomic(behavior), false);
             }
         } else if (node instanceof OpaqueAction) {
@@ -1267,10 +1288,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
                 if (umlElement instanceof Activity umlActivity) {
-                    // For vertical scaling, we need to carefully re-evaluate this, since called activities may be
-                    // inlined or may be merged back to call behaviors of the activities. Both cases need to be handled
-                    // for the different translation purposes, similar to below for opaque behaviors.
                     if (!umlActivity.isAbstract()) {
+                        // The constraints are considered at a local level: this activity *directly* calls the
+                        // constrained activity. We do not include the initial nodes of the activities recursively, i.e.
+                        // this activity can call an activity that calls a constrained activity, and will *not* add to
+                        // the occurrence constraint count.
                         Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -1284,6 +1306,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         cifAutomata.add(createIntervalAutomaton(name, cifStartEvents, min, max));
                     }
                 } else if (umlElement instanceof OpaqueBehavior umlOpaqueBehavior) {
+                    // The constraints are considered at a local level: this activity *directly* calls the
+                    // constrained behavior. We do not include the call nodes of the opaque behavior recursively, i.e.
+                    // this activity can call an activity that calls the constrained behavior, and will *not* add to the
+                    // occurrence constraint count.
                     List<Event> cifStartEvents;
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                         // For synthesis, we directly translate the opaque behaviors, so we simply look up their

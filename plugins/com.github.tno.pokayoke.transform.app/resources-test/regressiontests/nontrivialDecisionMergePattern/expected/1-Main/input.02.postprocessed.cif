@@ -12,10 +12,10 @@ plant automaton Context:
   alg bool __precondition = true;
   alg bool postcondition = field2 and flipped;
   alg bool __postcondition__nonAtomicActive__flip = not __nonAtomicActive__flip;
-  alg bool __postcondition__occurrences__26__left__20 = occurrences__26__left__20.__occurrences >= 0;
-  alg bool __postcondition__occurrences__26__right__21 = occurrences__26__right__21.__occurrences >= 0;
-  alg bool __postcondition__occurrences__26__flip__22 = occurrences__26__flip__22.__occurrences >= 0;
-  alg bool __postcondition = postcondition and __postcondition__nonAtomicActive__flip and (__postcondition__occurrences__26__left__20 and (__postcondition__occurrences__26__right__21 and __postcondition__occurrences__26__flip__22));
+  alg bool __postcondition__occurrences__50__left__38 = occurrences__50__left__38.__occurrences >= 0;
+  alg bool __postcondition__occurrences__50__right__40 = occurrences__50__right__40.__occurrences >= 0;
+  alg bool __postcondition__occurrences__50__flip__42 = occurrences__50__flip__42.__occurrences >= 0;
+  alg bool __postcondition = postcondition and __postcondition__nonAtomicActive__flip and (__postcondition__occurrences__50__left__38 and (__postcondition__occurrences__50__right__40 and __postcondition__occurrences__50__flip__42));
   initial __precondition;
   marked __postcondition;
   location:
@@ -27,7 +27,7 @@ plant automaton Context:
     edge flip__na_result_1 when __nonAtomicActive__flip do field1 := not field1, flipped := true, __nonAtomicActive__flip := false;
     edge flip__na_result_2 when __nonAtomicActive__flip do field1 := not field1, flipped := true, __nonAtomicActive__flip := false;
 end
-requirement automaton occurrences__26__left__20:
+requirement automaton occurrences__50__left__38:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -35,7 +35,7 @@ requirement automaton occurrences__26__left__20:
     marked;
     edge left when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__26__right__21:
+requirement automaton occurrences__50__right__40:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
@@ -43,7 +43,7 @@ requirement automaton occurrences__26__right__21:
     marked;
     edge right when __occurrences < 1 do __occurrences := __occurrences + 1;
 end
-requirement automaton occurrences__26__flip__22:
+requirement automaton occurrences__50__flip__42:
   disc int[0..1] __occurrences;
   marked __occurrences >= 0;
   location:
