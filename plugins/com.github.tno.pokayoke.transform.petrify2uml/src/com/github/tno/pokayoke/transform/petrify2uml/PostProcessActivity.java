@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -149,14 +150,16 @@ public class PostProcessActivity {
      *
      * @param activity The activity for which to finalize the opaque actions.
      * @param rewrittenNonAtomicActions All non-atomic actions that have already been rewritten (on Petri Net level).
+     * @param startEventMap The mapping from translated CIF start events to their corresponding UML elements for which
+     *     they were created.
      * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
      *     elements and the index of the corresponding effect of the end event.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
-            Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
-            List<String> warnings)
+            Map<Event, RedefinableElement> startEventMap, Map<String, Pair<RedefinableElement, Integer>> endEventMap,
+            String nonAtomicOutcomeSuffix, List<String> warnings)
     {
         CifContext context = new CifContext(activity.getModel());
 
