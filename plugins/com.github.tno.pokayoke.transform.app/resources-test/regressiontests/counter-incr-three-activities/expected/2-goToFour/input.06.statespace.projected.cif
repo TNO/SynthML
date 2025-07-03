@@ -3,31 +3,21 @@ uncontrollable initialize__na_result_1;
 uncontrollable initialize__na_result_2;
 controllable incr1;
 controllable incr2;
-<<<<<<< HEAD
-controllable __node__InitialNode__36__0;
-uncontrollable __node__DecisionNode__37__0;
-uncontrollable __node__DecisionNode__37__1;
-uncontrollable __node__MergeNode__38__0;
-uncontrollable __node__MergeNode__38__1;
-uncontrollable __node__ActivityFinalNode__39__0;
-uncontrollable __node__CallBehaviorAction__40;
-uncontrollable __node__CallBehaviorAction__41;
-uncontrollable __node__CallBehaviorAction__42;
-uncontrollable __node__CallBehaviorAction__42__na_result_1;
-uncontrollable __node__CallBehaviorAction__42__na_result_2;
-=======
 controllable __node__InitialNode__96__0;
+uncontrollable __node__DecisionNode__98__0;
+uncontrollable __node__DecisionNode__98__1;
+uncontrollable __node__MergeNode__100__0;
+uncontrollable __node__MergeNode__100__1;
+uncontrollable __node__ActivityFinalNode__102__0;
+uncontrollable __node__CallBehaviorAction__104;
+uncontrollable __node__CallBehaviorAction__106;
+uncontrollable __node__CallBehaviorAction__108;
 uncontrollable __node__CallBehaviorAction__108__na_result_1;
 uncontrollable __node__CallBehaviorAction__108__na_result_2;
->>>>>>> refs/remotes/origin/main
 controllable __start;
 controllable __end;
 automaton projected:
-<<<<<<< HEAD
-  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__36__0, __node__DecisionNode__37__0, __node__DecisionNode__37__1, __node__MergeNode__38__0, __node__MergeNode__38__1, __node__ActivityFinalNode__39__0, __node__CallBehaviorAction__40, __node__CallBehaviorAction__41, __node__CallBehaviorAction__42, __node__CallBehaviorAction__42__na_result_1, __node__CallBehaviorAction__42__na_result_2, __start, __end;
-=======
-  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__96__0, __node__CallBehaviorAction__108__na_result_1, __node__CallBehaviorAction__108__na_result_2, __start, __end;
->>>>>>> refs/remotes/origin/main
+  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__96__0, __node__DecisionNode__98__0, __node__DecisionNode__98__1, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__ActivityFinalNode__102__0, __node__CallBehaviorAction__104, __node__CallBehaviorAction__106, __node__CallBehaviorAction__108, __node__CallBehaviorAction__108__na_result_1, __node__CallBehaviorAction__108__na_result_2, __start, __end;
   @state(statespace = "__init")
   location s1:
     initial;

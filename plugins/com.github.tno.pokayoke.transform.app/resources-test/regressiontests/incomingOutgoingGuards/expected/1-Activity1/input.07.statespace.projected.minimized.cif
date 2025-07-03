@@ -1,66 +1,45 @@
-<<<<<<< HEAD
-controllable __node__InitialNode__34__0;
-uncontrollable __node__ActivityFinalNode__35__0;
-uncontrollable __node__OpaqueAction__36;
-uncontrollable __node__OpaqueAction__37;
-uncontrollable __node__OpaqueAction__37__result_1;
-uncontrollable __node__OpaqueAction__37__result_2;
-uncontrollable __node__MergeNode__38__0;
-uncontrollable __node__MergeNode__38__1;
-uncontrollable __node__DecisionNode__39__0;
-uncontrollable __node__DecisionNode__39__1;
-=======
 controllable __node__InitialNode__56__0;
->>>>>>> refs/remotes/origin/main
+uncontrollable __node__ActivityFinalNode__58__0;
+uncontrollable __node__OpaqueAction__60;
+uncontrollable __node__OpaqueAction__62;
+uncontrollable __node__MergeNode__64__0;
+uncontrollable __node__MergeNode__64__1;
+uncontrollable __node__DecisionNode__66__0;
+uncontrollable __node__DecisionNode__66__1;
 controllable __start;
 controllable __end;
 automaton minimal:
-<<<<<<< HEAD
-  alphabet __node__InitialNode__34__0, __node__ActivityFinalNode__35__0, __node__OpaqueAction__36, __node__OpaqueAction__37, __node__OpaqueAction__37__result_1, __node__OpaqueAction__37__result_2, __node__MergeNode__38__0, __node__MergeNode__38__1, __node__DecisionNode__39__0, __node__DecisionNode__39__1, __start, __end;
-=======
-  alphabet __node__InitialNode__56__0, __start, __end;
->>>>>>> refs/remotes/origin/main
+  alphabet __node__InitialNode__56__0, __node__ActivityFinalNode__58__0, __node__OpaqueAction__60, __node__OpaqueAction__62, __node__MergeNode__64__0, __node__MergeNode__64__1, __node__DecisionNode__66__0, __node__DecisionNode__66__1, __start, __end;
   @state(projected = "s1")
   location s1:
     initial;
     edge __start goto s2;
   @state(projected = "s2")
   location s2:
-<<<<<<< HEAD
-    edge __node__InitialNode__34__0 goto s4;
-  @state(projected = "s12")
-=======
     edge __node__InitialNode__56__0 goto s4;
-  @state(projected = "s4")
->>>>>>> refs/remotes/origin/main
+  @state(projected = "s10")
   location s3:
     marked;
   @state(projected = "s3")
   location s4:
-    edge __node__OpaqueAction__37 goto s9;
-  @state(projected = "s9")
+    edge __node__OpaqueAction__62 goto s9;
+  @state(projected = "s8")
   location s5:
-    edge __node__ActivityFinalNode__35__0 goto s6;
-  @state(projected = "s11")
+    edge __node__ActivityFinalNode__58__0 goto s6;
+  @state(projected = "s9")
   location s6:
     edge __end goto s3;
-  @state(projected = "s8")
+  @state(projected = "s6")
   location s7:
-    edge __node__OpaqueAction__36 goto s8;
-  @state(projected = "s10")
+    edge __node__OpaqueAction__60 goto s8;
+  @state(projected = "s7")
   location s8:
-    edge __node__MergeNode__38__1 goto s5;
+    edge __node__MergeNode__64__1 goto s5;
   @state(projected = "s4")
   location s9:
-    edge __node__OpaqueAction__37__result_2 goto s10;
-    edge __node__OpaqueAction__37__result_1 goto s11;
+    edge __node__DecisionNode__66__1 goto s10;
+    edge __node__DecisionNode__66__0 goto s7;
   @state(projected = "s5")
   location s10:
-    edge __node__DecisionNode__39__0 goto s7;
-  @state(projected = "s6")
-  location s11:
-    edge __node__DecisionNode__39__1 goto s12;
-  @state(projected = "s7")
-  location s12:
-    edge __node__MergeNode__38__0 goto s5;
+    edge __node__MergeNode__64__0 goto s5;
 end
