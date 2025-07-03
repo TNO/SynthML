@@ -287,8 +287,9 @@ public class FullSynthesisApp {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
-        // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The choice is based on the nodes name: in the future we
-        // might want to refer directly to the nodes instead of using a string comparison.
+        // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
+        // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
+        // using a string comparison.
         List<String> eventNames = events.stream().filter(
                 event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
