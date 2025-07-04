@@ -1,8 +1,15 @@
 controllable __node__InitialNode__56__0;
+uncontrollable __node__ActivityFinalNode__58__0;
+uncontrollable __node__OpaqueAction__60;
+uncontrollable __node__OpaqueAction__62;
+uncontrollable __node__MergeNode__64__0;
+uncontrollable __node__MergeNode__64__1;
+uncontrollable __node__DecisionNode__66__0;
+uncontrollable __node__DecisionNode__66__1;
 controllable __start;
 controllable __end;
 automaton projected:
-  alphabet __node__InitialNode__56__0, __start, __end;
+  alphabet __node__InitialNode__56__0, __node__ActivityFinalNode__58__0, __node__OpaqueAction__60, __node__OpaqueAction__62, __node__MergeNode__64__0, __node__MergeNode__64__1, __node__DecisionNode__66__0, __node__DecisionNode__66__1, __start, __end;
   @state(statespace = "__init")
   location s1:
     initial;
@@ -13,18 +20,31 @@ automaton projected:
     edge __node__InitialNode__56__0 goto s3;
   @state(statespace = "loc4")
   @state(statespace = "loc3")
+  location s3:
+    edge __node__OpaqueAction__62 goto s4;
   @state(statespace = "loc6")
   @state(statespace = "loc5")
   @state(statespace = "loc8")
   @state(statespace = "loc7")
-  @state(statespace = "loc10")
-  @state(statespace = "loc9")
-  @state(statespace = "loc12")
-  @state(statespace = "loc11")
-  @state(statespace = "loc13")
-  location s3:
-    edge __end goto s4;
-  @state(statespace = "__done")
   location s4:
+    edge __node__DecisionNode__66__1 goto s5;
+    edge __node__DecisionNode__66__0 goto s6;
+  @state(statespace = "loc9")
+  location s5:
+    edge __node__MergeNode__64__0 goto s8;
+  @state(statespace = "loc10")
+  location s6:
+    edge __node__OpaqueAction__60 goto s7;
+  @state(statespace = "loc12")
+  location s7:
+    edge __node__MergeNode__64__1 goto s8;
+  @state(statespace = "loc11")
+  location s8:
+    edge __node__ActivityFinalNode__58__0 goto s9;
+  @state(statespace = "loc13")
+  location s9:
+    edge __end goto s10;
+  @state(statespace = "__done")
+  location s10:
     marked;
 end
