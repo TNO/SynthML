@@ -78,11 +78,11 @@ import com.google.common.base.Verify;
  * simulated using Cameo. The annotation language is assumed to be CIF.
  */
 public class UMLToCameoTransformer {
-    /** Name for the lock class. */
-    private static final String LOCK_CLASS_NAME = "Lock";
-
     /** The prefix to use template variable assignments, which is 'temp__'. */
     public static final String PARAM_PREFIX = "temp__";
+
+    /** Name for the lock class. */
+    private static final String LOCK_CLASS_NAME = "Lock";
 
     private final Model model;
 

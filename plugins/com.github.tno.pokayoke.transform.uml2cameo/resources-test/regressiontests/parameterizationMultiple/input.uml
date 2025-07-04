@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_mE1OgDCcEfCmLZSDnGIBLA" name="Parameterization">
+    <packagedElement xmi:type="uml:Class" xmi:id="_-BPkUDCcEfCmLZSDnGIBLA" name="System" classifierBehavior="_q-4RMDCdEfCmLZSDnGIBLA" isActive="true">
+      <ownedAttribute xmi:id="_Ye2rkDCdEfCmLZSDnGIBLA" name="Park1_product" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Ye3SoDCdEfCmLZSDnGIBLA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Ye3SoTCdEfCmLZSDnGIBLA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bHY0EDCdEfCmLZSDnGIBLA" name="Park2_product" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bHZbIDCdEfCmLZSDnGIBLA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bHZbITCdEfCmLZSDnGIBLA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_gwlRMDCdEfCmLZSDnGIBLA" name="Disp_product" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gwl4QDCdEfCmLZSDnGIBLA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gwmfUDCdEfCmLZSDnGIBLA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_0zlsgDCdEfCmLZSDnGIBLA" name="Parameter_Output_Product_Activity" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0zmTkDCdEfCmLZSDnGIBLA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0zmTkTCdEfCmLZSDnGIBLA" value="1"/>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_D5B3EDCdEfCmLZSDnGIBLA" name="MoveProduct" node="_9ArCsDCdEfCmLZSDnGIBLA _ARSe4DCeEfCmLZSDnGIBLA _KUtEkDCeEfCmLZSDnGIBLA _M29l8DCeEfCmLZSDnGIBLA _WyBg4DCeEfCmLZSDnGIBLA _fBTPcDCeEfCmLZSDnGIBLA _jBVWYDCeEfCmLZSDnGIBLA">
+        <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_h-FgoFHPEfCaALiH7vZiQg" parameter="_h-GuwFHPEfCaALiH7vZiQg _dHNnAFjPEfCed8LJhF4VYg">
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_h-GuwFHPEfCaALiH7vZiQg" default="_h-GuwVHPEfCaALiH7vZiQg" parameteredElement="_h-GuwVHPEfCaALiH7vZiQg" constrainingClassifier="_O59N4DCdEfCmLZSDnGIBLA">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_h-GuwVHPEfCaALiH7vZiQg" name="productId" templateParameter="_h-GuwFHPEfCaALiH7vZiQg"/>
+          </ownedParameter>
+          <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_dHNnAFjPEfCed8LJhF4VYg" default="_dHNnAVjPEfCed8LJhF4VYg" parameteredElement="_dHNnAVjPEfCed8LJhF4VYg">
+            <ownedDefault xmi:type="uml:Class" xmi:id="_dHNnAVjPEfCed8LJhF4VYg" name="T2" templateParameter="_dHNnAFjPEfCed8LJhF4VYg"/>
+            <constrainingClassifier xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </ownedParameter>
+        </ownedTemplateSignature>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_TgQ1MDCeEfCmLZSDnGIBLA" target="_KUtEkDCeEfCmLZSDnGIBLA" source="_ARSe4DCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_gcz7IFHPEfCaALiH7vZiQg">
+            <language>CIF</language>
+            <body>Park1_product = productId</body>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_TgRcQDCeEfCmLZSDnGIBLA" name="Product on which station_To_Output from station 1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_UFm98DCeEfCmLZSDnGIBLA" name="" target="_M29l8DCeEfCmLZSDnGIBLA" source="_ARSe4DCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="_fLgrUFHPEfCaALiH7vZiQg">
+            <language>CIF</language>
+            <body>Park2_product = productId</body>
+          </guard>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_UFm98jCeEfCmLZSDnGIBLA" name="Product on which station_To_Output from station 2_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_UkWvcDCeEfCmLZSDnGIBLA" target="_ARSe4DCeEfCmLZSDnGIBLA" source="_9ArCsDCdEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_k-HzMDCeEfCmLZSDnGIBLA"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_UkWvcjCeEfCmLZSDnGIBLA" name="Initial1_To_Product on which station_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_Y4sScDCeEfCmLZSDnGIBLA" target="_WyBg4DCeEfCmLZSDnGIBLA" source="_KUtEkDCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_YWYaIDCfEfCmLZSDnGIBLA"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Y4sScjCeEfCmLZSDnGIBLA" name="Output from station 1_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_Zm8fkDCeEfCmLZSDnGIBLA" target="_WyBg4DCeEfCmLZSDnGIBLA" source="_M29l8DCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_YBg9YDCfEfCmLZSDnGIBLA"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Zm8fkjCeEfCmLZSDnGIBLA" name="Output from station 2_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_HjfrwDCfEfCmLZSDnGIBLA" target="_jBVWYDCeEfCmLZSDnGIBLA" source="_fBTPcDCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_JMS1kDCfEfCmLZSDnGIBLA"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_HjfrwjCfEfCmLZSDnGIBLA" name="Remove from disp_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_Sb1HQDCfEfCmLZSDnGIBLA" target="_fBTPcDCeEfCmLZSDnGIBLA" source="_WyBg4DCeEfCmLZSDnGIBLA">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_YqDkEDCfEfCmLZSDnGIBLA"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_Sb1HQjCfEfCmLZSDnGIBLA" name="_To_Remove from disp_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_9ArCsDCdEfCmLZSDnGIBLA" name="" outgoing="_UkWvcDCeEfCmLZSDnGIBLA"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="_ARSe4DCeEfCmLZSDnGIBLA" name="Product on which station" incoming="_UkWvcDCeEfCmLZSDnGIBLA" outgoing="_TgQ1MDCeEfCmLZSDnGIBLA _UFm98DCeEfCmLZSDnGIBLA"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_KUtEkDCeEfCmLZSDnGIBLA" name="Output from Park1" incoming="_TgQ1MDCeEfCmLZSDnGIBLA" outgoing="_Y4sScDCeEfCmLZSDnGIBLA">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_M29l8DCeEfCmLZSDnGIBLA" name="Output from Park2" incoming="_UFm98DCeEfCmLZSDnGIBLA" outgoing="_Zm8fkDCeEfCmLZSDnGIBLA">
+          <body>// TODO body of OpaqueAction2</body>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="_WyBg4DCeEfCmLZSDnGIBLA" name="" incoming="_Y4sScDCeEfCmLZSDnGIBLA _Zm8fkDCeEfCmLZSDnGIBLA" outgoing="_Sb1HQDCfEfCmLZSDnGIBLA"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_fBTPcDCeEfCmLZSDnGIBLA" name="Remove from disp" incoming="_Sb1HQDCfEfCmLZSDnGIBLA" outgoing="_HjfrwDCfEfCmLZSDnGIBLA">
+          <body>// TODO body of OpaqueAction4</body>
+        </node>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="_jBVWYDCeEfCmLZSDnGIBLA" name="" incoming="_HjfrwDCfEfCmLZSDnGIBLA"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_q-4RMDCdEfCmLZSDnGIBLA" name="Environment" node="_Mm0FcDIwEfC0ZcoSb49rpw _QfQWoDIwEfC0ZcoSb49rpw _ZDJXEFNdEfCBfbIuuwW-dw _cOvwYFNdEfCBfbIuuwW-dw _iHyAUFNdEfCBfbIuuwW-dw _Yr-WYFgBEfCypLFnyoOr-A _3pVmcFgBEfCypLFnyoOr-A">
+        <edge xmi:type="uml:ControlFlow" xmi:id="_R0ymMDIwEfC0ZcoSb49rpw" name="" target="_ZDJXEFNdEfCBfbIuuwW-dw" source="_QfQWoDIwEfC0ZcoSb49rpw">
+          <guard xmi:type="uml:LiteralNull" xmi:id="_UW6ksDIwEfC0ZcoSb49rpw"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_R0ymMjIwEfC0ZcoSb49rpw" name="OpaqueAction1_To__weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_7LlcAFNdEfCBfbIuuwW-dw" target="_iHyAUFNdEfCBfbIuuwW-dw" source="_Mm0FcDIwEfC0ZcoSb49rpw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_7Lt-4FNdEfCBfbIuuwW-dw" name="_To_Merge1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_7LvNAFNdEfCBfbIuuwW-dw" name="_To_Merge1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_7rviwFNdEfCBfbIuuwW-dw" target="_QfQWoDIwEfC0ZcoSb49rpw" source="_iHyAUFNdEfCBfbIuuwW-dw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_7rz0MFNdEfCBfbIuuwW-dw" name="Merge1_To_OpaqueAction1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_7r1CUFNdEfCBfbIuuwW-dw" name="Merge1_To_OpaqueAction1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_8dfv0FNdEfCBfbIuuwW-dw" target="_Yr-WYFgBEfCypLFnyoOr-A" source="_ZDJXEFNdEfCBfbIuuwW-dw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_8djaMFNdEfCBfbIuuwW-dw" name="Fork1_To_MoveProduct_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_8dl2cFNdEfCBfbIuuwW-dw" name="Fork1_To_MoveProduct_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_9YbuEFNdEfCBfbIuuwW-dw" target="_3pVmcFgBEfCypLFnyoOr-A" source="_ZDJXEFNdEfCBfbIuuwW-dw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_9YexYFNdEfCBfbIuuwW-dw" name="Fork1_To_MoveProduct_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_9YibwFNdEfCBfbIuuwW-dw" name="Fork1_To_MoveProduct_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_-M5Q4FNdEfCBfbIuuwW-dw" target="_cOvwYFNdEfCBfbIuuwW-dw" source="_3pVmcFgBEfCypLFnyoOr-A">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_-M6fAFNdEfCBfbIuuwW-dw" name="MoveProduct_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_-M7tIFNdEfCBfbIuuwW-dw" name="MoveProduct_To_Join1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="_-sPfUFNdEfCBfbIuuwW-dw" target="_cOvwYFNdEfCBfbIuuwW-dw" source="_Yr-WYFgBEfCypLFnyoOr-A">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="_-sTwwFNdEfCBfbIuuwW-dw" name="MoveProduct_To_Join1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="_-sWNAFNdEfCBfbIuuwW-dw" name="MoveProduct_To_Join1_weight"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="__KYz4FNdEfCBfbIuuwW-dw" target="_iHyAUFNdEfCBfbIuuwW-dw" source="_cOvwYFNdEfCBfbIuuwW-dw">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="__KaCAFNdEfCBfbIuuwW-dw" name="Join1_To_Merge1_guard" value="true"/>
+          <weight xmi:type="uml:LiteralInteger" xmi:id="__KbQIFNdEfCBfbIuuwW-dw" name="Join1_To_Merge1_weight"/>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="_Mm0FcDIwEfC0ZcoSb49rpw" name="" outgoing="_7LlcAFNdEfCBfbIuuwW-dw"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="_QfQWoDIwEfC0ZcoSb49rpw" name="OpaqueAction1" incoming="_7rviwFNdEfCBfbIuuwW-dw" outgoing="_R0ymMDIwEfC0ZcoSb49rpw">
+          <body>// TODO body of OpaqueAction1</body>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="_ZDJXEFNdEfCBfbIuuwW-dw" name="" incoming="_R0ymMDIwEfC0ZcoSb49rpw" outgoing="_8dfv0FNdEfCBfbIuuwW-dw _9YbuEFNdEfCBfbIuuwW-dw"/>
+        <node xmi:type="uml:JoinNode" xmi:id="_cOvwYFNdEfCBfbIuuwW-dw" name="" incoming="_-M5Q4FNdEfCBfbIuuwW-dw _-sPfUFNdEfCBfbIuuwW-dw" outgoing="__KYz4FNdEfCBfbIuuwW-dw">
+          <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="_cO1P8FNdEfCBfbIuuwW-dw" name="Join1" value="true"/>
+        </node>
+        <node xmi:type="uml:MergeNode" xmi:id="_iHyAUFNdEfCBfbIuuwW-dw" name="" incoming="_7LlcAFNdEfCBfbIuuwW-dw __KYz4FNdEfCBfbIuuwW-dw" outgoing="_7rviwFNdEfCBfbIuuwW-dw"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_Yr-WYFgBEfCypLFnyoOr-A" name="MoveProduct" incoming="_8dfv0FNdEfCBfbIuuwW-dw" outgoing="_-sPfUFNdEfCBfbIuuwW-dw" behavior="_D5B3EDCdEfCmLZSDnGIBLA"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="_3pVmcFgBEfCypLFnyoOr-A" name="MoveProduct" incoming="_9YbuEFNdEfCBfbIuuwW-dw" outgoing="_-M5Q4FNdEfCBfbIuuwW-dw" behavior="_D5B3EDCdEfCmLZSDnGIBLA"/>
+      </ownedBehavior>
+    </packagedElement>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_O59N4DCdEfCmLZSDnGIBLA" name="ProductId" visibility="public">
+      <ownedRule xmi:id="_j-UYgDCdEfCmLZSDnGIBLA" name="min">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_j-UYgTCdEfCmLZSDnGIBLA"/>
+      </ownedRule>
+      <ownedRule xmi:id="_kbO-ADCdEfCmLZSDnGIBLA" name="max">
+        <specification xmi:type="uml:LiteralInteger" xmi:id="_lS17cDCdEfCmLZSDnGIBLA" value="4"/>
+      </ownedRule>
+      <generalization xmi:id="_jr39oDCdEfCmLZSDnGIBLA">
+        <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      </generalization>
+    </packagedElement>
+    <profileApplication xmi:id="_zSu-wE3eEfC3C8RF14REyQ">
+      <eAnnotations xmi:id="_zS-PUE3eEfC3C8RF14REyQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_wn-LMDCeEfCmLZSDnGIBLA" guard="Disp_product = 0 and T2" base_RedefinableElement="_KUtEkDCeEfCmLZSDnGIBLA" atomic="true">
+    <effects>Disp_product := Park1_product,&#xD;
+Park1_product := 0</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_4O0AwDCeEfCmLZSDnGIBLA" guard="Disp_product = 0 and not T2" base_RedefinableElement="_M29l8DCeEfCmLZSDnGIBLA" atomic="true">
+    <effects>Disp_product := Park2_product,&#xD;
+Park2_product := 0</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_aoRkQDCfEfCmLZSDnGIBLA" base_RedefinableElement="_fBTPcDCeEfCmLZSDnGIBLA">
+    <effects>Disp_product := 0</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_bW4ngDIwEfC0ZcoSb49rpw" base_RedefinableElement="_QfQWoDIwEfC0ZcoSb49rpw">
+    <effects>Park1_product := 1,&#xD;
+Park2_product := 2</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A">
+    <templateArguments>productId := 2,&#xD;
+T2 := false</templateArguments>
+  </SynthML:FormalAction>
+  <SynthML:FormalAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A">
+    <templateArguments>productId := 1,&#xD;
+T2 := true</templateArguments>
+  </SynthML:FormalAction>
+</xmi:XMI>
