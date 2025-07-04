@@ -5,18 +5,24 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.common.java.Lists;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -25,6 +31,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
@@ -45,6 +52,7 @@ import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.TemplateParameter;
@@ -55,6 +63,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifParameterCollector;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -72,6 +81,8 @@ public class UMLToCameoTransformer {
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
+    /** The prefix to use template variable assignments, which is 'temp__'. */
+    public static final String PARAM_PREFIX = "temp__";
 
     private final Model model;
 
@@ -334,17 +345,33 @@ public class UMLToCameoTransformer {
                 "Expected opaque behaviors to not have owned elements.");
 
         // Translate the guard and effects of the given behavior.
-        String guard = translateGuard(behavior);
+        Set<String> variables = getLocalVariableList(behavior);
 
         CifContext context = CifContext.createScoped(behavior);
+        String guard = translateGuard(behavior, context);
         List<List<String>> effects = translateEffects(behavior, context);
 
         // Define a new activity that encodes the behavior of the action.
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
-                acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior));
+                acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior), variables);
 
         // Store the created activity as the single owned behavior of the given opaque behavior.
         behavior.getOwnedBehaviors().add(activity);
+    }
+
+    @SuppressWarnings("restriction")
+    private Set<String> getLocalVariableList(RedefinableElement behavior) {
+        CifContext context = CifContext.createScoped(behavior);
+
+        List<List<AUpdate>> parsedEffects = CifParserHelper.parseEffects(behavior);
+        AExpression combinedGuard = getCombinedGuard(behavior);
+
+        CifParameterCollector templateParameterCollector = new CifParameterCollector();
+        Stream<NamedTemplateParameter> guardParameters = combinedGuard == null ? Stream.empty()
+                : templateParameterCollector.flatten(combinedGuard, context);
+        Stream<NamedTemplateParameter> effectParameters = parsedEffects.stream().flatMap(List::stream)
+                .flatMap(expr -> templateParameterCollector.flatten(expr, context));
+        return Stream.concat(guardParameters, effectParameters).map(p -> p.getName()).collect(Collectors.toSet());
     }
 
     /**
@@ -394,6 +421,43 @@ public class UMLToCameoTransformer {
                 transformDecisionNode(decisionNode);
             }
         }
+
+        if (activity.getOwnedTemplateSignature() instanceof RedefinableTemplateSignature templateSignature) {
+            transformTemplateSignature(activity, templateSignature);
+        }
+    }
+
+    private void transformTemplateSignature(Activity activity, RedefinableTemplateSignature templateSignature) {
+        for (TemplateParameter parameter: templateSignature.getParameters()) {
+            if (parameter instanceof ClassifierTemplateParameter) {
+                String name = ((NamedElement)parameter.getParameteredElement()).getName();
+
+                ActivityHelper.addParameterToActivity(activity, name);
+            }
+        }
+    }
+
+    private void transformTemplateArguments(CallBehaviorAction callAction) {
+        List<AAssignmentUpdate> parsedAssignments = CifParserHelper.parseTemplateArguments(callAction);
+        if (parsedAssignments.isEmpty()) {
+            return;
+        }
+
+        CifContext cifScope = CifContext.createScoped(callAction);
+
+        List<String> translatedAssignments = new ArrayList<>();
+        Set<String> arguments = new HashSet<>();
+        for (AAssignmentUpdate assignment: parsedAssignments) {
+            String adressable = ((ANameExpression)assignment.addressable).name.name;
+            String value = translator.translateExpression(assignment.value, cifScope);
+
+            translatedAssignments.add(PARAM_PREFIX + adressable + "=" + value);
+            arguments.add(adressable);
+        }
+
+        String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+
+        ActivityHelper.addTemplateArguments(callAction, new HashSet<>(arguments), pythonBody);
     }
 
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
@@ -421,6 +485,8 @@ public class UMLToCameoTransformer {
                 action.setBehavior(behavior.getOwnedBehaviors().get(0));
             }
         }
+
+        transformTemplateArguments(action);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
@@ -428,15 +494,17 @@ public class UMLToCameoTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
+        Set<String> localArguments = getLocalVariableList(action);
+
         // Translate the guard and effects of the action.
-        String guard = translateGuard(action);
         CifContext context = CifContext.createScoped(action);
+        String guard = translateGuard(action, context);
         List<List<String>> effects = translateEffects(action, context);
 
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
-                PokaYokeUmlProfileUtil.isAtomic(action));
+                PokaYokeUmlProfileUtil.isAtomic(action), localArguments);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
@@ -453,15 +521,23 @@ public class UMLToCameoTransformer {
         // Remove the old action that is now replaced.
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
+
+        ActivityHelper.addTemplateArguments(replacementActionNode, localArguments, null);
     }
 
     /**
      * Translates the guard of the specified element.
      *
      * @param element The element of which to translate the guard.
+     * @param context The context in which the element is translated.
      * @return The translated guard.
      */
-    private String translateGuard(RedefinableElement element) {
+    private String translateGuard(RedefinableElement element, CifContext context) {
+        AExpression combinedGuard = getCombinedGuard(element);
+        return translator.translateExpression(combinedGuard, context);
+    }
+
+    private AExpression getCombinedGuard(RedefinableElement element) {
         // Get the outgoing guard of the incoming edge, if element is an activity node.
         AExpression extraGuard = null;
         if (element instanceof ActivityNode activityNode) {
@@ -478,7 +554,7 @@ public class UMLToCameoTransformer {
             extraGuard = (extraGuard == null) ? elementGuard : extraGuard;
         }
 
-        return translator.translateExpression(extraGuard);
+        return extraGuard;
     }
 
     /**
@@ -506,7 +582,7 @@ public class UMLToCameoTransformer {
                 .map(entry -> entry.getValue() + " = " + entry.getKey()).toList();
 
         // Add these pre-state assignments to the front of every translated effect, and return the result.
-        return translatedEffects.stream().map(effect -> Lists.concat(prestateAssignments, effect)).toList();
+        return translatedEffects.stream().map(effects -> Lists.concat(prestateAssignments, effects)).toList();
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {

@@ -9,6 +9,7 @@ import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.uml2.uml.Element;
@@ -65,6 +66,23 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     /**
+     * Checks if the evaluated {@code value} type can be assigned to the {@code addressable} type.
+     *
+     * @param addressable The addressable to assign to.
+     * @param addressableContext The context of the addressable.
+     * @param expression The expression providing the assignment.
+     * @param expressionContext The context of the expression.
+     * @param assignmentPos The position at which the assignment happens.
+     * @throws TypeException If the {@code value} expression cannot be evaluated or if the value type cannot be assigned
+     *     to the {@code addressable} type.
+     */
+    public void checkArgumentAssignment(ANameExpression addressable, CifContext addressableContext,
+            AExpression expression, CifContext expressionContext, TextPosition assignmentPos) throws TypeException
+    {
+        visit(visit(addressable, addressableContext), assignmentPos, visit(expression, expressionContext), ctx);
+    }
+
+    /**
      * Checks if the predicate type of the evaluated {@code invariant} can be assigned to a boolean.
      *
      * @param invariant The invariant to evaluate.
@@ -102,6 +120,11 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     @Override
     protected Type visit(Property property, TextPosition propertyPos, CifContext ctx) {
         return property.getType();
+    }
+
+    @Override
+    protected Type visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+        return parameter.getType();
     }
 
     @Override

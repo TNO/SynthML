@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.uml2cameo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
@@ -29,8 +30,10 @@ import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
+import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
@@ -52,15 +55,16 @@ public class ActivityHelper {
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param isAtomic Whether the activity to create should be atomic.
+     * @param scopedProperties The properties that are defined in the scope of the calling activity
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> scopedProperties)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, scopedProperties);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, scopedProperties);
         }
     }
 
@@ -73,11 +77,12 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
+     * @param scopedProperties The properties that are defined in the scope of the calling activity
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> scopedProperties)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
@@ -97,6 +102,11 @@ public class ActivityHelper {
         // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
+
+        // Add the template parameters
+        for (String propertyName: scopedProperties) {
+            addParameterToActivity(activity, propertyName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -305,6 +315,24 @@ public class ActivityHelper {
     }
 
     /**
+     * Adds a parameter to an activity.
+     *
+     * @param activity The activity to which the parameter is added.
+     * @param name The name of the parameter to create.
+     */
+    public static void addParameterToActivity(Activity activity, String name) {
+        Parameter inputParameter = UMLFactory.eINSTANCE.createParameter();
+        inputParameter.setName(name);
+
+        activity.getOwnedParameters().add(inputParameter);
+
+        ActivityParameterNode parameterNode = UMLFactory.eINSTANCE.createActivityParameterNode();
+        parameterNode.setName(name + "Node");
+        parameterNode.setParameter(inputParameter);
+        parameterNode.setActivity(activity);
+    }
+
+    /**
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
      * specified effects. The evaluation of the guard and possible execution of the effect happen non-atomically, as two
      * separate steps (which themselves are atomic).
@@ -314,20 +342,27 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
+     * @param scopedProperties The properties that are defined in the scope of the calling activity
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> scopedProperties)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
-        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire);
+        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
+                scopedProperties);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, scopedProperties);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.getOwnedBehaviors().add(start);
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
+
+        // Add the template parameters
+        for (String propertyName: scopedProperties) {
+            addParameterToActivity(activity, propertyName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -366,6 +401,10 @@ public class ActivityHelper {
         endToFinalFlow.setActivity(activity);
         endToFinalFlow.setSource(callEndNode);
         endToFinalFlow.setTarget(finalNode);
+
+        // Pass arguments to the newly created activities. Properties could be scoped further to the start/end node
+        addTemplateArguments(callStartNode, scopedProperties, null);
+        addTemplateArguments(callEndNode, scopedProperties, null);
 
         return activity;
     }
@@ -629,7 +668,7 @@ public class ActivityHelper {
      * @param effects The list of effects to translate. Every effect must be a list of single-line Python programs.
      * @return The translated Python program that performs the effect(s) as described above.
      */
-    private static String translateEffects(List<List<String>> effects) {
+    public static String translateEffects(List<List<String>> effects) {
         if (effects.isEmpty()) {
             return "pass";
         }
@@ -657,6 +696,55 @@ public class ActivityHelper {
             // Then we return a Python program that randomly performs one of the effects if the action guard holds.
             return String.format("if guard:\n%s", CifToPythonTranslator
                     .mergeAll(CifToPythonTranslator.increaseIndentation(extendedEffects), "\n").get());
+        }
+    }
+
+    private static void passTemplateArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
+            String argumentName)
+    {
+        // Create an output pin on the assignment action and an input pin on the call action
+        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.PARAM_PREFIX + argumentName,
+                null);
+        InputPin inputPin = callAction.createArgument(argumentName, null);
+
+        // Connect the output and input pins with an ObjectFlow
+        ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
+        dataFlow.setSource(outputPin);
+        dataFlow.setTarget(inputPin);
+        callAction.getActivity().getEdges().add(dataFlow);
+    }
+
+    public static void addTemplateArguments(CallBehaviorAction callAction, Set<String> passedArguments,
+            String templateBody)
+    {
+        if (passedArguments.isEmpty()) {
+            return;
+        }
+
+        if (templateBody == null) {
+            // Add the temp__ prefix variables
+            List<String> translatedAssignments = new ArrayList<>();
+            for (String argument: passedArguments) {
+                translatedAssignments.add(UMLToCameoTransformer.PARAM_PREFIX + argument + "=" + argument);
+            }
+
+            templateBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+        }
+
+        Activity parentActivity = callAction.getActivity();
+
+        OpaqueAction assignmentAction = FileHelper.FACTORY.createOpaqueAction();
+        assignmentAction.setActivity(parentActivity);
+
+        // Merge all translated assignments into a single Python code block
+        assignmentAction.getBodies().add(templateBody);
+        assignmentAction.getLanguages().add("Python");
+
+        callAction.getIncomings().get(0).setTarget(assignmentAction);
+
+        // For each assignment, create a data flow from the new action to the original call action
+        for (String argumentName: passedArguments) {
+            passTemplateArgument(callAction, assignmentAction, argumentName);
         }
     }
 

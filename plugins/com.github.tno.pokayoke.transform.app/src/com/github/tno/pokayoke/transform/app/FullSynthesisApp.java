@@ -98,6 +98,10 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
+        // Parameterized activities are not (yet) supported by this method
+        Preconditions.checkArgument(activity.getOwnedParameters().isEmpty(),
+                "Synthesis of parameterized activities is unsupported.");
+
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity), activity,
                 TranslationPurpose.SYNTHESIS);
@@ -259,8 +263,8 @@ public class FullSynthesisApp {
 
         // Translating synthesized activity to CIF, for guard computation.
         Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
-        UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
-                TranslationPurpose.GUARD_COMPUTATION);
+        UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity),
+                activity, TranslationPurpose.GUARD_COMPUTATION);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();

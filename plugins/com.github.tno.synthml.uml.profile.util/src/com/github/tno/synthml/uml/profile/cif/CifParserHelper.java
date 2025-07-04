@@ -8,11 +8,13 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -83,6 +85,28 @@ public class CifParserHelper {
         }
         CifUpdatesParser updatesParser = new CifUpdatesParser();
         return updatesParser.parseString(updates, getLocation(context));
+    }
+
+    public static List<AAssignmentUpdate> parseTemplateArguments(CallBehaviorAction callBehaviorAction)
+            throws SyntaxException
+    {
+        if (callBehaviorAction == null) {
+            return null;
+        }
+        List<String> effects = PokaYokeUmlProfileUtil.getTemplateArguments(callBehaviorAction);
+        List<AAssignmentUpdate> assignments = new ArrayList<>(effects.size());
+        for (String effect: effects) {
+            List<AUpdate> updates = parseUpdates(effect, callBehaviorAction);
+            for (AUpdate update: updates) {
+                if (update instanceof AAssignmentUpdate assignment) {
+                    assignments.add(assignment);
+                } else {
+                    throw new CustomSyntaxException("Template arguments must contain only assignment expressions",
+                            TextPosition.createDummy(getLocation(callBehaviorAction)));
+                }
+            }
+        }
+        return assignments;
     }
 
     public static List<List<AUpdate>> parseEffects(RedefinableElement element) throws SyntaxException {

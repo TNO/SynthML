@@ -18,7 +18,10 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -53,6 +56,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
@@ -61,13 +65,16 @@ import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.TypeException;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
+import SynthML.FormalAction;
 import SynthML.FormalElement;
 import SynthML.SynthMLPackage;
 
@@ -238,6 +245,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (clazz instanceof Behavior) {
             // Activities are also a Class in UML. Skip the next validations for all behaviors.
+            return;
+        }
+
+        if (clazz.getOwner() instanceof TemplateParameter) {
+            // This class is used to name a template parameter. Skip the next validations.
             return;
         }
 
@@ -723,6 +735,93 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 }
                 error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
             }
+        }
+    }
+
+    /**
+     * Validates the {@link FormalAction#getTemplateArguments()} property if set.
+     *
+     * @param callAction The call action to validate.
+     */
+    @Check
+    private void checkValidTemplateArguments(CallBehaviorAction callAction) {
+        Behavior calledActivity = callAction.getBehavior();
+        List<String> arguments = PokaYokeUmlProfileUtil.getTemplateArguments(callAction);
+
+        if (arguments.size() > 1) {
+            error("Nondeterministic template assignments are forbidden",
+                    SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+        }
+
+        try {
+            List<AUpdate> expressions = arguments.stream()
+                    .flatMap(argument -> CifParserHelper.parseUpdates(argument, calledActivity).stream()).toList();
+
+            // Valid assignments are valid updates with restrictions
+            checkValidAssignments(expressions, callAction);
+
+            // Ensure that no variable is assigned more than once
+            checkUniqueAddressables(expressions, new LinkedHashSet<>());
+
+            // Ensure that every variable is assigned
+            if (expressions.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+                throw new CustomSyntaxException("Not all template parameters have been assigned.", null);
+            }
+        } catch (RuntimeException re) {
+            String prefix = "Invalid effects: ";
+            if (arguments.size() > 1) {
+                prefix = "Invalid template argument";
+            }
+            error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+        }
+    }
+
+    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> properties) {
+        return properties.stream().anyMatch(p -> p.getName().equals(name));
+    }
+
+    private void checkValidAssignments(List<AUpdate> updates, CallBehaviorAction callAction) {
+        Behavior calledActivity = callAction.getBehavior();
+        Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
+                .getDeclaredTemplateParameters();
+        Set<NamedTemplateParameter> elementProperties = new CifScope(callAction).getDeclaredTemplateParameters();
+
+        for (AUpdate update: updates) {
+            // Ensure the update is an assignment update
+            if (!(update instanceof AAssignmentUpdate assignment)) {
+                throw new CustomSyntaxException("Only assignment updates are supported.", update.position);
+            }
+
+            // Ensure the addressable part is a named expression
+            if (!(assignment.addressable instanceof ANameExpression addressable)) {
+                throw new CustomSyntaxException("Only name expressions are allowed as addressables.", update.position);
+            }
+
+            if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
+                throw new CustomSyntaxException("Unknown addressable: " + addressable.name.name, update.position);
+            }
+
+            if (assignment.value instanceof ABinaryExpression) {
+                throw new CustomSyntaxException("Binary expressions are not allowed as update values.",
+                        assignment.position);
+            }
+
+            if (assignment.value instanceof ANameExpression nameExpr) {
+                if (!isNameInNameSet(nameExpr.name.name, elementProperties)) {
+                    throw new CustomSyntaxException("Unknown value name: " + nameExpr.name.name, nameExpr.position);
+                }
+            } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
+                throw new CustomSyntaxException("Unsupported expression type in assignment value.",
+                        assignment.position);
+            }
+
+            // Verify that the types match
+            CifTypeChecker checker = new CifTypeChecker(callAction);
+            CifContext addressableContext = CifContext.createScoped(calledActivity);
+            CifContext valueContext = CifContext.createScoped(callAction);
+
+            checker.checkArgumentAssignment(addressable, addressableContext, assignment.value, valueContext,
+                    assignment.position);
         }
     }
 

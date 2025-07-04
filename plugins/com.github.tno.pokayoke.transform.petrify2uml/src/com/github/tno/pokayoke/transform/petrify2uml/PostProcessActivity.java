@@ -158,7 +158,7 @@ public class PostProcessActivity {
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             List<String> warnings)
     {
-        CifContext context = new CifContext(activity.getModel());
+        CifContext context = CifContext.createGlobal(activity);
 
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
