@@ -33,7 +33,7 @@ public class DoubleMergePattern {
      */
     public static boolean findAndRewriteAll(Activity activity) {
         List<DoubleMergePattern> patterns = findAll(activity);
-        // This loop ensures a correct handling of overlapping merge patterns.
+        // Only rewrite one pattern at a time, to prevent issues when patterns overlap.
         while (!patterns.isEmpty()) {
             patterns.get(0).rewrite();
             patterns = findAll(activity);
