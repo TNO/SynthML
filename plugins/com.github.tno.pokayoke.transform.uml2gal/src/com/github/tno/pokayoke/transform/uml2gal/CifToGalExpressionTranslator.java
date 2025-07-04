@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 
 import fr.lip6.move.gal.AssignType;
 import fr.lip6.move.gal.Assignment;
@@ -193,6 +194,11 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
         VariableReference reference = Uml2GalTranslationHelper.FACTORY.createVariableReference();
         reference.setRef(variable);
         return reference;
+    }
+
+    @Override
+    protected Object visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.eclipse.uml2.uml.InstanceValue;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -46,6 +47,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
+import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
@@ -54,6 +56,7 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
@@ -69,7 +72,6 @@ public class UMLToCameoTransformer {
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
 
-    private final CifContext cifContext;
 
     private final Model model;
 
@@ -79,8 +81,7 @@ public class UMLToCameoTransformer {
 
     public UMLToCameoTransformer(Model model) {
         this.model = model;
-        this.cifContext = new CifContext(this.model);
-        this.translator = new CifToPythonTranslator(this.cifContext);
+        this.translator = new CifToPythonTranslator();
         this.propertyBounds = new LinkedHashMap<>();
     }
 
@@ -104,6 +105,8 @@ public class UMLToCameoTransformer {
     public void transformModel() throws CoreException {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
         ValidationHelper.validateModel(model);
+
+        CifContext cifContext = CifContext.createGlobal(model);
 
         Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
@@ -155,7 +158,8 @@ public class UMLToCameoTransformer {
             if (cifExpression != null) {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
                 newDefaultValue.getLanguages().add("Python");
-                String translatedLiteral = translator.translateExpression(cifExpression);
+                String translatedLiteral = translator.translateExpression(cifExpression,
+                        CifContext.createScoped(property));
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
             } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
@@ -331,7 +335,9 @@ public class UMLToCameoTransformer {
 
         // Translate the guard and effects of the given behavior.
         String guard = translateGuard(behavior);
-        List<List<String>> effects = translateEffects(behavior);
+
+        CifContext context = CifContext.createScoped(behavior);
+        List<List<String>> effects = translateEffects(behavior, context);
 
         // Define a new activity that encodes the behavior of the action.
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
@@ -424,7 +430,8 @@ public class UMLToCameoTransformer {
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
         // Translate the guard and effects of the action.
         String guard = translateGuard(action);
-        List<List<String>> effects = translateEffects(action);
+        CifContext context = CifContext.createScoped(action);
+        List<List<String>> effects = translateEffects(action, context);
 
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
@@ -478,19 +485,20 @@ public class UMLToCameoTransformer {
      * Translates the effects of the specified element.
      *
      * @param element The element of which to translate the effects.
+     * @param context The context in which the element is translated.
      * @return The translated effects.
      */
-    private List<List<String>> translateEffects(RedefinableElement element) {
+    private List<List<String>> translateEffects(RedefinableElement element, CifContext context) {
         // Parse all effects.
         List<List<AUpdate>> parsedEffects = CifParserHelper.parseEffects(element);
 
         // Rename all variables on the right-hand sides of assignments by prefixing them with 'pre__'.
         Map<String, String> renaming = new LinkedHashMap<>();
-        List<List<AUpdate>> renamedEffects = new EffectPrestateRenamer(cifContext).renameEffects(parsedEffects,
-                renaming);
+        List<List<AUpdate>> renamedEffects = new EffectPrestateRenamer(context).renameEffects(parsedEffects, renaming);
 
         // Translate all parsed and renamed effects.
-        List<List<String>> translatedEffects = renamedEffects.stream().map(translator::translateUpdates).toList();
+        List<List<String>> translatedEffects = renamedEffects.stream()
+                .map(effects -> translator.translateUpdates(effects, context)).toList();
 
         // From the renaming map, construct pre-state assignments of the form 'pre__X = X' with 'X' a renamed variable.
         List<String> prestateAssignments = renaming.entrySet().stream()

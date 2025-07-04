@@ -77,7 +77,7 @@ public class FullSynthesisApp {
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
-                new CifContext(umlSpec).getAllActivities());
+                CifContext.createGlobal(umlSpec).getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {
@@ -99,7 +99,8 @@ public class FullSynthesisApp {
             List<String> warnings) throws IOException, CoreException
     {
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity), activity,
+                TranslationPurpose.SYNTHESIS);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -304,8 +305,9 @@ public class FullSynthesisApp {
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
         // Translate final UML model to CIF and get its state space.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
-                TranslationPurpose.LANGUAGE_EQUIVALENCE);
+        Activity activity = translator.getActivity();
+        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(CifContext.createGlobal(activity),
+                activity, TranslationPurpose.LANGUAGE_EQUIVALENCE);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {

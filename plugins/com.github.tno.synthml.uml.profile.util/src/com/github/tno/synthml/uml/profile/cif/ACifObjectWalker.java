@@ -129,6 +129,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
             return visit(literal, expr.position, ctx);
         } else if (element instanceof Property property) {
             return visit(property, expr.position, ctx);
+        } else if (element instanceof NamedTemplateParameter parameter) {
+            return visit(parameter, expr.position, ctx);
         } else {
             throw new CustomSyntaxException(String.format("unresolved name '%s'", name), expr.position);
         }
@@ -137,6 +139,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     protected abstract T visit(EnumerationLiteral literal, TextPosition literalPos, CifContext ctx);
 
     protected abstract T visit(Property property, TextPosition propertyPos, CifContext ctx);
+
+    protected abstract T visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx);
 
     @Override
     protected T visit(AUnaryExpression expr, CifContext ctx) {

@@ -87,7 +87,7 @@ public class CompositeDataTypeFlattener {
     public static void flattenCompositeDataTypes(Model model) {
         // Only perform flattening if there are any composite data types. This not only prevents unnecessary work, but
         // also prevents normalizing expressions/updates.
-        CifContext context = new CifContext(model);
+        CifContext context = CifContext.createGlobal(model);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
         if (!dataTypes.isEmpty()) {
             Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);

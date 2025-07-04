@@ -552,7 +552,8 @@ public class ActivityHelper {
         // Get the incoming guard of the outgoing edges.
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
             ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
-            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge),
+                    CifContext.createScoped(decisionNode));
             evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 

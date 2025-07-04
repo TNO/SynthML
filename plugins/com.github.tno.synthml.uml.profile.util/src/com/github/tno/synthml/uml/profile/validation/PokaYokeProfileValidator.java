@@ -176,7 +176,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
-        CifContext ctx = new CifContext(model);
+        CifContext ctx = CifContext.createGlobal(model);
         Map<String, List<NamedElement>> referenceableElementsInclDuplicates = ctx
                 .getReferenceableElementsInclDuplicates();
         for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
@@ -876,7 +876,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 return;
             }
 
-            CifContext context = new CifContext(constraint);
+            CifContext context = CifContext.createScoped(constraint);
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {

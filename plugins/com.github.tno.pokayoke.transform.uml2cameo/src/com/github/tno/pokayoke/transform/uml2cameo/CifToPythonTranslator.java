@@ -17,28 +17,23 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 
 /** Translates basic CIF expressions and updates to Python. */
 public class CifToPythonTranslator extends ACifObjectWalker<String> {
-    private final CifContext cifContext;
-
-    public CifToPythonTranslator(CifContext cifContext) {
-        this.cifContext = cifContext;
-    }
-
-    public String translateExpression(AExpression expr) {
+    public String translateExpression(AExpression expr, CifContext context) {
         if (expr == null) {
             return "True";
         }
-        return visit(expr, cifContext);
+        return visit(expr, context);
     }
 
-    public List<String> translateUpdates(List<AUpdate> updates) {
-        return updates.stream().map(this::translateUpdate).collect(Collectors.toList());
+    public List<String> translateUpdates(List<AUpdate> updates, CifContext context) {
+        return updates.stream().map(update -> translateUpdate(update, context)).collect(Collectors.toList());
     }
 
-    private String translateUpdate(AUpdate update) {
-        return visit(update, cifContext);
+    public String translateUpdate(AUpdate update, CifContext context) {
+        return visit(update, context);
     }
 
     @Override
@@ -92,6 +87,12 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
     @Override
     protected String visit(Property property, TextPosition propertyPos, CifContext ctx) {
         return property.getName();
+    }
+
+    @SuppressWarnings("restriction")
+    @Override
+    protected String visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+        return parameter.getName();
     }
 
     @Override

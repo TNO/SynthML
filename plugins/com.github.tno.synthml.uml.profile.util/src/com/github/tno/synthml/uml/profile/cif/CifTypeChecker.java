@@ -36,7 +36,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      * @param elem The context for evaluating the expression.
      */
     public CifTypeChecker(Element elem) {
-        this.ctx = new CifContext(elem);
+        this.ctx = CifContext.createScoped(elem);
         this.booleanType = UmlPrimitiveType.BOOLEAN.load(elem);
         this.integerType = UmlPrimitiveType.INTEGER.load(elem);
     }

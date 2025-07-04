@@ -160,8 +160,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
-    public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
-        super(new CifContext(activity.getModel()));
+    public UmlToCifTranslator(CifContext context, Activity activity, TranslationPurpose purpose) {
+        super(context);
         this.activity = activity;
         this.translationPurpose = purpose;
     }
