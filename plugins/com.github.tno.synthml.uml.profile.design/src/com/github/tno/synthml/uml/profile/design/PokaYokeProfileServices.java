@@ -1,10 +1,7 @@
 
 package com.github.tno.synthml.uml.profile.design;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +11,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.ControlFlow;
-import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.NamedElement;
@@ -28,7 +26,6 @@ import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
@@ -38,14 +35,12 @@ import org.obeonetwork.dsl.uml2.core.internal.services.DisplayLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
-import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.reflect.Parameter;
 
 import SynthML.FormalAction;
 import SynthML.FormalControlFlow;
@@ -109,25 +104,11 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * @param currentElement The EObject selected.
-     * @return The RedefinableTemplateSignature or null.
-     */
-    public RedefinableTemplateSignature getRedefinableTemplateSignatureAsSingle(Activity activity) {
-        TemplateSignature ownedSignature = activity.getOwnedTemplateSignature();
-        if (ownedSignature instanceof RedefinableTemplateSignature) {
-            return (RedefinableTemplateSignature)ownedSignature;
-        }
-
-        return null;
-    }
-
-    /**
-     * Adapted from EditLabelSwitch caseClass TODO: Returns the {@link FormalElement#getGuard() guard} property value if
-     * {@code element} is stereotyped, {@code null} otherwise.
+     * Adapted from EditLabelSwitch. Returns the {@link FormalAction#getTemplateArguments() templateArguments} property
+     * value if {@code element} is stereotyped, {@code null} otherwise.
      *
-     * @param element The element to interrogate.
-     * @return The {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
-     *     otherwise.
+     * @param activity The element to interrogate.
+     * @param editedLabelContent The new content.
      */
     public void setActivityName(Activity activity, String editedLabelContent) {
         // Mirror LabelServices editUmlLabel
@@ -141,10 +122,8 @@ public class PokaYokeProfileServices {
             String baseLabel = matcher.group(1);
             String generics = matcher.group(2) != null ? matcher.group(2) : "";
 
-            CifContext cifContext = new CifContext(activity);
-            List<DataType> dataTypes = cifContext.getAllPrimitiveDataTypes();
-
-            Map<String, DataType> labelTypes = new HashMap<>();
+            List<Type> dataTypes = PokaYokeTypeUtil.getSupportedTypes(activity);
+            Map<String, Classifier> labelTypes = new HashMap<>();
 
             for (String part: generics.split(",")) {
                 if (part.isEmpty()) {
@@ -155,42 +134,70 @@ public class PokaYokeProfileServices {
                     String name = split[0].trim();
                     String typeName = split[1].trim();
 
-                    Optional<DataType> type = dataTypes.stream().filter(dt -> dt.getName().equals(typeName))
-                            .findFirst();
+                    Optional<Type> type = dataTypes.stream().filter(dt -> dt.getName().equals(typeName)).findFirst();
 
-                    if (type.isPresent()) {
-                        labelTypes.put(name, type.get());
-                    } else
-                        return; // Parameter referred was not found
-                } else
-                    return; // Parameter notation was wrong
+                    if (type.isPresent() && type.get() instanceof Classifier classifier) {
+                        labelTypes.put(name, classifier);
+                    } else {
+                        return;
+                    }
+                } else {
+                    return;
+                }
             }
 
             // Send the edited label to the original Switch class
             String genericString = labelTypes.isEmpty() ? "" : ("<" + String.join(", ", labelTypes.keySet()) + ">");
             editLabel.setEditedLabelContent(baseLabel + genericString);
 
-            // Mirror EditLabelSwitch caseClass
-            // Proxy parseInputLabel
+            // The method a label is set mimics how UML designer sets TemplateParameters for classes.
+            // First {@code EditLabelSwitch#parseInputLabel} is called. This method parses the label and updates the
+            // underlying {@link TemplateableElement}. Since this method is private we proxy it by calling
+            // {@code EditLabelSwitch#caseTemplateableElement}. Finally we call {@code EditLabelSwitch#caseNamedElement}
+            // as normal
             editLabel.caseTemplateableElement(activity);
             editLabel.caseNamedElement(activity);
 
+            // Add type information to the new created template parameters
             for (TemplateParameter parameter: activity.getOwnedTemplateSignature().getParameters()) {
                 if (parameter instanceof ClassifierTemplateParameter classifier) {
                     String name = ((NamedElement)parameter.getParameteredElement()).getName();
-                    classifier.getConstrainingClassifiers().add(labelTypes.get(name));
+
+                    EList<Classifier> constrainingClassifiers = classifier.getConstrainingClassifiers();
+
+                    constrainingClassifiers.clear();
+                    constrainingClassifiers.add(labelTypes.get(name));
                 }
             }
         }
     }
 
     /**
-     * Adapted from DisplayLabelSwitch caseClass TODO: Returns the {@link FormalElement#getGuard() guard} property value
-     * if {@code element} is stereotyped, {@code null} otherwise.
+     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalAction#getTemplateArguments()
+     * templateArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
      *
-     * @param element The element to interrogate.
-     * @return The {@link FormalElement#getGuard() guard} property value if {@code element} is stereotyped, {@code null}
-     *     otherwise.
+     * @param callAction The element to interrogate.
+     * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
+     *     stereotyped, {@code null} otherwise.
+     */
+    public String getCallActionName(CallBehaviorAction callAction) {
+        List<String> templateArguments = PokaYokeUmlProfileUtil.getTemplateArguments(callAction);
+        String stringArguments = String.join("", templateArguments).replaceAll("\s", "").replace(":", "");
+
+        if (stringArguments.isEmpty()) {
+            return callAction.getName();
+        } else {
+            return callAction.getName() + "<" + stringArguments + ">";
+        }
+    }
+
+    /**
+     * Adapted from DisplayLabelSwitch caseClass. Returns the activity name, and the template parameters value if
+     * {@code element} contains {@code TemplateSignature}
+     *
+     * @param activity The element to interrogate.
+     * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
+     *     stereotyped, {@code null} otherwise.
      */
     public String getActivityName(Activity activity) {
         final TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
@@ -205,11 +212,13 @@ public class PokaYokeProfileServices {
                 } else {
                     templateArguments.append(", "); //$NON-NLS-1$
                 }
+
                 final ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
                 if (parameterableElement instanceof NamedElement) {
                     final NamedElement classTempate = (NamedElement)parameterableElement;
                     templateArguments.append(classTempate.getName());
                 }
+
                 if (templateParameter instanceof ClassifierTemplateParameter classifier) {
                     var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
                     if (firstClassifier.isPresent()) {
@@ -224,9 +233,10 @@ public class PokaYokeProfileServices {
         String namedElement = DisplayLabelSwitch.computeStereotypes(activity)
                 + (activity.getName() == null ? "" : activity.getName()); //$NON-NLS-1$
 
-        if (templateArguments != null) {
+        if (!templateArguments.isEmpty()) {
             return DisplayLabelSwitch.computeStereotypes(activity) + namedElement + templateArguments;
         }
+
         return namedElement;
     }
 
@@ -355,19 +365,19 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalAction#getTemplateParameters() parameters} property value if {@code element} is
+     * Returns the {@link FormalAction#getTemplateArguments() parameters} property value if {@code element} is
      * stereotyped, {@code null} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalAction#getTemplateParameters() parameters} property value if {@code element} is
-     * stereotyped, {@code null} otherwise.
+     * @return The {@link FormalAction#getTemplateArguments() parameters} property value if {@code element} is
+     *     stereotyped, {@code null} otherwise.
      */
     public String getTemplateParameters(CallBehaviorAction element) {
-        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getTemplateParameters(element));
+        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getTemplateArguments(element));
     }
 
     /**
-     * Applies the {@link FormalAction} stereotype and sets the {@link FormalAction#setTemplateParameters parameters}
+     * Applies the {@link FormalAction} stereotype and sets the {@link FormalAction#getTemplateArguments() parameters}
      * property for {@code element}.
      * <p>
      * The {@link FormalAction} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
@@ -377,13 +387,13 @@ public class PokaYokeProfileServices {
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    public void setTemplateParameters(CallBehaviorAction element, String newValue) {
+    public void setTemplateArguments(CallBehaviorAction element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value
-            PokaYokeUmlProfileUtil.setTemplateParameters(element, null);
+            PokaYokeUmlProfileUtil.setTemplateArguments(element, null);
         } else {
-            PokaYokeUmlProfileUtil.setTemplateParameters(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
+            PokaYokeUmlProfileUtil.setTemplateArguments(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
         }
 
         // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
@@ -391,8 +401,8 @@ public class PokaYokeProfileServices {
         refresh(element);
     }
 
-    public void unsetTemplateParameters(CallBehaviorAction element) {
-        setTemplateParameters(element, null);
+    public void unsetTemplateArguments(CallBehaviorAction element) {
+        setTemplateArguments(element, null);
     }
 
     /**
