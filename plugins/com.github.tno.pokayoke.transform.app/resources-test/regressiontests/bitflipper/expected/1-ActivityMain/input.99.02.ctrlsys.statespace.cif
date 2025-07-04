@@ -1,45 +1,45 @@
-uncontrollable __node__DecisionNode__26__0;
-uncontrollable __node__DecisionNode__26__1;
-uncontrollable __node__MergeNode__27__0;
-uncontrollable __node__MergeNode__27__1;
-uncontrollable __node__CallBehaviorAction__29;
-uncontrollable __node__CallBehaviorAction__30;
-uncontrollable __node__CallBehaviorAction__30__result_1;
-uncontrollable __node__CallBehaviorAction__30__result_2;
+uncontrollable __node__DecisionNode__40__0;
+uncontrollable __node__DecisionNode__40__1;
+uncontrollable __node__MergeNode__41__0;
+uncontrollable __node__MergeNode__41__1;
+uncontrollable __node__CallBehaviorAction__43;
+uncontrollable __node__CallBehaviorAction__44;
+uncontrollable __node__CallBehaviorAction__44__result_1;
+uncontrollable __node__CallBehaviorAction__44__result_2;
 automaton statespace:
-  alphabet __node__DecisionNode__26__0, __node__DecisionNode__26__1, __node__MergeNode__27__0, __node__MergeNode__27__1, __node__CallBehaviorAction__29, __node__CallBehaviorAction__30, __node__CallBehaviorAction__30__result_1, __node__CallBehaviorAction__30__result_2;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = true, ActiveClass.bit = false, ActiveClass.init = false)
+  alphabet __node__DecisionNode__40__0, __node__DecisionNode__40__1, __node__MergeNode__41__0, __node__MergeNode__41__1, __node__CallBehaviorAction__43, __node__CallBehaviorAction__44, __node__CallBehaviorAction__44__result_1, __node__CallBehaviorAction__44__result_2;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = true, ActiveClass.bit = false, ActiveClass.init = false)
   location loc1:
     initial;
-    edge __node__CallBehaviorAction__30 goto loc3;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = true, ActiveClass.bit = true, ActiveClass.init = false)
+    edge __node__CallBehaviorAction__44 goto loc3;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = true, ActiveClass.bit = true, ActiveClass.init = false)
   location loc2:
     initial;
-    edge __node__CallBehaviorAction__30 goto loc4;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = false, ActiveClass.init = false)
+    edge __node__CallBehaviorAction__44 goto loc4;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = false, ActiveClass.init = false)
   location loc3:
-    edge __node__CallBehaviorAction__30__result_1 goto loc5;
-    edge __node__CallBehaviorAction__30__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = true, ActiveClass.init = false)
+    edge __node__CallBehaviorAction__44__result_1 goto loc5;
+    edge __node__CallBehaviorAction__44__result_2 goto loc6;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = true, ActiveClass.init = false)
   location loc4:
-    edge __node__CallBehaviorAction__30__result_1 goto loc5;
-    edge __node__CallBehaviorAction__30__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = true, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = true, ActiveClass.init = true)
+    edge __node__CallBehaviorAction__44__result_1 goto loc5;
+    edge __node__CallBehaviorAction__44__result_2 goto loc6;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = true, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = true, ActiveClass.init = true)
   location loc5:
-    edge __node__DecisionNode__26__1 goto loc7;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = true, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = false, ActiveClass.init = true)
+    edge __node__DecisionNode__40__1 goto loc7;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = true, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = false, ActiveClass.init = true)
   location loc6:
-    edge __node__DecisionNode__26__0 goto loc8;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = true, ActiveClass.__controlflow__23 = false, ActiveClass.bit = true, ActiveClass.init = true)
+    edge __node__DecisionNode__40__0 goto loc8;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = true, ActiveClass.__controlflow__37 = false, ActiveClass.bit = true, ActiveClass.init = true)
   location loc7:
-    edge __node__MergeNode__27__1 goto loc9;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = true, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = false, ActiveClass.init = true)
+    edge __node__MergeNode__41__1 goto loc9;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = true, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = false, ActiveClass.init = true)
   location loc8:
-    edge __node__CallBehaviorAction__29 goto loc10;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = true, ActiveClass.__controlflow__20 = false, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = true, ActiveClass.init = true)
+    edge __node__CallBehaviorAction__43 goto loc10;
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = true, ActiveClass.__controlflow__34 = false, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = true, ActiveClass.init = true)
   location loc9:
     marked;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__16 = false, ActiveClass.__controlflow__18 = false, ActiveClass.__controlflow__19 = false, ActiveClass.__controlflow__20 = true, ActiveClass.__controlflow__21 = false, ActiveClass.__controlflow__23 = false, ActiveClass.bit = true, ActiveClass.init = true)
+  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.__controlflow__30 = false, ActiveClass.__controlflow__32 = false, ActiveClass.__controlflow__33 = false, ActiveClass.__controlflow__34 = true, ActiveClass.__controlflow__35 = false, ActiveClass.__controlflow__37 = false, ActiveClass.bit = true, ActiveClass.init = true)
   location loc10:
-    edge __node__MergeNode__27__0 goto loc9;
+    edge __node__MergeNode__41__0 goto loc9;
 end
