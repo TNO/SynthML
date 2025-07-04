@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -151,7 +152,10 @@ public class NonAtomicPatternRewriter {
 
         // Ensure that the end places have no incoming arcs starting from other transitions.
         for (Place endPlace: endPlaces) {
-            if (endPlace.getInArcs().size() != 1) {
+            Long incomingArcsFromPatternTransitions = endPlace.getInArcs().stream().map(a -> a.getSource())
+                    .filter(t -> endTransitions.contains(t)).collect(Collectors.counting());
+
+            if (endPlace.getInArcs().size() - incomingArcsFromPatternTransitions != 0) {
                 return Optional.empty();
             }
         }
