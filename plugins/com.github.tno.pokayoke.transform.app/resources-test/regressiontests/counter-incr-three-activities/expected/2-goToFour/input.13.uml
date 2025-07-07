@@ -194,7 +194,7 @@
             </ownedComment>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="74" name="goToThree__ControlFlow_1" target="106" source="98">
+        <edge xmi:type="uml:ControlFlow" xmi:id="74" name="ControlFlow_1" target="106" source="98">
           <ownedComment xmi:id="75">
             <body>Original-ID-Path:50</body>
           </ownedComment>
@@ -206,7 +206,7 @@
             <body>count = 1 or (count = 3 or count = 5)</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="78" name="goToThree__ControlFlow_2" target="104" source="98">
+        <edge xmi:type="uml:ControlFlow" xmi:id="78" name="ControlFlow_2" target="104" source="98">
           <ownedComment xmi:id="79">
             <body>Original-ID-Path:52</body>
           </ownedComment>
@@ -218,22 +218,22 @@
             <body>count = 0 or (count = 2 or count = 4)</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="82" name="goToThree__ControlFlow_3" target="98" source="108">
+        <edge xmi:type="uml:ControlFlow" xmi:id="82" name="ControlFlow_3" target="98" source="108">
           <ownedComment xmi:id="83">
             <body>Original-ID-Path:54</body>
           </ownedComment>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="84" name="goToThree__ControlFlow_4" target="100" source="104">
+        <edge xmi:type="uml:ControlFlow" xmi:id="84" name="ControlFlow_4" target="100" source="104">
           <ownedComment xmi:id="85">
             <body>Original-ID-Path:55</body>
           </ownedComment>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="86" name="goToThree__ControlFlow_5" target="100" source="106">
+        <edge xmi:type="uml:ControlFlow" xmi:id="86" name="ControlFlow_5" target="100" source="106">
           <ownedComment xmi:id="87">
             <body>Original-ID-Path:56</body>
           </ownedComment>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="88" name="goToThree__ControlFlow_6" target="102" source="100">
+        <edge xmi:type="uml:ControlFlow" xmi:id="88" name="ControlFlow_6" target="102" source="100">
           <ownedComment xmi:id="89">
             <body>Original-ID-Path:57</body>
           </ownedComment>
@@ -241,7 +241,7 @@
             <body>Original-Structure:1 End</body>
           </ownedComment>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="91" name="goToThree__ControlFlow_7" target="108" source="96">
+        <edge xmi:type="uml:ControlFlow" xmi:id="91" name="ControlFlow_7" target="108" source="96">
           <ownedComment xmi:id="92">
             <body>Original-ID-Path:58</body>
           </ownedComment>
@@ -256,37 +256,37 @@
             <body>true</body>
           </guard>
         </edge>
-        <node xmi:type="uml:InitialNode" xmi:id="96" name="goToThree__InitialNode" outgoing="91">
+        <node xmi:type="uml:InitialNode" xmi:id="96" name="InitialNode" outgoing="91">
           <ownedComment xmi:id="97">
             <body>Original-ID-Path:60</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="98" name="goToThree__DecisionNode" incoming="82" outgoing="74 78">
+        <node xmi:type="uml:DecisionNode" xmi:id="98" name="DecisionNode" incoming="82" outgoing="74 78">
           <ownedComment xmi:id="99">
             <body>Original-ID-Path:61</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:MergeNode" xmi:id="100" name="goToThree__MergeNode" incoming="84 86" outgoing="88">
+        <node xmi:type="uml:MergeNode" xmi:id="100" name="MergeNode" incoming="84 86" outgoing="88">
           <ownedComment xmi:id="101">
             <body>Original-ID-Path:62</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="102" name="goToThree__ActivityFinalNode" incoming="88">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="102" name="ActivityFinalNode" incoming="88">
           <ownedComment xmi:id="103">
             <body>Original-ID-Path:63</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="104" name="goToThree__incr1" incoming="78" outgoing="84" behavior="41">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="104" name="incr1" incoming="78" outgoing="84" behavior="41">
           <ownedComment xmi:id="105">
             <body>Original-ID-Path:64</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="106" name="goToThree__incr2" incoming="74" outgoing="86" behavior="44">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="106" name="incr2" incoming="74" outgoing="86" behavior="44">
           <ownedComment xmi:id="107">
             <body>Original-ID-Path:65</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:CallBehaviorAction" xmi:id="108" name="goToThree__initialize" incoming="91" outgoing="82" behavior="38">
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="108" name="initialize" incoming="91" outgoing="82" behavior="38">
           <ownedComment xmi:id="109">
             <body>Original-ID-Path:66</body>
           </ownedComment>

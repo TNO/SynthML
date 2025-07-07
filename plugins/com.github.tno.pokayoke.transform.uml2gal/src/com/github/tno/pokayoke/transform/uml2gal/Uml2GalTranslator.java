@@ -39,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
@@ -117,6 +118,9 @@ public class Uml2GalTranslator {
 
         // Validate and flatten the model.
         new FlattenUMLActivity(model).transform();
+
+        // Prepend the name of the outer activity to the model elements in activities.
+        NameHelper.prependOuterActivityNameToNodesAndEdgesInActivities(model);
 
         // Create GAL specification builders for translating the UML model, and reset from any previous translation.
         specificationBuilder = new GalSpecificationBuilder();
