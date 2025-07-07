@@ -56,13 +56,15 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             Set<Pair<List<Event>, List<Event>>> pairedEvents)
     {
         // Sanity check: paired events should not be null.
-        Verify.verify(pairedEvents != null, "Paired events cannot be null.");
+        Verify.verify(pairedEvents != null, ERROR_PREFIX + "paired events cannot be null.");
 
         // Sanity check: tau events and non-tau events must be disjoint.
         Verify.verify(areDisjointEventSets(
-                pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()), tauEvents1));
+                pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()), tauEvents1),
+                ERROR_PREFIX + "the first model's internal and external event sets are not disjoint.");
         Verify.verify(areDisjointEventSets(
-                pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), tauEvents2));
+                pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), tauEvents2),
+                ERROR_PREFIX + "the second model's internal and external event sets are not disjoint.");
 
         // Sanity check: marked states should not have outgoing transitions.
         Set<Location> markedStates1 = stateSpace1.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
@@ -70,17 +72,17 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         Set<Location> markedStates2 = stateSpace2.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
                 .collect(Collectors.toSet());
         Verify.verify(markedStates1.stream().allMatch(s -> s.getEdges().isEmpty()),
-                "State space 1 has outgoing transitions from marked states.");
+                ERROR_PREFIX + "state space 1 has outgoing transitions from marked states.");
         Verify.verify(markedStates2.stream().allMatch(s -> s.getEdges().isEmpty()),
-                "State space 2 has outgoing transitions from marked states.");
+                ERROR_PREFIX + "state space 2 has outgoing transitions from marked states.");
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
         Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
         Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
         Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
-                "State space 1 contains blocking states.");
+                ERROR_PREFIX + "state space 1 contains blocking states.");
         Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
-                "State space 2 contains blocking states.");
+                ERROR_PREFIX + "state space 2 contains blocking states.");
 
         // Initialize queue. If 'null', the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -109,9 +111,9 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             // Sanity check: the states should represent the same external state, since tau transitions may only
             // change internal state.
             Verify.verify(areAllEquivalent(tauReachableStates1, stateAnnotations1),
-                    "Tau reachability found multiple external states.");
+                    ERROR_PREFIX + "tau-reachability found multiple external states in the first model.");
             Verify.verify(areAllEquivalent(tauReachableStates2, stateAnnotations2),
-                    "Tau reachability found multiple external states.");
+                    ERROR_PREFIX + "tau-reachability found multiple external states in the second model.");
 
             // Check if any tau reachable state is marked, for both state spaces.
             boolean anyMarked1 = tauReachableStates1.stream().anyMatch(markedStates1::contains);

@@ -50,10 +50,16 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             Set<String> externalVariableNames)
     {
         // Sanity checks. The models should only have one component, an automaton.
-        Verify.verify(model1.getComponents().size() == 1, "Found more than one component.");
-        Verify.verify(model2.getComponents().size() == 1, "Found more than one component.");
-        Verify.verify(model1.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
-        Verify.verify(model2.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
+        Verify.verify(model1.getComponents().size() == 1, StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                + "the first model contains more than one component.");
+        Verify.verify(model2.getComponents().size() == 1, StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                + "the second model contains more than one component.");
+        Verify.verify(model1.getComponents().get(0) instanceof Automaton,
+                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + "the first model's component is not an automaton.");
+        Verify.verify(model2.getComponents().get(0) instanceof Automaton,
+                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + "the second model's component is not an automaton.");
 
         Automaton stateSpace1 = (Automaton)model1.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)model2.getComponents().get(0);
@@ -63,8 +69,12 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
         // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
-        Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1));
-        Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2));
+        Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1),
+                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + "the first model contains events that are neither internal nor external.");
+        Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2),
+                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + "the second model contains events that are neither internal nor external.");
 
         // Filter unused events from the state space alphabets.
         Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
@@ -86,7 +96,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         // Verify that each location has only one annotation. This is always the case with CIF model generated with the
         // state space exploration.
         locToAnnotations.values().stream().forEach(
-                a -> Verify.verify(a.size() == 1, "Found state that doesn't have exactly one state annotation."));
+                a -> Verify.verify(a.size() == 1, StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + "model "
+                        + model.getName() + "contains a state that doesn't have exactly one state annotation."));
 
         // Filter the state annotations, by removing the internal variables from them.
         Map<Location, Annotation> locToFilteredAnnotations = new LinkedHashMap<>();
