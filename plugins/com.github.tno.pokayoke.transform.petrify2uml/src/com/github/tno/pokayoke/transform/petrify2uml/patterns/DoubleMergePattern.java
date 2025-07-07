@@ -32,15 +32,19 @@ public class DoubleMergePattern {
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
     public static boolean findAndRewriteAll(Activity activity) {
-        List<DoubleMergePattern> patterns = findAll(activity);
-        boolean foundPatterns = !patterns.isEmpty();
+        boolean hasFoundPatterns = false;
 
         // Only rewrite one pattern at a time, to prevent issues when patterns overlap.
-        while (!patterns.isEmpty()) {
-            patterns.get(0).rewrite();
-            patterns = findAll(activity);
+        while (true) {
+            List<DoubleMergePattern> patterns = findAll(activity);
+            if (patterns.isEmpty()) {
+                break;
+            } else {
+                patterns.get(0).rewrite();
+                hasFoundPatterns = true;
+            }
         }
-        return foundPatterns;
+        return hasFoundPatterns;
     }
 
     /**
