@@ -135,7 +135,7 @@
                 <foregroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_yellow']"/>
               </style>
             </subContainerMappings>
-            <style xsi:type="style:FlatContainerStyleDescription" arcWidth="25" arcHeight="25" borderSizeComputationExpression="1" labelExpression="service:getCallActionName" roundedCorner="true" backgroundStyle="Liquid">
+            <style xsi:type="style:FlatContainerStyleDescription" arcWidth="25" arcHeight="25" borderSizeComputationExpression="1" labelExpression="service:getCallBehaviorActionLabel()" roundedCorner="true" backgroundStyle="Liquid">
               <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_orange']"/>
               <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
               <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
@@ -148,7 +148,7 @@
           <reusedContainerMappings href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_DataStore']"/>
           <reusedContainerMappings href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_InterruptibleActivityRegion']"/>
           <reusedContainerMappings href="platform:/plugin/org.obeonetwork.dsl.uml2.core.design/description/uml2core.odesign#//@ownedViewpoints[name='Reused']/@ownedRepresentations[name='Activity%20Diagram']/@defaultLayer/@containerMappings[name='AD_Activity']/@subContainerMappings[name='AD_Partition']"/>
-          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" labelSize="12" labelExpression="service:getActivityName">
+          <style xsi:type="style:FlatContainerStyleDescription" borderSizeComputationExpression="1" labelSize="12" labelExpression="service:getActivityLabel()">
             <borderColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='dark_purple']"/>
             <labelColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='black']"/>
             <backgroundColor xsi:type="description:SystemColor" href="environment:/viewpoint#//@systemColors/@entries[name='white']"/>
@@ -212,10 +212,10 @@
           </ownedTools>
         </toolSections>
         <toolSections name="Section SC_Activity">
-          <ownedTools xsi:type="tool:DirectEditLabel" name="NamedActivityDirectEdit" inputLabelExpression="service:getActivityName">
+          <ownedTools xsi:type="tool:DirectEditLabel" name="NamedActivityDirectEdit" inputLabelExpression="service:getCallBehaviorActionLabel">
             <mask mask="{0}"/>
             <initialOperation>
-              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setActivityName(arg0)"/>
+              <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setActivityLabel(arg0)"/>
             </initialOperation>
           </ownedTools>
         </toolSections>
@@ -330,8 +330,8 @@
           </style>
         </controls>
       </groups>
-      <groups name="PR_TemplateParamersGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_TemplateParameters" labelExpression="Template Parameters" helpExpression="The Template Parameters of the Called Activity" valueExpression="service:self.getTemplateParameters()">
+      <groups name="PR_TemplateArgumentsGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_templateArguments" labelExpression="Template Arguments" helpExpression="The Template Arguments of the Called Activity" valueExpression="service:self.getTemplateArguments()">
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setTemplateArguments(newValue)"/>
           </initialOperation>

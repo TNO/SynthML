@@ -1,6 +1,7 @@
 
 package com.github.tno.synthml.uml.profile.design;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +111,7 @@ public class PokaYokeProfileServices {
      * @param activity The element to interrogate.
      * @param editedLabelContent The new content.
      */
-    public void setActivityName(Activity activity, String editedLabelContent) {
+    public void setActivityLabel(Activity activity, String editedLabelContent) {
         // Mirror LabelServices editUmlLabel
         final EditLabelSwitch editLabel = new EditLabelSwitch();
 
@@ -146,11 +147,11 @@ public class PokaYokeProfileServices {
                 }
             }
 
-            // Send the edited label to the original Switch class
+            // Send the edited label to the original {@code EditLabelSwitch#CaseClass}
             String genericString = labelTypes.isEmpty() ? "" : ("<" + String.join(", ", labelTypes.keySet()) + ">");
             editLabel.setEditedLabelContent(baseLabel + genericString);
 
-            // The method a label is set mimics how UML designer sets TemplateParameters for classes.
+            // Below mimics how UML designer sets TemplateParameters for classes.
             // First {@code EditLabelSwitch#parseInputLabel} is called. This method parses the label and updates the
             // underlying {@link TemplateableElement}. Since this method is private we proxy it by calling
             // {@code EditLabelSwitch#caseTemplateableElement}. Finally we call {@code EditLabelSwitch#caseNamedElement}
@@ -180,14 +181,17 @@ public class PokaYokeProfileServices {
      * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
      *     stereotyped, {@code null} otherwise.
      */
-    public String getCallActionName(CallBehaviorAction callAction) {
+    public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+
         List<String> templateArguments = PokaYokeUmlProfileUtil.getTemplateArguments(callAction);
-        String stringArguments = String.join("", templateArguments).replaceAll("\s", "").replace(":", "");
+        String stringArguments = String.join("", templateArguments).replaceAll("\s", "").replace(":", "").replace("\n",
+                "");
 
         if (stringArguments.isEmpty()) {
-            return callAction.getName();
+            return displaySwitch.caseCallBehaviorAction(callAction);
         } else {
-            return callAction.getName() + "<" + stringArguments + ">";
+            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + stringArguments + ">";
         }
     }
 
@@ -199,45 +203,39 @@ public class PokaYokeProfileServices {
      * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
      *     stereotyped, {@code null} otherwise.
      */
-    public String getActivityName(Activity activity) {
+    public String getActivityLabel(Activity activity) {
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+        String activityLabel = displaySwitch.caseBehavior(activity);
+
         final TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
-        final StringBuffer templateArguments = new StringBuffer();
-        if (ownedTemplateSignature != null) {
-            templateArguments.append("<");
-            final List<TemplateParameter> ownedTemplateParameters = ownedTemplateSignature.getOwnedParameters();
-            boolean first = true;
-            for (final TemplateParameter templateParameter: ownedTemplateParameters) {
-                if (first) {
-                    first = false;
-                } else {
-                    templateArguments.append(", "); //$NON-NLS-1$
-                }
+        List<TemplateParameter> templateParameters = (ownedTemplateSignature != null)
+                ? ownedTemplateSignature.getOwnedParameters() : new ArrayList<>();
 
-                final ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
-                if (parameterableElement instanceof NamedElement) {
-                    final NamedElement classTempate = (NamedElement)parameterableElement;
-                    templateArguments.append(classTempate.getName());
-                }
+        List<String> parameterSignatures = new ArrayList<>();
+        for (final TemplateParameter templateParameter: templateParameters) {
+            // Extract the name of the element
+            final ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
+            if (!(parameterableElement instanceof NamedElement namedParameterableElement)) {
+                continue;
+            }
 
-                if (templateParameter instanceof ClassifierTemplateParameter classifier) {
-                    var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
-                    if (firstClassifier.isPresent()) {
-                        templateArguments.append(":").append(firstClassifier.get().getName());
-                    }
+            // Add the type signature if it can be determined
+            String parameterSignature = namedParameterableElement.getName();
+            if (templateParameter instanceof ClassifierTemplateParameter classifier) {
+                var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
+                if (firstClassifier.isPresent()) {
+                    parameterSignature += ":" + firstClassifier.get().getName();
                 }
             }
 
-            templateArguments.append(">");
+            parameterSignatures.add(parameterSignature);
         }
 
-        String namedElement = DisplayLabelSwitch.computeStereotypes(activity)
-                + (activity.getName() == null ? "" : activity.getName()); //$NON-NLS-1$
-
-        if (!templateArguments.isEmpty()) {
-            return DisplayLabelSwitch.computeStereotypes(activity) + namedElement + templateArguments;
+        if (parameterSignatures.isEmpty()) {
+            return activityLabel;
         }
 
-        return namedElement;
+        return activityLabel + "<" + String.join(",", parameterSignatures) + ">";
     }
 
     /**
@@ -372,7 +370,7 @@ public class PokaYokeProfileServices {
      * @return The {@link FormalAction#getTemplateArguments() parameters} property value if {@code element} is
      *     stereotyped, {@code null} otherwise.
      */
-    public String getTemplateParameters(CallBehaviorAction element) {
+    public String getTemplateArguments(CallBehaviorAction element) {
         return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getTemplateArguments(element));
     }
 
@@ -504,6 +502,16 @@ public class PokaYokeProfileServices {
             // 'ActivityEdge'. This implementation only changes the name.
             setName(edge, editedLabelContent);
             return edge;
+        } else if (context instanceof CallBehaviorAction callAction) {
+            // Parse the colon to specify the type
+            Pattern pattern = Pattern.compile("^(\\w+)\\s*(?:<(.+)>)?$");
+            Matcher matcher = pattern.matcher(editedLabelContent);
+
+            if (matcher.find()) {
+                editedLabelContent = matcher.group(1);
+                String generics = matcher.group(2) != null ? matcher.group(2) : "";
+                setTemplateArguments(callAction, generics.replace("=", ":=").replace(",", ",\n"));
+            }
         }
 
         EditLabelSwitch editLabel = new EditLabelSwitch();
@@ -527,6 +535,8 @@ public class PokaYokeProfileServices {
             // The implementation in UML Designer uses 'doSwitch' to return both the name of an 'ActivityEdge' and
             // the name of its stereotype. This implementation only returns the name.
             return edge.getName();
+        } else if (element instanceof CallBehaviorAction callAction) {
+            return getCallBehaviorActionLabel(callAction);
         }
 
         final DirectEditLabelSwitch directEditLabel = new DirectEditLabelSwitch();
