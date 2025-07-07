@@ -107,7 +107,7 @@
         <ownedComment xmi:id="59">
           <body>Original-ID-Path:15</body>
         </ownedComment>
-        <edge xmi:type="uml:ControlFlow" xmi:id="60" name="Activity2__ControlFlow_1" target="92" source="86">
+        <edge xmi:type="uml:ControlFlow" xmi:id="60" name="ControlFlow_1" target="92" source="86">
           <ownedComment xmi:id="61">
             <body>Original-ID-Path:16</body>
           </ownedComment>
@@ -122,7 +122,7 @@
             <body>not init</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="65" name="Activity2__ControlFlow_2" target="96" source="92">
+        <edge xmi:type="uml:ControlFlow" xmi:id="65" name="ControlFlow_2" target="96" source="92">
           <ownedComment xmi:id="66">
             <body>Original-ID-Path:19</body>
           </ownedComment>
@@ -132,7 +132,7 @@
             </ownedComment>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="69" name="Activity2__ControlFlow_3" target="90" source="96">
+        <edge xmi:type="uml:ControlFlow" xmi:id="69" name="ControlFlow_3" target="90" source="96">
           <ownedComment xmi:id="70">
             <body>Original-ID-Path:22</body>
           </ownedComment>
@@ -144,7 +144,7 @@
             <body>val = false</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="73" name="Activity2__ControlFlow_4" target="94" source="96">
+        <edge xmi:type="uml:ControlFlow" xmi:id="73" name="ControlFlow_4" target="94" source="96">
           <ownedComment xmi:id="74">
             <body>Original-ID-Path:25</body>
           </ownedComment>
@@ -156,7 +156,7 @@
             <body>val = true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="77" name="Activity2__ControlFlow_5" target="88" source="94">
+        <edge xmi:type="uml:ControlFlow" xmi:id="77" name="ControlFlow_5" target="88" source="94">
           <ownedComment xmi:id="78">
             <body>Original-ID-Path:28</body>
           </ownedComment>
@@ -171,7 +171,7 @@
             <body>val = true</body>
           </guard>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="82" name="Activity2__ControlFlow_6" target="94" source="90">
+        <edge xmi:type="uml:ControlFlow" xmi:id="82" name="ControlFlow_6" target="94" source="90">
           <ownedComment xmi:id="83">
             <body>Original-ID-Path:31</body>
           </ownedComment>
@@ -181,34 +181,34 @@
             </ownedComment>
           </guard>
         </edge>
-        <node xmi:type="uml:InitialNode" xmi:id="86" name="Activity2__Initial1" outgoing="60">
+        <node xmi:type="uml:InitialNode" xmi:id="86" name="Initial1" outgoing="60">
           <ownedComment xmi:id="87">
             <body>Original-ID-Path:34</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="88" name="Activity2__ActivityFinal1" incoming="77">
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="88" name="ActivityFinal1" incoming="77">
           <ownedComment xmi:id="89">
             <body>Original-ID-Path:35</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:OpaqueAction" xmi:id="90" name="Activity2__ValFlipper" incoming="69" outgoing="82">
+        <node xmi:type="uml:OpaqueAction" xmi:id="90" name="ValFlipper" incoming="69" outgoing="82">
           <ownedComment xmi:id="91">
             <body>Original-ID-Path:36</body>
           </ownedComment>
           <body>// TODO body of OpaqueAction1</body>
         </node>
-        <node xmi:type="uml:OpaqueAction" xmi:id="92" name="Activity2__Initialize" incoming="60" outgoing="65">
+        <node xmi:type="uml:OpaqueAction" xmi:id="92" name="Initialize" incoming="60" outgoing="65">
           <ownedComment xmi:id="93">
             <body>Original-ID-Path:37</body>
           </ownedComment>
           <body>// TODO body of OpaqueAction2</body>
         </node>
-        <node xmi:type="uml:MergeNode" xmi:id="94" name="Activity2__Merge1" incoming="73 82" outgoing="77">
+        <node xmi:type="uml:MergeNode" xmi:id="94" name="Merge1" incoming="73 82" outgoing="77">
           <ownedComment xmi:id="95">
             <body>Original-ID-Path:38</body>
           </ownedComment>
         </node>
-        <node xmi:type="uml:DecisionNode" xmi:id="96" name="Activity2__Decision1" incoming="65" outgoing="69 73">
+        <node xmi:type="uml:DecisionNode" xmi:id="96" name="Decision1" incoming="65" outgoing="69 73">
           <ownedComment xmi:id="97">
             <body>Original-ID-Path:39</body>
           </ownedComment>
