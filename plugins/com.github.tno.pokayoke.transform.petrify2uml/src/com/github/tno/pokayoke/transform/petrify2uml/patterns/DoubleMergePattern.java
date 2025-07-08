@@ -36,7 +36,7 @@ public class DoubleMergePattern {
 
         // Only rewrite one pattern at a time, to prevent issues when patterns overlap.
         while (true) {
-            Optional<DoubleMergePattern> patterns = findAll(activity);
+            Optional<DoubleMergePattern> patterns = findAny(activity);
             if (patterns.isEmpty()) {
                 break;
             } else {
@@ -53,7 +53,7 @@ public class DoubleMergePattern {
      * @param activity The input activity.
      * @return All <i>double merge</i> patterns in the given activity.
      */
-    public static Optional<DoubleMergePattern> findAll(Activity activity) {
+    public static Optional<DoubleMergePattern> findAny(Activity activity) {
         return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).findFirst();
     }
 
