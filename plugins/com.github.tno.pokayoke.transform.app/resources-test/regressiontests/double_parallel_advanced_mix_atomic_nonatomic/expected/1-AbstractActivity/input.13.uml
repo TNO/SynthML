@@ -69,7 +69,7 @@
           </ownedComment>
         </upperValue>
       </ownedAttribute>
-      <ownedBehavior xmi:type="uml:Activity" xmi:id="28" name="AbstractActivity" postcondition="40" precondition="36" node="89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="28" name="AbstractActivity" postcondition="40" precondition="36" node="82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98">
         <ownedComment xmi:id="29">
           <body>Original-ID-Path:15</body>
         </ownedComment>
@@ -110,7 +110,7 @@
             <body>a_executed = true and b_executed = true and c_executed = true and d_executed = true</body>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="44" name="IntervalConstraintA" constrainedElement="110">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="44" name="IntervalConstraintA" constrainedElement="99">
           <ownedComment xmi:id="45">
             <body>Original-ID-Path:23</body>
           </ownedComment>
@@ -120,7 +120,7 @@
             </ownedComment>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="48" name="IntervalConstraintB" constrainedElement="112">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="48" name="IntervalConstraintB" constrainedElement="101">
           <ownedComment xmi:id="49">
             <body>Original-ID-Path:25</body>
           </ownedComment>
@@ -130,7 +130,7 @@
             </ownedComment>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="52" name="IntervalConstraintC" constrainedElement="114">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="52" name="IntervalConstraintC" constrainedElement="103">
           <ownedComment xmi:id="53">
             <body>Original-ID-Path:27</body>
           </ownedComment>
@@ -140,7 +140,7 @@
             </ownedComment>
           </specification>
         </ownedRule>
-        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="56" name="IntervalConstraintD" constrainedElement="116">
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="56" name="IntervalConstraintD" constrainedElement="105">
           <ownedComment xmi:id="57">
             <body>Original-ID-Path:29</body>
           </ownedComment>
@@ -150,102 +150,89 @@
             </ownedComment>
           </specification>
         </ownedRule>
-        <edge xmi:type="uml:ControlFlow" xmi:id="60" name="InitialNode__p1__to____start" target="98" source="99"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="61" name="AtomicD__to__Join____end" target="108" source="90"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="62" name="__end__to__FinalNode__p11" target="100" source="97"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="63" name="Fork____start__to__NonAtomicA" target="91" source="109"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="64" name="Fork____start__to__NonAtomicC" target="94" source="109"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="65" name="Decision__p4__to__NonAtomicA__na_result_1" target="92" source="101">
+        <edge xmi:type="uml:ControlFlow" xmi:id="60" name="InitialNode__p1__to____start" target="89" source="90"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="61" name="AtomicD__to__Join____end" target="97" source="83"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="62" name="__end__to__FinalNode__p11" target="91" source="88"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="63" name="Fork____start__to__NonAtomicA" target="84" source="98"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="64" name="Fork____start__to__NonAtomicC" target="87" source="98"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="65" name="Decision__p4__to__NonAtomicA__na_result_1" target="85" source="92">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="66" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="67" name="Decision__p4__to__NonAtomicA__na_result_2" target="93" source="101">
+        <edge xmi:type="uml:ControlFlow" xmi:id="67" name="Decision__p4__to__NonAtomicA__na_result_2" target="86" source="92">
           <guard xmi:type="uml:LiteralBoolean" xmi:id="68" value="true"/>
         </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="69" name="NonAtomicA__to__Decision__p4" target="101" source="91"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="70" name="Decision__p5__to__NonAtomicC__na_result_1" target="95" source="102">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="71" value="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="72" name="Decision__p5__to__NonAtomicC__na_result_2" target="96" source="102">
-          <guard xmi:type="uml:LiteralBoolean" xmi:id="73" value="true"/>
-        </edge>
-        <edge xmi:type="uml:ControlFlow" xmi:id="74" name="NonAtomicC__to__Decision__p5" target="102" source="94"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="75" name="Fork__NonAtomicA__na_result_1__to__Merge__p6" target="103" source="106"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="76" name="Fork__NonAtomicA__na_result_2__to__Merge__p6" target="103" source="107"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="77" name="Merge__p6__to__AtomicB" target="89" source="103"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="78" name="Fork__NonAtomicA__na_result_1__to__Merge__p7" target="104" source="106"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="79" name="Fork__NonAtomicA__na_result_2__to__Merge__p7" target="104" source="107"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="80" name="Merge__p7__to__AtomicD" target="90" source="104"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="81" name="NonAtomicC__na_result_1__to__Merge__p8" target="105" source="95"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="82" name="NonAtomicC__na_result_2__to__Merge__p8" target="105" source="96"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="83" name="Merge__p8__to__Join____end" target="108" source="105"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="84" name="AtomicB__to__Join____end" target="108" source="89"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="85" name="NonAtomicA__na_result_1__to__Fork__NonAtomicA__na_result_1" target="106" source="92"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="86" name="NonAtomicA__na_result_2__to__Fork__NonAtomicA__na_result_2" target="107" source="93"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="87" name="Join____end__to____end" target="97" source="108"/>
-        <edge xmi:type="uml:ControlFlow" xmi:id="88" name="__start__to__Fork____start" target="109" source="98"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="89" name="AtomicB" incoming="77" outgoing="84"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="90" name="AtomicD" incoming="80" outgoing="61"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="91" name="NonAtomicA" incoming="63" outgoing="69"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="92" name="NonAtomicA__na_result_1" incoming="65" outgoing="85"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="93" name="NonAtomicA__na_result_2" incoming="67" outgoing="86"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="94" name="NonAtomicC" incoming="64" outgoing="74"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="95" name="NonAtomicC__na_result_1" incoming="70" outgoing="81"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="96" name="NonAtomicC__na_result_2" incoming="72" outgoing="82"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="97" name="__end" incoming="87" outgoing="62"/>
-        <node xmi:type="uml:OpaqueAction" xmi:id="98" name="__start" incoming="60" outgoing="88"/>
-        <node xmi:type="uml:InitialNode" xmi:id="99" name="InitialNode__p1" outgoing="60"/>
-        <node xmi:type="uml:ActivityFinalNode" xmi:id="100" name="FinalNode__p11" incoming="62"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="101" name="Decision__p4" incoming="69" outgoing="65 67"/>
-        <node xmi:type="uml:DecisionNode" xmi:id="102" name="Decision__p5" incoming="74" outgoing="70 72"/>
-        <node xmi:type="uml:MergeNode" xmi:id="103" name="Merge__p6" incoming="75 76" outgoing="77"/>
-        <node xmi:type="uml:MergeNode" xmi:id="104" name="Merge__p7" incoming="78 79" outgoing="80"/>
-        <node xmi:type="uml:MergeNode" xmi:id="105" name="Merge__p8" incoming="81 82" outgoing="83"/>
-        <node xmi:type="uml:ForkNode" xmi:id="106" name="Fork__NonAtomicA__na_result_1" incoming="85" outgoing="75 78"/>
-        <node xmi:type="uml:ForkNode" xmi:id="107" name="Fork__NonAtomicA__na_result_2" incoming="86" outgoing="76 79"/>
-        <node xmi:type="uml:JoinNode" xmi:id="108" name="Join____end" incoming="61 83 84" outgoing="87"/>
-        <node xmi:type="uml:ForkNode" xmi:id="109" name="Fork____start" incoming="88" outgoing="63 64"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="69" name="NonAtomicA__to__Decision__p4" target="92" source="84"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="70" name="NonAtomicC__to__Join____end" target="97" source="87"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="71" name="Fork__NonAtomicA__na_result_1__to__Merge__p6" target="93" source="95"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="72" name="Fork__NonAtomicA__na_result_2__to__Merge__p6" target="93" source="96"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="73" name="Merge__p6__to__AtomicB" target="82" source="93"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="74" name="Fork__NonAtomicA__na_result_1__to__Merge__p7" target="94" source="95"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="75" name="Fork__NonAtomicA__na_result_2__to__Merge__p7" target="94" source="96"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="76" name="Merge__p7__to__AtomicD" target="83" source="94"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="77" name="AtomicB__to__Join____end" target="97" source="82"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="78" name="NonAtomicA__na_result_1__to__Fork__NonAtomicA__na_result_1" target="95" source="85"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="79" name="NonAtomicA__na_result_2__to__Fork__NonAtomicA__na_result_2" target="96" source="86"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="80" name="Join____end__to____end" target="88" source="97"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="81" name="__start__to__Fork____start" target="98" source="89"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="82" name="AtomicB" incoming="73" outgoing="77"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="83" name="AtomicD" incoming="76" outgoing="61"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="84" name="NonAtomicA" incoming="63" outgoing="69"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="85" name="NonAtomicA__na_result_1" incoming="65" outgoing="78"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="86" name="NonAtomicA__na_result_2" incoming="67" outgoing="79"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="87" name="NonAtomicC" incoming="64" outgoing="70"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="88" name="__end" incoming="80" outgoing="62"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="89" name="__start" incoming="60" outgoing="81"/>
+        <node xmi:type="uml:InitialNode" xmi:id="90" name="InitialNode__p1" outgoing="60"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="91" name="FinalNode__p11" incoming="62"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="92" name="Decision__p4" incoming="69" outgoing="65 67"/>
+        <node xmi:type="uml:MergeNode" xmi:id="93" name="Merge__p6" incoming="71 72" outgoing="73"/>
+        <node xmi:type="uml:MergeNode" xmi:id="94" name="Merge__p7" incoming="74 75" outgoing="76"/>
+        <node xmi:type="uml:ForkNode" xmi:id="95" name="Fork__NonAtomicA__na_result_1" incoming="78" outgoing="71 74"/>
+        <node xmi:type="uml:ForkNode" xmi:id="96" name="Fork__NonAtomicA__na_result_2" incoming="79" outgoing="72 75"/>
+        <node xmi:type="uml:JoinNode" xmi:id="97" name="Join____end" incoming="61 70 77" outgoing="80"/>
+        <node xmi:type="uml:ForkNode" xmi:id="98" name="Fork____start" incoming="81" outgoing="63 64"/>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="110" name="NonAtomicA">
-        <ownedComment xmi:id="111">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="99" name="NonAtomicA">
+        <ownedComment xmi:id="100">
           <body>Original-ID-Path:31</body>
         </ownedComment>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="112" name="AtomicB">
-        <ownedComment xmi:id="113">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="101" name="AtomicB">
+        <ownedComment xmi:id="102">
           <body>Original-ID-Path:32</body>
         </ownedComment>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="114" name="NonAtomicC">
-        <ownedComment xmi:id="115">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="103" name="NonAtomicC">
+        <ownedComment xmi:id="104">
           <body>Original-ID-Path:33</body>
         </ownedComment>
       </ownedBehavior>
-      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="116" name="AtomicD">
-        <ownedComment xmi:id="117">
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="105" name="AtomicD">
+        <ownedComment xmi:id="106">
           <body>Original-ID-Path:34</body>
         </ownedComment>
       </ownedBehavior>
     </packagedElement>
-    <profileApplication xmi:id="118">
-      <eAnnotations xmi:id="119" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <profileApplication xmi:id="107">
+      <eAnnotations xmi:id="108" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
       </eAnnotations>
       <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
     </profileApplication>
   </uml:Model>
-  <SynthML:FormalElement xmi:id="120" guard="true" base_RedefinableElement="110">
+  <SynthML:FormalElement xmi:id="109" guard="true" base_RedefinableElement="99">
     <effects>a_executed := true</effects>
     <effects>a_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="121" guard="a_executed = true" base_RedefinableElement="112" atomic="true">
+  <SynthML:FormalElement xmi:id="110" guard="a_executed = true" base_RedefinableElement="101" atomic="true">
     <effects>b_executed := true</effects>
     <effects>b_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="122" guard="true" base_RedefinableElement="114">
+  <SynthML:FormalElement xmi:id="111" guard="true" base_RedefinableElement="103">
     <effects>c_executed := true</effects>
     <effects>c_executed := true</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalElement xmi:id="123" guard="a_executed = true" base_RedefinableElement="116" atomic="true">
+  <SynthML:FormalElement xmi:id="112" guard="a_executed = true" base_RedefinableElement="105" atomic="true">
     <effects>d_executed := true</effects>
     <effects>d_executed := true</effects>
   </SynthML:FormalElement>
