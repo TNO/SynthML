@@ -118,11 +118,11 @@ public class UMLToCameoTransformer {
         Preconditions.checkArgument(modelNestedClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
-        Activity contextActivity = (Activity)contextClass;
 
         // Check that only outgoing edges from decision nodes have incoming guards, and only incoming edges to guarded
         // actions have outgoing guards.
-        for (Element activityElement: contextActivity.getClassifierBehavior().getOwnedElements()) {
+        Activity contextActivity = (Activity)contextClass.getClassifierBehavior();
+        for (Element activityElement: contextActivity.getOwnedElements()) {
             if (activityElement instanceof ControlFlow controlFlow) {
                 AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
                 Preconditions.checkArgument(
