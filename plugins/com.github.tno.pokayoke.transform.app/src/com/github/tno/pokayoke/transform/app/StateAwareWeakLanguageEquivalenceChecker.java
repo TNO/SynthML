@@ -112,8 +112,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
             // Sanity check: the states should represent the same external state, since tau transitions may only
             // change internal state.
-            checkAllEquivalentStates(tauReachableStates1, stateAnnotations1);
-            checkAllEquivalentStates(tauReachableStates2, stateAnnotations2);
+            checkAllEquivalentStates(tauReachableStates1, stateAnnotations1, stateSpace1);
+            checkAllEquivalentStates(tauReachableStates2, stateAnnotations2, stateSpace2);
 
             // Check if any tau reachable state is marked, for both state spaces.
             List<String> reachableMarked1 = tauReachableStates1.stream().filter(markedStates1::contains)
@@ -326,9 +326,11 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         return visited;
     }
 
-    private void checkAllEquivalentStates(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
+    private void checkAllEquivalentStates(Set<Location> states, Map<Location, Annotation> stateAnnotations,
+            Automaton stateSpace)
+    {
         // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
-        // there is one non-equivalent state, return false.
+        // there is one non-equivalent state, throws an error.
         Iterator<Location> statesIter = states.iterator();
         Location firstState = statesIter.next();
         Annotation firstStateAnnotation = stateAnnotations.get(firstState);
@@ -337,8 +339,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             Location currentState = statesIter.next();
             if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(currentState))) {
                 throw new RuntimeException(ERROR_PREFIX + String.format(
-                        "states '%s' and '%s' can be reached with an internal action, but are not equivalent.",
-                        firstState.getName(), currentState.getName()));
+                        "states '%s' and '%s' of state space '%s' can be reached with an internal action, but are not equivalent.",
+                        firstState.getName(), currentState.getName(), stateSpace.getName()));
             }
         }
     }
