@@ -265,23 +265,25 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
         // If any initial state is not contained in the visited set, throw an error.
         if (visited.size() != initialStates1.size() + initialStates2.size()) {
+            List<String> errors = new ArrayList<>();
+
             // Find initial states in the first model that are not in any pair.
             initialStates1.removeAll(visited);
-            String error1 = "";
             if (!initialStates1.isEmpty()) {
-                error1 += String.format("The first model contains initial states that cannot be paired, e.g. '%s'. ",
-                        initialStates1.iterator().next().getName());
+                errors.add(String.format("The first model contains initial states that cannot be paired: %s.",
+                        String.join(", ", initialStates1.stream().map(s -> s.getName()).toList())));
             }
 
             // Find initial states in the second model that are not in any pair.
             initialStates2.removeAll(visited);
-            String error2 = "";
             if (!initialStates2.isEmpty()) {
-                error2 += String.format("The second model contains initial states that cannot be paired, e.g. '%s'.",
-                        initialStates2.iterator().next().getName());
+                errors.add(String.format("The second model contains initial states that cannot be paired: %s.",
+                        String.join(", ", initialStates2.stream().map(s -> s.getName()).toList())));
             }
 
-            throw new RuntimeException(ERROR_PREFIX + error1 + error2);
+            if (!errors.isEmpty()) {
+                throw new RuntimeException(ERROR_PREFIX + String.join(" ", errors));
+            }
         }
 
         return queue;
