@@ -183,7 +183,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     }
 
     /**
-     * Check the number of blocking states in the given state space. See also
+     * Check that given state space has no blocking states. See also
      * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param stateSpace State space to search.
@@ -213,7 +213,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         }
 
         if (stateCount - nonblocking.size() != 0) {
-            throw new RuntimeException(ERROR_PREFIX + String.format("State space '%s' contains %s blocking states.",
+            throw new RuntimeException(ERROR_PREFIX + String.format("State space '%s' contains %s blocking state(s).",
                     stateSpace.getName(), String.valueOf(stateCount - nonblocking.size())));
         }
     }
@@ -252,9 +252,9 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             }
         }
 
-        // If any state is not contained in the visited set, throw an error.
+        // If any initial state is not contained in the visited set, throw an error.
         if (visited.size() != initialStates1.size() + initialStates2.size()) {
-            // Find states in the first model that are not in any pair.
+            // Find initial states in the first model that are not in any pair.
             initialStates1.removeAll(visited);
             String error1 = "";
             if (!initialStates1.isEmpty()) {
@@ -262,7 +262,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                         initialStates1.iterator().next().getName());
             }
 
-            // Find states in the second model that are not in any pair.
+            // Find initial states in the second model that are not in any pair.
             initialStates2.removeAll(visited);
             String error2 = "";
             if (!initialStates2.isEmpty()) {
