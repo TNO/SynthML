@@ -1,0 +1,86 @@
+controllable initialize;
+uncontrollable initialize__na_result_1;
+uncontrollable initialize__na_result_2;
+controllable incr1;
+controllable incr2;
+controllable __node__InitialNode__132__0;
+uncontrollable __node__DecisionNode__135__0;
+uncontrollable __node__DecisionNode__135__1;
+uncontrollable __node__MergeNode__138__0;
+uncontrollable __node__MergeNode__138__1;
+uncontrollable __node__ActivityFinalNode__141__0;
+uncontrollable __node__CallBehaviorAction__144;
+uncontrollable __node__CallBehaviorAction__147;
+uncontrollable __node__CallBehaviorAction__150;
+uncontrollable __node__CallBehaviorAction__150__na_result_1;
+uncontrollable __node__CallBehaviorAction__150__na_result_2;
+controllable __node__InitialNode__229__0;
+uncontrollable __node__DecisionNode__231__0;
+uncontrollable __node__DecisionNode__231__1;
+uncontrollable __node__DecisionNode__231__2;
+uncontrollable __node__DecisionNode__231__3;
+uncontrollable __node__MergeNode__233__0;
+uncontrollable __node__MergeNode__233__1;
+uncontrollable __node__MergeNode__235__0;
+uncontrollable __node__MergeNode__235__1;
+uncontrollable __node__MergeNode__235__2;
+uncontrollable __node__ActivityFinalNode__237__0;
+uncontrollable __node__CallBehaviorAction__239;
+uncontrollable __node__CallBehaviorAction__241;
+uncontrollable __node__CallBehaviorAction__243;
+uncontrollable __node__CallBehaviorAction__245;
+uncontrollable __node__CallBehaviorAction__247;
+uncontrollable __node__CallBehaviorAction__249;
+uncontrollable __node__CallBehaviorAction__251;
+uncontrollable __node__CallBehaviorAction__251__na_result_1;
+uncontrollable __node__CallBehaviorAction__251__na_result_2;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__132__0, __node__DecisionNode__135__0, __node__DecisionNode__135__1, __node__MergeNode__138__0, __node__MergeNode__138__1, __node__ActivityFinalNode__141__0, __node__CallBehaviorAction__144, __node__CallBehaviorAction__147, __node__CallBehaviorAction__150, __node__CallBehaviorAction__150__na_result_1, __node__CallBehaviorAction__150__na_result_2, __node__InitialNode__229__0, __node__DecisionNode__231__0, __node__DecisionNode__231__1, __node__DecisionNode__231__2, __node__DecisionNode__231__3, __node__MergeNode__233__0, __node__MergeNode__233__1, __node__MergeNode__235__0, __node__MergeNode__235__1, __node__MergeNode__235__2, __node__ActivityFinalNode__237__0, __node__CallBehaviorAction__239, __node__CallBehaviorAction__241, __node__CallBehaviorAction__243, __node__CallBehaviorAction__245, __node__CallBehaviorAction__247, __node__CallBehaviorAction__249, __node__CallBehaviorAction__251, __node__CallBehaviorAction__251__na_result_1, __node__CallBehaviorAction__251__na_result_2, __start, __end;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected = "s2")
+  location s2:
+    edge initialize goto s4;
+  @state(projected = "s16")
+  location s3:
+    marked;
+  @state(projected = "s3")
+  location s4:
+    edge initialize__na_result_2 goto s5;
+    edge initialize__na_result_1 goto s6;
+  @state(projected = "s4")
+  location s5:
+    edge incr2 goto s11;
+    edge incr1 goto s7;
+  @state(projected = "s5")
+  location s6:
+    edge incr2 goto s7;
+    edge incr1 goto s8;
+  @state(projected = "s6")
+  @state(projected = "s9")
+  location s7:
+    edge incr2 goto s10;
+    edge incr1 goto s11;
+  @state(projected = "s7")
+  location s8:
+    edge incr2 goto s11;
+    edge incr1 goto s9;
+  @state(projected = "s11")
+  location s9:
+    edge incr2 goto s10;
+  @state(projected = "s12")
+  @state(projected = "s13")
+  @state(projected = "s15")
+  @state(projected = "s17")
+  location s10:
+    edge __end goto s3;
+  @state(projected = "s8")
+  @state(projected = "s10")
+  @state(projected = "s14")
+  location s11:
+    edge incr1 goto s10;
+end
