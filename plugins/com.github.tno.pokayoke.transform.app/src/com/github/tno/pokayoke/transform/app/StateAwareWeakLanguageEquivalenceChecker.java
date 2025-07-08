@@ -119,7 +119,10 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             if (!areEquivalentStates(tauReachableStates1.iterator().next(), stateAnnotations1,
                     tauReachableStates2.iterator().next(), stateAnnotations2))
             {
-                throw new RuntimeException(ERROR_PREFIX + "the two models can reach non-equivalent states.");
+                throw new RuntimeException(ERROR_PREFIX + "the two models can reach non-equivalent states: "
+                        + String.format("state '%s' of the first model, and state '%s' of the second model.",
+                                tauReachableStates1.iterator().next().getName(),
+                                tauReachableStates2.iterator().next().getName()));
             }
 
             // The pair of states is equivalent. Check also all pairs of states reachable from this pair.
