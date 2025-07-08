@@ -103,8 +103,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
             // Sanity check: the states should represent the same external state, since tau transitions may only
             // change internal state.
-            areAllEquivalent(tauReachableStates1, stateAnnotations1);
-            areAllEquivalent(tauReachableStates2, stateAnnotations2);
+            checkAllEquivalentStates(tauReachableStates1, stateAnnotations1);
+            checkAllEquivalentStates(tauReachableStates2, stateAnnotations2);
 
             // Check if any tau reachable state is marked, for both state spaces.
             boolean anyMarked1 = tauReachableStates1.stream().anyMatch(markedStates1::contains);
@@ -303,7 +303,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         return visited;
     }
 
-    private void areAllEquivalent(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
+    private void checkAllEquivalentStates(Set<Location> states, Map<Location, Annotation> stateAnnotations) {
         // Find if the states of the set are all equivalent. Pick the first state, and compare it to all the others: if
         // there is one non-equivalent state, return false.
         Iterator<Location> statesIter = states.iterator();
