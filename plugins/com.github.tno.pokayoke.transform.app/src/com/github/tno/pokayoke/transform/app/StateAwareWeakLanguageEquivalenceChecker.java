@@ -77,10 +77,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
         Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
         Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
-        Verify.verify(getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1) == 0,
-                ERROR_PREFIX + "state space 1 contains blocking states.");
-        Verify.verify(getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2) == 0,
-                ERROR_PREFIX + "state space 2 contains blocking states.");
+        getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1);
+        getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2);
 
         // Initialize queue. If 'null', the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -183,9 +181,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      * @param stateSpace State space to search.
      * @param markedStates The set of marked states of the state space.
      * @param stateToIncomingTrans The map from states to their incoming transitions.
-     * @return The number of blocking states in the state space.
      */
-    public static int getBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
+    public static void getBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
             Map<Location, List<Edge>> stateToIncomingTrans)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
@@ -206,7 +203,11 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                 }
             }
         }
-        return stateCount - nonblocking.size();
+
+        if (stateCount - nonblocking.size() != 0) {
+            throw new RuntimeException(String.format("State space '%s' contains %s blocking states.",
+                    stateSpace.getName(), String.valueOf(stateCount - nonblocking.size())));
+        }
     }
 
     private Queue<Pair<Set<Location>, Set<Location>>> initializeQueue(Automaton stateSpace1,
