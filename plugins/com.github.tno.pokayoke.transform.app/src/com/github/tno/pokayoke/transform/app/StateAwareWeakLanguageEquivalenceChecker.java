@@ -80,12 +80,9 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         checkBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1);
         checkBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2);
 
-        // Initialize queue. If 'null', the models are not equivalent.
+        // Initialize queue.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
                 stateAnnotations2);
-        if (queue == null) {
-            throw new RuntimeException(ERROR_PREFIX + "failed to find matching initial states.");
-        }
 
         Set<Pair<Set<Location>, Set<Location>>> visitedPairs = new LinkedHashSet<>();
         visitedPairs.addAll(queue);
@@ -244,12 +241,28 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             }
         }
 
-        // All initial states must be used in some initial pair. If not, return 'null'.
-        if (visited.size() == initialStates1.size() + initialStates2.size()) {
-            return queue;
-        } else {
-            return null;
+        // If any state is not contained in the visited set, throw an error.
+        if (visited.size() != initialStates1.size() + initialStates2.size()) {
+            // Find states in the first model that are not in any pair.
+            initialStates1.removeAll(visited);
+            String error1 = "";
+            if (!initialStates1.isEmpty()) {
+                error1 += String.format("The first model contains initial states that cannot be paired, e.g. '%s'. ",
+                        initialStates1.iterator().next().getName());
+            }
+
+            // Find states in the second model that are not in any pair.
+            initialStates2.removeAll(visited);
+            String error2 = "";
+            if (!initialStates2.isEmpty()) {
+                error2 += String.format("The second model contains initial states that cannot be paired, e.g. '%s'.",
+                        initialStates2.iterator().next().getName());
+            }
+
+            throw new RuntimeException(error1 + error2);
         }
+
+        return queue;
     }
 
     private boolean areEquivalentStates(Location state1, Map<Location, Annotation> stateAnnotations1, Location state2,
