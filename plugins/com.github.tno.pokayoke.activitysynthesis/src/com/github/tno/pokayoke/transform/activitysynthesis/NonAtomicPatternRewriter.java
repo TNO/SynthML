@@ -151,7 +151,10 @@ public class NonAtomicPatternRewriter {
 
         // Ensure that the end places have no incoming arcs starting from other transitions.
         for (Place endPlace: endPlaces) {
-            if (endPlace.getInArcs().size() != 1) {
+            long otherIncomingTransitions = endPlace.getInArcs().stream().map(a -> a.getSource())
+                    .filter(t -> !endTransitions.contains(t)).count();
+
+            if (otherIncomingTransitions > 0) {
                 return Optional.empty();
             }
         }
