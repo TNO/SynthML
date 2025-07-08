@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -90,10 +91,13 @@ public class Uml2GalTranslator {
                 element.getOwnedComments().stream().map(Comment::getBody).toList());
 
         // Convert the tracing mappings to JSON objects.
-        JSONObject variableTracingJson = new JSONObject(variableTracing.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getName(), e -> convertComments.apply(e.getValue()))));
-        JSONObject transitionTracingJson = new JSONObject(transitionTracing.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getKey().getName(), e -> convertComments.apply(e.getValue()))));
+        BinaryOperator<JSONArray> mergeFunction = (a, b) -> { throw new IllegalStateException("Duplicate key."); };
+        JSONObject variableTracingJson = new JSONObject(
+                variableTracing.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getName(),
+                        e -> convertComments.apply(e.getValue()), mergeFunction, LinkedHashMap::new)));
+        JSONObject transitionTracingJson = new JSONObject(
+                transitionTracing.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getName(),
+                        e -> convertComments.apply(e.getValue()), mergeFunction, LinkedHashMap::new)));
 
         // Construct and return the root JSON object.
         JSONObject root = new JSONObject();
