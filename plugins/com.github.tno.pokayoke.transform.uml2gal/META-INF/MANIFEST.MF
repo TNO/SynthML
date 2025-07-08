@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml2gal
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml2gal
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: com.github.tno.pokayoke.transform.uml2gal
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",

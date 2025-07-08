@@ -23,4 +23,4 @@ Require-Bundle: com.github.tno.synthml.uml.profile.plugin;bundle-version="0.0.1"
  org.eclipse.escet.cif.common;bundle-version="3.0.0"
 Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.synthml.uml.profile.util
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

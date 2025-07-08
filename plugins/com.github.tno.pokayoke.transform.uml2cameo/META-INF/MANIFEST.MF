@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.uml2;bundle-version="5.5.2",
  com.github.tno.pokayoke.transform.flatten;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml2cameo
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: com.github.tno.pokayoke.transform.uml2cameo
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",

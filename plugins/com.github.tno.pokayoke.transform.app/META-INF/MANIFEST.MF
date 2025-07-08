@@ -38,7 +38,7 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.tno.pokayoke.transform.flatten;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: com.github.tno.pokayoke.transform.app
 Import-Package: com.github.tno.pokayoke.transform.tests.common;version="0.0.0",
  org.junit.jupiter.api;version="5.9.3",
