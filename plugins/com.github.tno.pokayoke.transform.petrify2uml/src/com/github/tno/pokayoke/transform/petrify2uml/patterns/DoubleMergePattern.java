@@ -48,7 +48,7 @@ public class DoubleMergePattern {
     }
 
     /**
-     * Finds all <i>double merge</i> patterns in the given activity.
+     * Finds a <i>double merge</i> pattern in the given activity.
      *
      * @param activity The input activity.
      * @return All <i>double merge</i> patterns in the given activity.
