@@ -145,7 +145,7 @@ public class CifContext {
             // Collect all referenceable elements that are always referred to by a single identifier.
             for (NamedElement declaredElement: declaredElements) {
                 String elementName = declaredElement.getName();
-                if (!(declaredElement instanceof Property property)) {
+                if (!(declaredElement instanceof Property)) {
                     referenceableElements.put(elementName, declaredElement);
                     referenceableElementsInclDuplicates.computeIfAbsent(elementName, k -> new LinkedList<>())
                             .add(declaredElement);

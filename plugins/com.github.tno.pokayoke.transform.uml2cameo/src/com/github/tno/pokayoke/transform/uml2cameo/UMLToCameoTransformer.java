@@ -118,10 +118,11 @@ public class UMLToCameoTransformer {
         Preconditions.checkArgument(modelNestedClasses.size() == 1,
                 "Expected the model to contain exactly one class, got " + modelNestedClasses.size());
         Class contextClass = modelNestedClasses.get(0);
+        Activity contextActivity = (Activity)contextClass;
 
         // Check that only outgoing edges from decision nodes have incoming guards, and only incoming edges to guarded
         // actions have outgoing guards.
-        for (Element activityElement: ((Activity)contextClass.getClassifierBehavior()).getOwnedElements()) {
+        for (Element activityElement: contextActivity.getClassifierBehavior().getOwnedElements()) {
             if (activityElement instanceof ControlFlow controlFlow) {
                 AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
                 Preconditions.checkArgument(
@@ -144,7 +145,7 @@ public class UMLToCameoTransformer {
             // Collect the bounds for integer properties, they will be validated later.
             Range<Integer> propertyRange = null;
             if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                propertyRange = Range.of(PokaYokeTypeUtil.getMinValue(property.getType()),
                         PokaYokeTypeUtil.getMaxValue(property.getType()));
                 propertyBounds.put(property.getName(), propertyRange);
             }
