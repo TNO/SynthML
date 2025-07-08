@@ -59,10 +59,10 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         Verify.verify(pairedEvents != null, ERROR_PREFIX + "paired events cannot be null.");
 
         // Sanity check: tau events and non-tau events must be disjoint.
-        Verify.verify(areDisjointEventSets(
+        Verify.verify(checkDisjointEventSets(
                 pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()), tauEvents1),
                 ERROR_PREFIX + "the first model's internal and external event sets are not disjoint.");
-        Verify.verify(areDisjointEventSets(
+        Verify.verify(checkDisjointEventSets(
                 pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()), tauEvents2),
                 ERROR_PREFIX + "the second model's internal and external event sets are not disjoint.");
 
@@ -154,7 +154,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         }
     }
 
-    private boolean areDisjointEventSets(Set<Event> set1, Set<Event> set2) {
+    private boolean checkDisjointEventSets(Set<Event> set1, Set<Event> set2) {
         Set<String> absNamesEventsSet1 = set1.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
         Set<String> absNamesEventsSet2 = set2.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
 
