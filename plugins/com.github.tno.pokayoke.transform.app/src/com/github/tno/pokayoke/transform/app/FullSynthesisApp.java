@@ -346,7 +346,7 @@ public class FullSynthesisApp {
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
 
-        // Perform the language equivalence check and return the result.
+        // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
                 result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
