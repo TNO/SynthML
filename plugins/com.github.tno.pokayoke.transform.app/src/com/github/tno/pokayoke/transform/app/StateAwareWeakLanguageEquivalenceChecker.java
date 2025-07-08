@@ -151,8 +151,12 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                 // other is not zero.
                 if (targetStates1.isEmpty() != targetStates2.isEmpty()) {
                     throw new RuntimeException(ERROR_PREFIX + String.format(
-                            "the event %s of the first model and event %s of the second model reach different states.",
-                            events.getLeft().get(0).getName(), events.getRight().get(0).getName()));
+                            "the event '%s' from states %s of the first model and "
+                                    + "event '%s' from states %s of the second model reach different states.",
+                            events.getLeft().get(0).getName(),
+                            String.join(", ", tauReachableStates1.stream().map(s -> s.getName()).toList()),
+                            events.getRight().get(0).getName(),
+                            String.join(", ", tauReachableStates2.stream().map(s -> s.getName()).toList())));
                 } else if (targetStates1.size() > 0) {
                     // Add the next pair to the queue, if not already visited.
                     Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetStates1, targetStates2);
