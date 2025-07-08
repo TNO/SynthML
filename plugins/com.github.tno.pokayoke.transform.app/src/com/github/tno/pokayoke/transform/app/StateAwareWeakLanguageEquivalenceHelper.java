@@ -69,12 +69,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Map<Location, Annotation> filteredStateAnn2 = filterStateAnnotations(model2, externalVariableNames);
 
         // Sanity check: check that the tau and non-tau events represent the entire state space alphabet.
-        Verify.verify(checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1),
-                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
-                        + "the first model contains events that are neither internal nor external.");
-        Verify.verify(checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2),
-                StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
-                        + "the second model contains events that are neither internal nor external.");
+        checkAlphabetCoverage(stateSpace1, namesToEvents1, tauEvents1);
+        checkAlphabetCoverage(stateSpace2, namesToEvents2, tauEvents2);
 
         // Filter unused events from the state space alphabets.
         Set<String> unusedEvents1 = removeAndGetUnusedEvents(stateSpace1);
@@ -118,7 +114,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         return locToFilteredAnnotations;
     }
 
-    private static boolean checkAlphabetCoverage(Automaton stateSpace, Map<String, List<Event>> namesToEvents,
+    private static void checkAlphabetCoverage(Automaton stateSpace, Map<String, List<Event>> namesToEvents,
             Set<Event> tauEvents)
     {
         // Check that the alphabet of the state space is equal to the union of non-tau and the tau events. This check is
@@ -133,7 +129,12 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         Set<String> absNamesEventsMerged = eventsMerged.stream().map(e -> CifTextUtils.getAbsName(e))
                 .collect(Collectors.toSet());
 
-        return absNamesStateSpace.equals(absNamesEventsMerged);
+        if (!absNamesStateSpace.equals(absNamesEventsMerged)) {
+            absNamesStateSpace.removeAll(absNamesEventsMerged);
+            throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
+                    "state space '%s' contains events that are neither internal nor external, e.g. '%s'.",
+                    stateSpace.getName(), absNamesStateSpace.iterator().next()));
+        }
     }
 
     private static Set<String> removeAndGetUnusedEvents(Automaton stateSpace) {
