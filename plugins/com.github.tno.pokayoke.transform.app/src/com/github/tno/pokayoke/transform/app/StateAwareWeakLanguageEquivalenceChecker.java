@@ -110,7 +110,13 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             boolean anyMarked1 = tauReachableStates1.stream().anyMatch(markedStates1::contains);
             boolean anyMarked2 = tauReachableStates2.stream().anyMatch(markedStates2::contains);
             if (anyMarked1 != anyMarked2) {
-                throw new RuntimeException(ERROR_PREFIX + "one model can reach a marked state while the other cannot.");
+                if (anyMarked1) {
+                    throw new RuntimeException(
+                            ERROR_PREFIX + "the first model can reach a marked state while the second cannot.");
+                } else {
+                    throw new RuntimeException(
+                            ERROR_PREFIX + "the second model can reach a marked state while the first cannot.");
+                }
             }
 
             // Check that the pair of sets of tau reached states is equivalent.
