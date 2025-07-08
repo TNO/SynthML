@@ -163,8 +163,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
     /**
      * Compute the events from two state spaces that represent the same UML element, and pair them together. If the
-     * events in one state space are not related to any event in the other state space, return 'null' to indicate that
-     * the two state spaces are not equivalent.
+     * events in one state space are not related to any event in the other state space, throws an error.
      *
      * @param namesToEvents1 The map from the name of the UML element to the list of events related to it, in the first
      *     state space.
@@ -173,8 +172,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      *     state space.
      * @param unusedEvents2 Names of events that are not used in the second state space.
      * @return The set containing pairs of corresponding (lists of) events for the two state space automata. All events
-     *     in the first list of events are equivalent to all the events in the second list of events. If 'null', the two
-     *     state spaces are not equivalent.
+     *     in the first list of events are equivalent to all the events in the second list of events.
      */
     private static Set<Pair<List<Event>, List<Event>>> getPairedEvents(Map<String, List<Event>> namesToEvents1,
             Set<String> unusedEvents1, Map<String, List<Event>> namesToEvents2, Set<String> unusedEvents2)
@@ -234,8 +232,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      * The result of the preparation of the two CIF state spaces.
      *
      * @param pairedEvents The set containing pairs of corresponding (lists of) events for the two state space automata.
-     *     All events in the first list of events are equivalent to all the events in the second list of events. If
-     *     {@code null}, the two state spaces are not equivalent.
+     *     All events in the first list of events are equivalent to all the events in the second list of events.
      * @param stateAnnotations1 The filtered state annotations for the first state space.
      * @param stateAnnotations2 The filtered state annotations for the second state space.
      */
