@@ -26,6 +26,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifLocationHelper;
+import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
 /**
@@ -69,10 +70,20 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                 .collect(Collectors.toSet());
         Set<Location> markedStates2 = stateSpace2.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
                 .collect(Collectors.toSet());
-        Verify.verify(markedStates1.stream().allMatch(s -> s.getEdges().isEmpty()),
-                ERROR_PREFIX + "state space 1 has outgoing transitions from marked states.");
-        Verify.verify(markedStates2.stream().allMatch(s -> s.getEdges().isEmpty()),
-                ERROR_PREFIX + "state space 2 has outgoing transitions from marked states.");
+        List<String> markedWithOutgoing = markedStates1.stream().filter(s -> !s.getEdges().isEmpty())
+                .map(m -> m.getName()).toList();
+        if (!markedWithOutgoing.isEmpty()) {
+            throw new RuntimeException(
+                    ERROR_PREFIX + "state space 1 has outgoing transitions from the following marked states: "
+                            + String.join(", ", markedWithOutgoing) + ".");
+        }
+        markedWithOutgoing = markedStates2.stream().filter(s -> !s.getEdges().isEmpty())
+                .map(m -> m.getName()).toList();
+        if (!markedWithOutgoing.isEmpty()) {
+            throw new RuntimeException(
+                    ERROR_PREFIX + "state space 2 has outgoing transitions from the following marked states: "
+                            + String.join(", ", markedWithOutgoing) + ".");
+        }
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
         Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
@@ -183,8 +194,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     }
 
     /**
-     * Check that given state space has no blocking states. See also
-     * {@link AutomatonHelper#getNonCoreachableCount}.
+     * Check that given state space has no blocking states. See also {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param stateSpace State space to search.
      * @param markedStates The set of marked states of the state space.
