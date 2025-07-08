@@ -26,7 +26,6 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifLocationHelper;
-import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 
 /**
@@ -77,8 +76,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                     ERROR_PREFIX + "state space 1 has outgoing transitions from the following marked states: "
                             + String.join(", ", markedWithOutgoing) + ".");
         }
-        markedWithOutgoing = markedStates2.stream().filter(s -> !s.getEdges().isEmpty())
-                .map(m -> m.getName()).toList();
+        markedWithOutgoing = markedStates2.stream().filter(s -> !s.getEdges().isEmpty()).map(m -> m.getName()).toList();
         if (!markedWithOutgoing.isEmpty()) {
             throw new RuntimeException(
                     ERROR_PREFIX + "state space 2 has outgoing transitions from the following marked states: "
@@ -118,19 +116,17 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             checkAllEquivalentStates(tauReachableStates2, stateAnnotations2);
 
             // Check if any tau reachable state is marked, for both state spaces.
-            boolean anyMarked1 = tauReachableStates1.stream().anyMatch(markedStates1::contains);
-            boolean anyMarked2 = tauReachableStates2.stream().anyMatch(markedStates2::contains);
-            if (anyMarked1 != anyMarked2) {
-                if (anyMarked1) {
-                    throw new RuntimeException(ERROR_PREFIX + String.format(
-                            "the first model tau-reached a marked state from state '%s' while the second model from state '%s' hasn't.",
-                            tauReachableStates1.iterator().next().getName(),
-                            tauReachableStates2.iterator().next().getName()));
+            List<String> reachableMarked1 = tauReachableStates1.stream().filter(markedStates1::contains)
+                    .map(Location::getName).toList();
+            List<String> reachableMarked2 = tauReachableStates2.stream().filter(markedStates2::contains)
+                    .map(Location::getName).toList();
+            if (reachableMarked1.isEmpty() != reachableMarked2.isEmpty()) {
+                if (reachableMarked1.isEmpty()) {
+                    throw new RuntimeException(ERROR_PREFIX + "the second model tau-reached a marked state from states "
+                            + String.join(", ", reachableMarked2) + " while the first model has not.");
                 } else {
-                    throw new RuntimeException(ERROR_PREFIX + String.format(
-                            "the second model tau-reached a marked state from state '%s' while the first model from state '%s' hasn't.",
-                            tauReachableStates2.iterator().next().getName(),
-                            tauReachableStates1.iterator().next().getName()));
+                    throw new RuntimeException(ERROR_PREFIX + "the first model tau-reached a marked state from states "
+                            + String.join(", ", reachableMarked1) + " while the second model has not.");
                 }
             }
 
