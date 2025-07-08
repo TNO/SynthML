@@ -77,8 +77,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
         Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
         Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
-        getBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1);
-        getBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2);
+        checkBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1);
+        checkBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2);
 
         // Initialize queue. If 'null', the models are not equivalent.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -175,14 +175,14 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     }
 
     /**
-     * Find the number of blocking states in the given state space. See also
+     * Check the number of blocking states in the given state space. See also
      * {@link AutomatonHelper#getNonCoreachableCount}.
      *
      * @param stateSpace State space to search.
      * @param markedStates The set of marked states of the state space.
      * @param stateToIncomingTrans The map from states to their incoming transitions.
      */
-    public static void getBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
+    public static void checkBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
             Map<Location, List<Edge>> stateToIncomingTrans)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
