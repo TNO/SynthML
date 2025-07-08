@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.app;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -134,10 +135,20 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 .collect(Collectors.toSet());
 
         if (!absNamesStateSpace.equals(absNamesEventsMerged)) {
-            absNamesStateSpace.removeAll(absNamesEventsMerged);
-            throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
-                    "state space '%s' contains events that are neither internal nor external, e.g. '%s'.",
-                    stateSpace.getName(), absNamesStateSpace.iterator().next()));
+            Set<String> tmp = new HashSet<>(new ArrayList<>(absNamesStateSpace));
+            tmp.removeAll(absNamesEventsMerged);
+
+            if (!tmp.isEmpty()) {
+                // If absNamesStateSpace contains more names than absNamesEventsMerged.
+                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + String.format("state space '%s' contains events that are neither internal nor external: %s.",
+                                stateSpace.getName(), String.join(", ", tmp)));
+            } else {
+                absNamesEventsMerged.removeAll(absNamesStateSpace);
+                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                        + String.format("state space '%s' contains events that are neither internal nor external: %s.",
+                                stateSpace.getName(), String.join(", ", absNamesEventsMerged)));
+            }
         }
     }
 
