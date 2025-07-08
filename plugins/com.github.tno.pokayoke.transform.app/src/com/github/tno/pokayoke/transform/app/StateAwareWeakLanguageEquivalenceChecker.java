@@ -160,7 +160,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
         for (String name: absNamesEventsSet2) {
             if (absNamesEventsSet1.contains(name)) {
-                throw new RuntimeException(String.format(
+                throw new RuntimeException(ERROR_PREFIX + String.format(
                         "Event '%s' is contained both in the internal event set and the external event set.", name));
             }
         }
@@ -209,7 +209,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         }
 
         if (stateCount - nonblocking.size() != 0) {
-            throw new RuntimeException(String.format("State space '%s' contains %s blocking states.",
+            throw new RuntimeException(ERROR_PREFIX + String.format("State space '%s' contains %s blocking states.",
                     stateSpace.getName(), String.valueOf(stateCount - nonblocking.size())));
         }
     }
@@ -266,7 +266,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                         initialStates2.iterator().next().getName());
             }
 
-            throw new RuntimeException(error1 + error2);
+            throw new RuntimeException(ERROR_PREFIX + error1 + error2);
         }
 
         return queue;
@@ -319,8 +319,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         while (statesIter.hasNext()) {
             Location currentState = statesIter.next();
             if (!areEquivalentAnnotations(firstStateAnnotation, stateAnnotations.get(currentState))) {
-                throw new RuntimeException(String.format(
-                        "States '%s' and '%s' can be reached with an internal action, but are not equivalent.",
+                throw new RuntimeException(ERROR_PREFIX + String.format(
+                        "states '%s' and '%s' can be reached with an internal action, but are not equivalent.",
                         firstState.getName(), currentState.getName()));
             }
         }
