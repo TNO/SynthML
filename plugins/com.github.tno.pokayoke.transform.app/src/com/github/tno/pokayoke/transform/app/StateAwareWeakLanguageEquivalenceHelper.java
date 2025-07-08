@@ -91,9 +91,13 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
         // Verify that each location has only one annotation. This is always the case with CIF model generated with the
         // state space exploration.
-        locToAnnotations.values().stream().forEach(
-                a -> Verify.verify(a.size() == 1, StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + "model '"
-                        + model.getName() + "' contains a state that doesn't have exactly one state annotation."));
+        List<String> locsWithErrors = locToAnnotations.entrySet().stream().filter(e -> e.getValue().size() != 1)
+                .map(a -> a.getKey().getName()).toList();
+        if (!locsWithErrors.isEmpty()) {
+            throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
+                    + String.format("model '%s' contains state(s) %s that don't have exactly one state annotation.",
+                            model.getName(), String.join(", ", locsWithErrors)));
+        }
 
         // Filter the state annotations, by removing the internal variables from them.
         Map<Location, Annotation> locToFilteredAnnotations = new LinkedHashMap<>();
