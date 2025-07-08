@@ -336,12 +336,6 @@ public class FullSynthesisApp {
                 umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
                 umlToCifTranslatorPostSynth.getInternalEvents(), translator.getVariableNames());
 
-        // If the corresponding events from one state space to the other is 'null', the two state spaces are not
-        // language equivalent, so return false.
-        if (result.pairedEvents() == null) {
-            throw new RuntimeException("Language equivalence check failed: cannot pair the events of the two models.");
-        }
-
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);

@@ -184,14 +184,34 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 pairedEvents.add(Pair.of(usedEvents1, usedEvents2));
             } else if (usedEvents1.isEmpty() != usedEvents2.isEmpty()) {
                 // If one set of events is empty and the other is not, one model can have a transition while the other
-                // model cannot; this means that the two state spaces are not equivalent. Return 'null' to signal that
-                // the two event sets are not compatible.
-                return null;
+                // model cannot; this means that the two state spaces are not equivalent, thus throw an error.
+                String emptyEventModel;
+                String fullEventModel;
+                String eventName;
+                if (usedEvents1.isEmpty()) {
+                    emptyEventModel = "first model";
+                    fullEventModel = "second model";
+                    eventName = usedEvents2.get(0).getName();
+                } else {
+                    emptyEventModel = "second model";
+                    fullEventModel = "first model";
+                    eventName = usedEvents1.get(0).getName();
+                }
+
+                throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
+                        "found non-matching events related to UML element '%s'. "
+                                + "The %s has no events, while the %s has event '%s'.",
+                        umlElementName, emptyEventModel, fullEventModel, eventName));
             }
         }
 
         // If second map is not empty, the two state spaces are not equivalent.
-        return namesToEvents2.isEmpty() ? pairedEvents : null;
+        if (!namesToEvents2.isEmpty()) {
+            throw new RuntimeException(String.format("The second model contains non-matching events, e.g. '%s'.",
+                    namesToEvents2.keySet().iterator().next()));
+        }
+
+        return pairedEvents;
     }
 
     /**
