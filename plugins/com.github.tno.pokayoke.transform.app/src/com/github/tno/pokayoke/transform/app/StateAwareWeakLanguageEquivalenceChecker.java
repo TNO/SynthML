@@ -86,8 +86,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
         Map<Location, List<Edge>> stateToIncomingTrans1 = computeIncomingTransitionsPerState(stateSpace1);
         Map<Location, List<Edge>> stateToIncomingTrans2 = computeIncomingTransitionsPerState(stateSpace2);
-        checkBlockingStatesCount(stateSpace1, markedStates1, stateToIncomingTrans1);
-        checkBlockingStatesCount(stateSpace2, markedStates2, stateToIncomingTrans2);
+        checkNoBlockingStates(stateSpace1, markedStates1, stateToIncomingTrans1);
+        checkNoBlockingStates(stateSpace2, markedStates2, stateToIncomingTrans2);
 
         // Initialize queue.
         Queue<Pair<Set<Location>, Set<Location>>> queue = initializeQueue(stateSpace1, stateAnnotations1, stateSpace2,
@@ -201,7 +201,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
      * @param markedStates The set of marked states of the state space.
      * @param stateToIncomingTrans The map from states to their incoming transitions.
      */
-    public static void checkBlockingStatesCount(Automaton stateSpace, Set<Location> markedStates,
+    public static void checkNoBlockingStates(Automaton stateSpace, Set<Location> markedStates,
             Map<Location, List<Edge>> stateToIncomingTrans)
     {
         Queue<Location> toExpand = new ArrayDeque<>(1000);
