@@ -60,9 +60,9 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
         // Sanity check: tau events and non-tau events must be disjoint.
         checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()),
-                tauEvents1, stateSpace1);
+                tauEvents1, stateSpace1.getName());
         checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()),
-                tauEvents2, stateSpace2);
+                tauEvents2, stateSpace2.getName());
 
         // Sanity check: marked states should not have outgoing transitions.
         Set<Location> markedStates1 = stateSpace1.getLocations().stream().filter(s -> CifLocationHelper.isMarked(s))
@@ -181,7 +181,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         }
     }
 
-    private void checkDisjointEventSets(Set<Event> set1, Set<Event> set2, Automaton stateSpace) {
+    private void checkDisjointEventSets(Set<Event> set1, Set<Event> set2, String stateSpaceName) {
         Set<String> absNamesEventsSet1 = set1.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
         Set<String> absNamesEventsSet2 = set2.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
 
@@ -189,7 +189,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             if (absNamesEventsSet1.contains(name)) {
                 throw new RuntimeException(ERROR_PREFIX + String.format(
                         "Event '%s' of state space '%s' is contained both in the internal event set and the external event set.",
-                        name, stateSpace.getName()));
+                        name, stateSpaceName));
             }
         }
     }
