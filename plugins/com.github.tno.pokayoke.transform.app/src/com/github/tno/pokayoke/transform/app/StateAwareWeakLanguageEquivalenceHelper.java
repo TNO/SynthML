@@ -95,9 +95,9 @@ public class StateAwareWeakLanguageEquivalenceHelper {
         List<String> locsWithErrors = locToAnnotations.entrySet().stream().filter(e -> e.getValue().size() != 1)
                 .map(a -> a.getKey().getName()).toList();
         if (!locsWithErrors.isEmpty()) {
-            throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
-                    + String.format("model '%s' contains state(s) %s that don't have exactly one state annotation.",
-                            model.getName(), String.join(", ", locsWithErrors)));
+            throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
+                    "state space '%s' contains state(s) %s that don't have exactly one state annotation.",
+                    model.getComponents().get(0).getName(), String.join(", ", locsWithErrors)));
         }
 
         // Filter the state annotations, by removing the internal variables from them.
