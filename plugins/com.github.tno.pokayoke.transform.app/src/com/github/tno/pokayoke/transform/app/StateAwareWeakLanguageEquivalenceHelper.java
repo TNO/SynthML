@@ -202,23 +202,23 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             } else if (usedEvents1.isEmpty() != usedEvents2.isEmpty()) {
                 // If one set of events is empty and the other is not, one model can have a transition while the other
                 // model cannot; this means that the two state spaces are not equivalent, thus throw an error.
-                String emptyEventModel;
-                String fullEventModel;
+                String emptyEventSSpaceName;
+                String fullEventSSpaceName;
                 String eventName;
                 if (usedEvents1.isEmpty()) {
-                    emptyEventModel = stateSpace1Name;
-                    fullEventModel = stateSpace2Name;
+                    emptyEventSSpaceName = stateSpace1Name;
+                    fullEventSSpaceName = stateSpace2Name;
                     eventName = usedEvents2.get(0).getName();
                 } else {
-                    emptyEventModel = stateSpace2Name;
-                    fullEventModel = stateSpace1Name;
+                    emptyEventSSpaceName = stateSpace2Name;
+                    fullEventSSpaceName = stateSpace1Name;
                     eventName = usedEvents1.get(0).getName();
                 }
 
                 throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
                         "found non-matching events related to UML element '%s'. "
                                 + "The state space '%s' has no events, while the state space '%s' has event '%s'.",
-                        umlElementName, emptyEventModel, fullEventModel, eventName));
+                        umlElementName, emptyEventSSpaceName, fullEventSSpaceName, eventName));
             }
         }
 
