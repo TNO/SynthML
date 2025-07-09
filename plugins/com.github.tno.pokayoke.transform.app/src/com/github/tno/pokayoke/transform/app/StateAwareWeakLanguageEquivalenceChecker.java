@@ -72,15 +72,15 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         List<String> markedWithOutgoing = markedStates1.stream().filter(s -> !s.getEdges().isEmpty())
                 .map(m -> m.getName()).toList();
         if (!markedWithOutgoing.isEmpty()) {
-            throw new RuntimeException(
-                    ERROR_PREFIX + "state space 1 has outgoing transitions from the following marked states: "
-                            + String.join(", ", markedWithOutgoing) + ".");
+            throw new RuntimeException(ERROR_PREFIX + "state space '" + stateSpace1.getName()
+                    + "' has outgoing transitions from the following marked states: "
+                    + String.join(", ", markedWithOutgoing) + ".");
         }
         markedWithOutgoing = markedStates2.stream().filter(s -> !s.getEdges().isEmpty()).map(m -> m.getName()).toList();
         if (!markedWithOutgoing.isEmpty()) {
-            throw new RuntimeException(
-                    ERROR_PREFIX + "state space 2 has outgoing transitions from the following marked states: "
-                            + String.join(", ", markedWithOutgoing) + ".");
+            throw new RuntimeException(ERROR_PREFIX + "state space '" + stateSpace2.getName()
+                    + "' has outgoing transitions from the following marked states: "
+                    + String.join(", ", markedWithOutgoing) + ".");
         }
 
         // Sanity check: all states should be able to reach a marked state (be non-blocking).
@@ -122,16 +122,16 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                     .map(Location::getName).toList();
             if (reachableMarked1.isEmpty() != reachableMarked2.isEmpty()) {
                 if (reachableMarked1.isEmpty()) {
-                    throw new RuntimeException(ERROR_PREFIX + "the state space " + stateSpace2.getName()
-                            + " tau-reached marked state(s) " + String.join(", ", reachableMarked2)
+                    throw new RuntimeException(ERROR_PREFIX + "the state space '" + stateSpace2.getName()
+                            + "' tau-reached marked state(s) " + String.join(", ", reachableMarked2)
                             + " from the tau-reachable set {"
                             + String.join(", ", tauReachableStates2.stream().map(l -> l.getName()).toList())
                             + "}, while the state space " + stateSpace1.getName()
                             + " has not reached any marked state within {"
                             + String.join(", ", tauReachableStates1.stream().map(l -> l.getName()).toList()) + "}.");
                 } else {
-                    throw new RuntimeException(ERROR_PREFIX + "the state space " + stateSpace1.getName()
-                            + " tau-reached marked state(s) " + String.join(", ", reachableMarked1)
+                    throw new RuntimeException(ERROR_PREFIX + "the state space '" + stateSpace1.getName()
+                            + "' tau-reached marked state(s) " + String.join(", ", reachableMarked1)
                             + " from the tau-reachable set {"
                             + String.join(", ", tauReachableStates1.stream().map(l -> l.getName()).toList())
                             + "}, while the state space " + stateSpace2.getName()
@@ -282,15 +282,15 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             // Find initial states in the first model that are not in any pair.
             initialStates1.removeAll(visited);
             if (!initialStates1.isEmpty()) {
-                errors.add(String.format("The first model contains initial states that cannot be paired: %s.",
-                        String.join(", ", initialStates1.stream().map(s -> s.getName()).toList())));
+                errors.add(String.format("The state space '%s' contains initial states that cannot be paired: %s.",
+                        stateSpace1, String.join(", ", initialStates1.stream().map(s -> s.getName()).toList())));
             }
 
             // Find initial states in the second model that are not in any pair.
             initialStates2.removeAll(visited);
             if (!initialStates2.isEmpty()) {
-                errors.add(String.format("The second model contains initial states that cannot be paired: %s.",
-                        String.join(", ", initialStates2.stream().map(s -> s.getName()).toList())));
+                errors.add(String.format("The state space '%s' contains initial states that cannot be paired: %s.",
+                        stateSpace2, String.join(", ", initialStates2.stream().map(s -> s.getName()).toList())));
             }
 
             if (!errors.isEmpty()) {
