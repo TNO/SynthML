@@ -170,14 +170,14 @@ public class PostProcessActivity {
                 }
 
                 // Distinguish between start/end actions, atomic/non-atomic actions, opaque behaviors/actions, and
-                // rewrite them accordingly. Note that the activity does *not* contain the end of atomic
+                // rewrite them accordingly. Note that the activity does *not* contain the ends of atomic
                 // non-deterministic actions at this point, since they have been filtered out previously.
                 String actionName = action.getName();
                 RedefinableElement originalUmlElement = null;
                 boolean isOpaqueBehavior = false;
                 boolean isFlattenedOpaqueAction = actionName.startsWith(UmlToCifTranslator.NODE_PREFIX);
 
-                // The action connotes a start action if the start event map includes an event with the same name.
+                // The action is a start action if the start event map includes an event with the same name.
                 // Otherwise, it's an end (of a non-atomic) action. End actions of (flattened) opaque actions and opaque
                 // behaviors are handled in the same way, see later.
                 List<Event> startEvents = startEventMap.keySet().stream().filter(e -> e.getName().equals(actionName))
