@@ -122,11 +122,21 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                     .map(Location::getName).toList();
             if (reachableMarked1.isEmpty() != reachableMarked2.isEmpty()) {
                 if (reachableMarked1.isEmpty()) {
-                    throw new RuntimeException(ERROR_PREFIX + "the second model tau-reached a marked state from states "
-                            + String.join(", ", reachableMarked2) + " while the first model has not.");
+                    throw new RuntimeException(ERROR_PREFIX + "the state space " + stateSpace2.getName()
+                            + " tau-reached marked state(s) " + String.join(", ", reachableMarked2)
+                            + " from the tau-reachable set {"
+                            + String.join(", ", tauReachableStates2.stream().map(l -> l.getName()).toList())
+                            + "}, while the state space " + stateSpace1.getName()
+                            + " has not reached any marked state within {"
+                            + String.join(", ", tauReachableStates1.stream().map(l -> l.getName()).toList()) + "}.");
                 } else {
-                    throw new RuntimeException(ERROR_PREFIX + "the first model tau-reached a marked state from states "
-                            + String.join(", ", reachableMarked1) + " while the second model has not.");
+                    throw new RuntimeException(ERROR_PREFIX + "the state space " + stateSpace1.getName()
+                            + " tau-reached marked state(s) " + String.join(", ", reachableMarked1)
+                            + " from the tau-reachable set {"
+                            + String.join(", ", tauReachableStates1.stream().map(l -> l.getName()).toList())
+                            + "}, while the state space " + stateSpace2.getName()
+                            + " has not reached any marked state within {"
+                            + String.join(", ", tauReachableStates2.stream().map(l -> l.getName()).toList()) + "}.");
                 }
             }
 
