@@ -48,10 +48,10 @@ public class DoubleMergePattern {
     }
 
     /**
-     * Finds a <i>double merge</i> pattern in the given activity.
+     * Finds a <i>double merge</i> pattern in the given activity, if present.
      *
      * @param activity The input activity.
-     * @return All <i>double merge</i> patterns in the given activity.
+     * @return A <i>double merge</i> patterns in the given activity, if present.
      */
     public static Optional<DoubleMergePattern> findAny(Activity activity) {
         return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).findFirst();
