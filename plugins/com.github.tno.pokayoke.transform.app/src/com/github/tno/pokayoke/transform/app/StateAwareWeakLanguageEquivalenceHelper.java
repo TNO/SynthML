@@ -79,7 +79,7 @@ public class StateAwareWeakLanguageEquivalenceHelper {
 
         // Check that the two alphabets are compatible, and create a set of pairs with the corresponding list of events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = getPairedEvents(namesToEvents1, unusedEvents1,
-                namesToEvents2, unusedEvents2);
+                stateSpace1.getName(), namesToEvents2, unusedEvents2, stateSpace2.getName());
 
         return new ModelPreparationResult(pairedEvents, filteredStateAnn1, filteredStateAnn2);
     }
@@ -168,14 +168,17 @@ public class StateAwareWeakLanguageEquivalenceHelper {
      * @param namesToEvents1 The map from the name of the UML element to the list of events related to it, in the first
      *     state space.
      * @param unusedEvents1 Names of events that are not used in the first state space.
+     * @param stateSpace1Name The name of the first state space.
      * @param namesToEvents2 The map from the name of the UML element to the list of events related to it, in the second
      *     state space.
      * @param unusedEvents2 Names of events that are not used in the second state space.
+     * @param stateSpace2Name The name of the second state space.
      * @return The set containing pairs of corresponding (lists of) events for the two state space automata. All events
      *     in the first list of events are equivalent to all the events in the second list of events.
      */
     private static Set<Pair<List<Event>, List<Event>>> getPairedEvents(Map<String, List<Event>> namesToEvents1,
-            Set<String> unusedEvents1, Map<String, List<Event>> namesToEvents2, Set<String> unusedEvents2)
+            Set<String> unusedEvents1, String stateSpace1Name, Map<String, List<Event>> namesToEvents2,
+            Set<String> unusedEvents2, String stateSpace2Name)
     {
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
         for (Entry<String, List<Event>> entry: namesToEvents1.entrySet()) {
@@ -203,18 +206,18 @@ public class StateAwareWeakLanguageEquivalenceHelper {
                 String fullEventModel;
                 String eventName;
                 if (usedEvents1.isEmpty()) {
-                    emptyEventModel = "first model";
-                    fullEventModel = "second model";
+                    emptyEventModel = stateSpace1Name;
+                    fullEventModel = stateSpace2Name;
                     eventName = usedEvents2.get(0).getName();
                 } else {
-                    emptyEventModel = "second model";
-                    fullEventModel = "first model";
+                    emptyEventModel = stateSpace2Name;
+                    fullEventModel = stateSpace1Name;
                     eventName = usedEvents1.get(0).getName();
                 }
 
                 throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX + String.format(
                         "found non-matching events related to UML element '%s'. "
-                                + "The %s has no events, while the %s has event '%s'.",
+                                + "The state space '%s' has no events, while the state space '%s' has event '%s'.",
                         umlElementName, emptyEventModel, fullEventModel, eventName));
             }
         }
