@@ -7,9 +7,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -33,6 +35,17 @@ public class PetrifyOutput2PNMLTranslator {
     }
 
     private static final PtnetFactory PETRI_NET_FACTORY = PtnetFactory.eINSTANCE;
+
+    private static Set<Transition> transitionSet = new LinkedHashSet<>();
+
+    /**
+     * XXX TODO
+     *
+     * @return the transitionSet
+     */
+    public static Set<Transition> getTransitionSet() {
+        return transitionSet;
+    }
 
     public static void transformFile(Path inputPath, Path outputPath) throws IOException {
         List<String> input = PetrifyHelper.readFile(inputPath.toString());
@@ -168,6 +181,7 @@ public class PetrifyOutput2PNMLTranslator {
         transition.setId(name);
         transition.setName(createName(name));
         transition.setContainerPage(page);
+        transitionSet.add(transition);
         return transition;
     }
 
