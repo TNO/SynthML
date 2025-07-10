@@ -1,6 +1,6 @@
 controllable left;
 controllable right;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet left, right;
   @state(Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
   location loc1:

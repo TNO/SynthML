@@ -1,4 +1,4 @@
-automaton statespace:
+automaton synthesis_state_space:
   alphabet;
   @state(Context = "*", Context.field = false, sup = "*")
   location loc1:

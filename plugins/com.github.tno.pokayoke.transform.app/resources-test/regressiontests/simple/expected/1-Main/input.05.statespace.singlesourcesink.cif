@@ -9,7 +9,7 @@ uncontrollable measure_product_position__result_1;
 uncontrollable measure_product_position__result_2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet prepare_robot, robot_move_to_location1, robot_move_to_location2, robot_adjust_product, robot_release_product_at_location2, prepare_location2, measure_product_position, measure_product_position__result_1, measure_product_position__result_2, __start, __end;
   @state(Context = "*", Context.__activeAction = 0, Context.location2HasProduct = false, Context.location2Prepared = false, Context.productCorrectlyPlaced = "Unknown", Context.robotHasProduct = true, Context.robotLocation = "Location1", Context.robotPrepared = false, happen_at_most_once__76__prepare_location2__90 = "*", happen_at_most_once__76__prepare_location2__90.__occurrences = 0, happen_at_most_once__76__prepare_robot__80 = "*", happen_at_most_once__76__prepare_robot__80.__occurrences = 0, happen_at_most_once__76__robot_move_to_location2__84 = "*", happen_at_most_once__76__robot_move_to_location2__84.__occurrences = 0, happen_at_most_once__76__robot_release_product_at_location2__88 = "*", happen_at_most_once__76__robot_release_product_at_location2__88.__occurrences = 0, sup = "*")
   location __init:

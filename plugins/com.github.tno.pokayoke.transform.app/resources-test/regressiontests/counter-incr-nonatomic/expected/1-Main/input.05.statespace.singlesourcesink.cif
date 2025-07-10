@@ -5,7 +5,7 @@ controllable incr1;
 controllable incr2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __start, __end;
   @state(Context = "*", Context.__nonAtomicActive__initialize = false, Context.count = 0, Context.init = false, occurrences__38__incr1__24 = "*", occurrences__38__incr1__24.__occurrences = 0, occurrences__38__incr2__26 = "*", occurrences__38__incr2__26.__occurrences = 0, occurrences__38__initialize__22 = "*", occurrences__38__initialize__22.__occurrences = 0, sup = "*")
   location __init:

@@ -4,7 +4,7 @@ uncontrollable NonAtomicB__na_result_1;
 uncontrollable NonAtomicB__na_result_2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet AtomicA, NonAtomicB, NonAtomicB__na_result_1, NonAtomicB__na_result_2, __start, __end;
   @state(IntervalConstraintA__32__AtomicA__40 = "*", IntervalConstraintA__32__AtomicA__40.__occurrences = 0, IntervalConstraintB__36__NonAtomicB__42 = "*", IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0, Machine = "*", Machine.__nonAtomicActive__NonAtomicB = false, Machine.a_executed = false, Machine.b_executed = false, sup = "*")
   location __init:

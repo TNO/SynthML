@@ -2,7 +2,7 @@ controllable action1;
 uncontrollable action1__result_1;
 uncontrollable action1__result_2;
 controllable action2;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet action1, action1__result_1, action1__result_2, action2;
   @state(Example = "*", Example.__activeAction = 0, Example.field1 = false, Example.field2 = false, sup = "*")
   location loc1:

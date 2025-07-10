@@ -1,7 +1,7 @@
 controllable left;
 controllable right;
 controllable flip;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet left, right, flip;
   @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, blocking__40__flip__28 = "*", blocking__40__flip__28.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
   location loc1:
