@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,8 +62,11 @@ public class NonAtomicPatternRewriter {
      */
     public List<NonAtomicPattern> findAndRewritePatterns(PetriNet petriNet) {
         List<NonAtomicPattern> patterns = findPatterns(petriNet);
+
+        // Deepcopy because the patterns are actually deleted from the Petri net.
+        List<NonAtomicPattern> originalPatterns = new ArrayList<>(EcoreUtil.copyAll(findPatterns(petriNet)));
         rewritePatterns(patterns);
-        return patterns;
+        return originalPatterns;
     }
 
     /**
