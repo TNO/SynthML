@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
+import com.github.tno.pokayoke.transform.app.SynthesisChainTranslation;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -156,6 +157,7 @@ public class PostProcessActivity {
      */
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
+            SynthesisChainTranslation sct,
             List<String> warnings)
     {
         CifContext context = new CifContext(activity.getModel());
@@ -167,6 +169,8 @@ public class PostProcessActivity {
                     throw new RuntimeException(
                             "Expected only opaque actions, found: " + action.getClass().getSimpleName());
                 }
+
+                sct.getActionKind(action); // and do stuff based on the action kind
 
                 // Rewrite/adapt the opaque action, if needed.
                 String actionName = action.getName();
