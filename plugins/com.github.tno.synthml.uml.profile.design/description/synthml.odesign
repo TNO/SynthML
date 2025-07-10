@@ -212,7 +212,7 @@
           </ownedTools>
         </toolSections>
         <toolSections name="Section SC_Activity">
-          <ownedTools xsi:type="tool:DirectEditLabel" name="NamedActivityDirectEdit" inputLabelExpression="service:getCallBehaviorActionLabel">
+          <ownedTools xsi:type="tool:DirectEditLabel" name="NamedActivityDirectEdit" inputLabelExpression="service:getActivityLabel()">
             <mask mask="{0}"/>
             <initialOperation>
               <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setActivityLabel(arg0)"/>
