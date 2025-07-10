@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-uncontrollable __node__OpaqueAction__87;
-uncontrollable __node__OpaqueAction__88;
-uncontrollable __node__OpaqueAction__89;
-uncontrollable __node__OpaqueAction__90;
-uncontrollable __node__OpaqueAction__91;
-uncontrollable __node__OpaqueAction__92;
-uncontrollable __node__DecisionNode__94__0;
-uncontrollable __node__DecisionNode__94__1;
-uncontrollable __node__DecisionNode__94__2;
-uncontrollable __node__DecisionNode__95__0;
-uncontrollable __node__DecisionNode__95__1;
-uncontrollable __node__MergeNode__96__0;
-uncontrollable __node__MergeNode__96__1;
-uncontrollable __node__MergeNode__97__0;
-uncontrollable __node__MergeNode__97__1;
-uncontrollable __node__DecisionNode__98__0;
-uncontrollable __node__DecisionNode__98__1;
-uncontrollable __node__DecisionNode__99__0;
-uncontrollable __node__DecisionNode__99__1;
-uncontrollable __node__MergeNode__100__0;
-uncontrollable __node__MergeNode__100__1;
-uncontrollable __node__MergeNode__100__2;
-uncontrollable __node__MergeNode__100__3;
-uncontrollable __node__CallBehaviorAction__102;
-uncontrollable __node__CallBehaviorAction__103;
-uncontrollable __node__CallBehaviorAction__104;
-uncontrollable __node__CallBehaviorAction__105;
-automaton post_synthesis_chain_state_space:
-  alphabet __node__OpaqueAction__87, __node__OpaqueAction__88, __node__OpaqueAction__89, __node__OpaqueAction__90, __node__OpaqueAction__91, __node__OpaqueAction__92, __node__DecisionNode__94__0, __node__DecisionNode__94__1, __node__DecisionNode__94__2, __node__DecisionNode__95__0, __node__DecisionNode__95__1, __node__MergeNode__96__0, __node__MergeNode__96__1, __node__MergeNode__97__0, __node__MergeNode__97__1, __node__DecisionNode__98__0, __node__DecisionNode__98__1, __node__DecisionNode__99__0, __node__DecisionNode__99__1, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__MergeNode__100__2, __node__MergeNode__100__3, __node__CallBehaviorAction__102, __node__CallBehaviorAction__103, __node__CallBehaviorAction__104, __node__CallBehaviorAction__105;
-  @state(Context = "*", Context.__controlflow__54 = false, Context.__controlflow__56 = false, Context.__controlflow__58 = false, Context.__controlflow__60 = false, Context.__controlflow__62 = false, Context.__controlflow__64 = false, Context.__controlflow__65 = false, Context.__controlflow__66 = false, Context.__controlflow__67 = false, Context.__controlflow__68 = false, Context.__controlflow__69 = false, Context.__controlflow__70 = false, Context.__controlflow__72 = false, Context.__controlflow__74 = false, Context.__controlflow__75 = false, Context.__controlflow__77 = false, Context.__controlflow__79 = false, Context.__controlflow__80 = false, Context.__controlflow__81 = false, Context.__controlflow__82 = false, Context.__controlflow__83 = false, Context.__controlflow__84 = false, Context.__controlflow__85 = true, Context.field1 = false, Context.field2 = false, Context.flipped = false, Context.mode = false)
-=======
 uncontrollable __node__OpaqueAction__80;
 uncontrollable __node__OpaqueAction__81;
 uncontrollable __node__OpaqueAction__82;
@@ -53,10 +21,9 @@ uncontrollable __node__CallBehaviorAction__91;
 uncontrollable __node__CallBehaviorAction__92;
 uncontrollable __node__CallBehaviorAction__93;
 uncontrollable __node__CallBehaviorAction__94;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__OpaqueAction__80, __node__OpaqueAction__81, __node__OpaqueAction__82, __node__DecisionNode__84__0, __node__DecisionNode__84__1, __node__DecisionNode__84__2, __node__DecisionNode__85__0, __node__DecisionNode__85__1, __node__MergeNode__86__0, __node__MergeNode__86__1, __node__DecisionNode__87__0, __node__DecisionNode__87__1, __node__MergeNode__88__0, __node__MergeNode__88__1, __node__MergeNode__88__2, __node__MergeNode__88__3, __node__CallBehaviorAction__90, __node__CallBehaviorAction__90__na_result_1, __node__CallBehaviorAction__90__na_result_2, __node__CallBehaviorAction__91, __node__CallBehaviorAction__92, __node__CallBehaviorAction__93, __node__CallBehaviorAction__94;
   @state(Context = "*", Context.__controlflow__54 = false, Context.__controlflow__56 = false, Context.__controlflow__58 = false, Context.__controlflow__60 = false, Context.__controlflow__62 = false, Context.__controlflow__64 = false, Context.__controlflow__65 = false, Context.__controlflow__66 = false, Context.__controlflow__67 = false, Context.__controlflow__68 = false, Context.__controlflow__70 = false, Context.__controlflow__72 = false, Context.__controlflow__73 = false, Context.__controlflow__74 = false, Context.__controlflow__75 = false, Context.__controlflow__76 = false, Context.__controlflow__77 = false, Context.__controlflow__78 = true, Context.__nonAtomicActive____node__CallBehaviorAction__90 = false, Context.field1 = false, Context.field2 = false, Context.flipped = false, Context.mode = false)
->>>>>>> refs/remotes/origin/main
   location loc1:
     initial;
     edge __node__DecisionNode__84__1 goto loc5;

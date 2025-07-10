@@ -1,28 +1,12 @@
-<<<<<<< HEAD
-uncontrollable __node__OpaqueAction__55;
-uncontrollable __node__OpaqueAction__56;
-uncontrollable __node__OpaqueAction__57;
-uncontrollable __node__DecisionNode__59__0;
-uncontrollable __node__DecisionNode__59__1;
-uncontrollable __node__MergeNode__61__0;
-uncontrollable __node__MergeNode__61__1;
-uncontrollable __node__JoinNode__62;
-uncontrollable __node__ForkNode__63;
-uncontrollable __node__CallBehaviorAction__64;
-automaton post_synthesis_chain_state_space:
-  alphabet __node__OpaqueAction__55, __node__OpaqueAction__56, __node__OpaqueAction__57, __node__DecisionNode__59__0, __node__DecisionNode__59__1, __node__MergeNode__61__0, __node__MergeNode__61__1, __node__JoinNode__62, __node__ForkNode__63, __node__CallBehaviorAction__64;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__45 = false, Machine.__controlflow__47 = false, Machine.__controlflow__48 = false, Machine.__controlflow__49 = false, Machine.__controlflow__50 = false, Machine.__controlflow__51 = false, Machine.__controlflow__53 = true, Machine.a_executed = false, Machine.b_executed = false)
-=======
 uncontrollable __node__JoinNode__50;
 uncontrollable __node__ForkNode__51;
 uncontrollable __node__CallBehaviorAction__52;
 uncontrollable __node__CallBehaviorAction__53;
 uncontrollable __node__CallBehaviorAction__53__na_result_1;
 uncontrollable __node__CallBehaviorAction__53__na_result_2;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__JoinNode__50, __node__ForkNode__51, __node__CallBehaviorAction__52, __node__CallBehaviorAction__53, __node__CallBehaviorAction__53__na_result_1, __node__CallBehaviorAction__53__na_result_2;
   @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = false, Machine.b_executed = false)
->>>>>>> refs/remotes/origin/main
   location loc1:
     initial;
     edge __node__ForkNode__51 goto loc2;
