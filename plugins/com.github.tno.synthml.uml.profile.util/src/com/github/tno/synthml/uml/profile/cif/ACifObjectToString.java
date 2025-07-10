@@ -167,7 +167,7 @@ public class ACifObjectToString {
             return 8;
         }
 
-        if (expr instanceof AUnaryExpression unaryExpr) {
+        if (expr instanceof AUnaryExpression) {
             return 6;
         }
 

@@ -121,7 +121,8 @@ public class UMLToCameoTransformer {
 
         // Check that only outgoing edges from decision nodes have incoming guards, and only incoming edges to guarded
         // actions have outgoing guards.
-        for (Element activityElement: ((Activity)contextClass.getClassifierBehavior()).getOwnedElements()) {
+        Activity contextActivity = (Activity)contextClass.getClassifierBehavior();
+        for (Element activityElement: contextActivity.getOwnedElements()) {
             if (activityElement instanceof ControlFlow controlFlow) {
                 AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
                 Preconditions.checkArgument(
@@ -144,7 +145,7 @@ public class UMLToCameoTransformer {
             // Collect the bounds for integer properties, they will be validated later.
             Range<Integer> propertyRange = null;
             if (PokaYokeTypeUtil.isIntegerType(property.getType())) {
-                propertyRange = Range.between(PokaYokeTypeUtil.getMinValue(property.getType()),
+                propertyRange = Range.of(PokaYokeTypeUtil.getMinValue(property.getType()),
                         PokaYokeTypeUtil.getMaxValue(property.getType()));
                 propertyBounds.put(property.getName(), propertyRange);
             }

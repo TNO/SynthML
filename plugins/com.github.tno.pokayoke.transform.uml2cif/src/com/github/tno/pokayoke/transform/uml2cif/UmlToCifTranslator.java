@@ -1703,8 +1703,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             // behavior to the original opaque behavior, but instead is left as an opaque action.
                             RedefinableElement umlElem = startEventMap.get(cifEvent);
                             Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
-                            Verify.verify(((OpaqueAction)umlElem).getName().contains(END_ACTION_SUFFIX),
-                                    cifEvent.getName());
+                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
                             boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()

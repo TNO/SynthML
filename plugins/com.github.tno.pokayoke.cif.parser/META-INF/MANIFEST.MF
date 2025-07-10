@@ -14,4 +14,4 @@ Require-Bundle: org.eclipse.jface.text;bundle-version="3.16.100",
  org.eclipse.escet.cif.parser;bundle-version="3.0.0";visibility:=reexport
 Bundle-Vendor: TNO-ESI
 Automatic-Module-Name: com.github.tno.pokayoke.cif.parser
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

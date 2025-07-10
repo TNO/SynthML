@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.203.100",
  org.eclipse.uml2.uml;bundle-version="5.5.0";visibility:=reexport,
  org.eclipse.uml2.types;bundle-version="2.5.0";visibility:=reexport
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: SynthML,
  SynthML.impl,
  SynthML.util
