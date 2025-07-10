@@ -47,17 +47,16 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      * @param isAtomic Whether the activity to create should be atomic.
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId, boolean isAtomic)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, callerId);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire);
         }
     }
 
@@ -70,20 +69,14 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
-
-        // The Python code generator uses patterns such as "active == '" + callerId + "'".
-        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'callerId'.
-        Preconditions.checkArgument(!callerId.contains("'"),
-                "Argument callerId contains quote character ('): " + callerId);
 
         // Translate the given effects as a single Python program.
         String effectBody = translateEffects(effects);
@@ -313,16 +306,14 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param callerId The unique identifier of the caller. This identifier should not contain a quote character (').
-     *
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, String callerId)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
-        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire, callerId);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, callerId);
+        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
