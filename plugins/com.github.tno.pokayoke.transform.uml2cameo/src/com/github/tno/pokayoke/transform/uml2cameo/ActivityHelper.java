@@ -12,9 +12,9 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.FinalNode;
+import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.InputPin;
-import org.eclipse.uml2.uml.LiteralString;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -26,7 +26,6 @@ import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
-import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
@@ -162,15 +161,16 @@ public class ActivityHelper {
         sendAcquireNode.getArguments().add(sendAcquireInput);
 
         // Define the requester value specification node.
-        ValueSpecificationAction requesterValueNode = FileHelper.FACTORY.createValueSpecificationAction();
+        OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        OutputPin requesterValueOutput = FileHelper.FACTORY.createOutputPin();
-        requesterValueOutput.setName("requester");
-        requesterValueOutput.setType(UmlPrimitiveType.STRING.load(acquire));
-        requesterValueNode.setResult(requesterValueOutput);
-        LiteralString requesterValueLiteral = FileHelper.FACTORY.createLiteralString();
-        requesterValueLiteral.setValue(callerId);
-        requesterValueNode.setValue(requesterValueLiteral);
+        requesterValueNode.getBodies().add("import uuid\r\n" + "requester  = \"" + name + "_\" + str(uuid.uuid4())");
+        requesterValueNode.getLanguages().add("Python");
+        OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
+
+        // Define the fork node for duplicating the requester objects output
+        ForkNode requestDuplicatorForkNode = FileHelper.FACTORY.createForkNode();
+        requestDuplicatorForkNode.setActivity(activity);
 
         // Define the control flow from the decision node that checks the guard to the requester value node.
         ControlFlow checkGuardDecisionToRequesterValueFlow = FileHelper.FACTORY.createControlFlow();
@@ -182,51 +182,52 @@ public class ActivityHelper {
         decisionToFinalGuard.getLanguages().add("Python");
         checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
 
+        // Define the object flow from the requester value node to the duplicator fork node.
+        ObjectFlow requesterToDuplicatorObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requesterToDuplicatorObjectFlow.setActivity(activity);
+        requesterToDuplicatorObjectFlow.setSource(requesterValueOutput);
+        requesterToDuplicatorObjectFlow.setTarget(requestDuplicatorForkNode);
+
         // Define the object flow from the requester value node to the node that sends the acquire signal.
-        ObjectFlow requesterObjectFlow = FileHelper.FACTORY.createObjectFlow();
-        requesterObjectFlow.setActivity(activity);
-        requesterObjectFlow.setSource(requesterValueOutput);
-        requesterObjectFlow.setTarget(sendAcquireInput);
+        ObjectFlow requestDuplicatorToSignalObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requestDuplicatorToSignalObjectFlow.setActivity(activity);
+        requestDuplicatorToSignalObjectFlow.setSource(requestDuplicatorForkNode);
+        requestDuplicatorToSignalObjectFlow.setTarget(sendAcquireInput);
 
         // Define the inner merge node.
         MergeNode innerMergeNode = FileHelper.FACTORY.createMergeNode();
         innerMergeNode.setActivity(activity);
 
-        // Define the control flow from the node that sends the acquire signal to the inner merge node.
-        ControlFlow acquireToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
-        acquireToInnerMergeFlow.setActivity(activity);
-        acquireToInnerMergeFlow.setSource(sendAcquireNode);
-        acquireToInnerMergeFlow.setTarget(innerMergeNode);
+        // Define the control flow from the request signal duplicator node to the inner merge node.
+        ObjectFlow requestDuplicatorToInnerMergeObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        requestDuplicatorToInnerMergeObjectFlow.setActivity(activity);
+        requestDuplicatorToInnerMergeObjectFlow.setSource(requestDuplicatorForkNode);
+        requestDuplicatorToInnerMergeObjectFlow.setTarget(innerMergeNode);
 
-        // Define the node that checks whether the lock is granted.
-        OpaqueAction checkActiveNode = FileHelper.FACTORY.createOpaqueAction();
-        checkActiveNode.setActivity(activity);
-        checkActiveNode.getBodies().add("active == '" + callerId + "'");
-        checkActiveNode.getLanguages().add("Python");
-        OutputPin checkActiveOutput = checkActiveNode.createOutputValue("isActive",
-                UmlPrimitiveType.BOOLEAN.load(acquire));
+        // Define the node that unmarshals the request for the decision node.
+        OpaqueAction unmarshalRequestNode = FileHelper.FACTORY.createOpaqueAction();
+        unmarshalRequestNode.setActivity(activity);
+        InputPin unmarshalRequestInput = unmarshalRequestNode.createInputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
+        OutputPin unmarshalRequestOutput = unmarshalRequestNode.createOutputValue("requester",
+                UmlPrimitiveType.STRING.load(acquire));
 
-        // Define the control flow from the inner merge node to the node that checks the active variable.
-        ControlFlow innerMergeToCheckActiveFlow = FileHelper.FACTORY.createControlFlow();
-        innerMergeToCheckActiveFlow.setActivity(activity);
-        innerMergeToCheckActiveFlow.setSource(innerMergeNode);
-        innerMergeToCheckActiveFlow.setTarget(checkActiveNode);
+        // Define the object flow from the inner merge node to the node that unmarshals the request.
+        ObjectFlow innerMergeToUnmarshalRequestObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        innerMergeToUnmarshalRequestObjectFlow.setActivity(activity);
+        innerMergeToUnmarshalRequestObjectFlow.setSource(innerMergeNode);
+        innerMergeToUnmarshalRequestObjectFlow.setTarget(unmarshalRequestInput);
 
         // Define the inner decision node.
         DecisionNode innerDecisionNode = FileHelper.FACTORY.createDecisionNode();
         innerDecisionNode.setActivity(activity);
 
-        // Define the control flow from the node that checks the active variable to the inner decision node.
-        ControlFlow checkActiveToInnerDecisionFlow = FileHelper.FACTORY.createControlFlow();
-        checkActiveToInnerDecisionFlow.setActivity(activity);
-        checkActiveToInnerDecisionFlow.setSource(checkActiveNode);
-        checkActiveToInnerDecisionFlow.setTarget(innerDecisionNode);
-
-        // Define the object flow from the node that checks the active variable to the inner decision node.
-        ObjectFlow checkActiveToInnerDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
-        checkActiveToInnerDecisionObjFlow.setActivity(activity);
-        checkActiveToInnerDecisionObjFlow.setSource(checkActiveOutput);
-        checkActiveToInnerDecisionObjFlow.setTarget(innerDecisionNode);
+        // Define the object flow from the node that unmarshals the request to the inner decision node checks the active
+        // variable .
+        ObjectFlow unmarshalRequestToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        unmarshalRequestToInnerObjectFlow.setActivity(activity);
+        unmarshalRequestToInnerObjectFlow.setSource(unmarshalRequestOutput);
+        unmarshalRequestToInnerObjectFlow.setTarget(innerDecisionNode);
 
         // Define the opaque action of the activity that encodes the guard and effect.
         OpaqueAction guardAndEffectNode = FileHelper.FACTORY.createOpaqueAction();
@@ -245,19 +246,19 @@ public class ActivityHelper {
         innerDecisionToGuardAndEffectFlow.setSource(innerDecisionNode);
         innerDecisionToGuardAndEffectFlow.setTarget(guardAndEffectNode);
         OpaqueExpression innerDecisionToGuardAndEffectGuard = FileHelper.FACTORY.createOpaqueExpression();
-        innerDecisionToGuardAndEffectGuard.getBodies().add("isActive");
+        innerDecisionToGuardAndEffectGuard.getBodies().add("active == requester");
         innerDecisionToGuardAndEffectGuard.getLanguages().add("Python");
         innerDecisionToGuardAndEffectFlow.setGuard(innerDecisionToGuardAndEffectGuard);
 
-        // Define the control flow from the inner decision node to the node that executes the guard and effect.
-        ControlFlow innerDecisionToInnerMergeFlow = FileHelper.FACTORY.createControlFlow();
-        innerDecisionToInnerMergeFlow.setActivity(activity);
-        innerDecisionToInnerMergeFlow.setSource(innerDecisionNode);
-        innerDecisionToInnerMergeFlow.setTarget(innerMergeNode);
+        // Define the control flow from the inner decision node to the inner merge note.
+        ObjectFlow innerDecisionToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
+        innerDecisionToInnerObjectFlow.setActivity(activity);
+        innerDecisionToInnerObjectFlow.setSource(innerDecisionNode);
+        innerDecisionToInnerObjectFlow.setTarget(innerMergeNode);
         OpaqueExpression innerDecisionToInnerMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         innerDecisionToInnerMergeGuard.getBodies().add("else");
         innerDecisionToInnerMergeGuard.getLanguages().add("Python");
-        innerDecisionToInnerMergeFlow.setGuard(innerDecisionToInnerMergeGuard);
+        innerDecisionToInnerObjectFlow.setGuard(innerDecisionToInnerMergeGuard);
 
         // Define the outer decision node.
         DecisionNode outerDecisionNode = FileHelper.FACTORY.createDecisionNode();
