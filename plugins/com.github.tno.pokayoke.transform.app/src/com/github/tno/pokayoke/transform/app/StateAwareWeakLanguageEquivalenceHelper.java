@@ -139,7 +139,6 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             Set<String> onlyInStateSpace = Sets.difference(absNamesStateSpace, absNamesEventsMerged);
 
             if (!onlyInStateSpace.isEmpty()) {
-                // If absNamesStateSpace contains more names than absNamesEventsMerged.
                 throw new RuntimeException(StateAwareWeakLanguageEquivalenceChecker.ERROR_PREFIX
                         + String.format("state space '%s' contains events that are neither internal nor external: %s.",
                                 stateSpace.getName(), String.join(", ", onlyInStateSpace)));

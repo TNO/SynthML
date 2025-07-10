@@ -133,7 +133,7 @@ public class FullSynthesisApp {
 
         // Perform state space generation.
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif");
-        String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(),
+        String[] stateSpaceGenerationArgs = new String[] {cifSynthesisPath.toString(), "--name=synthesis_state_space",
                 "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
         AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
@@ -300,9 +300,6 @@ public class FullSynthesisApp {
         Specification stateSpaceGenerated = CifFileHelper
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
-        // Set the name of the state space.
-        stateSpaceGenerated.getComponents().get(0).setName("Synthesis state space");
-
         // Translate final UML model to CIF and get its state space.
         UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
                 TranslationPurpose.LANGUAGE_EQUIVALENCE);
@@ -318,7 +315,7 @@ public class FullSynthesisApp {
         // Perform state space generation.
         Path cifStateSpacePath = localOutputPath.resolve(filePrefix + ".99.02.ctrlsys.statespace.cif");
         String[] stateSpaceGenerationArgs = new String[] {cifSpecPath.toString(),
-                "--output=" + cifStateSpacePath.toString()};
+                "--name=post_synthesis_chain_state_space", "--output=" + cifStateSpacePath.toString()};
         AppStream explorerAppStream = new MemAppStream();
         AppStreams explorerAppStreams = new AppStreams(InputStream.nullInputStream(), explorerAppStream,
                 explorerAppStream, explorerAppStream);
@@ -331,9 +328,6 @@ public class FullSynthesisApp {
 
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
-
-        // Set the name of the post-synthesis chain state space.
-        stateSpacePostSynthChain.getComponents().get(0).setName("Post-synthesis chain state space");
 
         // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
