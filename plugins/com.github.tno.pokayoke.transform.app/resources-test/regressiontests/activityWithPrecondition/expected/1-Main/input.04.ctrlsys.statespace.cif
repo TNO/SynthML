@@ -1,5 +1,5 @@
 controllable change;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet change;
   @state(Class = "*", Class.element = "First", happens_at_most_once__28__change__16 = "*", happens_at_most_once__28__change__16.__occurrences = 0, sup = "*")
   location loc1:

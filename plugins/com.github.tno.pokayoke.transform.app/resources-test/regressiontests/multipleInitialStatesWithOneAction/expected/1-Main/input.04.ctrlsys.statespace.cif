@@ -1,5 +1,5 @@
 controllable action;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet action;
   @state(Context = "*", Context.field = false, sup = "*")
   location loc1:

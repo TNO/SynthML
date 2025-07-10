@@ -8,7 +8,7 @@ uncontrollable Flip_A_Coin__result_1;
 uncontrollable Flip_A_Coin__result_2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, Flip_A_Coin__result_1, Flip_A_Coin__result_2, __start, __end;
   @state(Context = "*", Context.__activeAction = 0, Context.Coffee_or_Tea = "Unknown", Context.Has_Drank_Coffee_or_Tea = false, Context.Is_Computer_On = false, Context.Is_Computer_Ready = false, Context.Is_Ready_to_Work = false, happens_at_most_once__56__Drink_Coffee__64 = "*", happens_at_most_once__56__Drink_Coffee__64.__occurrences = 0, happens_at_most_once__56__Drink_Tea__66 = "*", happens_at_most_once__56__Drink_Tea__66.__occurrences = 0, happens_at_most_once__56__Start_Working__68 = "*", happens_at_most_once__56__Start_Working__68.__occurrences = 0, happens_at_most_once__56__Starting_Computer__62 = "*", happens_at_most_once__56__Starting_Computer__62.__occurrences = 0, happens_at_most_once__56__Turn_Computer_On__60 = "*", happens_at_most_once__56__Turn_Computer_On__60.__occurrences = 0, sup = "*")
   location __init:

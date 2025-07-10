@@ -5,7 +5,7 @@ uncontrollable __node__DecisionNode__53__1;
 uncontrollable __node__CallBehaviorAction__55;
 uncontrollable __node__MergeNode__56__0;
 uncontrollable __node__MergeNode__56__1;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__OpaqueAction__50, __node__OpaqueAction__51, __node__DecisionNode__53__0, __node__DecisionNode__53__1, __node__CallBehaviorAction__55, __node__MergeNode__56__0, __node__MergeNode__56__1;
   @state(Context = "*", Context.__controlflow__40 = false, Context.__controlflow__42 = false, Context.__controlflow__44 = false, Context.__controlflow__45 = false, Context.__controlflow__46 = false, Context.__controlflow__47 = true, Context.__controlflow__49 = false, Context.done_a = false, Context.done_b = false)
   location loc1:

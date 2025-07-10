@@ -4,7 +4,7 @@ uncontrollable initialize__result_1;
 uncontrollable initialize__result_2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet flip, initialize, initialize__result_1, initialize__result_2, __start, __end;
   @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
   @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")

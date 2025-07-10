@@ -8,7 +8,7 @@ uncontrollable __node__MergeNode__64__0;
 uncontrollable __node__MergeNode__64__1;
 uncontrollable __node__DecisionNode__66__0;
 uncontrollable __node__DecisionNode__66__1;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet __node__InitialNode__56__0, __node__ActivityFinalNode__58__0, __node__OpaqueAction__60, __node__OpaqueAction__62, __node__OpaqueAction__62__result_1, __node__OpaqueAction__62__result_2, __node__MergeNode__64__0, __node__MergeNode__64__1, __node__DecisionNode__66__0, __node__DecisionNode__66__1;
   @state(Class1 = "*", Class1.__activeAction = 0, Class1.__controlflow__30 = false, Class1.__controlflow__35 = false, Class1.__controlflow__39 = false, Class1.__controlflow__43 = false, Class1.__controlflow__47 = false, Class1.__controlflow__52 = false, Class1.init = false, Class1.val = false, sup = "*")
   location loc1:

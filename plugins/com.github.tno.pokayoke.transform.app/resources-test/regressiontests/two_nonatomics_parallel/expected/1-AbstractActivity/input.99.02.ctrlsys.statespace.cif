@@ -14,7 +14,7 @@ uncontrollable __node__MergeNode__72__0;
 uncontrollable __node__MergeNode__72__1;
 uncontrollable __node__JoinNode__74;
 uncontrollable __node__ForkNode__75;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__OpaqueAction__62, __node__OpaqueAction__63, __node__OpaqueAction__64, __node__OpaqueAction__65, __node__OpaqueAction__66, __node__OpaqueAction__67, __node__DecisionNode__69__0, __node__DecisionNode__69__1, __node__DecisionNode__70__0, __node__DecisionNode__70__1, __node__MergeNode__71__0, __node__MergeNode__71__1, __node__MergeNode__72__0, __node__MergeNode__72__1, __node__JoinNode__74, __node__ForkNode__75;
   @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__controlflow__47 = false, Machine.__controlflow__49 = false, Machine.__controlflow__51 = false, Machine.__controlflow__52 = false, Machine.__controlflow__53 = false, Machine.__controlflow__54 = false, Machine.__controlflow__55 = false, Machine.__controlflow__56 = false, Machine.__controlflow__57 = false, Machine.__controlflow__58 = false, Machine.__controlflow__60 = true, Machine.a_executed = false, Machine.b_executed = false)
   location loc1:
