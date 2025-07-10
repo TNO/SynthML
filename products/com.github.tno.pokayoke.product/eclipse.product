@@ -15,10 +15,11 @@
    <launcherArgs>
       <programArgs>--launcher.defaultAction openFile --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=17
+      <vmArgs>-Dosgi.requiredJavaVersion=21
 -Declipse.p2.unsignedPolicy=allow 
 -Djava.net.preferIPv4Stack=true
 -Dfile.encoding=UTF-8
+-Declipse.e4.inject.javax.warning=false
 -Xmx8g
 -XX:+UseG1GC
 -XX:+UseStringDeduplication	

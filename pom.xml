@@ -29,7 +29,7 @@
 
         <pokayoke.binary.version.enduser>${pokayoke.binary.prefix}-${pokayoke.version.enduser}</pokayoke.binary.version.enduser>
 
-        <pokayoke.java.version>17</pokayoke.java.version>
+        <pokayoke.java.version>21</pokayoke.java.version>
         <maven.compiler.source>${pokayoke.java.version}</maven.compiler.source>
         <maven.compiler.target>${pokayoke.java.version}</maven.compiler.target>
         <maven.compiler.release>${pokayoke.java.version}</maven.compiler.release>
@@ -177,7 +177,7 @@
                     <!-- Let JustJ handle the execution environment. -->
                     <!-- See https://www.eclipse.org/justj/?page=documentation
                     for more information. -->
-                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+                    <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-21</executionEnvironment>
 
                     <!-- Configure environments. -->
                     <!-- Determines which environment specific bundles will be

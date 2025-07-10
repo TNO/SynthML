@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.github.tno.pokayoke.transform.uml2cif
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.uml2cif
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: com.github.tno.pokayoke.transform.uml2cif
 Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.5.0",
  com.github.tno.pokayoke.transform.common;bundle-version="0.0.1",

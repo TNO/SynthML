@@ -31,6 +31,6 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.tno.synthml.uml.profile.util;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.activitysynthesis
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: com.github.tno.pokayoke.transform.activitysynthesis
 

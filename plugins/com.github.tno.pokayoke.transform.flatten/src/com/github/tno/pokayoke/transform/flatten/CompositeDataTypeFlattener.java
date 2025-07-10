@@ -607,7 +607,7 @@ public class CompositeDataTypeFlattener {
                 unfoldRedefinableElement(internalAction, propertyToLeaves, absoluteToFlatNames);
             } else if (ownedElement instanceof Constraint constraint) {
                 unfoldConstraint(constraint, propertyToLeaves, absoluteToFlatNames);
-            } else if (ownedElement instanceof ActivityNode activityNode) {
+            } else if (ownedElement instanceof ActivityNode) {
                 // Nodes in activities should not refer to properties.
                 continue;
             } else {

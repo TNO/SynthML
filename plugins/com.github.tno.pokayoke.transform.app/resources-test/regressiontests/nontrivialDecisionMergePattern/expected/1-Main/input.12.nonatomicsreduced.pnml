@@ -76,26 +76,7 @@
       </place>
       <arc id="flip__na_result_1__to__p7" source="flip__na_result_1" target="p7">
       </arc>
-      <transition id="flip__na_result_1/1">
-        <name>
-          <text>flip__na_result_1</text>
-        </name>
-      </transition>
-      <place id="p5">
-        <name>
-          <text>p5</text>
-        </name>
-      </place>
-      <arc id="flip__na_result_1/1__to__p5" source="flip__na_result_1/1" target="p5">
-      </arc>
       <arc id="flip__na_result_2__to__p7" source="flip__na_result_2" target="p7">
-      </arc>
-      <transition id="flip__na_result_2/1">
-        <name>
-          <text>flip__na_result_2</text>
-        </name>
-      </transition>
-      <arc id="flip__na_result_2/1__to__p5" source="flip__na_result_2/1" target="p5">
       </arc>
       <arc id="left__to__p7" source="left" target="p7">
       </arc>
@@ -132,15 +113,11 @@
       </arc>
       <arc id="p2__to__right/1" source="p2" target="right/1">
       </arc>
-      <arc id="p3__to__flip__na_result_1/1" source="p3" target="flip__na_result_1/1">
-      </arc>
-      <arc id="p3__to__flip__na_result_2/1" source="p3" target="flip__na_result_2/1">
-      </arc>
       <arc id="p4__to__flip" source="p4" target="flip">
       </arc>
-      <arc id="p5__to__left" source="p5" target="left">
+      <arc id="p5__to__left" source="p3" target="left">
       </arc>
-      <arc id="p5__to__right" source="p5" target="right">
+      <arc id="p5__to__right" source="p3" target="right">
       </arc>
       <arc id="p6__to__flip__na_result_1" source="p6" target="flip__na_result_1">
       </arc>

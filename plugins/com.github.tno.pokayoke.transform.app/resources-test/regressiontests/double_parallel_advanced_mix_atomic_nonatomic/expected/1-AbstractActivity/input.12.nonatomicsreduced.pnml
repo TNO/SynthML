@@ -16,16 +16,6 @@
           <text>NonAtomicA</text>
         </name>
       </transition>
-      <transition id="NonAtomicC__na_result_2">
-        <name>
-          <text>NonAtomicC__na_result_2</text>
-        </name>
-      </transition>
-      <transition id="NonAtomicC__na_result_1">
-        <name>
-          <text>NonAtomicC__na_result_1</text>
-        </name>
-      </transition>
       <transition id="NonAtomicA__na_result_2">
         <name>
           <text>NonAtomicA__na_result_2</text>
@@ -97,15 +87,6 @@
       </place>
       <arc id="NonAtomicC__to__p5" source="NonAtomicC" target="p5">
       </arc>
-      <place id="p8">
-        <name>
-          <text>p8</text>
-        </name>
-      </place>
-      <arc id="NonAtomicC__na_result_1__to__p8" source="NonAtomicC__na_result_1" target="p8">
-      </arc>
-      <arc id="NonAtomicC__na_result_2__to__p8" source="NonAtomicC__na_result_2" target="p8">
-      </arc>
       <place id="p11">
         <name>
           <text>p11</text>
@@ -147,15 +128,11 @@
       </arc>
       <arc id="p4__to__NonAtomicA__na_result_2" source="p4" target="NonAtomicA__na_result_2">
       </arc>
-      <arc id="p5__to__NonAtomicC__na_result_1" source="p5" target="NonAtomicC__na_result_1">
-      </arc>
-      <arc id="p5__to__NonAtomicC__na_result_2" source="p5" target="NonAtomicC__na_result_2">
-      </arc>
       <arc id="p6__to__AtomicB" source="p6" target="AtomicB">
       </arc>
       <arc id="p7__to__AtomicD" source="p7" target="AtomicD">
       </arc>
-      <arc id="p8__to____end" source="p8" target="__end">
+      <arc id="p8__to____end" source="p5" target="__end">
       </arc>
       <arc id="p9__to____end" source="p9" target="__end">
       </arc>

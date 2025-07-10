@@ -7,10 +7,10 @@ Before setting up the development environment:
 * GitHub should correctly be set up regarding SSH keys (in order to check out the repository using SSH).
   * Instructions for generating new SSH keys and adding them to your GitHub account can be found [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
   * Alternatively, you can generate an SSH key using the Eclipse installer by following the instructions in the subsection below.
-       
+
 #### Generating SSH keys within the Eclipse installer
 
-The following steps can be used to generate an SSH key using the Eclipse installer, instead of, e.g., using Git Bash: 
+The following steps can be used to generate an SSH key using the Eclipse installer, instead of, e.g., using Git Bash:
 
 1. After step 3 of the setup instructions below, click on the small round key-shaped icon on the bottom-left of the Eclipse installer.
 2. Go to the 'Key Management' tab.
@@ -26,7 +26,7 @@ The following steps can be used to generate an SSH key using the Eclipse install
      Host github.com
      IdentityFile ~/.ssh/XXX
      ```
-       
+
 ## Setup
 
 Use the following steps to set up an Eclipse development environment for Poka Yoke development:
@@ -34,8 +34,8 @@ Use the following steps to set up an Eclipse development environment for Poka Yo
 1. Download the Eclipse Installer, from https://eclipse.org/downloads.
 2. Run the Eclipse Installer.
 3. Switch to Advanced mode, using the hamburger menu.
-   * In case you haven't yet configured SSH keys, consider following the steps described above in the rerequisites, for generating SSH keys within the Eclipse installer.
-4. Select `Eclipse Platform`, `2023-06` and `JRE 17.* - https://download.eclipse.org/justj/jres/17/updates/release/latest`.
+   * In case you haven't yet configured SSH keys, consider following the steps described above in the prerequisites, for generating SSH keys within the Eclipse installer.
+4. Select `Eclipse Platform`, `2024-09` and `JRE 21.* - https://download.eclipse.org/justj/jres/21/updates/release/latest`.
 5. Click `Next`.
 6. Use the green plus button to add `file:/X:/PokaYoke/Oomph/com.github.tno.pokayoke.setup`.
   Choose `Catalog: Eclipse Projects` in the dropdown box.
