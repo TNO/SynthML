@@ -19,7 +19,9 @@ import com.google.common.base.Verify;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
- *
+ * Tracks the synthesis chain transformations from the UML elements of the input model, to their translation to CIF
+ * events, the translation to Petri net transitions, and finally to the synthesized activity UML opaque actions (before
+ * model finalization).
  */
 public class SynthesisUmlElementTracking {
     private Map<String, UmlElementInfo> cifEventNamesToUmlElemntInfo;
@@ -29,21 +31,27 @@ public class SynthesisUmlElementTracking {
     private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap;
 
     /**
-     * @return the cifEventNamesToUmlElemntInfo
+     * Returns the map from CIF event names to the corresponding UML element info.
+     *
+     * @return The map from CIF event names to the corresponding UML element info.
      */
     public Map<String, UmlElementInfo> getCifEventNamesToUmlElemntInfo() {
         return cifEventNamesToUmlElemntInfo;
     }
 
     /**
-     * @return the transitionsToUmlElementInfo
+     * Returns the map from Petri net transitions to the corresponding UML element info.
+     *
+     * @return The map from Petri net transitions to the corresponding UML element info.
      */
     public Map<Transition, UmlElementInfo> getTransitionsToUmlElementInfo() {
         return transitionsToUmlElementInfo;
     }
 
     /**
-     * @return the actionsToUmlElementInfoMap
+     * Returns the map from the new UML opaque actions to the corresponding UML element info.
+     *
+     * @return The map from the new UML opaque actions to the corresponding UML element info.
      */
     public Map<Action, UmlElementInfo> getActionsToUmlElementInfoMap() {
         return actionsToUmlElementInfoMap;
