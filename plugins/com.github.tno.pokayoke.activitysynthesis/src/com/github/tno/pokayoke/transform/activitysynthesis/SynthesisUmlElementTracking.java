@@ -4,7 +4,9 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
@@ -128,7 +130,7 @@ public class SynthesisUmlElementTracking {
 
     public void addActions(Map<Transition, Action> transitionsToActions) {
         // Update the action to UML element info map.
-        for (java.util.Map.Entry<Transition, Action> entry: transitionsToActions.entrySet()) {
+        for (Entry<Transition, Action> entry: transitionsToActions.entrySet()) {
             actionsToUmlElementInfoMap.put(entry.getValue(), transitionsToUmlElementInfo.get(entry.getKey()));
         }
     }
@@ -150,5 +152,13 @@ public class SynthesisUmlElementTracking {
 
     public UmlElementInfo getUmlElementInfo(Action action) {
         return actionsToUmlElementInfoMap.get(action);
+    }
+
+    public void removeLoopTransition() {
+        // Remove the transition(s) that is used as the self-loop for the final place in the Petri net.
+        // Nota: Using Cif2Petrify.LOOP_EVENT_NAME gives import cycles.
+        transitionsToUmlElementInfo = transitionsToUmlElementInfo.entrySet().stream()
+                .filter(e -> !e.getKey().getName().getText().equals("__loop"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

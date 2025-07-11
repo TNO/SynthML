@@ -223,6 +223,9 @@ public class FullSynthesisApp {
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
+        // Remove loop from synthesis tracker.
+        synthesisUmlElementsTracker.removeLoopTransition();
+
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
         // that can be merged, replacing their start and end transitions by a single transition. These patterns'
         // intermediate control flows cannot have guards and we can safely merge them, since 1) the patterns have no

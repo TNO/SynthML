@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 
 /** Transforms CIF state spaces to Petrify input. */
 public class Cif2Petrify {
-    private static final String LOOP_EVENT_NAME = "__loop";
+    public static final String LOOP_EVENT_NAME = "__loop";
 
     private Cif2Petrify() {
     }
