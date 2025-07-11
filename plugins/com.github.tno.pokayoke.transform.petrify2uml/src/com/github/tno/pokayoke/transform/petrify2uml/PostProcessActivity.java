@@ -155,7 +155,6 @@ public class PostProcessActivity {
      * @param synthesisTracker The tracker containing the original UML element for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    @SuppressWarnings("fallthrough")
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
@@ -178,7 +177,7 @@ public class PostProcessActivity {
                 RedefinableElement umlElement = synthesisTracker.getUmlElementInfo(action).getUmlElement();
 
                 switch (actionKind) {
-                    case COMPLETE_CALL: {
+                    case COMPLETE_CALL -> {
                         // Atomic opaque behavior, or start of a rewritten non-atomic action. Transform it to a call
                         // behavior.
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
@@ -190,8 +189,10 @@ public class PostProcessActivity {
                         action.getIncomings().get(0).setTarget(callAction);
                         action.getOutgoings().get(0).setSource(callAction);
                         action.destroy();
+
+                        break;
                     }
-                    case START_CALL: {
+                    case START_CALL -> {
                         // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
                         // opaque action.
                         action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
@@ -202,8 +203,10 @@ public class PostProcessActivity {
                         warnings.add(String.format(
                                 "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
                                 umlElement.getName(), action.getName()));
+
+                        break;
                     }
-                    case END_CALL: {
+                    case END_CALL -> {
                         // Sanity check.
                         Verify.verify(!rewrittenNonAtomicActions.contains(action),
                                 "The end of a non-atomic action is contained in the set of rewritten actions.");
@@ -240,9 +243,12 @@ public class PostProcessActivity {
                         warnings.add(String.format(
                                 "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
                                 actionElement.getName(), action.getName()));
+
+                        break;
                     }
-                    default:
+                    default -> {
                         throw new RuntimeException("Found unexpected action kind: " + actionKind);
+                    }
                 }
             } else if (!(node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
                     || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode))
