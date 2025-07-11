@@ -25,8 +25,8 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.app.SynthesisChainTranslation;
-import com.github.tno.pokayoke.transform.app.SynthesisChainTranslation.ActionKind;
+import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisChainTranslation;
+import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisChainTranslation.ActionKind;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -160,8 +160,6 @@ public class PostProcessActivity {
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
             SynthesisChainTranslation sct, List<String> warnings)
     {
-        CifContext context = new CifContext(activity.getModel());
-
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof Action action) {

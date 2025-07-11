@@ -40,6 +40,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministic
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
+import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisChainTranslation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
