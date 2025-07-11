@@ -119,7 +119,17 @@ public class SynthesisUmlElementTracking {
                 .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
 
         for (Transition t: petriNetTransitions) {
-            transitionsToUmlElementInfo.put(t, cifEventNamesToUmlElementInfo.get(t.getName().getText()));
+            // Create new UML element info and store it.
+            UmlElementInfo currentUmlElementInfo = cifEventNamesToUmlElementInfo.get(t.getName().getText());
+            if (currentUmlElementInfo == null) {
+                transitionsToUmlElementInfo.put(t, null);
+            } else {
+                UmlElementInfo newUmlElementInfo = new UmlElementInfo(currentUmlElementInfo.getUmlElement());
+                newUmlElementInfo.setStartAction(currentUmlElementInfo.isStartAction());
+                newUmlElementInfo.setMerged(currentUmlElementInfo.isMerged());
+                newUmlElementInfo.setEffectNr(currentUmlElementInfo.getEffectNr());
+                transitionsToUmlElementInfo.put(t, newUmlElementInfo);
+            }
         }
     }
 
