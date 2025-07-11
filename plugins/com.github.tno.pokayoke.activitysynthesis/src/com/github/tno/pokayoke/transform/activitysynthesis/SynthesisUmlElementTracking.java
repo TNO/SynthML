@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,11 +25,11 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * model finalization).
  */
 public class SynthesisUmlElementTracking {
-    private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo;
+    private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo = new LinkedHashMap<>();
 
-    private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo;
+    private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
 
-    private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap;
+    private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap = new LinkedHashMap<>();
 
     /**
      * Returns the map from CIF event names to the corresponding UML element info.
