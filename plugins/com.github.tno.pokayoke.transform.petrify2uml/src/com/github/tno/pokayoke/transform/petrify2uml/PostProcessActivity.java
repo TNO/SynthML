@@ -158,7 +158,7 @@ public class PostProcessActivity {
     @SuppressWarnings("fallthrough")
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
-            SynthesisUmlElementTracking sct, List<String> warnings)
+            SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
@@ -174,8 +174,8 @@ public class PostProcessActivity {
                 }
 
                 // Get the kind of action, and finalize the opaque action.
-                ActionKind actionKind = sct.getActionKind(action);
-                RedefinableElement umlElement = sct.getUmlElementInfo(action).getUmlElement();
+                ActionKind actionKind = synthesisTracker.getActionKind(action);
+                RedefinableElement umlElement = synthesisTracker.getUmlElementInfo(action).getUmlElement();
 
                 switch (actionKind) {
                     case COMPLETE_CALL: {
