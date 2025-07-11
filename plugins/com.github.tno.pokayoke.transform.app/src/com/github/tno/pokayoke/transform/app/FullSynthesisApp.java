@@ -216,7 +216,7 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Add the transitions to the synthesis chain tracker.
-        synthesisUmlElementsTracker.addTransitions(PetrifyOutput2PNMLTranslator.getTransitionSet());
+        synthesisUmlElementsTracker.addPetriNetTransitions(petriNet);
 
         // Remove the self-loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
