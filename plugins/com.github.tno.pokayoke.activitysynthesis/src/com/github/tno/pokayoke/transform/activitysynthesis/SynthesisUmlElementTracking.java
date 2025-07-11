@@ -63,7 +63,7 @@ public class SynthesisUmlElementTracking {
 
     public static enum ActionKind {
         START_CALL, END_CALL, COMPLETE_CALL, START_SHADOW, END_SHADOW, COMPLETE_SHADOW, START_ACTION, END_ACTION,
-        COMPLETE_ACTION;
+        COMPLETE_ACTION, CONTROL_NODE;
     }
 
     public SynthesisUmlElementTracking() {
@@ -161,7 +161,7 @@ public class SynthesisUmlElementTracking {
             }
         }
 
-        return null;
+        return ActionKind.CONTROL_NODE;
     }
 
     public UmlElementInfo getUmlElementInfo(Action action) {
