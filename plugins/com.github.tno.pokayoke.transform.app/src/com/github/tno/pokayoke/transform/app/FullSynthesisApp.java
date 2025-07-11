@@ -101,7 +101,7 @@ public class FullSynthesisApp {
     {
         // Create the synthesis chain translation object to store all the translations from the initial UML model to the
         // synthesised activity.
-        SynthesisUmlElementTracking sct = new SynthesisUmlElementTracking();
+        SynthesisUmlElementTracking synthesisUmlElementsTracker = new SynthesisUmlElementTracking();
 
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS);
@@ -115,8 +115,8 @@ public class FullSynthesisApp {
         }
 
         // Add the CIF event names to UML element info map.
-        sct.addCifStartEvents(umlToCifTranslator.getStartEventMap());
-        sct.addCifEndEvents(umlToCifTranslator.getEndEventMap());
+        synthesisUmlElementsTracker.addCifStartEvents(umlToCifTranslator.getStartEventMap());
+        synthesisUmlElementsTracker.addCifEndEvents(umlToCifTranslator.getEndEventMap());
 
         // Post-process the CIF specification to eliminate all if-updates.
         ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
@@ -164,7 +164,7 @@ public class FullSynthesisApp {
         // XXX in step 5 we add `__start` and `__end` events. Do we add them as well to the translation map?
 
         // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace, sct);
+        String preservedEvents = getPreservedEvents(cifStateSpace, synthesisUmlElementsTracker);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -216,7 +216,7 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
         // Add the transitions to the synthesis chain translation object.
-        sct.addTransitions(PetrifyOutput2PNMLTranslator.getTransitionSet());
+        synthesisUmlElementsTracker.addTransitions(PetrifyOutput2PNMLTranslator.getTransitionSet());
 
         // Remove the self-loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
@@ -236,7 +236,7 @@ public class FullSynthesisApp {
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
         // Update the synthesis chain translations with the rewritten patterns.
-        sct.updateRewrittenPatterns(nonAtomicPatterns);
+        synthesisUmlElementsTracker.updateRewrittenPatterns(nonAtomicPatterns);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
         // action.
@@ -246,7 +246,7 @@ public class FullSynthesisApp {
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
         // Update the synthesis chain translation with the newly created actions.
-        sct.addActions(petriNet2Activity.getTransitionMapping());
+        synthesisUmlElementsTracker.addActions(petriNet2Activity.getTransitionMapping());
 
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
@@ -256,7 +256,7 @@ public class FullSynthesisApp {
         PostProcessActivity.finalizeOpaqueActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, sct, warnings);
+                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, synthesisUmlElementsTracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
