@@ -2,7 +2,7 @@ controllable left;
 controllable right;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet left, right, __start, __end;
   @state(Context = "*", Context.field1 = false, Context.field2 = false, sup = "*")
   @state(Context = "*", Context.field1 = true, Context.field2 = false, sup = "*")

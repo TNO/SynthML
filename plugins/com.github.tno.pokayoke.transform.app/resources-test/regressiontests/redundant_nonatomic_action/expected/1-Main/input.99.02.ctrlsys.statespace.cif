@@ -15,7 +15,7 @@ uncontrollable __node__CallBehaviorAction__68__result_2;
 uncontrollable __node__CallBehaviorAction__69;
 uncontrollable __node__CallBehaviorAction__69__result_1;
 uncontrollable __node__CallBehaviorAction__69__result_2;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__OpaqueAction__58, __node__OpaqueAction__59, __node__DecisionNode__61__0, __node__DecisionNode__61__1, __node__MergeNode__62__0, __node__MergeNode__62__1, __node__MergeNode__63__0, __node__MergeNode__63__1, __node__JoinNode__65, __node__ForkNode__66, __node__ForkNode__67, __node__CallBehaviorAction__68, __node__CallBehaviorAction__68__result_1, __node__CallBehaviorAction__68__result_2, __node__CallBehaviorAction__69, __node__CallBehaviorAction__69__result_1, __node__CallBehaviorAction__69__result_2;
   @state(Context = "*", Context.__activeAction = 0, Context.__controlflow__40 = false, Context.__controlflow__42 = false, Context.__controlflow__44 = false, Context.__controlflow__45 = false, Context.__controlflow__46 = false, Context.__controlflow__47 = false, Context.__controlflow__48 = false, Context.__controlflow__49 = false, Context.__controlflow__50 = false, Context.__controlflow__51 = false, Context.__controlflow__52 = false, Context.__controlflow__53 = false, Context.__controlflow__54 = false, Context.__controlflow__56 = true, Context.done_a = false, Context.done_b = false)
   location loc1:

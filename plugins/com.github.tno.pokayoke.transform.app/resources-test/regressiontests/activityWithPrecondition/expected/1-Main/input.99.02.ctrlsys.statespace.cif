@@ -1,5 +1,5 @@
 uncontrollable __node__CallBehaviorAction__37;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__CallBehaviorAction__37;
   @state(Class = "*", Class.__controlflow__32 = false, Class.__controlflow__33 = true, Class.element = "First")
   location loc1:

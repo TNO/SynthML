@@ -4,7 +4,7 @@ uncontrollable do_b__na_result_1;
 controllable do_c;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet do_a, do_b, do_b__na_result_1, do_c, __start, __end;
   @state(Context = "*", Context.__nonAtomicActive__do_b = false, Context.done_a = false, Context.done_b = false, Context.done_c = false, occurrences__42__do_a__28 = "*", occurrences__42__do_a__28.__occurrences = 0, occurrences__42__do_b__30 = "*", occurrences__42__do_b__30.__occurrences = 0, occurrences__42__do_c__46 = "*", occurrences__42__do_c__46.__occurrences = 0, sup = "*")
   location __init:

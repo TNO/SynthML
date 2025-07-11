@@ -10,7 +10,7 @@ uncontrollable NonAtomicC__na_result_2;
 controllable AtomicD;
 uncontrollable AtomicD__result_1;
 uncontrollable AtomicD__result_2;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet NonAtomicA, NonAtomicA__na_result_1, NonAtomicA__na_result_2, AtomicB, AtomicB__result_1, AtomicB__result_2, NonAtomicC, NonAtomicC__na_result_1, NonAtomicC__na_result_2, AtomicD, AtomicD__result_1, AtomicD__result_2;
   @state(IntervalConstraintA__44__NonAtomicA__60 = "*", IntervalConstraintA__44__NonAtomicA__60.__occurrences = 0, IntervalConstraintB__48__AtomicB__62 = "*", IntervalConstraintB__48__AtomicB__62.__occurrences = 0, IntervalConstraintC__52__NonAtomicC__64 = "*", IntervalConstraintC__52__NonAtomicC__64.__occurrences = 0, IntervalConstraintD__56__AtomicD__66 = "*", IntervalConstraintD__56__AtomicD__66.__occurrences = 0, Machine = "*", Machine.__activeAction = 0, Machine.__nonAtomicActive__NonAtomicA = false, Machine.__nonAtomicActive__NonAtomicC = false, Machine.a_executed = false, Machine.b_executed = false, Machine.c_executed = false, Machine.d_executed = false, sup = "*")
   location loc1:

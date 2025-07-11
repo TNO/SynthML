@@ -1,4 +1,4 @@
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet;
   @state(Context = "*", Context.__controlflow__12 = true, Context.field = false)
   location loc1:

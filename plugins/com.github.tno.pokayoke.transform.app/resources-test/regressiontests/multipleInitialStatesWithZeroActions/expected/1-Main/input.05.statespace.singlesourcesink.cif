@@ -1,6 +1,6 @@
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet __start, __end;
   @state(Context = "*", Context.field = false, sup = "*")
   @state(Context = "*", Context.field = true, sup = "*")

@@ -12,7 +12,7 @@ uncontrollable __node__ForkNode__74;
 uncontrollable __node__CallBehaviorAction__75;
 uncontrollable __node__CallBehaviorAction__76;
 uncontrollable __node__CallBehaviorAction__77;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__OpaqueAction__65, __node__OpaqueAction__66, __node__DecisionNode__68__0, __node__DecisionNode__68__1, __node__MergeNode__69__0, __node__MergeNode__69__1, __node__MergeNode__70__0, __node__MergeNode__70__1, __node__JoinNode__72, __node__ForkNode__73, __node__ForkNode__74, __node__CallBehaviorAction__75, __node__CallBehaviorAction__76, __node__CallBehaviorAction__77;
   @state(Context = "*", Context.__controlflow__46 = false, Context.__controlflow__48 = false, Context.__controlflow__50 = false, Context.__controlflow__51 = false, Context.__controlflow__52 = false, Context.__controlflow__53 = false, Context.__controlflow__54 = false, Context.__controlflow__55 = false, Context.__controlflow__56 = false, Context.__controlflow__57 = false, Context.__controlflow__58 = false, Context.__controlflow__59 = false, Context.__controlflow__60 = false, Context.__controlflow__61 = false, Context.__controlflow__63 = true, Context.done_a = false, Context.done_b = false, Context.done_c = false)
   location loc1:

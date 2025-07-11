@@ -3,7 +3,7 @@ uncontrollable action__result_1;
 uncontrollable action__result_2;
 controllable __start;
 controllable __end;
-automaton statespace:
+automaton synthesis_state_space:
   alphabet action, action__result_1, action__result_2, __start, __end;
   @state(Context = "*", Context.__activeAction = 0, Context.field = false, sup = "*")
   location __init:

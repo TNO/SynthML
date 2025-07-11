@@ -3,7 +3,7 @@ uncontrollable __node__ForkNode__51;
 uncontrollable __node__CallBehaviorAction__52;
 uncontrollable __node__CallBehaviorAction__53;
 uncontrollable __node__CallBehaviorAction__53__na_result_1;
-automaton statespace:
+automaton post_synthesis_chain_state_space:
   alphabet __node__JoinNode__50, __node__ForkNode__51, __node__CallBehaviorAction__52, __node__CallBehaviorAction__53, __node__CallBehaviorAction__53__na_result_1;
   @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = false, Machine.b_executed = false)
   location loc1:
