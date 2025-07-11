@@ -7,7 +7,11 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
- * Container class to store UML elements and their execution characteristics.
+ * Container class to store UML elements and how they get used throughout the synthesis chain. The class fields refer to
+ * the actual UML element (isAtomic, isDeterministic, isShadowed), to the associated CIF events (isStartAction if it is
+ * the start of a UML atomic or non-atomic action/behavior, effectNr represents the effect number if the CIF event
+ * represents the end of a UML non-atomic or non-deterministic action) and whether the related transition pattern in the
+ * Petri net has been merged or not (isMerged).
  */
 public class UmlElementInfo {
     private RedefinableElement umlElement;
