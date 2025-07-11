@@ -113,7 +113,8 @@ public class SynthesisUmlElementTracking {
     public void addPetriNetTransitions(PetriNet petriNet) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
         // elements info is not empty.
-        Verify.verify(!cifEventNamesToUmlElementInfo.isEmpty(), "TODO error msg");
+        Verify.verify(!cifEventNamesToUmlElementInfo.isEmpty(),
+                "The map from CIF event names to UML element infos is empty.");
 
         List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
                 .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
@@ -149,6 +150,13 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Returns the kind of activity node the input action should translate to, based on the UML element the action
+     * originates from, and whether it was merged during the synthesis chain.
+     *
+     * @param action The UML action create to fill the newly synthesised activity.
+     * @return An enumeration defining the kind of activity node the action should translate to.
+     */
     public ActionKind getActionKind(Action action) {
         UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
         if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
