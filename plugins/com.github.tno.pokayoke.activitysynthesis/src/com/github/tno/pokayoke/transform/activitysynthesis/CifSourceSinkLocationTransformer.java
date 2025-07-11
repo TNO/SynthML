@@ -4,6 +4,7 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -41,15 +42,20 @@ public class CifSourceSinkLocationTransformer {
     }
 
     /**
-     * Transforms the given specification (as described for {@link #transform(Specification)}) and writes the
-     * transformed specification to the indicated file path.
+     * Transforms the given specification (as described for
+     * {@link #transform(Specification, SynthesisUmlElementTracking)}) and writes the transformed specification to the
+     * indicated file path.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
      * @param outputFilePath The path to the output file to write the transformation result to.
      * @param outputFolderPath The path to the folder in which the transformation result is to be written.
+     * @param synthesisTracker The synthesis chain translation tracker, from UML elements to their translation to CIF
+     *     events, to Petri net transitions, to the new UML opaque actions.
      */
-    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath) {
-        transform(specification);
+    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath,
+            SynthesisUmlElementTracking synthesisTracker)
+    {
+        transform(specification, synthesisTracker);
 
         try {
             AppEnv.registerSimple();
@@ -64,8 +70,10 @@ public class CifSourceSinkLocationTransformer {
      * and a new sink (marked) location.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
+     * @param synthesisTracker The synthesis chain translation tracker, from UML elements to their translation to CIF
+     *     events, to Petri net transitions, to the new UML opaque actions.
      */
-    public static void transform(Specification specification) {
+    public static void transform(Specification specification, SynthesisUmlElementTracking synthesisTracker) {
         // Make sure the input specification does not contain any complex component with separate initials or markeds.
         Preconditions.checkArgument(
                 CifCollectUtils.getComplexComponentsStream(specification).allMatch(c -> c.getInitials().isEmpty()),
@@ -155,5 +163,8 @@ public class CifSourceSinkLocationTransformer {
             location.getEdges().add(edge);
             location.getMarkeds().clear();
         }
+
+        // Update the synthesis tracker with the new start and end events.
+        synthesisTracker.addCifStartEvents(Map.of(startEvent, null, endEvent, null));
     }
 }

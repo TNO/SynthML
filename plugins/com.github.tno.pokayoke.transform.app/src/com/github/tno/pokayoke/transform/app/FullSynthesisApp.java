@@ -155,13 +155,13 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // Transform the state space by creating a single (initial) source and a single (marked) sink location.
+        // Transform the state space by creating a single (initial) source and a single (marked) sink location. Update
+        // the synthesis tracker with the two newly created events.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
-
-        // XXX in step 5 we add `__start` and `__end` events. Do we add them as well to the translation map?
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
+                synthesisUmlElementsTracker);
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace, synthesisUmlElementsTracker);
@@ -256,7 +256,8 @@ public class FullSynthesisApp {
         PostProcessActivity.finalizeOpaqueActions(activity,
                 NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
                         petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, synthesisUmlElementsTracker, warnings);
+                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
+                synthesisUmlElementsTracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
