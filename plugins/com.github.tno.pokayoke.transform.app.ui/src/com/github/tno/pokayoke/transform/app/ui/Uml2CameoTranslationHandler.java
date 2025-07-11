@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.inject.Named;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -17,6 +15,8 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.github.tno.pokayoke.transform.app.Uml2CameoTranslationApp;
+
+import jakarta.inject.Named;
 
 /** Menu action handler for translating UML models to fUML that can be simulated with the Cameo Systems Modeler. */
 public class Uml2CameoTranslationHandler {
