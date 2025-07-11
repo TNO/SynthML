@@ -24,7 +24,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * model finalization).
  */
 public class SynthesisUmlElementTracking {
-    private Map<String, UmlElementInfo> cifEventNamesToUmlElemntInfo;
+    private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo;
 
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo;
 
@@ -35,8 +35,8 @@ public class SynthesisUmlElementTracking {
      *
      * @return The map from CIF event names to the corresponding UML element info.
      */
-    public Map<String, UmlElementInfo> getCifEventNamesToUmlElemntInfo() {
-        return cifEventNamesToUmlElemntInfo;
+    public Map<String, UmlElementInfo> getCifEventNamesToUmlElementInfo() {
+        return cifEventNamesToUmlElementInfo;
     }
 
     /**
@@ -75,7 +75,7 @@ public class SynthesisUmlElementTracking {
             UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
             umlElementInfo.setStartAction(true);
             umlElementInfo.setMerged(false);
-            cifEventNamesToUmlElemntInfo.put(cifEvent.getName(), umlElementInfo);
+            cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
     }
 
@@ -91,7 +91,7 @@ public class SynthesisUmlElementTracking {
             umlElementInfo.setStartAction(false);
             umlElementInfo.setMerged(false);
             umlElementInfo.setEffectNr(effectNr);
-            cifEventNamesToUmlElemntInfo.put(cifEvent.getName(), umlElementInfo);
+            cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
     }
 
@@ -101,18 +101,18 @@ public class SynthesisUmlElementTracking {
         for (String removedName: removedNames) {
             String startActionName = removedName.substring(0,
                     removedName.lastIndexOf(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX));
-            cifEventNamesToUmlElemntInfo.get(startActionName).setMerged(true);
-            cifEventNamesToUmlElemntInfo.remove(removedName);
+            cifEventNamesToUmlElementInfo.get(startActionName).setMerged(true);
+            cifEventNamesToUmlElementInfo.remove(removedName);
         }
     }
 
     public void addTransitions(Set<Transition> transitions) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
         // elements info is not empty.
-        Verify.verify(!cifEventNamesToUmlElemntInfo.isEmpty(), "TODO error msg");
+        Verify.verify(!cifEventNamesToUmlElementInfo.isEmpty(), "TODO error msg");
 
         for (Transition t: transitions) {
-            transitionsToUmlElementInfo.put(t, cifEventNamesToUmlElemntInfo.get(t.getName().getText()));
+            transitionsToUmlElementInfo.put(t, cifEventNamesToUmlElementInfo.get(t.getName().getText()));
         }
     }
 
