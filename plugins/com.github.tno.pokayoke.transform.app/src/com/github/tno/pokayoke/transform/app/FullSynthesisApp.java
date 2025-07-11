@@ -99,7 +99,7 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
-        // Create the synthesis chain translation object to store all the translations from the initial UML model to the
+        // Create the synthesis chain tracker object to store all the translations from the initial UML model to the
         // synthesised activity.
         SynthesisUmlElementTracking synthesisUmlElementsTracker = new SynthesisUmlElementTracking();
 
@@ -215,7 +215,7 @@ public class FullSynthesisApp {
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
-        // Add the transitions to the synthesis chain translation object.
+        // Add the transitions to the synthesis chain tracker.
         synthesisUmlElementsTracker.addTransitions(PetrifyOutput2PNMLTranslator.getTransitionSet());
 
         // Remove the self-loop that was added for petrification.
@@ -223,7 +223,7 @@ public class FullSynthesisApp {
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
-        // Remove loop from synthesis tracker.
+        // Remove self-loop from synthesis chain tracker.
         synthesisUmlElementsTracker.removeLoopTransition();
 
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
@@ -238,7 +238,7 @@ public class FullSynthesisApp {
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
-        // Update the synthesis chain translations with the rewritten patterns.
+        // Update the synthesis chain tracker with the rewritten patterns.
         synthesisUmlElementsTracker.updateRewrittenPatterns(nonAtomicPatterns);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
@@ -248,7 +248,7 @@ public class FullSynthesisApp {
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
-        // Update the synthesis chain translation with the newly created actions.
+        // Update the synthesis chain tracker with the newly created actions.
         synthesisUmlElementsTracker.addActions(petriNet2Activity.getTransitionMapping());
 
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
