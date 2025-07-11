@@ -3,11 +3,9 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -31,6 +29,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
+import com.github.tno.pokayoke.transform.uml2cif.UmlElementInfo;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
@@ -149,15 +148,12 @@ public class PostProcessActivity {
      *
      * @param activity The activity for which to finalize the opaque actions.
      * @param rewrittenNonAtomicActions All non-atomic actions that have already been rewritten (on Petri Net level).
-     * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
-     *     elements and the index of the corresponding effect of the end event.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
      * @param synthesisTracker The tracker containing the original UML element for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
-            Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
-            SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
+            String nonAtomicOutcomeSuffix, SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
@@ -217,16 +213,10 @@ public class PostProcessActivity {
                         // action.
 
                         // Find the UML element for the non-atomic action, and the index to the relevant effect.
-                        Pair<RedefinableElement, Integer> actionAndEffectIndex = endEventMap.get(action.getName());
-                        Verify.verifyNotNull(actionAndEffectIndex,
-                                String.format("Expected the CIF end event '%s' to map to a non-atomic UML element.",
-                                        action.getName()));
+                        UmlElementInfo umlElementInfo = synthesisTracker.getUmlElementInfo(action);
+                        RedefinableElement actionElement = umlElementInfo.getUmlElement();
+                        int effectNr = umlElementInfo.getEffectNr();
 
-                        // Determine the UML opaque behavior that has the guard and effects of the current action.
-                        RedefinableElement actionElement = actionAndEffectIndex.left;
-                        if (actionElement instanceof CallBehaviorAction cbAction) {
-                            actionElement = cbAction.getBehavior();
-                        }
                         Verify.verify(actionElement instanceof OpaqueBehavior,
                                 "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
 
@@ -235,8 +225,7 @@ public class PostProcessActivity {
                                 action.getName().replace(nonAtomicOutcomeSuffix, UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
-                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement)
-                                .get(actionAndEffectIndex.right);
+                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectNr);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
                         // Add a warning that the non-atomic end action has not been fully merged.
