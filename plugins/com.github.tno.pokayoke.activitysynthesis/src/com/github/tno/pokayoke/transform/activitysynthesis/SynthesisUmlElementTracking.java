@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.uml2cif.UmlElementInfo;
+import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -20,7 +21,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 /**
  *
  */
-public class SynthesisChainTranslation {
+public class SynthesisUmlElementTracking {
     private Map<String, UmlElementInfo> cifEventNamesToUmlElemntInfo;
 
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo;
@@ -53,7 +54,7 @@ public class SynthesisChainTranslation {
         COMPLETE_ACTION;
     }
 
-    public SynthesisChainTranslation() {
+    public SynthesisUmlElementTracking() {
         // Empty constructor.
     }
 
@@ -83,6 +84,17 @@ public class SynthesisChainTranslation {
             umlElementInfo.setMerged(false);
             umlElementInfo.setEffectNr(effectNr);
             cifEventNamesToUmlElemntInfo.put(cifEvent.getName(), umlElementInfo);
+        }
+    }
+
+    public void updateEndAtomicNonDeterministic(List<String> removedNames) {
+        // Update the UML element info: remove the object referring to the end of atomic non-deterministic COF event,
+        // and set the start as merged.
+        for (String removedName: removedNames) {
+            String startActionName = removedName.substring(0,
+                    removedName.lastIndexOf(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX));
+            cifEventNamesToUmlElemntInfo.get(startActionName).setMerged(true);
+            cifEventNamesToUmlElemntInfo.remove(removedName);
         }
     }
 
