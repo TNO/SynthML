@@ -147,11 +147,12 @@ public class PostProcessActivity {
      * extra guards/effects.
      *
      * @param activity The activity for which to finalize the opaque actions.
-     * @param synthesisTracker The tracker containing the original UML element for each action.
+     * @param synthesisTracker The tracker containing the original UML element and information about the synthesis chain
+     *     manipulations for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    public static void finalizeOpaqueActions(Activity activity,
-            SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
+    public static void finalizeOpaqueActions(Activity activity, SynthesisUmlElementTracking synthesisTracker,
+            List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
