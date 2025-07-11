@@ -25,8 +25,8 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisChainTranslation;
-import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisChainTranslation.ActionKind;
+import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisUmlElementTracking.ActionKind;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -158,7 +158,7 @@ public class PostProcessActivity {
     @SuppressWarnings("fallthrough")
     public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
             Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
-            SynthesisChainTranslation sct, List<String> warnings)
+            SynthesisUmlElementTracking sct, List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
