@@ -256,11 +256,7 @@ public class FullSynthesisApp {
         // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
         Path opaqueActionsFinalizedOutputPath = outputFolderPath
                 .resolve(filePrefix + ".14.opaque_actions_finalized.uml");
-        PostProcessActivity.finalizeOpaqueActions(activity,
-                NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
-                        petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
-                synthesisUmlElementsTracker, warnings);
+        PostProcessActivity.finalizeOpaqueActions(activity, synthesisUmlElementsTracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.

@@ -147,13 +147,11 @@ public class PostProcessActivity {
      * extra guards/effects.
      *
      * @param activity The activity for which to finalize the opaque actions.
-     * @param rewrittenNonAtomicActions All non-atomic actions that have already been rewritten (on Petri Net level).
-     * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
      * @param synthesisTracker The tracker containing the original UML element for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
-            String nonAtomicOutcomeSuffix, SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
+    public static void finalizeOpaqueActions(Activity activity,
+            SynthesisUmlElementTracking synthesisTracker, List<String> warnings)
     {
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
@@ -204,9 +202,7 @@ public class PostProcessActivity {
                     }
                     case END_CALL -> {
                         // Sanity check.
-                        Verify.verify(!rewrittenNonAtomicActions.contains(action),
-                                "The end of a non-atomic action is contained in the set of rewritten actions.");
-                        Verify.verify(action.getName().contains(nonAtomicOutcomeSuffix),
+                        Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
                         // The action is the end of a non-rewritten non-atomic action. Add its effects to the opaque
@@ -221,8 +217,8 @@ public class PostProcessActivity {
                                 "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
 
                         // Rename the current action, set its guard to 'true', and retain the original relevant effect.
-                        action.setName(
-                                action.getName().replace(nonAtomicOutcomeSuffix, UmlToCifTranslator.END_ACTION_SUFFIX));
+                        action.setName(action.getName().replace(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
+                                UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectNr);
