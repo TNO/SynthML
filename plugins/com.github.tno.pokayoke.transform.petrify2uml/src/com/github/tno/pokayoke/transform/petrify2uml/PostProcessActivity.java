@@ -32,7 +32,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsI
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -153,6 +152,7 @@ public class PostProcessActivity {
      * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
      *     elements and the index of the corresponding effect of the end event.
      * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
+     * @param synthesisTracker The tracker containing the original UML element for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     @SuppressWarnings("fallthrough")
