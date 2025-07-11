@@ -126,4 +126,8 @@ public class SynthesisChainTranslation {
 
         return null;
     }
+
+    public UmlElementInfo getUmlElementInfo(Action action) {
+        return actionsToUmlElementInfoMap.get(action);
+    }
 }
