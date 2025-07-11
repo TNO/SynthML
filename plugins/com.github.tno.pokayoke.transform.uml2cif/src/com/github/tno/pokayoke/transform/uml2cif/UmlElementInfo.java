@@ -25,10 +25,12 @@ public class UmlElementInfo {
     private int effectNr;
 
     public UmlElementInfo(RedefinableElement umlElement) {
-        this.umlElement = umlElement;
-        isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlElement);
-        isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlElement);
-        isShadowed = umlElement instanceof CallBehaviorAction && PokaYokeUmlProfileUtil.isFormalElement(umlElement);
+        if (umlElement != null) {
+            this.umlElement = umlElement;
+            isAtomic = PokaYokeUmlProfileUtil.isAtomic(umlElement);
+            isDeterministic = PokaYokeUmlProfileUtil.isDeterministic(umlElement);
+            isShadowed = umlElement instanceof CallBehaviorAction && PokaYokeUmlProfileUtil.isFormalElement(umlElement);
+        }
     }
 
     public RedefinableElement getUmlElement() {
