@@ -19,6 +19,7 @@ import com.github.tno.pokayoke.transform.uml2cif.UmlElementInfo;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
@@ -109,12 +110,15 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    public void addTransitions(Set<Transition> transitions) {
+    public void addPetriNetTransitions(PetriNet petriNet) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
         // elements info is not empty.
         Verify.verify(!cifEventNamesToUmlElementInfo.isEmpty(), "TODO error msg");
 
-        for (Transition t: transitions) {
+        List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
+                .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
+
+        for (Transition t: petriNetTransitions) {
             transitionsToUmlElementInfo.put(t, cifEventNamesToUmlElementInfo.get(t.getName().getText()));
         }
     }
@@ -157,8 +161,9 @@ public class SynthesisUmlElementTracking {
     public void removeLoopTransition() {
         // Remove the transition(s) that is used as the self-loop for the final place in the Petri net.
         // Nota: Using Cif2Petrify.LOOP_EVENT_NAME gives import cycles.
-        transitionsToUmlElementInfo = transitionsToUmlElementInfo.entrySet().stream()
-                .filter(e -> !e.getKey().getName().getText().equals("__loop"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Set<Transition> loopTransitions = transitionsToUmlElementInfo.entrySet().stream()
+                .filter(e -> e.getKey().getName().getText().equals("__loop")).map(e -> e.getKey())
+                .collect(Collectors.toSet());
+        loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
     }
 }
