@@ -39,9 +39,9 @@ public class PetrifyOutput2PNMLTranslator {
     private static Set<Transition> transitionSet = new LinkedHashSet<>();
 
     /**
-     * XXX TODO
+     * Return the Petri net's transition set.
      *
-     * @return the transitionSet
+     * @return The Petri net's transition set.
      */
     public static Set<Transition> getTransitionSet() {
         return transitionSet;
