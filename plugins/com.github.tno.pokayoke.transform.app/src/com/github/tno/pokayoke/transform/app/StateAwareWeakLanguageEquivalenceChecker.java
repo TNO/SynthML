@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.escet.cif.common.AnnotationEqHashWrap;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
@@ -309,8 +308,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
     }
 
     private boolean areEquivalentAnnotations(Annotation ann1, Annotation ann2) {
-        AnnotationEqHashWrap annotationWrapped1 = new AnnotationEqHashWrap(ann1);
-        AnnotationEqHashWrap annotationWrapped2 = new AnnotationEqHashWrap(ann2);
+        StateAnnotationEqHashWrap annotationWrapped1 = new StateAnnotationEqHashWrap(ann1);
+        StateAnnotationEqHashWrap annotationWrapped2 = new StateAnnotationEqHashWrap(ann2);
         return annotationWrapped1.equals(annotationWrapped2);
     }
 
