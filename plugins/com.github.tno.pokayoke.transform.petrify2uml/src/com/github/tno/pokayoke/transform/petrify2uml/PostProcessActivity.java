@@ -167,14 +167,14 @@ public class PostProcessActivity {
                     continue;
                 }
 
-                // Get the kind of action, and finalize the opaque action.
+                // Get the kind of action, and finalize the opaque action accordingly.
                 ActionKind actionKind = synthesisTracker.getActionKind(action);
                 RedefinableElement umlElement = synthesisTracker.getUmlElementInfo(action).getUmlElement();
 
                 switch (actionKind) {
                     case COMPLETE_CALL -> {
-                        // Atomic opaque behavior, or start of a rewritten non-atomic action. Transform it to a call
-                        // behavior.
+                        // The action represents an atomic opaque behavior, or the start of a rewritten non-atomic
+                        // action. Transform it to a call behavior.
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior((OpaqueBehavior)umlElement);
                         callAction.setActivity(activity);
