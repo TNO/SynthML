@@ -14,19 +14,29 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
  * Petri net has been merged or not (isMerged).
  */
 public class UmlElementInfo {
+    /** The UML element of the input model. */
     private RedefinableElement umlElement;
 
+    /** {@code true} if the input UML element is atomic. */
     private boolean isAtomic;
 
+    /** {@code true} if the input UML element is deterministic. */
     private boolean isDeterministic;
 
-    private boolean isStartAction;
-
-    private boolean isMerged;
-
+    /** {@code true} if the input UML element is a shadowed call behavior. */
     private boolean isShadowed;
 
+    /**
+     * {@code true} if the CIF event associated to the UML element is the start event of a non-atomic or
+     * non-deterministic action, or if the UML element is atomic.
+     */
+    private boolean isStartAction;
+
+    /** Represents the effect index of non-atomic or non-deterministic actions. */
     private int effectNr;
+
+    /** {@code true} if the Petri net transition pattern has been merged during the synthesis chain. */
+    private boolean isMerged;
 
     public UmlElementInfo(RedefinableElement umlElement) {
         if (umlElement != null) {
