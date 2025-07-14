@@ -79,7 +79,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;Initialize_&quot; + str(uuid.uuid4())</body>
+requester = 'Initialize_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="41" incoming="17" outgoing="18 19"/>
         <node xmi:type="uml:MergeNode" xmi:id="42" incoming="19 24" outgoing="20"/>
@@ -176,7 +176,7 @@ isSuccessful = guard</body>
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;Increment_&quot; + str(uuid.uuid4())</body>
+requester = 'Increment_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="84" incoming="60" outgoing="61 62"/>
         <node xmi:type="uml:MergeNode" xmi:id="85" incoming="62 67" outgoing="63"/>

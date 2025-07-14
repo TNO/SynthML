@@ -84,7 +84,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;Action1_&quot; + str(uuid.uuid4())</body>
+requester = 'Action1_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="43" incoming="19" outgoing="20 21"/>
         <node xmi:type="uml:MergeNode" xmi:id="44" incoming="21 26" outgoing="22"/>
@@ -181,7 +181,7 @@ isSuccessful = guard</body>
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;Action2_&quot; + str(uuid.uuid4())</body>
+requester = 'Action2_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="86" incoming="62" outgoing="63 64"/>
         <node xmi:type="uml:MergeNode" xmi:id="87" incoming="64 69" outgoing="65"/>
@@ -291,7 +291,7 @@ isSuccessful = guard</body>
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;TooDetailed_&quot; + str(uuid.uuid4())</body>
+requester = 'TooDetailed_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="141" incoming="117" outgoing="118 119"/>
         <node xmi:type="uml:MergeNode" xmi:id="142" incoming="119 124" outgoing="120"/>

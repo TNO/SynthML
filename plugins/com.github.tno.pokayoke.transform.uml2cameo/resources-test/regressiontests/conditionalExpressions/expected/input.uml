@@ -84,7 +84,7 @@
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;OpaqueAction1__start_&quot; + str(uuid.uuid4())</body>
+requester = 'OpaqueAction1__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="44" incoming="20" outgoing="21 22"/>
           <node xmi:type="uml:MergeNode" xmi:id="45" incoming="22 27" outgoing="23"/>
@@ -179,7 +179,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;OpaqueAction1__end_&quot; + str(uuid.uuid4())</body>
+requester = 'OpaqueAction1__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="87" incoming="63" outgoing="64 65"/>
           <node xmi:type="uml:MergeNode" xmi:id="88" incoming="65 70" outgoing="66"/>
@@ -288,7 +288,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;OpaqueAction2__start_&quot; + str(uuid.uuid4())</body>
+requester = 'OpaqueAction2__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="138" incoming="114" outgoing="115 116"/>
           <node xmi:type="uml:MergeNode" xmi:id="139" incoming="116 121" outgoing="117"/>
@@ -383,7 +383,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;OpaqueAction2__end_&quot; + str(uuid.uuid4())</body>
+requester = 'OpaqueAction2__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="181" incoming="157" outgoing="158 159"/>
           <node xmi:type="uml:MergeNode" xmi:id="182" incoming="159 164" outgoing="160"/>
@@ -487,7 +487,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;Counter__start_&quot; + str(uuid.uuid4())</body>
+requester = 'Counter__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="232" incoming="208" outgoing="209 210"/>
           <node xmi:type="uml:MergeNode" xmi:id="233" incoming="210 215" outgoing="211"/>
@@ -582,7 +582,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;Counter__end_&quot; + str(uuid.uuid4())</body>
+requester = 'Counter__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="275" incoming="251" outgoing="252 253"/>
           <node xmi:type="uml:MergeNode" xmi:id="276" incoming="253 258" outgoing="254"/>

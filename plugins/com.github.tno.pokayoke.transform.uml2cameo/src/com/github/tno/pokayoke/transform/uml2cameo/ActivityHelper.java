@@ -160,7 +160,7 @@ public class ActivityHelper {
         // Define the requester value specification node.
         OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \"" + name + "_\" + str(uuid.uuid4())");
+        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \'" + name + "_\' + str(uuid.uuid4())");
         requesterValueNode.getLanguages().add("Python");
         OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
                 UmlPrimitiveType.STRING.load(acquire));

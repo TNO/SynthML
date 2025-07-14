@@ -90,7 +90,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;OpaqueAction1_&quot; + str(uuid.uuid4())</body>
+requester = 'OpaqueAction1_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="47" incoming="23" outgoing="24 25"/>
         <node xmi:type="uml:MergeNode" xmi:id="48" incoming="25 30" outgoing="26"/>
@@ -188,7 +188,7 @@ isSuccessful = guard</body>
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;Initialize_&quot; + str(uuid.uuid4())</body>
+requester = 'Initialize_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="90" incoming="66" outgoing="67 68"/>
         <node xmi:type="uml:MergeNode" xmi:id="91" incoming="68 73" outgoing="69"/>

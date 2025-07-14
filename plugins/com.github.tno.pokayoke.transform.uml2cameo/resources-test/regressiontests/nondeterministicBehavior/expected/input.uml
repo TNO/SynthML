@@ -92,7 +92,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </outputValue>
           <body>import uuid&#xD;
-requester  = &quot;operation_&quot; + str(uuid.uuid4())</body>
+requester = 'operation_' + str(uuid.uuid4())</body>
         </node>
         <node xmi:type="uml:ForkNode" xmi:id="51" incoming="27" outgoing="28 29"/>
         <node xmi:type="uml:MergeNode" xmi:id="52" incoming="29 34" outgoing="30"/>

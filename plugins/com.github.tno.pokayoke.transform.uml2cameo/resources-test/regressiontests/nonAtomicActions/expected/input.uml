@@ -93,7 +93,7 @@
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;do1__start_&quot; + str(uuid.uuid4())</body>
+requester = 'do1__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="48" incoming="24" outgoing="25 26"/>
           <node xmi:type="uml:MergeNode" xmi:id="49" incoming="26 31" outgoing="27"/>
@@ -188,7 +188,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;do1__end_&quot; + str(uuid.uuid4())</body>
+requester = 'do1__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="91" incoming="67" outgoing="68 69"/>
           <node xmi:type="uml:MergeNode" xmi:id="92" incoming="69 74" outgoing="70"/>
@@ -316,7 +316,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;do2__start_&quot; + str(uuid.uuid4())</body>
+requester = 'do2__start_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="160" incoming="136" outgoing="137 138"/>
           <node xmi:type="uml:MergeNode" xmi:id="161" incoming="138 143" outgoing="139"/>
@@ -411,7 +411,7 @@ isSuccessful = guard</body>
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </outputValue>
             <body>import uuid&#xD;
-requester  = &quot;do2__end_&quot; + str(uuid.uuid4())</body>
+requester = 'do2__end_' + str(uuid.uuid4())</body>
           </node>
           <node xmi:type="uml:ForkNode" xmi:id="203" incoming="179" outgoing="180 181"/>
           <node xmi:type="uml:MergeNode" xmi:id="204" incoming="181 186" outgoing="182"/>
