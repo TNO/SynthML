@@ -78,6 +78,10 @@ public class ActivityHelper {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
 
+        // The Python code generator uses patterns such as "active == '" + callerId + "'".
+        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'callerId'.
+        Preconditions.checkArgument(!name.contains("'"), "Argument callerId contains quote character ('): " + name);
+
         // Translate the given effects as a single Python program.
         String effectBody = translateEffects(effects);
 
@@ -156,14 +160,10 @@ public class ActivityHelper {
         // Define the requester value specification node.
         OpaqueAction requesterValueNode = FileHelper.FACTORY.createOpaqueAction();
         requesterValueNode.setActivity(activity);
-        requesterValueNode.getBodies().add("import uuid\r\n" + "requester  = \"" + name + "_\" + str(uuid.uuid4())");
+        requesterValueNode.getBodies().add("import uuid\r\n" + "requester = \"" + name + "_\" + str(uuid.uuid4())");
         requesterValueNode.getLanguages().add("Python");
         OutputPin requesterValueOutput = requesterValueNode.createOutputValue("requester",
                 UmlPrimitiveType.STRING.load(acquire));
-
-        // Define the fork node for duplicating the requester objects output
-        ForkNode requestDuplicatorForkNode = FileHelper.FACTORY.createForkNode();
-        requestDuplicatorForkNode.setActivity(activity);
 
         // Define the control flow from the decision node that checks the guard to the requester value node.
         ControlFlow checkGuardDecisionToRequesterValueFlow = FileHelper.FACTORY.createControlFlow();
@@ -174,6 +174,10 @@ public class ActivityHelper {
         decisionToFinalGuard.getBodies().add(checkGuardOutput.getName());
         decisionToFinalGuard.getLanguages().add("Python");
         checkGuardDecisionToRequesterValueFlow.setGuard(decisionToFinalGuard);
+
+        // Define the fork node for duplicating the 'requester' output.
+        ForkNode requestDuplicatorForkNode = FileHelper.FACTORY.createForkNode();
+        requestDuplicatorForkNode.setActivity(activity);
 
         // Define the object flow from the requester value node to the duplicator fork node.
         ObjectFlow requesterToDuplicatorObjectFlow = FileHelper.FACTORY.createObjectFlow();
@@ -191,7 +195,7 @@ public class ActivityHelper {
         MergeNode innerMergeNode = FileHelper.FACTORY.createMergeNode();
         innerMergeNode.setActivity(activity);
 
-        // Define the control flow from the request signal duplicator node to the inner merge node.
+        // Define the object flow from the request signal duplicator node to the inner merge node.
         ObjectFlow requestDuplicatorToInnerMergeObjectFlow = FileHelper.FACTORY.createObjectFlow();
         requestDuplicatorToInnerMergeObjectFlow.setActivity(activity);
         requestDuplicatorToInnerMergeObjectFlow.setSource(requestDuplicatorForkNode);
@@ -215,8 +219,8 @@ public class ActivityHelper {
         DecisionNode innerDecisionNode = FileHelper.FACTORY.createDecisionNode();
         innerDecisionNode.setActivity(activity);
 
-        // Define the object flow from the node that unmarshals the request to the inner decision node checks the active
-        // variable .
+        // Define the object flow from the node that unmarshals the request to the inner decision node that checks the
+        // active variable.
         ObjectFlow unmarshalRequestToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
         unmarshalRequestToInnerObjectFlow.setActivity(activity);
         unmarshalRequestToInnerObjectFlow.setSource(unmarshalRequestOutput);
