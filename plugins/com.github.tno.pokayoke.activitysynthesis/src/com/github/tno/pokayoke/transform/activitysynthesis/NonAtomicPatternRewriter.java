@@ -61,12 +61,8 @@ public class NonAtomicPatternRewriter {
      */
     public List<NonAtomicPattern> findAndRewritePatterns(PetriNet petriNet) {
         List<NonAtomicPattern> patterns = findPatterns(petriNet);
-
-        // Deepcopy because the patterns are actually deleted from the Petri net.
-        List<NonAtomicPattern> originalPatterns = patterns.stream().map(p -> new NonAtomicPattern(p.startTransition(),
-                p.intermediatePlace(), p.endTransitions(), p.endPlaces())).toList();
         rewritePatterns(patterns);
-        return originalPatterns;
+        return patterns;
     }
 
     /**
