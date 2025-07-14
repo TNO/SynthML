@@ -308,14 +308,14 @@ public class FullSynthesisApp {
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> preservedEventNames = events.stream().filter(
-                event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
+        List<String> preservedEventNames = events.stream()
+                .filter(event -> event.getControllable() || !synthesisUmlElementTracking.isAtomicEndEvent(event))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         // Get the names of the removed events (end of atomic non-deterministic actions) and update the synthesis chain
         // tracker.
-        List<String> removedEventNames = events.stream().filter(
-                event -> !event.getControllable() && event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
+        List<String> removedEventNames = events.stream()
+                .filter(event -> !event.getControllable() && synthesisUmlElementTracking.isAtomicEndEvent(event))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
         synthesisUmlElementTracking.updateEndAtomicNonDeterministic(removedEventNames);
 

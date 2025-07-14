@@ -184,4 +184,9 @@ public class SynthesisUmlElementTracking {
                 .collect(Collectors.toSet());
         loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
     }
+
+    public boolean isAtomicEndEvent(Event event) {
+        UmlElementInfo umlElementInfo = cifEventNamesToUmlElementInfo.get(event.getName());
+        return umlElementInfo.isAtomic() && !umlElementInfo.isStartAction();
+    }
 }
