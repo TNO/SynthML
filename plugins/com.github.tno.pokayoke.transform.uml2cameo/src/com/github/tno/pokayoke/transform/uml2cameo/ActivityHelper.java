@@ -220,7 +220,7 @@ public class ActivityHelper {
         innerDecisionNode.setActivity(activity);
 
         // Define the object flow from the node that unmarshals the request to the inner decision node that checks the
-        // active variable. This is needed to add requester to the context of 'innerDecisionToGuardAndEffectGuard'
+        // active variable. This is needed to add requester to the context of 'innerDecisionToGuardAndEffectGuard'.
         ObjectFlow unmarshalRequestToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
         unmarshalRequestToInnerObjectFlow.setActivity(activity);
         unmarshalRequestToInnerObjectFlow.setSource(unmarshalRequestOutput);
