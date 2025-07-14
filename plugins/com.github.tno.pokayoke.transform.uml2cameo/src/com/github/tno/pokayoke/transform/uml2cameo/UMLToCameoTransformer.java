@@ -50,7 +50,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
-import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
@@ -336,8 +335,7 @@ public class UMLToCameoTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
-                acquireSignal, behavior.getQualifiedName() + "__" + IDHelper.getID(behavior),
-                PokaYokeUmlProfileUtil.isAtomic(behavior));
+                acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior));
 
         // Store the created activity as the single owned behavior of the given opaque behavior.
         behavior.getOwnedBehaviors().add(activity);
@@ -431,7 +429,7 @@ public class UMLToCameoTransformer {
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
-                action.getQualifiedName() + "__" + IDHelper.getID(action), PokaYokeUmlProfileUtil.isAtomic(action));
+                PokaYokeUmlProfileUtil.isAtomic(action));
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
