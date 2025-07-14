@@ -208,16 +208,17 @@ public class GuardComputation {
      */
     private BDD computeGuard(CifBddEdge edge, BDD controlledStates, BDDVarSet internalVars) {
         // We consider the correctness of guard computation inductively: assuming we execute the activity in a
-        // controlled manner up to the execution of 'edge', we now have to compute the (extra) guard that ensures that
-        // the execution of 'edge' ends up in a controlled system state again. If we do this consistently, then every
-        // activity execution will be safe (under the guards that we compute for the activity) by induction on the
-        // length of the execution trace. We thus stay within the controlled system behavior.
+        // controlled manner up to the execution of 'edge', we now have to compute the (extra, with respect to the
+        // user-specified guard) guard that ensures that the execution of 'edge' ends up in a controlled system state
+        // again. If we do this consistently, then every activity execution will be safe (under the guards that we
+        // compute for the activity) by induction on the length of the execution trace. We thus stay within the
+        // controlled system behavior.
 
         // Now, for the computation of the guard of 'edge'. Let us consider all controlled system states where the
-        // uncontrolled system guard of 'edge' holds. Of these system states, we must only keep the ones from which the
-        // application of 'edge' ends up in a controlled system state. We can compute the guard of 'edge' as described
-        // above, from these two sets of states.
-        BDD uncontrolledGuard = controlledStates.and(edge.guard);
+        // uncontrolled system (i.e. user-specified, the original) guard of 'edge' holds. Of these system states, we
+        // must only keep the ones from which the application of 'edge' ends up in a controlled system state. We can
+        // compute the guard of 'edge' as described above, from these two sets of states.
+        BDD uncontrolledGuard = controlledStates.and(edge.origGuard);
         BDD controlledGuard = edge.apply(controlledStates.id(), CifBddEdgeApplyDirection.BACKWARD, controlledStates);
         BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
 
