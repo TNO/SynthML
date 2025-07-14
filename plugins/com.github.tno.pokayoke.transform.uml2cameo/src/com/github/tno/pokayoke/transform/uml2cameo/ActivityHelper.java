@@ -78,9 +78,9 @@ public class ActivityHelper {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
 
-        // The Python code generator uses patterns such as "active == '" + callerId + "'".
-        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'callerId'.
-        Preconditions.checkArgument(!name.contains("'"), "Argument callerId contains quote character ('): " + name);
+        // The Python code generator does not escape quotes when translating 'name'.
+        // To avoid syntax errors in the generated Python code, we disallow the use of single quotes in 'name'.
+        Preconditions.checkArgument(!name.contains("'"), "Argument name contains quote character ('): " + name);
 
         // Translate the given effects as a single Python program.
         String effectBody = translateEffects(effects);
@@ -220,7 +220,7 @@ public class ActivityHelper {
         innerDecisionNode.setActivity(activity);
 
         // Define the object flow from the node that unmarshals the request to the inner decision node that checks the
-        // active variable.
+        // active variable. This is needed to add requester to the context of 'innerDecisionToGuardAndEffectGuard'
         ObjectFlow unmarshalRequestToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
         unmarshalRequestToInnerObjectFlow.setActivity(activity);
         unmarshalRequestToInnerObjectFlow.setSource(unmarshalRequestOutput);
@@ -247,7 +247,7 @@ public class ActivityHelper {
         innerDecisionToGuardAndEffectGuard.getLanguages().add("Python");
         innerDecisionToGuardAndEffectFlow.setGuard(innerDecisionToGuardAndEffectGuard);
 
-        // Define the control flow from the inner decision node to the inner merge note.
+        // Define the object flow from the inner decision node to the inner merge node.
         ObjectFlow innerDecisionToInnerObjectFlow = FileHelper.FACTORY.createObjectFlow();
         innerDecisionToInnerObjectFlow.setActivity(activity);
         innerDecisionToInnerObjectFlow.setSource(innerDecisionNode);
