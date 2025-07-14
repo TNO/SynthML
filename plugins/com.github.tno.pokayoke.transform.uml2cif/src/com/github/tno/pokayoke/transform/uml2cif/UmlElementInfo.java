@@ -33,7 +33,7 @@ public class UmlElementInfo {
     private boolean isStartAction;
 
     /** Represents the effect index of non-atomic or non-deterministic actions. */
-    private int effectNr;
+    private int effectIdx;
 
     /** {@code true} if the Petri net transition pattern has been merged during the synthesis chain. */
     private boolean isMerged;
@@ -79,11 +79,11 @@ public class UmlElementInfo {
         return isShadowed;
     }
 
-    public int getEffectNr() {
-        return effectNr;
+    public int getEffectIdx() {
+        return effectIdx;
     }
 
-    public void setEffectNr(int n) {
-        this.effectNr = n;
+    public void setEffectIdx(int n) {
+        this.effectIdx = n;
     }
 }

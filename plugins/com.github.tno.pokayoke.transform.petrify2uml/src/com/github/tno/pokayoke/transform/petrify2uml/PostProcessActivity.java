@@ -212,7 +212,7 @@ public class PostProcessActivity {
                         // Find the UML element for the non-atomic action, and the index to the relevant effect.
                         UmlElementInfo umlElementInfo = synthesisTracker.getUmlElementInfo(action);
                         RedefinableElement actionElement = umlElementInfo.getUmlElement();
-                        int effectNr = umlElementInfo.getEffectNr();
+                        int effectIdx = umlElementInfo.getEffectIdx();
 
                         Verify.verify(actionElement instanceof OpaqueBehavior,
                                 "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
@@ -222,7 +222,7 @@ public class PostProcessActivity {
                                 UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
-                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectNr);
+                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectIdx);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
                         // Add a warning that the non-atomic end action has not been fully merged.

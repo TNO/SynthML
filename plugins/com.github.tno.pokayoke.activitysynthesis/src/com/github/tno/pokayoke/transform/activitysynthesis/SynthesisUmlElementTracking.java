@@ -94,7 +94,7 @@ public class SynthesisUmlElementTracking {
             UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
             umlElementInfo.setStartAction(false);
             umlElementInfo.setMerged(false);
-            umlElementInfo.setEffectNr(effectNr);
+            umlElementInfo.setEffectIdx(effectNr);
             cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
     }
@@ -128,7 +128,7 @@ public class SynthesisUmlElementTracking {
                 UmlElementInfo newUmlElementInfo = new UmlElementInfo(currentUmlElementInfo.getUmlElement());
                 newUmlElementInfo.setStartAction(currentUmlElementInfo.isStartAction());
                 newUmlElementInfo.setMerged(currentUmlElementInfo.isMerged());
-                newUmlElementInfo.setEffectNr(currentUmlElementInfo.getEffectNr());
+                newUmlElementInfo.setEffectIdx(currentUmlElementInfo.getEffectIdx());
                 transitionsToUmlElementInfo.put(t, newUmlElementInfo);
             }
         }
