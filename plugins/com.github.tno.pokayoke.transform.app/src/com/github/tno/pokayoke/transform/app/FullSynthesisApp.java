@@ -162,7 +162,7 @@ public class FullSynthesisApp {
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
                 synthesisUmlElementsTracker);
 
-        // Perform event-based automaton projection.
+        // Perform event-based automaton projection, and update the synthesis chain tracker.
         String preservedEvents = getPreservedEvents(cifStateSpace, synthesisUmlElementsTracker);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
@@ -214,7 +214,7 @@ public class FullSynthesisApp {
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
-        // Add the transitions to the synthesis chain tracker.
+        // Add the Petri net transitions to the synthesis chain tracker.
         synthesisUmlElementsTracker.addPetriNetTransitions(petriNet);
 
         // Remove the self-loop that was added for petrification.
@@ -237,7 +237,7 @@ public class FullSynthesisApp {
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
-        // Update the synthesis chain tracker with the rewritten patterns.
+        // Update the synthesis chain tracker with the rewritten non-atomic patterns.
         synthesisUmlElementsTracker.updateRewrittenPatterns(nonAtomicPatterns);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
@@ -312,10 +312,11 @@ public class FullSynthesisApp {
                 event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
+        // Get the names of the removed events (end of atomic non-deterministic actions) and update the synthesis chain
+        // tracker.
         List<String> removedEventNames = events.stream().filter(
                 event -> !event.getControllable() && event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
-
         synthesisUmlElementTracking.updateEndAtomicNonDeterministic(removedEventNames);
 
         return String.join(",", preservedEventNames);
