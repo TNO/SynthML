@@ -172,7 +172,7 @@ public class PostProcessActivity {
                 RedefinableElement umlElement = synthesisTracker.getUmlElementInfo(action).getUmlElement();
 
                 switch (actionKind) {
-                    case COMPLETE_CALL -> {
+                    case COMPLETE_OPAQUE_BEHAVIOR -> {
                         // The action represents an atomic opaque behavior, or the start of a rewritten non-atomic
                         // action. Transform it to a call behavior.
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
@@ -187,7 +187,7 @@ public class PostProcessActivity {
 
                         break;
                     }
-                    case START_CALL -> {
+                    case START_OPAQUE_BEHAVIOR -> {
                         // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
                         // opaque action.
                         action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
@@ -201,7 +201,7 @@ public class PostProcessActivity {
 
                         break;
                     }
-                    case END_CALL -> {
+                    case END_OPAQUE_BEHAVIOR -> {
                         // Sanity check.
                         Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");

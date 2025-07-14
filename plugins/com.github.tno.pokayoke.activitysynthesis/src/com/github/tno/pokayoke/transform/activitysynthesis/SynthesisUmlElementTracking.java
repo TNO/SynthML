@@ -62,8 +62,8 @@ public class SynthesisUmlElementTracking {
     }
 
     public static enum ActionKind {
-        START_CALL, END_CALL, COMPLETE_CALL, START_SHADOW, END_SHADOW, COMPLETE_SHADOW, START_ACTION, END_ACTION,
-        COMPLETE_ACTION, CONTROL_NODE;
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, CONTROL_NODE;
     }
 
     public SynthesisUmlElementTracking() {
@@ -161,11 +161,11 @@ public class SynthesisUmlElementTracking {
         UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
         if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
             if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
-                return ActionKind.COMPLETE_CALL;
+                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (umlElementInfo.isStartAction()) {
-                return ActionKind.START_CALL;
+                return ActionKind.START_OPAQUE_BEHAVIOR;
             } else {
-                return ActionKind.END_CALL;
+                return ActionKind.END_OPAQUE_BEHAVIOR;
             }
         }
 
