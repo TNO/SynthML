@@ -25,4 +25,4 @@ Require-Bundle: org.eclipse.uml2.uml;bundle-version="5.5.0",
  org.apache.commons.io;bundle-version="0.0.0",
  org.eclipse.core.runtime;bundle-version="0.0.0",
  com.github.tno.pokayoke.transform.flatten;bundle-version="0.0.1",
- com.github.tno.pokayoke.transform.track
+ com.github.tno.pokayoke.transform.track;bundle-version="0.0.1"
