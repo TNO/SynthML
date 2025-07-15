@@ -16,7 +16,6 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.uml2cif.UmlElementInfo;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -28,6 +27,12 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * model finalization).
  */
 public class SynthesisUmlElementTracking {
+    /** The suffix of an atomic action outcome. */
+    public static final String ATOMIC_OUTCOME_SUFFIX = "__result_";
+
+    /** The suffix of a non-atomic action outcome. */
+    public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
+
     private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo = new LinkedHashMap<>();
 
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
@@ -103,8 +108,7 @@ public class SynthesisUmlElementTracking {
         // Update the UML element info: remove the object referring to the end of atomic non-deterministic COF event,
         // and set the start as merged.
         for (String removedName: removedNames) {
-            String startActionName = removedName.substring(0,
-                    removedName.lastIndexOf(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX));
+            String startActionName = removedName.substring(0, removedName.lastIndexOf(ATOMIC_OUTCOME_SUFFIX));
             cifEventNamesToUmlElementInfo.get(startActionName).setMerged(true);
             cifEventNamesToUmlElementInfo.remove(removedName);
         }
