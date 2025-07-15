@@ -5,30 +5,30 @@ controllable __start;
 controllable __end;
 automaton minimal:
   alphabet left, right, flip, __start, __end;
-  @state(projected = "s1")
+  @state(projected: "s1")
   location s1:
     initial;
     edge __start goto s2;
-  @state(projected = "s2")
+  @state(projected: "s2")
   location s2:
     edge flip goto s4;
     edge right goto s5;
     edge left goto s5;
-  @state(projected = "s10")
+  @state(projected: "s10")
   location s3:
     marked;
-  @state(projected = "s3")
+  @state(projected: "s3")
   location s4:
     edge right goto s6;
     edge left goto s6;
-  @state(projected = "s5")
-  @state(projected = "s4")
+  @state(projected: "s5")
+  @state(projected: "s4")
   location s5:
     edge flip goto s6;
-  @state(projected = "s6")
-  @state(projected = "s7")
-  @state(projected = "s9")
-  @state(projected = "s8")
+  @state(projected: "s6")
+  @state(projected: "s7")
+  @state(projected: "s9")
+  @state(projected: "s8")
   location s6:
     edge __end goto s3;
 end

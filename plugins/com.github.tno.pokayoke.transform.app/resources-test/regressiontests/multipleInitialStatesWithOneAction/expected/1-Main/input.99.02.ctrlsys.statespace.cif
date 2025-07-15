@@ -5,24 +5,24 @@ uncontrollable __node__MergeNode__28__1;
 uncontrollable __node__CallBehaviorAction__30;
 automaton post_synthesis_chain_state_space:
   alphabet __node__DecisionNode__27__0, __node__DecisionNode__27__1, __node__MergeNode__28__0, __node__MergeNode__28__1, __node__CallBehaviorAction__30;
-  @state(Context = "*", Context.__controlflow__18 = false, Context.__controlflow__20 = false, Context.__controlflow__21 = false, Context.__controlflow__22 = false, Context.__controlflow__24 = true, Context.field = false)
+  @state(Context: "*", Context.__controlflow__18: false, Context.__controlflow__20: false, Context.__controlflow__21: false, Context.__controlflow__22: false, Context.__controlflow__24: true, Context.field: false)
   location loc1:
     initial;
     edge __node__DecisionNode__27__0 goto loc3;
-  @state(Context = "*", Context.__controlflow__18 = false, Context.__controlflow__20 = false, Context.__controlflow__21 = false, Context.__controlflow__22 = false, Context.__controlflow__24 = true, Context.field = true)
+  @state(Context: "*", Context.__controlflow__18: false, Context.__controlflow__20: false, Context.__controlflow__21: false, Context.__controlflow__22: false, Context.__controlflow__24: true, Context.field: true)
   location loc2:
     initial;
     edge __node__DecisionNode__27__1 goto loc4;
-  @state(Context = "*", Context.__controlflow__18 = true, Context.__controlflow__20 = false, Context.__controlflow__21 = false, Context.__controlflow__22 = false, Context.__controlflow__24 = false, Context.field = false)
+  @state(Context: "*", Context.__controlflow__18: true, Context.__controlflow__20: false, Context.__controlflow__21: false, Context.__controlflow__22: false, Context.__controlflow__24: false, Context.field: false)
   location loc3:
     edge __node__CallBehaviorAction__30 goto loc5;
-  @state(Context = "*", Context.__controlflow__18 = false, Context.__controlflow__20 = false, Context.__controlflow__21 = false, Context.__controlflow__22 = true, Context.__controlflow__24 = false, Context.field = true)
+  @state(Context: "*", Context.__controlflow__18: false, Context.__controlflow__20: false, Context.__controlflow__21: false, Context.__controlflow__22: true, Context.__controlflow__24: false, Context.field: true)
   location loc4:
     edge __node__MergeNode__28__1 goto loc6;
-  @state(Context = "*", Context.__controlflow__18 = false, Context.__controlflow__20 = false, Context.__controlflow__21 = true, Context.__controlflow__22 = false, Context.__controlflow__24 = false, Context.field = true)
+  @state(Context: "*", Context.__controlflow__18: false, Context.__controlflow__20: false, Context.__controlflow__21: true, Context.__controlflow__22: false, Context.__controlflow__24: false, Context.field: true)
   location loc5:
     edge __node__MergeNode__28__0 goto loc6;
-  @state(Context = "*", Context.__controlflow__18 = false, Context.__controlflow__20 = true, Context.__controlflow__21 = false, Context.__controlflow__22 = false, Context.__controlflow__24 = false, Context.field = true)
+  @state(Context: "*", Context.__controlflow__18: false, Context.__controlflow__20: true, Context.__controlflow__21: false, Context.__controlflow__22: false, Context.__controlflow__24: false, Context.field: true)
   location loc6:
     marked;
 end

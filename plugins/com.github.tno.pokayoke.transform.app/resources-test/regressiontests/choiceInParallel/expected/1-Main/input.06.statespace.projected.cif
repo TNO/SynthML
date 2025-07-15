@@ -8,57 +8,57 @@ controllable __start;
 controllable __end;
 automaton projected:
   alphabet Turn_Computer_On, Starting_Computer, Drink_Coffee, Drink_Tea, Start_Working, Flip_A_Coin, __start, __end;
-  @state(synthesis_state_space = "__init")
+  @state(synthesis_state_space: "__init")
   location s1:
     initial;
     edge __start goto s2;
-  @state(synthesis_state_space = "loc1")
+  @state(synthesis_state_space: "loc1")
   location s2:
     edge Turn_Computer_On goto s3;
-  @state(synthesis_state_space = "loc2")
+  @state(synthesis_state_space: "loc2")
   location s3:
     edge Flip_A_Coin goto s4;
     edge Starting_Computer goto s5;
-  @state(synthesis_state_space = "loc4")
-  @state(synthesis_state_space = "loc7")
-  @state(synthesis_state_space = "loc6")
+  @state(synthesis_state_space: "loc4")
+  @state(synthesis_state_space: "loc7")
+  @state(synthesis_state_space: "loc6")
   location s4:
     edge Drink_Tea goto s7;
     edge Drink_Coffee goto s8;
     edge Starting_Computer goto s9;
-  @state(synthesis_state_space = "loc3")
+  @state(synthesis_state_space: "loc3")
   location s5:
     edge Flip_A_Coin goto s6;
-  @state(synthesis_state_space = "loc5")
-  @state(synthesis_state_space = "loc9")
-  @state(synthesis_state_space = "loc8")
+  @state(synthesis_state_space: "loc5")
+  @state(synthesis_state_space: "loc9")
+  @state(synthesis_state_space: "loc8")
   location s6:
     edge Drink_Tea goto s10;
     edge Drink_Coffee goto s11;
-  @state(synthesis_state_space = "loc11")
+  @state(synthesis_state_space: "loc11")
   location s7:
     edge Starting_Computer goto s10;
-  @state(synthesis_state_space = "loc10")
+  @state(synthesis_state_space: "loc10")
   location s8:
     edge Starting_Computer goto s11;
-  @state(synthesis_state_space = "loc9")
-  @state(synthesis_state_space = "loc8")
+  @state(synthesis_state_space: "loc9")
+  @state(synthesis_state_space: "loc8")
   location s9:
     edge Drink_Tea goto s10;
     edge Drink_Coffee goto s11;
-  @state(synthesis_state_space = "loc13")
+  @state(synthesis_state_space: "loc13")
   location s10:
     edge Start_Working goto s13;
-  @state(synthesis_state_space = "loc12")
+  @state(synthesis_state_space: "loc12")
   location s11:
     edge Start_Working goto s12;
-  @state(synthesis_state_space = "loc14")
+  @state(synthesis_state_space: "loc14")
   location s12:
     edge __end goto s14;
-  @state(synthesis_state_space = "loc15")
+  @state(synthesis_state_space: "loc15")
   location s13:
     edge __end goto s14;
-  @state(synthesis_state_space = "__done")
+  @state(synthesis_state_space: "__done")
   location s14:
     marked;
 end

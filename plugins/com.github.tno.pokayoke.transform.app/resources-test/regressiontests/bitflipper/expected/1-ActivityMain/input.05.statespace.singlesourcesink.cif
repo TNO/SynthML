@@ -6,33 +6,33 @@ controllable __start;
 controllable __end;
 automaton synthesis_state_space:
   alphabet flip, initialize, initialize__result_1, initialize__result_2, __start, __end;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: false, ActiveClass.init: false, sup: "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: false, sup: "*")
   location __init:
     initial;
     edge __start goto loc1;
     edge __start goto loc2;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: false, ActiveClass.init: false, sup: "*")
   location loc1:
     edge initialize goto loc3;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: false, sup: "*")
   location loc2:
     edge initialize goto loc4;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.bit = false, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 1, ActiveClass.bit: false, ActiveClass.init: false, sup: "*")
   location loc3:
     edge initialize__result_1 goto loc5;
     edge initialize__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 1, ActiveClass.bit = true, ActiveClass.init = false, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 1, ActiveClass.bit: true, ActiveClass.init: false, sup: "*")
   location loc4:
     edge initialize__result_1 goto loc5;
     edge initialize__result_2 goto loc6;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = true, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: true, sup: "*")
   location loc5:
     edge __end goto __done;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = false, ActiveClass.init = true, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: false, ActiveClass.init: true, sup: "*")
   location loc6:
     edge flip goto loc5;
-  @state(ActiveClass = "*", ActiveClass.__activeAction = 0, ActiveClass.bit = true, ActiveClass.init = true, sup = "*")
+  @state(ActiveClass: "*", ActiveClass.__activeAction: 0, ActiveClass.bit: true, ActiveClass.init: true, sup: "*")
   location __done:
     marked;
 end

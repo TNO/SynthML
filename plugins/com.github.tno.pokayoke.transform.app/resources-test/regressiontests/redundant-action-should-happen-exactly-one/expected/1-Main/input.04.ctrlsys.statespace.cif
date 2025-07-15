@@ -3,38 +3,38 @@ controllable right;
 controllable flip;
 automaton synthesis_state_space:
   alphabet left, right, flip;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 0, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: false, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 0, sup: "*")
   location loc1:
     initial;
     edge left goto loc3;
     edge flip goto loc4;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 0, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: false, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 0, sup: "*")
   location loc2:
     initial;
     edge right goto loc5;
     edge flip goto loc6;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 1, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 0, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 1, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 0, sup: "*")
   location loc3:
     edge flip goto loc7;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = false, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: false, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc4:
     edge right goto loc8;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 1, Context = "*", Context.field1 = true, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 0, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 1, Context: "*", Context.field1: true, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 0, sup: "*")
   location loc5:
     edge flip goto loc9;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = false, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: false, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc6:
     edge left goto loc10;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 1, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = true, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 1, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: true, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc7:
     marked;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 1, Context = "*", Context.field1 = true, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 1, Context: "*", Context.field1: true, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc8:
     marked;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 0, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 1, Context = "*", Context.field1 = false, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 0, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 1, Context: "*", Context.field1: false, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc9:
     marked;
-  @state(at_most_once__36__left__24 = "*", at_most_once__36__left__24.__occurrences = 1, at_most_once__36__right__26 = "*", at_most_once__36__right__26.__occurrences = 0, Context = "*", Context.field1 = false, Context.field2 = true, exactly_once__40__flip__28 = "*", exactly_once__40__flip__28.__occurrences = 1, sup = "*")
+  @state(at_most_once__36__left__24: "*", at_most_once__36__left__24.__occurrences: 1, at_most_once__36__right__26: "*", at_most_once__36__right__26.__occurrences: 0, Context: "*", Context.field1: false, Context.field2: true, exactly_once__40__flip__28: "*", exactly_once__40__flip__28.__occurrences: 1, sup: "*")
   location loc10:
     marked;
 end

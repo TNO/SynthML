@@ -1,11 +1,11 @@
 controllable change;
 automaton synthesis_state_space:
   alphabet change;
-  @state(Class = "*", Class.element = "First", sup = "*")
+  @state(Class: "*", Class.element: "First", sup: "*")
   location loc1:
     initial;
     edge change goto loc2;
-  @state(Class = "*", Class.element = "Second", sup = "*")
+  @state(Class: "*", Class.element: "Second", sup: "*")
   location loc2:
     marked;
 end
