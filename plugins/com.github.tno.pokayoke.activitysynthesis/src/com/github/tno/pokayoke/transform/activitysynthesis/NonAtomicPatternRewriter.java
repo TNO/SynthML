@@ -16,6 +16,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.NonAtomicPattern;
+
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -172,22 +174,22 @@ public class NonAtomicPatternRewriter {
     private void rewritePatterns(List<NonAtomicPattern> patterns) {
         for (NonAtomicPattern pattern: patterns) {
             // First, remove the intermediate place's outgoing arcs.
-            EcoreUtil.deleteAll(pattern.intermediatePlace.getOutArcs(), true);
-            pattern.intermediatePlace.getOutArcs().clear();
+            EcoreUtil.deleteAll(pattern.intermediatePlace().getOutArcs(), true);
+            pattern.intermediatePlace().getOutArcs().clear();
 
             // Remove all the end transitions and their outgoing arcs.
-            pattern.endTransitions.stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
-            EcoreUtil.deleteAll(pattern.endTransitions, true);
+            pattern.endTransitions().stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
+            EcoreUtil.deleteAll(pattern.endTransitions(), true);
 
             // Connect the intermediate place with the outgoing arcs from the end places.
-            for (Place endPlace: pattern.endPlaces) {
+            for (Place endPlace: pattern.endPlaces()) {
                 for (Arc outArc: new LinkedList<>(endPlace.getOutArcs())) {
-                    outArc.setSource(pattern.intermediatePlace);
+                    outArc.setSource(pattern.intermediatePlace());
                 }
             }
 
             // Remove end places.
-            EcoreUtil.deleteAll(pattern.endPlaces, true);
+            EcoreUtil.deleteAll(pattern.endPlaces(), true);
         }
     }
 
@@ -216,19 +218,5 @@ public class NonAtomicPatternRewriter {
 
     private static <T extends PnObject> List<T> sorted(Stream<T> stream) {
         return stream.sorted(Comparator.comparing(PnObject::getId)).toList();
-    }
-
-    /**
-     * A rewritable non-atomic Petri Net pattern.
-     *
-     * @param startTransition The transition that starts the non-atomic action.
-     * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
-     *     executing.
-     * @param endTransitions All transitions that end the execution of the non-atomic action.
-     * @param endPlaces The places after the end transitions.
-     */
-    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
-            List<Place> endPlaces)
-    {
     }
 }
