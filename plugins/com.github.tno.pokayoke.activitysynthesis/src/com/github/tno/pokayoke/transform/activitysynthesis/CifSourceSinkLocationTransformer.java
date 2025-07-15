@@ -22,6 +22,7 @@ import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.uml2.uml.RedefinableElement;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.google.common.base.Preconditions;
 
 /**

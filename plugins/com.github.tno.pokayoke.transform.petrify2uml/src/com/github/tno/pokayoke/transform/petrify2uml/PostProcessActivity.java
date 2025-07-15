@@ -23,12 +23,12 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
-import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisUmlElementTracking;
-import com.github.tno.pokayoke.transform.activitysynthesis.SynthesisUmlElementTracking.ActionKind;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.ActionKind;
 import com.github.tno.pokayoke.transform.uml2cif.UmlElementInfo;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;

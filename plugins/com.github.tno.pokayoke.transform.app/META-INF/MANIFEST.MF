@@ -35,7 +35,8 @@ Require-Bundle: org.eclipse.escet.cif.io;bundle-version="0.0.0",
  com.github.tno.synthml.uml.profile.util;bundle-version="0.0.1",
  com.github.tno.pokayoke.transform.uml2cameo;bundle-version="0.0.1",
  com.github.tno.pokayoke.transform.distribution;bundle-version="0.0.1",
- com.github.tno.pokayoke.transform.flatten;bundle-version="0.0.1"
+ com.github.tno.pokayoke.transform.flatten;bundle-version="0.0.1",
+ com.github.tno.pokayoke.transform.track;bundle-version="0.0.1"
 Bundle-Vendor: TNO
 Automatic-Module-Name: com.github.tno.pokayoke.transform.app
 Bundle-RequiredExecutionEnvironment: JavaSE-21
