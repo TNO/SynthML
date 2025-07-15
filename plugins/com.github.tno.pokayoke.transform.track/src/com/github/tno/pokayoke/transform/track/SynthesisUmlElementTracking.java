@@ -1,5 +1,5 @@
 
-package com.github.tno.pokayoke.transform.activitysynthesis;
+package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
 import java.util.List;
