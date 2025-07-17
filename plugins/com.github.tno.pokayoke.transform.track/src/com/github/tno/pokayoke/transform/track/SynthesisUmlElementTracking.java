@@ -135,7 +135,8 @@ public class SynthesisUmlElementTracking {
 
     public Map<Event, RedefinableElement> getStartEventMap() {
         return cifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                : cifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().isStartAction())
+                : cifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
     }
 
