@@ -218,6 +218,32 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    public List<Event> getStartEvents(RedefinableElement umlElement, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
     // Section dealing with Petri net transitions.
 
     public void addPetriNetTransitions(PetriNet petriNet) {
