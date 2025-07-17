@@ -20,6 +20,7 @@ import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.settings.CifBddFree;
 import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.bdd.utils.BddUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
@@ -194,6 +195,15 @@ public class GuardComputation {
             } else {
                 throw new RuntimeException("Unknown activity node: " + node);
             }
+        }
+
+        // Cleanup all BDDs that haven't yet been freed.
+        BddUtils.free(cifBddSpec.initialPlantInv);
+        BddUtils.free(cifBddSpec.marked);
+        BddUtils.free(synthResult.ctrlBeh);
+
+        for (CifBddEdge edge: cifBddSpec.edges) {
+            edge.freeBDDs();
         }
     }
 
