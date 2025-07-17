@@ -144,6 +144,10 @@ public class SynthesisUmlElementTracking {
         return cifEventsToUmlElementInfo.get(event);
     }
 
+    public boolean isStartEvent(Event cifEvent) {
+        return cifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+    }
+
     public void updateEndAtomicNonDeterministic(List<String> removedNames) {
         // Update the UML element info: remove the object referring to the end of atomic non-deterministic COF event,
         // and set the start as merged.
