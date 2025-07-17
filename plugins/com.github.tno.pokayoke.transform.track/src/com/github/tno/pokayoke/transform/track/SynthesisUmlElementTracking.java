@@ -133,6 +133,12 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    public Map<Event, RedefinableElement> getStartEventMap() {
+        return cifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                : cifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().isStartAction())
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+    }
+
     public void updateEndAtomicNonDeterministic(List<String> removedNames) {
         // Update the UML element info: remove the object referring to the end of atomic non-deterministic COF event,
         // and set the start as merged.
@@ -142,6 +148,8 @@ public class SynthesisUmlElementTracking {
             cifEventNamesToUmlElementInfo.remove(removedName);
         }
     }
+
+    // Section dealing with Petri net transitions.
 
     public void addPetriNetTransitions(PetriNet petriNet) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
@@ -183,32 +191,6 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    /**
-     * Returns the kind of activity node the input action should translate to, based on the UML element the action
-     * originates from, and whether it was merged during the synthesis chain.
-     *
-     * @param action The UML action create to fill the newly synthesised activity.
-     * @return An enumeration defining the kind of activity node the action should translate to.
-     */
-    public ActionKind getActionKind(Action action) {
-        UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
-        if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
-            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
-                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
-            } else if (umlElementInfo.isStartAction()) {
-                return ActionKind.START_OPAQUE_BEHAVIOR;
-            } else {
-                return ActionKind.END_OPAQUE_BEHAVIOR;
-            }
-        }
-
-        return ActionKind.CONTROL_NODE;
-    }
-
-    public UmlElementInfo getUmlElementInfo(Action action) {
-        return actionsToUmlElementInfoMap.get(action);
-    }
-
     public void removeLoopTransition() {
         // Remove the transition(s) that is used as the self-loop for the final place in the Petri net.
         // Nota: Using Cif2Petrify.LOOP_EVENT_NAME gives import cycles.
@@ -235,5 +217,33 @@ public class SynthesisUmlElementTracking {
     public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
             List<Place> endPlaces)
     {
+    }
+
+    // Section dealing with new UML opaque actions.
+
+    /**
+     * Returns the kind of activity node the input action should translate to, based on the UML element the action
+     * originates from, and whether it was merged during the synthesis chain.
+     *
+     * @param action The UML action create to fill the newly synthesised activity.
+     * @return An enumeration defining the kind of activity node the action should translate to.
+     */
+    public ActionKind getActionKind(Action action) {
+        UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
+        if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
+            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
+                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
+            } else if (umlElementInfo.isStartAction()) {
+                return ActionKind.START_OPAQUE_BEHAVIOR;
+            } else {
+                return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        return ActionKind.CONTROL_NODE;
+    }
+
+    public UmlElementInfo getUmlElementInfo(Action action) {
+        return actionsToUmlElementInfoMap.get(action);
     }
 }
