@@ -33,7 +33,7 @@ public class SynthesisUmlElementTracking {
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
     /** The map from CIF events to their corresponding UML element info. */
-    private Map<String, UmlElementInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
+    private Map<Event, UmlElementInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The map from CIF event names to their corresponding UML element info. */
     private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo = new LinkedHashMap<>();
@@ -80,6 +80,16 @@ public class SynthesisUmlElementTracking {
         // Empty constructor.
     }
 
+    // Add a single CIF start event.
+    public void addCifEvent(Event cifEvent, RedefinableElement umlElement) {
+        // Create the UML element info and store it.
+        UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
+        umlElementInfo.setStartAction(true);
+        umlElementInfo.setMerged(false);
+        cifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+    }
+
     public void addCifStartEvents(Map<Event, RedefinableElement> cifEventToUmlElement) {
         for (java.util.Map.Entry<Event, RedefinableElement> entry: cifEventToUmlElement.entrySet()) {
             Event cifEvent = entry.getKey();
@@ -91,6 +101,20 @@ public class SynthesisUmlElementTracking {
             umlElementInfo.setMerged(false);
             cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
+    }
+
+    // Add a single CIF end event.
+    public void addCifEvent(Event cifEvent, Pair<RedefinableElement, Integer> umlElementAndEffectIdx) {
+        RedefinableElement umlElement = umlElementAndEffectIdx.left;
+        int effectNr = umlElementAndEffectIdx.right;
+
+        // Create the UML element info and store it.
+        UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
+        umlElementInfo.setStartAction(false);
+        umlElementInfo.setMerged(false);
+        umlElementInfo.setEffectIdx(effectNr);
+        cifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
     }
 
     // Same method after erasure, so we need to give different names.
