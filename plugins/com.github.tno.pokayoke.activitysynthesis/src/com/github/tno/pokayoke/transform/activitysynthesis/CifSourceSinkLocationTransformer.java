@@ -3,9 +3,7 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -168,9 +166,7 @@ public class CifSourceSinkLocationTransformer {
         }
 
         // Update the synthesis tracker with the new start and end events.
-        Map<Event, RedefinableElement> startEndMap = new LinkedHashMap<>();
-        startEndMap.put(startEvent, null);
-        startEndMap.put(endEvent, null);
-        synthesisTracker.addCifStartEvents(startEndMap);
+        synthesisTracker.addCifEvent(startEvent, (RedefinableElement)null);
+        synthesisTracker.addCifEvent(endEvent, (RedefinableElement)null);
     }
 }
