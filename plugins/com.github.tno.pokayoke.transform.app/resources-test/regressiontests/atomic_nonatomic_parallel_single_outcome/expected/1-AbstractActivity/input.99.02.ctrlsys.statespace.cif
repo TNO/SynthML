@@ -5,31 +5,31 @@ uncontrollable __node__CallBehaviorAction__53;
 uncontrollable __node__CallBehaviorAction__53__na_result_1;
 automaton post_synthesis_chain_state_space:
   alphabet __node__JoinNode__50, __node__ForkNode__51, __node__CallBehaviorAction__52, __node__CallBehaviorAction__53, __node__CallBehaviorAction__53__na_result_1;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = true, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = false, Machine.b_executed = false)
+  @state(Machine: "*", Machine.__controlflow__40: false, Machine.__controlflow__41: false, Machine.__controlflow__42: false, Machine.__controlflow__43: false, Machine.__controlflow__44: false, Machine.__controlflow__46: true, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: false, Machine.b_executed: false)
   location loc1:
     initial;
     edge __node__ForkNode__51 goto loc2;
-  @state(Machine = "*", Machine.__controlflow__40 = true, Machine.__controlflow__41 = true, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = false, Machine.b_executed = false)
+  @state(Machine: "*", Machine.__controlflow__40: true, Machine.__controlflow__41: true, Machine.__controlflow__42: false, Machine.__controlflow__43: false, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: false, Machine.b_executed: false)
   location loc2:
     edge __node__CallBehaviorAction__52 goto loc3;
     edge __node__CallBehaviorAction__53 goto loc4;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = true, Machine.__controlflow__42 = true, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = true, Machine.b_executed = false)
+  @state(Machine: "*", Machine.__controlflow__40: false, Machine.__controlflow__41: true, Machine.__controlflow__42: true, Machine.__controlflow__43: false, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: true, Machine.b_executed: false)
   location loc3:
     edge __node__CallBehaviorAction__53 goto loc5;
-  @state(Machine = "*", Machine.__controlflow__40 = true, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = true, Machine.a_executed = false, Machine.b_executed = false)
+  @state(Machine: "*", Machine.__controlflow__40: true, Machine.__controlflow__41: false, Machine.__controlflow__42: false, Machine.__controlflow__43: false, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: true, Machine.a_executed: false, Machine.b_executed: false)
   location loc4:
     edge __node__CallBehaviorAction__52 goto loc5;
     edge __node__CallBehaviorAction__53__na_result_1 goto loc6;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = true, Machine.__controlflow__43 = false, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = true, Machine.a_executed = true, Machine.b_executed = false)
+  @state(Machine: "*", Machine.__controlflow__40: false, Machine.__controlflow__41: false, Machine.__controlflow__42: true, Machine.__controlflow__43: false, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: true, Machine.a_executed: true, Machine.b_executed: false)
   location loc5:
     edge __node__CallBehaviorAction__53__na_result_1 goto loc7;
-  @state(Machine = "*", Machine.__controlflow__40 = true, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = true, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = false, Machine.b_executed = true)
+  @state(Machine: "*", Machine.__controlflow__40: true, Machine.__controlflow__41: false, Machine.__controlflow__42: false, Machine.__controlflow__43: true, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: false, Machine.b_executed: true)
   location loc6:
     edge __node__CallBehaviorAction__52 goto loc7;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = true, Machine.__controlflow__43 = true, Machine.__controlflow__44 = false, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = true, Machine.b_executed = true)
+  @state(Machine: "*", Machine.__controlflow__40: false, Machine.__controlflow__41: false, Machine.__controlflow__42: true, Machine.__controlflow__43: true, Machine.__controlflow__44: false, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: true, Machine.b_executed: true)
   location loc7:
     edge __node__JoinNode__50 goto loc8;
-  @state(Machine = "*", Machine.__controlflow__40 = false, Machine.__controlflow__41 = false, Machine.__controlflow__42 = false, Machine.__controlflow__43 = false, Machine.__controlflow__44 = true, Machine.__controlflow__46 = false, Machine.__nonAtomicActive____node__CallBehaviorAction__53 = false, Machine.a_executed = true, Machine.b_executed = true)
+  @state(Machine: "*", Machine.__controlflow__40: false, Machine.__controlflow__41: false, Machine.__controlflow__42: false, Machine.__controlflow__43: false, Machine.__controlflow__44: true, Machine.__controlflow__46: false, Machine.__nonAtomicActive____node__CallBehaviorAction__53: false, Machine.a_executed: true, Machine.b_executed: true)
   location loc8:
     marked;
 end

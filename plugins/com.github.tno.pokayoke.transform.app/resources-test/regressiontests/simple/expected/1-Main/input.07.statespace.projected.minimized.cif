@@ -9,37 +9,37 @@ controllable __start;
 controllable __end;
 automaton minimal:
   alphabet prepare_robot, robot_move_to_location1, robot_move_to_location2, robot_adjust_product, robot_release_product_at_location2, prepare_location2, measure_product_position, __start, __end;
-  @state(projected = "s1")
+  @state(projected: "s1")
   location s1:
     initial;
     edge __start goto s2;
-  @state(projected = "s2")
+  @state(projected: "s2")
   location s2:
     edge prepare_location2 goto s4;
     edge prepare_robot goto s5;
-  @state(projected = "s10")
+  @state(projected: "s10")
   location s3:
     marked;
-  @state(projected = "s3")
+  @state(projected: "s3")
   location s4:
     edge prepare_robot goto s9;
-  @state(projected = "s4")
+  @state(projected: "s4")
   location s5:
     edge prepare_location2 goto s9;
-  @state(projected = "s8")
+  @state(projected: "s8")
   location s6:
     edge robot_adjust_product goto s7;
     edge robot_move_to_location1 goto s8;
-  @state(projected = "s7")
+  @state(projected: "s7")
   location s7:
     edge measure_product_position goto s6;
-  @state(projected = "s9")
+  @state(projected: "s9")
   location s8:
     edge __end goto s3;
-  @state(projected = "s5")
+  @state(projected: "s5")
   location s9:
     edge robot_move_to_location2 goto s10;
-  @state(projected = "s6")
+  @state(projected: "s6")
   location s10:
     edge robot_release_product_at_location2 goto s7;
 end

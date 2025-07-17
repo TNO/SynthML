@@ -5,26 +5,26 @@ controllable __start;
 controllable __end;
 automaton projected:
   alphabet initialize, incr1, incr2, __start, __end;
-  @state(synthesis_state_space = "__init")
+  @state(synthesis_state_space: "__init")
   location s1:
     initial;
     edge __start goto s2;
-  @state(synthesis_state_space = "loc1")
+  @state(synthesis_state_space: "loc1")
   location s2:
     edge initialize goto s3;
-  @state(synthesis_state_space = "loc2")
-  @state(synthesis_state_space = "loc4")
-  @state(synthesis_state_space = "loc3")
+  @state(synthesis_state_space: "loc2")
+  @state(synthesis_state_space: "loc4")
+  @state(synthesis_state_space: "loc3")
   location s3:
     edge incr2 goto s4;
     edge incr1 goto s5;
-  @state(synthesis_state_space = "loc5")
+  @state(synthesis_state_space: "loc5")
   location s4:
     edge __end goto s6;
-  @state(synthesis_state_space = "loc6")
+  @state(synthesis_state_space: "loc6")
   location s5:
     edge __end goto s6;
-  @state(synthesis_state_space = "__done")
+  @state(synthesis_state_space: "__done")
   location s6:
     marked;
 end

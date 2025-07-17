@@ -18,44 +18,44 @@ controllable __start;
 controllable __end;
 automaton projected:
   alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__96__0, __node__DecisionNode__98__0, __node__DecisionNode__98__1, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__ActivityFinalNode__102__0, __node__CallBehaviorAction__104, __node__CallBehaviorAction__106, __node__CallBehaviorAction__108, __node__CallBehaviorAction__108__na_result_1, __node__CallBehaviorAction__108__na_result_2, __start, __end;
-  @state(synthesis_state_space = "__init")
+  @state(synthesis_state_space: "__init")
   location s1:
     initial;
     edge __start goto s2;
-  @state(synthesis_state_space = "loc1")
+  @state(synthesis_state_space: "loc1")
   location s2:
     edge initialize goto s3;
-  @state(synthesis_state_space = "loc2")
+  @state(synthesis_state_space: "loc2")
   location s3:
     edge initialize__na_result_2 goto s4;
     edge initialize__na_result_1 goto s5;
-  @state(synthesis_state_space = "loc4")
+  @state(synthesis_state_space: "loc4")
   location s4:
     edge incr2 goto s8;
     edge incr1 goto s9;
-  @state(synthesis_state_space = "loc3")
+  @state(synthesis_state_space: "loc3")
   location s5:
     edge incr2 goto s6;
     edge incr1 goto s7;
-  @state(synthesis_state_space = "loc6")
+  @state(synthesis_state_space: "loc6")
   location s6:
     edge incr1 goto s10;
-  @state(synthesis_state_space = "loc5")
+  @state(synthesis_state_space: "loc5")
   location s7:
     edge incr2 goto s10;
-  @state(synthesis_state_space = "loc8")
+  @state(synthesis_state_space: "loc8")
   location s8:
     edge __end goto s12;
-  @state(synthesis_state_space = "loc7")
+  @state(synthesis_state_space: "loc7")
   location s9:
     edge incr1 goto s11;
-  @state(synthesis_state_space = "loc9")
+  @state(synthesis_state_space: "loc9")
   location s10:
     edge __end goto s12;
-  @state(synthesis_state_space = "loc10")
+  @state(synthesis_state_space: "loc10")
   location s11:
     edge __end goto s12;
-  @state(synthesis_state_space = "__done")
+  @state(synthesis_state_space: "__done")
   location s12:
     marked;
 end

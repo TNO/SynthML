@@ -18,6 +18,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Declaration;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.java.PathPair;
 
 import com.google.common.base.Preconditions;
 
@@ -53,7 +54,9 @@ public class CifSourceSinkLocationTransformer {
 
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(specification, outputFilePath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(specification,
+                    new PathPair(outputFilePath.toString(), outputFilePath.toAbsolutePath().toString()),
+                    outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }

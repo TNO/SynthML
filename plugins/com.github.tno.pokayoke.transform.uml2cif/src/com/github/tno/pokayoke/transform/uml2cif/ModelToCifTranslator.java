@@ -128,7 +128,7 @@ public abstract class ModelToCifTranslator {
 
         // Translates all UML enumeration literals that are in context to CIF enumeration literals.
         for (EnumerationLiteral umlLiteral: context.getAllEnumerationLiterals()) {
-            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(umlLiteral.getName(), null);
+            EnumLiteral cifLiteral = CifConstructors.newEnumLiteral(null, umlLiteral.getName(), null);
             enumMap.get(umlLiteral.getEnumeration()).getLiterals().add(cifLiteral);
             enumLiteralMap.put(umlLiteral, cifLiteral);
         }

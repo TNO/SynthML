@@ -27,6 +27,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
@@ -103,7 +104,7 @@ public class FullSynthesisApp {
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(cifSpec, makePathPair(cifSpecPath), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
@@ -114,21 +115,22 @@ public class FullSynthesisApp {
         Path cifPostProcessedSpecPath = outputFolderPath.resolve(filePrefix + ".02.postprocessed.cif");
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifPostProcessedSpecPath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(cifSpec, makePathPair(cifPostProcessedSpecPath), outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
 
         // Get CIF/BDD specification.
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
-        CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
+        CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec,
+                cifPostProcessedSpecPath.toAbsolutePath().toString(), settings);
 
         // Perform synthesis.
         CifDataSynthesisResult cifSynthesisResult = CIFDataSynthesisHelper.synthesize(cifBddSpec, settings);
 
         // Convert synthesis result back to CIF.
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
-        CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
+        CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath,
                 outputFolderPath.toString());
 
         // Perform state space generation.
@@ -261,13 +263,14 @@ public class FullSynthesisApp {
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifTranslatedActivity, umlActivityToCifPath.toString(), outputFolderPath.toString());
+            CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(umlActivityToCifPath),
+                    outputFolderPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
 
         // Computing guards.
-        new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
+        new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity, umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
@@ -307,7 +310,7 @@ public class FullSynthesisApp {
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {
             AppEnv.registerSimple();
-            CifWriter.writeCifSpec(cifSpec, cifSpecPath.toString(), localOutputPath.toString());
+            CifWriter.writeCifSpec(cifSpec, makePathPair(cifSpecPath), localOutputPath.toString());
         } finally {
             AppEnv.unregisterApplication();
         }
@@ -344,5 +347,9 @@ public class FullSynthesisApp {
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
                 result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
+    }
+
+    private static PathPair makePathPair(Path path) {
+        return new PathPair(path.toString(), path.toAbsolutePath().toString());
     }
 }

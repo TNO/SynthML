@@ -38,62 +38,62 @@ controllable __start;
 controllable __end;
 automaton projected:
   alphabet initialize, initialize__na_result_1, initialize__na_result_2, incr1, incr2, __node__InitialNode__132__0, __node__DecisionNode__135__0, __node__DecisionNode__135__1, __node__MergeNode__138__0, __node__MergeNode__138__1, __node__ActivityFinalNode__141__0, __node__CallBehaviorAction__144, __node__CallBehaviorAction__147, __node__CallBehaviorAction__150, __node__CallBehaviorAction__150__na_result_1, __node__CallBehaviorAction__150__na_result_2, __node__InitialNode__229__0, __node__DecisionNode__231__0, __node__DecisionNode__231__1, __node__DecisionNode__231__2, __node__DecisionNode__231__3, __node__MergeNode__233__0, __node__MergeNode__233__1, __node__MergeNode__235__0, __node__MergeNode__235__1, __node__MergeNode__235__2, __node__ActivityFinalNode__237__0, __node__CallBehaviorAction__239, __node__CallBehaviorAction__241, __node__CallBehaviorAction__243, __node__CallBehaviorAction__245, __node__CallBehaviorAction__247, __node__CallBehaviorAction__249, __node__CallBehaviorAction__251, __node__CallBehaviorAction__251__na_result_1, __node__CallBehaviorAction__251__na_result_2, __start, __end;
-  @state(synthesis_state_space = "__init")
+  @state(synthesis_state_space: "__init")
   location s1:
     initial;
     edge __start goto s2;
-  @state(synthesis_state_space = "loc1")
+  @state(synthesis_state_space: "loc1")
   location s2:
     edge initialize goto s3;
-  @state(synthesis_state_space = "loc2")
+  @state(synthesis_state_space: "loc2")
   location s3:
     edge initialize__na_result_2 goto s4;
     edge initialize__na_result_1 goto s5;
-  @state(synthesis_state_space = "loc4")
+  @state(synthesis_state_space: "loc4")
   location s4:
     edge incr2 goto s8;
     edge incr1 goto s9;
-  @state(synthesis_state_space = "loc3")
+  @state(synthesis_state_space: "loc3")
   location s5:
     edge incr2 goto s6;
     edge incr1 goto s7;
-  @state(synthesis_state_space = "loc6")
+  @state(synthesis_state_space: "loc6")
   location s6:
     edge incr2 goto s12;
     edge incr1 goto s10;
-  @state(synthesis_state_space = "loc5")
+  @state(synthesis_state_space: "loc5")
   location s7:
     edge incr2 goto s10;
     edge incr1 goto s11;
-  @state(synthesis_state_space = "loc8")
+  @state(synthesis_state_space: "loc8")
   location s8:
     edge incr1 goto s13;
-  @state(synthesis_state_space = "loc7")
+  @state(synthesis_state_space: "loc7")
   location s9:
     edge incr2 goto s13;
     edge incr1 goto s14;
-  @state(synthesis_state_space = "loc10")
+  @state(synthesis_state_space: "loc10")
   location s10:
     edge incr1 goto s15;
-  @state(synthesis_state_space = "loc9")
+  @state(synthesis_state_space: "loc9")
   location s11:
     edge incr2 goto s15;
-  @state(synthesis_state_space = "loc11")
+  @state(synthesis_state_space: "loc11")
   location s12:
     edge __end goto s16;
-  @state(synthesis_state_space = "loc13")
+  @state(synthesis_state_space: "loc13")
   location s13:
     edge __end goto s16;
-  @state(synthesis_state_space = "loc12")
+  @state(synthesis_state_space: "loc12")
   location s14:
     edge incr1 goto s17;
-  @state(synthesis_state_space = "loc14")
+  @state(synthesis_state_space: "loc14")
   location s15:
     edge __end goto s16;
-  @state(synthesis_state_space = "__done")
+  @state(synthesis_state_space: "__done")
   location s16:
     marked;
-  @state(synthesis_state_space = "loc15")
+  @state(synthesis_state_space: "loc15")
   location s17:
     edge __end goto s16;
 end

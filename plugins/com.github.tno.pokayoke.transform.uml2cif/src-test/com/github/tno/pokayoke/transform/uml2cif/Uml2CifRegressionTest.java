@@ -10,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.common.app.framework.AppEnv;
+import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,7 +70,8 @@ public class Uml2CifRegressionTest extends RegressionTest {
             // Store the translated CIF specification.
             try {
                 AppEnv.registerSimple();
-                CifWriter.writeCifSpec(cifSpecification, outputFilePath.toAbsolutePath().toString(),
+                CifWriter.writeCifSpec(cifSpecification,
+                        new PathPair(outputFilePath.toString(), outputFilePath.toAbsolutePath().toString()),
                         outputFilePath.toString());
             } finally {
                 AppEnv.unregisterApplication();
