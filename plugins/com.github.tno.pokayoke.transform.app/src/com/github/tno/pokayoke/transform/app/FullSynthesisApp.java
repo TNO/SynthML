@@ -114,10 +114,6 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // Add the CIF event names to UML element info map.
-        synthesisUmlElementsTracker.addCifStartEvents(umlToCifTranslator.getStartEventMap());
-        synthesisUmlElementsTracker.addCifEndEvents(umlToCifTranslator.getEndEventMap());
-
         // Post-process the CIF specification to eliminate all if-updates.
         ElimIfUpdates elimIfUpdates = new ElimIfUpdates();
         elimIfUpdates.transform(cifSpec);
