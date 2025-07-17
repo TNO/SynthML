@@ -114,7 +114,7 @@ public abstract class ModelToCifTranslator {
      *     created.
      */
     public Map<Event, RedefinableElement> getStartEventMap() {
-        return ImmutableMap.copyOf(startEventMap);
+        return synthesisUmlElementsTracker.getStartEventMap();
     }
 
     /**
