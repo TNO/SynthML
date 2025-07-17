@@ -151,11 +151,29 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    public Map<Event, RedefinableElement> getStartEventMap() {
-        return synthesisCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                : synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                        : synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                        : guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                        : languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
     }
 
     public UmlElementInfo getUmlElementInfo(Event event) {

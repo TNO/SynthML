@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -110,11 +111,12 @@ public abstract class ModelToCifTranslator {
      * Gives the mapping from translated CIF start events to their corresponding UML elements for which they were
      * created.
      *
+     * @param purpose The translation purpose enumeration.
      * @return The mapping from translated CIF start events to their corresponding UML elements for which they were
      *     created.
      */
-    public Map<Event, RedefinableElement> getStartEventMap() {
-        return synthesisUmlElementsTracker.getStartEventMap();
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        return synthesisUmlElementsTracker.getStartEventMap(purpose);
     }
 
     /**
