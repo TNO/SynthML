@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -62,13 +63,20 @@ public abstract class ModelToCifTranslator {
     protected final UmlAnnotationsToCif translator;
 
     /**
+     * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
+     * UML elements in the synthesized activity.
+     */
+    protected SynthesisUmlElementTracking synthesisUmlElementsTracker;
+
+    /**
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
      */
-    public ModelToCifTranslator(CifContext context) {
+    public ModelToCifTranslator(CifContext context, SynthesisUmlElementTracking synthesisUmlElementsTracker) {
         this.context = context;
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
+        this.synthesisUmlElementsTracker = synthesisUmlElementsTracker;
     }
 
     /**
