@@ -32,10 +32,16 @@ public class SynthesisUmlElementTracking {
     /** The suffix of a non-atomic action outcome. */
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
+    /** The map from CIF events to their corresponding UML element info. */
+    private Map<String, UmlElementInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /** The map from CIF event names to their corresponding UML element info. */
     private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo = new LinkedHashMap<>();
 
+    /** The map from Petri net transitions to their corresponding UML element info. */
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
 
+    /** The map from UML opaque actions to their corresponding original UML element info. */
     private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap = new LinkedHashMap<>();
 
     /**
