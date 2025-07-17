@@ -37,7 +37,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Base functionality for transforming models (e.g., Petri nets or activities) to CIF, in the context of Poka Yoke UML
@@ -72,6 +71,7 @@ public abstract class ModelToCifTranslator {
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
+     * @param synthesisUmlElementsTracker The tracker to store the synthesis chain transformations of UML elements.
      */
     public ModelToCifTranslator(CifContext context, SynthesisUmlElementTracking synthesisUmlElementsTracker) {
         this.context = context;
