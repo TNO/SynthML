@@ -1297,8 +1297,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                        List<Event> cifStartEvents = startEventMap.entrySet().stream()
-                                .filter(entry -> initialNodes.contains(entry.getValue())).map(Entry::getKey).toList();
+                        List<Event> cifStartEvents = synthesisUmlElementsTracker.getInitialNodeEvents(initialNodes,
+                                translationPurpose);
 
                         String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),
                                 IDHelper.getID(umlConstraint), umlActivity.getName(), IDHelper.getID(umlActivity));

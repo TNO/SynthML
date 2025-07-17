@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
@@ -191,6 +192,29 @@ public class SynthesisUmlElementTracking {
             String startActionName = removedName.substring(0, removedName.lastIndexOf(ATOMIC_OUTCOME_SUFFIX));
             synthesisCifEventNamesToUmlElementInfo.get(startActionName).setMerged(true);
             synthesisCifEventNamesToUmlElementInfo.remove(removedName);
+        }
+    }
+
+    public List<Event> getInitialNodeEvents(Set<InitialNode> initialNodes, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
+                        .toList();
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
+                        .toList();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
+                        .toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
 
