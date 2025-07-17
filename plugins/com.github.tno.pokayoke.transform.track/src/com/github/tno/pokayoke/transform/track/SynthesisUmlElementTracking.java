@@ -32,11 +32,17 @@ public class SynthesisUmlElementTracking {
     /** The suffix of a non-atomic action outcome. */
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
-    /** The map from CIF events to their corresponding UML element info. */
-    private Map<Event, UmlElementInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
+    /** The map from CIF events generated for the synthesis to their corresponding UML element info. */
+    private Map<Event, UmlElementInfo> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
-    /** The map from CIF event names to their corresponding UML element info. */
-    private Map<String, UmlElementInfo> cifEventNamesToUmlElementInfo = new LinkedHashMap<>();
+    /** The map from CIF event names generated for the synthesis to their corresponding UML element info. */
+    private Map<String, UmlElementInfo> synthesisCifEventNamesToUmlElementInfo = new LinkedHashMap<>();
+
+    /** The map from CIF events generated for guard computation to their corresponding UML element info. */
+    private Map<Event, UmlElementInfo> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /** The map from CIF events generated for language equivalence to their corresponding UML element info. */
+    private Map<Event, UmlElementInfo> languageEquivalenceCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The map from Petri net transitions to their corresponding UML element info. */
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
@@ -50,7 +56,7 @@ public class SynthesisUmlElementTracking {
      * @return The map from CIF event names to the corresponding UML element info.
      */
     public Map<String, UmlElementInfo> getCifEventNamesToUmlElementInfo() {
-        return cifEventNamesToUmlElementInfo;
+        return synthesisCifEventNamesToUmlElementInfo;
     }
 
     /**
@@ -71,6 +77,10 @@ public class SynthesisUmlElementTracking {
         return actionsToUmlElementInfoMap;
     }
 
+    public static enum TranslationPurpose {
+        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
+    }
+
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
         START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, CONTROL_NODE;
@@ -81,13 +91,21 @@ public class SynthesisUmlElementTracking {
     }
 
     // Add a single CIF start event.
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement) {
+    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, TranslationPurpose purpose) {
         // Create the UML element info and store it.
         UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
         umlElementInfo.setStartAction(true);
         umlElementInfo.setMerged(false);
-        cifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
-        cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+        if (purpose == TranslationPurpose.SYNTHESIS) {
+            synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+            synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+        } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
+            guardComputationCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        } else {
+            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
     }
 
     public void addCifStartEvents(Map<Event, RedefinableElement> cifEventToUmlElement) {
@@ -99,7 +117,7 @@ public class SynthesisUmlElementTracking {
             UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
             umlElementInfo.setStartAction(true);
             umlElementInfo.setMerged(false);
-            cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+            synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
     }
 
@@ -113,8 +131,8 @@ public class SynthesisUmlElementTracking {
         umlElementInfo.setStartAction(false);
         umlElementInfo.setMerged(false);
         umlElementInfo.setEffectIdx(effectNr);
-        cifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
-        cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+        synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
     }
 
     // Same method after erasure, so we need to give different names.
@@ -129,23 +147,23 @@ public class SynthesisUmlElementTracking {
             umlElementInfo.setStartAction(false);
             umlElementInfo.setMerged(false);
             umlElementInfo.setEffectIdx(effectNr);
-            cifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+            synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         }
     }
 
     public Map<Event, RedefinableElement> getStartEventMap() {
-        return cifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                : cifEventsToUmlElementInfo.entrySet().stream()
+        return synthesisCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                : synthesisCifEventsToUmlElementInfo.entrySet().stream()
                         .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
     }
 
     public UmlElementInfo getUmlElementInfo(Event event) {
-        return cifEventsToUmlElementInfo.get(event);
+        return synthesisCifEventsToUmlElementInfo.get(event);
     }
 
     public boolean isStartEvent(Event cifEvent) {
-        return cifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+        return synthesisCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
     }
 
     public void updateEndAtomicNonDeterministic(List<String> removedNames) {
@@ -153,8 +171,8 @@ public class SynthesisUmlElementTracking {
         // and set the start as merged.
         for (String removedName: removedNames) {
             String startActionName = removedName.substring(0, removedName.lastIndexOf(ATOMIC_OUTCOME_SUFFIX));
-            cifEventNamesToUmlElementInfo.get(startActionName).setMerged(true);
-            cifEventNamesToUmlElementInfo.remove(removedName);
+            synthesisCifEventNamesToUmlElementInfo.get(startActionName).setMerged(true);
+            synthesisCifEventNamesToUmlElementInfo.remove(removedName);
         }
     }
 
@@ -163,7 +181,7 @@ public class SynthesisUmlElementTracking {
     public void addPetriNetTransitions(PetriNet petriNet) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
         // elements info is not empty.
-        Verify.verify(!cifEventNamesToUmlElementInfo.isEmpty(),
+        Verify.verify(!synthesisCifEventNamesToUmlElementInfo.isEmpty(),
                 "The map from CIF event names to UML element infos is empty.");
 
         List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
@@ -171,7 +189,7 @@ public class SynthesisUmlElementTracking {
 
         for (Transition t: petriNetTransitions) {
             // Create new UML element info and store it.
-            UmlElementInfo currentUmlElementInfo = cifEventNamesToUmlElementInfo.get(t.getName().getText());
+            UmlElementInfo currentUmlElementInfo = synthesisCifEventNamesToUmlElementInfo.get(t.getName().getText());
             if (currentUmlElementInfo == null) {
                 transitionsToUmlElementInfo.put(t, null);
             } else {
@@ -210,7 +228,7 @@ public class SynthesisUmlElementTracking {
     }
 
     public boolean isAtomicEndEvent(Event event) {
-        UmlElementInfo umlElementInfo = cifEventNamesToUmlElementInfo.get(event.getName());
+        UmlElementInfo umlElementInfo = synthesisCifEventNamesToUmlElementInfo.get(event.getName());
         return umlElementInfo.isAtomic() && !umlElementInfo.isStartAction();
     }
 

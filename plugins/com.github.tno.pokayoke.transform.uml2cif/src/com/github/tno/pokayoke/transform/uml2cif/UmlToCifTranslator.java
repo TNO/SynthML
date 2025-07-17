@@ -73,6 +73,7 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -150,10 +151,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
-
-    public static enum TranslationPurpose {
-        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
-    }
 
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose,
             SynthesisUmlElementTracking synthesisUmlElementsTracker)
@@ -597,7 +594,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         startEventMap.put(cifStartEvent, umlElement);
 
         // Store the CIF event into the synthesis tracker.
-        synthesisUmlElementsTracker.addCifEvent(cifStartEvent, umlElement);
+        synthesisUmlElementsTracker.addCifEvent(cifStartEvent, umlElement, translationPurpose);
 
         // Add the start event to the normalized name to event map.
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
