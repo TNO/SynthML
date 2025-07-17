@@ -19,7 +19,6 @@ import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
 import org.eclipse.escet.cif.bdd.settings.CifBddFree;
 import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
-import org.eclipse.escet.cif.bdd.spec.CifBddEdgeApplyDirection;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
@@ -218,8 +217,8 @@ public class GuardComputation {
         // uncontrolled system (i.e. user-specified, the original) guard of 'edge' holds. Of these system states, we
         // must only keep the ones from which the application of 'edge' ends up in a controlled system state. We can
         // compute the guard of 'edge' as described above, from these two sets of states.
-        BDD uncontrolledGuard = controlledStates.and(edge.origGuard);
-        BDD controlledGuard = edge.apply(controlledStates.id(), CifBddEdgeApplyDirection.BACKWARD, controlledStates);
+        BDD uncontrolledGuard = edge.origGuard.and(controlledStates);
+        BDD controlledGuard = edge.guard.and(controlledStates);
         BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
 
         // Free intermediate BDDs.
