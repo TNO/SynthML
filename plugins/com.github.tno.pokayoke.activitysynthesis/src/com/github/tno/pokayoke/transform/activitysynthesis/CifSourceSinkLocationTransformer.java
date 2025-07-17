@@ -21,6 +21,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.google.common.base.Preconditions;
 
 /**
@@ -166,7 +167,7 @@ public class CifSourceSinkLocationTransformer {
         }
 
         // Update the synthesis tracker with the new start and end events.
-        synthesisTracker.addCifEvent(startEvent, (RedefinableElement)null);
-        synthesisTracker.addCifEvent(endEvent, (RedefinableElement)null);
+        synthesisTracker.addCifEvent(startEvent, (RedefinableElement)null, TranslationPurpose.SYNTHESIS);
+        synthesisTracker.addCifEvent(endEvent, (RedefinableElement)null, TranslationPurpose.SYNTHESIS);
     }
 }

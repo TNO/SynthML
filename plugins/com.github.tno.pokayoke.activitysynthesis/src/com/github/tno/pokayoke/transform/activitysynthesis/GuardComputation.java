@@ -45,6 +45,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.javabdd.BDDVarSet;
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
@@ -69,7 +70,8 @@ public class GuardComputation {
         // Obtain the mapping from UML (activity) elements to all the CIF start events created for them. Note that we
         // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
         // flows.
-        Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
+        Map<RedefinableElement, List<Event>> startEventMap = reverse(
+                translator.getStartEventMap(TranslationPurpose.GUARD_COMPUTATION));
 
         // Helper function for obtaining the single CIF start event of a given UML element.
         Function<RedefinableElement, Event> getSingleStartEvent = element -> {
