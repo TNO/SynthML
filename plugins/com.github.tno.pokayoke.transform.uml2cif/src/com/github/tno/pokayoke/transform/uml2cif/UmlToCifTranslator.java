@@ -1293,11 +1293,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // constrained activity. We do not include the initial nodes of the activities recursively, i.e.
                         // this activity can call an activity that calls a constrained activity, and will *not* add to
                         // the occurrence constraint count.
-                        Set<InitialNode> initialNodes = umlActivity.getNodes().stream()
+                        Set<ActivityNode> initialNodes = umlActivity.getNodes().stream()
                                 .filter(InitialNode.class::isInstance).map(InitialNode.class::cast)
                                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-                        List<Event> cifStartEvents = synthesisUmlElementsTracker.getInitialNodeEvents(initialNodes,
+                        List<Event> cifStartEvents = synthesisUmlElementsTracker.getNodeEvents(initialNodes,
                                 translationPurpose);
 
                         String name = String.format("%s__%s__%s__%s", umlConstraint.getName(),

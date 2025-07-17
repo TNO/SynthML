@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
@@ -195,22 +195,19 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    public List<Event> getInitialNodeEvents(Set<InitialNode> initialNodes, TranslationPurpose purpose) {
+    public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
                 return synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
-                        .toList();
+                        .filter(entry -> nodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey).toList();
             }
             case GUARD_COMPUTATION: {
                 return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
-                        .toList();
+                        .filter(entry -> nodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey).toList();
             }
             case LANGUAGE_EQUIVALENCE: {
                 return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> initialNodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey)
-                        .toList();
+                        .filter(entry -> nodes.contains(entry.getValue().getUmlElement())).map(Entry::getKey).toList();
             }
 
             default:
