@@ -140,6 +140,10 @@ public class SynthesisUmlElementTracking {
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
     }
 
+    public UmlElementInfo getUmlElementInfo(Event event) {
+        return cifEventsToUmlElementInfo.get(event);
+    }
+
     public void updateEndAtomicNonDeterministic(List<String> removedNames) {
         // Update the UML element info: remove the object referring to the end of atomic non-deterministic COF event,
         // and set the start as merged.
