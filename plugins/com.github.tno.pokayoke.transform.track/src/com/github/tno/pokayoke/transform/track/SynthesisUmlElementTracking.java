@@ -112,6 +112,12 @@ public class SynthesisUmlElementTracking {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
+            // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
+            // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
+            // UML element of the input model. The CIF event to finalized UML element defines a start, non-merged action
+            // (similarly to the synthesis case). The CIF event to the original UML element inherits the action
+            // attributes from the previous step in the synthesis chain, i.e. the finalized UML element info.
+
             // Store the CIF event in relation to the finalized UML element info.
             guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
 
@@ -167,6 +173,12 @@ public class SynthesisUmlElementTracking {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
+            // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
+            // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
+            // UML element of the input model. The CIF event to finalized UML element defines a start, non-merged action
+            // (similarly to the synthesis case). The CIF event to the original UML element inherits the action
+            // attributes from the previous step in the synthesis chain, i.e. the finalized UML element info.
+
             // Store the CIF event in relation to the finalized UML element info.
             guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
 
