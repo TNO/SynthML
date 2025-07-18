@@ -76,6 +76,9 @@ public abstract class ModelToCifTranslator {
      */
     public ModelToCifTranslator(CifContext context, SynthesisUmlElementTracking synthesisUmlElementsTracker) {
         this.context = context;
+        // TODO: here startEventMap is still needed, as it gets updated as the UML to CIF translation goes on. If we
+        // pass the synthesis tracker event map, it gets a copy, which is an empty map, and never gets updated. Maybe
+        // create a translator when it is needed and not at instantiation?
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
         this.synthesisUmlElementsTracker = synthesisUmlElementsTracker;
     }
