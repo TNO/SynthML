@@ -350,7 +350,12 @@ public class SynthesisUmlElementTracking {
 
     public void addPetriNetTransitions(PetriNet petriNet) {
         // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
-        // elements info is not empty.
+        // elements info is not empty. It is more convenient to use the Petri net after it has been synthesised, instead
+        // of storing each transition at the time of creation: in case a transition appears multiple times in a Petri
+        // Net, Petrify distinguishes each duplicate by adding a postfix to the name of the transition (e.g.,
+        // 'Transition_A/1' is a duplicate of 'Transition_A'), and these duplicates are not specified in the transition
+        // declarations, but only appear in the specification, and are handled separately. Directly using the final
+        // Petri net allows to just loop over the transitions, and store them in the synthesis tracker.
         Verify.verify(!synthesisCifEventNamesToUmlElementInfo.isEmpty(),
                 "The map from CIF event names to UML element infos is empty.");
 
