@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.NonAtomicPattern;
 
 import fr.lip6.move.pnml.ptnet.Arc;
@@ -59,12 +60,14 @@ public class NonAtomicPatternRewriter {
      * Finds all non-atomic patterns in the given Petri Net that can be rewritten, and rewrites them.
      *
      * @param petriNet The Petri Net to rewrite, which is modified in-place.
-     * @return The list of non-atomic patterns that have been rewritten.
+     * @param synthesisUmlElementTracker The tracker of the synthesis chain transformations.
      */
-    public List<NonAtomicPattern> findAndRewritePatterns(PetriNet petriNet) {
+    public void findAndRewritePatterns(PetriNet petriNet, SynthesisUmlElementTracking synthesisUmlElementTracker) {
         List<NonAtomicPattern> patterns = findPatterns(petriNet);
         rewritePatterns(patterns);
-        return patterns;
+
+        // Update the synthesis chain tracker with the rewritten non-atomic patterns.
+        synthesisUmlElementTracker.updateRewrittenPatterns(patterns);
     }
 
     /**

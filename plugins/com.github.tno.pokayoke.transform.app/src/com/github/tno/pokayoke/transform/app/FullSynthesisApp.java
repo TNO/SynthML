@@ -48,7 +48,6 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslato
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
@@ -231,11 +230,8 @@ public class FullSynthesisApp {
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
-        List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
+        nonAtomicPatternRewriter.findAndRewritePatterns(petriNet, synthesisUmlElementsTracker);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
-
-        // Update the synthesis chain tracker with the rewritten non-atomic patterns.
-        synthesisUmlElementsTracker.updateRewrittenPatterns(nonAtomicPatterns);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
         // action.
