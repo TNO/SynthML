@@ -12,6 +12,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
@@ -233,6 +234,38 @@ public class SynthesisUmlElementTracking {
                 return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
                         .filter(entry -> entry.getValue().isStartAction()
                                 && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    public List<Event> getCallBehaviorsEvents(OpaqueBehavior umlOpaqueBehavior, TranslationPurpose purpose) {
+        // Nota: this method is needed because we store the call behavior action instead of the underlying (called)
+        // opaque behavior. Storing the opaque behavior should simplify fetching this kind of events, and will be done
+        // in the future.
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement() instanceof CallBehaviorAction cbAction
+                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
+                        .map(Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement() instanceof CallBehaviorAction cbAction
+                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
+                        .map(Entry::getKey).toList();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement() instanceof CallBehaviorAction cbAction
+                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
                         .map(Entry::getKey).toList();
             }
 
