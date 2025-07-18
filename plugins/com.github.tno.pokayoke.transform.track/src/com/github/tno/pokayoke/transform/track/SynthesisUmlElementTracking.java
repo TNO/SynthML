@@ -107,22 +107,29 @@ public class SynthesisUmlElementTracking {
         UmlElementInfo umlElementInfo = new UmlElementInfo(umlElement);
         umlElementInfo.setStartAction(true);
         umlElementInfo.setMerged(false);
+
         if (purpose == TranslationPurpose.SYNTHESIS) {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
+            // Store the CIF event in relation to the finalized UML element info.
+            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
+
             // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
-            UmlElementInfo originalUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
-            if (originalUmlElementInfo == null) {
+            UmlElementInfo originalUmlElementInfo;
+            UmlElementInfo finalizedUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
+            if (finalizedUmlElementInfo == null) {
                 // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
                 // UML element to refer to. Create an empty UML element info.
                 originalUmlElementInfo = new UmlElementInfo(null);
+            } else {
+                // Create a new UML element info object, that refers to the original UML element, and inherits its
+                // attributes from the finalized UML element info.
+                originalUmlElementInfo = new UmlElementInfo(finalizedUmlElementInfo.getUmlElement());
+                originalUmlElementInfo.setStartAction(finalizedUmlElementInfo.isStartAction());
+                originalUmlElementInfo.setMerged(finalizedUmlElementInfo.isMerged());
             }
-
             guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
-
-            // Store the CIF event in relation to the finalized UML element info.
-            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
         } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
         } else {
@@ -144,7 +151,9 @@ public class SynthesisUmlElementTracking {
     }
 
     // Add a single CIF end event.
-    public void addCifEvent(Event cifEvent, Pair<RedefinableElement, Integer> umlElementAndEffectIdx) {
+    public void addCifEvent(Event cifEvent, Pair<RedefinableElement, Integer> umlElementAndEffectIdx,
+            TranslationPurpose purpose)
+    {
         RedefinableElement umlElement = umlElementAndEffectIdx.left;
         int effectNr = umlElementAndEffectIdx.right;
 
@@ -153,8 +162,35 @@ public class SynthesisUmlElementTracking {
         umlElementInfo.setStartAction(false);
         umlElementInfo.setMerged(false);
         umlElementInfo.setEffectIdx(effectNr);
-        synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
-        synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+
+        if (purpose == TranslationPurpose.SYNTHESIS) {
+            synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+            synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
+        } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
+            // Store the CIF event in relation to the finalized UML element info.
+            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
+
+            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
+            UmlElementInfo originalUmlElementInfo;
+            if (finalizedUmlElementsToUmlElementInfoMap.get(umlElement) == null) {
+                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
+                // UML element to refer to. Create an empty UML element info.
+                originalUmlElementInfo = new UmlElementInfo(null);
+            } else {
+                // Create a new UML element info object, that refers to the original UML element, and set its attributes
+                // as an end, non-merged action and the corresponding index.
+                originalUmlElementInfo = new UmlElementInfo(
+                        finalizedUmlElementsToUmlElementInfoMap.get(umlElement).getUmlElement());
+                originalUmlElementInfo.setStartAction(false);
+                originalUmlElementInfo.setMerged(false);
+                originalUmlElementInfo.setEffectIdx(effectNr);
+            }
+            guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+        } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
+            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+        } else {
+            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
     }
 
     // Same method after erasure, so we need to give different names.
@@ -289,6 +325,27 @@ public class SynthesisUmlElementTracking {
                                 && entry.getValue().getUmlElement() instanceof CallBehaviorAction cbAction
                                 && cbAction.getBehavior().equals(umlOpaqueBehavior))
                         .map(Entry::getKey).toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    public boolean isStartCallBehavior(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the finalized UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToFinalizedUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
             }
 
             default:
