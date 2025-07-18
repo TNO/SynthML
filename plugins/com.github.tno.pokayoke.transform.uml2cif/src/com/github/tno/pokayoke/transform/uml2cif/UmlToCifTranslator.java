@@ -1677,23 +1677,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // back to a call behavior to the original opaque behavior.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
-                        // We must allow finishing non-atomic/non-deterministic actions.
-                        if (startEventMap.containsKey(cifEvent)) {
-                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
-                            // behavior to the original opaque behavior, but instead is left as an opaque action.
-                            RedefinableElement umlElem = startEventMap.get(cifEvent);
-                            Verify.verify(umlElem instanceof OpaqueAction,
-                                    "CIF event " + cifEvent.getName() + " does not represent an opaque action.");
-                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX),
-                                    "CIF event " + cifEvent.getName() + " does not contain th end action suffix.");
-                        } else {
-                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            boolean isNonDeterministicEnd = nonDeterministicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            Verify.verify(isNonAtomicEnd || isNonDeterministicEnd, cifEvent.getName());
-                        }
+                        // Sanity check: ensure the CIF event corresponds to an end action.
+                        Verify.verify(synthesisUmlElementsTracker.isEndAction(cifEvent, translationPurpose));
+
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }

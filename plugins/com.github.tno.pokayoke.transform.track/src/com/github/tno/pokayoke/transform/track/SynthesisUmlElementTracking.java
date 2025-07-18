@@ -325,6 +325,27 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    public boolean isEndAction(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the original UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
     // Section dealing with Petri net transitions.
 
     public void addPetriNetTransitions(PetriNet petriNet) {
