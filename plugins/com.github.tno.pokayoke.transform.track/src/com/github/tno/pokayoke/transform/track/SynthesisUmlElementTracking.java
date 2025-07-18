@@ -309,13 +309,6 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    public void addActions(Map<Transition, Action> transitionsToActions) {
-        // Update the action to UML element info map.
-        for (Entry<Transition, Action> entry: transitionsToActions.entrySet()) {
-            actionsToUmlElementInfoMap.put(entry.getValue(), transitionsToUmlElementInfo.get(entry.getKey()));
-        }
-    }
-
     public void removeLoopTransition() {
         // Remove the transition(s) that is used as the self-loop for the final place in the Petri net.
         // Nota: Using Cif2Petrify.LOOP_EVENT_NAME gives import cycles.
@@ -345,6 +338,13 @@ public class SynthesisUmlElementTracking {
     }
 
     // Section dealing with new UML opaque actions.
+
+    public void addActions(Map<Transition, Action> transitionsToActions) {
+        // Update the action to UML element info map.
+        for (Entry<Transition, Action> entry: transitionsToActions.entrySet()) {
+            actionsToUmlElementInfoMap.put(entry.getValue(), transitionsToUmlElementInfo.get(entry.getKey()));
+        }
+    }
 
     /**
      * Returns the kind of activity node the input action should translate to, based on the UML element the action
