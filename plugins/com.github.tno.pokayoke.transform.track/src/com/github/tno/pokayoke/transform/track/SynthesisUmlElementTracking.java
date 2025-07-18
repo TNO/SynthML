@@ -52,6 +52,15 @@ public class SynthesisUmlElementTracking {
     /** The map from UML opaque actions to their corresponding original UML element info. */
     private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap = new LinkedHashMap<>();
 
+    /** The map from finalized UML elements to their corresponding original UML element info. */
+    private Map<RedefinableElement, UmlElementInfo> finalizedUmlElementsToUmlElementInfoMap = new LinkedHashMap<>();
+
+    /**
+     * The map from CIF events generated for guard computation to their corresponding synthesized model UML element
+     * info.
+     */
+    private Map<Event, UmlElementInfo> guardComputationCifEventsToFinalizedUmlElementInfo = new LinkedHashMap<>();
+
     /**
      * Returns the map from CIF event names to the corresponding UML element info.
      *
@@ -102,7 +111,18 @@ public class SynthesisUmlElementTracking {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             synthesisCifEventNamesToUmlElementInfo.put(cifEvent.getName(), umlElementInfo);
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
-            guardComputationCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
+            UmlElementInfo originalUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
+            if (originalUmlElementInfo == null) {
+                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
+                // UML element to refer to. Create an empty UML element info.
+                originalUmlElementInfo = new UmlElementInfo(null);
+            }
+
+            guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+
+            // Store the CIF event in relation to the finalized UML element info.
+            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
         } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
             languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
         } else {
@@ -162,8 +182,10 @@ public class SynthesisUmlElementTracking {
                                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
             }
             case GUARD_COMPUTATION: {
-                return guardComputationCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                        : guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                // Return the map from CIF events generated for the guard computation step, to the finalized UML
+                // elements info, *not* the original UML elements.
+                return guardComputationCifEventsToFinalizedUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
+                        : guardComputationCifEventsToFinalizedUmlElementInfo.entrySet().stream()
                                 .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
                                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
             }
@@ -370,5 +392,14 @@ public class SynthesisUmlElementTracking {
 
     public UmlElementInfo getUmlElementInfo(Action action) {
         return actionsToUmlElementInfoMap.get(action);
+    }
+
+    // Section dealing with finalized UML elements.
+
+    public void addFinalizedUmlElement(RedefinableElement finalizedUmlElement,
+            RedefinableElement incompleteUmlElement)
+    {
+        finalizedUmlElementsToUmlElementInfoMap.put(finalizedUmlElement,
+                actionsToUmlElementInfoMap.get(incompleteUmlElement));
     }
 }
