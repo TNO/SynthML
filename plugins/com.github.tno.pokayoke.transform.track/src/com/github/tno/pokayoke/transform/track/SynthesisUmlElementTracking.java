@@ -61,24 +61,6 @@ public class SynthesisUmlElementTracking {
      */
     private Map<Event, UmlElementInfo> guardComputationCifEventsToFinalizedUmlElementInfo = new LinkedHashMap<>();
 
-    /**
-     * Returns the map from Petri net transitions to the corresponding UML element info.
-     *
-     * @return The map from Petri net transitions to the corresponding UML element info.
-     */
-    public Map<Transition, UmlElementInfo> getTransitionsToUmlElementInfo() {
-        return transitionsToUmlElementInfo;
-    }
-
-    /**
-     * Returns the map from the new UML opaque actions to the corresponding UML element info.
-     *
-     * @return The map from the new UML opaque actions to the corresponding UML element info.
-     */
-    public Map<Action, UmlElementInfo> getActionsToUmlElementInfoMap() {
-        return actionsToUmlElementInfoMap;
-    }
-
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
@@ -91,6 +73,8 @@ public class SynthesisUmlElementTracking {
     public SynthesisUmlElementTracking() {
         // Empty constructor.
     }
+
+    // Section dealing with CIF events.
 
     // Add a single CIF start event.
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, TranslationPurpose purpose) {
