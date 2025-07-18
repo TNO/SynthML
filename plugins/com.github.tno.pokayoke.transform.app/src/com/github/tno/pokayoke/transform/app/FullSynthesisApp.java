@@ -301,15 +301,20 @@ public class FullSynthesisApp {
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> preservedEventNames = events.stream()
-                .filter(event -> event.getControllable() || !synthesisUmlElementTracking.isAtomicEndEvent(event))
+
+        // Note that the state space explorer generates a new CIF specification, where the CIF events are different
+        // objects, yet they keep the same name. The synthesis tracker contains the CIF events of the original
+        // specification, while here we use the state space specification. For simplicity, check if the event with the
+        // same name is the end of an atomic behavior/action.
+        List<String> preservedEventNames = events.stream().filter(
+                event -> event.getControllable() || !synthesisUmlElementTracking.isAtomicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        // Get the names of the removed events (end of atomic non-deterministic actions) and update the synthesis chain
+        // Get the removed events names (end of atomic non-deterministic actions) and update the synthesis chain
         // tracker.
-        List<String> removedEventNames = events.stream()
-                .filter(event -> !event.getControllable() && synthesisUmlElementTracking.isAtomicEndEvent(event))
-                .map(event -> CifTextUtils.getAbsName(event, false)).toList();
+        List<String> removedEventNames = events.stream().filter(
+                event -> !event.getControllable() && synthesisUmlElementTracking.isAtomicEndEventName(event.getName()))
+                .map(e -> e.getName()).toList();
         synthesisUmlElementTracking.updateEndAtomicNonDeterministic(removedEventNames);
 
         return String.join(",", preservedEventNames);
