@@ -1670,10 +1670,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // of the actions that the user defined. This case handles events that start such actions
                         // through a call behavior action.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else if (startEventMap.containsKey(cifEvent)
-                            && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
-                            && oAction.getName().endsWith(START_ACTION_SUFFIX))
-                    {
+                    } else if (synthesisUmlElementsTracker.isStartOpaqueAction(cifEvent, translationPurpose)) {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined. This case handles events that start such actions
                         // through an opaque action, which only applies to non-atomic actions that couldn't be merged
@@ -1686,8 +1683,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             // behavior to the original opaque behavior, but instead is left as an opaque action.
                             RedefinableElement umlElem = startEventMap.get(cifEvent);
                             Verify.verify(umlElem instanceof OpaqueAction,
-                                    "Element " + cifEvent.getName() + " is not an opaque action.");
-                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
+                                    "CIF event " + cifEvent.getName() + " does not represent an opaque action.");
+                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX),
+                                    "CIF event " + cifEvent.getName() + " does not contain th end action suffix.");
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
                             boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
