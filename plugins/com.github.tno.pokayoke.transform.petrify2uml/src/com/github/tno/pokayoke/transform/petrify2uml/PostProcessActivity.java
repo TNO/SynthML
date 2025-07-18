@@ -180,6 +180,9 @@ public class PostProcessActivity {
                         callAction.setActivity(activity);
                         callAction.setName(action.getName());
 
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(callAction, action);
+
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
                         action.getIncomings().get(0).setTarget(callAction);
                         action.getOutgoings().get(0).setSource(callAction);
@@ -193,6 +196,9 @@ public class PostProcessActivity {
                         action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic start action has not been fully merged.
                         warnings.add(String.format(
@@ -224,6 +230,9 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
                         String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectIdx);
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
 
                         // Add a warning that the non-atomic end action has not been fully merged.
                         warnings.add(String.format(
