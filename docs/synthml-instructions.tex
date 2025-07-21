@@ -241,6 +241,10 @@ After having created the concrete activity, go to the activity diagram
     \item From the `Palette' view of the activity diagram, you can find the control flow. Click on the icon, then click on the node representing the source of the flow, then on the node representing the target of the flow.  
 \end{enumerate}
 
+Control flows support incoming and outgoing guards, which are found in the `SynthML' tab of the `Properties' view. 
+An incoming guard specifies when a token can be placed on that control flow, whereas an outgoing guard specifies a condition for the removal of the token from the control flow. 
+Both guards should be state predicates over the model properties, similarly to opaque action guards.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Create a Call Behavior Node}
@@ -255,7 +259,6 @@ After having created a concrete activity, adding a call behavior node can be ach
 
 \paragraph*{Graphical Approach.}
 From the `Palette' view of the activity diagram, you can find the `Call Behavior' node under the `Opaque Action' drop-down menu. 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
