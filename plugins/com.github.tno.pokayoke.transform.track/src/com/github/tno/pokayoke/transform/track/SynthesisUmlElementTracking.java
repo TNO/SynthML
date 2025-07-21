@@ -1,7 +1,9 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+//import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -17,6 +20,7 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.google.common.base.Verify;
+import com.google.common.collect.Sets;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Place;
@@ -34,7 +38,16 @@ public class SynthesisUmlElementTracking {
     /** The suffix of a non-atomic action outcome. */
     public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
-    /** The map from CIF events generated for the synthesis to their corresponding UML element info. */
+    /**
+     * The map from CIF events generated for the synthesis to their corresponding UML element info. Does not get updated
+     * as the synthesis chain progresses. Needed for the language equivalence check.
+     */
+    private Map<Event, UmlElementInfo> unalteredCifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /**
+     * The map from CIF events generated for the synthesis to their corresponding UML element info. Gets updated as the
+     * synthesis chain rewrites events.
+     */
     private Map<Event, UmlElementInfo> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The map from CIF event names generated for the synthesis to their corresponding UML element info. */
@@ -86,6 +99,7 @@ public class SynthesisUmlElementTracking {
         if (purpose == TranslationPurpose.SYNTHESIS) {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             namesToCifEvents.put(cifEvent.getName(), cifEvent);
+            unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
             // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
             // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
@@ -109,10 +123,26 @@ public class SynthesisUmlElementTracking {
                 originalUmlElementInfo = new UmlElementInfo(finalizedUmlElementInfo.getUmlElement());
                 originalUmlElementInfo.setStartAction(finalizedUmlElementInfo.isStartAction());
                 originalUmlElementInfo.setMerged(finalizedUmlElementInfo.isMerged());
+                originalUmlElementInfo.setEffectIdx(finalizedUmlElementInfo.getEffectIdx());
             }
             guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
         } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
+            UmlElementInfo originalUmlElementInfo;
+            UmlElementInfo finalizedUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
+            if (finalizedUmlElementInfo == null) {
+                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
+                // UML element to refer to. Create an empty UML element info.
+                originalUmlElementInfo = new UmlElementInfo(null);
+            } else {
+                // Create a new UML element info object, that refers to the original UML element.
+                originalUmlElementInfo = new UmlElementInfo(finalizedUmlElementInfo.getUmlElement());
+                originalUmlElementInfo.setStartAction(finalizedUmlElementInfo.isStartAction());
+                originalUmlElementInfo.setMerged(finalizedUmlElementInfo.isMerged());
+                originalUmlElementInfo.setEffectIdx(finalizedUmlElementInfo.getEffectIdx());
+            }
+
+            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
         } else {
             throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
@@ -134,6 +164,7 @@ public class SynthesisUmlElementTracking {
         if (purpose == TranslationPurpose.SYNTHESIS) {
             synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
             namesToCifEvents.put(cifEvent.getName(), cifEvent);
+            unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
         } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
             // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
             // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
@@ -161,7 +192,23 @@ public class SynthesisUmlElementTracking {
             }
             guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
         } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
+            UmlElementInfo originalUmlElementInfo;
+            if (finalizedUmlElementsToUmlElementInfoMap.get(umlElement) == null) {
+                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
+                // UML element to refer to. Create an empty UML element info.
+                originalUmlElementInfo = new UmlElementInfo(null);
+            } else {
+                // Create a new UML element info object, that refers to the original UML element, and set its attributes
+                // as an end, non-merged action and the corresponding index.
+                originalUmlElementInfo = new UmlElementInfo(
+                        finalizedUmlElementsToUmlElementInfoMap.get(umlElement).getUmlElement());
+                originalUmlElementInfo.setStartAction(false);
+                originalUmlElementInfo.setMerged(false);
+                originalUmlElementInfo.setEffectIdx(effectNr);
+            }
+
+            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
         } else {
             throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
@@ -209,7 +256,8 @@ public class SynthesisUmlElementTracking {
 
         // Find the start of atomic non-deterministic CIF events, and set the UML element info to 'merged'.
         List<Event> startAtomicNonDeterministicEvents = synthesisCifEventsToUmlElementInfo.keySet().stream()
-                .filter(event -> event.getControllable() && isAtomicStartEventName(event.getName())).toList();
+                .filter(event -> event.getControllable() && isAtomicNonDeterministicStartEventName(event.getName()))
+                .toList();
         startAtomicNonDeterministicEvents.stream()
                 .forEach(e -> synthesisCifEventsToUmlElementInfo.get(e).setMerged(true));
     }
@@ -323,6 +371,58 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    // TODO: here. make it work.
+    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired() {
+        // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
+        // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
+
+        // Initialize map of paired events.
+        Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
+
+        // Store the paired events of the post-synthesis model. If some events are not paired, they do not have a
+        // corresponding UML element at the beginning of the synthesis: throw an error to flag this. Note that the
+        // converse might not hold: there might be redundant behaviors (and thus events) in the original UML model, and
+        // these should not have any paired events in the post-synthesis UMl model.
+        Set<Event> usedPostSynthEvents = new LinkedHashSet<>();
+
+        for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
+            // Only for opaque behaviors, opaque actions, and call behaviors.
+            UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
+
+            if (synthesisUmlElementInfo.isInternal()) {
+                continue;
+            }
+
+            List<Event> equivalentEvents = new ArrayList<>();
+
+            for (Entry<Event, UmlElementInfo> entryLanguage: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
+                UmlElementInfo languageUmlElementInfo = entryLanguage.getValue();
+
+                // If internal event, store it in the internal events set. Otherwise, check if it is equivalent to the
+                // CIF event from synthesis.
+                if (languageUmlElementInfo.isInternal()) {
+                    usedPostSynthEvents.add(entryLanguage.getKey());
+                } else if (synthesisUmlElementInfo.isEquivalent(languageUmlElementInfo)) {
+                    equivalentEvents.add(entryLanguage.getKey());
+                    usedPostSynthEvents.add(entryLanguage.getKey());
+                }
+            }
+
+            if (!equivalentEvents.isEmpty()) {
+                pairedEvents.add(new Pair<>(List.of(entrySynth.getKey()), equivalentEvents));
+            }
+        }
+
+        // Sanity check: all CIF events in the post-synthesis UML model should be paired, unless they represent internal
+        // actions.
+        Verify.verify(usedPostSynthEvents.equals(languageEquivalenceCifEventsToUmlElementInfo.keySet()),
+                String.format("Found unused events %s in the post-synthesis UML model.",
+                        Sets.difference(languageEquivalenceCifEventsToUmlElementInfo.keySet(), usedPostSynthEvents)
+                                .stream().map(e -> e.getName()).toList()));
+
+        return pairedEvents;
+    }
+
     // Section dealing with Petri net transitions.
 
     public void addPetriNetTransitions(PetriNet petriNet) {
@@ -373,14 +473,14 @@ public class SynthesisUmlElementTracking {
         loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
     }
 
-    public boolean isAtomicStartEventName(String eventName) {
+    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
         UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
-        return umlElementInfo.isAtomic() && umlElementInfo.isStartAction();
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && umlElementInfo.isStartAction();
     }
 
-    public boolean isAtomicEndEventName(String eventName) {
+    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
         UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
-        return umlElementInfo.isAtomic() && !umlElementInfo.isStartAction();
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && !umlElementInfo.isStartAction();
     }
 
     /**
@@ -439,5 +539,23 @@ public class SynthesisUmlElementTracking {
     {
         finalizedUmlElementsToUmlElementInfoMap.put(finalizedUmlElement,
                 actionsToUmlElementInfoMap.get(incompleteUmlElement));
+    }
+
+    /**
+     * Helper function, to reverse the given mapping.
+     *
+     * @param <T> The domain of map to reverse.
+     * @param <U> The codomain the the map to reverse.
+     * @param map The map to reverse.
+     * @return The reversed map.
+     */
+    public static <T, U> Map<U, List<T>> reverse(Map<T, U> map) {
+        Map<U, List<T>> result = new LinkedHashMap<>();
+
+        for (Entry<T, U> entry: map.entrySet()) {
+            result.computeIfAbsent(entry.getValue(), e -> new ArrayList<>()).add(entry.getKey());
+        }
+
+        return result;
     }
 }
