@@ -13,7 +13,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.escet.cif.common.AnnotationEqHashWrap;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
@@ -24,6 +23,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.common.java.Pair;
 
 import com.github.tno.pokayoke.transform.activitysynthesis.CifLocationHelper;
 import com.google.common.base.Verify;
@@ -59,9 +59,9 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         Verify.verify(pairedEvents != null, ERROR_PREFIX + "paired events cannot be null.");
 
         // Sanity check: tau events and non-tau events must be disjoint.
-        checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.getLeft().stream()).collect(Collectors.toSet()),
+        checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.left.stream()).collect(Collectors.toSet()),
                 tauEvents1, stateSpace1.getName());
-        checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.getRight().stream()).collect(Collectors.toSet()),
+        checkDisjointEventSets(pairedEvents.stream().flatMap(p -> p.right.stream()).collect(Collectors.toSet()),
                 tauEvents2, stateSpace2.getName());
 
         // Sanity check: marked states should not have outgoing transitions.
@@ -107,8 +107,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
             Pair<Set<Location>, Set<Location>> currentPair = queue.remove();
 
             // Compute tau-reachable states from the current pair.
-            Set<Location> tauReachableStates1 = getTauReachableStates(currentPair.getLeft(), absNamesTauEvents1);
-            Set<Location> tauReachableStates2 = getTauReachableStates(currentPair.getRight(), absNamesTauEvents2);
+            Set<Location> tauReachableStates1 = getTauReachableStates(currentPair.left, absNamesTauEvents1);
+            Set<Location> tauReachableStates2 = getTauReachableStates(currentPair.right, absNamesTauEvents2);
 
             // Sanity check: the states should represent the same external state, since tau transitions may only
             // change internal state.
@@ -152,8 +152,8 @@ public class StateAwareWeakLanguageEquivalenceChecker {
 
             // The pair of states is equivalent. Check also all pairs of states reachable from this pair.
             for (Pair<List<Event>, List<Event>> events: pairedEvents) {
-                Set<Location> targetStates1 = getNextStates(tauReachableStates1, events.getLeft());
-                Set<Location> targetStates2 = getNextStates(tauReachableStates2, events.getRight());
+                Set<Location> targetStates1 = getNextStates(tauReachableStates1, events.left);
+                Set<Location> targetStates2 = getNextStates(tauReachableStates2, events.right);
 
                 // If one set of states can reach some target with this event, but the other set cannot reach any,
                 // the two models are different. Note that this is different from checking the sizes of the target
@@ -163,15 +163,15 @@ public class StateAwareWeakLanguageEquivalenceChecker {
                     throw new RuntimeException(ERROR_PREFIX + String.format(
                             "the events %s from states %s of the state space '%s' and the "
                                     + "events %s from states %s of the state space '%s' reach different states.",
-                            String.join(", ", events.getLeft().stream().map(Event::getName).toList()),
+                            String.join(", ", events.left.stream().map(Event::getName).toList()),
                             String.join(", ", tauReachableStates1.stream().map(s -> s.getName()).toList()),
                             stateSpace1.getName(),
-                            String.join(", ", events.getRight().stream().map(Event::getName).toList()),
+                            String.join(", ", events.right.stream().map(Event::getName).toList()),
                             String.join(", ", tauReachableStates2.stream().map(s -> s.getName()).toList()),
                             stateSpace2.getName()));
                 } else if (targetStates1.size() > 0) {
                     // Add the next pair to the queue, if not already visited.
-                    Pair<Set<Location>, Set<Location>> nextPair = Pair.of(targetStates1, targetStates2);
+                    Pair<Set<Location>, Set<Location>> nextPair = new Pair<>(targetStates1, targetStates2);
                     if (!visitedPairs.contains(nextPair)) {
                         visitedPairs.add(nextPair);
                         queue.add(nextPair);
@@ -268,7 +268,7 @@ public class StateAwareWeakLanguageEquivalenceChecker {
         for (Location state1: initialStates1) {
             for (Location state2: initialStates2) {
                 if (areEquivalentStates(state1, annotations1, state2, annotations2)) {
-                    queue.add(Pair.of(Set.of(state1), Set.of(state2)));
+                    queue.add(new Pair<>(Set.of(state1), Set.of(state2)));
                     visited.add(state1);
                     visited.add(state2);
                 }

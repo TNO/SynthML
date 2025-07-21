@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +28,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
@@ -306,14 +308,16 @@ public class FullSynthesisApp {
         // objects, yet they keep the same name. The synthesis tracker contains the CIF events of the original
         // specification, while here we use the state space specification. For simplicity, check if the event with the
         // same name is the end of an atomic behavior/action.
-        List<String> preservedEventNames = events.stream().filter(
-                event -> event.getControllable() || !synthesisUmlElementTracking.isAtomicEndEventName(event.getName()))
+        List<String> preservedEventNames = events.stream()
+                .filter(event -> event.getControllable()
+                        || !synthesisUmlElementTracking.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         // Get the removed events names (end of atomic non-deterministic actions) and update the synthesis chain
         // tracker.
-        List<String> removedEventNames = events.stream().filter(
-                event -> !event.getControllable() && synthesisUmlElementTracking.isAtomicEndEventName(event.getName()))
+        List<String> removedEventNames = events.stream()
+                .filter(event -> !event.getControllable()
+                        && synthesisUmlElementTracking.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(e -> e.getName()).toList();
         synthesisUmlElementTracking.updateEndAtomicNonDeterministic(removedEventNames);
 
@@ -356,6 +360,10 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
+        // Get the paired events.
+        Set<Pair<List<Event>, List<Event>>> pairedEvents = synthesisUmlElementTracking
+                .getPrePostSynthesisChainEventsPaired();
+
         // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
@@ -367,9 +375,11 @@ public class FullSynthesisApp {
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
 
+        Set<org.apache.commons.lang3.tuple.Pair<List<Event>, List<Event>>> tmp = result.pairedEvents();
+
         // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
-                result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), result.pairedEvents());
+                result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), pairedEvents);
     }
 }

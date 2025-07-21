@@ -191,6 +191,10 @@ public class StateAwareWeakLanguageEquivalenceHelper {
             List<Event> usedEvents2 = events2.stream().filter(e -> !unusedEvents2.contains(CifTextUtils.getAbsName(e)))
                     .toList();
 
+            if (!unusedEvents1.isEmpty() || !unusedEvents2.isEmpty()) {
+                System.out.println("bcddo");
+            }
+
             // Remove the item from the second map, to later check that all items from the second map have been looped
             // through.
             namesToEvents2.remove(umlElementName);
