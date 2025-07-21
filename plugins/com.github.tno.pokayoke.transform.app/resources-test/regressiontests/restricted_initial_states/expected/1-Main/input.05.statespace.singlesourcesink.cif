@@ -1,0 +1,19 @@
+controllable Action;
+controllable __start;
+controllable __end;
+automaton synthesis_state_space:
+  alphabet Action, __start, __end;
+  @state(Context: "*", Context.done: false, Context.position: "Second", sup: "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+  @state(Context: "*", Context.done: false, Context.position: "Second", sup: "*")
+  location loc1:
+    edge Action goto loc2;
+  @state(Context: "*", Context.done: true, Context.position: "Second", sup: "*")
+  location loc2:
+    edge __end goto __done;
+  @state(Context: "*", Context.done: true, Context.position: "Second", sup: "*")
+  location __done:
+    marked;
+end
