@@ -16,15 +16,15 @@
 
 \maketitle
 
-\section{Create a New Poka Yoke UML model}
+\section{Create a New SynthML UML model}
 
-Let us first open the Poka Yoke environment within UML Designer. 
+Let us first open the SynthML environment within UML Designer. 
 A snapshot of the main screen is shown in Fig.~\ref{fig:PY-environment}, with the main components highlighted. 
 In order to create a new UML model, 
 \begin{enumerate}
     \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.    
     \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `PokaYoke'. 
-    This enables all the Poka Yoke features, such as the addition of guards and effects to opaque behaviors. 
+    This enables all the SynthML features, such as the addition of guards and effects to opaque behaviors. 
 \end{enumerate}
 
 The model will have a UML file by default, called \texttt{model.uml}. 
@@ -34,7 +34,7 @@ In the following, we refer to this model instance as the `model', unless otherwi
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{Figures/PYEnvironmentHighlight.png}
-    \caption{A screenshot of the Poka Yoke environment.}
+    \caption{A screenshot of the SynthML environment.}
     \label{fig:PY-environment}
 \end{figure}
 
@@ -50,7 +50,7 @@ There are several ways of creating a class in UML Designer. From the `Model Expl
     \item Right click on the model $\to$ New Child $\to$ Packaged Element\footnotemark $\to$ Class. You may want to rename it with a meaningful name. 
     \item We only support active classes: to make a class active, look in the `Properties' view, `Advanced' tab, and check the `Active' checkbox.
 \end{enumerate}
-\footnotetext{A class can also be added as an `Owned Type' by right clicking on the model $\to$ Owned Type $\to$ Class. The UML metamodel treats both owned types and packaged elements as `packageable elements': it makes no practical difference for the creation of a Poka Yoke model. For consistency, it is advised to use the packaged element option.} 
+\footnotetext{A class can also be added as an `Owned Type' by right clicking on the model $\to$ Owned Type $\to$ Class. The UML metamodel treats both owned types and packaged elements as `packageable elements': it makes no practical difference for the creation of a SynthML model. For consistency, it is advised to use the packaged element option.} 
 
 \paragraph*{Graphical Approach.}
 Alternatively, you may create a class from the `Class Diagram' view. To this end, you may
@@ -71,7 +71,7 @@ Properties represent the variables of a model. The supported types are boolean, 
 To create a boolean-typed property:
 \begin{enumerate} 
 \item Right click on the Class $\to$ New Child $\to$ Owned Attribute $\to$ Property.
-\item In the `Properties' view, in the `Poka Yoke' tab, you can select `Boolean' as the type, and set a default value for the type. 
+\item In the `Properties' view, in the `SynthML' tab, you can select `Boolean' as the type, and set a default value for the type. 
 To create integers and enumerations, you need to define them beforehand, as explained in the following. 
 \end{enumerate}
 
@@ -89,12 +89,12 @@ Similarly, to create an integer-typed property, first we need to define the rang
 \begin{enumerate}
     \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Primitive Type. Alternatively, you could add a Primitive Type from the `Palette' view, 
     by clicking on the tiny arrow on the left of `Enumeration', which reveals `PrimitiveType', allowing it to be dragged-and-dropped to the class diagram.
-    \item In the `Properties' view, within the `Poka Yoke' tab, select `Super type: Integer'. Give it a name and write down the minimum and maximum values. 
+    \item In the `Properties' view, within the `SynthML' tab, select `Super type: Integer'. Give it a name and write down the minimum and maximum values. 
     Note that two constraints named `min' and `max' will appear in the `Model Explorer' view.     
 \end{enumerate} 
 After the completion of these steps, we can create a new property of this ranged integer type. 
 
-Both enumerations and primitive types can also be added as a `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Enumeration (or Primitive Type). The UML metamodel treats both owned types and packaged elements as `packageable elements', which are the elements considered by Poka Yoke, so it makes no practical difference for the creation of a Poka Yoke model. Since enumerations and primitive types are usually considered as types, it is advised to use the owned type option.
+Both enumerations and primitive types can also be added as a `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Enumeration (or Primitive Type). The UML metamodel treats both owned types and packaged elements as `packageable elements', which are the elements considered by SynthML, so it makes no practical difference for the creation of a SynthML model. Since enumerations and primitive types are usually considered as types, it is advised to use the owned type option.
 
 \smallskip
 
@@ -103,7 +103,7 @@ Alternatively, you may create a property from the `Class Diagram' view. To this 
 \begin{enumerate}
     \item From the `Palette' view, simply click on the Property element (within Features) and drag it inside a class.  
     A popup window will open: fill in the Name, then click OK.
-    \item Double click on the property, in the `Properties' view, `Poka Yoke' tab, select the property type from the drop-down menu. 
+    \item Double click on the property, in the `Properties' view, `SynthML' tab, select the property type from the drop-down menu. 
 \end{enumerate}
 Note that you still need to create an enumeration and integer type via the standard approach before you can create an integer or enumeration property.
 
@@ -149,7 +149,7 @@ defining respectively the system states at the beginning and the end of the acti
 Additionally, users can specify constraints, (see \S\ref{subsec:constraints}), defining additional requirements, and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
 Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity. 
 
-Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
+Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a SynthML model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -204,7 +204,7 @@ A node can be a \emph{control node} (initial, final, fork, join, decision, or me
 be an \emph{call behavior node} which either calls another activity of executes an action by calling an opaque behavior,
 or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action. 
 So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or non-deterministic, and either atomic or non-atomic. 
-Concrete activities can be visualized via an activity diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a Poka Yoke model. 
+Concrete activities can be visualized via an activity diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a SynthML model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -265,7 +265,7 @@ From the `Palette' view of the activity diagram, you can find the `Call Behavior
 After having created a concrete activity, adding an opaque action node can be achieved by 
 \begin{enumerate}
     \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Opaque Action node.
-    \item In the `Properties' view, `Poka Yoke' tab, you can add guards and effects for the opaque action.
+    \item In the `Properties' view, `SynthML' tab, you can add guards and effects for the opaque action.
 \end{enumerate} 
 
 \paragraph*{Graphical Approach.}
@@ -283,9 +283,9 @@ For activity synthesis purposes, the user needs to create the actions to be used
 
 \begin{enumerate}
 \item Right click on the Class $\to$ New Child $\to$ Owned Behavior $\to$ Opaque Behavior.
-\item For atomic actions, in the `Properties' view, `Poka Yoke' tab, check the `Atomic' checkbox.
-\item In the `Properties' view, `Poka Yoke' tab, in the `Guard' field, the action guards can be specified (\ie the conditions under which this action can be performed).
-\item In the `Properties' view, `Poka Yoke' tab, in the `Effects' field, the action effects can be specified (\ie the variable assignments that describe how performing the action changes the valuation of these variables).
+\item For atomic actions, in the `Properties' view, `SynthML' tab, check the `Atomic' checkbox.
+\item In the `Properties' view, `SynthML' tab, in the `Guard' field, the action guards can be specified (\ie the conditions under which this action can be performed).
+\item In the `Properties' view, `SynthML' tab, in the `Effects' field, the action effects can be specified (\ie the variable assignments that describe how performing the action changes the valuation of these variables).
 \item Non-deterministic effects are separated by three tilde \verb#~#  signs. For example, an effect field 
 \verb#val:=true ~~~ val:=false# 
 means that the variable \texttt{val} will be non-deterministically assigned \emph{either} true \emph{or} false as a consequence of performing the action.
