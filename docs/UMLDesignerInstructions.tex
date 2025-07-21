@@ -388,7 +388,7 @@ We can use the following steps:
     \item Create a new UML project named BitFlipper.
     \item Create an active class named ActiveClass.
     \item Create two boolean properties, named \texttt{init} and \texttt{bit}. 
-    The default value of \texttt{init} is false, none (leave an empty field) for \texttt{bit}.  
+    Set the default value of \texttt{init} to false, and leave an empty field (meaning no default value) for \texttt{bit}.  
     \item Create an abstract activity as the ActiveClass classifier behavior, with precondition \verb#not init#, 
     and postcondition \verb#bit and init#.
     \item Create an opaque behavior, named \texttt{initialize}, that models an initialization action, with guard \texttt{not init} and nondeterministic effects:
