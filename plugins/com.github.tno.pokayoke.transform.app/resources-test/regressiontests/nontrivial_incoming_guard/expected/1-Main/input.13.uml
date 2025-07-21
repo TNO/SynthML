@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="1" name="Model">
+    <packagedElement xmi:type="uml:Class" xmi:id="2" name="Context" visibility="public" classifierBehavior="22" isActive="true">
+      <ownedComment xmi:id="3">
+        <body>Original-ID-Path:2</body>
+      </ownedComment>
+      <ownedAttribute xmi:id="4" name="field1" visibility="public">
+        <ownedComment xmi:id="5">
+          <body>Original-ID-Path:3</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="6" value="1">
+          <ownedComment xmi:id="7">
+            <body>Original-ID-Path:4</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="8" value="1">
+          <ownedComment xmi:id="9">
+            <body>Original-ID-Path:5</body>
+          </ownedComment>
+        </upperValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="10" name="field2" visibility="public">
+        <ownedComment xmi:id="11">
+          <body>Original-ID-Path:6</body>
+        </ownedComment>
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1">
+          <ownedComment xmi:id="13">
+            <body>Original-ID-Path:7</body>
+          </ownedComment>
+        </lowerValue>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="14" value="1">
+          <ownedComment xmi:id="15">
+            <body>Original-ID-Path:8</body>
+          </ownedComment>
+        </upperValue>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="16">
+          <ownedComment xmi:id="17">
+            <body>Original-ID-Path:9</body>
+          </ownedComment>
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="18" name="left">
+        <ownedComment xmi:id="19">
+          <body>Original-ID-Path:10</body>
+        </ownedComment>
+        <body>not field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="20" name="right">
+        <ownedComment xmi:id="21">
+          <body>Original-ID-Path:11</body>
+        </ownedComment>
+        <body>field1</body>
+        <body>field2 := true</body>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="22" name="Main" postcondition="24" node="38 39 40 41 42 43 44 45">
+        <ownedComment xmi:id="23">
+          <body>Original-ID-Path:12</body>
+        </ownedComment>
+        <ownedRule xmi:id="24" name="postcondition">
+          <ownedComment xmi:id="25">
+            <body>Original-ID-Path:13</body>
+          </ownedComment>
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="26" name="">
+            <ownedComment xmi:id="27">
+              <body>Original-ID-Path:14</body>
+            </ownedComment>
+            <body>field2</body>
+          </specification>
+        </ownedRule>
+        <edge xmi:type="uml:ControlFlow" xmi:id="28" name="InitialNode__p1__to____start" target="39" source="42"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="29" name="Decision__p2__to__left" target="40" source="43">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="30" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="31" name="Decision__p2__to__right" target="41" source="43">
+          <guard xmi:type="uml:LiteralBoolean" xmi:id="32" value="true"/>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="33" name="__start__to__Decision__p2" target="43" source="39"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="34" name="left__to__Merge__p3" target="44" source="40"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="35" name="right__to__Merge__p3" target="44" source="41"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="36" name="Merge__p3__to____end" target="38" source="44"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="37" name="__end__to__FinalNode__p4" target="45" source="38"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="38" name="__end" incoming="36" outgoing="37"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="39" name="__start" incoming="28" outgoing="33"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="40" name="left" incoming="29" outgoing="34"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="41" name="right" incoming="31" outgoing="35"/>
+        <node xmi:type="uml:InitialNode" xmi:id="42" name="InitialNode__p1" outgoing="28"/>
+        <node xmi:type="uml:DecisionNode" xmi:id="43" name="Decision__p2" incoming="33" outgoing="29 31"/>
+        <node xmi:type="uml:MergeNode" xmi:id="44" name="Merge__p3" incoming="34 35" outgoing="36"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="45" name="FinalNode__p4" incoming="37"/>
+      </ownedBehavior>
+    </packagedElement>
+    <profileApplication xmi:id="46">
+      <eAnnotations xmi:id="47" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="48" guard="not field1" base_RedefinableElement="18" atomic="true">
+    <effects>field2 := true</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="49" guard="field1" base_RedefinableElement="20" atomic="true">
+    <effects>field2 := true</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>
