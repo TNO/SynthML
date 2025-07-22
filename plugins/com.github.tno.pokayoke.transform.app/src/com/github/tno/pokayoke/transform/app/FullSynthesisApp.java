@@ -362,7 +362,7 @@ public class FullSynthesisApp {
 
         // Get the paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = synthesisUmlElementTracking
-                .getPrePostSynthesisChainEventsPaired();
+                .getPrePostSynthesisChainEventsPaired(translator.getActivity());
 
         // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
@@ -375,11 +375,10 @@ public class FullSynthesisApp {
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
         Automaton stateSpace2 = (Automaton)stateSpacePostSynthChain.getComponents().get(0);
 
-        Set<org.apache.commons.lang3.tuple.Pair<List<Event>, List<Event>>> tmp = result.pairedEvents();
-
         // Perform the language equivalence check.
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
-        checker.check(stateSpace1, result.stateAnnotations1(), translator.getInternalEvents(), stateSpace2,
-                result.stateAnnotations2(), umlToCifTranslatorPostSynth.getInternalEvents(), pairedEvents);
+        checker.check(stateSpace1, result.stateAnnotations1(), synthesisUmlElementTracking.getInternalSynthesisEvents(),
+                stateSpace2, result.stateAnnotations2(), synthesisUmlElementTracking.getInternalLanguageEqEvents(),
+                pairedEvents);
     }
 }
