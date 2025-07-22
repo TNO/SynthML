@@ -134,40 +134,56 @@ public class UmlElementInfo {
             return false;
         }
 
-        // If this or the other UML element info is a call behavior, compare the called behaviors.
-        // TODO: this needs an extra condition for shadow calls.
+        // If this or the other UML element info is a non-shadowed call behavior, compare the called behaviors.
         RedefinableElement thisUmlCalledElement;
         RedefinableElement thatUmlCalledElement;
-        if (umlElement instanceof CallBehaviorAction cbAction) {
+        if (umlElement instanceof CallBehaviorAction cbAction && !PokaYokeUmlProfileUtil.isFormalElement(cbAction)) {
             thisUmlCalledElement = cbAction.getBehavior();
         } else {
             thisUmlCalledElement = this.umlElement;
         }
-        if (thatUmlElementInfo.getUmlElement() instanceof CallBehaviorAction cbAction) {
+
+        if (thatUmlElementInfo.getUmlElement() instanceof CallBehaviorAction cbAction
+                && !PokaYokeUmlProfileUtil.isFormalElement(cbAction))
+        {
             thatUmlCalledElement = cbAction.getBehavior();
         } else {
             thatUmlCalledElement = thatUmlElementInfo.getUmlElement();
         }
 
-        // If UML element is a call behavior, compare the opaque behaviors; else, compare the UML elements themselves.
-        // TODO: this needs an extra condition for shadow calls.
-        if (thisUmlCalledElement instanceof CallBehaviorAction cbAction
-                && thatUmlCalledElement instanceof CallBehaviorAction umlCallBehaviorAction)
+        // If UML element is a non-shadowed call behavior, compare the opaque behaviors; else, compare the UML elements
+        // themselves.
+        if (thisUmlCalledElement instanceof CallBehaviorAction thisCallBehaviorAction
+                && PokaYokeUmlProfileUtil.isFormalElement(thisCallBehaviorAction)
+                && thatUmlCalledElement instanceof CallBehaviorAction thatCallBehaviorAction
+                && PokaYokeUmlProfileUtil.isFormalElement(thatCallBehaviorAction))
         {
-            return cbAction.getBehavior().equals(umlCallBehaviorAction.getBehavior());
-        } else if (thisUmlCalledElement instanceof OpaqueAction oAction
-                && thatUmlCalledElement instanceof OpaqueAction umlOpaqueAction)
+            return thisCallBehaviorAction.equals(thatCallBehaviorAction);
+        } else if (thisUmlCalledElement instanceof CallBehaviorAction thisCallBehaviorAction
+                && thatUmlCalledElement instanceof CallBehaviorAction thatCallBehaviorAction)
         {
-            return oAction.equals(umlOpaqueAction);
-        } else if (thisUmlCalledElement instanceof OpaqueBehavior oBehavior
-                && thatUmlCalledElement instanceof OpaqueBehavior umlOpaqueBehavior)
+            return thisCallBehaviorAction.getBehavior().equals(thatCallBehaviorAction.getBehavior());
+        } else if (thisUmlCalledElement instanceof OpaqueAction thisOpaqueAction
+                && thatUmlCalledElement instanceof OpaqueAction thatOpaqueAction)
         {
-            return oBehavior.equals(umlOpaqueBehavior);
+            return thisOpaqueAction.equals(thatOpaqueAction);
+        } else if (thisUmlCalledElement instanceof OpaqueBehavior thisOpaqueBehavior
+                && thatUmlCalledElement instanceof OpaqueBehavior thatOpaqueBehavior)
+        {
+            return thisOpaqueBehavior.equals(thatOpaqueBehavior);
         }
 
         return false;
     }
 
+    /**
+     * Return {@code true} if the current UML element info represents an internal action: if the underlying UML element
+     * is null or a control node, or if the UML element does not belong to the input activity and it's not an opaque
+     * behavior (since opaque behaviors are defined in the UML model and not in any specific activity).
+     *
+     * @param activity The container activity.
+     * @return {@code true} if the current UML element info represents an internal action.
+     */
     public boolean isInternal(Activity activity) {
         return umlElement == null || umlElement instanceof DecisionNode || umlElement instanceof MergeNode
                 || umlElement instanceof ForkNode || umlElement instanceof JoinNode || umlElement instanceof InitialNode
@@ -176,7 +192,7 @@ public class UmlElementInfo {
     }
 
     /**
-     * Method that return a copy of the current UML element info.
+     * Return a copy of the current UML element info.
      *
      * @return A copy of the current UML element info.
      */
