@@ -237,11 +237,8 @@ public class FullSynthesisApp {
         // action.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
         PNML2UMLTranslator petriNet2Activity = new PNML2UMLTranslator(activity);
-        petriNet2Activity.translate(petriNet);
+        petriNet2Activity.translate(petriNet, synthesisUmlElementsTracker);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
-
-        // Update the synthesis chain tracker with the newly created actions.
-        synthesisUmlElementsTracker.addActions(petriNet2Activity.getTransitionMapping());
 
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
