@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -28,7 +27,6 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
-import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
 
@@ -360,16 +358,10 @@ public class FullSynthesisApp {
         // Load state space post-synthesis chain file.
         Specification stateSpacePostSynthChain = CifFileHelper.loadCifSpec(cifStateSpacePath);
 
-        // Get the paired events.
-        Set<Pair<List<Event>, List<Event>>> pairedEvents = synthesisUmlElementTracking
-                .getPrePostSynthesisChainEventsPaired(translator.getActivity());
-
         // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                translator.getNormalizedNameToEventsMap(), translator.getInternalEvents(), stateSpacePostSynthChain,
-                umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
-                umlToCifTranslatorPostSynth.getInternalEvents(), translator.getVariableNames());
+                stateSpacePostSynthChain, translator.getVariableNames());
 
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
@@ -379,6 +371,6 @@ public class FullSynthesisApp {
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         checker.check(stateSpace1, result.stateAnnotations1(), synthesisUmlElementTracking.getInternalSynthesisEvents(),
                 stateSpace2, result.stateAnnotations2(), synthesisUmlElementTracking.getInternalLanguageEqEvents(),
-                pairedEvents);
+                synthesisUmlElementTracking.getPrePostSynthesisChainEventsPaired(translator.getActivity()));
     }
 }
