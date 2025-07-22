@@ -266,7 +266,7 @@ public class SynthesisUmlElementTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The enumeration informing on which translation is occurring.
-     * @return {@code true} if
+     * @return {@code true} if the CIF event corresponds to a start event.
      */
     public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
@@ -286,6 +286,12 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Update the 'merged' field of the start of atomic non-deterministic UML elements to {@code true}, and remove the
+     * corresponding end events from the synthesis CIF event to UML element info map.
+     *
+     * @param removedEventNames The list of names of CIF end events.
+     */
     public void updateEndAtomicNonDeterministic(List<String> removedEventNames) {
         // Update the UML element info: remove the object referring to the end of atomic non-deterministic CIF event,
         // and set the start as merged.
@@ -299,6 +305,13 @@ public class SynthesisUmlElementTracking {
                 .forEach(e -> synthesisCifEventsToUmlElementInfo.get(e).setMerged(true));
     }
 
+    /**
+     * Return the events corresponding to the input set of nodes, based on the translation purpose.
+     *
+     * @param nodes The set of activity node, to find the related CIF events.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The list of CIF events corresponding to the activity nodes.
+     */
     public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
@@ -319,7 +332,15 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    public List<Event> getStartEvents(RedefinableElement umlElement, TranslationPurpose purpose) {
+    /**
+     * Get the list of CIF start events corresponding to the original, input (i.e. *not* the finalized) UML element for
+     * different translation purposes.
+     *
+     * @param umlElement The UML element.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The list from CIF start events to their corresponding UML element infos.
+     */
+    public List<Event> getStartEventsOfOriginalElement(RedefinableElement umlElement, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
                 return synthesisCifEventsToUmlElementInfo.entrySet().stream()
@@ -345,6 +366,16 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Return {@code true} if the CIF event corresponds to the start of a call behavior action. This includes both a
+     * "merged" call behavior (i.e. an action that includes both the guard and effects of the underlying opaque
+     * behavior), or just the start of a non-atomic action. It refers to the original UML model elements, hence the
+     * guard computation case uses the original UML element info map, *not* the finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the start of a call behavior action.
+     */
     public boolean isStartCallBehavior(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
@@ -366,6 +397,16 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Return {@code true} if the CIF event corresponds to the start of an opaque action. This includes both a "merged"
+     * opaque action (i.e. an action that includes both the guard and effects), or just the start of a non-atomic
+     * action. It refers to the original UML model elements, hence the guard computation case uses the original UML
+     * element info map, *not* the finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the start of an opaque action.
+     */
     public boolean isStartOpaqueAction(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
@@ -387,6 +428,15 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Return {@code true} if the CIF event corresponds to the end of an action. It refers to the original UML model
+     * elements, hence the guard computation case uses the original UML element info map, *not* the finalized UML
+     * element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the end of an action.
+     */
     public boolean isEndAction(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
@@ -408,6 +458,15 @@ public class SynthesisUmlElementTracking {
         }
     }
 
+    /**
+     * Pair the CIF events generated for the synthesis phase and the CIF events generated for the language equivalence
+     * phase, when they refer to the same original UML element. If the events refer to an internal action (e.g. a
+     * control node, or actions used in other activities), it populates the set of internal synthesis actions and of
+     * internal language equivalence actions.
+     *
+     * @param activity The activity containing all the relevant CIF events.
+     * @return The set of pairs of list of paired events.
+     */
     public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Activity activity) {
         // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
         // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
@@ -418,9 +477,7 @@ public class SynthesisUmlElementTracking {
         // Divide internal and external events for the synthesis map.
         Map<Event, UmlElementInfo> externalSynthesisEventsMap = new LinkedHashMap<>();
         for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
-            // Only for opaque behaviors, opaque actions, and call behaviors.
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
-
             if (synthesisUmlElementInfo.isInternal(activity)) {
                 internalSynthesisEvents.add(entrySynth.getKey());
             } else {
@@ -431,9 +488,7 @@ public class SynthesisUmlElementTracking {
         // Divide internal and external events for the language equivalence map.
         Map<Event, UmlElementInfo> externalLanguageEqEventsMap = new LinkedHashMap<>();
         for (Entry<Event, UmlElementInfo> entrySynth: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
-            // Only for opaque behaviors, opaque actions, and call behaviors.
             UmlElementInfo languageEqUmlElementInfo = entrySynth.getValue();
-
             if (languageEqUmlElementInfo.isInternal(activity)) {
                 internalLanguageEquivalenceEvents.add(entrySynth.getKey());
             } else {
@@ -443,15 +498,15 @@ public class SynthesisUmlElementTracking {
 
         // Store the paired events of the post-synthesis model. If some events are not paired, they do not have a
         // corresponding UML element at the beginning of the synthesis: throw an error to flag this. Note that the
-        // converse might not hold: there might be redundant behaviors (and thus events) in the original UML model, and
-        // these should not have any paired events in the post-synthesis UMl model.
+        // converse might not hold: there might be redundant or forbidden behaviors (and thus events) in the original
+        // UML model, and these should not have any paired events in the post-synthesis UMl model.
         Set<Event> usedPostSynthEvents = new LinkedHashSet<>();
 
         for (Entry<Event, UmlElementInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
-            // Only for opaque behaviors, opaque actions, and call behaviors.
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
 
             if (synthesisUmlElementInfo.isInternal(activity)) {
+                // No need to pair internal events.
                 continue;
             }
 
@@ -490,16 +545,43 @@ public class SynthesisUmlElementTracking {
         return internalLanguageEquivalenceEvents;
     }
 
+    /**
+     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
+        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && umlElementInfo.isStartAction();
+    }
+
+    /**
+     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
+        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && !umlElementInfo.isStartAction();
+    }
+
     // Section dealing with Petri net transitions.
 
+    /**
+     * Creates the map from Petri net transitions to UML element info, provided that the map from CIF event names to UML
+     * elements info is not empty.
+     *
+     * @param petriNet The Petri net.
+     */
     public void addPetriNetTransitions(PetriNet petriNet) {
-        // Creates the map from transitions to UML element info, provided that the map from CIF event names to UML
-        // elements info is not empty. It is more convenient to use the Petri net after it has been synthesised, instead
-        // of storing each transition at the time of creation: in case a transition appears multiple times in a Petri
-        // Net, Petrify distinguishes each duplicate by adding a postfix to the name of the transition (e.g.,
-        // 'Transition_A/1' is a duplicate of 'Transition_A'), and these duplicates are not specified in the transition
-        // declarations, but only appear in the specification, and are handled separately. Directly using the final
-        // Petri net allows to just loop over the transitions, and store them in the synthesis tracker.
+        // Note that it is more convenient to use the Petri net after it has been synthesised, instead of storing each
+        // transition at the time of creation: in case a transition appears multiple times in a Petri net, Petrify
+        // distinguishes each duplicate by adding a postfix to the name of the transition (e.g., 'Transition_A/1' is a
+        // duplicate of 'Transition_A'), and these duplicates are not specified in the transition declarations, but only
+        // appear in the specification, and are handled separately. Directly using the final Petri net allows to just
+        // loop over the transitions, and store them in the synthesis tracker.
         Verify.verify(!synthesisCifEventsToUmlElementInfo.isEmpty(),
                 "The map from CIF event names to UML element infos is empty.");
 
@@ -513,11 +595,7 @@ public class SynthesisUmlElementTracking {
             if (currentUmlElementInfo == null) {
                 transitionsToUmlElementInfo.put(t, null);
             } else {
-                UmlElementInfo newUmlElementInfo = new UmlElementInfo(currentUmlElementInfo.getUmlElement());
-                newUmlElementInfo.setStartAction(currentUmlElementInfo.isStartAction());
-                newUmlElementInfo.setMerged(currentUmlElementInfo.isMerged());
-                newUmlElementInfo.setEffectIdx(currentUmlElementInfo.getEffectIdx());
-                transitionsToUmlElementInfo.put(t, newUmlElementInfo);
+                transitionsToUmlElementInfo.put(t, currentUmlElementInfo.copy());
             }
         }
     }
@@ -540,16 +618,6 @@ public class SynthesisUmlElementTracking {
         loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
     }
 
-    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
-        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
-        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && umlElementInfo.isStartAction();
-    }
-
-    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
-        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
-        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && !umlElementInfo.isStartAction();
-    }
-
     /**
      * A rewritable non-atomic Petri Net pattern.
      *
@@ -566,11 +634,9 @@ public class SynthesisUmlElementTracking {
 
     // Section dealing with new UML opaque actions.
 
-    public void addActions(Map<Transition, Action> transitionsToActions) {
+    public void addAction(Transition transiton, Action action) {
         // Update the action to UML element info map.
-        for (Entry<Transition, Action> entry: transitionsToActions.entrySet()) {
-            actionsToUmlElementInfoMap.put(entry.getValue(), transitionsToUmlElementInfo.get(entry.getKey()));
-        }
+        actionsToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
 
     /**
