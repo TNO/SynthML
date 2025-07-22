@@ -546,6 +546,38 @@ public class SynthesisUmlElementTracking {
     }
 
     /**
+     * Return {@code true} if the CIF event corresponds to an internal action (e.g. a control node). It refers to the
+     * original UML model elements, hence the guard computation case uses the original UML element info map, *not* the
+     * finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @param activity The container activity.
+     * @return {@code true} if the CIF event corresponds to an internal action.
+     */
+    public boolean isInternal(Event cifEvent, TranslationPurpose purpose, Activity activity) {
+        UmlElementInfo umlElementInfo;
+        switch (purpose) {
+            case SYNTHESIS: {
+                umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+
+        return umlElementInfo.isInternal(activity);
+    }
+
+    /**
      * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
