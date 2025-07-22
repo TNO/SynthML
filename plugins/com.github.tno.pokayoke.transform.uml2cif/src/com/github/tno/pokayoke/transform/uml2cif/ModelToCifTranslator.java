@@ -194,19 +194,6 @@ public abstract class ModelToCifTranslator {
     }
 
     /**
-     * Gives the guard corresponding to the given CIF event.
-     *
-     * @param event The CIF event, which must have been translated for some UML element in the input UML model.
-     * @return The guard corresponding to the given CIF event.
-     */
-    public Expression getGuard(Event event) {
-        RedefinableElement element = synthesisUmlElementsTracker.getUmlElementInfo(event).getUmlElement();
-        Preconditions.checkNotNull(element,
-                "Expected a CIF event that has been translated for some UML element in the input UML model.");
-        return getGuard(element);
-    }
-
-    /**
      * Gives the guard of the given UML element.
      *
      * @param element The UML element, which must not be a {@link ControlFlow control flow}.
