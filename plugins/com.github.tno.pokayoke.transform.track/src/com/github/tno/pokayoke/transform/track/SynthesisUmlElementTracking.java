@@ -102,55 +102,51 @@ public class SynthesisUmlElementTracking {
         umlElementInfo.setStartAction(true);
         umlElementInfo.setMerged(false);
 
-        if (purpose == TranslationPurpose.SYNTHESIS) {
-            synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
-            namesToCifEvents.put(cifEvent.getName(), cifEvent);
-            unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
-        } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
-            // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
-            // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
-            // UML element of the input model. The CIF event to finalized UML element defines a start, non-merged action
-            // (similarly to the synthesis case). The CIF event to the original UML element inherits the action
-            // attributes from the previous step in the synthesis chain, i.e. the finalized UML element info.
+        switch (purpose) {
+            case TranslationPurpose.SYNTHESIS: {
+                synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+                namesToCifEvents.put(cifEvent.getName(), cifEvent);
+                unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
 
-            // Store the CIF event in relation to the finalized UML element info.
-            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
-
-            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
-            UmlElementInfo originalUmlElementInfo;
-            UmlElementInfo finalizedUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
-            if (finalizedUmlElementInfo == null) {
-                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
-                // UML element to refer to. Create an empty UML element info.
-                originalUmlElementInfo = new UmlElementInfo(null);
-            } else {
-                // Create a new UML element info object, that refers to the original UML element, and inherits its
-                // attributes from the finalized UML element info.
-                originalUmlElementInfo = new UmlElementInfo(finalizedUmlElementInfo.getUmlElement());
-                originalUmlElementInfo.setStartAction(finalizedUmlElementInfo.isStartAction());
-                originalUmlElementInfo.setMerged(finalizedUmlElementInfo.isMerged());
-                originalUmlElementInfo.setEffectIdx(finalizedUmlElementInfo.getEffectIdx());
-            }
-            guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
-        } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
-            UmlElementInfo originalUmlElementInfo;
-            UmlElementInfo finalizedUmlElementInfo = finalizedUmlElementsToUmlElementInfoMap.get(umlElement);
-            if (finalizedUmlElementInfo == null) {
-                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
-                // UML element to refer to. Create an empty UML element info.
-                originalUmlElementInfo = new UmlElementInfo(null);
-            } else {
-                // Create a new UML element info object, that refers to the original UML element.
-                originalUmlElementInfo = new UmlElementInfo(finalizedUmlElementInfo.getUmlElement());
-                originalUmlElementInfo.setStartAction(finalizedUmlElementInfo.isStartAction());
-                originalUmlElementInfo.setMerged(finalizedUmlElementInfo.isMerged());
-                originalUmlElementInfo.setEffectIdx(finalizedUmlElementInfo.getEffectIdx());
+                break;
             }
 
-            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
-        } else {
-            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+            case TranslationPurpose.GUARD_COMPUTATION: {
+                // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
+                // event stemming from it. We need to link this CIF event to the finalized event, and also to the
+                // original UML element of the input model. The CIF event to finalized UML element defines a start,
+                // non-merged action (similarly to the synthesis case). The CIF event to the original UML element
+                // inherits the action attributes from the previous step in the synthesis chain, i.e. the finalized UML
+                // element info.
+
+                // Store the CIF event in relation to the finalized UML element info.
+                guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
+
+                // Store the CIF event in relation to the original UML element corresponding to the finalized UML
+                // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
+                // original UML element to refer to, hence create an empty UML element info.
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                        .get(umlElement) == null) ? new UmlElementInfo(null)
+                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+
+                break;
+            }
+
+            case TranslationPurpose.LANGUAGE_EQUIVALENCE: {
+                // Store the CIF event in relation to the original UML element corresponding to the finalized UML
+                // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
+                // original UML element to refer to, hence create an empty UML element info.
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                        .get(umlElement) == null) ? new UmlElementInfo(null)
+                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+
+                break;
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
 
@@ -167,84 +163,87 @@ public class SynthesisUmlElementTracking {
         umlElementInfo.setMerged(false);
         umlElementInfo.setEffectIdx(effectNr);
 
-        if (purpose == TranslationPurpose.SYNTHESIS) {
-            synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
-            namesToCifEvents.put(cifEvent.getName(), cifEvent);
-            unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
-        } else if (purpose == TranslationPurpose.GUARD_COMPUTATION) {
-            // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
-            // event stemming from it. We need to link this CIF event to the finalized event, and also to the original
-            // UML element of the input model. The CIF event to finalized UML element defines a start, non-merged action
-            // (similarly to the synthesis case). The CIF event to the original UML element inherits the action
-            // attributes from the previous step in the synthesis chain, i.e. the finalized UML element info.
+        switch (purpose) {
+            case TranslationPurpose.SYNTHESIS: {
+                synthesisCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo);
+                namesToCifEvents.put(cifEvent.getName(), cifEvent);
+                unalteredCifEventsToUmlElementInfo.put(cifEvent, umlElementInfo.copy());
+                break;
+            }
 
-            // Store the CIF event in relation to the finalized UML element info.
-            guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
+            case TranslationPurpose.GUARD_COMPUTATION: {
+                // In guard computation, the UML element represents the finalized UML element, and the CIF event is the
+                // event stemming from it. We need to link this CIF event to the finalized event, and also to the
+                // original UML element of the input model. The CIF event to finalized UML element defines a start,
+                // non-merged action (similarly to the synthesis case). The CIF event to the original UML element
+                // inherits the action attributes from the previous step in the synthesis chain, i.e. the finalized UML
+                // element info.
 
-            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
-            UmlElementInfo originalUmlElementInfo;
-            if (finalizedUmlElementsToUmlElementInfoMap.get(umlElement) == null) {
-                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
-                // UML element to refer to. Create an empty UML element info.
-                originalUmlElementInfo = new UmlElementInfo(null);
-            } else {
-                // Create a new UML element info object, that refers to the original UML element, and set its attributes
-                // as an end, non-merged action and the corresponding index.
-                originalUmlElementInfo = new UmlElementInfo(
-                        finalizedUmlElementsToUmlElementInfoMap.get(umlElement).getUmlElement());
+                // Store the CIF event in relation to the finalized UML element info.
+                guardComputationCifEventsToFinalizedUmlElementInfo.put(cifEvent, umlElementInfo);
+
+                // Store the CIF event in relation to the original UML element corresponding to the finalized UML
+                // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
+                // original UML element to refer to. Create an empty UML element info.
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                        .get(umlElement) == null) ? new UmlElementInfo(null)
+                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
                 originalUmlElementInfo.setStartAction(false);
                 originalUmlElementInfo.setMerged(false);
                 originalUmlElementInfo.setEffectIdx(effectNr);
+
+                guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+
+                break;
             }
-            guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
-        } else if (purpose == TranslationPurpose.LANGUAGE_EQUIVALENCE) {
-            // Store the CIF event in relation to the original UML element corresponding to the finalized UML element.
-            UmlElementInfo originalUmlElementInfo;
-            if (finalizedUmlElementsToUmlElementInfoMap.get(umlElement) == null) {
-                // If the current CIF element corresponds to a control node (e.g. decision node), there is no original
-                // UML element to refer to. Create an empty UML element info.
-                originalUmlElementInfo = new UmlElementInfo(null);
-            } else {
-                // Create a new UML element info object, that refers to the original UML element, and set its attributes
-                // as an end, non-merged action and the corresponding index.
-                originalUmlElementInfo = new UmlElementInfo(
-                        finalizedUmlElementsToUmlElementInfoMap.get(umlElement).getUmlElement());
+
+            case TranslationPurpose.LANGUAGE_EQUIVALENCE: {
+                // Store the CIF event in relation to the original UML element corresponding to the finalized UML
+                // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
+                // original UML element to refer to. Create an empty UML element info.
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                        .get(umlElement) == null) ? new UmlElementInfo(null)
+                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
                 originalUmlElementInfo.setStartAction(false);
                 originalUmlElementInfo.setMerged(false);
                 originalUmlElementInfo.setEffectIdx(effectNr);
+
+                languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
+
+                break;
             }
 
-            languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
-        } else {
-            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
 
     public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        Map<Event, UmlElementInfo> mapToFilter;
         switch (purpose) {
             case SYNTHESIS: {
-                return synthesisCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                        : synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
-                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+                mapToFilter = synthesisCifEventsToUmlElementInfo;
+                break;
             }
             case GUARD_COMPUTATION: {
-                // Return the map from CIF events generated for the guard computation step, to the finalized UML
+                // Utilize the map from CIF events generated for the guard computation step, to the finalized UML
                 // elements info, *not* the original UML elements.
-                return guardComputationCifEventsToFinalizedUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                        : guardComputationCifEventsToFinalizedUmlElementInfo.entrySet().stream()
-                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
-                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+                mapToFilter = guardComputationCifEventsToFinalizedUmlElementInfo;
+                break;
             }
             case LANGUAGE_EQUIVALENCE: {
-                return languageEquivalenceCifEventsToUmlElementInfo.isEmpty() ? new LinkedHashMap<>()
-                        : languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
-                                .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
-                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+                mapToFilter = languageEquivalenceCifEventsToUmlElementInfo;
+                break;
             }
             default:
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
+
+        // Return the map from start events to the corresponding UML elements.
+        return mapToFilter.isEmpty() ? new LinkedHashMap<>()
+                : mapToFilter.entrySet().stream()
+                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
     }
 
     public UmlElementInfo getUmlElementInfo(Event event) {
@@ -568,6 +567,25 @@ public class SynthesisUmlElementTracking {
         return actionsToUmlElementInfoMap.get(action);
     }
 
+    public void removeInternalActions() {
+        // Removes internal actions created for petrification.
+        Set<Action> actionsToRemove = new LinkedHashSet<>();
+        for (Entry<Action, UmlElementInfo> entry: actionsToUmlElementInfoMap.entrySet()) {
+            if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
+                actionsToRemove.add(entry.getKey());
+            }
+        }
+        actionsToRemove.stream().forEach(a -> actionsToUmlElementInfoMap.remove(a));
+
+        Set<Event> cifEventsToRemove = new LinkedHashSet<>();
+        for (Entry<Event, UmlElementInfo> entry: synthesisCifEventsToUmlElementInfo.entrySet()) {
+            if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
+                cifEventsToRemove.add(entry.getKey());
+            }
+        }
+        cifEventsToRemove.stream().forEach(a -> synthesisCifEventsToUmlElementInfo.remove(a));
+    }
+
     // Section dealing with finalized UML elements.
 
     public void addFinalizedUmlElement(RedefinableElement finalizedUmlElement,
@@ -576,6 +594,8 @@ public class SynthesisUmlElementTracking {
         finalizedUmlElementsToUmlElementInfoMap.put(finalizedUmlElement,
                 actionsToUmlElementInfoMap.get(incompleteUmlElement));
     }
+
+    // Helpers.
 
     /**
      * Helper function, to reverse the given mapping.
