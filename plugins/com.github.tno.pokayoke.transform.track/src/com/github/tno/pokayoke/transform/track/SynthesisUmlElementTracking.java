@@ -227,7 +227,10 @@ public class SynthesisUmlElementTracking {
     }
 
     /**
-     * Get the map of start events for different translation purposes.
+     * Get the map from CIF start events to their corresponding UML elements for different translation purposes. The
+     * start event map represents the relation between CIF events and the UML elements they were generated for, hence
+     * for the guard computation case, returns the map from CIF events to the finalized UML elements, *not* the
+     * original, input elements.
      *
      * @param purpose The enumeration informing on which translation is occurring.
      * @return The map from CIF start events to their corresponding UML element infos.
@@ -240,8 +243,6 @@ public class SynthesisUmlElementTracking {
                 break;
             }
             case GUARD_COMPUTATION: {
-                // Utilize the map from CIF events generated for the guard computation step, to the finalized UML
-                // elements info, *not* the original UML elements.
                 cifEventsToUMlElementInfos = guardComputationCifEventsToFinalizedUmlElementInfo;
                 break;
             }
@@ -260,12 +261,29 @@ public class SynthesisUmlElementTracking {
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
     }
 
-    public UmlElementInfo getUmlElementInfo(Event event) {
-        return synthesisCifEventsToUmlElementInfo.get(event);
-    }
+    /**
+     * Return whether the CIF event represents a start action.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if
+     */
+    public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
 
-    public boolean isStartEvent(Event cifEvent) {
-        return synthesisCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
+
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
     }
 
     public void updateEndAtomicNonDeterministic(List<String> removedEventNames) {
