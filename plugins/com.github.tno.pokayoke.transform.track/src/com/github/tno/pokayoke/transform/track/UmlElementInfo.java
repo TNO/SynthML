@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -154,10 +155,11 @@ public class UmlElementInfo {
         return false;
     }
 
-    public boolean isInternal() {
-        return umlElement instanceof DecisionNode || umlElement instanceof MergeNode || umlElement instanceof ForkNode
-                || umlElement instanceof JoinNode || umlElement instanceof InitialNode
-                || umlElement instanceof ActivityFinalNode || umlElement == null;
+    public boolean isInternal(Activity activity) {
+        return umlElement == null || umlElement instanceof DecisionNode || umlElement instanceof MergeNode
+                || umlElement instanceof ForkNode || umlElement instanceof JoinNode || umlElement instanceof InitialNode
+                || umlElement instanceof ActivityFinalNode
+                || (!(umlElement instanceof OpaqueBehavior) && !umlElement.eContainer().equals(activity));
     }
 
     /**
