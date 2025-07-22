@@ -665,6 +665,10 @@ public class SynthesisUmlElementTracking {
         return actionsToUmlElementInfoMap.get(action);
     }
 
+    /**
+     * Remove the internal actions created for petrification, in both action to UML element map and CIF event to UML
+     * element map. Specifically targeted at the "__start" and "__end" events.
+     */
     public void removeInternalActions() {
         // Removes internal actions created for petrification.
         Set<Action> actionsToRemove = new LinkedHashSet<>();
@@ -691,25 +695,5 @@ public class SynthesisUmlElementTracking {
     {
         finalizedUmlElementsToUmlElementInfo.put(finalizedUmlElement,
                 actionsToUmlElementInfoMap.get(incompleteUmlElement));
-    }
-
-    // Helpers.
-
-    /**
-     * Helper function, to reverse the given mapping.
-     *
-     * @param <T> The domain of map to reverse.
-     * @param <U> The codomain the the map to reverse.
-     * @param map The map to reverse.
-     * @return The reversed map.
-     */
-    public static <T, U> Map<U, List<T>> reverse(Map<T, U> map) {
-        Map<U, List<T>> result = new LinkedHashMap<>();
-
-        for (Entry<T, U> entry: map.entrySet()) {
-            result.computeIfAbsent(entry.getValue(), e -> new ArrayList<>()).add(entry.getKey());
-        }
-
-        return result;
     }
 }
