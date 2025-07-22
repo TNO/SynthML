@@ -516,7 +516,7 @@ public class SynthesisUmlElementTracking {
                 UmlElementInfo languageUmlElementInfo = entryLanguage.getValue();
 
                 // Store the equivalent events.
-                if (synthesisUmlElementInfo.isEquivalent(languageUmlElementInfo)) {
+                if (synthesisUmlElementInfo.isEquivalentWithoutStructure(languageUmlElementInfo)) {
                     equivalentEvents.add(entryLanguage.getKey());
                     usedPostSynthEvents.add(entryLanguage.getKey());
                 }

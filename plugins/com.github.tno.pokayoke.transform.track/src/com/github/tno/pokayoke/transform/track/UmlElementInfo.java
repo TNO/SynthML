@@ -37,14 +37,19 @@ public class UmlElementInfo {
 
     /**
      * {@code true} if the CIF event associated to the UML element is the start event of a non-atomic or
-     * non-deterministic action, or if the UML element is atomic.
+     * non-deterministic action, or if the UML element is atomic. By default, all control nodes are translated as a
+     * start event, and thus are start actions. It can be {@code false} only for the events/action related to the end of
+     * non-merged non-atomic or non-deterministic UML elements.
      */
     private boolean isStartAction;
 
     /** Represents the effect index of non-atomic or non-deterministic actions. */
     private int effectIdx;
 
-    /** {@code true} if the Petri net transition pattern has been merged during the synthesis chain. */
+    /**
+     * {@code true} if the atomic non-deterministic event pattern, or if the Petri net non-atomic transition pattern has
+     * been merged during the synthesis chain.
+     */
     private boolean isMerged;
 
     public UmlElementInfo(RedefinableElement umlElement) {
@@ -111,7 +116,15 @@ public class UmlElementInfo {
         this.effectIdx = n;
     }
 
-    public boolean isEquivalent(UmlElementInfo thatUmlElementInfo) {
+    /**
+     * Return {@code true} if the UML element info is equivalent to the input UML element info. Equivalence is based on
+     * all the fields, excluding 'isMerged' which represents structural information about how the CIF event (or Petri
+     * net transition, or UML finalized action) have been used in the synthesis chain so far.
+     *
+     * @param thatUmlElementInfo The UML element info to compare.
+     * @return {@code true} if the input UML element info is equivalent to the current one.
+     */
+    public boolean isEquivalentWithoutStructure(UmlElementInfo thatUmlElementInfo) {
         // Check if all fields are equal, excluding field 'isMerged' which is a structural information, and does not
         // regard the UML element per se. It is used only for finalizing the action.
         if (isAtomic != thatUmlElementInfo.isAtomic() || isDeterministic != thatUmlElementInfo.isDeterministic()
