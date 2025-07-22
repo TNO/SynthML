@@ -25,9 +25,8 @@ public class StateAwareWeakLanguageEquivalenceHelper {
     }
 
     /**
-     * Prepares two CIF models for the language equivalence check. Performs sanity checks, removes internal variables
-     * from state annotations, and maps the events of one state space to the events of the other. Returns a record
-     * containing the mapped events, and the filtered state annotations.
+     * Prepares two CIF models for the language equivalence check. Performs sanity checks, and removes internal
+     * variables from state annotations. Returns a record containing the filtered state annotations.
      *
      * @param model1 The first CIF model.
      * @param model2 The second CIF model.
