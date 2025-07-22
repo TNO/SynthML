@@ -46,18 +46,12 @@ public class SynthesisUmlElementTracking {
 
     /**
      * The map from CIF events generated for the synthesis to their corresponding UML element info. Gets updated as the
-     * synthesis chain rewrites events.
+     * synthesis chain rewrites, removes, or add events.
      */
     private Map<Event, UmlElementInfo> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
-    /** The map from CIF event names generated for the synthesis to their corresponding UML element info. */
+    /** The map from CIF event names generated for the synthesis to their corresponding CIF events. */
     private Map<String, Event> namesToCifEvents = new LinkedHashMap<>();
-
-    /** The map from CIF events generated for guard computation to their corresponding UML element info. */
-    private Map<Event, UmlElementInfo> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
-
-    /** The map from CIF events generated for language equivalence to their corresponding UML element info. */
-    private Map<Event, UmlElementInfo> languageEquivalenceCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The map from Petri net transitions to their corresponding UML element info. */
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
@@ -66,13 +60,19 @@ public class SynthesisUmlElementTracking {
     private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap = new LinkedHashMap<>();
 
     /** The map from finalized UML elements to their corresponding original UML element info. */
-    private Map<RedefinableElement, UmlElementInfo> finalizedUmlElementsToUmlElementInfoMap = new LinkedHashMap<>();
+    private Map<RedefinableElement, UmlElementInfo> finalizedUmlElementsToUmlElementInfo = new LinkedHashMap<>();
+
+    /** The map from CIF events generated for guard computation to their corresponding UML element info. */
+    private Map<Event, UmlElementInfo> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
      * The map from CIF events generated for guard computation to their corresponding synthesized model UML element
      * info.
      */
     private Map<Event, UmlElementInfo> guardComputationCifEventsToFinalizedUmlElementInfo = new LinkedHashMap<>();
+
+    /** The map from CIF events generated for language equivalence to their corresponding UML element info. */
+    private Map<Event, UmlElementInfo> languageEquivalenceCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The set of internal CIF events (e.g. corresponding to control nodes) generated for synthesis. */
     private Set<Event> internalSynthesisEvents = new LinkedHashSet<>();
@@ -125,9 +125,9 @@ public class SynthesisUmlElementTracking {
                 // Store the CIF event in relation to the original UML element corresponding to the finalized UML
                 // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
                 // original UML element to refer to, hence create an empty UML element info.
-                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfo
                         .get(umlElement) == null) ? new UmlElementInfo(null)
-                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                                : finalizedUmlElementsToUmlElementInfo.get(umlElement).copy();
                 guardComputationCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
 
                 break;
@@ -137,9 +137,9 @@ public class SynthesisUmlElementTracking {
                 // Store the CIF event in relation to the original UML element corresponding to the finalized UML
                 // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
                 // original UML element to refer to, hence create an empty UML element info.
-                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfo
                         .get(umlElement) == null) ? new UmlElementInfo(null)
-                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                                : finalizedUmlElementsToUmlElementInfo.get(umlElement).copy();
                 languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
 
                 break;
@@ -185,9 +185,9 @@ public class SynthesisUmlElementTracking {
                 // Store the CIF event in relation to the original UML element corresponding to the finalized UML
                 // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
                 // original UML element to refer to. Create an empty UML element info.
-                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfo
                         .get(umlElement) == null) ? new UmlElementInfo(null)
-                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                                : finalizedUmlElementsToUmlElementInfo.get(umlElement).copy();
                 originalUmlElementInfo.setStartAction(false);
                 originalUmlElementInfo.setMerged(false);
                 originalUmlElementInfo.setEffectIdx(effectNr);
@@ -201,9 +201,9 @@ public class SynthesisUmlElementTracking {
                 // Store the CIF event in relation to the original UML element corresponding to the finalized UML
                 // element. If the current CIF element corresponds to a control node (e.g. decision node), there is no
                 // original UML element to refer to. Create an empty UML element info.
-                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfoMap
+                UmlElementInfo originalUmlElementInfo = (finalizedUmlElementsToUmlElementInfo
                         .get(umlElement) == null) ? new UmlElementInfo(null)
-                                : finalizedUmlElementsToUmlElementInfoMap.get(umlElement).copy();
+                                : finalizedUmlElementsToUmlElementInfo.get(umlElement).copy();
                 originalUmlElementInfo.setStartAction(false);
                 originalUmlElementInfo.setMerged(false);
                 originalUmlElementInfo.setEffectIdx(effectNr);
@@ -591,7 +591,7 @@ public class SynthesisUmlElementTracking {
     public void addFinalizedUmlElement(RedefinableElement finalizedUmlElement,
             RedefinableElement incompleteUmlElement)
     {
-        finalizedUmlElementsToUmlElementInfoMap.put(finalizedUmlElement,
+        finalizedUmlElementsToUmlElementInfo.put(finalizedUmlElement,
                 actionsToUmlElementInfoMap.get(incompleteUmlElement));
     }
 
