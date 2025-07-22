@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-//import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
@@ -73,6 +73,12 @@ public class SynthesisUmlElementTracking {
      * info.
      */
     private Map<Event, UmlElementInfo> guardComputationCifEventsToFinalizedUmlElementInfo = new LinkedHashMap<>();
+
+    /** The set of internal CIF events (e.g. corresponding to control nodes) generated for synthesis. */
+    private Set<Event> internalSynthesisEvents = new LinkedHashSet<>();
+
+    /** The set of internal CIF events (e.g. corresponding to control nodes) generated for language equivalence. */
+    private Set<Event> internalLanguageEquivalenceEvents = new LinkedHashSet<>();
 
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
@@ -371,13 +377,38 @@ public class SynthesisUmlElementTracking {
         }
     }
 
-    // TODO: here. make it work.
-    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired() {
+    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Activity activity) {
         // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
         // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
 
         // Initialize map of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
+
+        // Divide internal and external events for the synthesis map.
+        Map<Event, UmlElementInfo> externalSynthesisEventsMap = new LinkedHashMap<>();
+        for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
+            // Only for opaque behaviors, opaque actions, and call behaviors.
+            UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
+
+            if (synthesisUmlElementInfo.isInternal(activity)) {
+                internalSynthesisEvents.add(entrySynth.getKey());
+            } else {
+                externalSynthesisEventsMap.put(entrySynth.getKey(), synthesisUmlElementInfo);
+            }
+        }
+
+        // Divide internal and external events for the language equivalence map.
+        Map<Event, UmlElementInfo> externalLanguageEqEventsMap = new LinkedHashMap<>();
+        for (Entry<Event, UmlElementInfo> entrySynth: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
+            // Only for opaque behaviors, opaque actions, and call behaviors.
+            UmlElementInfo languageEqUmlElementInfo = entrySynth.getValue();
+
+            if (languageEqUmlElementInfo.isInternal(activity)) {
+                internalLanguageEquivalenceEvents.add(entrySynth.getKey());
+            } else {
+                externalLanguageEqEventsMap.put(entrySynth.getKey(), languageEqUmlElementInfo);
+            }
+        }
 
         // Store the paired events of the post-synthesis model. If some events are not paired, they do not have a
         // corresponding UML element at the beginning of the synthesis: throw an error to flag this. Note that the
@@ -385,24 +416,21 @@ public class SynthesisUmlElementTracking {
         // these should not have any paired events in the post-synthesis UMl model.
         Set<Event> usedPostSynthEvents = new LinkedHashSet<>();
 
-        for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
+        for (Entry<Event, UmlElementInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
             // Only for opaque behaviors, opaque actions, and call behaviors.
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
 
-            if (synthesisUmlElementInfo.isInternal()) {
+            if (synthesisUmlElementInfo.isInternal(activity)) {
                 continue;
             }
 
             List<Event> equivalentEvents = new ArrayList<>();
 
-            for (Entry<Event, UmlElementInfo> entryLanguage: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
+            for (Entry<Event, UmlElementInfo> entryLanguage: externalLanguageEqEventsMap.entrySet()) {
                 UmlElementInfo languageUmlElementInfo = entryLanguage.getValue();
 
-                // If internal event, store it in the internal events set. Otherwise, check if it is equivalent to the
-                // CIF event from synthesis.
-                if (languageUmlElementInfo.isInternal()) {
-                    usedPostSynthEvents.add(entryLanguage.getKey());
-                } else if (synthesisUmlElementInfo.isEquivalent(languageUmlElementInfo)) {
+                // Store the equivalent events.
+                if (synthesisUmlElementInfo.isEquivalent(languageUmlElementInfo)) {
                     equivalentEvents.add(entryLanguage.getKey());
                     usedPostSynthEvents.add(entryLanguage.getKey());
                 }
@@ -413,14 +441,22 @@ public class SynthesisUmlElementTracking {
             }
         }
 
-        // Sanity check: all CIF events in the post-synthesis UML model should be paired, unless they represent internal
-        // actions.
-        Verify.verify(usedPostSynthEvents.equals(languageEquivalenceCifEventsToUmlElementInfo.keySet()),
+        // Sanity check: all external CIF events in the post-synthesis UML model should be paired with an event from the
+        // synthesis phase.
+        Verify.verify(usedPostSynthEvents.equals(externalLanguageEqEventsMap.keySet()),
                 String.format("Found unused events %s in the post-synthesis UML model.",
-                        Sets.difference(languageEquivalenceCifEventsToUmlElementInfo.keySet(), usedPostSynthEvents)
-                                .stream().map(e -> e.getName()).toList()));
+                        Sets.difference(externalLanguageEqEventsMap.keySet(), usedPostSynthEvents).stream()
+                                .map(e -> e.getName()).toList()));
 
         return pairedEvents;
+    }
+
+    public Set<Event> getInternalSynthesisEvents() {
+        return internalSynthesisEvents;
+    }
+
+    public Set<Event> getInternalLanguageEqEvents() {
+        return internalLanguageEquivalenceEvents;
     }
 
     // Section dealing with Petri net transitions.
