@@ -62,7 +62,6 @@ import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralInteger;
 import org.eclipse.uml2.uml.MergeNode;
-import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -137,18 +136,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping from UML occurrence constraints to corresponding translated CIF requirement automata. */
     private final Map<IntervalConstraint, List<Automaton>> occurrenceConstraintMap = new LinkedHashMap<>();
 
-    /**
-     * The one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their corresponding
-     * CIF events.
-     */
-    private final Map<String, List<Event>> normalizedNameToEvents = new LinkedHashMap<>();
-
-    /**
-     * The internal events of the generated CIF specification, i.e. events that are not observable from the UML model
-     * point-of-view.
-     */
-    private final Set<Event> internalEvents = new LinkedHashSet<>();
-
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
@@ -167,26 +154,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Activity getActivity() {
         return activity;
-    }
-
-    /**
-     * Returns the one-to-many mapping from normalized names (see {@link #normalizeName}) of UML elements to their
-     * corresponding CIF events.
-     *
-     * @return The mapping.
-     */
-    public Map<String, List<Event>> getNormalizedNameToEventsMap() {
-        return normalizedNameToEvents;
-    }
-
-    /**
-     * Returns the internal events of the generated CIF specification, i.e. events that are not observable from the UML
-     * model point-of-view.
-     *
-     * @return The set of internal events.
-     */
-    public Set<Event> getInternalEvents() {
-        return internalEvents;
     }
 
     /**
@@ -546,26 +513,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Store the CIF event into the synthesis tracker.
         synthesisUmlElementsTracker.addCifEvent(cifStartEvent, umlElement, translationPurpose);
 
-        // Add the start event to the normalized name to event map.
-        if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
-                || umlElement instanceof OpaqueBehavior)
-        {
-            // We normalize for synthesis and language equivalence check purposes, as the models generated for those
-            // purposes these need to be compared by the language equivalence check. We don't do it for guard
-            // computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to detect
-            // opaque actions that originated from split non-deterministic actions that haven't been merged back.
-            // Later, we want to get rid of the name-based approach and have earlier steps produce the relevant
-            // information, so that we know which actions represent starts/ends, but until then we keep basing this
-            // on the names.
-            if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
-                // Add the event to the corresponding normalized name. More events may correspond to the same name.
-                normalizedNameToEvents.computeIfAbsent(normalizeName(umlAction, ""), k -> new ArrayList<>())
-                        .add(cifStartEvent);
-            }
-        } else {
-            internalEvents.add(cifStartEvent);
-        }
-
         // Create a CIF edge for this start event.
         EventExpression cifEventExpr = CifConstructors.newEventExpression();
         cifEventExpr.setEvent(cifStartEvent);
@@ -597,27 +544,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         : SynthesisUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX;
                 cifEndEvent.setName(name + outcomeSuffix + (i + 1));
                 cifEndEvents.add(cifEndEvent);
-
-                // Add the end event to the normalized names to event map.
-                if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
-                        || umlElement instanceof OpaqueBehavior)
-                {
-                    // We normalize for synthesis and language equivalence check purposes, as the models generated for
-                    // those purposes these need to be compared by the language equivalence check. We don't do it for
-                    // guard computation, as there we then lose 'start' and 'end' post-fixes in names, which we need to
-                    // detect opaque actions that originated from split non-deterministic actions that haven't been
-                    // merged back. Later, we want to get rid of the name-based approach and have earlier steps produce
-                    // the relevant information, so that we know which actions represent starts/ends, but until then we
-                    // keep basing this on the names.
-                    if (translationPurpose != TranslationPurpose.GUARD_COMPUTATION) {
-                        normalizedNameToEvents
-                                .computeIfAbsent(normalizeName(umlAction, outcomeSuffix + String.valueOf(i + 1)),
-                                        k -> new ArrayList<>())
-                                .add(cifEndEvent);
-                    }
-                } else {
-                    internalEvents.add(cifEndEvent);
-                }
 
                 // Make the CIF edge for the uncontrollable end event.
                 EventExpression cifEndEventExpr = CifConstructors.newEventExpression();
@@ -1610,7 +1536,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (internalEvents.contains(cifEvent)) {
+                    if (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose, activity)) {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place.
@@ -1693,35 +1619,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         }
 
         return cifInvariants;
-    }
-
-    /**
-     * For a UML element, returns a normalized name that is consistent pre and post synthesis. It is used to map a CIF
-     * event to the underlying UML element: e.g., if the element is a call behavior action, it refers to the called
-     * element.
-     *
-     * @param umlElement The UML element.
-     * @param postfix A string that is added to the normalized name; it can be empty.
-     * @return The normalized name of the UML element.
-     */
-    private String normalizeName(NamedElement umlElement, String postfix) {
-        // Get to the called behavior.
-        if (umlElement instanceof CallBehaviorAction cbAction) {
-            umlElement = cbAction.getBehavior();
-        }
-
-        // If name contains the post-synthesis identifier for the start or end of a non-atomic action, replace it with
-        // its original non-atomic action identifier.
-        String elementName = umlElement.getName();
-        if (elementName.endsWith(START_ACTION_SUFFIX)) {
-            umlElement.setName(elementName.substring(0, elementName.length() - START_ACTION_SUFFIX.length()));
-        } else if (elementName.contains(END_ACTION_SUFFIX)) {
-            umlElement.setName(elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX))
-                    + SynthesisUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX
-                    + elementName.substring(elementName.lastIndexOf(END_ACTION_SUFFIX) + END_ACTION_SUFFIX.length()));
-        }
-
-        return "UML_element__" + umlElement.getName() + postfix;
     }
 
     /**
