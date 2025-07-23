@@ -610,6 +610,29 @@ public class SynthesisChainUmlElementTracking {
         return actionsToUmlElementInfoMap.get(action);
     }
 
+    /**
+     * Remove the internal actions created for petrification, in both action to UML element map and CIF event to UML
+     * element map. Specifically targeted at the "__start" and "__end" events.
+     */
+    public void removeInternalActions() {
+        // Removes internal actions created for petrification.
+        Set<Action> actionsToRemove = new LinkedHashSet<>();
+        for (Entry<Action, UmlElementInfo> entry: actionsToUmlElementInfoMap.entrySet()) {
+            if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
+                actionsToRemove.add(entry.getKey());
+            }
+        }
+        actionsToRemove.stream().forEach(a -> actionsToUmlElementInfoMap.remove(a));
+
+        Set<Event> cifEventsToRemove = new LinkedHashSet<>();
+        for (Entry<Event, UmlElementInfo> entry: synthesisCifEventsToUmlElementInfo.entrySet()) {
+            if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
+                cifEventsToRemove.add(entry.getKey());
+            }
+        }
+        cifEventsToRemove.stream().forEach(a -> synthesisCifEventsToUmlElementInfo.remove(a));
+    }
+
     // Section dealing with finalized UML elements.
 
     public void addFinalizedUmlElement(RedefinableElement finalizedUmlElement,
