@@ -56,8 +56,8 @@ public class SynthesisUmlElementTracking {
     /** The map from Petri net transitions to their corresponding UML element info. */
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
 
-    /** The map from UML opaque actions to their corresponding original UML element info. */
-    private Map<Action, UmlElementInfo> activityNodesToUmlElementInfoMap = new LinkedHashMap<>();
+    /** The map from UML activity nodes to their corresponding original UML element info. */
+    private Map<ActivityNode, UmlElementInfo> activityNodesToUmlElementInfoMap = new LinkedHashMap<>();
 
     /** The map from finalized UML elements to their corresponding original UML element info. */
     private Map<RedefinableElement, UmlElementInfo> finalizedUmlElementsToUmlElementInfo = new LinkedHashMap<>();
@@ -671,7 +671,7 @@ public class SynthesisUmlElementTracking {
     // Section dealing with new UML opaque actions.
 
     public void addActivityNode(Transition transiton, Action action) {
-        // Update the action to UML element info map.
+        // Update the activity nodes to UML element info map.
         activityNodesToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
 
@@ -707,10 +707,12 @@ public class SynthesisUmlElementTracking {
      */
     public void removeInternalActions() {
         // Removes internal actions created for petrification.
-        Set<Action> actionsToRemove = new LinkedHashSet<>();
-        for (Entry<Action, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
-            if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
-                actionsToRemove.add(entry.getKey());
+        Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
+        for (Entry<ActivityNode, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
+            if (entry.getKey() instanceof OpaqueAction oAction && entry.getKey().getName().contains("__")
+                    && entry.getValue().getUmlElement() == null)
+            {
+                actionsToRemove.add(oAction);
             }
         }
         actionsToRemove.stream().forEach(a -> activityNodesToUmlElementInfoMap.remove(a));
