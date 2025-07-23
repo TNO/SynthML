@@ -3,17 +3,14 @@ package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
@@ -30,6 +27,9 @@ import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionMergePattern;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking.ActionKind;
+import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -148,14 +148,11 @@ public class PostProcessActivity {
      * extra guards/effects.
      *
      * @param activity The activity for which to finalize the opaque actions.
-     * @param rewrittenNonAtomicActions All non-atomic actions that have already been rewritten (on Petri Net level).
-     * @param endEventMap The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML
-     *     elements and the index of the corresponding effect of the end event.
-     * @param nonAtomicOutcomeSuffix The name suffix that was used to indicate a non-atomic action outcome.
+     * @param synthesisTracker The tracker containing the original UML element and information about the synthesis chain
+     *     manipulations for each action.
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
-    public static void finalizeOpaqueActions(Activity activity, Set<Action> rewrittenNonAtomicActions,
-            Map<String, Pair<RedefinableElement, Integer>> endEventMap, String nonAtomicOutcomeSuffix,
+    public static void finalizeOpaqueActions(Activity activity, SynthesisChainUmlElementTracking synthesisTracker,
             List<String> warnings)
     {
         CifContext context = new CifContext(activity.getModel());
@@ -168,67 +165,90 @@ public class PostProcessActivity {
                             "Expected only opaque actions, found: " + action.getClass().getSimpleName());
                 }
 
-                // Rewrite/adapt the opaque action, if needed.
-                String actionName = action.getName();
-                Behavior behavior = context.getOpaqueBehavior(actionName);
-                if (behavior != null
-                        && (PokaYokeUmlProfileUtil.isAtomic(behavior) || rewrittenNonAtomicActions.contains(action)))
-                {
-                    // Atomic opaque behavior, or start of a rewritten non-atomic action. Transform it to a call
-                    // behavior.
-                    CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
-                    callAction.setBehavior(behavior);
-                    callAction.setActivity(activity);
-                    callAction.setName(action.getName());
+                if (isInternalAction(action)) {
+                    // If the action is internal, skip the current action.
+                    continue;
+                }
 
-                    // Redirect the incoming/outgoing control flow edges, and destroy the original action.
-                    action.getIncomings().get(0).setTarget(callAction);
-                    action.getOutgoings().get(0).setSource(callAction);
-                    action.destroy();
-                } else if (behavior != null) {
-                    // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
-                    // opaque action.
-                    action.setName(behavior.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
-                    PokaYokeUmlProfileUtil.setAtomic(action, true);
-                    PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(behavior));
+                // Get the kind of action, and finalize the opaque action accordingly.
+                ActionKind actionKind = synthesisTracker.getActionKind(action);
+                RedefinableElement umlElement = synthesisTracker.getUmlElementInfo(action).getUmlElement();
 
-                    // Add a warning that the non-atomic start action has not been fully merged.
-                    warnings.add(String.format(
-                            "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
-                            behavior.getName(), actionName));
-                } else if (!isInternalAction(action)) {
-                    // Sanity check.
-                    Verify.verify(!rewrittenNonAtomicActions.contains(action),
-                            "The end of a non-atomic action is contained in the set of rewritten actions.");
-                    Verify.verify(actionName.contains(nonAtomicOutcomeSuffix),
-                            "End of non-atomic action name does not contain the non-atomic outcome suffix.");
+                switch (actionKind) {
+                    case COMPLETE_OPAQUE_BEHAVIOR -> {
+                        // The action represents an atomic opaque behavior, or the start of a rewritten non-atomic
+                        // action. Transform it to a call behavior.
+                        CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
+                        callAction.setBehavior((OpaqueBehavior)umlElement);
+                        callAction.setActivity(activity);
+                        callAction.setName(action.getName());
 
-                    // The action is the end of a non-rewritten non-atomic action. Add its effects to the opaque action.
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(callAction, action);
 
-                    // Find the UML element for the non-atomic action, and the index to the relevant effect.
-                    Pair<RedefinableElement, Integer> actionAndEffectIndex = endEventMap.get(actionName);
-                    Verify.verifyNotNull(actionAndEffectIndex, String
-                            .format("Expected the CIF end event '%s' to map to a non-atomic UML element.", actionName));
+                        // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                        action.getIncomings().get(0).setTarget(callAction);
+                        action.getOutgoings().get(0).setSource(callAction);
+                        action.destroy();
 
-                    // Determine the UML opaque behavior that has the guard and effects of the current action.
-                    RedefinableElement actionElement = actionAndEffectIndex.left;
-                    if (actionElement instanceof CallBehaviorAction cbAction) {
-                        actionElement = cbAction.getBehavior();
+                        break;
                     }
-                    Verify.verify(actionElement instanceof OpaqueBehavior,
-                            "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
+                    case START_OPAQUE_BEHAVIOR -> {
+                        // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
+                        // opaque action.
+                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
 
-                    // Rename the current action, set its guard to 'true', and retain the original relevant effect.
-                    action.setName(actionName.replace(nonAtomicOutcomeSuffix, UmlToCifTranslator.END_ACTION_SUFFIX));
-                    PokaYokeUmlProfileUtil.setAtomic(action, true);
-                    PokaYokeUmlProfileUtil.setGuard(action, "true");
-                    String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(actionAndEffectIndex.right);
-                    PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
 
-                    // Add a warning that the non-atomic end action has not been fully merged.
-                    warnings.add(String.format(
-                            "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
-                            actionElement.getName(), action.getName()));
+                        // Add a warning that the non-atomic start action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                                umlElement.getName(), action.getName()));
+
+                        break;
+                    }
+                    case END_OPAQUE_BEHAVIOR -> {
+                        // Sanity check.
+                        Verify.verify(
+                                action.getName().contains(SynthesisChainUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX),
+                                "End of non-atomic action name does not contain the non-atomic outcome suffix.");
+
+                        // The action is the end of a non-rewritten non-atomic action. Add its effects to the opaque
+                        // action.
+
+                        // Find the UML element for the non-atomic action, and the index to the relevant effect.
+                        UmlElementInfo umlElementInfo = synthesisTracker.getUmlElementInfo(action);
+                        RedefinableElement actionElement = umlElementInfo.getUmlElement();
+                        int effectIdx = umlElementInfo.getEffectIdx();
+
+                        Verify.verify(actionElement instanceof OpaqueBehavior,
+                                "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
+
+                        // Rename the current action, set its guard to 'true', and retain the original relevant effect.
+                        action.setName(
+                                action.getName().replace(SynthesisChainUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX,
+                                        UmlToCifTranslator.END_ACTION_SUFFIX));
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
+                        PokaYokeUmlProfileUtil.setGuard(action, "true");
+                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectIdx);
+                        PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        // Add a warning that the non-atomic end action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
+                                actionElement.getName(), action.getName()));
+
+                        break;
+                    }
+                    default -> {
+                        throw new RuntimeException("Found unexpected action kind: " + actionKind);
+                    }
                 }
             } else if (!(node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
                     || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode))
