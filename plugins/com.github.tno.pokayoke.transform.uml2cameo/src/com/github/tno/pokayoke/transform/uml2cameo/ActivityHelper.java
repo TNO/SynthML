@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -20,6 +21,8 @@ import org.eclipse.uml2.uml.ObjectFlow;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.SendSignalAction;
@@ -28,6 +31,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -499,6 +503,85 @@ public class ActivityHelper {
         decisionToInnerMergeGuard.getBodies().add("else");
         decisionToInnerMergeGuard.getLanguages().add("Python");
         decisionToInnerMergeFlow.setGuard(decisionToInnerMergeGuard);
+
+        return activity;
+    }
+
+    /**
+     * Creates an activity that evaluates the incoming guards of the outgoing control flows of the given decision node,
+     * and randomly picks one of the branches whose guards holds.
+     *
+     * @param decisionNode The decision node.
+     * @param translator The translator for translating incoming guards to Python expressions.
+     * @return The created activity.
+     */
+    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode,
+            CifToPythonTranslator translator)
+    {
+        // Create the activity.
+        Activity activity = FileHelper.FACTORY.createActivity();
+
+        // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
+        // whose guard holds.
+        OpaqueAction decisionEvaluationNode = FileHelper.FACTORY.createOpaqueAction();
+        decisionEvaluationNode.setActivity(activity);
+        decisionEvaluationNode.getLanguages().add("Python");
+
+        // Define the Python body program of the decision evaluation node.
+        StringBuilder decisionEvaluationProgram = new StringBuilder();
+        decisionEvaluationProgram.append("import random\n");
+        decisionEvaluationProgram.append("branches = []\n");
+
+        // Get the incoming guard of the outgoing edges.
+        for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
+            ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
+            decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
+        }
+
+        decisionEvaluationProgram.append("branch = random.choice(branches)\n");
+        decisionEvaluationNode.getBodies().add(decisionEvaluationProgram.toString());
+
+        // Define the initial node.
+        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
+        initNode.setActivity(activity);
+
+        // Define the control flow between the initial node and the decision evaluation node.
+        ControlFlow initToEvalFlow = FileHelper.FACTORY.createControlFlow();
+        initToEvalFlow.setActivity(activity);
+        initToEvalFlow.setSource(initNode);
+        initToEvalFlow.setTarget(decisionEvaluationNode);
+
+        // Define the final node.
+        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        finalNode.setActivity(activity);
+
+        // Define the control flow between the decision evaluation node and the final node.
+        ControlFlow evalToFinalFlow = FileHelper.FACTORY.createControlFlow();
+        evalToFinalFlow.setActivity(activity);
+        evalToFinalFlow.setSource(decisionEvaluationNode);
+        evalToFinalFlow.setTarget(finalNode);
+
+        // Define the output parameter of the activity.
+        Parameter outputParam = FileHelper.FACTORY.createParameter();
+        outputParam.setDirection(ParameterDirectionKind.RETURN_LITERAL);
+        outputParam.setName("branch");
+        outputParam.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
+        activity.getOwnedParameters().add(outputParam);
+
+        // Define the output parameter node of the activity.
+        ActivityParameterNode outputParamNode = FileHelper.FACTORY.createActivityParameterNode();
+        outputParamNode.setActivity(activity);
+        outputParamNode.setParameter(outputParam);
+        outputParamNode.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
+
+        // Define the object flow from the decision evaluation node to the output parameter node.
+        OutputPin evalOutput = decisionEvaluationNode.createOutputValue("branch",
+                UmlPrimitiveType.INTEGER.load(decisionNode));
+        ObjectFlow evalOutputFlow = FileHelper.FACTORY.createObjectFlow();
+        evalOutputFlow.setActivity(activity);
+        evalOutputFlow.setSource(evalOutput);
+        evalOutputFlow.setTarget(outputParamNode);
 
         return activity;
     }

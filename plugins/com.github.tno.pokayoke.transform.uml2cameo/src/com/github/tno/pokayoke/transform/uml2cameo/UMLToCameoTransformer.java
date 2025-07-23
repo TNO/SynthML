@@ -502,39 +502,27 @@ public class UMLToCameoTransformer {
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {
-        // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
-        // whose guard holds.
-        OpaqueAction decisionEvaluationNode = FileHelper.FACTORY.createOpaqueAction();
-        decisionEvaluationNode.setActivity(decisionNode.getActivity());
-        decisionEvaluationNode.getLanguages().add("Python");
+        // Create the activity that evaluates the incoming guards of the outgoing control flows of the decision node.
+        Activity evalActivity = ActivityHelper.createDecisionEvaluationActivity(decisionNode, translator);
+        decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
+        evalActivity.setName("eval");
 
-        // Define the Python body program of the decision evaluation node.
-        StringBuilder decisionEvaluationProgram = new StringBuilder();
-        decisionEvaluationProgram.append("import random\n");
-        decisionEvaluationProgram.append("branches = []\n");
-
-        // Get the incoming guard of the outgoing edges.
-        for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
-            ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
-            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
-            decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
-        }
-
-        decisionEvaluationProgram.append("branch = random.choice(branches)\n");
-        decisionEvaluationNode.getBodies().add(decisionEvaluationProgram.toString());
+        // Create the call behavior node that calls the activity we just created.
+        CallBehaviorAction evalNode = FileHelper.FACTORY.createCallBehaviorAction();
+        evalNode.setActivity(decisionNode.getActivity());
+        evalNode.setBehavior(evalActivity);
 
         // Redirect the incoming edge into the decision node to go into the new evaluation node instead.
-        decisionNode.getIncomings().get(0).setTarget(decisionEvaluationNode);
+        decisionNode.getIncomings().get(0).setTarget(evalNode);
 
         // Define the control flow from the new evaluator node to the decision node.
         ControlFlow evaluationToDecisionFlow = FileHelper.FACTORY.createControlFlow();
         evaluationToDecisionFlow.setActivity(decisionNode.getActivity());
-        evaluationToDecisionFlow.setSource(decisionEvaluationNode);
+        evaluationToDecisionFlow.setSource(evalNode);
         evaluationToDecisionFlow.setTarget(decisionNode);
 
         // Define the object flow from the new evaluator node to the decision node.
-        OutputPin evaluationOutput = decisionEvaluationNode.createOutputValue("branch",
-                UmlPrimitiveType.INTEGER.load(decisionNode));
+        OutputPin evaluationOutput = evalNode.createResult("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
         ObjectFlow evaluationToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
         evaluationToDecisionObjFlow.setActivity(decisionNode.getActivity());
         evaluationToDecisionObjFlow.setSource(evaluationOutput);
