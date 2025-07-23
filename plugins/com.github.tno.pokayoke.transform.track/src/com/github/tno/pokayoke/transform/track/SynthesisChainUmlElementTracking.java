@@ -22,6 +22,7 @@ import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking2.NonA
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Place;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
@@ -556,5 +557,19 @@ public class SynthesisChainUmlElementTracking {
             transitionsToUmlElementInfo.get(pattern.startTransition()).setMerged(true);
             pattern.endTransitions().stream().forEach(et -> transitionsToUmlElementInfo.remove(et));
         }
+    }
+
+    /**
+     * A rewritable non-atomic Petri Net pattern.
+     *
+     * @param startTransition The transition that starts the non-atomic action.
+     * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
+     *     executing.
+     * @param endTransitions All transitions that end the execution of the non-atomic action.
+     * @param endPlaces The places after the end transitions.
+     */
+    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
+            List<Place> endPlaces)
+    {
     }
 }

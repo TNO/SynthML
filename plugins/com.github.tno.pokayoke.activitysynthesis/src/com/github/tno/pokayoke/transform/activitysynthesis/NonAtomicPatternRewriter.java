@@ -217,18 +217,4 @@ public class NonAtomicPatternRewriter {
     private static <T extends PnObject> List<T> sorted(Stream<T> stream) {
         return stream.sorted(Comparator.comparing(PnObject::getId)).toList();
     }
-
-    /**
-     * A rewritable non-atomic Petri Net pattern.
-     *
-     * @param startTransition The transition that starts the non-atomic action.
-     * @param intermediatePlace The intermediate place that contains a token whenever the non-atomic action is
-     *     executing.
-     * @param endTransitions All transitions that end the execution of the non-atomic action.
-     * @param endPlaces The places after the end transitions.
-     */
-    public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
-            List<Place> endPlaces)
-    {
-    }
 }
