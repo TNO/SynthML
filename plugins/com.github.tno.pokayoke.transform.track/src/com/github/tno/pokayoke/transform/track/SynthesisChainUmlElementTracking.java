@@ -18,7 +18,6 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
-import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking2.ActionKind;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -81,6 +80,11 @@ public class SynthesisChainUmlElementTracking {
 
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
+    }
+
+    public static enum ActionKind {
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, CONTROL_NODE;
     }
 
     public SynthesisChainUmlElementTracking() {
@@ -601,5 +605,4 @@ public class SynthesisChainUmlElementTracking {
 
         return ActionKind.CONTROL_NODE;
     }
-
 }
