@@ -16,13 +16,18 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -163,17 +168,35 @@ public class PNML2UMLTranslator {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
-        // Create the UML action node.
-        Action action = UML_FACTORY.createOpaqueAction();
+        RedefinableElement ogUmlElement = synthesisUmlElementTracker.getUmlElement(transition);
+        ActivityNode node;
+        // Create an activity node based on the underlying UML element.
+        if (ogUmlElement instanceof ForkNode) {
+            // Create the fork node.
+            node = UML_FACTORY.createForkNode();
+        } else if (ogUmlElement instanceof JoinNode) {
+            // Create the join node.
+            node = UML_FACTORY.createJoinNode();
+        } else if (ogUmlElement instanceof DecisionNode || ogUmlElement instanceof InitialNode) {
+            // Create the decision node.
+            node = UML_FACTORY.createDecisionNode();
+        } else if (ogUmlElement instanceof MergeNode || ogUmlElement instanceof ActivityFinalNode) {
+            // Create the merge node.
+            node = UML_FACTORY.createMergeNode();
+        } else {
+            // Create the UML action node. These can transform into an opaque actions, call behaviors and shadowed call
+            // behaviors in future synthesis steps.
+            node = UML_FACTORY.createOpaqueAction();
+        }
 
-        action.setActivity(activity);
-        action.setName(transition.getId());
+        node.setActivity(activity);
+        node.setName(transition.getId());
 
-        nodeMapping.put(action, transition);
-        transitionMapping.put(transition, action);
+        nodeMapping.put(node, transition);
+        transitionMapping.put(transition, node);
 
         // Store the new action in the synthesis tracker.
-        synthesisUmlElementTracker.addActivityNode(transition, action);
+        synthesisUmlElementTracker.addActivityNode(transition, node);
     }
 
     private void translate(Place place) {
