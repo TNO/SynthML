@@ -516,17 +516,17 @@ public class UMLToCameoTransformer {
         decisionNode.getIncomings().get(0).setTarget(evalNode);
 
         // Define the control flow from the new evaluator node to the decision node.
-        ControlFlow evaluationToDecisionFlow = FileHelper.FACTORY.createControlFlow();
-        evaluationToDecisionFlow.setActivity(decisionNode.getActivity());
-        evaluationToDecisionFlow.setSource(evalNode);
-        evaluationToDecisionFlow.setTarget(decisionNode);
+        ControlFlow evalToDecisionFlow = FileHelper.FACTORY.createControlFlow();
+        evalToDecisionFlow.setActivity(decisionNode.getActivity());
+        evalToDecisionFlow.setSource(evalNode);
+        evalToDecisionFlow.setTarget(decisionNode);
 
         // Define the object flow from the new evaluator node to the decision node.
-        OutputPin evaluationOutput = evalNode.createResult("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
-        ObjectFlow evaluationToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
-        evaluationToDecisionObjFlow.setActivity(decisionNode.getActivity());
-        evaluationToDecisionObjFlow.setSource(evaluationOutput);
-        evaluationToDecisionObjFlow.setTarget(decisionNode);
+        OutputPin evalOutput = evalNode.createResult("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
+        ObjectFlow evalToDecisionObjFlow = FileHelper.FACTORY.createObjectFlow();
+        evalToDecisionObjFlow.setActivity(decisionNode.getActivity());
+        evalToDecisionObjFlow.setSource(evalOutput);
+        evalToDecisionObjFlow.setTarget(decisionNode);
 
         // Update the guards of all outgoing edges accordingly to the outcome of the decision evaluation node.
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {

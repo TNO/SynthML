@@ -523,24 +523,24 @@ public class ActivityHelper {
 
         // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
         // whose guard holds.
-        OpaqueAction decisionEvaluationNode = FileHelper.FACTORY.createOpaqueAction();
-        decisionEvaluationNode.setActivity(activity);
-        decisionEvaluationNode.getLanguages().add("Python");
+        OpaqueAction evalNode = FileHelper.FACTORY.createOpaqueAction();
+        evalNode.setActivity(activity);
+        evalNode.getLanguages().add("Python");
 
         // Define the Python body program of the decision evaluation node.
-        StringBuilder decisionEvaluationProgram = new StringBuilder();
-        decisionEvaluationProgram.append("import random\n");
-        decisionEvaluationProgram.append("branches = []\n");
+        StringBuilder evalProgram = new StringBuilder();
+        evalProgram.append("import random\n");
+        evalProgram.append("branches = []\n");
 
         // Get the incoming guard of the outgoing edges.
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
             ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
             String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
-            decisionEvaluationProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
+            evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
-        decisionEvaluationProgram.append("branch = random.choice(branches)\n");
-        decisionEvaluationNode.getBodies().add(decisionEvaluationProgram.toString());
+        evalProgram.append("branch = random.choice(branches)\n");
+        evalNode.getBodies().add(evalProgram.toString());
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -550,7 +550,7 @@ public class ActivityHelper {
         ControlFlow initToEvalFlow = FileHelper.FACTORY.createControlFlow();
         initToEvalFlow.setActivity(activity);
         initToEvalFlow.setSource(initNode);
-        initToEvalFlow.setTarget(decisionEvaluationNode);
+        initToEvalFlow.setTarget(evalNode);
 
         // Define the final node.
         FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
@@ -559,7 +559,7 @@ public class ActivityHelper {
         // Define the control flow between the decision evaluation node and the final node.
         ControlFlow evalToFinalFlow = FileHelper.FACTORY.createControlFlow();
         evalToFinalFlow.setActivity(activity);
-        evalToFinalFlow.setSource(decisionEvaluationNode);
+        evalToFinalFlow.setSource(evalNode);
         evalToFinalFlow.setTarget(finalNode);
 
         // Define the output parameter of the activity.
@@ -576,8 +576,7 @@ public class ActivityHelper {
         outputParamNode.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
 
         // Define the object flow from the decision evaluation node to the output parameter node.
-        OutputPin evalOutput = decisionEvaluationNode.createOutputValue("branch",
-                UmlPrimitiveType.INTEGER.load(decisionNode));
+        OutputPin evalOutput = evalNode.createOutputValue("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
         ObjectFlow evalOutputFlow = FileHelper.FACTORY.createObjectFlow();
         evalOutputFlow.setActivity(activity);
         evalOutputFlow.setSource(evalOutput);
