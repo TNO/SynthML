@@ -37,7 +37,6 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CheckNonDeterministic
 import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
-import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -233,7 +232,7 @@ public class FullSynthesisApp {
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
                 umlToCifTranslator.getNonAtomicEvents());
-        List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
+        nonAtomicPatternRewriter.findAndRewritePatterns(petriNet, synthesisTracker);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
