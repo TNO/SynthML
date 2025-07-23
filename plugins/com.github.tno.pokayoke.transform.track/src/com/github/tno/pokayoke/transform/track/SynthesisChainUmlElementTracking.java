@@ -18,7 +18,6 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
-import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking2.NonAtomicPattern;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -571,5 +570,12 @@ public class SynthesisChainUmlElementTracking {
     public record NonAtomicPattern(Transition startTransition, Place intermediatePlace, List<Transition> endTransitions,
             List<Place> endPlaces)
     {
+    }
+
+    // Section dealing with new UML opaque actions.
+
+    public void addAction(Transition transiton, Action action) {
+        // Update the action to UML element info map.
+        actionsToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
 }
