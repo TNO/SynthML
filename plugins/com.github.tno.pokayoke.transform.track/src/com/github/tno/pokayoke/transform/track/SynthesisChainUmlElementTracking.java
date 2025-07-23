@@ -18,6 +18,12 @@ import fr.lip6.move.pnml.ptnet.Transition;
  * model finalization).
  */
 public class SynthesisChainUmlElementTracking {
+    /** The suffix of an atomic action outcome. */
+    public static final String ATOMIC_OUTCOME_SUFFIX = "__result_";
+
+    /** The suffix of a non-atomic action outcome. */
+    public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
+
     /**
      * The map from CIF events generated for the synthesis to their corresponding UML element info. Does not get updated
      * as the synthesis chain progresses. Needed for the language equivalence check.
@@ -59,6 +65,10 @@ public class SynthesisChainUmlElementTracking {
 
     /** The set of internal CIF events (e.g. corresponding to control nodes) generated for language equivalence. */
     private Set<Event> internalLanguageEquivalenceEvents = new LinkedHashSet<>();
+
+    public static enum TranslationPurpose {
+        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
+    }
 
     public SynthesisChainUmlElementTracking() {
         // Empty constructor.

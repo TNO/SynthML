@@ -72,6 +72,8 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -89,12 +91,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /** The prefix of a variable used in translated CIF specifications indicating that an action is active. */
     public static final String NONATOMIC_PREFIX = "__nonAtomicActive";
-
-    /** The suffix of an atomic action outcome. */
-    public static final String ATOMIC_OUTCOME_SUFFIX = "__result_";
-
-    /** The suffix of a non-atomic action outcome. */
-    public static final String NONATOMIC_OUTCOME_SUFFIX = "__na_result_";
 
     /** The prefix of a CIF variable that encodes (part of) the activity precondition. */
     public static final String PRECONDITION_PREFIX = "__precondition";
@@ -155,10 +151,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
-
-    public static enum TranslationPurpose {
-        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
-    }
 
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
         super(new CifContext(activity.getModel()));
@@ -646,8 +638,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 // Declare the CIF uncontrollable end event.
                 Event cifEndEvent = CifConstructors.newEvent();
                 cifEndEvent.setControllable(false);
-                String outcomeSuffix = isAtomic ? UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX
-                        : UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX;
+                String outcomeSuffix = isAtomic ? SynthesisChainUmlElementTracking.ATOMIC_OUTCOME_SUFFIX
+                        : SynthesisChainUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX;
                 cifEndEvent.setName(name + outcomeSuffix + (i + 1));
                 cifEndEvents.add(cifEndEvent);
 
@@ -1799,7 +1791,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             umlElement.setName(elementName.substring(0, elementName.length() - START_ACTION_SUFFIX.length()));
         } else if (elementName.contains(END_ACTION_SUFFIX)) {
             umlElement.setName(elementName.substring(0, elementName.lastIndexOf(END_ACTION_SUFFIX))
-                    + NONATOMIC_OUTCOME_SUFFIX
+                    + SynthesisChainUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX
                     + elementName.substring(elementName.lastIndexOf(END_ACTION_SUFFIX) + END_ACTION_SUFFIX.length()));
         }
 
