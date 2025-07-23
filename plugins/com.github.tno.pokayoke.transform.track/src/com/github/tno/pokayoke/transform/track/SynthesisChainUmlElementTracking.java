@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import fr.lip6.move.pnml.ptnet.Transition;
@@ -275,6 +277,123 @@ public class SynthesisChainUmlElementTracking {
                         .filter(entry -> entry.getValue().isStartAction()
                                 && entry.getValue().getUmlElement().equals(umlElement))
                         .map(Entry::getKey).toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return whether the CIF event represents a start action.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to a start event.
+     */
+    public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
+
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
+
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent).isStartAction();
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to the start of a call behavior action. This includes both a
+     * "merged" call behavior (i.e. an action that includes both the guard and effects of the underlying opaque
+     * behavior), or just the start of a non-atomic action. It refers to the original UML model elements, hence the
+     * guard computation case uses the original UML element info map, *not* the finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the start of a call behavior action.
+     */
+    public boolean isStartCallBehavior(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueBehavior;
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the original UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueBehavior;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueBehavior;
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to the start of an opaque action. This includes both a "merged"
+     * opaque action (i.e. an action that includes both the guard and effects), or just the start of a non-atomic
+     * action. It refers to the original UML model elements, hence the guard computation case uses the original UML
+     * element info map, *not* the finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the start of an opaque action.
+     */
+    public boolean isStartOpaqueAction(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueAction;
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the original UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueAction;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueAction;
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to the end of an action. It refers to the original UML model
+     * elements, hence the guard computation case uses the original UML element info map, *not* the finalized UML
+     * element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the end of an action.
+     */
+    public boolean isEndAction(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the original UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return !umlElementInfo.isStartAction();
             }
 
             default:
