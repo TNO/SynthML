@@ -362,9 +362,7 @@ public class FullSynthesisApp {
         // Filter the state annotations to keep only the external variables, and get the tau and non-tau events before
         // the language equivalence check.
         ModelPreparationResult result = StateAwareWeakLanguageEquivalenceHelper.prepareModels(stateSpaceGenerated,
-                translator.getNormalizedNameToEventsMap(), translator.getInternalEvents(), stateSpacePostSynthChain,
-                umlToCifTranslatorPostSynth.getNormalizedNameToEventsMap(),
-                umlToCifTranslatorPostSynth.getInternalEvents(), translator.getVariableNames());
+                stateSpacePostSynthChain, translator.getVariableNames());
 
         // Get the two state space automata to compare.
         Automaton stateSpace1 = (Automaton)stateSpaceGenerated.getComponents().get(0);
