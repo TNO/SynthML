@@ -1314,29 +1314,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                         // For synthesis, we directly translate the opaque behaviors, so we simply look up their
                         // associated start events.
-                        cifStartEvents = startEventMap.entrySet().stream()
-                                .filter(entry -> entry.getValue().equals(umlOpaqueBehavior)).map(Entry::getKey)
-                                .toList();
+                        cifStartEvents = synthesisTracker.getStartEventsOfOriginalElement(umlOpaqueBehavior,
+                                translationPurpose);
 
                         // Sanity check: we must have found at least one start event.
                         Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
                     } else if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
-                        // For guard computation, we don't directly translate the opaque behaviors. Instead, we inline
-                        // call behaviors to such opaque behaviors. Furthermore, some non-atomic opaque behaviors may
-                        // have separate start and end opaque actions that could not be merged back into call behaviors
-                        // to the original opaque behaviors. The occurrence constraints still refer to the original
-                        // opaque behaviors, and for both cases we have to find the relevant CIF events.
-                        cifStartEvents = startEventMap.entrySet().stream().filter(entry ->
-                        // Include all CIF events for call behavior actions that call the constrained opaque behavior.
-                        // This includes all atomic opaque behaviors, as well as merged-back non-atomic ones.
-                        (entry.getValue() instanceof CallBehaviorAction cbAction
-                                && cbAction.getBehavior().equals(umlOpaqueBehavior))
-                                // Include all CIF events for opaque actions that represent start actions of
-                                // non-deterministic opaque behaviors. These are the ones that couldn't be merged back
-                                // to call behavior actions that call the constrained opaque behavior.
-                                || (entry.getValue() instanceof OpaqueAction oAction
-                                        && oAction.getName().equals(umlOpaqueBehavior.getName() + START_ACTION_SUFFIX)))
-                                .map(Entry::getKey).toList();
+                        cifStartEvents = synthesisTracker.getStartEventsOfOriginalElement(umlOpaqueBehavior,
+                                translationPurpose);
 
                         // We don't check whether we found at least one start event. In case of unused actions, these
                         // won't have been translated, and we thus don't get any start events. That is OK, if we don't
