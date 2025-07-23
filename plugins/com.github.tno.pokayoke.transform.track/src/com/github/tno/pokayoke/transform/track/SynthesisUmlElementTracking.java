@@ -670,7 +670,7 @@ public class SynthesisUmlElementTracking {
 
     // Section dealing with new UML opaque actions.
 
-    public void addAction(Transition transiton, Action action) {
+    public void addActivityNode(Transition transiton, Action action) {
         // Update the action to UML element info map.
         actionsToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
