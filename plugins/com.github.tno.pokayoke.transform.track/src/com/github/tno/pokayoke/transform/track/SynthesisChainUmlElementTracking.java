@@ -605,4 +605,17 @@ public class SynthesisChainUmlElementTracking {
 
         return ActionKind.CONTROL_NODE;
     }
+
+    public UmlElementInfo getUmlElementInfo(Action action) {
+        return actionsToUmlElementInfoMap.get(action);
+    }
+
+    // Section dealing with finalized UML elements.
+
+    public void addFinalizedUmlElement(RedefinableElement finalizedUmlElement,
+            RedefinableElement incompleteUmlElement)
+    {
+        finalizedUmlElementsToUmlElementInfo.put(finalizedUmlElement,
+                actionsToUmlElementInfoMap.get(incompleteUmlElement));
+    }
 }
