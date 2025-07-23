@@ -152,8 +152,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
-    public UmlToCifTranslator(Activity activity, TranslationPurpose purpose) {
-        super(new CifContext(activity.getModel()));
+    public UmlToCifTranslator(Activity activity, TranslationPurpose purpose,
+            SynthesisChainUmlElementTracking synthesisTracker)
+    {
+        super(new CifContext(activity.getModel()), synthesisTracker);
         this.activity = activity;
         this.translationPurpose = purpose;
     }

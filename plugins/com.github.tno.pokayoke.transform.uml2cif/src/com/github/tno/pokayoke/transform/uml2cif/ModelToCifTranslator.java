@@ -27,6 +27,8 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -62,13 +64,21 @@ public abstract class ModelToCifTranslator {
     protected final UmlAnnotationsToCif translator;
 
     /**
+     * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
+     * UML elements in the synthesized activity.
+     */
+    protected SynthesisChainUmlElementTracking synthesisTracker;
+
+    /**
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
+     * @param synthesisTracker The tracker to store the synthesis chain transformations of UML elements.
      */
-    public ModelToCifTranslator(CifContext context) {
+    public ModelToCifTranslator(CifContext context, SynthesisChainUmlElementTracking synthesisTracker) {
         this.context = context;
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
+        this.synthesisTracker = synthesisTracker;
     }
 
     /**
@@ -102,11 +112,13 @@ public abstract class ModelToCifTranslator {
      * Gives the mapping from translated CIF start events to their corresponding UML elements for which they were
      * created.
      *
+     * @param purpose The translation purpose enumeration.
      * @return The mapping from translated CIF start events to their corresponding UML elements for which they were
      *     created.
      */
-    public Map<Event, RedefinableElement> getStartEventMap() {
-        return ImmutableMap.copyOf(startEventMap);
+
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        return ImmutableMap.copyOf(synthesisTracker.getStartEventMap(purpose));
     }
 
     /**
