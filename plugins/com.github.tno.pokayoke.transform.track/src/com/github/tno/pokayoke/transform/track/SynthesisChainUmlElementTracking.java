@@ -18,6 +18,9 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
+import com.google.common.base.Verify;
+
+import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
@@ -501,5 +504,38 @@ public class SynthesisChainUmlElementTracking {
                 .toList();
         startAtomicNonDeterministicEvents.stream()
                 .forEach(e -> synthesisCifEventsToUmlElementInfo.get(e).setMerged(true));
+    }
+
+    // Section dealing with Petri net transitions.
+
+    /**
+     * Creates the map from Petri net transitions to UML element info, provided that the map from CIF event names to UML
+     * elements info is not empty.
+     *
+     * @param petriNet The Petri net.
+     */
+    public void addPetriNetTransitions(PetriNet petriNet) {
+        // Note that it is more convenient to use the Petri net after it has been synthesised, instead of storing each
+        // transition at the time of creation: in case a transition appears multiple times in a Petri net, Petrify
+        // distinguishes each duplicate by adding a postfix to the name of the transition (e.g., 'Transition_A/1' is a
+        // duplicate of 'Transition_A'), and these duplicates are not specified in the transition declarations, but only
+        // appear in the specification, and are handled separately. Directly using the final Petri net allows to just
+        // loop over the transitions, and store them in the synthesis tracker.
+        Verify.verify(!synthesisCifEventsToUmlElementInfo.isEmpty(),
+                "The map from CIF event names to UML element infos is empty.");
+
+        List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
+                .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
+
+        for (Transition t: petriNetTransitions) {
+            // Create new UML element info and store it.
+            UmlElementInfo currentUmlElementInfo = synthesisCifEventsToUmlElementInfo
+                    .get(namesToCifEvents.get(t.getName().getText()));
+            if (currentUmlElementInfo == null) {
+                transitionsToUmlElementInfo.put(t, null);
+            } else {
+                transitionsToUmlElementInfo.put(t, currentUmlElementInfo.copy());
+            }
+        }
     }
 }
