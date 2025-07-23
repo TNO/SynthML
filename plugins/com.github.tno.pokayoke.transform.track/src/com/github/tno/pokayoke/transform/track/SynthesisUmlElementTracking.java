@@ -57,7 +57,7 @@ public class SynthesisUmlElementTracking {
     private Map<Transition, UmlElementInfo> transitionsToUmlElementInfo = new LinkedHashMap<>();
 
     /** The map from UML opaque actions to their corresponding original UML element info. */
-    private Map<Action, UmlElementInfo> actionsToUmlElementInfoMap = new LinkedHashMap<>();
+    private Map<Action, UmlElementInfo> activityNodesToUmlElementInfoMap = new LinkedHashMap<>();
 
     /** The map from finalized UML elements to their corresponding original UML element info. */
     private Map<RedefinableElement, UmlElementInfo> finalizedUmlElementsToUmlElementInfo = new LinkedHashMap<>();
@@ -672,7 +672,7 @@ public class SynthesisUmlElementTracking {
 
     public void addActivityNode(Transition transiton, Action action) {
         // Update the action to UML element info map.
-        actionsToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
+        activityNodesToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
 
     /**
@@ -683,7 +683,7 @@ public class SynthesisUmlElementTracking {
      * @return An enumeration defining the kind of activity node the action should translate to.
      */
     public ActionKind getActionKind(Action action) {
-        UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
+        UmlElementInfo umlElementInfo = activityNodesToUmlElementInfoMap.get(action);
         if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
             if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
@@ -698,7 +698,7 @@ public class SynthesisUmlElementTracking {
     }
 
     public UmlElementInfo getUmlElementInfo(Action action) {
-        return actionsToUmlElementInfoMap.get(action);
+        return activityNodesToUmlElementInfoMap.get(action);
     }
 
     /**
@@ -708,12 +708,12 @@ public class SynthesisUmlElementTracking {
     public void removeInternalActions() {
         // Removes internal actions created for petrification.
         Set<Action> actionsToRemove = new LinkedHashSet<>();
-        for (Entry<Action, UmlElementInfo> entry: actionsToUmlElementInfoMap.entrySet()) {
+        for (Entry<Action, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
             if (entry.getKey().getName().contains("__") && entry.getValue().getUmlElement() == null) {
                 actionsToRemove.add(entry.getKey());
             }
         }
-        actionsToRemove.stream().forEach(a -> actionsToUmlElementInfoMap.remove(a));
+        actionsToRemove.stream().forEach(a -> activityNodesToUmlElementInfoMap.remove(a));
 
         Set<Event> cifEventsToRemove = new LinkedHashSet<>();
         for (Entry<Event, UmlElementInfo> entry: synthesisCifEventsToUmlElementInfo.entrySet()) {
@@ -730,6 +730,6 @@ public class SynthesisUmlElementTracking {
             RedefinableElement incompleteUmlElement)
     {
         finalizedUmlElementsToUmlElementInfo.put(finalizedUmlElement,
-                actionsToUmlElementInfoMap.get(incompleteUmlElement));
+                activityNodesToUmlElementInfoMap.get(incompleteUmlElement));
     }
 }
