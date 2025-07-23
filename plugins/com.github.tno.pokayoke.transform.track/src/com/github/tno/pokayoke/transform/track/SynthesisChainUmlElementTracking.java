@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking2.ActionKind;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -578,4 +579,27 @@ public class SynthesisChainUmlElementTracking {
         // Update the action to UML element info map.
         actionsToUmlElementInfoMap.put(action, transitionsToUmlElementInfo.get(transiton));
     }
+
+    /**
+     * Returns the kind of activity node the input action should translate to, based on the UML element the action
+     * originates from, and whether it was merged during the synthesis chain.
+     *
+     * @param action The UML action create to fill the newly synthesised activity.
+     * @return An enumeration defining the kind of activity node the action should translate to.
+     */
+    public ActionKind getActionKind(Action action) {
+        UmlElementInfo umlElementInfo = actionsToUmlElementInfoMap.get(action);
+        if (umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
+            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
+                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
+            } else if (umlElementInfo.isStartAction()) {
+                return ActionKind.START_OPAQUE_BEHAVIOR;
+            } else {
+                return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        return ActionKind.CONTROL_NODE;
+    }
+
 }
