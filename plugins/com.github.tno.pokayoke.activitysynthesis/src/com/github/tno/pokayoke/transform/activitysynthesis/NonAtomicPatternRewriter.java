@@ -16,6 +16,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.uml2.uml.Action;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking.NonAtomicPattern;
+
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -57,12 +60,14 @@ public class NonAtomicPatternRewriter {
      * Finds all non-atomic patterns in the given Petri Net that can be rewritten, and rewrites them.
      *
      * @param petriNet The Petri Net to rewrite, which is modified in-place.
-     * @return The list of non-atomic patterns that have been rewritten.
+     * @param synthesisTracker The tracker of the synthesis chain transformations.
      */
-    public List<NonAtomicPattern> findAndRewritePatterns(PetriNet petriNet) {
+    public void findAndRewritePatterns(PetriNet petriNet, SynthesisChainUmlElementTracking synthesisTracker) {
         List<NonAtomicPattern> patterns = findPatterns(petriNet);
         rewritePatterns(patterns);
-        return patterns;
+
+        // Update the synthesis chain tracker with the rewritten non-atomic patterns.
+        synthesisTracker.updateRewrittenPatterns(patterns);
     }
 
     /**
@@ -172,22 +177,22 @@ public class NonAtomicPatternRewriter {
     private void rewritePatterns(List<NonAtomicPattern> patterns) {
         for (NonAtomicPattern pattern: patterns) {
             // First, remove the intermediate place's outgoing arcs.
-            EcoreUtil.deleteAll(pattern.intermediatePlace.getOutArcs(), true);
-            pattern.intermediatePlace.getOutArcs().clear();
+            EcoreUtil.deleteAll(pattern.intermediatePlace().getOutArcs(), true);
+            pattern.intermediatePlace().getOutArcs().clear();
 
             // Remove all the end transitions and their outgoing arcs.
-            pattern.endTransitions.stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
-            EcoreUtil.deleteAll(pattern.endTransitions, true);
+            pattern.endTransitions().stream().forEach(et -> EcoreUtil.deleteAll(et.getOutArcs(), true));
+            EcoreUtil.deleteAll(pattern.endTransitions(), true);
 
             // Connect the intermediate place with the outgoing arcs from the end places.
-            for (Place endPlace: pattern.endPlaces) {
+            for (Place endPlace: pattern.endPlaces()) {
                 for (Arc outArc: new LinkedList<>(endPlace.getOutArcs())) {
-                    outArc.setSource(pattern.intermediatePlace);
+                    outArc.setSource(pattern.intermediatePlace());
                 }
             }
 
             // Remove end places.
-            EcoreUtil.deleteAll(pattern.endPlaces, true);
+            EcoreUtil.deleteAll(pattern.endPlaces(), true);
         }
     }
 
