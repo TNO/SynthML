@@ -593,6 +593,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifStartEvent.setName(name);
         startEventMap.put(cifStartEvent, umlElement);
 
+        // Store the CIF event into the synthesis tracker.
+        synthesisTracker.addCifEvent(cifStartEvent, umlElement, translationPurpose);
+
         // Add the start event to the normalized name to event map.
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                 || umlElement instanceof OpaqueBehavior)
@@ -676,6 +679,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifEndEdge.getEvents().add(cifEdgeEndEvent);
                 cifEndEdge.getUpdates().addAll(effects.get(i));
                 newEventEdges.put(cifEndEvent, cifEndEdge);
+
+                // Store the CIF event into the synthesis tracker.
+                synthesisTracker.addCifEvent(cifEndEvent, new Pair<>(umlElement, i), translationPurpose);
             }
 
             // Remember which start and end events belong together.
@@ -851,7 +857,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (startEventMap.containsKey(cifEvent)) {
+                if (synthesisTracker.isStartEvent(cifEvent, translationPurpose)) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
@@ -867,7 +873,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (startEventMap.containsKey(cifEvent)) {
+                if (synthesisTracker.isStartEvent(cifEvent, translationPurpose)) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
