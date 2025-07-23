@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking2.NonAtomicPattern;
 import com.google.common.base.Verify;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
@@ -546,5 +547,14 @@ public class SynthesisChainUmlElementTracking {
                 .filter(e -> e.getKey().getName().getText().equals("__loop")).map(e -> e.getKey())
                 .collect(Collectors.toSet());
         loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
+    }
+
+    public void updateRewrittenPatterns(List<NonAtomicPattern> nonAtomicPatterns) {
+        // For each rewritten pattern, update the start transition as merged and remove the corresponding end
+        // transitions.
+        for (NonAtomicPattern pattern: nonAtomicPatterns) {
+            transitionsToUmlElementInfo.get(pattern.startTransition()).setMerged(true);
+            pattern.endTransitions().stream().forEach(et -> transitionsToUmlElementInfo.remove(et));
+        }
     }
 }
