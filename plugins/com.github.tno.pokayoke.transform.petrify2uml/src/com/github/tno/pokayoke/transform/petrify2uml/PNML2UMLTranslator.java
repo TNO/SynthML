@@ -173,7 +173,7 @@ public class PNML2UMLTranslator {
         transitionMapping.put(transition, action);
 
         // Store the new action in the synthesis tracker.
-        synthesisUmlElementTracker.addAction(transition, action);
+        synthesisUmlElementTracker.addActivityNode(transition, action);
     }
 
     private void translate(Place place) {
