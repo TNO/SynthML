@@ -1664,38 +1664,21 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (startEventMap.containsKey(cifEvent)
-                            && startEventMap.get(cifEvent) instanceof CallBehaviorAction)
-                    {
+                    } else if (synthesisTracker.isStartCallBehavior(cifEvent, translationPurpose)) {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined. This case handles events that start such actions
                         // through a call behavior action.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else if (startEventMap.containsKey(cifEvent)
-                            && startEventMap.get(cifEvent) instanceof OpaqueAction oAction
-                            && oAction.getName().endsWith(START_ACTION_SUFFIX))
-                    {
+                    } else if (synthesisTracker.isStartOpaqueAction(cifEvent, translationPurpose)) {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined. This case handles events that start such actions
                         // through an opaque action, which only applies to non-atomic actions that couldn't be merged
                         // back to a call behavior to the original opaque behavior.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
-                        // We must allow finishing non-atomic/non-deterministic actions.
-                        if (startEventMap.containsKey(cifEvent)) {
-                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
-                            // behavior to the original opaque behavior, but instead is left as an opaque action.
-                            RedefinableElement umlElem = startEventMap.get(cifEvent);
-                            Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
-                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
-                        } else {
-                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            boolean isNonDeterministicEnd = nonDeterministicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            Verify.verify(isNonAtomicEnd || isNonDeterministicEnd, cifEvent.getName());
-                        }
+                        // Sanity check: ensure the CIF event corresponds to an end action.
+                        Verify.verify(synthesisTracker.isEndAction(cifEvent, translationPurpose));
+
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }
