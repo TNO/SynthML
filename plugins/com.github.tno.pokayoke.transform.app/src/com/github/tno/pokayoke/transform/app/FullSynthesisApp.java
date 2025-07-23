@@ -153,11 +153,12 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // Transform the state space by creating a single (initial) source and a single (marked) sink location.
+        // Transform the state space by creating a single (initial) source and a single (marked) sink location.  Update
+        // the synthesis tracker with the two newly created events.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath, synthesisTracker);
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
