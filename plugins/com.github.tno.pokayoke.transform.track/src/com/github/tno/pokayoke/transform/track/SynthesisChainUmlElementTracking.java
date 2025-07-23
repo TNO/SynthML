@@ -461,4 +461,45 @@ public class SynthesisChainUmlElementTracking {
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
+
+    /**
+     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
+        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && umlElementInfo.isStartAction();
+    }
+
+    /**
+     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
+        UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
+        return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && !umlElementInfo.isStartAction();
+    }
+
+    /**
+     * Update the 'merged' field of the start of atomic non-deterministic UML elements to {@code true}, and remove the
+     * corresponding end events from the synthesis CIF event to UML element info map.
+     *
+     * @param removedEventNames The list of names of CIF end events.
+     */
+    public void updateEndAtomicNonDeterministic(List<String> removedEventNames) {
+        // Update the UML element info: remove the object referring to the end of atomic non-deterministic CIF event,
+        // and set the start as merged.
+        removedEventNames.stream().forEach(r -> synthesisCifEventsToUmlElementInfo.remove(namesToCifEvents.get(r)));
+
+        // Find the start of atomic non-deterministic CIF events, and set the UML element info to 'merged'.
+        List<Event> startAtomicNonDeterministicEvents = synthesisCifEventsToUmlElementInfo.keySet().stream()
+                .filter(event -> event.getControllable() && isAtomicNonDeterministicStartEventName(event.getName()))
+                .toList();
+        startAtomicNonDeterministicEvents.stream()
+                .forEach(e -> synthesisCifEventsToUmlElementInfo.get(e).setMerged(true));
+    }
 }

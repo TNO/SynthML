@@ -153,15 +153,16 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // Transform the state space by creating a single (initial) source and a single (marked) sink location.  Update
+        // Transform the state space by creating a single (initial) source and a single (marked) sink location. Update
         // the synthesis tracker with the two newly created events.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath, synthesisTracker);
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
+                synthesisTracker);
 
-        // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace);
+        // Perform event-based automaton projection and update the synthesis tracker.
+        String preservedEvents = getPreservedEvents(cifStateSpace, synthesisTracker);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -290,19 +291,32 @@ public class FullSynthesisApp {
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, synthesisTracker);
     }
 
-    private static String getPreservedEvents(Specification spec) {
+    private static String getPreservedEvents(Specification spec, SynthesisChainUmlElementTracking synthesisTracker) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> eventNames = events.stream()
+
+        // Note that the state space explorer generates a new CIF specification, where the CIF events are different
+        // objects, yet they keep the same name. The synthesis tracker contains the CIF events of the original
+        // specification, while here we use the state space specification. For simplicity, check if the event with the
+        // same name is the end of an atomic behavior/action.
+        List<String> preservedEventNames = events.stream()
                 .filter(event -> event.getControllable()
-                        || !event.getName().contains(SynthesisChainUmlElementTracking.ATOMIC_OUTCOME_SUFFIX))
+                        || !synthesisTracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        return String.join(",", eventNames);
+        // Get the removed events names (end of atomic non-deterministic actions) and update the synthesis chain
+        // tracker.
+        List<String> removedEventNames = events.stream()
+                .filter(event -> !event.getControllable()
+                        && synthesisTracker.isAtomicNonDeterministicEndEventName(event.getName()))
+                .map(e -> e.getName()).toList();
+        synthesisTracker.updateEndAtomicNonDeterministic(removedEventNames);
+
+        return String.join(",", preservedEventNames);
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
