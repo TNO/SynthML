@@ -26,6 +26,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -114,9 +115,12 @@ public class PNML2UMLTranslator {
     }
 
     public void translateFile(Path inputPath, Path outputPath) throws ImportException, InvalidIDException, IOException {
+        // Create a synthesis tracker.
+        SynthesisChainUmlElementTracking synthesisTracker = new SynthesisChainUmlElementTracking();
+
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
-        translate(petriNet);
+        translate(petriNet, synthesisTracker);
         PostProcessActivity.removeInternalActions(activity);
 
         // Write the UML activity to the output file.
@@ -125,21 +129,21 @@ public class PNML2UMLTranslator {
         FileHelper.storeModel(activity.getModel(), umlOutputFilePath.toString());
     }
 
-    public void translate(PetriNet petriNet) {
+    public void translate(PetriNet petriNet, SynthesisChainUmlElementTracking synthesisTracker) {
         // According to PNML documents, each Petri Net needs to contain at least one page. Users can add multiple pages
         // to structure their Petri Net in various ways. In our transformation, we add only one page that is mandatory.
         // See more info in: https://dev.lip6.fr/trac/research/ISOIEC15909/wiki/English/User/Structure.
         Preconditions.checkArgument(petriNet.getPages().size() == 1,
                 "Expected the Petri Net to have exactly one page.");
 
-        translate(petriNet.getPages().get(0));
+        translate(petriNet.getPages().get(0), synthesisTracker);
     }
 
-    private void translate(Page page) {
+    private void translate(Page page, SynthesisChainUmlElementTracking synthesisTracker) {
         // Transform all Petri Net transitions.
         List<Transition> transitions = sorted(
                 page.getObjects().stream().filter(Transition.class::isInstance).map(Transition.class::cast));
-        transitions.forEach(this::translate);
+        transitions.forEach(t -> translate(t, synthesisTracker));
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
@@ -155,7 +159,7 @@ public class PNML2UMLTranslator {
         activity.setIsAbstract(false);
     }
 
-    private void translate(Transition transition) {
+    private void translate(Transition transition, SynthesisChainUmlElementTracking synthesisTracker) {
         Preconditions.checkArgument(!transitionMapping.containsKey(transition),
                 "Expected the given transition to have not yet been translated.");
 
@@ -167,6 +171,9 @@ public class PNML2UMLTranslator {
 
         nodeMapping.put(action, transition);
         transitionMapping.put(transition, action);
+
+        // Store the new action in the synthesis tracker.
+        synthesisTracker.addAction(transition, action);
     }
 
     private void translate(Place place) {
