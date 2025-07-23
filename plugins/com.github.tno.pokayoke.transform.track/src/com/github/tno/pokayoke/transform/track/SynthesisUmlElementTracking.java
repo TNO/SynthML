@@ -650,6 +650,10 @@ public class SynthesisUmlElementTracking {
         loopTransitions.stream().forEach(t -> transitionsToUmlElementInfo.remove(t));
     }
 
+    public RedefinableElement getUmlElement(Transition transition) {
+        return transitionsToUmlElementInfo.get(transition).getUmlElement();
+    }
+
     /**
      * A rewritable non-atomic Petri Net pattern.
      *
