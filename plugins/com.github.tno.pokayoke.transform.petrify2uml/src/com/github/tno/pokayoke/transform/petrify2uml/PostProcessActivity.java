@@ -31,7 +31,6 @@ import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisChainUmlElementTracking.ActionKind;
 import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -155,8 +154,6 @@ public class PostProcessActivity {
     public static void finalizeOpaqueActions(Activity activity, SynthesisChainUmlElementTracking synthesisTracker,
             List<String> warnings)
     {
-        CifContext context = new CifContext(activity.getModel());
-
         // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof Action action) {
