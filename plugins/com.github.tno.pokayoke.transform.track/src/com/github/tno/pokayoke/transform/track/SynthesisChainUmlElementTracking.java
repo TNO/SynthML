@@ -3,8 +3,11 @@ package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
@@ -203,6 +206,75 @@ public class SynthesisChainUmlElementTracking {
                 languageEquivalenceCifEventsToUmlElementInfo.put(cifEvent, originalUmlElementInfo);
 
                 break;
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Get the map from CIF start events to their corresponding UML elements for different translation purposes. The
+     * start event map represents the relation between CIF events and the UML elements they were directly generated for,
+     * hence for the guard computation case, returns the map from CIF events to the finalized UML elements, *not* the
+     * original, input elements.
+     *
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The map from CIF start events to their corresponding UML element infos.
+     */
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        Map<Event, UmlElementInfo> cifEventsToUmlElementInfos;
+        switch (purpose) {
+            case SYNTHESIS: {
+                cifEventsToUmlElementInfos = synthesisCifEventsToUmlElementInfo;
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                cifEventsToUmlElementInfos = guardComputationCifEventsToFinalizedUmlElementInfo;
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                cifEventsToUmlElementInfos = languageEquivalenceCifEventsToUmlElementInfo;
+                break;
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+
+        // Return the map from start events to the corresponding UML elements.
+        return cifEventsToUmlElementInfos.isEmpty() ? new LinkedHashMap<>()
+                : cifEventsToUmlElementInfos.entrySet().stream()
+                        .filter(e -> e.getValue().isStartAction() && e.getValue().getUmlElement() != null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUmlElement()));
+    }
+
+    /**
+     * Get the list of CIF start events corresponding to the original, input (i.e. *not* the finalized) UML element for
+     * different translation purposes.
+     *
+     * @param umlElement The UML element.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The list from CIF start events to their corresponding UML element infos.
+     */
+    public List<Event> getStartEventsOfOriginalElement(RedefinableElement umlElement, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageEquivalenceCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> entry.getValue().isStartAction()
+                                && entry.getValue().getUmlElement().equals(umlElement))
+                        .map(Entry::getKey).toList();
             }
 
             default:
