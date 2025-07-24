@@ -1,0 +1,11 @@
+controllable Action;
+automaton synthesis_state_space:
+  alphabet Action;
+  @state(Context: "*", Context.done: false, Context.position: "Second", sup: "*")
+  location loc1:
+    initial;
+    edge Action goto loc2;
+  @state(Context: "*", Context.done: true, Context.position: "Second", sup: "*")
+  location loc2:
+    marked;
+end

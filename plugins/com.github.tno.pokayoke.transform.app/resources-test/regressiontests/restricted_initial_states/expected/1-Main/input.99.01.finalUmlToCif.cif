@@ -1,0 +1,20 @@
+enum Position = First, Second, Third;
+uncontrollable __node__CallBehaviorAction__31;
+plant automaton Context:
+  disc Position position in any;
+  disc bool done in any;
+  disc bool __controlflow__26;
+  disc bool __controlflow__27 = true;
+  alg bool Pre = not done;
+  alg bool __token_on_first_controlflow = __controlflow__27;
+  alg bool __initial_node_condition = position = Second;
+  alg bool __precondition = Pre and (__token_on_first_controlflow and __initial_node_condition);
+  alg bool __token_on_last_controlflow = __controlflow__26;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__31 when position = Second, __controlflow__27, true, not __controlflow__26 do done := true, __controlflow__27 := false, __controlflow__26 := true;
+end

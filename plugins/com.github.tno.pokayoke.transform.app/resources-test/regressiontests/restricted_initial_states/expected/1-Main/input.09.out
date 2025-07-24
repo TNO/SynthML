@@ -1,0 +1,13 @@
+.model minimal
+.dummy  __start Action __end __loop
+.graph
+Action p3
+__end p4
+__loop p4
+__start p2
+p1 __start
+p2 Action
+p3 __end
+p4 __loop
+.marking { p1 }
+.end
