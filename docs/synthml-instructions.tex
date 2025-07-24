@@ -1,0 +1,423 @@
+\documentclass{article}
+\usepackage{graphicx} 
+
+\title{SynthML instructions}
+\author{}
+\date{\today}
+
+% Ref that brings you to the point
+\usepackage{hyperref}
+
+% Shortcuts
+\newcommand{\eg}{\emph{e.g., }}
+\newcommand{\ie}{\emph{i.e., }}
+
+\begin{document}
+
+\maketitle
+
+\section{Create a new SynthML model}
+
+Let us first open the SynthML environment within UML Designer. 
+A snapshot of the main screen is shown in Fig.~\ref{fig:SynthML-environment}, with the main components highlighted. 
+In order to create a new UML model, 
+\begin{enumerate}
+    \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.    
+    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `SynthML'. 
+    This enables all the SynthML features, such as the addition of guards and effects to opaque behaviors. 
+\end{enumerate}
+
+The model will have a UML file by default, called \texttt{model.uml}. 
+Within it, there is a model instance denoted \texttt{<Model> NewModel}. 
+In the following, we refer to this model instance as the `model', unless otherwise specified. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/SynthMLEnvironmentHighlight.png}
+    \caption{A screenshot of the SynthML environment.}
+    \label{fig:SynthML-environment}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create a Class}
+\label{subsec:class}
+
+A UML class represents a (sub)system that has state and behaviors. One of the behaviors of an \emph{active} UML class must be appointed the \emph{classifier} behavior of that class. 
+An active class starts its classifier behavior (\eg an activity) as a direct consequence of its creation.  
+There are several ways of creating a class in UML Designer. From the `Model Explorer' view, 
+\begin{enumerate}
+    \item Right click on the model $\to$ New Child $\to$ Packaged Element\footnotemark $\to$ Class. You may want to rename it with a meaningful name. 
+    \item We only support active classes: to make a class active, look in the `Properties' view, `Advanced' tab, and check the `Active' checkbox.
+\end{enumerate}
+\footnotetext{A class can also be added as an `Owned Type' by right clicking on the model $\to$ Owned Type $\to$ Class. The UML metamodel treats both owned types and packaged elements as `packageable elements': it makes no practical difference for the creation of a SynthML model. For consistency, it is advised to use the packaged element option.} 
+
+\paragraph*{Graphical Approach.}
+Alternatively, you may create a class from the `Class Diagram' view. To this end, you may
+\begin{enumerate}
+    \item Right click on the model $\to$ New Representation $\to$ Class Diagram. 
+    \item A new empty class diagram opens, with some small text mentioning `Your diagram is empty. You can either [...]'. Double click on that text. If the model instance already contains a class, 
+    \eg from the previous steps, then this class will be visualized in the class diagram. Otherwise, the class diagram will be blank.
+    \item On the right hand side, the `Palette' view contains several folders: `Existing elements', `Types', `Features', and `Relationships'. 
+    \item To create a class, simply click on the `Class' element (within `Types') and drag it to the diagram. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create a Property}
+\label{subsec:property}
+
+Properties represent the variables of a model. The supported types are boolean, enumeration and ranged integers (besides composite data types, see \S\ref{subsec:data-types}). 
+To create a boolean-typed property:
+\begin{enumerate} 
+\item Right click on the Class $\to$ New Child $\to$ Owned Attribute $\to$ Property.
+\item In the `Properties' view, in the `SynthML' tab, you can select `Boolean' as the type, and set a default value for the type. 
+To create integers and enumerations, you need to define them beforehand, as explained in the following. 
+\end{enumerate}
+
+To create an enumeration-typed property, first we need to define the enumeration. To do so, 
+\begin{enumerate}
+    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Enumeration. Alternatively, you could drag-and-drop an `Enumeration' from the `Palette' view on the right.
+    \item Right click on the Enumeration $\to$ New Child $\to$ Owned Literal $\to$ Enumeration Literal. Alternatively, 
+    you could hover over the enumeration with your mouse in the class diagram, after which some options appear, from which you can select Literal.
+\end{enumerate}
+After the completion of these steps, we can create a new property of type Enumeration (with the given enumeration name). 
+
+\smallskip
+
+Similarly, to create an integer-typed property, first we need to define the ranged integer type. To do so, 
+\begin{enumerate}
+    \item Right click on the model $\to$ New Child $\to$ Owned Type $\to$ Primitive Type. Alternatively, you could add a Primitive Type from the `Palette' view, 
+    by clicking on the tiny arrow on the left of `Enumeration', which reveals `PrimitiveType', allowing it to be dragged-and-dropped to the class diagram.
+    \item In the `Properties' view, within the `SynthML' tab, select `Super type: Integer'. Give it a name and write down the minimum and maximum values. 
+    Note that two constraints named `min' and `max' will appear in the `Model Explorer' view.     
+\end{enumerate} 
+After the completion of these steps, we can create a new property of this ranged integer type. 
+
+Both enumerations and primitive types can also be added as a `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Enumeration (or Primitive Type). The UML metamodel treats both owned types and packaged elements as `packageable elements', which are the elements considered by SynthML, so it makes no practical difference for the creation of a SynthML model. Since enumerations and primitive types are usually considered as types, it is advised to use the owned type option.
+
+\smallskip
+
+\paragraph*{Graphical Approach.}
+Alternatively, you may create a property from the `Class Diagram' view. To this end, 
+\begin{enumerate}
+    \item From the `Palette' view, simply click on the Property element (within Features) and drag it inside a class.  
+    A popup window will open: fill in the Name, then click OK.
+    \item Double click on the property, in the `Properties' view, `SynthML' tab, select the property type from the drop-down menu. 
+\end{enumerate}
+Note that you still need to create an enumeration and integer type via the standard approach before you can create an integer or enumeration property.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create a (Composite) Data Type}
+\label{subsec:data-types}
+
+In UML diagrams, data types are model elements that define data values. You typically use data types to represent primitive types, such as integer types, and user-defined data types. 
+To avoid confusion among types, we refer to \emph{composite} data types to elements of type \texttt{DataType} who are \emph{not} also enumerations or primitive types.  
+Composite data types are used to represent more abstract types, \eg a robot. To create a composite data type, 
+\begin{enumerate}
+    \item Right click on the model $\to$ New Child $\to$ Owned Type\footnotemark $\to$ Data Type.
+\end{enumerate}
+Note that composite data types can have properties of type boolean, integer, enumeration, or of other composite data type -- as long as this does not introduce a cyclic structure. 
+\footnotetext{A composite data type can also be added as an `Packaged Element' by right clicking on the model $\to$ Packaged Element $\to$ Data Type. The same consideration regarding the interchange of owned types and packaged elements mentioned earlier is valid. Since a composite data type is usually considered as a type, it is advised to use the owned type option.}
+
+\paragraph*{Graphical Approach.} 
+Alternatively, you may create a composite data type from the `Class Diagram' view. To this end, you may
+\begin{enumerate}
+    \item In the `Palette' view, click on the tiny arrow located at the left of Enumeration. 
+    A drop-down menu will open, revealing `DataType'. 
+    \item Click on `DataType', and drag it to the class diagram. 
+    A pop up window will appear, where you can change its name; finally, click OK.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create an Abstract Activity}
+\label{subsec:abstract-activity}
+
+Activities can either be abstract (in order to be synthesized) or concrete (\ie containing nodes and control flows created by the user). Let us consider abstract activities. 
+
+\begin{enumerate}
+\item Right click on the Class $\to$ New Child $\to$ Classifier Behavior $\to$ Activity.
+\item By default, the activity is concrete (allowing it to contain user-defined nodes and control flows).
+\item For synthesis purposes, an abstract activity is required: in the `Properties' view, `General' tab, check the `Abstract' checkbox.
+\end{enumerate}
+Note that a class can only have a single classifier behavior, and it \emph{must} be an activity. So if you'd add an additional activity, this should be added as an `Owned Behavior' instead.
+
+To be able to synthesize a meaningful activity, we must define a precondition (see \S\ref{subsubsec:precondition}) and a postcondition (see \S\ref{subsubsec:postcondition}), 
+defining respectively the system states at the beginning and the end of the activity execution. 
+Additionally, users can specify constraints, (see \S\ref{subsec:constraints}), defining additional requirements, and occurrence constraints (see \S\ref{subsec:occurrence}), limiting the number of times an element can be called by the activity.
+Finally, the synthesis procedure employs opaque behaviors (see \S\ref{subsec:opaque-behavior}) as building blocks to synthesize an activity. 
+
+Note that in UML Designer activities can also be added as a nested classifier. This is \emph{not} allowed in a SynthML model. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create Preconditions}
+\label{subsubsec:precondition}
+
+\begin{enumerate}
+\item Right click on the activity $\to$ New Child $\to$ Precondition.
+\item Right click on the Precondition $\to$ New Child $\to$ Constraint. 
+\item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
+\item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations). 
+\item In the `Properties' view, `Default' tab, double click on the `Body' field. 
+\item In the new window, write on the `Value' field your precondition constraint. Click Add, then OK.
+\end{enumerate}
+
+We follow similar steps for creating postconditions. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create Postconditions}
+\label{subsubsec:postcondition}
+
+\begin{enumerate}
+\item Right click on the activity $\to$ New Child $\to$ Postcondition.
+\item Right click on the Postcondition $\to$ New Child $\to$ Constraint. 
+\item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
+\item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations). 
+\item In the `Properties' view, `Default' tab, double click on the `Body' field. 
+\item In the new window, write on the `Value' field the postcondition constraint. Click Add, then OK.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create a Concrete Activity}
+\label{subsec:concrete-activity}
+
+The creation of a concrete activity starts similarly to the creation of an abstract activity:
+\begin{enumerate}
+    \item Right click on the class $\to$ New Child $\to$ Classifier Behavior $\to$ Activity.
+\end{enumerate}
+Notice that you do not check the `Abstract' checkbox. 
+Recall that a class can only have a single classifier behavior: if you have already added such a behavior (\eg an abstract activity), 
+the concrete activity should be added as an `Owned Behavior' instead.
+
+A graphical representation of the activity is usually an activity diagram, 
+\begin{enumerate}
+    \item Right click on the activity $\to$ New Representation $\to$ Activity Diagram. 
+\end{enumerate}
+
+A concrete activity is a user-defined collection of nodes that are connected by control flows. It can thus be seen as a finite directed graph. 
+A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), 
+be an \emph{call behavior node} which either calls another activity of executes an action by calling an opaque behavior,
+or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action. 
+So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or non-deterministic, and either atomic or non-atomic. 
+Concrete activities can be visualized via an activity diagram (see \S\ref{subsec:abstract-activity}). Further, concrete activities can also be added as a nested classifier. This is \emph{not} allowed in a SynthML model. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create a Control Node}
+\label{subsubsec:control-node}
+
+After having created a concrete activity, adding a control node can be achieved by 
+\begin{enumerate}
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Initial / Activity Final / Fork / Join / Decision / Merge node.
+\end{enumerate} 
+Note that the final node is denoted as `Activity Final node'.
+
+\paragraph*{Graphical Approach.}
+After having created the concrete activity, go to the activity diagram 
+\begin{enumerate}
+    \item From the `Palette' view of the activity diagram, you can find the control nodes: clicking on the little arrow next to `Initial node' opens a drop-down menu with all types of control nodes. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create a Control Flow}
+\label{subsubsec:control-flow}
+
+After having created a concrete activity, adding a control flow can be achieved by 
+\begin{enumerate}
+    \item Right click on the concrete activity $\to$ New Child $\to$ Edge $\to$ Control Flow.
+    \item We now need to select the start and end node of this control flow. In the `Properties' view, `Default' tab, there are two columns, named `Property' and `Value'. 
+    \item Look for the rows `Source' and `Target' under the `Property' column. By clicking in the corresponding `Value' column, you can select the source and target node of the control flow from a drop-down menu.
+\end{enumerate} 
+
+\paragraph*{Graphical Approach.}
+After having created the concrete activity, go to the activity diagram 
+\begin{enumerate}
+    \item From the `Palette' view of the activity diagram, you can find the control flow. Click on the icon, then click on the node representing the source of the flow, then on the node representing the target of the flow.  
+\end{enumerate}
+
+Control flows support incoming and outgoing guards, which are found in the `SynthML' tab of the `Properties' view. 
+An incoming guard specifies when a token can be placed on that control flow, whereas an outgoing guard specifies a condition for the removal of the token from the control flow. 
+Both guards should be state predicates over the model properties, similarly to opaque action guards.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create a Call Behavior Node}
+\label{subsubsec:call-behave-node}
+
+After having created a concrete activity, adding a call behavior node can be achieved by 
+\begin{enumerate}
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Call Behavior Action node.
+    \item Within the `Default' tab, the `Behavior' row allows you to select which behavior to call with a drop-down menu, after having pressed the `...' button. 
+    This behavior can either be an activity, or an opaque behavior.
+\end{enumerate} 
+
+\paragraph*{Graphical Approach.}
+From the `Palette' view of the activity diagram, you can find the `Call Behavior' node under the `Opaque Action' drop-down menu. 
+
+When a call behavior node represents a call to an activity, we may abstract the call by adding a guard and effects to the node itself, located in the `SynthML' tab of the `Properties' view.
+This is informally denoted as "shadowed" call behavior.
+The execution of this node skips the actual call to the underlying activity, which is instead substituted by the the guard and effects.
+Note that a shadowed call is allowed only when the called behavior is an activity, and forbidden when the called behavior is an opaque behavior.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Create an Opaque Action Node}
+\label{subsubsec:opaque-action-node}
+
+After having created a concrete activity, adding an opaque action node can be achieved by 
+\begin{enumerate}
+    \item Right click on the concrete activity $\to$ New Child $\to$ Node $\to$ Opaque Action node.
+    \item In the `Properties' view, `SynthML' tab, you can add guards and effects for the opaque action.
+\end{enumerate} 
+
+\paragraph*{Graphical Approach.}
+From the `Palette' view of the activity diagram, you can directly find the `Opaque Action' node. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create an Opaque Behavior}
+\label{subsec:opaque-behavior}
+
+Opaque behaviors represent actions that activities can perform. 
+Opaque behaviors can be atomic (meaning that the system cannot perform any other operation during the execution of an atomic action) or non-atomic, 
+and deterministic (i.e., having at most one effect) or non-deterministic (i.e., having multiple effects, of which only one is chosen to be executed non-deterministically). 
+For activity synthesis purposes, the user needs to create the actions to be used by the to-be-synthesized activities, as opaque behaviors.  
+
+\begin{enumerate}
+\item Right click on the Class $\to$ New Child $\to$ Owned Behavior $\to$ Opaque Behavior.
+\item For atomic actions, in the `Properties' view, `SynthML' tab, check the `Atomic' checkbox.
+\item In the `Properties' view, `SynthML' tab, in the `Guard' field, the action guards can be specified (\ie the conditions under which this action can be performed).
+\item In the `Properties' view, `SynthML' tab, in the `Effects' field, the action effects can be specified (\ie the variable assignments that describe how performing the action changes the valuation of these variables).
+\item Non-deterministic effects are separated by three tilde \verb#~#  signs. For example, an effect field 
+\verb#val:=true ~~~ val:=false# 
+means that the variable \texttt{val} will be non-deterministically assigned \emph{either} true \emph{or} false as a consequence of performing the action.
+Note that the user has no control over which effect is picked by the execution of the action. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create Constraints}
+\label{subsec:constraints}
+
+For activity synthesis, in addition to abstract activities with pre- and postconditions, and opaque behaviors, 
+also requirements can be specified, to which all synthesized activities must adhere to. Such requirements are specified in UML as class constraints.
+To create a class constraint, 
+\begin{enumerate}
+    \item Right click on the Class $\to$ New Child $\to$ Owned Rule $\to$ Constraint.
+    \item Right click on the Constraint $\to$ New Child $\to$ Specification $\to$ Opaque Expression.
+    \item Open the opaque expression in the `Properties' view. Delete the name, or leave it blank (this is optional, but may give nicer visualizations). 
+    \item In the `Properties' view, `Default' tab, double click on the `Body' field. The expression body can be several things: 
+    \begin{itemize}
+        \item A state invariant, \eg \texttt{field1 and not field2}.
+        \item A state/event exclusion invariant, \eg \texttt{action1 needs field1 and not field2}, or \texttt{field1 and not field2 disables action1}.
+    \end{itemize}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Create Occurrence Constraints}
+\label{subsec:occurrence}
+
+Occurrence constraints define the amount of times a specific UML element (\eg activity or opaque behavior) can be called during the execution of an activity. As such, these are modeled as \emph{interval} constraints in UML Designer. 
+We might think of a specific action that we need to use (\ie the minimum of the occurrence constraint is greater or equal than one) and we do not want to use it more than three times (\ie the maximum of the occurrence constraint is set to three).
+Let us assume we want to add an occurrence constraint to an activity. From the `Model Explorer' view, 
+\begin{enumerate}
+    \item Right click on the abstract activity $\to$ New Child $\to$ Owned Rule $\to$ Interval Constraint. 
+    You may want to change the name to something representative of the constraint.  In the `Properties' view, click on the `Default' tab and add an element in the `Constrained Element' field. 
+    To do so, just click in the empty field of the corresponding `Value' column, and a small icon with three dots appears. 
+    Click on that icon, and select the constrained elements from the list; click Add, and then OK.
+
+    \item We now need to define the minimum and maximum values for the occurrence constraint. 
+    Right click on the interval constraint $\to$ New Child $\to$ Specification $\to$ Interval. Again, you may want to rename it in a meaningful way. 
+    
+    \item We now insert a minimum and maximum value for the occurrence limits. 
+    To this end, we add a \texttt{Literal Integer} \emph{at the model level}. 
+    Right click on the Model $\to$ New Child $\to$ Packaged Element $\to$ Literal Integer.  
+    For visualization purposes, erase the name, and fill in the `Value' field the value you need. 
+    Notice that you may need two literal integers, one for the minimum and one for the maximum occurrence limit.   
+    
+    \item Click on the interval specification we have just defined. Within the `Properties' view, click on the `Advanced' tab, there are the `Max' and `Min' fields. 
+    Click on the three-dots icon and select the maximum and minimum values represented by the two literal integers defined in the previous step. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Model Validation}
+\label{subsec:validation}
+
+In order to use an UML model for simulation or synthesis, the model must be valid, otherwise an error will be given. 
+To validate an UML model, open its class diagram (see \S\ref{subsec:class}), right click in an empty place of the diagram and select `Validate diagram'. 
+Any problems will be shown in the `Problems' tab (which is next to the `Properties' tab).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Perform Synthesis}
+\label{subsec:synthesis}
+
+In case the UML model has abstract activities, then concrete activities can automatically be computed for them by means of activity synthesis. 
+This requires that the UML model is valid. Activity synthesis can be performed by the following steps:
+\begin{enumerate}
+    \item Right click on the \texttt{model.uml} $\to$ Perform Synthesis. A new \texttt{output} folder is created. 
+    \item Open the output folder, scroll down until the last \texttt{.uml} file, open it, open the model, open the class, open the activity. 
+    \item For the activity diagram representation, right click on the activity $\to$ New Representation $\to$ Activity Diagram.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Simulation with Cameo}
+\label{subsec:simulation}
+
+In order to find design problems in UML models, they can be simulated using Cameo. 
+This requires translating the UML model to a (similar UML) model that Cameo can understand and simulate. 
+This translation is automated, and can be performed via the steps described below.
+Note that \emph{abstract} activities are not supported for simulation. 
+You can however synthesize a concrete activity for every abstract activity by means of activity synthesis (see \S\ref{subsec:synthesis}), 
+and then translate the outputted UML model into a model that Cameo can simulate.
+\begin{enumerate}
+    \item Right click on the \texttt{model.uml} $\to$ Translate UML to Cameo. A new \texttt{output} folder is created. 
+    \item Open the output folder, open the folder called \texttt{model.uml} (\ie the name of the original UML file), and there you find a new UML file. 
+    \item Open this UML file with the Cameo Systems Modeler, and simulate it. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Synthesis: Bit Flipper Example}
+
+To illustrate activity synthesis, let us now create a bit flipper model. In this model, the to-be-synthesized activity initializes a boolean variable non~-~deterministically, 
+and it flips it if it is false; does not need to do anything otherwise. 
+We can use the following steps:
+\begin{enumerate}
+    \item Create a new UML project named BitFlipper.
+    \item Create an active class named ActiveClass.
+    \item Create two boolean properties, named \texttt{init} and \texttt{bit}. 
+    Set the default value of \texttt{init} to false, and leave an empty field (meaning no default value) for \texttt{bit}.  
+    \item Create an abstract activity as the ActiveClass classifier behavior, with precondition \verb#not init#, 
+    and postcondition \verb#bit and init#.
+    \item Create an opaque behavior, named \texttt{initialize}, that models an initialization action, with guard \texttt{not init} and nondeterministic effects:
+    \newline
+    \verb#init := true, bit := true# \newline
+    \verb#~~~# \newline
+    \verb#init := true, bit:= false# \newline
+    This action flags the initialization as done 
+    (\texttt{init} is true after the action) and non-deterministically instantiates \texttt{bit}.
+    \item Create a opaque behavior that models a bit flipper action, with guard \verb#init# and effect 
+    \verb#bit := not bit#, named \texttt{flip}. 
+    \item Perform the synthesis. Figure~\ref{fig:bitflipper-activity} shows the activity diagram of the synthesized activity. 
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \includegraphics{Figures/bitflipper_activitysynth.png}
+    \caption{The synthesized activity diagram.}
+    \label{fig:bitflipper-activity}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
