@@ -178,8 +178,7 @@ public class UmlElementInfo {
 
     /**
      * Return {@code true} if the current UML element info represents an internal action: if the underlying UML element
-     * is null or a control node, or if the UML element does not belong to the input activity and it's not an opaque
-     * behavior (since opaque behaviors are defined in the UML model and not in any specific activity).
+     * is null or a control node.
      *
      * @param activity The container activity.
      * @return {@code true} if the current UML element info represents an internal action.
@@ -187,8 +186,7 @@ public class UmlElementInfo {
     public boolean isInternal(Activity activity) {
         return umlElement == null || umlElement instanceof DecisionNode || umlElement instanceof MergeNode
                 || umlElement instanceof ForkNode || umlElement instanceof JoinNode || umlElement instanceof InitialNode
-                || umlElement instanceof ActivityFinalNode
-                || (!(umlElement instanceof OpaqueBehavior) && !umlElement.eContainer().equals(activity));
+                || umlElement instanceof ActivityFinalNode;
     }
 
     /**

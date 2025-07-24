@@ -730,7 +730,8 @@ public class SynthesisUmlElementTracking {
         // Removes internal actions created for petrification.
         Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         for (Entry<ActivityNode, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
-            if (entry.getKey() instanceof OpaqueAction oAction && entry.getKey().getName().contains("__")
+            if (entry.getKey() instanceof OpaqueAction oAction
+                    && (entry.getKey().getName().equals("__start") || entry.getKey().getName().equals("__end"))
                     && entry.getValue().getUmlElement() == null)
             {
                 actionsToRemove.add(oAction);
