@@ -541,7 +541,10 @@ public class ActivityHelper {
         evalNode.setActivity(activity);
         evalNode.getLanguages().add("Python");
 
-        // Define the Python body program of the decision evaluation node.
+        // Define the Python body program of the decision evaluation node. This program will evaluate the incoming
+        // guards of every outgoing control flow of the given decision node, and randomly selects one of these branches
+        // whose guard holds. If none of the branches can be taken, then the branch -1 is returned instead. In that
+        // case, the new activity will re-evaluate the branches in a loop until it finds that some branch can be taken.
         StringBuilder evalProgram = new StringBuilder();
         evalProgram.append("import random\n");
         evalProgram.append("branches = []\n");
