@@ -521,6 +521,20 @@ public class ActivityHelper {
         // Create the activity.
         Activity activity = FileHelper.FACTORY.createActivity();
 
+        // Define the initial node.
+        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
+        initNode.setActivity(activity);
+
+        // Define the merge node.
+        MergeNode mergeNode = FileHelper.FACTORY.createMergeNode();
+        mergeNode.setActivity(activity);
+
+        // Define the control flow between the initial node and the merge node.
+        ControlFlow initToMergeFlow = FileHelper.FACTORY.createControlFlow();
+        initToMergeFlow.setActivity(activity);
+        initToMergeFlow.setSource(initNode);
+        initToMergeFlow.setTarget(mergeNode);
+
         // Define an action that evaluates the guards of all outgoing edges, and non-deterministically chooses one edge
         // whose guard holds.
         OpaqueAction evalNode = FileHelper.FACTORY.createOpaqueAction();
@@ -539,28 +553,36 @@ public class ActivityHelper {
             evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
-        evalProgram.append("branch = random.choice(branches)\n");
+        evalProgram.append("branch = random.choice(branches) if len(branches) > 0 else -1\n");
         evalNode.getBodies().add(evalProgram.toString());
 
-        // Define the initial node.
-        InitialNode initNode = FileHelper.FACTORY.createInitialNode();
-        initNode.setActivity(activity);
+        // Define the control flow between the merge node and the decision evaluation node.
+        ControlFlow mergeToEvalFlow = FileHelper.FACTORY.createControlFlow();
+        mergeToEvalFlow.setActivity(activity);
+        mergeToEvalFlow.setSource(mergeNode);
+        mergeToEvalFlow.setTarget(evalNode);
 
-        // Define the control flow between the initial node and the decision evaluation node.
-        ControlFlow initToEvalFlow = FileHelper.FACTORY.createControlFlow();
-        initToEvalFlow.setActivity(activity);
-        initToEvalFlow.setSource(initNode);
-        initToEvalFlow.setTarget(evalNode);
+        // Define the inner decision node, which will loop back to the merge node if another evaluation round is needed.
+        DecisionNode checkNode = FileHelper.FACTORY.createDecisionNode();
+        checkNode.setActivity(activity);
 
-        // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
-        finalNode.setActivity(activity);
+        // Define the object flow from the decision evaluation node to the inner decision node.
+        OutputPin evalOutput = evalNode.createOutputValue("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
+        ObjectFlow evalToCheckFlow = FileHelper.FACTORY.createObjectFlow();
+        evalToCheckFlow.setActivity(activity);
+        evalToCheckFlow.setSource(evalOutput);
+        evalToCheckFlow.setTarget(checkNode);
 
-        // Define the control flow between the decision evaluation node and the final node.
-        ControlFlow evalToFinalFlow = FileHelper.FACTORY.createControlFlow();
-        evalToFinalFlow.setActivity(activity);
-        evalToFinalFlow.setSource(evalNode);
-        evalToFinalFlow.setTarget(finalNode);
+        // Define the control flow from the inner decision node to the merge node.
+        ControlFlow checkToMergeFlow = FileHelper.FACTORY.createControlFlow();
+        checkToMergeFlow.setActivity(activity);
+        checkToMergeFlow.setSource(checkNode);
+        checkToMergeFlow.setTarget(mergeNode);
+
+        OpaqueExpression checkToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
+        checkToMergeGuard.getLanguages().add("Python");
+        checkToMergeGuard.getBodies().add("branch < 0");
+        checkToMergeFlow.setGuard(checkToMergeGuard);
 
         // Define the output parameter of the activity.
         Parameter outputParam = FileHelper.FACTORY.createParameter();
@@ -575,12 +597,16 @@ public class ActivityHelper {
         outputParamNode.setParameter(outputParam);
         outputParamNode.setType(UmlPrimitiveType.INTEGER.load(decisionNode));
 
-        // Define the object flow from the decision evaluation node to the output parameter node.
-        OutputPin evalOutput = evalNode.createOutputValue("branch", UmlPrimitiveType.INTEGER.load(decisionNode));
-        ObjectFlow evalOutputFlow = FileHelper.FACTORY.createObjectFlow();
-        evalOutputFlow.setActivity(activity);
-        evalOutputFlow.setSource(evalOutput);
-        evalOutputFlow.setTarget(outputParamNode);
+        // Define the object flow from the inner decision node to the output parameter node.
+        ObjectFlow checkToOutputFlow = FileHelper.FACTORY.createObjectFlow();
+        checkToOutputFlow.setActivity(activity);
+        checkToOutputFlow.setSource(checkNode);
+        checkToOutputFlow.setTarget(outputParamNode);
+
+        OpaqueExpression checkToOutputGuard = FileHelper.FACTORY.createOpaqueExpression();
+        checkToOutputGuard.getLanguages().add("Python");
+        checkToOutputGuard.getBodies().add("else");
+        checkToOutputFlow.setGuard(checkToOutputGuard);
 
         return activity;
     }
