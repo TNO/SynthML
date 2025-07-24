@@ -1,7 +1,6 @@
 
 package com.github.tno.pokayoke.transform.track;
 
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.DecisionNode;
@@ -180,10 +179,9 @@ public class UmlElementInfo {
      * Return {@code true} if the current UML element info represents an internal action: if the underlying UML element
      * is null or a control node.
      *
-     * @param activity The container activity.
      * @return {@code true} if the current UML element info represents an internal action.
      */
-    public boolean isInternal(Activity activity) {
+    public boolean isInternal() {
         return umlElement == null || umlElement instanceof DecisionNode || umlElement instanceof MergeNode
                 || umlElement instanceof ForkNode || umlElement instanceof JoinNode || umlElement instanceof InitialNode
                 || umlElement instanceof ActivityFinalNode;
