@@ -126,7 +126,7 @@ public class PNML2UMLTranslator {
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
         translate(petriNet, synthesisTracker);
-        PostProcessActivity.removeInternalActions(activity);
+        PostProcessActivity.removeInternalActions(activity, synthesisTracker);
 
         // Write the UML activity to the output file.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());

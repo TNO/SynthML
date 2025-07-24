@@ -251,7 +251,7 @@ public class FullSynthesisApp {
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeInternalActions(activity);
+        PostProcessActivity.removeInternalActions(activity, synthesisUmlElementsTracker);
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Remove internal actions from the synthesis tracker.
