@@ -15,6 +15,7 @@ import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -691,6 +692,26 @@ public class SynthesisUmlElementTracking {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
             } else {
                 return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        if (umlElementInfo.getUmlElement() instanceof OpaqueAction) {
+            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
+                return ActionKind.COMPLETE_OPAQUE_ACTION;
+            } else if (umlElementInfo.isStartAction()) {
+                return ActionKind.START_OPAQUE_ACTION;
+            } else {
+                return ActionKind.END_OPAQUE_ACTION;
+            }
+        }
+
+        if (umlElementInfo.getUmlElement() instanceof CallBehaviorAction) {
+            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
+                return ActionKind.COMPLETE_SHADOW;
+            } else if (umlElementInfo.isStartAction()) {
+                return ActionKind.START_SHADOW;
+            } else {
+                return ActionKind.END_SHADOW;
             }
         }
 
