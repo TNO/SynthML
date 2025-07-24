@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -465,10 +464,9 @@ public class SynthesisUmlElementTracking {
      * control node, or actions used in other activities), it populates the set of internal synthesis actions and of
      * internal language equivalence actions.
      *
-     * @param activity The activity containing all the relevant CIF events.
      * @return The set of pairs of list of paired events.
      */
-    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Activity activity) {
+    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired() {
         // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
         // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
 

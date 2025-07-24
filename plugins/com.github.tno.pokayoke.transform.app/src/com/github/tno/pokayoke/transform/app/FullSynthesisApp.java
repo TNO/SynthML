@@ -370,6 +370,6 @@ public class FullSynthesisApp {
         StateAwareWeakLanguageEquivalenceChecker checker = new StateAwareWeakLanguageEquivalenceChecker();
         checker.check(stateSpace1, result.stateAnnotations1(), synthesisUmlElementTracking.getInternalSynthesisEvents(),
                 stateSpace2, result.stateAnnotations2(), synthesisUmlElementTracking.getInternalLanguageEqEvents(),
-                synthesisUmlElementTracking.getPrePostSynthesisChainEventsPaired(translator.getActivity()));
+                synthesisUmlElementTracking.getPrePostSynthesisChainEventsPaired());
     }
 }
