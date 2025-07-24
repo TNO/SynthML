@@ -1,0 +1,48 @@
+uncontrollable __node__DecisionNode__69__0;
+uncontrollable __node__DecisionNode__69__1;
+uncontrollable __node__MergeNode__70__0;
+uncontrollable __node__MergeNode__70__1;
+uncontrollable __node__JoinNode__72;
+uncontrollable __node__ForkNode__73;
+uncontrollable __node__CallBehaviorAction__74;
+uncontrollable __node__CallBehaviorAction__74__result_1;
+uncontrollable __node__CallBehaviorAction__74__result_2;
+uncontrollable __node__CallBehaviorAction__75;
+uncontrollable __node__CallBehaviorAction__76;
+plant automaton Context:
+  disc bool field1 in any;
+  disc bool field2 = false;
+  disc bool flipped = false;
+  disc bool mode in any;
+  disc bool __controlflow__54;
+  disc bool __controlflow__55;
+  disc bool __controlflow__57;
+  disc bool __controlflow__59;
+  disc bool __controlflow__60;
+  disc bool __controlflow__61;
+  disc bool __controlflow__62;
+  disc bool __controlflow__63;
+  disc bool __controlflow__64;
+  disc bool __controlflow__66 = true;
+  disc int[0..1] __activeAction;
+  alg bool __token_on_first_controlflow = __controlflow__66;
+  alg bool __precondition = __token_on_first_controlflow;
+  alg bool __token_on_last_controlflow = __controlflow__64;
+  alg bool __postcondition = __token_on_last_controlflow;
+  initial __precondition;
+  marked __postcondition;
+  location:
+    initial;
+    marked;
+    edge __node__DecisionNode__69__0 when true, __controlflow__59, not __controlflow__55, not mode, __activeAction = 0 do __controlflow__59 := false, __controlflow__55 := true;
+    edge __node__DecisionNode__69__1 when true, __controlflow__59, not __controlflow__57, mode, __activeAction = 0 do __controlflow__59 := false, __controlflow__57 := true;
+    edge __node__MergeNode__70__0 when true, __controlflow__61, true, not __controlflow__63, __activeAction = 0 do __controlflow__61 := false, __controlflow__63 := true;
+    edge __node__MergeNode__70__1 when true, __controlflow__62, true, not __controlflow__63, __activeAction = 0 do __controlflow__62 := false, __controlflow__63 := true;
+    edge __node__JoinNode__72 when true, __controlflow__60, __controlflow__63, not __controlflow__64, true, __activeAction = 0 do __controlflow__60 := false, __controlflow__63 := false, __controlflow__64 := true;
+    edge __node__ForkNode__73 when true, __controlflow__66, true, not __controlflow__54, not __controlflow__59, __activeAction = 0 do __controlflow__66 := false, __controlflow__54 := true, __controlflow__59 := true;
+    edge __node__CallBehaviorAction__74 when true, __controlflow__54, (mode or (field1 or field2)) and (not mode or (not field1 or field2)), not __controlflow__60, __activeAction = 0 do __controlflow__54 := false, __activeAction := 1;
+    edge __node__CallBehaviorAction__74__result_1 when not __controlflow__60, __activeAction = 1 do field1 := not field1, flipped := true, __controlflow__60 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__74__result_2 when not __controlflow__60, __activeAction = 1 do field1 := not field1, flipped := true, __controlflow__60 := true, __activeAction := 0;
+    edge __node__CallBehaviorAction__75 when not field1 and not mode, __controlflow__55, true, not __controlflow__61, __activeAction = 0 do field2 := true, __controlflow__55 := false, __controlflow__61 := true;
+    edge __node__CallBehaviorAction__76 when field1 and mode, __controlflow__57, true, not __controlflow__62, __activeAction = 0 do field2 := true, __controlflow__57 := false, __controlflow__62 := true;
+end
