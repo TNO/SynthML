@@ -736,8 +736,7 @@ public class SynthesisUmlElementTracking {
         // Removes internal actions created for petrification.
         Set<OpaqueAction> actionsToRemove = new LinkedHashSet<>();
         for (Entry<ActivityNode, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
-            if (entry.getKey() instanceof OpaqueAction oAction
-                    && (entry.getKey().getName().equals("__start") || entry.getKey().getName().equals("__end"))
+            if (entry.getKey() instanceof OpaqueAction oAction && entry.getKey().getName().contains("__")
                     && entry.getValue().getUmlElement() == null)
             {
                 actionsToRemove.add(oAction);
@@ -752,6 +751,24 @@ public class SynthesisUmlElementTracking {
             }
         }
         cifEventsToRemove.stream().forEach(a -> synthesisCifEventsToUmlElementInfo.remove(a));
+    }
+
+    /**
+     * Return the set of internal action names.
+     *
+     * @return The set of internal action names.
+     */
+    public Set<String> getInternalActionNames() {
+        // Removes internal actions created for petrification.
+        Set<String> actionsToRemove = new LinkedHashSet<>();
+        for (Entry<ActivityNode, UmlElementInfo> entry: activityNodesToUmlElementInfoMap.entrySet()) {
+            if (entry.getKey() instanceof OpaqueAction oAction && entry.getKey().getName().contains("__")
+                    && entry.getValue().getUmlElement() == null)
+            {
+                actionsToRemove.add(oAction.getName());
+            }
+        }
+        return actionsToRemove;
     }
 
     // Section dealing with finalized UML elements.
