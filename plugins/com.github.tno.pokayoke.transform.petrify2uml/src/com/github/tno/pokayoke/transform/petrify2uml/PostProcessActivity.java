@@ -281,9 +281,6 @@ public class PostProcessActivity {
                         RedefinableElement actionElement = umlElementInfo.getUmlElement();
                         int effectIdx = umlElementInfo.getEffectIdx();
 
-                        Verify.verify(actionElement instanceof OpaqueBehavior,
-                                "Expected an opaque behavior, found: " + actionElement.getClass().getSimpleName());
-
                         // Rename the current action, set its guard to 'true', and retain the original relevant effect.
                         action.setName(action.getName().replace(SynthesisUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX,
                                 UmlToCifTranslator.END_ACTION_SUFFIX));
