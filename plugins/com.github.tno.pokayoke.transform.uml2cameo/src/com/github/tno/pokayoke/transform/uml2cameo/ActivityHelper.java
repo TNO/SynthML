@@ -509,7 +509,7 @@ public class ActivityHelper {
 
     /**
      * Creates an activity that evaluates the incoming guards of the outgoing control flows of the given decision node,
-     * and randomly picks one of the branches whose guards holds.
+     * and randomly picks one of the branches whose guard holds.
      *
      * @param decisionNode The decision node.
      * @param translator The translator for translating incoming guards to Python expressions.
@@ -544,7 +544,7 @@ public class ActivityHelper {
         // Define the Python body program of the decision evaluation node. This program will evaluate the incoming
         // guards of every outgoing control flow of the given decision node, and randomly selects one of these branches
         // whose guard holds. If none of the branches can be taken, then the branch -1 is returned instead. In that
-        // case, the new activity will re-evaluate the branches in a loop until it finds that some branch can be taken.
+        // case, the new activity will re-evaluate the branches in a loop until it finds some branch that can be taken.
         StringBuilder evalProgram = new StringBuilder();
         evalProgram.append("import random\n");
         evalProgram.append("branches = []\n");
