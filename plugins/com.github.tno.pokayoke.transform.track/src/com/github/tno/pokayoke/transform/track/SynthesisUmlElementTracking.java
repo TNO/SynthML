@@ -467,12 +467,12 @@ public class SynthesisUmlElementTracking {
      * control node, or actions used in other activities), it populates the set of internal synthesis actions and of
      * internal language equivalence actions.
      *
-     * @param sspacePre The state space of the input CIF model.
-     * @param sspacePost The state space of the CIF model after the activity has been finalized.
+     * @param synthesisStateSpace The state space of the input CIF model.
+     * @param languageEqStateSpace The state space of the CIF model after the activity has been finalized.
      * @return The set of pairs of list of paired events.
      */
-    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Automaton sspacePre,
-            Automaton sspacePost)
+    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Automaton synthesisStateSpace,
+            Automaton languageEqStateSpace)
     {
         // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
         // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
@@ -483,7 +483,7 @@ public class SynthesisUmlElementTracking {
         // Create a set of used CIF events to filter out the unused ones for the synthesis CIF events. Note that we use
         // names because the state space explorer creates a new model with new event objects, hence we cannot use an
         // object comparison.
-        Set<String> usedSynthEventsNames = getUsedEventsNames(sspacePre);
+        Set<String> usedSynthEventsNames = getUsedEventsNames(synthesisStateSpace);
         Map<Event, UmlElementInfo> usedSynthCifEventsToUmlElementInfo = unalteredCifEventsToUmlElementInfo.entrySet()
                 .stream().filter(e -> usedSynthEventsNames.contains(e.getKey().getName()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -502,7 +502,7 @@ public class SynthesisUmlElementTracking {
         // Create a set of used CIF events to filter out the unused ones for the language equivalence CIF events. Note
         // that we use names because the state space explorer creates a new model with new event objects, hence we
         // cannot use an object comparison.
-        Set<String> usedLanguageEqEventsNames = getUsedEventsNames(sspacePost);
+        Set<String> usedLanguageEqEventsNames = getUsedEventsNames(languageEqStateSpace);
         Map<Event, UmlElementInfo> usedLanguageEqCifEventsToUmlElementInfo = languageEquivalenceCifEventsToUmlElementInfo
                 .entrySet().stream().filter(e -> usedLanguageEqEventsNames.contains(e.getKey().getName()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
