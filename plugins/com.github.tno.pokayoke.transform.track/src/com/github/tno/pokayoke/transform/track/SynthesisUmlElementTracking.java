@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.escet.cif.common.CifEventUtils;
+import org.eclipse.escet.cif.common.CifTextUtils;
+import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
@@ -464,25 +467,30 @@ public class SynthesisUmlElementTracking {
      * control node, or actions used in other activities), it populates the set of internal synthesis actions and of
      * internal language equivalence actions.
      *
+     * @param sspacePre The state space of the input CIF model.
+     * @param sspacePost The state space of the CIF model after the activity has been finalized.
      * @return The set of pairs of list of paired events.
      */
-    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired() {
+    public Set<Pair<List<Event>, List<Event>>> getPrePostSynthesisChainEventsPaired(Automaton sspacePre,
+            Automaton sspacePost)
+    {
         // Pair the CIF events generated during the synthesis phase and during the language equivalence phase if they
         // refer to the same original UML element. Only for opaque behaviors, actions, and call behaviors.
 
         // Initialize map of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
-        // Create a set of used CIF events, to filter out the unused ones.
-        Set<RedefinableElement> usedUmlElements = finalizedUmlElementsToUmlElementInfo.values().stream()
-                .map(umlInfo -> umlInfo.getUmlElement()).collect(Collectors.toSet());
-        Map<Event, UmlElementInfo> usedCifEventsToUmlElementInfo = unalteredCifEventsToUmlElementInfo.entrySet()
-                .stream().filter(e -> usedUmlElements.contains(e.getValue().getUmlElement()))
+        // Create a set of used CIF events to filter out the unused ones for the synthesis CIF events. Note that we use
+        // names because the state space explorer creates a new model with new event objects, hence we cannot use an
+        // object comparison.
+        Set<String> usedSynthEventsNames = getUsedEventsNames(sspacePre);
+        Map<Event, UmlElementInfo> usedSynthCifEventsToUmlElementInfo = unalteredCifEventsToUmlElementInfo.entrySet()
+                .stream().filter(e -> usedSynthEventsNames.contains(e.getKey().getName()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         // Divide internal and external events for the synthesis map.
         Map<Event, UmlElementInfo> externalSynthesisEventsMap = new LinkedHashMap<>();
-        for (Entry<Event, UmlElementInfo> entrySynth: usedCifEventsToUmlElementInfo.entrySet()) {
+        for (Entry<Event, UmlElementInfo> entrySynth: usedSynthCifEventsToUmlElementInfo.entrySet()) {
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
             if (synthesisUmlElementInfo.isInternal()) {
                 internalSynthesisEvents.add(entrySynth.getKey());
@@ -491,9 +499,17 @@ public class SynthesisUmlElementTracking {
             }
         }
 
+        // Create a set of used CIF events to filter out the unused ones for the language equivalence CIF events. Note
+        // that we use names because the state space explorer creates a new model with new event objects, hence we
+        // cannot use an object comparison.
+        Set<String> usedLanguageEqEventsNames = getUsedEventsNames(sspacePost);
+        Map<Event, UmlElementInfo> usedLanguageEqCifEventsToUmlElementInfo = languageEquivalenceCifEventsToUmlElementInfo
+                .entrySet().stream().filter(e -> usedLanguageEqEventsNames.contains(e.getKey().getName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         // Divide internal and external events for the language equivalence map.
         Map<Event, UmlElementInfo> externalLanguageEqEventsMap = new LinkedHashMap<>();
-        for (Entry<Event, UmlElementInfo> entrySynth: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
+        for (Entry<Event, UmlElementInfo> entrySynth: usedLanguageEqCifEventsToUmlElementInfo.entrySet()) {
             UmlElementInfo languageEqUmlElementInfo = entrySynth.getValue();
             if (languageEqUmlElementInfo.isInternal()) {
                 internalLanguageEquivalenceEvents.add(entrySynth.getKey());
@@ -541,6 +557,13 @@ public class SynthesisUmlElementTracking {
                                 .map(e -> e.getName()).toList()));
 
         return pairedEvents;
+    }
+
+    private static Set<String> getUsedEventsNames(Automaton stateSpace) {
+        // Removes the unused events from the alphabet, and returns the unused events names.
+        stateSpace.setAlphabet(null);
+        Set<Event> usedAlphabet = CifEventUtils.getAlphabet(stateSpace);
+        return usedAlphabet.stream().map(e -> CifTextUtils.getAbsName(e)).collect(Collectors.toSet());
     }
 
     public Set<Event> getInternalSynthesisEvents() {
