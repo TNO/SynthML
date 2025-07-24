@@ -560,10 +560,9 @@ public class SynthesisUmlElementTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The enumeration informing on which translation is occurring.
-     * @param activity The container activity.
      * @return {@code true} if the CIF event corresponds to an internal action.
      */
-    public boolean isInternal(Event cifEvent, TranslationPurpose purpose, Activity activity) {
+    public boolean isInternal(Event cifEvent, TranslationPurpose purpose) {
         UmlElementInfo umlElementInfo;
         switch (purpose) {
             case SYNTHESIS: {
