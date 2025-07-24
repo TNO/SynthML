@@ -475,9 +475,16 @@ public class SynthesisUmlElementTracking {
         // Initialize map of paired events.
         Set<Pair<List<Event>, List<Event>>> pairedEvents = new LinkedHashSet<>();
 
+        // Create a set of used CIF events, to filter out the unused ones.
+        Set<RedefinableElement> usedUmlElements = finalizedUmlElementsToUmlElementInfo.values().stream()
+                .map(umlInfo -> umlInfo.getUmlElement()).collect(Collectors.toSet());
+        Map<Event, UmlElementInfo> usedCifEventsToUmlElementInfo = unalteredCifEventsToUmlElementInfo.entrySet()
+                .stream().filter(e -> usedUmlElements.contains(e.getValue().getUmlElement()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         // Divide internal and external events for the synthesis map.
         Map<Event, UmlElementInfo> externalSynthesisEventsMap = new LinkedHashMap<>();
-        for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
+        for (Entry<Event, UmlElementInfo> entrySynth: usedCifEventsToUmlElementInfo.entrySet()) {
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
             if (synthesisUmlElementInfo.isInternal()) {
                 internalSynthesisEvents.add(entrySynth.getKey());
