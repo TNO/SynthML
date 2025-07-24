@@ -15,11 +15,11 @@ Below you find guidelines for contributing to SynthML.
 	- In case of big changes, consider whether it's possible to split the work up into multiple issues, or multiple PRs under the same issue, that each have a small and clear scope.
 	- In case it's not possible or obvious how to cleanly split-up a big change in multiple small issues, then first discuss the idea and plan with the team.
 - When opening a new Git issue, assign the appropriate labels to it.
-	- In principle, every new Git issue should have (at least, but preferably exactly) one of the following labels: `formalisms`, `analysis`, `synthesis`, or `industrialization`.
+	- In principle, every new Git issue should have exactly one of the following labels: `formalisms`, `analysis`, `synthesis`, or `industrialization`.
 	- If the Git issue addresses a bug, then assign the label `bug` to it.
 	- Some Git issues use other labels as well, like `documentation` or `good first issue`. These are optional. They could be added if you find them appropriate for the new issue.
 - After having opened a new Git issue, update the relevant overview issue.
-	- Every non-overview issue must be included in (at least, but preferably exactly) one overview issue.
+	- Every non-overview issue must be included in exactly one overview issue.
 	- Ensure that the issue label is consistent with the overview issue to which the new issue is added. For example, if the new issue has label `synthesis`, then add it to the overview issue of activity synthesis tasks.
 - When working on a Git issue, assign yourself to that Git issue so that we have an overview of who is working on what, and which Git issues are not yet worked on.
 	- Being assigned to a Git issue means that you are in the lead of that issue.
