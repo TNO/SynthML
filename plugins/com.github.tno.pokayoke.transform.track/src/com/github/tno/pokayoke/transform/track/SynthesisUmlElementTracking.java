@@ -479,7 +479,7 @@ public class SynthesisUmlElementTracking {
         Map<Event, UmlElementInfo> externalSynthesisEventsMap = new LinkedHashMap<>();
         for (Entry<Event, UmlElementInfo> entrySynth: unalteredCifEventsToUmlElementInfo.entrySet()) {
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
-            if (synthesisUmlElementInfo.isInternal(activity)) {
+            if (synthesisUmlElementInfo.isInternal()) {
                 internalSynthesisEvents.add(entrySynth.getKey());
             } else {
                 externalSynthesisEventsMap.put(entrySynth.getKey(), synthesisUmlElementInfo);
@@ -490,7 +490,7 @@ public class SynthesisUmlElementTracking {
         Map<Event, UmlElementInfo> externalLanguageEqEventsMap = new LinkedHashMap<>();
         for (Entry<Event, UmlElementInfo> entrySynth: languageEquivalenceCifEventsToUmlElementInfo.entrySet()) {
             UmlElementInfo languageEqUmlElementInfo = entrySynth.getValue();
-            if (languageEqUmlElementInfo.isInternal(activity)) {
+            if (languageEqUmlElementInfo.isInternal()) {
                 internalLanguageEquivalenceEvents.add(entrySynth.getKey());
             } else {
                 externalLanguageEqEventsMap.put(entrySynth.getKey(), languageEqUmlElementInfo);
@@ -506,7 +506,7 @@ public class SynthesisUmlElementTracking {
         for (Entry<Event, UmlElementInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
             UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
 
-            if (synthesisUmlElementInfo.isInternal(activity)) {
+            if (synthesisUmlElementInfo.isInternal()) {
                 // No need to pair internal events.
                 continue;
             }
@@ -575,7 +575,7 @@ public class SynthesisUmlElementTracking {
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
 
-        return umlElementInfo.isInternal(activity);
+        return umlElementInfo.isInternal();
     }
 
     /**
