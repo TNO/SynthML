@@ -182,7 +182,7 @@ public class PostProcessActivity {
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior((OpaqueBehavior)umlElement);
                         callAction.setActivity(activity);
-                        callAction.setName("_node_" + umlElement.getName());
+                        callAction.setName(action.getName());
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(callAction, action);
@@ -197,7 +197,7 @@ public class PostProcessActivity {
                     case START_OPAQUE_BEHAVIOR -> {
                         // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
                         // opaque action.
-                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
 
@@ -217,7 +217,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
-                        action.setName("_node_" + umlElement.getName());
+                        action.setName(action.getName());
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(action, action);
@@ -228,7 +228,7 @@ public class PostProcessActivity {
                         // Non-atomic non-rewritten opaque action: this represents just the start of an opaque action.
                         // Add the original UML element's guard.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
-                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(action, action);
@@ -246,7 +246,7 @@ public class PostProcessActivity {
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
-                        action.setName("_node_" + umlElement.getName());
+                        action.setName(action.getName());
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(action, action);
@@ -258,7 +258,7 @@ public class PostProcessActivity {
                         // call. Add the original UML element's guard.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
-                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(action, action);
