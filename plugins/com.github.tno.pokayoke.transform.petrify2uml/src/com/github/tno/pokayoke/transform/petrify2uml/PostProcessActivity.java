@@ -162,6 +162,10 @@ public class PostProcessActivity {
                             "Expected only opaque actions, found: " + action.getClass().getSimpleName());
                 }
 
+                // Distinguish between start/end actions, atomic/non-atomic actions, opaque behaviors/actions, and
+                // rewrite them accordingly. Note that the activity does *not* contain the ends of atomic
+                // non-deterministic actions at this point, since they have been filtered out previously.
+
                 if (isInternalAction(action)) {
                     // If the action is internal, skip the current action.
                     continue;
@@ -178,7 +182,7 @@ public class PostProcessActivity {
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior((OpaqueBehavior)umlElement);
                         callAction.setActivity(activity);
-                        callAction.setName(action.getName());
+                        callAction.setName("_node_" + umlElement.getName());
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(callAction, action);
@@ -207,7 +211,67 @@ public class PostProcessActivity {
 
                         break;
                     }
-                    case END_OPAQUE_BEHAVIOR -> {
+                    case COMPLETE_OPAQUE_ACTION -> {
+                        // Atomic or rewritten opaque actions. Add the original UML element's guard and effects to the
+                        // current action.
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
+                        PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
+                        action.setName("_node_" + umlElement.getName());
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        break;
+                    }
+                    case START_OPAQUE_ACTION -> {
+                        // Non-atomic non-rewritten opaque action: this represents just the start of an opaque action.
+                        // Add the original UML element's guard.
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        // Add a warning that the non-atomic start action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                                umlElement.getName(), action.getName()));
+
+                        break;
+                    }
+                    case COMPLETE_SHADOW -> {
+                        // Atomic or rewritten shadowed call behaviors. Add the original UML element's guard and effects
+                        // to the current action.
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        PokaYokeUmlProfileUtil.setEffects(action, PokaYokeUmlProfileUtil.getEffects(umlElement));
+                        PokaYokeUmlProfileUtil.setAtomic(action, PokaYokeUmlProfileUtil.isAtomic(umlElement));
+                        action.setName("_node_" + umlElement.getName());
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        break;
+                    }
+                    case START_SHADOW -> {
+                        // Non-atomic non-rewritten shadowed call behavior: this represents just the start of a shadowed
+                        // call. Add the original UML element's guard.
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
+                        action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        // Add a warning that the non-atomic start action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                                umlElement.getName(), action.getName()));
+
+                        break;
+                    }
+
+                    case END_OPAQUE_BEHAVIOR, END_OPAQUE_ACTION, END_SHADOW -> {
                         // Sanity check.
                         Verify.verify(action.getName().contains(SynthesisUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
@@ -241,6 +305,7 @@ public class PostProcessActivity {
 
                         break;
                     }
+
                     default -> {
                         throw new RuntimeException("Found unexpected action kind: " + actionKind);
                     }
