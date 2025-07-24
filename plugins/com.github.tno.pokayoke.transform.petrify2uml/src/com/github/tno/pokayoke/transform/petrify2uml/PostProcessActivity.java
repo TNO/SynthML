@@ -1,10 +1,8 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
@@ -45,12 +43,11 @@ public class PostProcessActivity {
      * Remove the internal actions that were added in CIF specification and petrification.
      *
      * @param activity The activity in which actions to be removed.
+     * @param synthesisTracker The tracker containing the original UML element and information about the synthesis chain
+     *     manipulations for each action.
      */
-    public static void removeInternalActions(Activity activity) {
-        // Find all names of internal actions in the activity, which are the opaque actions whose name contain '__'.
-        Set<String> internalActionNames = activity.getNodes().stream()
-                .filter(node -> node instanceof OpaqueAction && node.getName().contains("__"))
-                .map(node -> node.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+    public static void removeInternalActions(Activity activity, SynthesisUmlElementTracking synthesisTracker) {
+        Set<String> internalActionNames = synthesisTracker.getInternalActionNames();
 
         // Remove all internal opaque actions that were found.
         for (String internalActionName: internalActionNames) {
