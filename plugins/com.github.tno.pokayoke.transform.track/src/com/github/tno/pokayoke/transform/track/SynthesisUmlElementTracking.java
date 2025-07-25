@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -532,6 +533,34 @@ public class SynthesisUmlElementTracking {
             }
         }
 
+        // Find the equivalent synthesis events.
+        Map<UmlElementInfo, List<Event>> externalSynthesisEventsMerged = new LinkedHashMap<>();
+        for (Entry<Event, UmlElementInfo> entry: externalSynthesisEventsMap.entrySet()) {
+            UmlElementInfo umlElementInfo = entry.getValue();
+            Event cifEvent = entry.getKey();
+
+            if (externalSynthesisEventsMerged.isEmpty()) {
+                // Add the first element to the map of merged events.
+                externalSynthesisEventsMerged.put(umlElementInfo, new ArrayList<>(Arrays.asList(cifEvent)));
+            } else {
+                // Find if the current CIF event is equivalent to any event already stored in the merged map. IF so, add
+                // it to the list; if not, create a new entry.
+                boolean mergedElement = false;
+                for (Entry<UmlElementInfo, List<Event>> mergedEntry: externalSynthesisEventsMerged.entrySet()) {
+                    if (!mergedElement && mergedEntry.getKey().isEquivalentWithoutStructure(umlElementInfo)) {
+                        // Add it to the current list, and then break out of the loop.
+                        externalSynthesisEventsMerged.get(mergedEntry.getKey()).add(cifEvent);
+                        mergedElement = true;
+                    }
+                }
+
+                // Create a new entry of the map of merged events if not yet merged.
+                if (!mergedElement) {
+                    externalSynthesisEventsMerged.put(umlElementInfo, new ArrayList<>(Arrays.asList(cifEvent)));
+                }
+            }
+        }
+
         // Create a set of used CIF events to filter out the unused ones for the language equivalence CIF events. Note
         // that we use names because the state space explorer creates a new model with new event objects, hence we
         // cannot use an object comparison.
@@ -557,8 +586,8 @@ public class SynthesisUmlElementTracking {
         // UML model, and these should not have any paired events in the post-synthesis UMl model.
         Set<Event> usedPostSynthEvents = new LinkedHashSet<>();
 
-        for (Entry<Event, UmlElementInfo> entrySynth: externalSynthesisEventsMap.entrySet()) {
-            UmlElementInfo synthesisUmlElementInfo = entrySynth.getValue();
+        for (Entry<UmlElementInfo, List<Event>> entrySynth: externalSynthesisEventsMerged.entrySet()) {
+            UmlElementInfo synthesisUmlElementInfo = entrySynth.getKey();
 
             if (synthesisUmlElementInfo.isInternal()) {
                 // No need to pair internal events.
@@ -578,7 +607,7 @@ public class SynthesisUmlElementTracking {
             }
 
             if (!equivalentEvents.isEmpty()) {
-                pairedEvents.add(new Pair<>(List.of(entrySynth.getKey()), equivalentEvents));
+                pairedEvents.add(new Pair<>(entrySynth.getValue(), equivalentEvents));
             }
         }
 
