@@ -208,6 +208,24 @@ public class PostProcessActivity {
 
                         break;
                     }
+                    case COMPLETE_CALL_BEHAVIOR -> {
+                        // The action represents an atomic call behavior, or the start of a rewritten non-atomic
+                        // call behavior. Transform it to a call behavior.
+                        CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
+                        callAction.setBehavior(((CallBehaviorAction)umlElement).getBehavior());
+                        callAction.setActivity(activity);
+                        callAction.setName(action.getName());
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(callAction, action);
+
+                        // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                        action.getIncomings().get(0).setTarget(callAction);
+                        action.getOutgoings().get(0).setSource(callAction);
+                        action.destroy();
+
+                        break;
+                    }
                     case COMPLETE_OPAQUE_ACTION -> {
                         // Atomic or rewritten opaque actions. Add the original UML element's guard and effects to the
                         // current action.
@@ -286,7 +304,16 @@ public class PostProcessActivity {
                                 UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
                         PokaYokeUmlProfileUtil.setGuard(action, "true");
-                        String effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectIdx);
+
+                        // If the element is a non-shadowed call behavior, get the called behavior's effects.
+                        String effect;
+                        if (actionElement instanceof CallBehaviorAction cbAction
+                                && !PokaYokeUmlProfileUtil.isFormalElement(actionElement))
+                        {
+                            effect = PokaYokeUmlProfileUtil.getEffects(cbAction.getBehavior()).get(effectIdx);
+                        } else {
+                            effect = PokaYokeUmlProfileUtil.getEffects(actionElement).get(effectIdx);
+                        }
                         PokaYokeUmlProfileUtil.setEffects(action, List.of(effect));
 
                         // Store the new UML element in the synthesis transformation tracker.
