@@ -1541,16 +1541,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (synthesisUmlElementsTracker.isStartCallBehavior(cifEvent, translationPurpose)) {
+                    } else if (synthesisUmlElementsTracker.isStartOpaqueBehavior(cifEvent, translationPurpose)
+                            || synthesisUmlElementsTracker.isStartOpaqueAction(cifEvent, translationPurpose)
+                            || synthesisUmlElementsTracker.isStartCallBehavior(cifEvent, translationPurpose))
+                    {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined. This case handles events that start such actions
-                        // through a call behavior action.
-                        yield PostConditionKind.WITHOUT_STRUCTURE;
-                    } else if (synthesisUmlElementsTracker.isStartOpaqueAction(cifEvent, translationPurpose)) {
-                        // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
-                        // of the actions that the user defined. This case handles events that start such actions
-                        // through an opaque action, which only applies to non-atomic actions that couldn't be merged
-                        // back to a call behavior to the original opaque behavior.
+                        // through a (concrete) call behavior, an opaque action, which only applies to non-atomic
+                        // actions that couldn't be merged back to a call behavior to the original opaque behavior.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // Sanity check: ensure the CIF event corresponds to an end action.
