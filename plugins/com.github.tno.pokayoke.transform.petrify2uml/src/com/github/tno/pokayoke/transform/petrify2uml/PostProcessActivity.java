@@ -163,7 +163,7 @@ public class PostProcessActivity {
                 // rewrite them accordingly. Note that the activity does *not* contain the ends of atomic
                 // non-deterministic actions at this point, since they have been filtered out previously.
 
-                if (isInternalAction(action)) {
+                if (isStartEndAction(action)) {
                     // If the action is internal, skip the current action.
                     continue;
                 }
@@ -357,7 +357,7 @@ public class PostProcessActivity {
         }
     }
 
-    private static boolean isInternalAction(Action action) {
+    private static boolean isStartEndAction(Action action) {
         return action.getName().equals(CifSourceSinkLocationTransformer.START_EVENT_NAME)
                 || action.getName().equals(CifSourceSinkLocationTransformer.END_EVENT_NAME);
     }
