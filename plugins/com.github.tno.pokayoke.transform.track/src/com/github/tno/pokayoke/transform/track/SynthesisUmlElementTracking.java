@@ -372,16 +372,16 @@ public class SynthesisUmlElementTracking {
     }
 
     /**
-     * Return {@code true} if the CIF event corresponds to the start of a call behavior action. This includes both a
-     * "merged" call behavior (i.e. an action that includes both the guard and effects of the underlying opaque
-     * behavior), or just the start of a non-atomic action. It refers to the original UML model elements, hence the
-     * guard computation case uses the original UML element info map, *not* the finalized UML element one.
+     * Return {@code true} if the CIF event corresponds to the start of an opaque behavior. This includes both a
+     * "merged" call to that opaque behavior (i.e. an action that includes both the guard and effects of the underlying
+     * opaque behavior), or just the start of a non-atomic action. It refers to the original UML model elements, hence
+     * the guard computation case uses the original UML element info map, *not* the finalized UML element one.
      *
      * @param cifEvent The CIF event.
      * @param purpose The enumeration informing on which translation is occurring.
-     * @return {@code true} if the CIF event corresponds to the start of a call behavior action.
+     * @return {@code true} if the CIF event corresponds to the start of an opaque behavior.
      */
-    public boolean isStartCallBehavior(Event cifEvent, TranslationPurpose purpose) {
+    public boolean isStartOpaqueBehavior(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
                 UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
@@ -395,6 +395,37 @@ public class SynthesisUmlElementTracking {
             case LANGUAGE_EQUIVALENCE: {
                 UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
                 return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof OpaqueBehavior;
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to the start of a call behavior action. This includes both a
+     * "merged" call behavior (i.e. an action that includes both the guard and effects of the underlying opaque
+     * behavior), or just the start of a non-atomic action. It refers to the original UML model elements, hence the
+     * guard computation case uses the original UML element info map, *not* the finalized UML element one.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to the start of a call behavior action.
+     */
+    public boolean isStartCallBehavior(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
+            }
+            case GUARD_COMPUTATION: {
+                // CIF events in relation to the original UML elements.
+                UmlElementInfo umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                UmlElementInfo umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                return umlElementInfo.isStartAction() && umlElementInfo.getUmlElement() instanceof CallBehaviorAction;
             }
 
             default:
