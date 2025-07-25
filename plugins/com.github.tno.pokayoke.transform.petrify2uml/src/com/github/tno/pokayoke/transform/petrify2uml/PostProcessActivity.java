@@ -231,7 +231,8 @@ public class PostProcessActivity {
                         // called behavior to the opaque action.
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
-                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        PokaYokeUmlProfileUtil.setGuard(action,
+                                PokaYokeUmlProfileUtil.getGuard(((CallBehaviorAction)umlElement).getBehavior()));
 
                         // Store the new UML element in the synthesis transformation tracker.
                         synthesisTracker.addFinalizedUmlElement(action, action);
