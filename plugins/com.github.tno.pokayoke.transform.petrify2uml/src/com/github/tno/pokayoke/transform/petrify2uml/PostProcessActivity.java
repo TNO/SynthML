@@ -226,6 +226,23 @@ public class PostProcessActivity {
 
                         break;
                     }
+                    case START_CALL_BEHAVIOR -> {
+                        // The action is the start of a non-rewritten non-atomic call behavior. Add the guards of the
+                        // called behavior to the opaque action.
+                        action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
+                        PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+
+                        // Store the new UML element in the synthesis transformation tracker.
+                        synthesisTracker.addFinalizedUmlElement(action, action);
+
+                        // Add a warning that the non-atomic start action has not been fully merged.
+                        warnings.add(String.format(
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                                umlElement.getName(), action.getName()));
+
+                        break;
+                    }
                     case COMPLETE_OPAQUE_ACTION -> {
                         // Atomic or rewritten opaque actions. Add the original UML element's guard and effects to the
                         // current action.
@@ -286,7 +303,7 @@ public class PostProcessActivity {
                         break;
                     }
 
-                    case END_OPAQUE_BEHAVIOR, END_OPAQUE_ACTION, END_SHADOW -> {
+                    case END_OPAQUE_BEHAVIOR, END_OPAQUE_ACTION, END_SHADOW, END_CALL_BEHAVIOR -> {
                         // Sanity check.
                         Verify.verify(action.getName().contains(SynthesisUmlElementTracking.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
