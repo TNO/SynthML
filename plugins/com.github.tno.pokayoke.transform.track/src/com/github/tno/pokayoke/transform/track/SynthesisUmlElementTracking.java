@@ -89,7 +89,8 @@ public class SynthesisUmlElementTracking {
 
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, START_SHADOW, END_SHADOW, COMPLETE_SHADOW,
-        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, CONTROL_NODE;
+        START_OPAQUE_ACTION, END_OPAQUE_ACTION, COMPLETE_OPAQUE_ACTION, COMPLETE_CALL_BEHAVIOR, CONTROL_NODE;
+
     }
 
     public SynthesisUmlElementTracking() {
@@ -732,13 +733,23 @@ public class SynthesisUmlElementTracking {
             }
         }
 
-        if (umlElementInfo.getUmlElement() instanceof CallBehaviorAction) {
+        if (umlElementInfo.getUmlElement() instanceof CallBehaviorAction && umlElementInfo.isShadowed()) {
             if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
                 return ActionKind.COMPLETE_SHADOW;
             } else if (umlElementInfo.isStartAction()) {
                 return ActionKind.START_SHADOW;
             } else {
                 return ActionKind.END_SHADOW;
+            }
+        }
+
+        if (umlElementInfo.getUmlElement() instanceof CallBehaviorAction && !umlElementInfo.isShadowed()) {
+            if (umlElementInfo.isStartAction() && (umlElementInfo.isAtomic() || umlElementInfo.isMerged())) {
+                return ActionKind.COMPLETE_CALL_BEHAVIOR;
+            } else if (umlElementInfo.isStartAction()) {
+                throw new RuntimeException("Found an incomplete start call behavior.");
+            } else {
+                throw new RuntimeException("Found an incomplete end call behavior.");
             }
         }
 
