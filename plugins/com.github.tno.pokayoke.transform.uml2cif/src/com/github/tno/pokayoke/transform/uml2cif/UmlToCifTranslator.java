@@ -1553,10 +1553,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose)) {
+                    if (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose)
+                            || !synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose, activity))
+                    {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
-                        // the incoming control flow to the final place.
+                        // the incoming control flow to the final place. Similarly, if the CIF event relates to an
+                        // element within a called concrete activity.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisUmlElementsTracker.isStartOpaqueBehavior(cifEvent, translationPurpose)
                             || synthesisUmlElementsTracker.isStartOpaqueAction(cifEvent, translationPurpose)
