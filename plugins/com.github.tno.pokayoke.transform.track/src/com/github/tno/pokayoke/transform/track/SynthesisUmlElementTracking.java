@@ -17,6 +17,7 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -687,6 +688,45 @@ public class SynthesisUmlElementTracking {
     public boolean isAtomicNonDeterministicEndEventName(String eventName) {
         UmlElementInfo umlElementInfo = synthesisCifEventsToUmlElementInfo.get(namesToCifEvents.get(eventName));
         return umlElementInfo.isAtomic() && !umlElementInfo.isDeterministic() && !umlElementInfo.isStartAction();
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to a UML element that is contained in the input activity. It
+     * refers to the original UML model elements, hence the guard computation case uses the original UML element info
+     * map, *not* the finalized UML element one. If UML element is {@code null}, it is assumed that the CIF events
+     * corresponds to a new UML element created purposely for the synthesized activity, so returns {@code true}.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @param synthesizedActivity The container activity.
+     * @return {@code true} if the CIF event corresponds to an internal action.
+     */
+    public boolean belongsToSynthesizedActivity(Event cifEvent, TranslationPurpose purpose,
+            Activity synthesizedActivity)
+    {
+        UmlElementInfo umlElementInfo;
+        switch (purpose) {
+            case SYNTHESIS: {
+                umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+
+        if (umlElementInfo == null) {
+            return true;
+        }
+
+        return umlElementInfo.getUmlElement().eContainer().equals(synthesizedActivity);
     }
 
     // Section dealing with Petri net transitions.
