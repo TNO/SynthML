@@ -872,4 +872,8 @@ public class SynthesisUmlElementTracking {
         finalizedUmlElementsToUmlElementInfo.put(finalizedUmlElement,
                 activityNodesToUmlElementInfoMap.get(incompleteUmlElement));
     }
+
+    public UmlElementInfo getUmlElementInfo(RedefinableElement finalizedUmlElement) {
+        return finalizedUmlElementsToUmlElementInfo.get(finalizedUmlElement);
+    }
 }
