@@ -73,6 +73,7 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -455,9 +456,25 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             boolean controllableStartEvent)
     {
         // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
-        // activity is already fixed, and we just want to re-compute the guards as locally as possible.
+        // activity is already fixed, and we just want to re-compute the guards as locally as possible. Events that
+        // belong to a called activity should be uncontrollable, except if they represents the call to the initial node.
         if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
-            controllableStartEvent = true;
+            UmlElementInfo originalUmlElementInfo = synthesisUmlElementsTracker.getUmlElementInfo(umlElement);
+
+            if (originalUmlElementInfo == null) {
+                // If null, the UML element refers to a new control node (e.g. a fork node) synthesized for the abstract
+                // activity.
+                controllableStartEvent = true;
+            } else {
+                RedefinableElement originalUmlElement = originalUmlElementInfo.getUmlElement();
+                if (originalUmlElement.eContainer() instanceof Activity activity && !activity.equals(this.activity)
+                        && !(originalUmlElement instanceof InitialNode))
+                {
+                    controllableStartEvent = false;
+                } else {
+                    controllableStartEvent = true;
+                }
+            }
         }
 
         // Initialize mapping of new events to their edges.
