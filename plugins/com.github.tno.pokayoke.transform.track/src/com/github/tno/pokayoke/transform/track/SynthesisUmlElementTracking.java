@@ -817,8 +817,8 @@ public class SynthesisUmlElementTracking {
         return ActionKind.CONTROL_NODE;
     }
 
-    public UmlElementInfo getUmlElementInfo(Action action) {
-        return activityNodesToUmlElementInfoMap.get(action);
+    public UmlElementInfo getUmlElementInfo(ActivityNode node) {
+        return activityNodesToUmlElementInfoMap.get(node);
     }
 
     /**
