@@ -349,9 +349,12 @@ public class PostProcessActivity {
                         throw new RuntimeException("Found unexpected action kind: " + actionKind);
                     }
                 }
-            } else if (!(node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
-                    || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode))
+            } else if (node instanceof DecisionNode || node instanceof MergeNode || node instanceof JoinNode
+                    || node instanceof ForkNode || node instanceof InitialNode || node instanceof ActivityFinalNode)
             {
+                // Store the new UML element in the synthesis transformation tracker.
+                synthesisTracker.addFinalizedUmlElement(node, node);
+            } else {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
