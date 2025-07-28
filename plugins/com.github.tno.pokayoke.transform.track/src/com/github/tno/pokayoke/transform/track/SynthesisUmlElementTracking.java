@@ -55,6 +55,9 @@ public class SynthesisUmlElementTracking {
      */
     private Map<Event, UmlElementInfo> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
+    /** The map from the source and target nodes of a control flow to its incoming and outgoing guards. */
+    private Map<Pair<ActivityNode, ActivityNode>, Pair<String, String>> sourceTargetNodeToControlFlowGuards = new LinkedHashMap<>();
+
     /** The map from CIF event names generated for the synthesis to their corresponding CIF events. */
     private Map<String, Event> namesToCifEvents = new LinkedHashMap<>();
 
@@ -727,6 +730,15 @@ public class SynthesisUmlElementTracking {
         }
 
         return umlElementInfo.getUmlElement().eContainer().equals(synthesizedActivity);
+    }
+
+    // Section dealing with control flow guards.
+
+    public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
+            String outgoingGuard)
+    {
+        sourceTargetNodeToControlFlowGuards.put(new Pair<>(sourceNode, targetNode),
+                new Pair<>(incomingGuard, outgoingGuard));
     }
 
     // Section dealing with Petri net transitions.
