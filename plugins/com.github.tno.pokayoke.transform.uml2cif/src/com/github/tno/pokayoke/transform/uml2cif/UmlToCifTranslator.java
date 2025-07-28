@@ -656,6 +656,14 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             if (translationPurpose != TranslationPurpose.SYNTHESIS && controlFlow.getSource() instanceof InitialNode) {
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
+
+            if (translationPurpose == TranslationPurpose.SYNTHESIS) {
+                // Store the control flow guards in the synthesis tracker.
+                synthesisUmlElementsTracker.addControlFlowGuards(
+                        controlFlow.getSource(), controlFlow.getTarget(),
+                        PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow),
+                                PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
+            }
         }
 
         // Translate all activity nodes.
@@ -1554,7 +1562,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
                     if (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose)
-                            || !synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose, activity))
+                            || !synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose,
+                                    activity))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
