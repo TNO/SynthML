@@ -822,6 +822,19 @@ public class SynthesisUmlElementTracking {
         activityNodesToUmlElementInfoMap.put(node, transitionsToUmlElementInfo.get(transiton));
     }
 
+    public boolean isConcreteNode(ActivityNode node) {
+        // Get the UML element info for the node. If the UML element info or the associated UML element is null, the
+        // node has been created for the synthesized activity. If the underlying UML element is an opaque behavior, the
+        // node has been created for the synthesized activity.
+        UmlElementInfo originalSourceInfo = getUmlElementInfo(node);
+        if (originalSourceInfo != null && originalSourceInfo.getUmlElement() != null
+                && !(originalSourceInfo.getUmlElement() instanceof OpaqueBehavior))
+        {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Returns the kind of activity node the input action should translate to, based on the UML element the action
      * originates from, and whether it was merged during the synthesis chain.
