@@ -73,7 +73,6 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking.TranslationPurpose;
-import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -459,22 +458,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // activity is already fixed, and we just want to re-compute the guards as locally as possible. Events that
         // belong to a called activity should be uncontrollable, except if they represents the call to the initial node.
         if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
-            UmlElementInfo originalUmlElementInfo = synthesisUmlElementsTracker.getUmlElementInfo(umlElement);
-
-            if (originalUmlElementInfo == null) {
-                // If null, the UML element refers to a new control node (e.g. a fork node) synthesized for the abstract
-                // activity.
-                controllableStartEvent = true;
-            } else {
-                RedefinableElement originalUmlElement = originalUmlElementInfo.getUmlElement();
-                if (originalUmlElement.eContainer() instanceof Activity activity && !activity.equals(this.activity)
-                        && !(originalUmlElement instanceof InitialNode))
-                {
-                    controllableStartEvent = false;
-                } else {
-                    controllableStartEvent = true;
-                }
-            }
+            controllableStartEvent = synthesisUmlElementsTracker.isNewNodeOrConcreteActivityInitialNode(umlElement,
+                    activity);
         }
 
         // Initialize mapping of new events to their edges.
@@ -659,10 +644,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                 // Store the control flow guards in the synthesis tracker.
-                synthesisUmlElementsTracker.addControlFlowGuards(
-                        controlFlow.getSource(), controlFlow.getTarget(),
+                synthesisUmlElementsTracker.addControlFlowGuards(controlFlow.getSource(), controlFlow.getTarget(),
                         PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow),
-                                PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
+                        PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
             }
         }
 

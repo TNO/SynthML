@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -931,5 +932,23 @@ public class SynthesisUmlElementTracking {
 
     public UmlElementInfo getUmlElementInfo(RedefinableElement finalizedUmlElement) {
         return finalizedUmlElementsToUmlElementInfo.get(finalizedUmlElement);
+    }
+
+    public boolean isNewNodeOrConcreteActivityInitialNode(RedefinableElement umlElement, Activity synthesizedActivity) {
+        // If the UML element info related to the input UML element is null, the UML element represents an element
+        // created for the synthesized activity, i.e. a "new" element, hence return true. If the UML element info is not
+        // null, check the original UML element it is referred to. Return true if the original UML element is contained
+        // in a concrete activity but *not* the synthesized and represents an initial node. Return false if the original
+        // UML elemnt is not an initial node.
+        UmlElementInfo originalUmlElementInfo = getUmlElementInfo(umlElement);
+        if (originalUmlElementInfo != null
+                && originalUmlElementInfo.getUmlElement().eContainer() instanceof Activity containerActivity
+                && !containerActivity.equals(synthesizedActivity)
+                && !(originalUmlElementInfo.getUmlElement() instanceof InitialNode))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
