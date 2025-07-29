@@ -33,7 +33,6 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
-import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -272,12 +271,12 @@ public class PNML2UMLTranslator {
             arcMapping.put(place.getOutArcs().get(0), controlFlow);
         }
 
-        // Get the guard of a control flow if it belonged to a concrete activity.
-        UmlElementInfo originalSourceInfo = tracker.getUmlElementInfo(sourceNode);
-        UmlElementInfo originalTargetInfo = tracker.getUmlElementInfo(targetNode);
-        if (originalSourceInfo != null && originalTargetInfo != null) {
+        // Get the guard of a control flow if it belonged to a concrete activity, i.e. if both the source node and
+        // target node belonged to a concrete activity.
+        if (tracker.isConcreteNode(sourceNode) && tracker.isConcreteNode(targetNode)) {
             Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards(
-                    (ActivityNode)originalSourceInfo.getUmlElement(), (ActivityNode)originalTargetInfo.getUmlElement());
+                    (ActivityNode)tracker.getUmlElementInfo(sourceNode).getUmlElement(),
+                    (ActivityNode)tracker.getUmlElementInfo(targetNode).getUmlElement());
             PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
             PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
         }
