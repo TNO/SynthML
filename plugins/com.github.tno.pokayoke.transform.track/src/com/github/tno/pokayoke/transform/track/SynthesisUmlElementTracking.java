@@ -741,6 +741,10 @@ public class SynthesisUmlElementTracking {
                 new Pair<>(incomingGuard, outgoingGuard));
     }
 
+    public Pair<String, String> getControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode) {
+        return sourceTargetNodeToControlFlowGuards.get(new Pair<>(sourceNode, targetNode));
+    }
+
     // Section dealing with Petri net transitions.
 
     /**
