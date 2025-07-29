@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -32,6 +33,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
+import com.github.tno.pokayoke.transform.track.UmlElementInfo;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -152,7 +154,7 @@ public class PNML2UMLTranslator {
 
         // Transform all Petri Net places and the arcs connected to them.
         List<Place> places = sorted(page.getObjects().stream().filter(Place.class::isInstance).map(Place.class::cast));
-        places.forEach(this::translate);
+        places.forEach(p -> translate(p, synthesisUmlElementTracker));
 
         // Post-process the UML activity to introduce forks and joins where needed.
         introduceForksAndJoins();
@@ -199,7 +201,7 @@ public class PNML2UMLTranslator {
         synthesisUmlElementTracker.addActivityNode(transition, node);
     }
 
-    private void translate(Place place) {
+    private void translate(Place place, SynthesisUmlElementTracking tracker) {
         Preconditions.checkArgument(!placeMapping.containsKey(place),
                 "Expected the given place to have not yet been translated.");
 
@@ -268,6 +270,16 @@ public class PNML2UMLTranslator {
         }
         if (place.getOutArcs().size() == 1) {
             arcMapping.put(place.getOutArcs().get(0), controlFlow);
+        }
+
+        // Get the guard of a control flow if it belonged to a concrete activity.
+        UmlElementInfo originalSourceInfo = tracker.getUmlElementInfo(sourceNode);
+        UmlElementInfo originalTargetInfo = tracker.getUmlElementInfo(targetNode);
+        if (originalSourceInfo != null && originalTargetInfo != null) {
+            Pair<String, String> incomingOutgoingGuards = tracker.getControlFlowGuards(
+                    (ActivityNode)originalSourceInfo.getUmlElement(), (ActivityNode)originalTargetInfo.getUmlElement());
+            PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, incomingOutgoingGuards.left);
+            PokaYokeUmlProfileUtil.setOutgoingGuard(controlFlow, incomingOutgoingGuards.right);
         }
     }
 
