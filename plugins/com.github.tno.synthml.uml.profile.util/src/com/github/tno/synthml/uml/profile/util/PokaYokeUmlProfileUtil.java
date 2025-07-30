@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.UMLPlugin;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.google.common.base.Strings;
 
 import SynthML.FormalControlFlow;
@@ -72,6 +73,17 @@ public class PokaYokeUmlProfileUtil {
      */
     public static boolean isFormalElement(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.getAppliedStereotype(element, FORMAL_ELEMENT_STEREOTYPE).isPresent();
+    }
+
+    /**
+     * Returns {@code true} if the control flow has non-trivial (i.e. null or true) guards.
+     *
+     * @param controlFlow The control flow to interrogate.
+     * @return {@code true} if the control flow has non-trivial guards.
+     */
+    public static boolean isGuardedControlFlow(ControlFlow controlFlow) {
+        return !NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow))
+                || !NameHelper.isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(controlFlow));
     }
 
     public static boolean isGuardEffectsAction(Action action) {
