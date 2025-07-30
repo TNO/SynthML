@@ -699,6 +699,8 @@ public class SynthesisUmlElementTracking {
      * refers to the original UML model elements, hence the guard computation case uses the original UML element info
      * map, *not* the finalized UML element one. If UML element is {@code null}, it is assumed that the CIF events
      * corresponds to a new UML element created purposely for the synthesized activity, so returns {@code true}.
+     * Similarly if the UML element is an opaque behavior, the CIF event represents a call behavior created for the
+     * synthesized activity.
      *
      * @param cifEvent The CIF event.
      * @param purpose The enumeration informing on which translation is occurring.
@@ -726,7 +728,7 @@ public class SynthesisUmlElementTracking {
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
 
-        if (umlElementInfo == null) {
+        if (umlElementInfo == null || umlElementInfo.getUmlElement() instanceof OpaqueBehavior) {
             return true;
         }
 
@@ -953,6 +955,10 @@ public class SynthesisUmlElementTracking {
         // null, check the original UML element it is referred to. Return true if the original UML element is contained
         // in a concrete activity but *not* the synthesized and represents an initial node. Return false if the original
         // UML elemnt is not an initial node.
+        if (umlElement instanceof OpaqueAction oAction) {
+            System.out.println("here");
+        }
+
         UmlElementInfo originalUmlElementInfo = getUmlElementInfo(umlElement);
         if (originalUmlElementInfo != null
                 && originalUmlElementInfo.getUmlElement().eContainer() instanceof Activity containerActivity
