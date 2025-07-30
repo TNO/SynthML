@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.MergeNode;
 
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 /**
@@ -70,8 +72,11 @@ public class RedundantDecisionMergePattern {
             Set<ActivityNode> targetNodes = decisionNode.getOutgoings().stream().map(ActivityEdge::getTarget)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            // If there is exactly one target node which is a merge node, then we have found a pattern.
-            if (targetNodes.size() == 1 && targetNodes.iterator().next() instanceof MergeNode mergeNode) {
+            // If there is exactly one target node which is a merge node, and the control flow does not have any guard,
+            // then we have found a pattern.
+            if (targetNodes.size() == 1 && targetNodes.iterator().next() instanceof MergeNode mergeNode
+                    && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)decisionNode.getOutgoings().get(0)))
+            {
                 return Optional.of(new RedundantDecisionMergePattern(decisionNode, mergeNode));
             }
         }
