@@ -8,11 +8,11 @@ import java.util.Map;
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
-import org.eclipse.uml2.uml.FinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.InputPin;
@@ -278,7 +278,7 @@ public class ActivityHelper {
         guardAndEffectToOuterDecisionObjFlow.setTarget(outerDecisionNode);
 
         // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        ActivityFinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
         // Define the control flow from the outer decision node to the final node.
@@ -358,7 +358,7 @@ public class ActivityHelper {
         startToEndFlow.setTarget(callEndNode);
 
         // Define the final node.
-        FinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
+        ActivityFinalNode finalNode = FileHelper.FACTORY.createActivityFinalNode();
         finalNode.setActivity(activity);
 
         // Define the control flow from the node that calls the end activity to the final node.
