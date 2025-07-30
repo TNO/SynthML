@@ -584,7 +584,7 @@ public class ActivityHelper {
 
         OpaqueExpression checkToMergeGuard = FileHelper.FACTORY.createOpaqueExpression();
         checkToMergeGuard.getLanguages().add("Python");
-        checkToMergeGuard.getBodies().add("branch < 0");
+        checkToMergeGuard.getBodies().add("branch == -1");
         checkToMergeFlow.setGuard(checkToMergeGuard);
 
         // Define the output parameter of the activity.
