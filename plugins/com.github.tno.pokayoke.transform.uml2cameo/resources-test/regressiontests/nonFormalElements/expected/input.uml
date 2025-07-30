@@ -16,7 +16,7 @@
         <edge xmi:type="uml:ControlFlow" xmi:id="11" target="16" source="19">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="12">
             <language>Python</language>
-            <body>branch &lt; 0</body>
+            <body>branch == -1</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ObjectFlow" xmi:id="13" target="20" source="19">

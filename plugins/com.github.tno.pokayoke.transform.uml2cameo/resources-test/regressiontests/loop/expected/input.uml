@@ -117,7 +117,7 @@ isSuccessful = guard</body>
         <edge xmi:type="uml:ControlFlow" xmi:id="56" target="61" source="64">
           <guard xmi:type="uml:OpaqueExpression" xmi:id="57">
             <language>Python</language>
-            <body>branch &lt; 0</body>
+            <body>branch == -1</body>
           </guard>
         </edge>
         <edge xmi:type="uml:ObjectFlow" xmi:id="58" target="65" source="64">
