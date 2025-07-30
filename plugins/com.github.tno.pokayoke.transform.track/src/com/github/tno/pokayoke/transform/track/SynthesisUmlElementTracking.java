@@ -955,10 +955,6 @@ public class SynthesisUmlElementTracking {
         // null, check the original UML element it is referred to. Return true if the original UML element is contained
         // in a concrete activity but *not* the synthesized and represents an initial node. Return false if the original
         // UML elemnt is not an initial node.
-        if (umlElement instanceof OpaqueAction oAction) {
-            System.out.println("here");
-        }
-
         UmlElementInfo originalUmlElementInfo = getUmlElementInfo(umlElement);
         if (originalUmlElementInfo != null
                 && originalUmlElementInfo.getUmlElement().eContainer() instanceof Activity containerActivity
