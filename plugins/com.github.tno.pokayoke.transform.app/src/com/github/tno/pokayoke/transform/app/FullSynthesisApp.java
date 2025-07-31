@@ -99,8 +99,8 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
-        // Create the synthesis chain tracker to store all the translations from the initial UML model to the
-        // synthesised activity.
+        // Instantiate the tracker that indicates how results from intermediate steps of the activity synthesis chain
+        // relate to the input UML.
         SynthesisChainTracking tracker = new SynthesisChainTracking();
 
         // Translate the UML specification to a CIF specification.
