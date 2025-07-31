@@ -72,7 +72,8 @@ public abstract class ModelToCifTranslator {
      * Constructs a new {@link ModelToCifTranslator}.
      *
      * @param context The context for querying the input UML model.
-     * @param tracker The tracker to store the synthesis chain transformations of UML elements.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
     public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker) {
         this.context = context;
