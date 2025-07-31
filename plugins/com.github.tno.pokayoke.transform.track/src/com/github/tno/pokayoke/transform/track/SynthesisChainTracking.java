@@ -23,8 +23,9 @@ import org.eclipse.uml2.uml.RedefinableElement;
 public class SynthesisChainTracking {
     /**
      * The map from CIF events generated for the initial data-based synthesis to a pair composed of their corresponding
-     * UML elements of the input model, and the effect index, if relevant. Gets updated as the activity synthesis chain
-     * rewrites, removes, or add events.
+     * UML elements of the input model, and the effect index, if relevant. The effect index is either a positive integer
+     * when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic
+     * action). Gets updated as the activity synthesis chain rewrites, removes, or add events.
      */
     private final Map<Event, Pair<RedefinableElement, Integer>> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
@@ -34,28 +35,15 @@ public class SynthesisChainTracking {
      */
     private final Set<Event> internalSynthesisEvents = new LinkedHashSet<>();
 
-    // Section for methods handling CIF events and UML elements.
-
     /**
-     * Add a single CIF event. It is implied that it represents a start event, as there is no effect index in the input
-     * arguments. The effect index is set to -1 by default, to signal that the CIF event is a start event.
+     * Add a single CIF event. The effect index is either a positive integer when relevant, or {@code null} when
+     * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      *
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to be related to the CIF event.
+     * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
      */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement) {
-        synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, -1));
-    }
-
-    /**
-     * Add a single CIF event. It is implied that it represents an end event, as there is the effect index in the input
-     * arguments.
-     *
-     * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to be related to the CIF event.
-     * @param effectIdx The effect index.
-     */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, int effectIdx) {
+    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx) {
         synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
     }
 }
