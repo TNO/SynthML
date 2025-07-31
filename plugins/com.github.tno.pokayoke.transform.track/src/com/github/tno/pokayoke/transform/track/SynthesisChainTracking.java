@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 /**
@@ -21,10 +22,11 @@ import org.eclipse.uml2.uml.RedefinableElement;
  */
 public class SynthesisChainTracking {
     /**
-     * The map from CIF events generated for the initial data-based synthesis to their corresponding UML elements of the
-     * input model. Gets updated as the activity synthesis chain rewrites, removes, or add events.
+     * The map from CIF events generated for the initial data-based synthesis to a pair composed of their corresponding
+     * UML elements of the input model, and the effect index, if relevant. Gets updated as the activity synthesis chain
+     * rewrites, removes, or add events.
      */
-    private final Map<Event, RedefinableElement> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
+    private final Map<Event, Pair<RedefinableElement, Integer>> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
      * The set of internal CIF events (e.g. corresponding to control nodes) generated for the initial data-based
