@@ -600,6 +600,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifStartEvent.setName(name);
         startEventMap.put(cifStartEvent, umlElement);
 
+        // Store the CIF event into the synthesis tracker.
+        synthesisTracker.addCifEvent(cifStartEvent, umlElement);
+
         // Add the start event to the normalized name to event map.
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction
                 || umlElement instanceof OpaqueBehavior)
@@ -683,6 +686,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 cifEndEdge.getEvents().add(cifEdgeEndEvent);
                 cifEndEdge.getUpdates().addAll(effects.get(i));
                 newEventEdges.put(cifEndEvent, cifEndEdge);
+
+                // Store the CIF event into the synthesis tracker.
+                synthesisTracker.addCifEvent(cifStartEvent, umlElement, i);
             }
 
             // Remember which start and end events belong together.
