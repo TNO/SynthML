@@ -52,10 +52,10 @@ public class SynthesisChainTracking {
      * arguments.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to be related to the CIF event
+     * @param umlElement The UML element to be related to the CIF event.
      * @param effectIdx The effect index.
      */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx) {
+    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, int effectIdx) {
         synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
     }
 }
