@@ -63,7 +63,7 @@ public class EquivalentActionsIntoMergePattern {
     }
 
     /**
-     * Tries finding an <i>equivalent actions into merge</i> pattern that involves the given activity node.
+     * Tries finding an <i>equivalent actions into merge</i> pattern that involves the given guard-free activity node.
      *
      * @param node The input activity node.
      * @return Some <i>equivalent actions into merge</i> pattern in case one was found, or an empty result otherwise.
@@ -73,8 +73,10 @@ public class EquivalentActionsIntoMergePattern {
             List<Action> incomingActions = new ArrayList<>(node.getIncomings().size());
 
             for (ActivityEdge controlFlow: node.getIncomings()) {
-                if (controlFlow.getSource() instanceof Action action && (incomingActions.isEmpty()
-                        || PokaYokeUmlProfileUtil.areEquivalent(action, incomingActions.get(0))))
+                if (controlFlow.getSource() instanceof Action action
+                        && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow)
+                        && (incomingActions.isEmpty()
+                                || PokaYokeUmlProfileUtil.areEquivalent(action, incomingActions.get(0))))
                 {
                     incomingActions.add(action);
                 } else {

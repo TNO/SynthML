@@ -10,20 +10,22 @@ import java.util.stream.Collectors;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
 /**
  * Functionality for finding and rewriting redundant decision-fork-merge patterns in UML activities.
  * <p>
  * A <i>redundant decision-fork-merge pattern</i> is a pattern where, after doing some decision node, the activity
- * branches into <i>N</i> different paths, which all fork and all merge again into the same <i>N</i> merge nodes. This
- * pattern is redundant, since the decision node and all <i>N</i> fork and merge nodes can be replaced by a single fork
- * node.
+ * branches into <i>N</i> different paths, which all fork and all merge again into the same <i>N</i> merge nodes and all
+ * control flows are guard-free. This pattern is redundant, since the decision node and all <i>N</i> fork and merge
+ * nodes can be replaced by a single fork node.
  * </p>
  */
 public class RedundantDecisionForkMergePattern {
@@ -76,20 +78,25 @@ public class RedundantDecisionForkMergePattern {
         if (node instanceof DecisionNode decisionNode) {
             int nrOfOutgoings = decisionNode.getOutgoings().size();
 
-            // Find the set of all target nodes of the decision node, and check whether these are all fork nodes.
-            Set<ForkNode> forkNodes = decisionNode.getOutgoings().stream().map(ActivityEdge::getTarget)
-                    .filter(ForkNode.class::isInstance).map(ForkNode.class::cast)
+            // Find the set of all target nodes of the decision node, and check whether these are all fork nodes. The
+            // control flow should also have no guard.
+            Set<ForkNode> forkNodes = decisionNode.getOutgoings().stream()
+                    .filter(e -> !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)e))
+                    .map(ActivityEdge::getTarget).filter(ForkNode.class::isInstance).map(ForkNode.class::cast)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             if (forkNodes.size() == nrOfOutgoings) {
-                // Iterate over every fork node and: (1) find the set of all target nodes, (2) check whether the number
-                // of target nodes is the same as the number of fork nodes, (3) check whether all target nodes are merge
-                // nodes, (4) check whether all fork nodes that we previously iterated over target the same merge nodes.
+                // Iterate over every fork node and:
+                // (1) find the set of all target nodes connected by a control flow without guards,
+                // (2) check whether the number of target nodes is the same as the number of fork nodes,
+                // (3) check whether all target nodes are merge nodes,
+                // (4) check whether all fork nodes that we previously iterated over target the same merge nodes.
                 Set<MergeNode> mergeNodes = new LinkedHashSet<>();
 
                 for (ForkNode forkNode: forkNodes) {
-                    Set<MergeNode> localMergeNodes = forkNode.getOutgoings().stream().map(ActivityEdge::getTarget)
-                            .filter(MergeNode.class::isInstance).map(MergeNode.class::cast)
+                    Set<MergeNode> localMergeNodes = forkNode.getOutgoings().stream()
+                            .filter(e -> !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)e))
+                            .map(ActivityEdge::getTarget).filter(MergeNode.class::isInstance).map(MergeNode.class::cast)
                             .collect(Collectors.toCollection(LinkedHashSet::new));
 
                     if (forkNode.getOutgoings().size() != localMergeNodes.size()

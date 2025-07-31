@@ -7,15 +7,18 @@ import java.util.Optional;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.MergeNode;
+
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
  * Functionality for finding and replacing <i>double merge</i> patterns in UML activities.
  * <p>
- * A <i>double merge</i> pattern is a control flow in the UML activity that connects two merge nodes. Such a control
- * flow is redundant since all the merging that's done on the source merge node can also be done on the target merge
- * node. Every such control flow can thus be rewritten by removing the source merge node, and redirecting all merging
- * control flows to merge into the target merge node instead.
+ * A <i>double merge</i> pattern is a guard-free control flow in the UML activity that connects two merge nodes. Such a
+ * control flow is redundant since all the merging that's done on the source merge node can also be done on the target
+ * merge node. Every such control flow can thus be rewritten by removing the source merge node, and redirecting all
+ * merging control flows to merge into the target merge node instead.
  * </p>
  */
 public class DoubleMergePattern {
@@ -64,7 +67,9 @@ public class DoubleMergePattern {
      * @return Some <i>double merge</i> pattern in case one was found, or an empty result otherwise.
      */
     private static Optional<DoubleMergePattern> findAny(ActivityEdge controlFlow) {
-        if (controlFlow.getSource() instanceof MergeNode && controlFlow.getTarget() instanceof MergeNode) {
+        if (controlFlow.getSource() instanceof MergeNode && controlFlow.getTarget() instanceof MergeNode
+                && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow))
+        {
             return Optional.of(new DoubleMergePattern(controlFlow));
         } else {
             return Optional.empty();
