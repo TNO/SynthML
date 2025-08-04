@@ -74,7 +74,7 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import SynthML.FormalAction;
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalElement;
 import SynthML.SynthMLPackage;
 
@@ -739,14 +739,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link FormalAction#getTemplateArguments()} property if set.
+     * Validates the {@link FormalCallBehaviorAction#getActivityArguments()} property if set.
      *
      * @param callAction The call action to validate.
      */
     @Check
-    private void checkValidTemplateArguments(CallBehaviorAction callAction) {
+    private void checkValidActivityArguments(CallBehaviorAction callAction) {
         Behavior calledActivity = callAction.getBehavior();
-        List<String> arguments = PokaYokeUmlProfileUtil.getTemplateArguments(callAction);
+        List<String> arguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
 
         if (arguments.size() > 1) {
             error("Nondeterministic template assignments are forbidden",
@@ -770,7 +770,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         } catch (RuntimeException re) {
             String prefix = "Invalid effects: ";
             if (arguments.size() > 1) {
-                prefix = "Invalid template argument";
+                prefix = "Invalid activity argument";
             }
             error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
         }

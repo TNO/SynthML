@@ -78,9 +78,9 @@ public class SynthMLSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case SynthMLPackage.FORMAL_ACTION: {
-				FormalAction formalAction = (FormalAction)theEObject;
-				T result = caseFormalAction(formalAction);
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION: {
+				FormalCallBehaviorAction formalCallBehaviorAction = (FormalCallBehaviorAction)theEObject;
+				T result = caseFormalCallBehaviorAction(formalCallBehaviorAction);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -119,17 +119,17 @@ public class SynthMLSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Formal Action</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Formal Call Behavior Action</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Formal Action</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Formal Call Behavior Action</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseFormalAction(FormalAction object) {
+	public T caseFormalCallBehaviorAction(FormalCallBehaviorAction object) {
 		return null;
 	}
 

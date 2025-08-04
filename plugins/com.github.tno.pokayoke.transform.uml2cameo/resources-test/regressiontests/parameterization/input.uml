@@ -126,7 +126,7 @@ Park2_product := 0</effects>
     <effects>Park1_product := 1,&#xD;
 Park2_product := 2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalAction xmi:id="_jysR0FHPEfCaALiH7vZiQg" base_CallBehaviorAction="_PZ0YkDIwEfC0ZcoSb49rpw">
-    <templateArguments>productId := 1</templateArguments>
-  </SynthML:FormalAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_jysR0FHPEfCaALiH7vZiQg" base_CallBehaviorAction="_PZ0YkDIwEfC0ZcoSb49rpw">
+    <activityArguments>productId := 1</activityArguments>
+  </SynthML:FormalCallBehaviorAction>
 </xmi:XMI>

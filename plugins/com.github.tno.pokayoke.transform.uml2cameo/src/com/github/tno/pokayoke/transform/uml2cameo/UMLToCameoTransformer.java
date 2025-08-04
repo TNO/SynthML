@@ -437,8 +437,8 @@ public class UMLToCameoTransformer {
         }
     }
 
-    private void transformTemplateArguments(CallBehaviorAction callAction) {
-        List<AAssignmentUpdate> parsedAssignments = CifParserHelper.parseTemplateArguments(callAction);
+    private void transformActivityArguments(CallBehaviorAction callAction) {
+        List<AAssignmentUpdate> parsedAssignments = CifParserHelper.parseActivityArguments(callAction);
         if (parsedAssignments.isEmpty()) {
             return;
         }
@@ -457,7 +457,7 @@ public class UMLToCameoTransformer {
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
 
-        ActivityHelper.addTemplateArguments(callAction, new HashSet<>(arguments), pythonBody);
+        ActivityHelper.addTemplateParameter(callAction, new HashSet<>(arguments), pythonBody);
     }
 
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
@@ -486,7 +486,7 @@ public class UMLToCameoTransformer {
             }
         }
 
-        transformTemplateArguments(action);
+        transformActivityArguments(action);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
@@ -522,7 +522,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
-        ActivityHelper.addTemplateArguments(replacementActionNode, localArguments, null);
+        ActivityHelper.addTemplateParameter(replacementActionNode, localArguments, null);
     }
 
     /**

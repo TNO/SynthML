@@ -187,16 +187,16 @@ Park2_product := 0</effects>
     <effects>Park1_product := 1,&#xD;
 Park2_product := 2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalAction xmi:id="_PChlUFgAEfCypLFnyoOr-A" base_CallBehaviorAction="_J208gFgAEfCypLFnyoOr-A">
-    <templateArguments>productId := productId</templateArguments>
-  </SynthML:FormalAction>
-  <SynthML:FormalAction xmi:id="_E3iikFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_aYZRYFgAEfCypLFnyoOr-A">
-    <templateArguments>productId := T2</templateArguments>
-  </SynthML:FormalAction>
-  <SynthML:FormalAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A">
-    <templateArguments>T2 := 2</templateArguments>
-  </SynthML:FormalAction>
-  <SynthML:FormalAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A">
-    <templateArguments>productId := 1</templateArguments>
-  </SynthML:FormalAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_PChlUFgAEfCypLFnyoOr-A" base_CallBehaviorAction="_J208gFgAEfCypLFnyoOr-A">
+    <activityArguments>productId := productId</activityArguments>
+  </SynthML:FormalCallBehaviorAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_E3iikFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_aYZRYFgAEfCypLFnyoOr-A">
+    <activityArguments>productId := T2</activityArguments>
+  </SynthML:FormalCallBehaviorAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A">
+    <activityArguments>T2 := 2</activityArguments>
+  </SynthML:FormalCallBehaviorAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A">
+    <activityArguments>productId := 1</activityArguments>
+  </SynthML:FormalCallBehaviorAction>
 </xmi:XMI>

@@ -31,7 +31,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
-import SynthML.FormalAction;
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
 import SynthML.SynthMLPackage;
@@ -50,9 +50,10 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
             .getName();
 
-    private static final String ST_FORMAL_ACTION = SynthMLPackage.Literals.FORMAL_ACTION.getName();
+    private static final String ST_FORMAL_CALL_BEHAVIOR_ACTION = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION
+            .getName();
 
-    private static final String PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS = SynthMLPackage.Literals.FORMAL_ACTION__TEMPLATE_ARGUMENTS
+    private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS
             .getName();
 
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
@@ -62,8 +63,9 @@ public class PokaYokeUmlProfileUtil {
     public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_ELEMENT;
 
-    /** Qualified name for the {@link FormalAction} stereotype. */
-    public static final String FORMAL_ACTION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR + ST_FORMAL_ACTION;
+    /** Qualified name for the {@link FormalCallBehaviorAction} stereotype. */
+    public static final String FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_CALL_BEHAVIOR_ACTION;
 
     /** Qualified name for the {@link FormalControlFlow} stereotype. */
     public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -207,39 +209,41 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Returns the contents of the {@link FormalAction#getTemplateArguments() templateArguments} if the
-     * {@link FormalAction} stereotype is applied on {@code element}, and an empty list otherwise. The returned list is
-     * a copy of the template parameters and as such, modifications to the list are not reflected on the
-     * {@code element}. Instead, use the {@link #setTemplateArguments(CallBehaviorAction, List)} method to set the new
-     * value on the {@code element}.
+     * Returns the contents of the {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} if the
+     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty list otherwise. The
+     * returned list is a copy of the template parameters and as such, modifications to the list are not reflected on
+     * the {@code element}. Instead, use the {@link #setActivityArguments(CallBehaviorAction, List)} method to set the
+     * new value on the {@code element}.
      *
      * @param element The element to get the property from.
      * @return The new property value.
-     * @see #setTemplateArguments(CallBehaviorAction, List)
+     * @see #setActivityArguments(CallBehaviorAction, List)
      */
     @SuppressWarnings("unchecked")
-    public static List<String> getTemplateArguments(CallBehaviorAction element) {
-        return getAppliedStereotype(element, FORMAL_ACTION_STEREOTYPE)
-                .map(st -> new ArrayList<>((List<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS)))
+    public static List<String> getActivityArguments(CallBehaviorAction element) {
+        return getAppliedStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE)
+                .map(st -> new ArrayList<>(
+                        (List<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS)))
                 .orElse(new ArrayList<>());
     }
 
     /**
-     * Sets {@code newValue} as contents of the {@link FormalAction#getTemplateArguments() templateArguments}. We are
-     * using a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly
-     * create the stereotype on read, but explicitly create it on write.
+     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getActivityArguments()
+     * activityArguments}. We are using a setter here to deal with the stereotype that is required to set the value. We
+     * do not want to implicitly create the stereotype on read, but explicitly create it on write.
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
     @SuppressWarnings("unchecked")
-    public static void setTemplateArguments(CallBehaviorAction element, List<String> newValue) {
+    public static void setActivityArguments(CallBehaviorAction element, List<String> newValue) {
         if (newValue == null || newValue.isEmpty()) {
-            PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_ACTION_STEREOTYPE);
+            PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE);
             return;
         }
-        Stereotype st = applyStereotype(element, getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_ACTION));
-        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_ACTION_TEMPLATE_ARGUMENTS);
+        Stereotype st = applyStereotype(element,
+                getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_CALL_BEHAVIOR_ACTION));
+        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS);
         ECollections.setEList(value, newValue);
     }
 

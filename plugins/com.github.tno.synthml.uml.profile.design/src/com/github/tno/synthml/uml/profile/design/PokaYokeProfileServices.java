@@ -43,7 +43,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
-import SynthML.FormalAction;
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
 
@@ -105,8 +105,8 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Adapted from EditLabelSwitch. Returns the {@link FormalAction#getTemplateArguments() templateArguments} property
-     * value if {@code element} is stereotyped, {@code null} otherwise.
+     * Adapted from EditLabelSwitch. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
+     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
      *
      * @param activity The element to interrogate.
      * @param editedLabelContent The new content.
@@ -174,18 +174,18 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalAction#getTemplateArguments()
-     * templateArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
+     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
+     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
      *
      * @param callAction The element to interrogate.
-     * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
-     *     stereotyped, {@code null} otherwise.
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
+     *     {@code activity} is stereotyped, {@code null} otherwise.
      */
     public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
 
-        List<String> templateArguments = PokaYokeUmlProfileUtil.getTemplateArguments(callAction);
-        String stringArguments = String.join("", templateArguments).replaceAll("\s", "").replace(":", "").replace("\n",
+        List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
+        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace(":", "").replace("\n",
                 "");
 
         if (stringArguments.isEmpty()) {
@@ -200,8 +200,8 @@ public class PokaYokeProfileServices {
      * {@code element} contains {@code TemplateSignature}
      *
      * @param activity The element to interrogate.
-     * @return The {@link FormalAction#getTemplateArguments() templateArguments} property value if {@code activity} is
-     *     stereotyped, {@code null} otherwise.
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
+     *     {@code activity} is stereotyped, {@code null} otherwise.
      */
     public String getActivityLabel(Activity activity) {
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
@@ -363,35 +363,35 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalAction#getTemplateArguments() parameters} property value if {@code element} is
-     * stereotyped, {@code null} otherwise.
+     * Returns the {@link FormalCallBehaviorAction#getActivityArguments() parameters} property value if {@code element}
+     * is stereotyped, {@code null} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalAction#getTemplateArguments() parameters} property value if {@code element} is
-     *     stereotyped, {@code null} otherwise.
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() parameters} property value if {@code element}
+     *     is stereotyped, {@code null} otherwise.
      */
-    public String getTemplateArguments(CallBehaviorAction element) {
-        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getTemplateArguments(element));
+    public String getActivityArguments(CallBehaviorAction element) {
+        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getActivityArguments(element));
     }
 
     /**
-     * Applies the {@link FormalAction} stereotype and sets the {@link FormalAction#getTemplateArguments() parameters}
-     * property for {@code element}.
+     * Applies the {@link FormalCallBehaviorAction} stereotype and sets the
+     * {@link FormalCallBehaviorAction#getActivityArguments() parameters} property for {@code element}.
      * <p>
-     * The {@link FormalAction} stereotype is removed if {@code newValue} is {@code null} or {@link String#isEmpty()
-     * empty}.
+     * The {@link FormalCallBehaviorAction} stereotype is removed if {@code newValue} is {@code null} or
+     * {@link String#isEmpty() empty}.
      * </p>
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    public void setTemplateArguments(CallBehaviorAction element, String newValue) {
+    public void setActivityArguments(CallBehaviorAction element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value
-            PokaYokeUmlProfileUtil.setTemplateArguments(element, null);
+            PokaYokeUmlProfileUtil.setActivityArguments(element, null);
         } else {
-            PokaYokeUmlProfileUtil.setTemplateArguments(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
+            PokaYokeUmlProfileUtil.setActivityArguments(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
         }
 
         // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
@@ -399,8 +399,8 @@ public class PokaYokeProfileServices {
         refresh(element);
     }
 
-    public void unsetTemplateArguments(CallBehaviorAction element) {
-        setTemplateArguments(element, null);
+    public void unsetActivityArguments(CallBehaviorAction element) {
+        setActivityArguments(element, null);
     }
 
     /**
@@ -510,7 +510,7 @@ public class PokaYokeProfileServices {
             if (matcher.find()) {
                 editedLabelContent = matcher.group(1);
                 String generics = matcher.group(2) != null ? matcher.group(2) : "";
-                setTemplateArguments(callAction, generics.replace("=", ":=").replace(",", ",\n"));
+                setActivityArguments(callAction, generics.replace("=", ":=").replace(",", ",\n"));
             }
         }
 

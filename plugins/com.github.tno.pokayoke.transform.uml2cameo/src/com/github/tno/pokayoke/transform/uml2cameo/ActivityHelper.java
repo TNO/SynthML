@@ -403,8 +403,8 @@ public class ActivityHelper {
         endToFinalFlow.setTarget(finalNode);
 
         // Pass arguments to the newly created activities. Properties could be scoped further to the start/end node
-        addTemplateArguments(callStartNode, scopedProperties, null);
-        addTemplateArguments(callEndNode, scopedProperties, null);
+        addTemplateParameter(callStartNode, scopedProperties, null);
+        addTemplateParameter(callEndNode, scopedProperties, null);
 
         return activity;
     }
@@ -699,7 +699,7 @@ public class ActivityHelper {
         }
     }
 
-    private static void passTemplateArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
+    private static void passActivityArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
             String argumentName)
     {
         // Create an output pin on the assignment action and an input pin on the call action
@@ -714,7 +714,7 @@ public class ActivityHelper {
         callAction.getActivity().getEdges().add(dataFlow);
     }
 
-    public static void addTemplateArguments(CallBehaviorAction callAction, Set<String> passedArguments,
+    public static void addTemplateParameter(CallBehaviorAction callAction, Set<String> passedArguments,
             String templateBody)
     {
         if (passedArguments.isEmpty()) {
@@ -744,7 +744,7 @@ public class ActivityHelper {
 
         // For each assignment, create a data flow from the new action to the original call action
         for (String argumentName: passedArguments) {
-            passTemplateArgument(callAction, assignmentAction, argumentName);
+            passActivityArgument(callAction, assignmentAction, argumentName);
         }
     }
 

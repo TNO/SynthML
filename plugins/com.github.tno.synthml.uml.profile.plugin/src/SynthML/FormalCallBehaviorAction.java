@@ -10,33 +10,33 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Formal Action</b></em>'.
+ * A representation of the model object '<em><b>Formal Call Behavior Action</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link SynthML.FormalAction#getTemplateArguments <em>Template Arguments</em>}</li>
- *   <li>{@link SynthML.FormalAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
+ *   <li>{@link SynthML.FormalCallBehaviorAction#getActivityArguments <em>Activity Arguments</em>}</li>
+ *   <li>{@link SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
- * @see SynthML.SynthMLPackage#getFormalAction()
+ * @see SynthML.SynthMLPackage#getFormalCallBehaviorAction()
  * @model
  * @generated
  */
-public interface FormalAction extends EObject {
+public interface FormalCallBehaviorAction extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Template Arguments</b></em>' attribute list.
+	 * Returns the value of the '<em><b>Activity Arguments</b></em>' attribute list.
 	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Template Arguments</em>' attribute list.
-	 * @see SynthML.SynthMLPackage#getFormalAction_TemplateArguments()
-	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
+	 * @return the value of the '<em>Activity Arguments</em>' attribute list.
+	 * @see SynthML.SynthMLPackage#getFormalCallBehaviorAction_ActivityArguments()
+	 * @model unique="false" dataType="org.eclipse.uml2.types.String"
 	 * @generated
 	 */
-	EList<String> getTemplateArguments();
+	EList<String> getActivityArguments();
 
 	/**
 	 * Returns the value of the '<em><b>Base Call Behavior Action</b></em>' reference.
@@ -44,14 +44,14 @@ public interface FormalAction extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Base Call Behavior Action</em>' reference.
 	 * @see #setBase_CallBehaviorAction(CallBehaviorAction)
-	 * @see SynthML.SynthMLPackage#getFormalAction_Base_CallBehaviorAction()
+	 * @see SynthML.SynthMLPackage#getFormalCallBehaviorAction_Base_CallBehaviorAction()
 	 * @model required="true" ordered="false"
 	 * @generated
 	 */
 	CallBehaviorAction getBase_CallBehaviorAction();
 
 	/**
-	 * Sets the value of the '{@link SynthML.FormalAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}' reference.
+	 * Sets the value of the '{@link SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Base Call Behavior Action</em>' reference.
@@ -60,4 +60,4 @@ public interface FormalAction extends EObject {
 	 */
 	void setBase_CallBehaviorAction(CallBehaviorAction value);
 
-} // FormalAction
+} // FormalCallBehaviorAction

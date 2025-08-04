@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
-  <viewpoint:DAnalysis uid="_6JpQEM_tEe6QioSmOybrPw" selectedViews="_6L5S0M_tEe6QioSmOybrPw _6Pjq0M_tEe6QioSmOybrPw _6PvRAM_tEe6QioSmOybrPw _6P0wkM_tEe6QioSmOybrPw _6P2lwM_tEe6QioSmOybrPw _6P8FUM_tEe6QioSmOybrPw" version="15.2.0.202303281325">
+  <viewpoint:DAnalysis uid="_6JpQEM_tEe6QioSmOybrPw" selectedViews="_6L5S0M_tEe6QioSmOybrPw _6Pjq0M_tEe6QioSmOybrPw _6PvRAM_tEe6QioSmOybrPw _6P0wkM_tEe6QioSmOybrPw _6P2lwM_tEe6QioSmOybrPw _6P8FUM_tEe6QioSmOybrPw" version="15.4.1.202403191723">
     <semanticResources>synthml.profile.uml</semanticResources>
     <semanticResources>pathmap://UML_METAMODELS/UML.metamodel.uml</semanticResources>
     <semanticResources>pathmap://UML_METAMODELS/Ecore.metamodel.uml</semanticResources>
@@ -25,7 +25,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="_6P8FUM_tEe6QioSmOybrPw">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="SynthML Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1749548003648">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="__Avh4M_tEe6QioSmOybrPw" name="SynthML Profile Diagram" repPath="#__Acm8M_tEe6QioSmOybrPw" changeId="1754317085228">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']"/>
         <target xmi:type="uml:Profile" href="synthml.profile.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
       </ownedRepresentationDescriptors>
@@ -268,7 +268,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_ElementImport']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_BrWCYUU0EfCzkK6SaMHPKQ" name="«Stereotype» &#xA;SynthML :: FormalAction" outgoingEdges="_p4kUREU0EfCzkK6SaMHPKQ">
+    <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_BrWCYUU0EfCzkK6SaMHPKQ" name="«Stereotype» &#xA;SynthML :: FormalCallBehaviorAction" outgoingEdges="_p4kUREU0EfCzkK6SaMHPKQ">
       <target xmi:type="uml:Stereotype" href="synthml.profile.uml#__yS2EEUzEfCzkK6SaMHPKQ"/>
       <semanticElements xmi:type="uml:Stereotype" href="synthml.profile.uml#__yS2EEUzEfCzkK6SaMHPKQ"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -278,7 +278,7 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='Extend']/@ownedRepresentations[name='Profile%20Diagram']/@defaultLayer/@containerMappings[name='PD_Stereotype']"/>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_C9p-0EU0EfCzkK6SaMHPKQ" name="templateArguments : String [*]">
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_C9p-0EU0EfCzkK6SaMHPKQ" name="activityArguments : String [*]{ordered, seq}">
         <target xmi:type="uml:Property" href="synthml.profile.uml#_C9m7gEU0EfCzkK6SaMHPKQ"/>
         <semanticElements xmi:type="uml:Property" href="synthml.profile.uml#_C9m7gEU0EfCzkK6SaMHPKQ"/>
         <ownedStyle xmi:type="diagram:Square" uid="_C9p-0UU0EfCzkK6SaMHPKQ" labelAlignment="LEFT">

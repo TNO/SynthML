@@ -3,25 +3,24 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="SynthML" nsURI="https://github.com/TNO/SynthML/" nsPrefix="SynthML">
   <eClassifiers xsi:type="ecore:EClass" name="FormalElement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="guard" ordered="false"
-        eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+        eType="ecore:EDataType types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="effects" ordered="false"
-        unique="false" upperBound="-1" eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+        unique="false" upperBound="-1" eType="ecore:EDataType types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="base_RedefinableElement"
-        ordered="false" lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//RedefinableElement"/>
+        ordered="false" lowerBound="1" eType="ecore:EClass uml.ecore#//RedefinableElement"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="atomic" ordered="false"
-        eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//Boolean"
-        defaultValueLiteral="false"/>
+        eType="ecore:EDataType types.ecore#//Boolean" defaultValueLiteral="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FormalControlFlow">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="outgoingGuard" ordered="false"
-        eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+        eType="ecore:EDataType types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="base_ControlFlow" ordered="false"
-        lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//ControlFlow"/>
+        lowerBound="1" eType="ecore:EClass uml.ecore#//ControlFlow"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FormalAction">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="templateArguments" ordered="false"
-        unique="false" upperBound="-1" eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FormalCallBehaviorAction">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="activityArguments" unique="false"
+        upperBound="-1" eType="ecore:EDataType types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="base_CallBehaviorAction"
-        ordered="false" lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//CallBehaviorAction"/>
+        ordered="false" lowerBound="1" eType="ecore:EClass uml.ecore#//CallBehaviorAction"/>
   </eClassifiers>
 </ecore:EPackage>

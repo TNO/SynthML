@@ -58,7 +58,7 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 		switch (eClass.getClassifierID()) {
 			case SynthMLPackage.FORMAL_ELEMENT: return createFormalElement();
 			case SynthMLPackage.FORMAL_CONTROL_FLOW: return createFormalControlFlow();
-			case SynthMLPackage.FORMAL_ACTION: return createFormalAction();
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION: return createFormalCallBehaviorAction();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -92,9 +92,9 @@ public class SynthMLFactoryImpl extends EFactoryImpl implements SynthMLFactory {
 	 * @generated
 	 */
 	@Override
-	public FormalAction createFormalAction() {
-		FormalActionImpl formalAction = new FormalActionImpl();
-		return formalAction;
+	public FormalCallBehaviorAction createFormalCallBehaviorAction() {
+		FormalCallBehaviorActionImpl formalCallBehaviorAction = new FormalCallBehaviorActionImpl();
+		return formalCallBehaviorAction;
 	}
 
 	/**
