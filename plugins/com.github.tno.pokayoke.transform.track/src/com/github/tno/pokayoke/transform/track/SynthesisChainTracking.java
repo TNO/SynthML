@@ -192,4 +192,26 @@ public class SynthesisChainTracking {
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
+
+    /**
+     * Get the list of CIF start events corresponding to the UML element for different translation purposes. Not yet
+     * supported for guard computation and language equivalence check.
+     *
+     * @param umlElement The UML element.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The list from CIF start events to their corresponding UML element infos.
+     */
+    public List<Event> getStartEventsOfUmlElement(RedefinableElement umlElement, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> isStartEvent(entry.getKey(), TranslationPurpose.SYNTHESIS)
+                                && entry.getValue().left.equals(umlElement))
+                        .map(Map.Entry::getKey).toList();
+            }
+
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
 }
