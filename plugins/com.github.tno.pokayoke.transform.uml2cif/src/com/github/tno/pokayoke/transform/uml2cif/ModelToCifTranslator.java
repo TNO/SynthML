@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -112,11 +113,12 @@ public abstract class ModelToCifTranslator {
      * Gives the mapping from translated CIF start events to their corresponding UML elements for which they were
      * created.
      *
+     * @param purpose The translation purpose.
      * @return The mapping from translated CIF start events to their corresponding UML elements for which they were
      *     created.
      */
-    public Map<Event, RedefinableElement> getStartEventMap() {
-        return ImmutableMap.copyOf(startEventMap);
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        return ImmutableMap.copyOf(synthesisTracker.getStartEventMap(purpose));
     }
 
     /**
@@ -197,7 +199,7 @@ public abstract class ModelToCifTranslator {
      * @return The guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = synthesisTracker.getStartEventMap().get(event);
+        RedefinableElement element = synthesisTracker.getStartEventMap(TranslationPurpose.GUARD_COMPUTATION).get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);
