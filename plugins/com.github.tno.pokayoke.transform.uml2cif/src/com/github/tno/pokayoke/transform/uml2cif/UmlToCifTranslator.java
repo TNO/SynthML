@@ -685,7 +685,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifStartEvent, umlElement, i, translationPurpose);
+                synthesisTracker.addCifEvent(cifEndEvent, umlElement, i, translationPurpose);
             }
 
             // Remember which start and end events belong together.
