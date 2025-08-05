@@ -159,7 +159,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose, SynthesisChainTracking tracker) {
-        super(new CifContext(activity.getModel()), tracker);
+        super(new CifContext(activity.getModel()), tracker, purpose);
         this.activity = activity;
         this.translationPurpose = purpose;
     }

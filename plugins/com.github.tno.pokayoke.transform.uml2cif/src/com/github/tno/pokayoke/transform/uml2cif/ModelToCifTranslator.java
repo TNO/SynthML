@@ -75,11 +75,12 @@ public abstract class ModelToCifTranslator {
      * @param context The context for querying the input UML model.
      * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
      *     relate to the input UML.
+     * @param purpose The translation purpose.
      */
-    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker) {
+    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker, TranslationPurpose purpose) {
         this.context = context;
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, startEventMap);
         this.synthesisTracker = tracker;
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker, purpose);
     }
 
     /**
