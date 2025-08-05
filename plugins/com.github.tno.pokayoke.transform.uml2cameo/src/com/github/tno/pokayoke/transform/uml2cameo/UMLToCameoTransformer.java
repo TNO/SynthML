@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -374,6 +375,29 @@ public class UMLToCameoTransformer {
         return Stream.concat(guardParameters, effectParameters).map(p -> p.getName()).collect(Collectors.toSet());
     }
 
+    private Set<String> getLocalVariableList(DecisionNode decisionNode) {
+        return decisionNode.getOutgoings().stream().flatMap(edge -> getLocalVariableList(edge).stream())
+                .collect(Collectors.toSet());
+    }
+
+    @SuppressWarnings("restriction")
+    private Set<String> getLocalVariableList(ActivityEdge edge) {
+        if (!(edge instanceof ControlFlow controlFlow)) {
+            return Collections.EMPTY_SET;
+        }
+
+        CifContext context = CifContext.createScoped(edge);
+        AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
+
+        if (incomingGuard == null) {
+            return Collections.EMPTY_SET;
+        }
+
+        CifParameterCollector templateParameterCollector = new CifParameterCollector();
+        return templateParameterCollector.flatten(incomingGuard, context).map(NamedTemplateParameter::getName)
+                .collect(Collectors.toSet());
+    }
+
     /**
      * Get the nested activities of the model.
      *
@@ -591,6 +615,13 @@ public class UMLToCameoTransformer {
         decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
         evalActivity.setName("eval");
 
+        Set<String> scopedProperties = getLocalVariableList(decisionNode);
+
+        // Add the template parameters
+        for (String propertyName: scopedProperties) {
+            ActivityHelper.addParameterToActivity(evalActivity, propertyName);
+        }
+
         // Create the call behavior node that calls the activity we just created.
         CallBehaviorAction evalNode = FileHelper.FACTORY.createCallBehaviorAction();
         evalNode.setActivity(decisionNode.getActivity());
@@ -598,6 +629,9 @@ public class UMLToCameoTransformer {
 
         // Redirect the incoming edge into the decision node to go into the new evaluation node instead.
         decisionNode.getIncomings().get(0).setTarget(evalNode);
+
+        // Pass local arguments to the activity
+        ActivityHelper.addTemplateParameter(evalNode, scopedProperties, null);
 
         // Define the control flow from the new evaluator node to the decision node.
         ControlFlow evalToDecisionFlow = FileHelper.FACTORY.createControlFlow();
