@@ -31,6 +31,22 @@ public class SynthesisChainTracking {
     private final Map<Event, Pair<RedefinableElement, Integer>> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
+     * The map from CIF events generated for the guard computation step to a pair composed of their corresponding UML
+     * elements of the input model, and the effect index, if relevant. The effect index is either a positive integer
+     * when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic
+     * action).
+     */
+    private final Map<Event, Pair<RedefinableElement, Integer>> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /**
+     * The map from CIF events generated for the language equivalence check step to a pair composed of their
+     * corresponding UML elements of the input model, and the effect index, if relevant. The effect index is either a
+     * positive integer when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of
+     * a non-atomic action).
+     */
+    private final Map<Event, Pair<RedefinableElement, Integer>> languageCifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /**
      * The set of internal CIF events (e.g. corresponding to control nodes) generated for the initial data-based
      * synthesis.
      */
