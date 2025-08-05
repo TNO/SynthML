@@ -197,7 +197,7 @@ public abstract class ModelToCifTranslator {
      * @return The guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = startEventMap.get(event);
+        RedefinableElement element = synthesisTracker.getStartEventMap().get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);
