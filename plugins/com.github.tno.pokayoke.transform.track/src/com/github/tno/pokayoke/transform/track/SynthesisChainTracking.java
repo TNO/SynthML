@@ -90,10 +90,26 @@ public class SynthesisChainTracking {
     /**
      * Return the map from CIF start events to the corresponding UML elements.
      *
+     * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding UML elements.
      */
-    public Map<Event, RedefinableElement> getStartEventMap() {
-        return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
+    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().right == null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
+            }
+            default:
+                throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
+        }
     }
 }
