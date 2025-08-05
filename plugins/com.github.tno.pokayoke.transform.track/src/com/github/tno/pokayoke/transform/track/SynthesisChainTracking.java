@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
@@ -45,5 +46,15 @@ public class SynthesisChainTracking {
      */
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx) {
         synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+    }
+
+    /**
+     * Return the map from CIF start events to the corresponding UML elements.
+     *
+     * @return The map from CIF start events to their corresponding UML elements.
+     */
+    public Map<Event, RedefinableElement> getStartEventMap() {
+        return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
     }
 }
