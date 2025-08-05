@@ -31,6 +31,12 @@ public class SynthesisChainTracking {
     private final Map<Event, Pair<RedefinableElement, Integer>> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
+     * The set of CIF events representing the start of a UML action/behavior generated for the initial data-based
+     * synthesis.
+     */
+    private Set<Event> synthesisCifStartEvents = new LinkedHashSet<>();
+
+    /**
      * The map from CIF events generated for the guard computation step to a pair composed of their corresponding UML
      * elements of the input model, and the effect index, if relevant. The effect index is either a positive integer
      * when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic
@@ -39,12 +45,23 @@ public class SynthesisChainTracking {
     private final Map<Event, Pair<RedefinableElement, Integer>> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
+     * The set of CIF events representing the start of a UML action/behavior generated for the guard computation step.
+     */
+    private Set<Event> guardComputationCifStartEvents = new LinkedHashSet<>();
+
+    /**
      * The map from CIF events generated for the language equivalence check step to a pair composed of their
      * corresponding UML elements of the input model, and the effect index, if relevant. The effect index is either a
      * positive integer when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of
      * a non-atomic action).
      */
     private final Map<Event, Pair<RedefinableElement, Integer>> languageCifEventsToUmlElementInfo = new LinkedHashMap<>();
+
+    /**
+     * The set of CIF events representing the start of a UML action/behavior generated for the language equivalence
+     * check step.
+     */
+    private Set<Event> languageCifStartEvents = new LinkedHashSet<>();
 
     /**
      * The set of internal CIF events (e.g. corresponding to control nodes) generated for the initial data-based
@@ -110,6 +127,40 @@ public class SynthesisChainTracking {
             }
             default:
                 throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return whether the CIF event represents a start action.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return {@code true} if the CIF event corresponds to a start event.
+     */
+    public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                // Compute the synthesis start event set.
+                synthesisCifStartEvents = synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
+                return synthesisCifStartEvents.contains(cifEvent);
+            }
+
+            case GUARD_COMPUTATION: {
+                // Compute the guard computation start event set.
+                guardComputationCifStartEvents = guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
+                return guardComputationCifStartEvents.contains(cifEvent);
+            }
+
+            case LANGUAGE_EQUIVALENCE: {
+                // Compute the language equivalence check start event set.
+                languageCifStartEvents = languageCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
+                return languageCifStartEvents.contains(cifEvent);
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
 }
