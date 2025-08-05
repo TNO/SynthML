@@ -332,7 +332,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      *     the index of the corresponding effect of the end event.
      */
     public Map<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
-        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = getEndEventMap();
+        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = synthesisTracker.getEndEventMap();
 
         Map<String, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
 
