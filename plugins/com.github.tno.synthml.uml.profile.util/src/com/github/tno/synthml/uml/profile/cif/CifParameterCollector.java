@@ -28,7 +28,7 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
     }
 
     private static Stream<NamedTemplateParameter> concat(List<Stream<NamedTemplateParameter>> streams) {
-        return streams.stream().flatMap(Function.identity());
+        return concat(streams.stream());
     }
 
     public Stream<NamedTemplateParameter> flatten(ACifObject expr, CifContext ctx) {
@@ -102,14 +102,14 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
             Stream<NamedTemplateParameter> thenExpr, List<Stream<NamedTemplateParameter>> elifs,
             Stream<NamedTemplateParameter> elseExpr, TextPosition expressionPos, CifContext ctx)
     {
-        return Stream.of(concat(guards), thenExpr, concat(elifs), elseExpr).flatMap(Function.identity());
+        return concat(Stream.of(concat(guards), thenExpr, concat(elifs), elseExpr));
     }
 
     @Override
     protected Stream<NamedTemplateParameter> visit(List<Stream<NamedTemplateParameter>> guards,
             Stream<NamedTemplateParameter> thenExpr, TextPosition expressionPos, CifContext ctx)
     {
-        return Stream.concat(guards.stream().flatMap(Function.identity()), thenExpr);
+        return Stream.concat(concat(guards), thenExpr);
     }
 
     @Override
