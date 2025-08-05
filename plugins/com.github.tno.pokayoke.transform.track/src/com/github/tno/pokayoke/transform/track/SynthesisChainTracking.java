@@ -52,6 +52,10 @@ public class SynthesisChainTracking {
      */
     private final Set<Event> internalSynthesisEvents = new LinkedHashSet<>();
 
+    public static enum TranslationPurpose {
+        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
+    }
+
     /**
      * Add a single CIF event. The effect index is either a positive integer when relevant, or {@code null} when
      * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
