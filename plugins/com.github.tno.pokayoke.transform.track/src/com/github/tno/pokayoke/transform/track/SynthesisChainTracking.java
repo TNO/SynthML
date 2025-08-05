@@ -63,9 +63,28 @@ public class SynthesisChainTracking {
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to be related to the CIF event.
      * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
+     * @param purpose The translation purpose.
      */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx) {
-        synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
+            TranslationPurpose purpose)
+    {
+        switch (purpose) {
+            case SYNTHESIS: {
+                synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                guardComputationCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                languageCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                break;
+            }
+
+            default:
+                throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
+        }
     }
 
     /**
