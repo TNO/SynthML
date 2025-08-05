@@ -214,4 +214,16 @@ public class SynthesisChainTracking {
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
     }
+
+    /**
+     * Return the map from CIF end events to the corresponding UML elements and effect indexes. Only supported for the
+     * initial data-based synthesis phase.
+     *
+     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements and
+     *     effect indexes.
+     */
+    public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
+        return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 }
