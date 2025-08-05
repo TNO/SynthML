@@ -3,12 +3,14 @@ package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 /**
@@ -159,6 +161,33 @@ public class SynthesisChainTracking {
                         .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
                 return languageCifStartEvents.contains(cifEvent);
             }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+    }
+
+    /**
+     * Return the events corresponding to the input set of nodes, based on the translation purpose.
+     *
+     * @param nodes The set of activity node, to find the related CIF events.
+     * @param purpose The enumeration informing on which translation is occurring.
+     * @return The list of CIF events corresponding to the activity nodes.
+     */
+    public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
+        switch (purpose) {
+            case SYNTHESIS: {
+                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
+            }
+            case GUARD_COMPUTATION: {
+                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                return languageCifEventsToUmlElementInfo.entrySet().stream()
+                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
+            }
+
             default:
                 throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
