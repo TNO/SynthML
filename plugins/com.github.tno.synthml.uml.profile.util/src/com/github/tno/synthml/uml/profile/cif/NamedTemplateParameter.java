@@ -9,7 +9,7 @@ import org.eclipse.uml2.uml.internal.impl.NamedElementImpl;
 /**
  * Dummy template parameter used to encapsulate the information normally stored in the object tree of a
  * {@link ClassifierTemplateParameter} for easier use during translation. The implementation implements
- * {@link NamedElement} to unify access through {@link CifScope}
+ * {@link NamedElement} to unify access through {@link CifScope}.
  */
 @SuppressWarnings("restriction")
 public class NamedTemplateParameter extends NamedElementImpl {

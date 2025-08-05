@@ -55,16 +55,16 @@ public class ActivityHelper {
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param isAtomic Whether the activity to create should be atomic.
-     * @param scopedProperties The properties that are defined in the scope of the calling activity
+     * @param localVariables The variables that are defined in the scope of the calling activity.
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> scopedProperties)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> localVariables)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, scopedProperties);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, localVariables);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, scopedProperties);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, localVariables);
         }
     }
 
@@ -77,12 +77,12 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param scopedProperties The properties that are defined in the scope of the calling activity
+     * @param localVariables The variables that are defined in the scope of the calling activity.
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> scopedProperties)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> localVariables)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
@@ -103,9 +103,10 @@ public class ActivityHelper {
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
 
-        // Add the template parameters
-        for (String propertyName: scopedProperties) {
-            addParameterToActivity(activity, propertyName);
+        // Add template parameters to the newly created activity for used local variables that are defined in the
+        // calling activity.
+        for (String variableName: localVariables) {
+            addParameterToActivity(activity, variableName);
         }
 
         // Define the initial node.
@@ -318,16 +319,16 @@ public class ActivityHelper {
      * Adds a parameter to an activity.
      *
      * @param activity The activity to which the parameter is added.
-     * @param name The name of the parameter to create.
+     * @param parameterName The name of the parameter to create.
      */
-    public static void addParameterToActivity(Activity activity, String name) {
+    public static void addParameterToActivity(Activity activity, String parameterName) {
         Parameter inputParameter = UMLFactory.eINSTANCE.createParameter();
-        inputParameter.setName(name);
+        inputParameter.setName(parameterName);
 
         activity.getOwnedParameters().add(inputParameter);
 
         ActivityParameterNode parameterNode = UMLFactory.eINSTANCE.createActivityParameterNode();
-        parameterNode.setName(name + "Node");
+        parameterNode.setName(parameterName + "Node");
         parameterNode.setParameter(inputParameter);
         parameterNode.setActivity(activity);
     }
@@ -342,16 +343,16 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param scopedProperties The properties that are defined in the scope of the calling activity
+     * @param localVariables The variables that are defined in the scope of the calling activity.
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> scopedProperties)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> localVariables)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
         Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
-                scopedProperties);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, scopedProperties);
+                localVariables);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, localVariables);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
@@ -359,8 +360,9 @@ public class ActivityHelper {
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
 
-        // Add the template parameters
-        for (String propertyName: scopedProperties) {
+        // Add template parameters to the newly created activity for used local variables that are defined in the
+        // calling activity.
+        for (String propertyName: localVariables) {
             addParameterToActivity(activity, propertyName);
         }
 
@@ -402,9 +404,9 @@ public class ActivityHelper {
         endToFinalFlow.setSource(callEndNode);
         endToFinalFlow.setTarget(finalNode);
 
-        // Pass arguments to the newly created activities. Properties could be scoped further to the start/end node
-        addTemplateParameter(callStartNode, scopedProperties, null);
-        addTemplateParameter(callEndNode, scopedProperties, null);
+        // Pass arguments to the newly created inner activities.
+        passVariablesToCallBehaviorAction(callStartNode, localVariables, null);
+        passVariablesToCallBehaviorAction(callEndNode, localVariables, null);
 
         return activity;
     }
@@ -702,33 +704,41 @@ public class ActivityHelper {
     private static void passActivityArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
             String argumentName)
     {
-        // Create an output pin on the assignment action and an input pin on the call action
+        // Create an output pin on the assignment action and an input pin on the call action.
         OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.PARAM_PREFIX + argumentName,
                 null);
         InputPin inputPin = callAction.createArgument(argumentName, null);
 
-        // Connect the output and input pins with an ObjectFlow
+        // Connect the output and input pins with an ObjectFlow.
         ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
         dataFlow.setSource(outputPin);
         dataFlow.setTarget(inputPin);
         callAction.getActivity().getEdges().add(dataFlow);
     }
 
-    public static void addTemplateParameter(CallBehaviorAction callAction, Set<String> passedArguments,
-            String templateBody)
+    /**
+     * Passes variables as arguments to a {@link CallBehaviorAction} for calling a parameterized activity.
+     *
+     * @param callAction The {@link CallBehaviorAction}.
+     * @param variableNames The names of the variables that will be passed to the callAction.
+     * @param optionalAssignments An optional assignment of the variables. If not, the variables are pass through from
+     *     the parent activity.
+     */
+    public static void passVariablesToCallBehaviorAction(CallBehaviorAction callAction, Set<String> variableNames,
+            String optionalAssignments)
     {
-        if (passedArguments.isEmpty()) {
+        if (variableNames.isEmpty()) {
             return;
         }
 
-        if (templateBody == null) {
-            // Add the temp__ prefix variables
+        if (optionalAssignments == null) {
+            // Add the temp__ prefix variables.
             List<String> translatedAssignments = new ArrayList<>();
-            for (String argument: passedArguments) {
+            for (String argument: variableNames) {
                 translatedAssignments.add(UMLToCameoTransformer.PARAM_PREFIX + argument + "=" + argument);
             }
 
-            templateBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+            optionalAssignments = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
         }
 
         Activity parentActivity = callAction.getActivity();
@@ -736,14 +746,14 @@ public class ActivityHelper {
         OpaqueAction assignmentAction = FileHelper.FACTORY.createOpaqueAction();
         assignmentAction.setActivity(parentActivity);
 
-        // Merge all translated assignments into a single Python code block
-        assignmentAction.getBodies().add(templateBody);
+        // Merge all translated assignments into a single Python code block.
+        assignmentAction.getBodies().add(optionalAssignments);
         assignmentAction.getLanguages().add("Python");
 
         callAction.getIncomings().get(0).setTarget(assignmentAction);
 
-        // For each assignment, create a data flow from the new action to the original call action
-        for (String argumentName: passedArguments) {
+        // For each assignment, create a data flow from the new action to the original call action.
+        for (String argumentName: variableNames) {
             passActivityArgument(callAction, assignmentAction, argumentName);
         }
     }

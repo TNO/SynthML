@@ -54,7 +54,7 @@ public class CifScope {
 
         Set<NamedTemplateParameter> resultParameters = new HashSet<>();
 
-        // create a corresponding UML Property with the same name and type
+        // create a corresponding UML Property with the same name and type.
         for (TemplateParameter parameter: templateParameters.collect(Collectors.toList())) {
             if (parameter instanceof ClassifierTemplateParameter classifierParam
                     && parameter.getDefault() instanceof NamedElement defaultNamedElement)

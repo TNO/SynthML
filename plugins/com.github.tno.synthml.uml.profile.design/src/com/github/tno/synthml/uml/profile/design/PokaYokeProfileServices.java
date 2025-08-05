@@ -3,7 +3,7 @@ package com.github.tno.synthml.uml.profile.design;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.NamedElement;
@@ -27,6 +28,7 @@ import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
@@ -56,6 +58,12 @@ import SynthML.FormalElement;
  */
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
+
+    // A regex pattern for extracting the signature from a label.
+    private static final String LABEL_SIGNATURE_PATTERN = "^(\\w+)\\s*(?:<([^>]+)>)?$";
+
+    // A regex pattern for extracting the arguments from a label.
+    private static final String LABEL_ARGUMENTS_PATTERN = LABEL_SIGNATURE_PATTERN;
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
@@ -102,140 +110,6 @@ public class PokaYokeProfileServices {
      */
     public String getIncomingGuard(ControlFlow controlFlow) {
         return PokaYokeUmlProfileUtil.getIncomingGuard(controlFlow);
-    }
-
-    /**
-     * Adapted from EditLabelSwitch. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
-     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
-     *
-     * @param activity The element to interrogate.
-     * @param editedLabelContent The new content.
-     */
-    public void setActivityLabel(Activity activity, String editedLabelContent) {
-        // Mirror LabelServices editUmlLabel
-        final EditLabelSwitch editLabel = new EditLabelSwitch();
-
-        // Parse the colon to specify the type
-        Pattern pattern = Pattern.compile("^(\\w+)\\s*(?:<(.+)>)?$");
-        Matcher matcher = pattern.matcher(editedLabelContent);
-
-        if (matcher.find()) {
-            String baseLabel = matcher.group(1);
-            String generics = matcher.group(2) != null ? matcher.group(2) : "";
-
-            List<Type> dataTypes = PokaYokeTypeUtil.getSupportedTypes(activity);
-            Map<String, Classifier> labelTypes = new HashMap<>();
-
-            for (String part: generics.split(",")) {
-                if (part.isEmpty()) {
-                    continue;
-                }
-                String[] split = part.trim().split(":");
-                if (split.length == 2) {
-                    String name = split[0].trim();
-                    String typeName = split[1].trim();
-
-                    Optional<Type> type = dataTypes.stream().filter(dt -> dt.getName().equals(typeName)).findFirst();
-
-                    if (type.isPresent() && type.get() instanceof Classifier classifier) {
-                        labelTypes.put(name, classifier);
-                    } else {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-
-            // Send the edited label to the original {@code EditLabelSwitch#CaseClass}
-            String genericString = labelTypes.isEmpty() ? "" : ("<" + String.join(", ", labelTypes.keySet()) + ">");
-            editLabel.setEditedLabelContent(baseLabel + genericString);
-
-            // Below mimics how UML designer sets TemplateParameters for classes.
-            // First {@code EditLabelSwitch#parseInputLabel} is called. This method parses the label and updates the
-            // underlying {@link TemplateableElement}. Since this method is private we proxy it by calling
-            // {@code EditLabelSwitch#caseTemplateableElement}. Finally we call {@code EditLabelSwitch#caseNamedElement}
-            // as normal
-            editLabel.caseTemplateableElement(activity);
-            editLabel.caseNamedElement(activity);
-
-            // Add type information to the new created template parameters
-            for (TemplateParameter parameter: activity.getOwnedTemplateSignature().getParameters()) {
-                if (parameter instanceof ClassifierTemplateParameter classifier) {
-                    String name = ((NamedElement)parameter.getParameteredElement()).getName();
-
-                    EList<Classifier> constrainingClassifiers = classifier.getConstrainingClassifiers();
-
-                    constrainingClassifiers.clear();
-                    constrainingClassifiers.add(labelTypes.get(name));
-                }
-            }
-        }
-    }
-
-    /**
-     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
-     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
-     *
-     * @param callAction The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
-     *     {@code activity} is stereotyped, {@code null} otherwise.
-     */
-    public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
-        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
-
-        List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
-        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace(":", "").replace("\n",
-                "");
-
-        if (stringArguments.isEmpty()) {
-            return displaySwitch.caseCallBehaviorAction(callAction);
-        } else {
-            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + stringArguments + ">";
-        }
-    }
-
-    /**
-     * Adapted from DisplayLabelSwitch caseClass. Returns the activity name, and the template parameters value if
-     * {@code element} contains {@code TemplateSignature}
-     *
-     * @param activity The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
-     *     {@code activity} is stereotyped, {@code null} otherwise.
-     */
-    public String getActivityLabel(Activity activity) {
-        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
-        String activityLabel = displaySwitch.caseBehavior(activity);
-
-        final TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
-        List<TemplateParameter> templateParameters = (ownedTemplateSignature != null)
-                ? ownedTemplateSignature.getOwnedParameters() : new ArrayList<>();
-
-        List<String> parameterSignatures = new ArrayList<>();
-        for (final TemplateParameter templateParameter: templateParameters) {
-            // Extract the name of the element
-            final ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
-            if (!(parameterableElement instanceof NamedElement namedParameterableElement)) {
-                continue;
-            }
-
-            // Add the type signature if it can be determined
-            String parameterSignature = namedParameterableElement.getName();
-            if (templateParameter instanceof ClassifierTemplateParameter classifier) {
-                var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
-                if (firstClassifier.isPresent()) {
-                    parameterSignature += ":" + firstClassifier.get().getName();
-                }
-            }
-
-            parameterSignatures.add(parameterSignature);
-        }
-
-        if (parameterSignatures.isEmpty()) {
-            return activityLabel;
-        }
-
-        return activityLabel + "<" + String.join(",", parameterSignatures) + ">";
     }
 
     /**
@@ -286,6 +160,149 @@ public class PokaYokeProfileServices {
     public void setIncomingGuard(ControlFlow controlFlow, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(controlFlow);
         PokaYokeUmlProfileUtil.setIncomingGuard(controlFlow, Strings.emptyToNull(newValue));
+    }
+
+    /**
+     * Adapted from DisplayLabelSwitch caseClass. Returns the activity name, and the template parameters value if
+     * {@code element} contains {@code TemplateSignature}.
+     *
+     * @param activity The element to interrogate.
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
+     *     {@code activity} is stereotyped, {@code null} otherwise.
+     */
+    public String getActivityLabel(Activity activity) {
+        // See 'setActivityLabel' for information about UML Designers 'Switch'.
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+        String activityLabel = displaySwitch.caseBehavior(activity);
+
+        TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
+        List<TemplateParameter> templateParameters = (ownedTemplateSignature != null)
+                ? ownedTemplateSignature.getOwnedParameters() : new ArrayList<>();
+
+        List<String> parameterSignatures = new ArrayList<>();
+        for (TemplateParameter templateParameter: templateParameters) {
+            // Extract the name of the element.
+            ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
+            if (!(parameterableElement instanceof NamedElement namedParameterableElement)) {
+                continue;
+            }
+
+            // Add the type signature if it can be determined.
+            String parameterSignature = namedParameterableElement.getName();
+            if (templateParameter instanceof ClassifierTemplateParameter classifier) {
+                var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
+                if (firstClassifier.isPresent()) {
+                    parameterSignature += ":" + firstClassifier.get().getName();
+                }
+            }
+
+            parameterSignatures.add(parameterSignature);
+        }
+
+        if (parameterSignatures.isEmpty()) {
+            return activityLabel;
+        }
+
+        return activityLabel + "<" + String.join(",", parameterSignatures) + ">";
+    }
+
+    /**
+     * Updates an {@link Activity}s labels and adds, modifies or removes the {@link RedefinableTemplateSignature}.
+     *
+     * @param activity The element to interrogate.
+     * @param editedLabelContent The new content.
+     */
+    public void setActivityLabel(Activity activity, String editedLabelContent) {
+        // Parse the label.
+        Pattern pattern = Pattern.compile(LABEL_SIGNATURE_PATTERN);
+        Matcher matcher = pattern.matcher(editedLabelContent);
+
+        if (matcher.find()) {
+            String baseLabel = matcher.group(1);
+            String generics = matcher.group(2) != null ? matcher.group(2) : "";
+
+            List<Type> dataTypes = PokaYokeTypeUtil.getSupportedTypes(activity);
+
+            // Map the parameter name to corresponding type.
+            Map<String, DataType> parameterNameToType = new LinkedHashMap<>();
+
+            for (String part: generics.split(",")) {
+                part = part.trim();
+
+                if (part.isEmpty()) {
+                    continue;
+                }
+
+                String[] split = part.split(":");
+                if (split.length == 2) {
+                    String name = split[0].trim();
+                    String typeName = split[1].trim();
+
+                    Optional<Type> type = dataTypes.stream().filter(dt -> dt.getName().equals(typeName)).findFirst();
+
+                    if (type.isPresent() && type.get() instanceof DataType dataType) {
+                        parameterNameToType.put(name, dataType);
+                    } else {
+                        return;
+                    }
+                } else {
+                    return;
+                }
+            }
+
+            // Mirror UML Designers 'LabelServices.editUmlLabel'. The switch uses visitor pattern without double
+            // dispatch. It uses pattern matching to forward an 'EditLabelSwitch.doSwitch' call to specialized methods.
+            // We will directly call these specialized methods.
+            EditLabelSwitch editLabel = new EditLabelSwitch();
+
+            // Generate a label without type information. This allows generating a RedefinableTemplateSignature using
+            // methods build into UML designer.
+            String genericString = parameterNameToType.isEmpty() ? ""
+                    : ("<" + String.join(", ", parameterNameToType.keySet()) + ">");
+            editLabel.setEditedLabelContent(baseLabel + genericString);
+
+            // Below mimics how UML designer sets a TemplateParameters for classes.
+            // First 'EditLabelSwitch.parseInputLabel. is called. This method parses the label and updates the
+            // underlying 'TemplateableElement'. Since this method is private we proxy it by calling
+            // EditLabelSwitch.caseTemplateableElement. Lastly call EditLabelSwitch.caseNamedElement as normal.
+            editLabel.caseTemplateableElement(activity);
+            editLabel.caseNamedElement(activity);
+
+            // Add type information to the newly created template parameters.
+            for (TemplateParameter parameter: activity.getOwnedTemplateSignature().getParameters()) {
+                if (parameter instanceof ClassifierTemplateParameter classifier) {
+                    String name = ((NamedElement)parameter.getParameteredElement()).getName();
+
+                    EList<Classifier> constrainingClassifiers = classifier.getConstrainingClassifiers();
+
+                    // Clear any pre-existing type information from the parameter.
+                    constrainingClassifiers.clear();
+                    constrainingClassifiers.add(parameterNameToType.get(name));
+                }
+            }
+        }
+    }
+
+    /**
+     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
+     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
+     *
+     * @param callAction The element to interrogate.
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
+     *     {@code activity} is stereotyped, {@code null} otherwise.
+     */
+    public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+
+        List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
+        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace(":", "").replace("\n",
+                "");
+
+        if (stringArguments.isEmpty()) {
+            return displaySwitch.caseCallBehaviorAction(callAction);
+        } else {
+            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + stringArguments + ">";
+        }
     }
 
     /**
@@ -343,7 +360,7 @@ public class PokaYokeProfileServices {
     public void setEffects(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
-            // Empty values are not allowed, so reset the value
+            // Empty values are not allowed, so reset the value.
             PokaYokeUmlProfileUtil.setEffects(element, null);
         } else {
             PokaYokeUmlProfileUtil.setEffects(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
@@ -388,7 +405,7 @@ public class PokaYokeProfileServices {
     public void setActivityArguments(CallBehaviorAction element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
-            // Empty values are not allowed, so reset the value
+            // Empty values are not allowed, so reset the value.
             PokaYokeUmlProfileUtil.setActivityArguments(element, null);
         } else {
             PokaYokeUmlProfileUtil.setActivityArguments(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
@@ -488,9 +505,10 @@ public class PokaYokeProfileServices {
 
     /**
      * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer. This
-     * implementation changes only the name of an 'ActivityEdge' without altering its guard. The override occurs
-     * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
-     * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
+     * implementation allows arguments to be changed for {@link CallBehaviorAction} to parameterized activities. It also
+     * changes the name of an 'ActivityEdge' without altering its guard. The override occurs implicitly because
+     * {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through Activity Diagram defined
+     * in the uml2core.odesign file in the UML Designer project.
      *
      * @param context The UML element to be edited.
      * @param editedLabelContent The new label content.
@@ -503,8 +521,8 @@ public class PokaYokeProfileServices {
             setName(edge, editedLabelContent);
             return edge;
         } else if (context instanceof CallBehaviorAction callAction) {
-            // Parse the colon to specify the type
-            Pattern pattern = Pattern.compile("^(\\w+)\\s*(?:<(.+)>)?$");
+            // Parse the colon to specify the type.
+            Pattern pattern = Pattern.compile(LABEL_ARGUMENTS_PATTERN);
             Matcher matcher = pattern.matcher(editedLabelContent);
 
             if (matcher.find()) {
@@ -522,10 +540,10 @@ public class PokaYokeProfileServices {
     /**
      * Compute the label of the given element for direct edit. Overrides the
      * {@link ReusedDescriptionServices#computeUmlDirectEditLabel(Element) computeUmlDirectEditLabel} method in UML
-     * Designer. This implementation returns only the name of an 'ActivityEdge' without adding the stereotype name
-     * within angle brackets before it. The override occurs implicitly because {@link PokaYokeProfileServices} is added
-     * to the viewpoint. This method is called through Activity Diagram defined in the uml2core.odesign file in the UML
-     * Designer project.
+     * Designer. It includes the signature to the label of {@link CallBehaviorAction}, and it returns the name of an
+     * {@link ActivityEdge} without adding the stereotype name within angle brackets before it. The override occurs
+     * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
+     * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *
      * @param element The {@link Element} for which to retrieve a label.
      * @return The computed label.

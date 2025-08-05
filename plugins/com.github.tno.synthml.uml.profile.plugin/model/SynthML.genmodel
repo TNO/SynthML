@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
-    modelDirectory="/com.github.tno.synthml.uml.profile.plugin/src"
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.github.tno.synthml.uml.profile.plugin/src"
     modelPluginID="com.github.tno.synthml.uml.profile.plugin" modelName="SynthML"
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="21.0" copyrightFields="false" usedGenPackages="#//SynthML ../../org.eclipse.uml2.types/model/Types.genmodel#//types ../../org.eclipse.uml2.uml/model/UML.genmodel#//uml ../../org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore"
+    complianceLevel="21.0" copyrightFields="false" usedGenPackages="../../org.eclipse.uml2.types/model/Types.genmodel#//types ../../org.eclipse.uml2.uml/model/UML.genmodel#//uml ../../org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore"
     operationReflection="true" importOrganizing="true">
   <foreignModel>SynthML.ecore</foreignModel>
+  <genPackages prefix="SynthML" disposableProviderFactory="true" ecorePackage="SynthML.ecore#/">
+    <genClasses ecoreClass="SynthML.ecore#//FormalElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalElement/guard"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalElement/effects"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalElement/base_RedefinableElement"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalElement/atomic"/>
+    </genClasses>
+    <genClasses ecoreClass="SynthML.ecore#//FormalControlFlow">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalControlFlow/outgoingGuard"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalControlFlow/base_ControlFlow"/>
+    </genClasses>
+    <genClasses ecoreClass="SynthML.ecore#//FormalCallBehaviorAction">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SynthML.ecore#//FormalCallBehaviorAction/activityArguments"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SynthML.ecore#//FormalCallBehaviorAction/base_CallBehaviorAction"/>
+    </genClasses>
+  </genPackages>
 </genmodel:GenModel>

@@ -461,7 +461,7 @@ public class UMLToCameoTransformer {
         }
     }
 
-    private void transformActivityArguments(CallBehaviorAction callAction) {
+    private void transformCallBehaviorActionArguments(CallBehaviorAction callAction) {
         List<AAssignmentUpdate> parsedAssignments = CifParserHelper.parseActivityArguments(callAction);
         if (parsedAssignments.isEmpty()) {
             return;
@@ -481,7 +481,7 @@ public class UMLToCameoTransformer {
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
 
-        ActivityHelper.addTemplateParameter(callAction, new HashSet<>(arguments), pythonBody);
+        ActivityHelper.passVariablesToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
     }
 
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
@@ -510,7 +510,7 @@ public class UMLToCameoTransformer {
             }
         }
 
-        transformActivityArguments(action);
+        transformCallBehaviorActionArguments(action);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
@@ -518,7 +518,7 @@ public class UMLToCameoTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
-        Set<String> localArguments = getLocalVariableList(action);
+        Set<String> localVariables = getLocalVariableList(action);
 
         // Translate the guard and effects of the action.
         CifContext context = CifContext.createScoped(action);
@@ -528,7 +528,7 @@ public class UMLToCameoTransformer {
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
-                PokaYokeUmlProfileUtil.isAtomic(action), localArguments);
+                PokaYokeUmlProfileUtil.isAtomic(action), localVariables);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
@@ -546,7 +546,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
-        ActivityHelper.addTemplateParameter(replacementActionNode, localArguments, null);
+        ActivityHelper.passVariablesToCallBehaviorAction(replacementActionNode, localVariables, null);
     }
 
     /**
@@ -615,11 +615,12 @@ public class UMLToCameoTransformer {
         decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
         evalActivity.setName("eval");
 
-        Set<String> scopedProperties = getLocalVariableList(decisionNode);
+        Set<String> localVariables = getLocalVariableList(decisionNode);
 
-        // Add the template parameters
-        for (String propertyName: scopedProperties) {
-            ActivityHelper.addParameterToActivity(evalActivity, propertyName);
+        // Add template parameters to the newly created activity for local variables that are used in the program of the
+        // decision node.
+        for (String variableName: localVariables) {
+            ActivityHelper.addParameterToActivity(evalActivity, variableName);
         }
 
         // Create the call behavior node that calls the activity we just created.
@@ -630,8 +631,8 @@ public class UMLToCameoTransformer {
         // Redirect the incoming edge into the decision node to go into the new evaluation node instead.
         decisionNode.getIncomings().get(0).setTarget(evalNode);
 
-        // Pass local arguments to the activity
-        ActivityHelper.addTemplateParameter(evalNode, scopedProperties, null);
+        // Pass local variables to the activity.
+        ActivityHelper.passVariablesToCallBehaviorAction(evalNode, localVariables, null);
 
         // Define the control flow from the new evaluator node to the decision node.
         ControlFlow evalToDecisionFlow = FileHelper.FACTORY.createControlFlow();

@@ -98,7 +98,7 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
-        // Parameterized activities are not (yet) supported by this method
+        // Parameterized activities are not (yet) supported by this method.
         Preconditions.checkArgument(activity.getOwnedParameters().isEmpty(),
                 "Synthesis of parameterized activities is unsupported.");
 

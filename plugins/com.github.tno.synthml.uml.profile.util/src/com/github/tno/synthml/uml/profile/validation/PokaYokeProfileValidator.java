@@ -757,13 +757,13 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             List<AUpdate> expressions = arguments.stream()
                     .flatMap(argument -> CifParserHelper.parseUpdates(argument, calledActivity).stream()).toList();
 
-            // Valid assignments are valid updates with restrictions
+            // Valid assignments are valid updates with restrictions.
             checkValidAssignments(expressions, callAction);
 
-            // Ensure that no variable is assigned more than once
+            // Ensure that no variable is assigned more than once.
             checkUniqueAddressables(expressions, new LinkedHashSet<>());
 
-            // Ensure that every variable is assigned
+            // Ensure that every variable is assigned.
             if (expressions.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
                 throw new CustomSyntaxException("Not all template parameters have been assigned.", null);
             }
@@ -787,12 +787,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Set<NamedTemplateParameter> elementProperties = new CifScope(callAction).getDeclaredTemplateParameters();
 
         for (AUpdate update: updates) {
-            // Ensure the update is an assignment update
+            // Ensure the update is an assignment update.
             if (!(update instanceof AAssignmentUpdate assignment)) {
                 throw new CustomSyntaxException("Only assignment updates are supported.", update.position);
             }
 
-            // Ensure the addressable part is a named expression
+            // Ensure the addressable part is a named expression.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
                 throw new CustomSyntaxException("Only name expressions are allowed as addressables.", update.position);
             }
@@ -815,7 +815,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         assignment.position);
             }
 
-            // Verify that the types match
+            // Verify that the types match.
             CifTypeChecker checker = new CifTypeChecker(callAction);
             CifContext addressableContext = CifContext.createScoped(calledActivity);
             CifContext valueContext = CifContext.createScoped(callAction);
