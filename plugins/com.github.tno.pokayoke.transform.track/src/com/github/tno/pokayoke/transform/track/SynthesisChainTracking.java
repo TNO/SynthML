@@ -65,12 +65,6 @@ public class SynthesisChainTracking {
      */
     private Set<Event> languageCifStartEvents = new LinkedHashSet<>();
 
-    /**
-     * The set of internal CIF events (e.g. corresponding to control nodes) generated for the initial data-based
-     * synthesis.
-     */
-    private final Set<Event> internalSynthesisEvents = new LinkedHashSet<>();
-
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
