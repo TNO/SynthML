@@ -258,6 +258,7 @@ public class PostProcessActivity {
                         // Non-atomic non-rewritten opaque action: this represents just the start of an opaque action.
                         // Add the original UML element's guard.
                         PokaYokeUmlProfileUtil.setGuard(action, PokaYokeUmlProfileUtil.getGuard(umlElement));
+                        PokaYokeUmlProfileUtil.setAtomic(action, true);
                         action.setName(action.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
 
                         // Store the new UML element in the synthesis transformation tracker.
