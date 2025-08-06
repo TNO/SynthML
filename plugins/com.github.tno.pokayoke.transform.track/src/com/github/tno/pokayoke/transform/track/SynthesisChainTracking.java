@@ -36,7 +36,7 @@ public class SynthesisChainTracking {
      * The set of CIF events representing the start of a UML action/behavior generated for the initial data-based
      * synthesis.
      */
-    private Set<Event> synthesisCifStartEvents = new LinkedHashSet<>();
+    private final Set<Event> synthesisCifStartEvents = new LinkedHashSet<>();
 
     /**
      * The map from CIF events generated for the guard computation step to a pair composed of their corresponding UML
@@ -101,10 +101,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the map from CIF start events to the corresponding UML elements.
+     * Gives the map from CIF start events to the corresponding UML elements for the specified translation purpose.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding UML elements.
+     * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
      */
     public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
         switch (purpose) {
@@ -127,11 +127,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return whether the CIF event represents a start action.
+     * Indicates whether the CIF event represents a start action for the given translation purpose.
      *
      * @param cifEvent The CIF event.
      * @param purpose The enumeration informing on which translation is occurring.
-     * @return {@code true} if the CIF event corresponds to a start event.
+     * @return {@code true} if the CIF event corresponds to a start event, {@code false} otherwise.
      */
     public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
@@ -161,10 +161,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the events corresponding to the input set of nodes, based on the translation purpose.
+     * Returns the events corresponding to the input set of nodes, based on the translation purpose.
      *
-     * @param nodes The set of activity node, to find the related CIF events.
-     * @param purpose The enumeration informing on which translation is occurring.
+     * @param nodes The set of activity nodes, to find the related CIF events.
+     * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the activity nodes.
      */
     public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
@@ -188,11 +188,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Get the list of CIF start events corresponding to the UML element for different translation purposes. Not yet
+     * Gives the list of CIF start events corresponding to the UML element for the specified translation purpose. Not yet
      * supported for guard computation and language equivalence check.
      *
      * @param umlElement The UML element.
-     * @param purpose The enumeration informing on which translation is occurring.
+     * @param purpose The translation purpose.
      * @return The list from CIF start events to their corresponding UML element infos.
      */
     public List<Event> getStartEventsOfUmlElement(RedefinableElement umlElement, TranslationPurpose purpose) {
