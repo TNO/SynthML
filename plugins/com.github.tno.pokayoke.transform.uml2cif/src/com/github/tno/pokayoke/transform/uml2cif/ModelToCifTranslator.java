@@ -63,8 +63,8 @@ public abstract class ModelToCifTranslator {
     protected final UmlAnnotationsToCif translator;
 
     /**
-     * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
-     * UML elements in the synthesized activity.
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
      */
     protected final SynthesisChainTracking synthesisTracker;
 

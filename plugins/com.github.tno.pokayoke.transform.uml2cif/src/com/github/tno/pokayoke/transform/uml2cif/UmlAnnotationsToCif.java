@@ -61,8 +61,8 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     private final Map<Property, DiscVariable> variableMap;
 
     /**
-     * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
-     * UML elements in the synthesized activity.
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
      */
     private final SynthesisChainTracking synthesisTracker;
 

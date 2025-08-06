@@ -38,19 +38,20 @@ public class SynthesisChainTracking {
     private final Set<Event> cifStartEvents = new LinkedHashSet<>();
 
     /**
-     * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF
-     * translator to decide whether or not to translate certain model elements (e.g.
-     * opaque behaviors, occurrence constraints), to generate different pre- and postconditions, to modify the
-     * controllability of CIF events. It is used by {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different UML-to-CIF translations.
+     * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF translator
+     * to decide whether or not to translate certain model elements (e.g. opaque behaviors, occurrence constraints), to
+     * generate different pre- and postconditions, to modify the controllability of CIF events. It is used by
+     * {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different
+     * UML-to-CIF translations.
      */
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
     /**
-Registers that the given CIF event has been created for the given UML element for the indicated translation purpose.
-     * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the action
-     * effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
+     * Registers that the given CIF event has been created for the given UML element for the indicated translation
+     * purpose. irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when
+     * the action effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
      *
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to relate to the CIF event.
