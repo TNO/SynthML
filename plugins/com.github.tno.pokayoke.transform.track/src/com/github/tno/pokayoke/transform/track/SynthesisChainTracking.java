@@ -2,7 +2,6 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +30,6 @@ public class SynthesisChainTracking {
     private final Map<Event, EventTraceInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
-     * The set of CIF events representing the start of a UML action/behavior. This information can be derived from
-     * {@link SynthesisChainTracking#cifEventsToUmlElementInfo}, but it is kept in a separate set for better
-     * performance.
-     */
-    private final Set<Event> cifStartEvents = new LinkedHashSet<>();
-
-    /**
      * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF translator
      * to decide whether or not to translate certain model elements (e.g. opaque behaviors, occurrence constraints), to
      * generate different pre- and postconditions, to modify the controllability of CIF events. It is used by
@@ -64,10 +56,6 @@ public class SynthesisChainTracking {
             TranslationPurpose purpose, boolean isStartEvent)
     {
         cifEventsToUmlElementInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
-
-        if (effectIdx == null) {
-            cifStartEvents.add(cifEvent);
-        }
     }
 
     /**
@@ -78,7 +66,7 @@ public class SynthesisChainTracking {
      */
     public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
         return cifEventsToUmlElementInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().effectIdx() == null)
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement()));
     }
 
@@ -89,7 +77,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event is a start event, {@code false} otherwise.
      */
     public boolean isStartEvent(Event cifEvent) {
-        return cifStartEvents.contains(cifEvent);
+        return cifEventsToUmlElementInfo.get(cifEvent).isStartEvent();
     }
 
     /**
@@ -119,7 +107,7 @@ public class SynthesisChainTracking {
         }
 
         return cifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
-                && isStartEvent(e.getKey()) && e.getValue().umlElement().equals(umlElement)).map(Map.Entry::getKey)
+                && e.getValue().isStartEvent() && e.getValue().umlElement().equals(umlElement)).map(Map.Entry::getKey)
                 .toList();
     }
 
@@ -132,7 +120,7 @@ public class SynthesisChainTracking {
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         return cifEventsToUmlElementInfo.entrySet().stream().filter(
-                e -> e.getValue().purpose().equals(TranslationPurpose.SYNTHESIS) && e.getValue().effectIdx() != null)
+                e -> e.getValue().purpose().equals(TranslationPurpose.SYNTHESIS) && !e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
     }
