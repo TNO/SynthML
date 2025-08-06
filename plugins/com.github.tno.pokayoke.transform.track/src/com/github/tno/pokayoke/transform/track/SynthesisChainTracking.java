@@ -49,7 +49,8 @@ public class SynthesisChainTracking {
 
     /**
      * Add a single CIF event. The effect index is either a positive integer when relevant, or {@code null} when
-     * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
+     * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the action
+     * effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
      *
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to be related to the CIF event.
