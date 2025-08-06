@@ -25,45 +25,17 @@ import org.eclipse.uml2.uml.RedefinableElement;
  */
 public class SynthesisChainTracking {
     /**
-     * The map from CIF events generated for the initial data-based synthesis to a pair composed of their corresponding
-     * UML elements of the input model, and the effect index, if relevant. The effect index is either a positive integer
-     * when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic
-     * action). Gets updated as the activity synthesis chain rewrites, removes, or add events.
+     * The map from CIF events to a record composed of their translation purpose, their corresponding UML elements of
+     * the input model, and the effect index, if relevant. The effect index is either a positive integer when relevant,
+     * or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Gets
+     * updated as the activity synthesis chain rewrites, removes, or add events.
      */
-    private final Map<Event, Pair<RedefinableElement, Integer>> synthesisCifEventsToUmlElementInfo = new LinkedHashMap<>();
+    private final Map<Event, CifEventInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
-     * The set of CIF events representing the start of a UML action/behavior generated for the initial data-based
-     * synthesis.
+     * The set of CIF events representing the start of a UML action/behavior.
      */
-    private final Set<Event> synthesisCifStartEvents = new LinkedHashSet<>();
-
-    /**
-     * The map from CIF events generated for the guard computation step to a pair composed of their corresponding UML
-     * elements of the input model, and the effect index, if relevant. The effect index is either a positive integer
-     * when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic
-     * action).
-     */
-    private final Map<Event, Pair<RedefinableElement, Integer>> guardComputationCifEventsToUmlElementInfo = new LinkedHashMap<>();
-
-    /**
-     * The set of CIF events representing the start of a UML action/behavior generated for the guard computation step.
-     */
-    private final Set<Event> guardComputationCifStartEvents = new LinkedHashSet<>();
-
-    /**
-     * The map from CIF events generated for the language equivalence check step to a pair composed of their
-     * corresponding UML elements of the input model, and the effect index, if relevant. The effect index is either a
-     * positive integer when relevant, or {@code null} when irrelevant (e.g., in case the CIF event is a start event of
-     * a non-atomic action).
-     */
-    private final Map<Event, Pair<RedefinableElement, Integer>> languageCifEventsToUmlElementInfo = new LinkedHashMap<>();
-
-    /**
-     * The set of CIF events representing the start of a UML action/behavior generated for the language equivalence
-     * check step.
-     */
-    private final Set<Event> languageCifStartEvents = new LinkedHashSet<>();
+    private final Set<Event> cifStartEvents = new LinkedHashSet<>();
 
     /**
      * The enumeration that describes the purpose of the current UML to CIF translation. It is used in the UML to CIF
@@ -87,31 +59,10 @@ public class SynthesisChainTracking {
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
             TranslationPurpose purpose)
     {
-        switch (purpose) {
-            case SYNTHESIS: {
-                synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
-                if (effectIdx == null) {
-                    synthesisCifStartEvents.add(cifEvent);
-                }
-                break;
-            }
-            case GUARD_COMPUTATION: {
-                guardComputationCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
-                if (effectIdx == null) {
-                    guardComputationCifStartEvents.add(cifEvent);
-                }
-                break;
-            }
-            case LANGUAGE_EQUIVALENCE: {
-                languageCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
-                if (effectIdx == null) {
-                    languageCifStartEvents.add(cifEvent);
-                }
-                break;
-            }
+        cifEventsToUmlElementInfo.put(cifEvent, new CifEventInfo(purpose, umlElement, effectIdx));
 
-            default:
-                throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
+        if (effectIdx == null) {
+            cifStartEvents.add(cifEvent);
         }
     }
 
@@ -122,23 +73,9 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
      */
     public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
-        switch (purpose) {
-            case SYNTHESIS: {
-                return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
-            }
-            case GUARD_COMPUTATION: {
-                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(e -> e.getValue().right == null)
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
-            }
-            case LANGUAGE_EQUIVALENCE: {
-                return languageCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right == null)
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().left));
-            }
-            default:
-                throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
-        }
+        return cifEventsToUmlElementInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().effectIdx() == null)
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement()));
     }
 
     /**
@@ -149,19 +86,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to a start event, {@code false} otherwise.
      */
     public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
-        switch (purpose) {
-            case SYNTHESIS: {
-                return synthesisCifStartEvents.contains(cifEvent);
-            }
-            case GUARD_COMPUTATION: {
-                return guardComputationCifStartEvents.contains(cifEvent);
-            }
-            case LANGUAGE_EQUIVALENCE: {
-                return languageCifStartEvents.contains(cifEvent);
-            }
-            default:
-                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
-        }
+        return cifStartEvents.contains(cifEvent);
     }
 
     /**
@@ -172,23 +97,9 @@ public class SynthesisChainTracking {
      * @return The list of CIF events corresponding to the activity nodes.
      */
     public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
-        switch (purpose) {
-            case SYNTHESIS: {
-                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
-            }
-            case GUARD_COMPUTATION: {
-                return guardComputationCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
-            }
-            case LANGUAGE_EQUIVALENCE: {
-                return languageCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> nodes.contains(entry.getValue().left)).map(Map.Entry::getKey).toList();
-            }
-
-            default:
-                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
-        }
+        return cifEventsToUmlElementInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(purpose) && nodes.contains(e.getValue().umlElement()))
+                .map(Map.Entry::getKey).toList();
     }
 
     /**
@@ -200,17 +111,14 @@ public class SynthesisChainTracking {
      * @return The list of CIF start events corresponding to the input UML element.
      */
     public List<Event> getStartEventsOf(RedefinableElement umlElement, TranslationPurpose purpose) {
-        switch (purpose) {
-            case SYNTHESIS: {
-                return synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(entry -> isStartEvent(entry.getKey(), TranslationPurpose.SYNTHESIS)
-                                && entry.getValue().left.equals(umlElement))
-                        .map(Map.Entry::getKey).toList();
-            }
-
-            default:
-                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        if (purpose != TranslationPurpose.SYNTHESIS) {
+            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
+
+        return cifEventsToUmlElementInfo
+                .entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
+                        && isStartEvent(e.getKey(), purpose) && e.getValue().umlElement().equals(umlElement))
+                .map(Map.Entry::getKey).toList();
     }
 
     /**
@@ -221,8 +129,10 @@ public class SynthesisChainTracking {
      *     effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return cifEventsToUmlElementInfo.entrySet().stream().filter(
+                e -> e.getValue().purpose().equals(TranslationPurpose.SYNTHESIS) && e.getValue().effectIdx() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
     }
 
     /**
