@@ -84,14 +84,23 @@ public class SynthesisChainTracking {
         switch (purpose) {
             case SYNTHESIS: {
                 synthesisCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                if (effectIdx == null) {
+                    synthesisCifStartEvents.add(cifEvent);
+                }
                 break;
             }
             case GUARD_COMPUTATION: {
                 guardComputationCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                if (effectIdx == null) {
+                    guardComputationCifStartEvents.add(cifEvent);
+                }
                 break;
             }
             case LANGUAGE_EQUIVALENCE: {
                 languageCifEventsToUmlElementInfo.put(cifEvent, new Pair<>(umlElement, effectIdx));
+                if (effectIdx == null) {
+                    languageCifStartEvents.add(cifEvent);
+                }
                 break;
             }
 
@@ -136,23 +145,12 @@ public class SynthesisChainTracking {
     public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
-                // Compute the synthesis start event set.
-                synthesisCifStartEvents = synthesisCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
                 return synthesisCifStartEvents.contains(cifEvent);
             }
-
             case GUARD_COMPUTATION: {
-                // Compute the guard computation start event set.
-                guardComputationCifStartEvents = guardComputationCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
                 return guardComputationCifStartEvents.contains(cifEvent);
             }
-
             case LANGUAGE_EQUIVALENCE: {
-                // Compute the language equivalence check start event set.
-                languageCifStartEvents = languageCifEventsToUmlElementInfo.entrySet().stream()
-                        .filter(e -> e.getValue().right == null).map(e -> e.getKey()).collect(Collectors.toSet());
                 return languageCifStartEvents.contains(cifEvent);
             }
             default:
@@ -188,8 +186,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the list of CIF start events corresponding to the UML element for the specified translation purpose. Not yet
-     * supported for guard computation and language equivalence check.
+     * Gives the list of CIF start events corresponding to the UML element for the specified translation purpose. Not
+     * yet supported for guard computation and language equivalence check.
      *
      * @param umlElement The UML element.
      * @param purpose The translation purpose.
