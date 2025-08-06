@@ -275,7 +275,8 @@ public class FullSynthesisApp {
         }
 
         // Computing guards.
-        new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity, umlActivityToCifPath);
+        new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
+                umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
