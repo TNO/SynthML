@@ -58,11 +58,12 @@ public class SynthesisChainTracking {
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the
      *     action effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
      * @param purpose The translation purpose.
+     * @param isStartEvent {@code true} if the event represents a start event.
      */
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
-            TranslationPurpose purpose)
+            TranslationPurpose purpose, boolean isStartEvent)
     {
-        cifEventsToUmlElementInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx));
+        cifEventsToUmlElementInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
 
         if (effectIdx == null) {
             cifStartEvents.add(cifEvent);
@@ -143,7 +144,10 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @param umlElement The UML element that relates to the CIF event.
      * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
+     * @param isStartEvent {@code true} if the event represents a start event.
      */
-    private record EventTraceInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
+    private record EventTraceInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
+            boolean isStartEvent)
+    {
     }
 }
