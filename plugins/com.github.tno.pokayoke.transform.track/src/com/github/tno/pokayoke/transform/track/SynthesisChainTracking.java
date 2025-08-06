@@ -25,15 +25,15 @@ import org.eclipse.uml2.uml.RedefinableElement;
  */
 public class SynthesisChainTracking {
     /**
-     * The map from CIF events to a record composed of their translation purpose, their corresponding UML elements of
-     * the input model, and the effect index, if relevant. The effect index is either a positive integer when relevant,
-     * or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Gets
-     * updated as the activity synthesis chain rewrites, removes, or add events.
+     * The map from CIF events to their tracing info. Gets updated as the activity synthesis chain rewrites, removes, or
+     * add events.
      */
     private final Map<Event, EventTraceInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
-     * The set of CIF events representing the start of a UML action/behavior.
+     * The set of CIF events representing the start of a UML action/behavior. This information can be derived from
+     * {@link SynthesisChainTracking#cifEventsToUmlElementInfo}, but it is kept in a separate set for better
+     * performance.
      */
     private final Set<Event> cifStartEvents = new LinkedHashSet<>();
 
@@ -50,12 +50,13 @@ public class SynthesisChainTracking {
 
     /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
-     * purpose. irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when
-     * the action effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
+     * purpose.
      *
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to relate to the CIF event.
-     * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
+     * @param effectIdx The effect index, that can either be a positive integer when relevant, or {@code null} when
+     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the
+     *     action effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
      * @param purpose The translation purpose.
      */
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
