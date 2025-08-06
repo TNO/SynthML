@@ -97,7 +97,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the activity nodes.
      */
-    public List<Event> getNodeEvents(Set<ActivityNode> nodes, TranslationPurpose purpose) {
+    public List<Event> getNodeEvents(Set<? extends ActivityNode> nodes, TranslationPurpose purpose) {
         return cifEventsToUmlElementInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && nodes.contains(e.getValue().umlElement()))
                 .map(Map.Entry::getKey).toList();
