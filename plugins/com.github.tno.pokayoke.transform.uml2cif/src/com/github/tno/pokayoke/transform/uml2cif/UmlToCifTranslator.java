@@ -1286,7 +1286,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                         // For synthesis, we directly translate the opaque behaviors, so we simply look up their
                         // associated start events.
-                        cifStartEvents = synthesisTracker.getStartEventsOfUmlElement(umlOpaqueBehavior,
+                        cifStartEvents = synthesisTracker.getStartEventsOf(umlOpaqueBehavior,
                                 translationPurpose);
 
                         // Sanity check: we must have found at least one start event.

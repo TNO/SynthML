@@ -199,7 +199,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list from CIF start events to their corresponding UML element infos.
      */
-    public List<Event> getStartEventsOfUmlElement(RedefinableElement umlElement, TranslationPurpose purpose) {
+    public List<Event> getStartEventsOf(RedefinableElement umlElement, TranslationPurpose purpose) {
         switch (purpose) {
             case SYNTHESIS: {
                 return synthesisCifEventsToUmlElementInfo.entrySet().stream()
