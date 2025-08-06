@@ -224,4 +224,15 @@ public class SynthesisChainTracking {
         return synthesisCifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().right != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+
+    /**
+     * The information related to a CIF event: the purpose for which it is translated, the UML element it refers to, the
+     * effect index if it is an end event ({@code null} if it is a start event).
+     *
+     * @param purpose The translation purpose.
+     * @param umlElement The UML element to be related to the CIF event.
+     * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
+     */
+    record CifEventInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
+    }
 }
