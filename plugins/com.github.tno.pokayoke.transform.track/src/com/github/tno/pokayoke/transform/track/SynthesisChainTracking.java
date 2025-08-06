@@ -83,10 +83,9 @@ public class SynthesisChainTracking {
      * Indicates whether the CIF event represents a start action for the given translation purpose.
      *
      * @param cifEvent The CIF event.
-     * @param purpose The enumeration informing on which translation is occurring.
      * @return {@code true} if the CIF event corresponds to a start event, {@code false} otherwise.
      */
-    public boolean isStartEvent(Event cifEvent, TranslationPurpose purpose) {
+    public boolean isStartEvent(Event cifEvent) {
         return cifStartEvents.contains(cifEvent);
     }
 
@@ -116,10 +115,9 @@ public class SynthesisChainTracking {
             throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
         }
 
-        return cifEventsToUmlElementInfo
-                .entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
-                        && isStartEvent(e.getKey(), purpose) && e.getValue().umlElement().equals(umlElement))
-                .map(Map.Entry::getKey).toList();
+        return cifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
+                && isStartEvent(e.getKey()) && e.getValue().umlElement().equals(umlElement)).map(Map.Entry::getKey)
+                .toList();
     }
 
     /**

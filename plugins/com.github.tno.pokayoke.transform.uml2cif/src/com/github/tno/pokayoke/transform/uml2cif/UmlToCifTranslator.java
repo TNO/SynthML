@@ -830,7 +830,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent, translationPurpose)) {
+                if (synthesisTracker.isStartEvent(cifEvent)) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
@@ -846,7 +846,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent, translationPurpose)) {
+                if (synthesisTracker.isStartEvent(cifEvent)) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
@@ -1286,8 +1286,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     if (translationPurpose == TranslationPurpose.SYNTHESIS) {
                         // For synthesis, we directly translate the opaque behaviors, so we simply look up their
                         // associated start events.
-                        cifStartEvents = synthesisTracker.getStartEventsOf(umlOpaqueBehavior,
-                                translationPurpose);
+                        cifStartEvents = synthesisTracker.getStartEventsOf(umlOpaqueBehavior, translationPurpose);
 
                         // Sanity check: we must have found at least one start event.
                         Verify.verify(!cifStartEvents.isEmpty(), "Found no CIF start events for: " + umlOpaqueBehavior);
