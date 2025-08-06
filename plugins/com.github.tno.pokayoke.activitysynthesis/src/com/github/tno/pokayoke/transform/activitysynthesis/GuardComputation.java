@@ -52,6 +52,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.javabdd.BDDVarSet;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -65,12 +66,21 @@ public class GuardComputation {
     private final UmlToCifTranslator translator;
 
     /**
+     * The tracker that stores UML elements and related CIF events, the Petri net transitions, and finally the generated
+     * UML elements in the synthesized activity.
+     */
+    private final SynthesisChainTracking synthesisTracker;
+
+    /**
      * Constructs a new {@link GuardComputation}.
      *
      * @param translator The UML-to-CIF translator to use for guard computation.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public GuardComputation(UmlToCifTranslator translator) {
+    public GuardComputation(UmlToCifTranslator translator, SynthesisChainTracking tracker) {
         this.translator = translator;
+        this.synthesisTracker = tracker;
     }
 
     public void computeGuards(Specification specification, Path specPath) {
@@ -78,7 +88,7 @@ public class GuardComputation {
         // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
         // flows.
         Map<RedefinableElement, List<Event>> startEventMap = reverse(
-                translator.getStartEventMap(TranslationPurpose.GUARD_COMPUTATION));
+                synthesisTracker.getStartEventMap(TranslationPurpose.GUARD_COMPUTATION));
 
         // Helper function for obtaining the single CIF start event of a given UML element.
         Function<RedefinableElement, Event> getSingleStartEvent = element -> {
