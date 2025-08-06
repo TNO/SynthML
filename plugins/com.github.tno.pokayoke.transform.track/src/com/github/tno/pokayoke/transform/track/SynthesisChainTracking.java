@@ -38,22 +38,22 @@ public class SynthesisChainTracking {
     private final Set<Event> cifStartEvents = new LinkedHashSet<>();
 
     /**
-     * The enumeration that describes the purpose of the current UML to CIF translation. It is used in the UML to CIF
-     * translator and in the Model to CIF translator to decide whether to translate or not certain model elements (e.g.
+     * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF
+     * translator to decide whether or not to translate certain model elements (e.g.
      * opaque behaviors, occurrence constraints), to generate different pre- and postconditions, to modify the
-     * controllability of CIF events. It is used here to store the CIF events in different maps.
+     * controllability of CIF events. It is used by {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different UML-to-CIF translations.
      */
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
     /**
-     * Add a single CIF event. The effect index is either a positive integer when relevant, or {@code null} when
+Registers that the given CIF event has been created for the given UML element for the indicated translation purpose.
      * irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the action
      * effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to be related to the CIF event.
+     * @param umlElement The UML element to relate to the CIF event.
      * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
      * @param purpose The translation purpose.
      */
@@ -80,10 +80,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Indicates whether the CIF event represents a start action for the given translation purpose.
+     * Indicates whether the CIF event is a start event, i.e., represents the start of an action.
      *
      * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event corresponds to a start event, {@code false} otherwise.
+     * @return {@code true} if the CIF event is a start event, {@code false} otherwise.
      */
     public boolean isStartEvent(Event cifEvent) {
         return cifStartEvents.contains(cifEvent);
@@ -112,7 +112,7 @@ public class SynthesisChainTracking {
      */
     public List<Event> getStartEventsOf(RedefinableElement umlElement, TranslationPurpose purpose) {
         if (purpose != TranslationPurpose.SYNTHESIS) {
-            throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+            throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
         }
 
         return cifEventsToUmlElementInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
@@ -139,9 +139,9 @@ public class SynthesisChainTracking {
      * effect index if it is an end event ({@code null} if it is a start event).
      *
      * @param purpose The translation purpose.
-     * @param umlElement The UML element to be related to the CIF event.
+     * @param umlElement The UML element that relates to the CIF event.
      * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
      */
-    record CifEventInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
+    private record CifEventInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
     }
 }
