@@ -30,7 +30,7 @@ public class SynthesisChainTracking {
      * or {@code null} when irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Gets
      * updated as the activity synthesis chain rewrites, removes, or add events.
      */
-    private final Map<Event, CifEventInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
+    private final Map<Event, EventTraceInfo> cifEventsToUmlElementInfo = new LinkedHashMap<>();
 
     /**
      * The set of CIF events representing the start of a UML action/behavior.
@@ -61,7 +61,7 @@ public class SynthesisChainTracking {
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
             TranslationPurpose purpose)
     {
-        cifEventsToUmlElementInfo.put(cifEvent, new CifEventInfo(purpose, umlElement, effectIdx));
+        cifEventsToUmlElementInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx));
 
         if (effectIdx == null) {
             cifStartEvents.add(cifEvent);
@@ -143,6 +143,6 @@ public class SynthesisChainTracking {
      * @param umlElement The UML element that relates to the CIF event.
      * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
      */
-    private record CifEventInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
+    private record EventTraceInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx) {
     }
 }
