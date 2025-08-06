@@ -65,6 +65,12 @@ public class SynthesisChainTracking {
      */
     private final Set<Event> languageCifStartEvents = new LinkedHashSet<>();
 
+    /**
+     * The enumeration that describes the purpose of the current UML to CIF translation. It is used in the UML to CIF
+     * translator and in the Model to CIF translator to decide whether to translate or not certain model elements (e.g.
+     * opaque behaviors, occurrence constraints), to generate different pre- and postconditions, to modify the
+     * controllability of CIF events. It is used here to store the CIF events in different maps.
+     */
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
