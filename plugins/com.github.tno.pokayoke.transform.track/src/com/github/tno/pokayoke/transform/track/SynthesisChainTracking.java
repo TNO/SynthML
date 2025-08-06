@@ -49,7 +49,7 @@ public class SynthesisChainTracking {
     /**
      * The set of CIF events representing the start of a UML action/behavior generated for the guard computation step.
      */
-    private Set<Event> guardComputationCifStartEvents = new LinkedHashSet<>();
+    private final Set<Event> guardComputationCifStartEvents = new LinkedHashSet<>();
 
     /**
      * The map from CIF events generated for the language equivalence check step to a pair composed of their
@@ -63,7 +63,7 @@ public class SynthesisChainTracking {
      * The set of CIF events representing the start of a UML action/behavior generated for the language equivalence
      * check step.
      */
-    private Set<Event> languageCifStartEvents = new LinkedHashSet<>();
+    private final Set<Event> languageCifStartEvents = new LinkedHashSet<>();
 
     public static enum TranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
