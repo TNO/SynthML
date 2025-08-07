@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -66,7 +66,7 @@ public class Uml2CifRegressionTest extends RegressionTest {
             Path outputFilePath = localOutputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
             // Translate the current UML activity to a CIF specification.
-            Specification cifSpecification = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS,
+            Specification cifSpecification = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS,
                     new SynthesisChainTracking()).translate();
 
             // Store the translated CIF specification.

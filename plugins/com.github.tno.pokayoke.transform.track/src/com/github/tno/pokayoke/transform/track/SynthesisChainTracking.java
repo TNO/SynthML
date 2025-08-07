@@ -35,7 +35,7 @@ public class SynthesisChainTracking {
      * {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different
      * UML-to-CIF translations.
      */
-    public static enum TranslationPurpose {
+    public static enum UmlToCifTranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
@@ -51,7 +51,7 @@ public class SynthesisChainTracking {
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      */
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
-            TranslationPurpose purpose, boolean isStartEvent)
+            UmlToCifTranslationPurpose purpose, boolean isStartEvent)
     {
         cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
     }
@@ -62,7 +62,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
      */
-    public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
+    public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement()));
@@ -85,7 +85,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the UML elements.
      */
-    public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, TranslationPurpose purpose) {
+    public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && umlElements.contains(e.getValue().umlElement()))
                 .map(Map.Entry::getKey).toList();
@@ -99,8 +99,8 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list of CIF start events corresponding to the given UML element.
      */
-    public List<Event> getStartEventsOf(RedefinableElement umlElement, TranslationPurpose purpose) {
-        if (purpose != TranslationPurpose.SYNTHESIS) {
+    public List<Event> getStartEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
+        if (purpose != UmlToCifTranslationPurpose.SYNTHESIS) {
             throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
         }
 
@@ -118,7 +118,7 @@ public class SynthesisChainTracking {
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         return cifEventTraceInfo.entrySet().stream().filter(
-                e -> e.getValue().purpose().equals(TranslationPurpose.SYNTHESIS) && !e.getValue().isStartEvent())
+                e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS) && !e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
     }
@@ -132,7 +132,7 @@ public class SynthesisChainTracking {
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      */
-    private record EventTraceInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
+    private record EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
             boolean isStartEvent)
     {
     }

@@ -50,7 +50,7 @@ import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslato
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
@@ -104,7 +104,7 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking();
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS, tracker);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS, tracker);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -264,7 +264,7 @@ public class FullSynthesisApp {
         // Translating synthesized activity to CIF, for guard computation.
         Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
-                TranslationPurpose.GUARD_COMPUTATION, tracker);
+                UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();
@@ -311,7 +311,7 @@ public class FullSynthesisApp {
 
         // Translate final UML model to CIF and get its state space.
         UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
-                TranslationPurpose.LANGUAGE_EQUIVALENCE, tracker);
+                UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE, tracker);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {

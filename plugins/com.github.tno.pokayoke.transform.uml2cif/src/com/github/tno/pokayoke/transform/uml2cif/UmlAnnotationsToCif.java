@@ -40,7 +40,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -67,11 +67,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     private final SynthesisChainTracking synthesisTracker;
 
     /** The translation purpose of the current UML to CIF translation. */
-    private final TranslationPurpose translationPurpose;
+    private final UmlToCifTranslationPurpose translationPurpose;
 
     public UmlAnnotationsToCif(CifContext context, Map<Enumeration, EnumDecl> enumMap,
             Map<EnumerationLiteral, EnumLiteral> enumLiteralMap, Map<Property, DiscVariable> variableMap,
-            SynthesisChainTracking tracker, TranslationPurpose purpose)
+            SynthesisChainTracking tracker, UmlToCifTranslationPurpose purpose)
     {
         this.context = context;
         this.enumMap = enumMap;

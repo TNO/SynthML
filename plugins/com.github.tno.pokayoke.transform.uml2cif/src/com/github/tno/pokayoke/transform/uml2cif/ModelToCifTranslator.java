@@ -28,7 +28,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.TranslationPurpose;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -76,7 +76,7 @@ public abstract class ModelToCifTranslator {
      *     relate to the input UML.
      * @param purpose The translation purpose.
      */
-    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker, TranslationPurpose purpose) {
+    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker, UmlToCifTranslationPurpose purpose) {
         this.context = context;
         this.synthesisTracker = tracker;
         this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker, purpose);
@@ -187,7 +187,7 @@ public abstract class ModelToCifTranslator {
      * @return The guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = synthesisTracker.getStartEventMap(TranslationPurpose.GUARD_COMPUTATION).get(event);
+        RedefinableElement element = synthesisTracker.getStartEventMap(UmlToCifTranslationPurpose.GUARD_COMPUTATION).get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);
