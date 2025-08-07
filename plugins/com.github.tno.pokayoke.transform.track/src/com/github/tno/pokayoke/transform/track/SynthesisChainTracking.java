@@ -35,7 +35,7 @@ public class SynthesisChainTracking {
      * {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different
      * UML-to-CIF translations.
      */
-    public static enum UmlToCifTranslationPurpose {
+    public enum UmlToCifTranslationPurpose {
         SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
     }
 
