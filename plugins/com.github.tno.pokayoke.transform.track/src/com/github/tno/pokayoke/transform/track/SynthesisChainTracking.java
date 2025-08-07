@@ -4,12 +4,16 @@ package com.github.tno.pokayoke.transform.track;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.RedefinableElement;
+
+import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
@@ -111,6 +115,49 @@ public class SynthesisChainTracking {
                         && !e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
+    }
+
+    /**
+     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from CIF start events to their corresponding CIF end events.
+     */
+    public Map<Event, List<Event>> getNonAtomicEvents(UmlToCifTranslationPurpose purpose) {
+        Map<Event, List<Event>> nonAtomicEvents = new LinkedHashMap<>();
+        Map<Event, RedefinableElement> startNonAtomicEventsAndUmlElement = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(purpose) && isStartNonAtomicAction(e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a,
+                        LinkedHashMap::new));
+
+        // For each start event, find the corresponding end events and add them to the map.
+        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonAtomicEventsAndUmlElement.entrySet()) {
+            List<Event> endEvents = cifEventTraceInfo.entrySet().stream()
+                    .filter(e -> e.getValue().purpose().equals(purpose) && !e.getValue().isStartEvent()
+                            && e.getValue().umlElement().equals(startEventAndUmlElement.getValue()))
+                    .map(e -> e.getKey()).toList();
+            if (!endEvents.isEmpty()) {
+                nonAtomicEvents.put(startEventAndUmlElement.getKey(), endEvents);
+            }
+        }
+
+        return nonAtomicEvents;
+    }
+
+    private boolean isStartNonAtomicAction(EventTraceInfo eventInfo) {
+        RedefinableElement umlElement = eventInfo.umlElement();
+        boolean isAtomic;
+        // If the UML element is a call behavior action, query the called behavior properties; else, query the current
+        // UML element properties.
+        if (umlElement instanceof CallBehaviorAction cbAction) {
+            isAtomic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
+                    && !PokaYokeUmlProfileUtil.isAtomic(cbAction.getBehavior());
+        } else {
+            isAtomic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
+                    && !PokaYokeUmlProfileUtil.isAtomic(umlElement);
+        }
+
+        return eventInfo.isStartEvent() && isAtomic;
     }
 
     /**
