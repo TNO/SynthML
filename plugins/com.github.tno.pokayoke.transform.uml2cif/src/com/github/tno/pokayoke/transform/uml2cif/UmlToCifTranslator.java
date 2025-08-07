@@ -225,16 +225,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives all CIF events related to non-atomic actions, as a mapping from non-atomic CIF start events to their
-     * corresponding CIF end events.
-     *
-     * @return A mapping from all non-atomic start events to their corresponding end events.
-     */
-    public Map<Event, List<Event>> getNonAtomicEvents() {
-        return Collections.unmodifiableMap(nonAtomicEventMap);
-    }
-
-    /**
      * Gives all CIF events related to non-deterministic actions, as a mapping from their CIF start events to their
      * corresponding CIF end events.
      *
@@ -1182,6 +1172,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @return The created active variables.
      */
     private List<DiscVariable> encodeNonAtomicActionConstraints() {
+        // Get tracker's non-atomic events map.
+        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicEvents(translationPurpose);
+
         // Add guards and updates to the edges of non-atomic actions to keep track of which such actions are active, and
         // to constrain their start and end events accordingly.
         List<DiscVariable> cifNonAtomicVars = new ArrayList<>(nonAtomicEventMap.size());
@@ -1689,11 +1682,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            boolean isNonAtomicEnd = nonAtomicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            boolean isNonDeterministicEnd = nonDeterministicEventMap.values().stream()
-                                    .anyMatch(events -> events.contains(cifEvent));
-                            Verify.verify(isNonAtomicEnd || isNonDeterministicEnd, cifEvent.getName());
+                            Verify.verify(!synthesisTracker.isStartEvent(cifEvent),
+                                    "Event '" + cifEvent.getName() + "' is not an end event.");
                         }
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
