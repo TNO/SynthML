@@ -3,7 +3,6 @@ package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -131,9 +130,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
 
-    /** The mapping from CIF start events of non-deterministic actions, to their corresponding CIF end events. */
-    private final Map<Event, List<Event>> nonDeterministicEventMap = new LinkedHashMap<>();
-
     /** The one-to-one mapping from CIF events to CIF edges. */
     private final BiMap<Event, Edge> eventEdgeMap = HashBiMap.create();
 
@@ -222,16 +218,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives all CIF events related to non-deterministic actions, as a mapping from their CIF start events to their
-     * corresponding CIF end events.
-     *
-     * @return A mapping from all non-deterministic start events to their corresponding end events.
-     */
-    public Map<Event, List<Event>> getNonDeterministicEvents() {
-        return Collections.unmodifiableMap(nonDeterministicEventMap);
-    }
-
-    /**
      * Gives all CIF events related to atomic non-deterministic actions, as a mapping from their CIF start events to
      * their corresponding CIF end events.
      *
@@ -241,7 +227,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
         Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicEvents(translationPurpose);
 
-        for (var entry: nonDeterministicEventMap.entrySet()) {
+        for (var entry: synthesisTracker.getNonDeterministicEvents(translationPurpose).entrySet()) {
             Event startEvent = entry.getKey();
             List<Event> endEvents = entry.getValue();
 
@@ -648,11 +634,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
                 // Store the CIF event into the synthesis tracker.
                 synthesisTracker.addCifEvent(cifEndEvent, umlElement, i, translationPurpose, false);
-            }
-
-            // Remember which start and end events belong together.
-            if (!isDeterministic) {
-                nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
             }
         }
 
@@ -1096,6 +1077,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // first such action get index 1, all events related to the second such action get index 2, etc.
             Map<Event, Integer> eventIndex = new LinkedHashMap<>();
             int index = 1;
+            Map<Event, List<Event>> nonDeterministicEventMap = synthesisTracker
+                    .getNonDeterministicEvents(translationPurpose);
 
             for (Event cifStartEvent: atomicNonDeterministicStartEvents) {
                 eventIndex.put(cifStartEvent, index);
