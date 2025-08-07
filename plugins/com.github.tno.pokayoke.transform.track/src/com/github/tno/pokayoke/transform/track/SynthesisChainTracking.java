@@ -27,7 +27,7 @@ public class SynthesisChainTracking {
      * The map from CIF events to their tracing info. Gets updated as the activity synthesis chain rewrites, removes, or
      * add events.
      */
-    private final Map<Event, EventTraceInfo> cifEventsToEventTraceInfo = new LinkedHashMap<>();
+    private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
     /**
      * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF translator
@@ -54,7 +54,7 @@ public class SynthesisChainTracking {
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
             TranslationPurpose purpose, boolean isStartEvent)
     {
-        cifEventsToEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
+        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
     }
 
     /**
@@ -64,7 +64,7 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
      */
     public Map<Event, RedefinableElement> getStartEventMap(TranslationPurpose purpose) {
-        return cifEventsToEventTraceInfo.entrySet().stream()
+        return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement()));
     }
@@ -76,7 +76,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event is a start event, {@code false} otherwise.
      */
     public boolean isStartEvent(Event cifEvent) {
-        return cifEventsToEventTraceInfo.get(cifEvent).isStartEvent();
+        return cifEventTraceInfo.get(cifEvent).isStartEvent();
     }
 
     /**
@@ -87,7 +87,7 @@ public class SynthesisChainTracking {
      * @return The list of CIF events corresponding to the activity nodes.
      */
     public List<Event> getEventsOf(Set<? extends ActivityNode> nodes, TranslationPurpose purpose) {
-        return cifEventsToEventTraceInfo.entrySet().stream()
+        return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && nodes.contains(e.getValue().umlElement()))
                 .map(Map.Entry::getKey).toList();
     }
@@ -105,7 +105,7 @@ public class SynthesisChainTracking {
             throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
         }
 
-        return cifEventsToEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
+        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
                 && e.getValue().isStartEvent() && e.getValue().umlElement().equals(umlElement)).map(Map.Entry::getKey)
                 .toList();
     }
@@ -118,7 +118,7 @@ public class SynthesisChainTracking {
      *     effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return cifEventsToEventTraceInfo.entrySet().stream().filter(
+        return cifEventTraceInfo.entrySet().stream().filter(
                 e -> e.getValue().purpose().equals(TranslationPurpose.SYNTHESIS) && !e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
