@@ -161,6 +161,51 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from CIF start events to their corresponding CIF end events.
+     */
+    public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
+        Map<Event, List<Event>> nonDeterministicEvents = new LinkedHashMap<>();
+        Map<Event, RedefinableElement> startNonDeterministicEventsAndUmlElement = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(purpose) && isStartNonDeterministicAction(e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a,
+                        LinkedHashMap::new));
+
+        // For each start event, find the corresponding end events and add them to the map.
+        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonDeterministicEventsAndUmlElement
+                .entrySet())
+        {
+            List<Event> endEvents = cifEventTraceInfo.entrySet().stream()
+                    .filter(e -> e.getValue().purpose().equals(purpose) && !e.getValue().isStartEvent()
+                            && e.getValue().umlElement().equals(startEventAndUmlElement.getValue()))
+                    .map(e -> e.getKey()).toList();
+            if (!endEvents.isEmpty()) {
+                nonDeterministicEvents.put(startEventAndUmlElement.getKey(), endEvents);
+            }
+        }
+
+        return nonDeterministicEvents;
+    }
+
+    private boolean isStartNonDeterministicAction(EventTraceInfo eventInfo) {
+        RedefinableElement umlElement = eventInfo.umlElement();
+        boolean isDeterministic;
+        // If the UML element is a call behavior action, query the called behavior properties; else, query the current
+        // UML element properties.
+        if (umlElement instanceof CallBehaviorAction cbAction) {
+            isDeterministic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
+                    && !PokaYokeUmlProfileUtil.isDeterministic(cbAction.getBehavior());
+        } else {
+            isDeterministic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
+                    && !PokaYokeUmlProfileUtil.isDeterministic(umlElement);
+        }
+
+        return eventInfo.isStartEvent() && isDeterministic;
+    }
+
+    /**
      * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
