@@ -6,10 +6,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="Poka Yoke">
+            name="SynthML">
          <property
                name="windowImages"
-               value="images/pokayoke16.png,images/pokayoke32.png,images/pokayoke48.png,images/pokayoke64.png,images/pokayoke128.png,images/pokayoke256.png">
+               value="images/synthml16.png,images/synthml32.png,images/synthml48.png,images/synthml64.png,images/synthml128.png,images/synthml256.png">
          </property>
          <property
                name="startupForegroundColor"
@@ -29,7 +29,7 @@
          </property>
          <property
                name="aboutText"
-               value="Poka Yoke">
+               value="SynthML">
          </property>
          <property
               name="introBrandingImage"
@@ -37,11 +37,11 @@
          </property>
          <property
                name="introTitle"
-               value="Welcome to Poka Yoke">
+               value="Welcome to SynthML">
          </property>
          <property
                name="appName"
-               value="Poka Yoke">
+               value="SynthML">
          </property>
          <property
                name="introDescription-root"
