@@ -131,9 +131,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The one-to-one mapping from UML activity edges to their corresponding translated CIF discrete variables. */
     private final BiMap<ActivityEdge, DiscVariable> controlFlowMap = HashBiMap.create();
 
-    /** The mapping from CIF start events of non-atomic actions, to their corresponding CIF end events. */
-    private final Map<Event, List<Event>> nonAtomicEventMap = new LinkedHashMap<>();
-
     /** The mapping from CIF start events of non-deterministic actions, to their corresponding CIF end events. */
     private final Map<Event, List<Event>> nonDeterministicEventMap = new LinkedHashMap<>();
 
@@ -242,6 +239,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      */
     public Map<Event, List<Event>> getAtomicNonDeterministicEvents() {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
+        Map<Event, List<Event>> nonAtomicEventMap = synthesisTracker.getNonAtomicEvents(translationPurpose);
 
         for (var entry: nonDeterministicEventMap.entrySet()) {
             Event startEvent = entry.getKey();
@@ -653,9 +651,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             }
 
             // Remember which start and end events belong together.
-            if (!isAtomic) {
-                nonAtomicEventMap.put(cifStartEvent, cifEndEvents);
-            }
             if (!isDeterministic) {
                 nonDeterministicEventMap.put(cifStartEvent, cifEndEvents);
             }
