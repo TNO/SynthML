@@ -738,7 +738,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             newVariables.add(cifControlFlowVar);
 
             // For the activity being synthesized, place a token in the control flow that leaves the initial node.
-            if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS && controlFlow.getSource() instanceof InitialNode) {
+            if (translationPurpose != UmlToCifTranslationPurpose.SYNTHESIS
+                    && controlFlow.getSource() instanceof InitialNode)
+            {
                 cifControlFlowVar.setValue(CifConstructors.newVariableValue(null, List.of(CifValueUtils.makeTrue())));
             }
         }
@@ -1511,7 +1513,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
         // 'without structure' postcondition.
-        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION && kind == PostConditionKind.WITH_STRUCTURE) {
+        if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION
+                && kind == PostConditionKind.WITH_STRUCTURE)
+        {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
                     CifConstructors.newBoolType(), condition);
@@ -1521,7 +1525,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Translate the user-specified activity postconditions. For the language equivalence check, these conditions
         // have already been included in the structure and guards, and we want to check that it was done correctly, so
         // we don't translate them again. For guard computation, these are not part of the structure postconditions.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE) {
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE)
+        {
             postconditionVars.addAll(translateUserSpecifiedPrePostconditions(activity.getPostconditions()));
         }
 
@@ -1529,7 +1535,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // action must not be active. For the language equivalence check, these conditions have already been included in
         // the structure and guards, and we want to check that it was done correctly, so we don't translate them again.
         // For guard computation, these are not part of the structure postconditions.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE) {
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE)
+        {
             for (DiscVariable cifNonAtomicVar: cifNonAtomicVars) {
                 // First define the postcondition expression.
                 UnaryExpression cifExtraPostcondition = CifConstructors.newUnaryExpression();
@@ -1549,8 +1557,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // atomic non-deterministic action must be active. For the language equivalence check, these conditions have
         // already been included in the structure and guards, and we want to check that it was done correctly, so we
         // don't translate them again. For guard computation, these are not part of the structure postconditions.
-        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE && kind != PostConditionKind.WITH_STRUCTURE
-                && cifAtomicityVar != null)
+        if (translationPurpose != UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE
+                && kind != PostConditionKind.WITH_STRUCTURE && cifAtomicityVar != null)
         {
             // First define the postcondition expression.
             BinaryExpression cifExtraPostcondition = CifConstructors.newBinaryExpression();
@@ -1854,19 +1862,19 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** Postcondition kind. */
     public static enum PostConditionKind {
         /**
-         * For {@link TranslationPurpose#SYNTHESIS} and {@link TranslationPurpose#LANGUAGE_EQUIVALENCE}, there is only
-         * one single kind of postcondition.
+         * For {@link UmlToCifTranslationPurpose#SYNTHESIS} and {@link UmlToCifTranslationPurpose#LANGUAGE_EQUIVALENCE},
+         * there is only one single kind of postcondition.
          */
         SINGLE("__postcondition"),
 
         /**
-         * For {@link TranslationPurpose#GUARD_COMPUTATION}, the postcondition without activity structure token
+         * For {@link UmlToCifTranslationPurpose#GUARD_COMPUTATION}, the postcondition without activity structure token
          * constraints.
          */
         WITHOUT_STRUCTURE("__postcondition_without_structure"),
 
         /**
-         * For {@link TranslationPurpose#GUARD_COMPUTATION}, the postcondition with activity structure token
+         * For {@link UmlToCifTranslationPurpose#GUARD_COMPUTATION}, the postcondition with activity structure token
          * constraints.
          */
         WITH_STRUCTURE("__postcondition_with_structure");
