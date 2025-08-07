@@ -118,20 +118,21 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end events, for the specified
+     * translation purpose.
      *
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonAtomicEvents(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> nonAtomicEvents = new LinkedHashMap<>();
-        Map<Event, RedefinableElement> startNonAtomicEventsAndUmlElement = cifEventTraceInfo.entrySet().stream()
+        Map<Event, RedefinableElement> startNonAtomicEventsToUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && isStartNonAtomicAction(e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a,
                         LinkedHashMap::new));
 
         // For each start event, find the corresponding end events and add them to the map.
-        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonAtomicEventsAndUmlElement.entrySet()) {
+        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonAtomicEventsToUmlElements.entrySet()) {
             List<Event> endEvents = cifEventTraceInfo.entrySet().stream()
                     .filter(e -> e.getValue().purpose().equals(purpose) && !e.getValue().isStartEvent()
                             && e.getValue().umlElement().equals(startEventAndUmlElement.getValue()))
@@ -161,20 +162,21 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     * Gives the map from CIF start events of non-deterministic actions to the corresponding CIF end events, for the
+     * specified translation purpose.
      *
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> nonDeterministicEvents = new LinkedHashMap<>();
-        Map<Event, RedefinableElement> startNonDeterministicEventsAndUmlElement = cifEventTraceInfo.entrySet().stream()
+        Map<Event, RedefinableElement> startNonDeterministicEventsToUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && isStartNonDeterministicAction(e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a,
                         LinkedHashMap::new));
 
         // For each start event, find the corresponding end events and add them to the map.
-        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonDeterministicEventsAndUmlElement
+        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonDeterministicEventsToUmlElements
                 .entrySet())
         {
             List<Event> endEvents = cifEventTraceInfo.entrySet().stream()
