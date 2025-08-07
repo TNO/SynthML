@@ -28,7 +28,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;

@@ -29,17 +29,6 @@ public class SynthesisChainTracking {
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
     /**
-     * The enumeration that describes the purpose of a UML-to-CIF translation. It is used in the UML-to-CIF translator
-     * to decide whether or not to translate certain model elements (e.g. opaque behaviors, occurrence constraints), to
-     * generate different pre- and postconditions, to modify the controllability of CIF events. It is used by
-     * {@link SynthesisChainTracking the activity synthesis tracker} to store the CIF events for the different
-     * UML-to-CIF translations.
-     */
-    public enum UmlToCifTranslationPurpose {
-        SYNTHESIS, GUARD_COMPUTATION, LANGUAGE_EQUIVALENCE;
-    }
-
-    /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
      * purpose.
      *
@@ -117,8 +106,9 @@ public class SynthesisChainTracking {
      *     effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return cifEventTraceInfo.entrySet().stream().filter(
-                e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS) && !e.getValue().isStartEvent())
+        return cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && !e.getValue().isStartEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
     }

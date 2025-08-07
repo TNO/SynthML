@@ -73,7 +73,7 @@ import com.github.tno.pokayoke.transform.common.IDHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
-import com.github.tno.pokayoke.transform.track.SynthesisChainTracking.UmlToCifTranslationPurpose;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
