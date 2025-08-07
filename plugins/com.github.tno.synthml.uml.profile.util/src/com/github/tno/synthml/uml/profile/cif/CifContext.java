@@ -154,27 +154,28 @@ public class CifContext {
 
             // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
             // identifiers.
-            addVariables(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
+            addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
 
-            addVariables(scope.getDeclaredTemplateParameters(), null, new LinkedHashSet<>());
+            // Collect all template parameters that may be referenced within the context of this activity
+            addNamedTemplateParameters(scope.getDeclaredTemplateParameters());
         }
     }
 
     /**
-     * Creates a context containing the union of variables in the local scope and the global scope.
+     * Creates a context containing only variables found in the scope of {@code model}.
      *
-     * @param element The search root.
-     * @return A {@code CifContext} containing the union of variables in the local scope and the global scope.
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @return A {@code CifContext} containing only variables in the global scope.
      */
     public static CifContext createGlobal(Element element) {
         return new CifContext(element, CifScope.global());
     }
 
     /**
-     * Creates a context containing only variables found in the scope of {@code model}.
+     * Creates a context containing the union of variables in the local scope and the global scope.
      *
-     * @param element The search root.
-     * @return A {@code CifContext} containing only variables in the global scope.
+     * @param element The search root
+     * @return A {@link CifContext} containing the union of variables in the local scope and the global scope.
      */
     public static CifContext createScoped(Element element) {
         return new CifContext(element, new CifScope(element));
@@ -193,40 +194,46 @@ public class CifContext {
      * Add instantiated properties, recursively, to {@link #referenceableElements} and
      * {@link #referenceableElementsInclDuplicates}.
      *
-     * @param variables The referenceable variables to add.
+     * @param properties The properties to add.
      * @param prefix The prefix of the properties, or {@code null} for root properties.
      * @param hierarchy The set tracking the composite data type hierarchy.
      */
-    private void addVariables(Collection<? extends NamedElement> variables, String prefix, Set<DataType> hierarchy) {
-        for (NamedElement umlVariable: variables) {
-            String name = ((prefix == null) ? "" : prefix + ".") + umlVariable.getName();
-
-            Type variableType;
-
-            if (umlVariable instanceof Property umlProperty) {
-                variableType = umlProperty.getType();
-            } else if (umlVariable instanceof NamedTemplateParameter templateParameter) {
-                variableType = templateParameter.getType();
-            } else {
-                return;
-            }
+    private void addProperties(Collection<Property> properties, String prefix, Set<DataType> hierarchy) {
+        for (Property umlProperty: properties) {
+            String name = ((prefix == null) ? "" : prefix + ".") + umlProperty.getName();
 
             // Add property.
-            referenceableElements.put(name, umlVariable);
-            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlVariable);
+            referenceableElements.put(name, umlProperty);
+            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(umlProperty);
 
             // Add descendants, if property has them.
-            if (PokaYokeTypeUtil.isCompositeDataType(variableType)) {
+            Type propertyType = umlProperty.getType();
+            if (PokaYokeTypeUtil.isCompositeDataType(propertyType)) {
                 // Stop the recursion if instantiation cycle found (the Poka Yoke validator guarantees that valid UML
                 // models don't contain instantiation cycles).
-                if (hierarchy.contains(variableType)) {
+                if (hierarchy.contains(propertyType)) {
                     return;
                 } else {
-                    hierarchy.add((DataType)variableType);
-                    addVariables(((DataType)variableType).getOwnedAttributes(), name, hierarchy);
-                    hierarchy.remove(variableType);
+                    hierarchy.add((DataType)propertyType);
+                    addProperties(((DataType)propertyType).getOwnedAttributes(), name, hierarchy);
+                    hierarchy.remove(propertyType);
                 }
             }
+        }
+    }
+
+    /**
+     * Add template parameters to {@link #referenceableElements} and {@link #referenceableElementsInclDuplicates}.
+     *
+     * @param parameters The template parameters to add.
+     */
+    private void addNamedTemplateParameters(Collection<NamedTemplateParameter> parameters) {
+        for (NamedElement parameter: parameters) {
+            String name = parameter.getName();
+
+            // Add property.
+            referenceableElements.put(name, parameter);
+            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(parameter);
         }
     }
 
@@ -315,7 +322,7 @@ public class CifContext {
     }
 
     /**
-     * Checks if the element is present in the context and represent a variable, i.e. a {@link Property} or a
+     * Checks if the element is present in the context and represents a variable, i.e. a {@link Property} or a
      * {@link NamedTemplateParameter}.
      *
      * @param name The name of the declared entity.
