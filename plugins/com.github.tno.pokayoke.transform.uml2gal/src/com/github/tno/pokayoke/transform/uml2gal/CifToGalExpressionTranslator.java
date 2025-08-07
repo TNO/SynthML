@@ -197,7 +197,7 @@ public class CifToGalExpressionTranslator extends ACifObjectWalker<Object> {
     }
 
     @Override
-    protected Object visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+    protected Object visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
         throw new UnsupportedOperationException();
     }
 

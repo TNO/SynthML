@@ -77,7 +77,7 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
     }
 
     @Override
-    protected Stream<NamedTemplateParameter> visit(NamedTemplateParameter parameter, TextPosition propertyPos,
+    protected Stream<NamedTemplateParameter> visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos,
             CifContext ctx)
     {
         return Stream.of(parameter);

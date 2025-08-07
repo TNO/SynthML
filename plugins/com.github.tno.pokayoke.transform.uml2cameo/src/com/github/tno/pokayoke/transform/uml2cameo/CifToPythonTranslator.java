@@ -91,7 +91,7 @@ public class CifToPythonTranslator extends ACifObjectWalker<String> {
 
     @SuppressWarnings("restriction")
     @Override
-    protected String visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+    protected String visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
         return parameter.getName();
     }
 

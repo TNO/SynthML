@@ -123,7 +123,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     }
 
     @Override
-    protected Type visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx) {
+    protected Type visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
         return parameter.getType();
     }
 

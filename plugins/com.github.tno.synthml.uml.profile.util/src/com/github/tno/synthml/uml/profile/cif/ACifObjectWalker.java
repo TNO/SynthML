@@ -140,7 +140,7 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
 
     protected abstract T visit(Property property, TextPosition propertyPos, CifContext ctx);
 
-    protected abstract T visit(NamedTemplateParameter parameter, TextPosition propertyPos, CifContext ctx);
+    protected abstract T visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx);
 
     @Override
     protected T visit(AUnaryExpression expr, CifContext ctx) {
