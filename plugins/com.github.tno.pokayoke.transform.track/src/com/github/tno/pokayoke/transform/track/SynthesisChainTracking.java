@@ -47,8 +47,7 @@ public class SynthesisChainTracking {
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to relate to the CIF event.
      * @param effectIdx The effect index, which can either be a positive integer when relevant, or {@code null} when
-     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action). Note that even when the
-     *     action effects are empty, we add a "default" end event, with empty effects and effect index equal to zero.
+     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      */
@@ -94,8 +93,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the list of CIF start events corresponding to the given UML element for the specified translation purpose. Not
-     * yet supported for guard computation and language equivalence check.
+     * Gives the list of CIF start events corresponding to the given UML element for the specified translation purpose.
+     * Not yet supported for guard computation and language equivalence check.
      *
      * @param umlElement The UML element.
      * @param purpose The translation purpose.
@@ -126,12 +125,12 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Tracing information related to a CIF event: the purpose for which it is translated, the UML element it refers to, the
-     * effect index if it is an end event ({@code null} if it is a start event).
+     * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
      * @param umlElement The UML element that relates to the CIF event.
-     * @param effectIdx The effect index. Can be {@code null} if the CIF event is a start event.
+     * @param effectIdx The effect index, which can either be a positive integer when relevant, or {@code null} when
+     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      */
     private record EventTraceInfo(TranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
