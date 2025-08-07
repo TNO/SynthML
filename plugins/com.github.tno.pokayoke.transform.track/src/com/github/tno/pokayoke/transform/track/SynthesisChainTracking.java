@@ -79,11 +79,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the events corresponding to the given set of nodes, based on the indicated translation purpose.
+     * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
-     * @param umlElements The set of redefinable elements, to find the related CIF events.
+     * @param umlElements The set of UML elements, to find the related CIF events.
      * @param purpose The translation purpose.
-     * @return The list of CIF events corresponding to the activity nodes.
+     * @return The list of CIF events corresponding to the UML elements.
      */
     public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, TranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
@@ -110,7 +110,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the map from CIF end events to the corresponding UML elements and effect indexes. Only supported for the
+     * Returns the map from CIF end events to the corresponding UML elements and effect indexes. Only supported for the
      * initial data-based synthesis phase.
      *
      * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements and
