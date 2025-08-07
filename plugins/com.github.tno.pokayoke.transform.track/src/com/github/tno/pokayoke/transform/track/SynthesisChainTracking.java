@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
-import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 /**
@@ -82,13 +81,13 @@ public class SynthesisChainTracking {
     /**
      * Returns the events corresponding to the given set of nodes, based on the indicated translation purpose.
      *
-     * @param nodes The set of activity nodes, to find the related CIF events.
+     * @param umlElements The set of redefinable elements, to find the related CIF events.
      * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the activity nodes.
      */
-    public List<Event> getEventsOf(Set<? extends ActivityNode> nodes, TranslationPurpose purpose) {
+    public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, TranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && nodes.contains(e.getValue().umlElement()))
+                .filter(e -> e.getValue().purpose().equals(purpose) && umlElements.contains(e.getValue().umlElement()))
                 .map(Map.Entry::getKey).toList();
     }
 
