@@ -223,7 +223,7 @@ public class FullSynthesisApp {
         // before them: in this case, the start of the action.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
-                umlToCifTranslator.getNonAtomicEvents());
+                tracker.getNonAtomicEvents(UmlToCifTranslationPurpose.SYNTHESIS));
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
