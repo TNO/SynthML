@@ -139,6 +139,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
+    /**
+     * The set of UML elements which are constrained by an occurrence constraint whose upper bound is equal to zero, and
+     * hence should never be called. This set helps to simplify the translation.
+     */
+    private Set<RedefinableElement> nonCallableElements = new LinkedHashSet<>();
+
     public UmlToCifTranslator(Activity activity, TranslationPurpose purpose,
             SynthesisUmlElementTracking synthesisUmlElementsTracker)
     {
@@ -303,6 +309,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
 
+        // Get the UML element which are constrained by occurrence constraints and should never be called.
+        nonCallableElements = getNonCallableElements();
+
         // Translate all UML opaque behaviors. These are only translated for synthesis. For other purposes, the
         // already-synthesized activity is used, and call behaviors to opaque behaviors are inlined.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
@@ -414,6 +423,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         BiMap<Event, Edge> eventEdges = HashBiMap.create();
 
         for (OpaqueBehavior umlBehavior: context.getAllOpaqueBehaviors()) {
+            // Do not translate an opaque behavior if it cannot be called.
+            if (nonCallableElements.contains(umlBehavior)) {
+                continue;
+            }
+
             ActionTranslationResult translationResult = translateAsAction(umlBehavior, umlBehavior.getName(),
                     PokaYokeUmlProfileUtil.isAtomic(umlBehavior), true);
             eventEdges.putAll(translationResult.eventEdges);
@@ -600,6 +614,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all concrete activities that are in context.
         for (Activity activity: context.getAllConcreteActivities()) {
+            // Do not translate an activity if it cannot be called.
+            if (nonCallableElements.contains(activity)) {
+                continue;
+            }
+
             Pair<Set<DiscVariable>, BiMap<Event, Edge>> result = translateConcreteActivity(activity);
             newVariables.addAll(result.left);
             newEventEdges.putAll(result.right);
@@ -1172,6 +1191,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             List<Automaton> cifAutomata = new ArrayList<>();
 
             for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                // Do not create the interval automaton for an element that is not translated into the CIF model.
+                if (nonCallableElements.contains(umlElement)) {
+                    continue;
+                }
+
                 if (umlElement instanceof Activity umlActivity) {
                     if (!umlActivity.isAbstract()) {
                         // The constraints are considered at a local level: this activity *directly* calls the
@@ -1728,5 +1752,31 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         private PostConditionKind(String prefix) {
             this.prefix = prefix;
         }
+    }
+
+    /**
+     * Gets all the UML elements which are constrained by an occurrence constraint whose upper limit is zero, hence
+     * should never be called.
+     *
+     * @return The set of UML elements that should not be called by the current activity.
+     */
+    private Set<RedefinableElement> getNonCallableElements() {
+        Set<RedefinableElement> zeroCallsElements = new LinkedHashSet<>();
+
+        for (Constraint umlConstraint: activity.getOwnedRules()) {
+            if (umlConstraint instanceof IntervalConstraint) {
+                ValueSpecification umlConstraintValue = umlConstraint.getSpecification();
+
+                if (umlConstraintValue instanceof Interval umlInterval
+                        && ((LiteralInteger)umlInterval.getMax()).getValue() == 0)
+                {
+                    for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                        zeroCallsElements.add((RedefinableElement)umlElement);
+                    }
+                }
+            }
+        }
+
+        return zeroCallsElements;
     }
 }
