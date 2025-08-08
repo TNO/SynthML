@@ -147,18 +147,18 @@ public class SynthesisChainTracking {
 
     private boolean isStartNonAtomicAction(EventTraceInfo eventInfo) {
         RedefinableElement umlElement = eventInfo.umlElement();
-        boolean isAtomic;
+        boolean isNonAtomic;
         // If the UML element is a call behavior action, query the called behavior properties; else, query the current
         // UML element properties.
         if (umlElement instanceof CallBehaviorAction cbAction) {
-            isAtomic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
+            isNonAtomic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
                     && !PokaYokeUmlProfileUtil.isAtomic(cbAction.getBehavior());
         } else {
-            isAtomic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
+            isNonAtomic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
                     && !PokaYokeUmlProfileUtil.isAtomic(umlElement);
         }
 
-        return eventInfo.isStartEvent() && isAtomic;
+        return eventInfo.isStartEvent() && isNonAtomic;
     }
 
     /**
@@ -193,18 +193,18 @@ public class SynthesisChainTracking {
 
     private boolean isStartNonDeterministicAction(EventTraceInfo eventInfo) {
         RedefinableElement umlElement = eventInfo.umlElement();
-        boolean isDeterministic;
+        boolean isNonDeterministic;
         // If the UML element is a call behavior action, query the called behavior properties; else, query the current
         // UML element properties.
         if (umlElement instanceof CallBehaviorAction cbAction) {
-            isDeterministic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
+            isNonDeterministic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
                     && !PokaYokeUmlProfileUtil.isDeterministic(cbAction.getBehavior());
         } else {
-            isDeterministic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
+            isNonDeterministic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
                     && !PokaYokeUmlProfileUtil.isDeterministic(umlElement);
         }
 
-        return eventInfo.isStartEvent() && isDeterministic;
+        return eventInfo.isStartEvent() && isNonDeterministic;
     }
 
     /**
