@@ -120,12 +120,13 @@ public class PostProcessActivity {
      * Simplifies the given activity.
      *
      * @param activity The activity to simplify, which is modified in-place.
+     * @param tracker The synthesis tracker.
      */
-    public static void simplify(Activity activity) {
+    public static void simplify(Activity activity, SynthesisUmlElementTracking tracker) {
         while (true) {
             boolean changed = false;
 
-            changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity);
+            changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity, tracker);
             changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
             changed |= EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
             changed |= DoubleMergePattern.findAndRewriteAll(activity);
