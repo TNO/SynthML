@@ -66,8 +66,8 @@ public class Uml2CifRegressionTest extends RegressionTest {
             Path outputFilePath = localOutputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
             // Translate the current UML activity to a CIF specification.
-            Specification cifSpecification = new UmlToCifTranslator(context, activity,
-                    TranslationPurpose.SYNTHESIS).translate();
+            Specification cifSpecification = new UmlToCifTranslator(context, activity, TranslationPurpose.SYNTHESIS)
+                    .translate();
 
             // Store the translated CIF specification.
             try {

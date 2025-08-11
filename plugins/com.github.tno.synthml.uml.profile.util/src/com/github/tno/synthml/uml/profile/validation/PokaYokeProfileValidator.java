@@ -18,7 +18,6 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
-import org.eclipse.escet.cif.parser.ast.expressions.ABinaryExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
@@ -57,7 +56,6 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -522,8 +520,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
                 .map(CifScope::getClassifierTemplateParameterName).allMatch(new HashSet<>()::add))
         {
-            error("All template parameters must have unique names.",
-                    UMLPackage.Literals.ACTIVITY__NODE);
+            error("Activity parameters must have unique names.", UMLPackage.Literals.ACTIVITY__NODE);
         }
 
         if (activity.isAbstract()) {
@@ -769,46 +766,49 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidActivityArguments(CallBehaviorAction callAction) {
+        if (!(callAction.getBehavior() instanceof Activity)) {
+            return;
+        }
+
         Behavior calledActivity = callAction.getBehavior();
         List<String> arguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
 
         if (arguments.size() > 1) {
-            error("Nondeterministic template assignments are forbidden",
-                    SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+            error("Nondeterministic template assignments are not supported",
+                    SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
         }
 
         try {
-            List<AUpdate> expressions = arguments.stream()
+            List<AUpdate> updates = arguments.stream()
                     .flatMap(argument -> CifParserHelper.parseUpdates(argument, calledActivity).stream()).toList();
 
             // Valid assignments are valid updates with restrictions.
-            checkValidAssignments(expressions, callAction);
+            checkValidActivityArguments(updates, callAction);
 
             // Ensure that no variable is assigned more than once.
-            checkUniqueAddressables(expressions, new LinkedHashSet<>());
+            checkUniqueAddressables(updates, new LinkedHashSet<>());
 
             // Ensure that every variable is assigned.
-            if (expressions.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
-                throw new CustomSyntaxException("Not all template parameters have been assigned.", null);
+            if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+                throw new CustomSyntaxException("Not all parameters of the called activity have been assigned.", null);
             }
         } catch (RuntimeException re) {
-            String prefix = "Invalid effects: ";
-            if (arguments.size() > 1) {
-                prefix = "Invalid activity argument";
-            }
-            error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+            String prefix = "Invalid parameter assignments: ";
+            error(prefix + re.getLocalizedMessage(),
+                    SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
         }
     }
 
-    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> properties) {
-        return properties.stream().anyMatch(p -> p.getName().equals(name));
+    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> namedElements) {
+        return namedElements.stream().anyMatch(p -> p.getName().equals(name));
     }
 
-    private void checkValidAssignments(List<AUpdate> updates, CallBehaviorAction callAction) {
+    private void checkValidActivityArguments(List<AUpdate> updates, CallBehaviorAction callAction) {
         Behavior calledActivity = callAction.getBehavior();
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
-        Set<NamedTemplateParameter> elementProperties = new CifScope(callAction).getDeclaredTemplateParameters();
+        Set<NamedTemplateParameter> availableTemplateParameters = new CifScope(callAction)
+                .getDeclaredTemplateParameters();
 
         for (AUpdate update: updates) {
             // Ensure the update is an assignment update.
@@ -818,24 +818,25 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
             // Ensure the addressable part is a named expression.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
-                throw new CustomSyntaxException("Only name expressions are allowed as addressables.", update.position);
+                throw new CustomSyntaxException("Only single names are allowed as addressables.", update.position);
             }
 
             if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
-                throw new CustomSyntaxException("Unknown addressable: " + addressable.name.name, update.position);
-            }
-
-            if (assignment.value instanceof ABinaryExpression) {
-                throw new CustomSyntaxException("Binary expressions are not allowed as update values.",
-                        assignment.position);
+                throw new CustomSyntaxException(
+                        "Unknown activity parameter name (of the called activity): " + addressable.name.name,
+                        update.position);
             }
 
             if (assignment.value instanceof ANameExpression nameExpr) {
-                if (!isNameInNameSet(nameExpr.name.name, elementProperties)) {
-                    throw new CustomSyntaxException("Unknown value name: " + nameExpr.name.name, nameExpr.position);
+                if (!isNameInNameSet(nameExpr.name.name, availableTemplateParameters)) {
+                    throw new CustomSyntaxException(
+                            "Unknown activity parameter (in the calling context) used as argument: "
+                                    + nameExpr.name.name,
+                            nameExpr.position);
                 }
             } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
-                throw new CustomSyntaxException("Unsupported expression type in assignment value.",
+                throw new CustomSyntaxException(
+                        "Only constants or parameters of the calling activity may be used as arguments.",
                         assignment.position);
             }
 
@@ -999,7 +1000,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 return;
             }
 
-            CifContext context = CifContext.createScoped(constraint);
+            CifContext context = CifContext.createGlobal(constraint);
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {

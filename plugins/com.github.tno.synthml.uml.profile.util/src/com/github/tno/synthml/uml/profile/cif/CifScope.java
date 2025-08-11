@@ -59,7 +59,7 @@ public class CifScope {
             newParameter.setName(paramName);
 
             // During validation it should have been verified that the parameter is a 'DataType'
-            newParameter.setConstrainingClassifier((DataType)parameterType);
+            newParameter.setType((DataType)parameterType);
 
             resultParameters.add(newParameter);
         }

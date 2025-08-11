@@ -1,11 +1,9 @@
 
 package com.github.tno.synthml.uml.profile.cif;
 
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.internal.impl.NamedElementImpl;
 
 /**
@@ -15,9 +13,9 @@ import org.eclipse.uml2.uml.internal.impl.NamedElementImpl;
 @SuppressWarnings("restriction")
 public class NamedTemplateParameter extends NamedElementImpl {
     /**
-     * The cached type classifier for the template parameter.
+     * The cached data type for the template parameter.
      */
-    protected DataType constrainingClassifier;
+    protected DataType type;
 
     protected NamedTemplateParameter() {
         super();
@@ -29,15 +27,15 @@ public class NamedTemplateParameter extends NamedElementImpl {
      * @return The type of the constraining classifier.
      */
     public DataType getType() {
-        return constrainingClassifier;
+        return type;
     }
 
     /**
-     * Sets the constraining classifier.
+     * Sets the type of the parameter.
      *
-     * @param newConstrainingClassifier The new constraining classifier.
+     * @param type The type.
      */
-    public void setConstrainingClassifier(DataType newConstrainingClassifier) {
-        constrainingClassifier = newConstrainingClassifier;
+    public void setType(DataType type) {
+        this.type = type;
     }
 }
