@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.MergeNode;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -41,10 +42,11 @@ public class RedundantDecisionMergePattern {
      * Finds and rewrites all redundant decision-merge patterns in the given activity.
      *
      * @param activity The input activity, which is modified in-place.
+     * @param tracker The synthesis tracker.
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static boolean findAndRewriteAll(Activity activity) {
-        List<RedundantDecisionMergePattern> patterns = findAll(activity);
+    public static boolean findAndRewriteAll(Activity activity, SynthesisUmlElementTracking tracker) {
+        List<RedundantDecisionMergePattern> patterns = findAll(activity, tracker);
         patterns.forEach(RedundantDecisionMergePattern::rewrite);
         return patterns.size() > 0;
     }
@@ -53,29 +55,35 @@ public class RedundantDecisionMergePattern {
      * Finds all redundant decision-merge patterns in the given activity.
      *
      * @param activity The input activity.
+     * @param tracker The synthesis tracker.
      * @return All redundant decision-merge patterns in the given activity.
      */
-    public static List<RedundantDecisionMergePattern> findAll(Activity activity) {
-        return activity.getNodes().stream().flatMap(node -> findAny(node).stream()).toList();
+    public static List<RedundantDecisionMergePattern> findAll(Activity activity, SynthesisUmlElementTracking tracker) {
+        return activity.getNodes().stream().flatMap(node -> findAny(node, tracker).stream()).toList();
     }
 
     /**
      * Tries finding a redundant decision-merge pattern that starts from the given activity node.
      *
      * @param node The input activity node.
+     * @param tracker The synthesis tracker.
      * @return Some redundant decision-merge pattern in case one was found, or an empty result otherwise.
      */
-    private static Optional<RedundantDecisionMergePattern> findAny(ActivityNode node) {
-        // If the given node is not a decision node, then it does not start a redundant decision-merge pattern.
-        if (node instanceof DecisionNode decisionNode) {
+    private static Optional<RedundantDecisionMergePattern> findAny(ActivityNode node,
+            SynthesisUmlElementTracking tracker)
+    {
+        // If the given node is not a decision node, then it does not start a redundant decision-merge pattern. If the
+        // decision node represents the initial node of a concrete activity, skip the simplification.
+        if (node instanceof DecisionNode decisionNode && !(tracker.representsActivityInitialNode(decisionNode))) {
             // Find the set of all target nodes that are reachable from the decision node by a control flow.
             Set<ActivityNode> targetNodes = decisionNode.getOutgoings().stream().map(ActivityEdge::getTarget)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             // If there is exactly one target node which is a merge node, and the control flow does not have any guard,
-            // then we have found a pattern.
+            // then we have found a pattern. The merge node must not represent a concrete activity final node.
             if (targetNodes.size() == 1 && targetNodes.iterator().next() instanceof MergeNode mergeNode
-                    && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)decisionNode.getOutgoings().get(0)))
+                    && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)decisionNode.getOutgoings().get(0))
+                    && !(tracker.representsActivityFinalNode(mergeNode)))
             {
                 return Optional.of(new RedundantDecisionMergePattern(decisionNode, mergeNode));
             }
