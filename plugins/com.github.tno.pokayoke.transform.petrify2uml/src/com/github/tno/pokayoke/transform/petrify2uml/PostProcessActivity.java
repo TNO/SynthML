@@ -127,9 +127,9 @@ public class PostProcessActivity {
             boolean changed = false;
 
             changed |= RedundantDecisionMergePattern.findAndRewriteAll(activity, tracker);
-            changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity);
+            changed |= RedundantDecisionForkMergePattern.findAndRewriteAll(activity, tracker);
             changed |= EquivalentActionsIntoMergePattern.findAndRewriteAll(activity);
-            changed |= DoubleMergePattern.findAndRewriteAll(activity);
+            changed |= DoubleMergePattern.findAndRewriteAll(activity, tracker);
 
             if (!changed) {
                 break;
