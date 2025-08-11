@@ -18,9 +18,12 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.InitialNode;
+import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
@@ -891,6 +894,42 @@ public class SynthesisUmlElementTracking {
 
     public UmlElementInfo getUmlElementInfo(ActivityNode node) {
         return activityNodesToUmlElementInfoMap.get(node);
+    }
+
+    /**
+     * Return {@code true} if the decision node represents a concrete activity initial node.
+     *
+     * @param decisionNode The node to check.
+     * @return {@code true} if the node represents an initial node.
+     */
+    public boolean representsActivityInitialNode(DecisionNode decisionNode) {
+        if (getUmlElementInfo(decisionNode) == null) {
+            return false;
+        }
+
+        if (getUmlElementInfo(decisionNode).getUmlElement() instanceof InitialNode) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Return {@code true} if the decision node represents a concrete activity final node.
+     *
+     * @param mergeNode The node to check.
+     * @return {@code true} if the node represents a final node.
+     */
+    public boolean representsActivityFinalNode(MergeNode mergeNode) {
+        if (getUmlElementInfo(mergeNode) == null) {
+            return false;
+        }
+
+        if (getUmlElementInfo(mergeNode).getUmlElement() instanceof ActivityFinalNode) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
