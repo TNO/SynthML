@@ -155,10 +155,6 @@ public class SynthesisChainTracking {
                 .map(e -> e.getKey()).toList();
     }
 
-    private boolean isStartNonAtomicAction(EventTraceInfo eventInfo) {
-        return eventInfo.isStartEvent() && !isAtomicAction(eventInfo.umlElement());
-    }
-
     private boolean isAtomicAction(RedefinableElement umlElement) {
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
             return PokaYokeUmlProfileUtil.isAtomic(umlElement);
@@ -200,10 +196,6 @@ public class SynthesisChainTracking {
         }
 
         return result;
-    }
-
-    private boolean isStartNonDeterministicAction(EventTraceInfo eventInfo) {
-        return eventInfo.isStartEvent() && !isDeterministicAction(eventInfo.umlElement());
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
