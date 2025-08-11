@@ -10,15 +10,17 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.MergeNode;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
  * Functionality for finding and replacing <i>double merge</i> patterns in UML activities.
  * <p>
- * A <i>double merge</i> pattern is a guard-free control flow in the UML activity that connects two merge nodes. Such a
- * control flow is redundant since all the merging that's done on the source merge node can also be done on the target
- * merge node. Every such control flow can thus be rewritten by removing the source merge node, and redirecting all
- * merging control flows to merge into the target merge node instead.
+ * A <i>double merge</i> pattern is a guard-free control flow in the UML activity that connects two merge nodes. The two
+ * merge node must not represent a concrete activity final node. Such a control flow is redundant since all the merging
+ * that's done on the source merge node can also be done on the target merge node. Every such control flow can thus be
+ * rewritten by removing the source merge node, and redirecting all merging control flows to merge into the target merge
+ * node instead.
  * </p>
  */
 public class DoubleMergePattern {
@@ -32,14 +34,15 @@ public class DoubleMergePattern {
      * Finds and rewrites all <i>double merge</i> patterns in the given activity.
      *
      * @param activity The input activity, which is modified in-place.
+     * @param tracker The synthesis tracker.
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static boolean findAndRewriteAll(Activity activity) {
+    public static boolean findAndRewriteAll(Activity activity, SynthesisUmlElementTracking tracker) {
         boolean hasFoundPatterns = false;
 
         // Only rewrite one pattern at a time, to prevent issues when patterns overlap.
         while (true) {
-            Optional<DoubleMergePattern> patterns = findAny(activity);
+            Optional<DoubleMergePattern> patterns = findAny(activity, tracker);
             if (patterns.isEmpty()) {
                 break;
             } else {
@@ -54,21 +57,26 @@ public class DoubleMergePattern {
      * Finds a <i>double merge</i> pattern in the given activity, if present.
      *
      * @param activity The input activity.
+     * @param tracker The synthesis tracker.
      * @return A <i>double merge</i> pattern in the given activity, if present.
      */
-    public static Optional<DoubleMergePattern> findAny(Activity activity) {
-        return activity.getEdges().stream().flatMap(edge -> findAny(edge).stream()).findFirst();
+    public static Optional<DoubleMergePattern> findAny(Activity activity, SynthesisUmlElementTracking tracker) {
+        return activity.getEdges().stream().flatMap(edge -> findAny(edge, tracker).stream()).findFirst();
     }
 
     /**
      * Tries finding a <i>double merge</i> pattern that involves the given control flow.
      *
      * @param controlFlow The input control flow.
+     * @param tracker The synthesis tracker.
      * @return Some <i>double merge</i> pattern in case one was found, or an empty result otherwise.
      */
-    private static Optional<DoubleMergePattern> findAny(ActivityEdge controlFlow) {
-        if (controlFlow.getSource() instanceof MergeNode && controlFlow.getTarget() instanceof MergeNode
-                && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow))
+    private static Optional<DoubleMergePattern> findAny(ActivityEdge controlFlow, SynthesisUmlElementTracking tracker) {
+        if (controlFlow.getSource() instanceof MergeNode sourceMergeNode
+                && controlFlow.getTarget() instanceof MergeNode targetMergeNode
+                && !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)controlFlow)
+                && !(tracker.representsActivityFinalNode(sourceMergeNode))
+                && !(tracker.representsActivityFinalNode(targetMergeNode)))
         {
             return Optional.of(new DoubleMergePattern(controlFlow));
         } else {
