@@ -42,11 +42,12 @@ public class SynthesisChainTracking {
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
+     * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
      */
     public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
-            UmlToCifTranslationPurpose purpose, boolean isStartEvent)
+            UmlToCifTranslationPurpose purpose, boolean isStartEvent, boolean isEndEvent)
     {
-        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent));
+        cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
     }
 
     /**
@@ -217,9 +218,10 @@ public class SynthesisChainTracking {
      * @param effectIdx The effect index, which can either be a positive integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
+     * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
      */
     private record EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-            boolean isStartEvent)
+            boolean isStartEvent, boolean isEndEvent)
     {
     }
 }
