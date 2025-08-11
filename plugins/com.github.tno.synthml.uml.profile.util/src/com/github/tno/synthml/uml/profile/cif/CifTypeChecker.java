@@ -12,7 +12,6 @@ import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
-import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
@@ -34,12 +33,12 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
     /**
      * Constructs a new type CIF checker.
      *
-     * @param elem The context for evaluating the expression.
+     * @param ctx The context for evaluating the expression.
      */
-    public CifTypeChecker(Element elem) {
-        this.ctx = CifContext.createScoped(elem);
-        this.booleanType = UmlPrimitiveType.BOOLEAN.load(elem);
-        this.integerType = UmlPrimitiveType.INTEGER.load(elem);
+    public CifTypeChecker(CifContext ctx) {
+        this.ctx = ctx;
+        this.booleanType = UmlPrimitiveType.BOOLEAN.load(ctx.getModel());
+        this.integerType = UmlPrimitiveType.INTEGER.load(ctx.getModel());
     }
 
     /**

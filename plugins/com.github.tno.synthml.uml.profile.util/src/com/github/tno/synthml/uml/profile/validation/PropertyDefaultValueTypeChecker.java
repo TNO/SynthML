@@ -2,7 +2,6 @@
 package com.github.tno.synthml.uml.profile.validation;
 
 import org.eclipse.escet.common.java.TextPosition;
-import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
@@ -16,10 +15,10 @@ public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
     /**
      * Constructs a new property default value type checker.
      *
-     * @param elem The context for evaluating the expression.
+     * @param ctx The context for evaluating the expression.
      */
-    public PropertyDefaultValueTypeChecker(Element elem) {
-        super(elem);
+    public PropertyDefaultValueTypeChecker(CifContext ctx) {
+        super(ctx);
     }
 
     @Override

@@ -77,8 +77,7 @@ public class FullSynthesisApp {
         CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
-        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
-                context.getAllActivities());
+        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {

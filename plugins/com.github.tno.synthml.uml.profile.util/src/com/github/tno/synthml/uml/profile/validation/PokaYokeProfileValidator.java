@@ -365,7 +365,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            new PropertyDefaultValueTypeChecker(property).checkAssignment(propType, propDefaultExpr);
+            new PropertyDefaultValueTypeChecker(CifContext.createScoped(property)).checkAssignment(propType,
+                    propDefaultExpr);
 
             if (PokaYokeTypeUtil.isIntegerType(propType)) {
                 // Default value is set and valid, thus can be parsed into an integer
@@ -707,11 +708,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(RedefinableElement element) {
+        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
         if (element instanceof ControlFlow controlFlow) {
             try {
                 AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
                 if (incomingGuardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
+                    typeChecker.checkBooleanAssignment(incomingGuardExpr);
                 }
             } catch (RuntimeException e) {
                 error("Invalid incoming guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
@@ -720,7 +722,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             try {
                 AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
                 if (outgoingGuardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
+                    typeChecker.checkBooleanAssignment(outgoingGuardExpr);
                 }
             } catch (RuntimeException e) {
                 error("Invalid outgoing guard: " + e.getLocalizedMessage(),
@@ -730,7 +732,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             try {
                 AExpression guardExpr = CifParserHelper.parseGuard(element);
                 if (guardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
+                    typeChecker.checkBooleanAssignment(guardExpr);
                 }
             } catch (RuntimeException e) {
                 error("Invalid guard: " + e.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__GUARD);
@@ -841,9 +843,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
 
             // Verify that the types match.
-            CifTypeChecker checker = new CifTypeChecker(callAction);
             CifContext addressableContext = CifContext.createScoped(calledActivity);
             CifContext valueContext = CifContext.createScoped(callAction);
+            CifTypeChecker checker = new CifTypeChecker(valueContext);
 
             checker.checkArgumentAssignment(addressable, addressableContext, assignment.value, valueContext,
                     assignment.position);
@@ -852,7 +854,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidUpdates(List<AUpdate> updates, Element element) {
         // Type check all updates.
-        CifTypeChecker typeChecker = new CifTypeChecker(element);
+        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
 
         for (AUpdate update: updates) {
             typeChecker.checkUpdate(update);
@@ -946,7 +948,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-            new CifTypeChecker(constraint).checkInvariant(invariant);
+            new CifTypeChecker(CifContext.createGlobal(constraint)).checkInvariant(invariant);
 
             // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
@@ -961,7 +963,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidClassConstraint(Constraint constraint) {
         try {
-            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
+            new CifTypeChecker(CifContext.createGlobal(constraint))
+                    .checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
