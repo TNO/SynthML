@@ -57,8 +57,8 @@ public class SynthesisChainTracking {
      */
     public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement()));
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()).collect(Collectors
+                        .toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a, LinkedHashMap::new));
     }
 
     /**
