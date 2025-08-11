@@ -163,15 +163,16 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Adapted from DisplayLabelSwitch caseClass. Returns the activity name, and the template parameters value if
-     * {@code element} contains {@code TemplateSignature}.
+     * Returns the activity name, and optionally a string representation of the template signature if {@code activity}
+     * is stereotyped.
      *
      * @param activity The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
-     *     {@code activity} is stereotyped, {@code null} otherwise.
+     * @return The activity name, and optionally a string representation of the template signature if {@code activity}
+     *     is stereotyped.
      */
     public String getActivityLabel(Activity activity) {
-        // See 'setActivityLabel' for information about UML Designers 'Switch'.
+        // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching
+        // to forward a 'DisplayLabelSwitch.doSwitch' call to specialized methods.
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
         String activityLabel = displaySwitch.caseBehavior(activity);
 
@@ -207,10 +208,11 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Updates an {@link Activity}s labels and adds, modifies or removes the {@link RedefinableTemplateSignature}.
+     * Inspired by {@link LabelServices#editUmlLabel(Element, String) editUMLLabel}. Updates an {@link Activity}s labels
+     * and adds, modifies or removes the {@link RedefinableTemplateSignature}.
      *
      * @param activity The element to interrogate.
-     * @param editedLabelContent The new content.
+     * @param editedLabelContent The new label content, which may include template signature information.
      */
     public void setActivityLabel(Activity activity, String editedLabelContent) {
         // Parse the label.
@@ -250,9 +252,9 @@ public class PokaYokeProfileServices {
                 }
             }
 
-            // Mirror UML Designers 'LabelServices.editUmlLabel'. The switch uses visitor pattern without double
-            // dispatch. It uses pattern matching to forward an 'EditLabelSwitch.doSwitch' call to specialized methods.
-            // We will directly call these specialized methods.
+            // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching
+            // to forward an 'EditLabelSwitch.doSwitch' call to specialized methods. We directly call these
+            // specialized methods.
             EditLabelSwitch editLabel = new EditLabelSwitch();
 
             // Generate a label without type information. This allows generating a RedefinableTemplateSignature using
@@ -284,14 +286,18 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Adapted from DisplayLabelSwitch caseClass. Returns the {@link FormalCallBehaviorAction#getActivityArguments()
-     * activityArguments} property value if {@code element} is stereotyped, {@code null} otherwise.
+     * Inspired by {@link DisplayLabelSwitch#caseClass(org.eclipse.uml2.uml.Class) caseClass}. Returns * @return The
+     * activity name, and optionally a string representation of the template signature if {@code callAction} is
+     * stereotyped.
      *
      * @param callAction The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} property value if
-     *     {@code activity} is stereotyped, {@code null} otherwise.
+     * @return The activity name, and optionally a string representation of the template signature if {@code callAction}
+     *     is stereotyped.
      */
     public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
+        // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching to
+        // forward a 'DisplayLabelSwitch.doSwitch' call to specialized methods. We call those specialized methods
+        // directly.
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
 
         List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
@@ -551,7 +557,7 @@ public class PokaYokeProfileServices {
     public String computeUmlDirectEditLabel(Element element) {
         if (element instanceof ActivityEdge edge) {
             // The implementation in UML Designer uses 'doSwitch' to return both the name of an 'ActivityEdge' and
-            // the name of its stereotype. This implementation only returns the name.
+            // and the stereotypes applied to it. This implementation only returns the name.
             return edge.getName();
         } else if (element instanceof CallBehaviorAction callAction) {
             return getCallBehaviorActionLabel(callAction);
