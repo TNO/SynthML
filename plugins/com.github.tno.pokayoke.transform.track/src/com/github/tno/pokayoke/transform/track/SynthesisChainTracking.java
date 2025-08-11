@@ -146,19 +146,18 @@ public class SynthesisChainTracking {
     }
 
     private boolean isStartNonAtomicAction(EventTraceInfo eventInfo) {
-        RedefinableElement umlElement = eventInfo.umlElement();
-        boolean isNonAtomic;
-        // If the UML element is a call behavior action, query the called behavior properties; else, query the current
-        // UML element properties.
-        if (umlElement instanceof CallBehaviorAction cbAction) {
-            isNonAtomic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
-                    && !PokaYokeUmlProfileUtil.isAtomic(cbAction.getBehavior());
-        } else {
-            isNonAtomic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
-                    && !PokaYokeUmlProfileUtil.isAtomic(umlElement);
+        return eventInfo.isStartEvent() && !isAtomicAction(eventInfo.umlElement());
+    }
+
+    private boolean isAtomicAction(RedefinableElement umlElement) {
+        if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
+            return PokaYokeUmlProfileUtil.isAtomic(umlElement);
+        } else if (umlElement instanceof CallBehaviorAction cbAction) {
+            return isAtomicAction(cbAction.getBehavior());
         }
 
-        return eventInfo.isStartEvent() && isNonAtomic;
+        // If the element does not have the Poka Yoke profile applied nor is a call behavior, it is atomic.
+        return true;
     }
 
     /**
