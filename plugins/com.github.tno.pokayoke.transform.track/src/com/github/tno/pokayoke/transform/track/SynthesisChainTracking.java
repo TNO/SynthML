@@ -178,26 +178,28 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
-        Map<Event, List<Event>> nonDeterministicEvents = new LinkedHashMap<>();
-        Map<Event, RedefinableElement> startNonDeterministicEventsToUmlElements = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && isStartNonDeterministicAction(e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a,
-                        LinkedHashMap::new));
+        Map<Event, List<Event>> result = new LinkedHashMap<>();
 
-        // For each start event, find the corresponding end events and add them to the map.
-        for (Entry<Event, RedefinableElement> startEventAndUmlElement: startNonDeterministicEventsToUmlElements
-                .entrySet())
-        {
-            List<Event> endEvents = cifEventTraceInfo.entrySet().stream()
-                    .filter(e -> e.getValue().purpose().equals(purpose) && !e.getValue().isStartEvent()
-                            && e.getValue().umlElement().equals(startEventAndUmlElement.getValue()))
-                    .map(e -> e.getKey()).toList();
-            if (!endEvents.isEmpty()) {
-                nonDeterministicEvents.put(startEventAndUmlElement.getKey(), endEvents);
+        // Get the map of all start events.
+        Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+
+        // Get the end events for every non-deterministic start event.
+        for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
+            Event startEvent = entry.getKey();
+            RedefinableElement umlElement = entry.getValue();
+
+            if (isDeterministicAction(umlElement)) {
+                continue;
             }
+
+            if (result.containsKey(startEvent)) {
+                throw new RuntimeException("Expected non-deterministic actions to have a single start event.");
+            }
+
+            result.put(startEvent, getEndEventsOf(entry.getValue(), purpose));
         }
 
-        return nonDeterministicEvents;
+        return result;
     }
 
     private boolean isStartNonDeterministicAction(EventTraceInfo eventInfo) {
