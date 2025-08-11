@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.UMLFactory;
 
+import com.github.tno.pokayoke.transform.track.SynthesisUmlElementTracking;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Preconditions;
 
@@ -24,8 +25,9 @@ import com.google.common.base.Preconditions;
  * <p>
  * A <i>redundant decision-fork-merge pattern</i> is a pattern where, after doing some decision node, the activity
  * branches into <i>N</i> different paths, which all fork and all merge again into the same <i>N</i> merge nodes and all
- * control flows are guard-free. This pattern is redundant, since the decision node and all <i>N</i> fork and merge
- * nodes can be replaced by a single fork node.
+ * control flows are guard-free. The decision node must not represent a concrete activity initial node, and the merge
+ * nodes must not represent a concrete activity final node. This pattern is redundant, since the decision node and all
+ * <i>N</i> fork and merge nodes can be replaced by a single fork node.
  * </p>
  */
 public class RedundantDecisionForkMergePattern {
@@ -49,10 +51,11 @@ public class RedundantDecisionForkMergePattern {
      * Finds and rewrites all redundant decision-fork-merge patterns in the given activity.
      *
      * @param activity The input activity, which is modified in-place.
+     * @param tracker The synthesis tracker.
      * @return {@code true} if the input activity has been rewritten, {@code false} otherwise.
      */
-    public static boolean findAndRewriteAll(Activity activity) {
-        List<RedundantDecisionForkMergePattern> patterns = findAll(activity);
+    public static boolean findAndRewriteAll(Activity activity, SynthesisUmlElementTracking tracker) {
+        List<RedundantDecisionForkMergePattern> patterns = findAll(activity, tracker);
         patterns.forEach(RedundantDecisionForkMergePattern::rewrite);
         return patterns.size() > 0;
     }
@@ -61,21 +64,28 @@ public class RedundantDecisionForkMergePattern {
      * Finds all redundant decision-fork-merge patterns in the given activity.
      *
      * @param activity The input activity.
+     * @param tracker The synthesis tracker.
      * @return All redundant decision-fork-merge patterns in the given activity.
      */
-    public static List<RedundantDecisionForkMergePattern> findAll(Activity activity) {
-        return activity.getNodes().stream().flatMap(node -> findAny(node).stream()).toList();
+    public static List<RedundantDecisionForkMergePattern> findAll(Activity activity,
+            SynthesisUmlElementTracking tracker)
+    {
+        return activity.getNodes().stream().flatMap(node -> findAny(node, tracker).stream()).toList();
     }
 
     /**
      * Tries finding a redundant decision-fork-merge pattern that starts from the given activity node.
      *
      * @param node The input activity node.
+     * @param tracker The synthesis tracker.
      * @return Some redundant decision-fork-merge pattern in case one was found, or an empty result otherwise.
      */
-    private static Optional<RedundantDecisionForkMergePattern> findAny(ActivityNode node) {
-        // If the given node is not a decision node, then it does not start a redundant decision-fork-merge pattern.
-        if (node instanceof DecisionNode decisionNode) {
+    private static Optional<RedundantDecisionForkMergePattern> findAny(ActivityNode node,
+            SynthesisUmlElementTracking tracker)
+    {
+        // If the given node is not a decision node, then it does not start a redundant decision-fork-merge pattern. The
+        // decision node must not represent a concrete activity initial node.
+        if (node instanceof DecisionNode decisionNode && !(tracker.representsActivityInitialNode(decisionNode))) {
             int nrOfOutgoings = decisionNode.getOutgoings().size();
 
             // Find the set of all target nodes of the decision node, and check whether these are all fork nodes. The
@@ -89,7 +99,7 @@ public class RedundantDecisionForkMergePattern {
                 // Iterate over every fork node and:
                 // (1) find the set of all target nodes connected by a control flow without guards,
                 // (2) check whether the number of target nodes is the same as the number of fork nodes,
-                // (3) check whether all target nodes are merge nodes,
+                // (3) check whether all target nodes are merge nodes, and they do not represent activity final nodes,
                 // (4) check whether all fork nodes that we previously iterated over target the same merge nodes.
                 Set<MergeNode> mergeNodes = new LinkedHashSet<>();
 
@@ -97,6 +107,7 @@ public class RedundantDecisionForkMergePattern {
                     Set<MergeNode> localMergeNodes = forkNode.getOutgoings().stream()
                             .filter(e -> !PokaYokeUmlProfileUtil.isGuardedControlFlow((ControlFlow)e))
                             .map(ActivityEdge::getTarget).filter(MergeNode.class::isInstance).map(MergeNode.class::cast)
+                            .filter(m -> !tracker.representsActivityFinalNode(m))
                             .collect(Collectors.toCollection(LinkedHashSet::new));
 
                     if (forkNode.getOutgoings().size() != localMergeNodes.size()
