@@ -191,19 +191,18 @@ public class SynthesisChainTracking {
     }
 
     private boolean isStartNonDeterministicAction(EventTraceInfo eventInfo) {
-        RedefinableElement umlElement = eventInfo.umlElement();
-        boolean isNonDeterministic;
-        // If the UML element is a call behavior action, query the called behavior properties; else, query the current
-        // UML element properties.
-        if (umlElement instanceof CallBehaviorAction cbAction) {
-            isNonDeterministic = PokaYokeUmlProfileUtil.isFormalElement(cbAction.getBehavior())
-                    && !PokaYokeUmlProfileUtil.isDeterministic(cbAction.getBehavior());
-        } else {
-            isNonDeterministic = PokaYokeUmlProfileUtil.isFormalElement(umlElement)
-                    && !PokaYokeUmlProfileUtil.isDeterministic(umlElement);
+        return eventInfo.isStartEvent() && !isDeterministicAction(eventInfo.umlElement());
+    }
+
+    private boolean isDeterministicAction(RedefinableElement umlElement) {
+        if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
+            return PokaYokeUmlProfileUtil.isDeterministic(umlElement);
+        } else if (umlElement instanceof CallBehaviorAction cbAction) {
+            return isDeterministicAction(cbAction.getBehavior());
         }
 
-        return eventInfo.isStartEvent() && isNonDeterministic;
+        // If the element does not have the Poka Yoke profile applied nor is a call behavior, it is deterministic.
+        return true;
     }
 
     /**
