@@ -3,7 +3,9 @@ package com.github.tno.pokayoke.transform.flatten;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
@@ -21,6 +23,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InitialNode;
 import org.eclipse.uml2.uml.MergeNode;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.IDHelper;
@@ -35,14 +38,17 @@ public class FlattenUMLActivity {
 
     private final StructureInfoHelper structureInfoHelper;
 
-    public FlattenUMLActivity(Model model) {
+    private final Set<RedefinableElement> nonCallableElements;
+
+    public FlattenUMLActivity(Model model, Set<RedefinableElement> nonCallableElements) {
         this.model = model;
         this.structureInfoHelper = new StructureInfoHelper();
+        this.nonCallableElements = nonCallableElements;
     }
 
     public static void transformFile(String sourcePath, String targetPath) throws IOException, CoreException {
         Model model = FileHelper.loadModel(sourcePath);
-        new FlattenUMLActivity(model).transform();
+        new FlattenUMLActivity(model, new LinkedHashSet<>()).transform();
         FileHelper.storeModel(model, targetPath);
     }
 
@@ -69,7 +75,7 @@ public class FlattenUMLActivity {
     }
 
     private void transform(Element element) {
-        if (element instanceof Activity activityElement) {
+        if (element instanceof Activity activityElement && !nonCallableElements.contains(activityElement)) {
             transformActivity(activityElement, null);
         } else if (element instanceof Class classElement) {
             classElement.getOwnedMembers().forEach(this::transform);

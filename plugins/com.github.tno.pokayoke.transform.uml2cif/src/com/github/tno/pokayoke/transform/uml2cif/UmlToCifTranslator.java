@@ -278,9 +278,12 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             ValidationHelper.validateModel(activity.getModel());
         }
 
+        // Get the UML element which are constrained by occurrence constraints and should never be called.
+        nonCallableElements = getNonCallableElements();
+
         // Flatten UML activities and normalize IDs.
         if (translationPurpose == TranslationPurpose.SYNTHESIS) {
-            FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel());
+            FlattenUMLActivity flattener = new FlattenUMLActivity(activity.getModel(), nonCallableElements);
             flattener.transform();
             FileHelper.normalizeIds(activity.getModel());
         }
@@ -308,9 +311,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         cifLocation.getInitials().add(CifValueUtils.makeTrue());
         cifLocation.getMarkeds().add(CifValueUtils.makeTrue());
         cifPlant.getLocations().add(cifLocation);
-
-        // Get the UML element which are constrained by occurrence constraints and should never be called.
-        nonCallableElements = getNonCallableElements();
 
         // Translate all UML opaque behaviors. These are only translated for synthesis. For other purposes, the
         // already-synthesized activity is used, and call behaviors to opaque behaviors are inlined.
