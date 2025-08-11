@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
@@ -56,6 +57,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -500,6 +502,28 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
             error("Activity should contain only precondition, postcondition, and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
+        }
+
+        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+
+        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+                .allMatch(DataType.class::isInstance))
+        {
+            error("Activity parameters must be of primitive or enum type.", UMLPackage.Literals.ACTIVITY__NODE);
+        }
+
+        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .allMatch(NamedElement.class::isInstance))
+        {
+            error("The template parameters must have a default of type 'NamedElement'.",
+                    UMLPackage.Literals.ACTIVITY__NODE);
+        }
+
+        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .map(CifScope::getClassifierTemplateParameterName).allMatch(new HashSet<>()::add))
+        {
+            error("All template parameters must have unique names.",
+                    UMLPackage.Literals.ACTIVITY__NODE);
         }
 
         if (activity.isAbstract()) {

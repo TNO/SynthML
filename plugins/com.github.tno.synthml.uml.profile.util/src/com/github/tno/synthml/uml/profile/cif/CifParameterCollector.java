@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package com.github.tno.synthml.uml.profile.cif;
 
@@ -16,9 +13,7 @@ import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
-/**
- * Finds all template parameters in scope.
- */
+/** Finds all template parameters in scope. */
 public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplateParameter>> {
     public CifParameterCollector() {
     }
@@ -31,7 +26,7 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
         return concat(streams.stream());
     }
 
-    public Stream<NamedTemplateParameter> flatten(ACifObject expr, CifContext ctx) {
+    public Stream<NamedTemplateParameter> collect(ACifObject expr, CifContext ctx) {
         return visit(expr, ctx);
     }
 
@@ -39,7 +34,7 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
     protected Stream<NamedTemplateParameter> visit(Stream<NamedTemplateParameter> addressable,
             TextPosition assignmentPos, Stream<NamedTemplateParameter> value, CifContext ctx)
     {
-        return addressable;
+        return Stream.concat(addressable, value);
     }
 
     @Override

@@ -70,10 +70,10 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      *
      * @param addressable The addressable to assign to.
      * @param addressableContext The context of the addressable.
-     * @param expression The expression providing the assignment.
+     * @param expression The expression that evaluates to the value to assign.
      * @param expressionContext The context of the expression.
      * @param assignmentPos The position at which the assignment happens.
-     * @throws TypeException If the {@code value} expression cannot be evaluated or if the value type cannot be assigned
+     * @throws TypeException If the {@code expression} cannot be evaluated or its value type cannot be assigned
      *     to the {@code addressable} type.
      */
     public void checkArgumentAssignment(ANameExpression addressable, CifContext addressableContext,

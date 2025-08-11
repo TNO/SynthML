@@ -369,9 +369,9 @@ public class UMLToCameoTransformer {
 
         CifParameterCollector templateParameterCollector = new CifParameterCollector();
         Stream<NamedTemplateParameter> guardParameters = combinedGuard == null ? Stream.empty()
-                : templateParameterCollector.flatten(combinedGuard, context);
+                : templateParameterCollector.collect(combinedGuard, context);
         Stream<NamedTemplateParameter> effectParameters = parsedEffects.stream().flatMap(List::stream)
-                .flatMap(expr -> templateParameterCollector.flatten(expr, context));
+                .flatMap(expr -> templateParameterCollector.collect(expr, context));
         return Stream.concat(guardParameters, effectParameters).map(p -> p.getName()).collect(Collectors.toSet());
     }
 
@@ -394,7 +394,7 @@ public class UMLToCameoTransformer {
         }
 
         CifParameterCollector templateParameterCollector = new CifParameterCollector();
-        return templateParameterCollector.flatten(incomingGuard, context).map(NamedTemplateParameter::getName)
+        return templateParameterCollector.collect(incomingGuard, context).map(NamedTemplateParameter::getName)
                 .collect(Collectors.toSet());
     }
 

@@ -1,25 +1,22 @@
-/**
- *
- */
 
 package com.github.tno.synthml.uml.profile.cif;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.RedefinableTemplateSignature;
-import org.eclipse.uml2.uml.TemplateParameter;
+import org.eclipse.uml2.uml.Type;
 
-/** Symbol table of a scope, containing the properties only available within this scope. */
+/** Symbol table of a scope, containing the named elements only available within this scope. */
 public class CifScope {
     /**
      * Contains all declared named elements defined within the scope that are supported by our subset of UML. Note that
@@ -48,36 +45,49 @@ public class CifScope {
             current = current.eContainer();
         }
 
-        Stream<TemplateParameter> templateParameters = activity.getOwnedElements().stream()
-                .filter(RedefinableTemplateSignature.class::isInstance).map(RedefinableTemplateSignature.class::cast)
-                .flatMap(signature -> signature.getOwnedParameters().stream());
+        List<ClassifierTemplateParameter> templateParameters = getClassifierTemplateParameters(activity);
 
-        Set<NamedTemplateParameter> resultParameters = new HashSet<>();
+        Set<NamedTemplateParameter> resultParameters = new LinkedHashSet<>();
 
-        // create a corresponding UML Property with the same name and type.
-        for (TemplateParameter parameter: templateParameters.collect(Collectors.toList())) {
-            if (parameter instanceof ClassifierTemplateParameter classifierParam
-                    && parameter.getDefault() instanceof NamedElement defaultNamedElement)
-            {
-                String paramName = defaultNamedElement.getName();
-                Classifier constraint = classifierParam.getConstrainingClassifiers().get(0);
+        // Create a corresponding named template parameter with the same name and type.
+        for (ClassifierTemplateParameter classifierParameter: templateParameters) {
+            // Assumes the model has been validated and therefore should not throw exceptions.
+            String paramName = getClassifierTemplateParameterName(classifierParameter.getDefault());
+            Type parameterType = getClassifierTemplateParameterType(classifierParameter);
 
-                NamedTemplateParameter newParameter = new NamedTemplateParameter();
-                newParameter.setName(paramName);
-                newParameter.setConstrainingClassifier(constraint);
+            NamedTemplateParameter newParameter = new NamedTemplateParameter();
+            newParameter.setName(paramName);
 
-                resultParameters.add(newParameter);
-            }
+            // During validation it should have been verified that the parameter is a 'DataType'
+            newParameter.setConstrainingClassifier((DataType)parameterType);
+
+            resultParameters.add(newParameter);
         }
 
         return resultParameters;
     }
 
     public Set<NamedTemplateParameter> getDeclaredTemplateParameters() {
-        return declaredElements;
+        return Collections.unmodifiableSet(declaredElements);
     }
 
     public static CifScope global() {
         return new CifScope();
+    }
+
+    public static Type getClassifierTemplateParameterType(ClassifierTemplateParameter classifierParameter) {
+        return classifierParameter.getConstrainingClassifiers().get(0);
+    }
+
+    public static String getClassifierTemplateParameterName(ParameterableElement classifierParameter) {
+        return ((NamedElement)classifierParameter).getName();
+    }
+
+    public static List<ClassifierTemplateParameter> getClassifierTemplateParameters(Activity activity) {
+        return activity.getOwnedElements().stream().filter(RedefinableTemplateSignature.class::isInstance)
+                .map(RedefinableTemplateSignature.class::cast)
+                .flatMap(signature -> signature.getOwnedParameters().stream())
+                .filter(ClassifierTemplateParameter.class::isInstance).map(ClassifierTemplateParameter.class::cast)
+                .toList();
     }
 }

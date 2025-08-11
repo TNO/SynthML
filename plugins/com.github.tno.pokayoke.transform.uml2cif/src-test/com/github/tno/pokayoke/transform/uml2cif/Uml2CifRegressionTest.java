@@ -51,9 +51,10 @@ public class Uml2CifRegressionTest extends RegressionTest {
         // Load UML synthesis specification.
         Model umlModel = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlModel);
+        CifContext context = CifContext.createGlobal(umlModel);
 
         // Find and translate every abstract UML activity in the loaded UML model to a separate CIF specification.
-        List<Activity> activities = CifContext.createGlobal(umlModel).getAllAbstractActivities();
+        List<Activity> activities = context.getAllAbstractActivities();
 
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
@@ -65,7 +66,7 @@ public class Uml2CifRegressionTest extends RegressionTest {
             Path outputFilePath = localOutputPath.resolve(filePrefix + "." + OUTPUT_FILE_EXTENSION);
 
             // Translate the current UML activity to a CIF specification.
-            Specification cifSpecification = new UmlToCifTranslator(CifContext.createScoped(activity), activity,
+            Specification cifSpecification = new UmlToCifTranslator(context, activity,
                     TranslationPurpose.SYNTHESIS).translate();
 
             // Store the translated CIF specification.

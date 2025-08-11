@@ -71,19 +71,24 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlSpec);
+        CifContext context = CifContext.createGlobal(umlSpec);
 
         // Flatten composite data types.
         CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
-                CifContext.createGlobal(umlSpec).getAllActivities());
+                context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {
             throw new RuntimeException(String.format(
                     "Expected to find no cyclic dependencies in the activities to synthesize, but found '%s'.",
                     orderer.getCycleDescription()));
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Synthesis of parameterized activities is unsupported.");
         }
 
         for (int i = 0; i < activities.size(); i++) {
@@ -98,10 +103,6 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
-        // Parameterized activities are not (yet) supported by this method.
-        Preconditions.checkArgument(activity.getOwnedParameters().isEmpty(),
-                "Synthesis of parameterized activities is unsupported.");
-
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity), activity,
                 TranslationPurpose.SYNTHESIS);
