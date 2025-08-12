@@ -493,7 +493,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // XXX have a discussion about this. do we actually let every event be controllable?
         if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
             controllableStartEvent = true;
-            //synthesisUmlElementsTracker.isNewNodeOrConcreteActivityInitialNode(umlElement, activity);
+            // synthesisUmlElementsTracker.isNewNodeOrConcreteActivityInitialNode(umlElement, activity);
         }
 
         // Initialize mapping of new events to their edges.
