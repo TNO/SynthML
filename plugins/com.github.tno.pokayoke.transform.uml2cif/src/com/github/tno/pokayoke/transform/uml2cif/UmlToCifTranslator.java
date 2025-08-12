@@ -358,8 +358,27 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
         // Translate all postconditions of the input UML activity.
         switch (translationPurpose) {
-            case LANGUAGE_EQUIVALENCE:
             case SYNTHESIS: {
+                // Translate postconditions twice, once to determine the postcondition without structure, and once to
+                // determine the postcondition with structure. Both are later used for disable different events when
+                // different postconditions hold. The postcondition with structure is used as marking predicate.
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithoutStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITHOUT_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithoutStructure.left);
+                postconditionVariables.put(PostConditionKind.WITHOUT_STRUCTURE, postconditionsWithoutStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithoutStructure.right);
+
+                Pair<List<AlgVariable>, AlgVariable> postconditionsWithStructure = translatePostconditions(
+                        cifNonAtomicVars, cifAtomicityVar, PostConditionKind.WITH_STRUCTURE);
+                cifPlant.getDeclarations().addAll(postconditionsWithStructure.left);
+                postconditionVariables.put(PostConditionKind.WITH_STRUCTURE, postconditionsWithStructure.right);
+                cifPlant.getDeclarations().add(postconditionsWithStructure.right);
+
+                cifPlant.getMarkeds().add(getTranslatedPostcondition(PostConditionKind.WITH_STRUCTURE));
+                break;
+            }
+
+            case LANGUAGE_EQUIVALENCE: {
                 // Translate postconditions once, to get a single algebraic variable that represents the postcondition.
                 // It is used as marking predicate, and later also to disable events when the postcondition holds.
                 Pair<List<AlgVariable>, AlgVariable> postconditions = translatePostconditions(cifNonAtomicVars,
@@ -1429,9 +1448,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // Initialize the list of postcondition variables for the partial conditions.
         List<AlgVariable> postconditionVars = new ArrayList<>();
 
-        // For guard computation, we have two postconditions. For the 'with structure' postcondition, include the
-        // 'without structure' postcondition.
-        if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION && kind == PostConditionKind.WITH_STRUCTURE) {
+        // For first-time synthesis and guard computation, we have two postconditions. For the 'with structure'
+        // postcondition, include the 'without structure' postcondition.
+        if (translationPurpose != TranslationPurpose.LANGUAGE_EQUIVALENCE && kind == PostConditionKind.WITH_STRUCTURE) {
             Expression condition = getTranslatedPostcondition(PostConditionKind.WITHOUT_STRUCTURE);
             AlgVariable cifAlgVar = CifConstructors.newAlgVariable(null, kind.prefix + "__without_structure", null,
                     CifConstructors.newBoolType(), condition);
@@ -1596,8 +1615,18 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     }
                 }
 
+                case SYNTHESIS -> {
+                    if (synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose,
+                            activity))
+                    {
+                        yield PostConditionKind.WITHOUT_STRUCTURE;
+                    } else {
+                        yield PostConditionKind.WITH_STRUCTURE;
+                    }
+                }
+
                 // If there is only one postcondition, there is nothing to choose.
-                case LANGUAGE_EQUIVALENCE, SYNTHESIS -> PostConditionKind.SINGLE;
+                case LANGUAGE_EQUIVALENCE -> PostConditionKind.SINGLE;
             };
 
             // Get the associated postcondition algebraic variable.
