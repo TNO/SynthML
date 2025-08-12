@@ -261,7 +261,7 @@ After having created a concrete activity, adding a call behavior node can be ach
 From the `Palette' view of the activity diagram, you can find the `Call Behavior' node under the `Opaque Action' drop-down menu.
 
 When a call behavior node represents a call to an activity, we may abstract the call by adding a guard and effects to the node itself, located in the `SynthML' tab of the `Properties' view.
-This is informally denoted as "shadowed" call behavior.
+This is informally denoted as `shadowed' call behavior.
 The execution of this node skips the actual call to the underlying activity, which is instead substituted by the the guard and effects.
 Note that a shadowed call is allowed only when the called behavior is an activity, and forbidden when the called behavior is an opaque behavior.
 
