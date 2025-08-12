@@ -471,9 +471,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // For guard computation, force all start events to be controllable, as the structure of the synthesized UML
         // activity is already fixed, and we just want to re-compute the guards as locally as possible. Events that
         // belong to a called activity should be uncontrollable, except if they represents the call to the initial node.
+        // XXX have a discussion about this. do we actually let every event be controllable?
         if (translationPurpose == TranslationPurpose.GUARD_COMPUTATION) {
-            controllableStartEvent = synthesisUmlElementsTracker.isNewNodeOrConcreteActivityInitialNode(umlElement,
-                    activity);
+            controllableStartEvent = true;
+            //synthesisUmlElementsTracker.isNewNodeOrConcreteActivityInitialNode(umlElement, activity);
         }
 
         // Initialize mapping of new events to their edges.
