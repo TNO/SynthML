@@ -301,8 +301,7 @@ public class PokaYokeProfileServices {
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
 
         List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
-        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace(":", "").replace("\n",
-                "");
+        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace("\n", "");
 
         if (stringArguments.isEmpty()) {
             return displaySwitch.caseCallBehaviorAction(callAction);
@@ -531,10 +530,11 @@ public class PokaYokeProfileServices {
             Pattern pattern = Pattern.compile(LABEL_ARGUMENTS_PATTERN);
             Matcher matcher = pattern.matcher(editedLabelContent);
 
+            // Translate the 'CallBehaviorAction' argument notation to standard CIF notation.
             if (matcher.find()) {
                 editedLabelContent = matcher.group(1);
                 String generics = matcher.group(2) != null ? matcher.group(2) : "";
-                setActivityArguments(callAction, generics.replace("=", ":=").replace(",", ",\n"));
+                setActivityArguments(callAction, generics.replace(",", ",\n"));
             }
         }
 
