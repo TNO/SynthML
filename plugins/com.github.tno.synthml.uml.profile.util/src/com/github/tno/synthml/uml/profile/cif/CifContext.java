@@ -342,7 +342,7 @@ public class CifContext {
     public NamedElement getVariable(String name) {
         NamedElement element = referenceableElements.get(name);
 
-        if (element instanceof Property || element instanceof NamedTemplateParameter) {
+        if (element instanceof Property) {
             return element;
         }
         return null;
