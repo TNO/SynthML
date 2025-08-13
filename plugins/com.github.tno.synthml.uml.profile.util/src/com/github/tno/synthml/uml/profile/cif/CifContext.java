@@ -241,7 +241,7 @@ public class CifContext {
         return Collections.unmodifiableCollection(declaredElements);
     }
 
-    protected NamedElement getReferenceableElement(String name) {
+    public NamedElement getReferenceableElement(String name) {
         return referenceableElements.get(name);
     }
 

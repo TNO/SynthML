@@ -40,6 +40,7 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FlowFinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -806,46 +807,39 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Behavior calledActivity = callAction.getBehavior();
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
-        Set<NamedTemplateParameter> availableTemplateParameters = new CifScope(callAction)
-                .getDeclaredTemplateParameters();
+
+        CifContext addressableContext = CifContext.createScoped(calledActivity);
+        CifContext valueContext = CifContext.createScoped(callAction);
 
         for (AUpdate update: updates) {
             // Ensure the update is an assignment update.
             if (!(update instanceof AAssignmentUpdate assignment)) {
-                throw new CustomSyntaxException("Only assignment updates are supported.", update.position);
+                error("Only assignment updates are supported.", null);
+                return;
             }
 
             // Ensure the addressable part is a named expression.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
-                throw new CustomSyntaxException("Only single names are allowed as addressables.", update.position);
-            }
+                error("Only single names are allowed as addressables.", null);
+            } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
+                error("Unknown activity parameter name (of the called activity): " + addressable.name.name, null);
+            } else {
+                // Verify that the types match.
+                CifTypeChecker checker = new CifTypeChecker(valueContext);
 
-            if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
-                throw new CustomSyntaxException(
-                        "Unknown activity parameter name (of the called activity): " + addressable.name.name,
-                        update.position);
-            }
-
-            if (assignment.value instanceof ANameExpression nameExpr) {
-                if (!isNameInNameSet(nameExpr.name.name, availableTemplateParameters)) {
-                    throw new CustomSyntaxException(
-                            "Unknown activity parameter (in the calling context) used as argument: "
-                                    + nameExpr.name.name,
-                            nameExpr.position);
-                }
-            } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
-                throw new CustomSyntaxException(
-                        "Only constants or parameters of the calling activity may be used as arguments.",
+                checker.checkArgumentAssignment(addressable, addressableContext, assignment.value, valueContext,
                         assignment.position);
             }
 
-            // Verify that the types match.
-            CifContext addressableContext = CifContext.createScoped(calledActivity);
-            CifContext valueContext = CifContext.createScoped(callAction);
-            CifTypeChecker checker = new CifTypeChecker(valueContext);
-
-            checker.checkArgumentAssignment(addressable, addressableContext, assignment.value, valueContext,
-                    assignment.position);
+            if (assignment.value instanceof ANameExpression nameExpr) {
+                String name = nameExpr.name.name;
+                NamedElement element = valueContext.getReferenceableElement(name);
+                if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
+                    error("Expected a constant or parameters of the calling activity, got: " + name, null);
+                }
+            } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
+                error("Expected a constant or parameters of the calling activity", null);
+            }
         }
     }
 
