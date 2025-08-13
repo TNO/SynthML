@@ -73,6 +73,16 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Indicates whether the CIF event is an end event, i.e., represents the end of an action.
+     *
+     * @param cifEvent The CIF event.
+     * @return {@code true} if the CIF event is an end event, {@code false} otherwise.
+     */
+    public boolean isEndEvent(Event cifEvent) {
+        return cifEventTraceInfo.get(cifEvent).isEndEvent();
+    }
+
+    /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events.
