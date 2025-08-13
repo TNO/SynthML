@@ -286,13 +286,12 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Inspired by {@link DisplayLabelSwitch#caseClass(org.eclipse.uml2.uml.Class) caseClass}. Returns * @return The
-     * activity name, and optionally a string representation of the template signature if {@code callAction} is
-     * stereotyped.
+     * Inspired by {@link DisplayLabelSwitch#caseClass(org.eclipse.uml2.uml.Class) caseClass}. Returns the name of the
+     * activity, and optionally, if {@code callAction} is stereotyped, the arguments passed to the activity.
      *
      * @param callAction The element to interrogate.
-     * @return The activity name, and optionally a string representation of the template signature if {@code callAction}
-     *     is stereotyped.
+     * @return The name of the activity, and optionally, if {@code callAction} is stereotyped, the arguments passed to
+     *     the activity
      */
     public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
         // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching to
@@ -385,11 +384,11 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalCallBehaviorAction#getActivityArguments() parameters} property value if {@code element}
+     * Returns the {@link FormalCallBehaviorAction#getActivityArguments() arguments} property value if {@code element}
      * is stereotyped, {@code null} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() parameters} property value if {@code element}
+     * @return The {@link FormalCallBehaviorAction#getActivityArguments() arguments} property value if {@code element}
      *     is stereotyped, {@code null} otherwise.
      */
     public String getActivityArguments(CallBehaviorAction element) {
@@ -398,7 +397,7 @@ public class PokaYokeProfileServices {
 
     /**
      * Applies the {@link FormalCallBehaviorAction} stereotype and sets the
-     * {@link FormalCallBehaviorAction#getActivityArguments() parameters} property for {@code element}.
+     * {@link FormalCallBehaviorAction#getActivityArguments() arguments} property for {@code element}.
      * <p>
      * The {@link FormalCallBehaviorAction} stereotype is removed if {@code newValue} is {@code null} or
      * {@link String#isEmpty() empty}.
@@ -511,9 +510,9 @@ public class PokaYokeProfileServices {
     /**
      * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer. This
      * implementation allows arguments to be changed for {@link CallBehaviorAction} to parameterized activities. It also
-     * changes the name of an 'ActivityEdge' without altering its guard. The override occurs implicitly because
-     * {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through Activity Diagram defined
-     * in the uml2core.odesign file in the UML Designer project.
+     * changes the name of an {@link ActivityEdge activity edge} without altering its guard. The override occurs
+     * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
+     * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *
      * @param context The UML element to be edited.
      * @param editedLabelContent The new label content.
