@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
+import com.google.common.base.Verify;
 
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
@@ -97,9 +98,16 @@ public class SynthesisChainTracking {
             throw new RuntimeException("Unsupported translation purpose: " + purpose + ".");
         }
 
-        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose)
-                && e.getValue().isStartEvent() && e.getValue().umlElement().equals(umlElement)).map(Map.Entry::getKey)
-                .toList();
+        List<Event> eventsOfElement = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()
+                        && e.getValue().umlElement().equals(umlElement))
+                .map(Map.Entry::getKey).toList();
+
+        // Before vertical scaling, there should be only one event per UML element.
+        Verify.verify(eventsOfElement.size() == 1,
+                "Found multiple CIF events corresponding to element '" + umlElement.getName() + "'.");
+
+        return eventsOfElement;
     }
 
     /**
