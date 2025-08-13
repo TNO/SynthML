@@ -60,7 +60,7 @@ public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
 
     // A regex pattern for extracting the signature from a label.
-    private static final String LABEL_SIGNATURE_PATTERN = "^(\\w+)\\s*(?:<([^>]+)>)?$";
+    private static final String LABEL_SIGNATURE_PATTERN = "^(.+?)\\s*(?:<([^>]+)>)?$";
 
     // A regex pattern for extracting the arguments from a label.
     private static final String LABEL_ARGUMENTS_PATTERN = LABEL_SIGNATURE_PATTERN;
