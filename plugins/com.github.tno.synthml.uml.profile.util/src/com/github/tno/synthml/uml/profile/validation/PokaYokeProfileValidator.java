@@ -725,8 +725,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     typeChecker.checkBooleanAssignment(outgoingGuardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid outgoing guard: " + e.getLocalizedMessage(),
-                        SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
+                error("Invalid outgoing guard: " + e.getLocalizedMessage(), null);
             }
         } else {
             try {
@@ -735,7 +734,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     typeChecker.checkBooleanAssignment(guardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid guard: " + e.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__GUARD);
+                error("Invalid guard: " + e.getLocalizedMessage(), null);
             }
         }
     }
@@ -756,7 +755,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (effects.size() > 1) {
                     prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
                 }
-                error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+                error(prefix + re.getLocalizedMessage(), null);
             }
         }
     }
@@ -776,8 +775,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         List<String> arguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
 
         if (arguments.size() > 1) {
-            error("Nondeterministic template assignments are not supported",
-                    SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
+            error("Nondeterministic template assignments are not supported", null);
         }
 
         try {
@@ -796,8 +794,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             }
         } catch (RuntimeException re) {
             String prefix = "Invalid parameter assignments: ";
-            error(prefix + re.getLocalizedMessage(),
-                    SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
+            error(prefix + re.getLocalizedMessage(), null);
         }
     }
 
