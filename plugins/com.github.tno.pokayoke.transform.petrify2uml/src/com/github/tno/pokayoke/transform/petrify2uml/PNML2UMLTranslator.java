@@ -290,54 +290,20 @@ public class PNML2UMLTranslator {
         // decision, merge and fork, and join nodes.
         List<ActivityNode> activityNodes = new ArrayList<>(activity.getNodes());
         for (ActivityNode node: activityNodes) {
-            if (node instanceof OpaqueAction action) {
-                Preconditions.checkArgument(!action.getIncomings().isEmpty(), "Expected at least one incoming edge.");
-                Preconditions.checkArgument(!action.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
+            // Add join and fork only for opaque actions or nodes that belong to a concrete (previously synthesized)
+            // activity. Skip control nodes created for this activity.
+            if (node instanceof OpaqueAction || tracker.isConcreteNode(node)) {
+                Preconditions.checkArgument(!node.getIncomings().isEmpty(), "Expected at least one incoming edge.");
+                Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
                 // Introduce a join node in case there are multiple incoming control flows.
-                if (action.getIncomings().size() > 1) {
-                    introduceJoinNode(action);
+                if (node.getIncomings().size() > 1) {
+                    introduceJoinNode(node);
                 }
 
                 // Introduce a fork node in case there are multiple outgoing control flows.
-                if (action.getOutgoings().size() > 1) {
-                    introduceForkNode(action);
-                }
-            } else if (node instanceof ForkNode fork) {
-                // Introduce a join node in case there are multiple incoming control flows.
-                if (fork.getIncomings().size() > 1) {
-                    introduceJoinNode(fork);
-                }
-            } else if (node instanceof JoinNode join) {
-                // Introduce a fork node in case there are multiple outgoing control flows.
-                if (join.getOutgoings().size() > 1) {
-                    introduceForkNode(join);
-                }
-            } else if (node instanceof DecisionNode decision) {
-                // Introduce a join node in case there are multiple incoming control flows.
-                if (decision.getIncomings().size() > 1) {
-                    introduceJoinNode(decision);
-                }
-
-                // Introduce a fork node in case there are multiple outgoing control flows and the node represents a
-                // concrete activity initial node.
-                if (decision.getOutgoings().size() > 1 && tracker.getUmlElementInfo(decision) != null
-                        && tracker.getUmlElementInfo(decision).getUmlElement() instanceof InitialNode)
-                {
-                    introduceForkNode(decision);
-                }
-            } else if (node instanceof MergeNode merge) {
-                // Introduce a join node in case there are multiple incoming control flows and the node represents a
-                // concrete activity final node.
-                if (merge.getIncomings().size() > 1 && tracker.getUmlElementInfo(merge) != null
-                        && tracker.getUmlElementInfo(merge).getUmlElement() instanceof ActivityFinalNode)
-                {
-                    introduceJoinNode(merge);
-                }
-
-                // Introduce a fork node in case there are multiple outgoing control flows.
-                if (merge.getOutgoings().size() > 1) {
-                    introduceForkNode(merge);
+                if (node.getOutgoings().size() > 1) {
+                    introduceForkNode(node);
                 }
             }
         }
