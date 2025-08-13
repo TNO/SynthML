@@ -16,7 +16,8 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
- * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petrinet actions, etc.
+ * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
+ * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petrinet actions, etc.
  * <p>
  * This tracking storage contains only 'global' tracing information from transformations in the synthesis chain that is
  * needed by other transformations. Any other 'local' tracing information which is not needed by other transformations
@@ -36,7 +37,7 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event to relate to the UML element.
      * @param umlElement The UML element to relate to the CIF event.
-     * @param effectIdx The effect index, which can either be a positive integer when relevant, or {@code null} when
+     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
@@ -109,9 +110,8 @@ public class SynthesisChainTracking {
      *     effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && e.getValue().isEndEvent())
+        return cifEventTraceInfo.entrySet().stream().filter(
+                e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS) && e.getValue().isEndEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
     }
@@ -213,7 +213,7 @@ public class SynthesisChainTracking {
      *
      * @param purpose The translation purpose.
      * @param umlElement The UML element that relates to the CIF event.
-     * @param effectIdx The effect index, which can either be a positive integer when relevant, or {@code null} when
+     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
