@@ -1658,7 +1658,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
                             Verify.verify(
                                     synthesisTracker.isEndEvent(cifEvent) && !synthesisTracker.isStartEvent(cifEvent),
-                                    "Event '" + cifEvent.getName() + "' is not an end event.");
+                                    "Event '" + cifEvent.getName() + "' is not an end-only event.");
                         }
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
