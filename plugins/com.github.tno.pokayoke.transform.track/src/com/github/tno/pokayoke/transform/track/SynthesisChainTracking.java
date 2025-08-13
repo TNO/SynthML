@@ -229,5 +229,8 @@ public class SynthesisChainTracking {
     private record EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
             boolean isStartEvent, boolean isEndEvent)
     {
+        public EventTraceInfo {
+            Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
+        }
     }
 }
