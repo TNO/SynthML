@@ -738,6 +738,39 @@ public class SynthesisUmlElementTracking {
         return umlElementInfo.getUmlElement().eContainer().equals(synthesizedActivity);
     }
 
+    /**
+     * Return {@code true} if the CIF event represents a concrete activity initial node.
+     *
+     * @param cifEvent The event to check.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the node represents an initial node.
+     */
+    public boolean representsActivityInitialNode(Event cifEvent, TranslationPurpose purpose) {
+        UmlElementInfo umlElementInfo;
+        switch (purpose) {
+            case SYNTHESIS: {
+                umlElementInfo = synthesisCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case GUARD_COMPUTATION: {
+                umlElementInfo = guardComputationCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            case LANGUAGE_EQUIVALENCE: {
+                umlElementInfo = languageEquivalenceCifEventsToUmlElementInfo.get(cifEvent);
+                break;
+            }
+            default:
+                throw new RuntimeException("Invalid translation purpose: " + purpose + ".");
+        }
+
+        if (umlElementInfo.getUmlElement() instanceof InitialNode) {
+            return true;
+        }
+
+        return false;
+    }
+
     // Section dealing with control flow guards.
 
     public void addControlFlowGuards(ActivityNode sourceNode, ActivityNode targetNode, String incomingGuard,
