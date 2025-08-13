@@ -16,9 +16,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 
 /**
- * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
- * CIF events, the translation to Petri net transitions, to the synthesized activity UML opaque actions, to the UML to
- * CIF transformation needed for guard computation and the UML to CIF transformation for the language equivalence check.
+ * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petrinet actions, etc.
  * <p>
  * This tracking storage contains only 'global' tracing information from transformations in the synthesis chain that is
  * needed by other transformations. Any other 'local' tracing information which is not needed by other transformations
@@ -144,7 +142,7 @@ public class SynthesisChainTracking {
                 throw new RuntimeException("Expected non-atomic actions to have a single start event.");
             }
 
-            result.put(startEvent, getEndEventsOf(entry.getValue(), purpose));
+            result.put(startEvent, getEndEventsOf(umlElement, purpose));
         }
 
         return result;
@@ -193,7 +191,7 @@ public class SynthesisChainTracking {
                 throw new RuntimeException("Expected non-deterministic actions to have a single start event.");
             }
 
-            result.put(startEvent, getEndEventsOf(entry.getValue(), purpose));
+            result.put(startEvent, getEndEventsOf(umlElement, purpose));
         }
 
         return result;
