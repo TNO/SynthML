@@ -211,9 +211,9 @@ public class PokaYokeUmlProfileUtil {
     /**
      * Returns the contents of the {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} if the
      * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty list otherwise. The
-     * returned list is a copy of the template parameters and as such, modifications to the list are not reflected on
-     * the {@code element}. Instead, use the {@link #setActivityArguments(CallBehaviorAction, List)} method to set the
-     * new value on the {@code element}.
+     * returned list is a copy of the values stored in the stereotype, and as such, modifications to the list are not
+     * reflected on the {@code element}. Instead, use the {@link #setActivityArguments(CallBehaviorAction, List)} method
+     * to set the new value on the {@code element}.
      *
      * @param element The element to get the property from.
      * @return The new property value.

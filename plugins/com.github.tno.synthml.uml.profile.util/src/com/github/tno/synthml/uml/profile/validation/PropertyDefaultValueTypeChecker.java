@@ -7,6 +7,7 @@ import org.eclipse.uml2.uml.Type;
 
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.TypeException;
 
 public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
@@ -33,6 +34,11 @@ public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
 
     @Override
     protected Type visit(UnaryOperator operator, TextPosition operatorPos, Type child, CifContext ctx) {
+        throw new TypeException(MESSAGE, operatorPos);
+    }
+
+    @Override
+    protected Type visit(NamedTemplateParameter operator, TextPosition operatorPos, CifContext ctx) {
         throw new TypeException(MESSAGE, operatorPos);
     }
 }
