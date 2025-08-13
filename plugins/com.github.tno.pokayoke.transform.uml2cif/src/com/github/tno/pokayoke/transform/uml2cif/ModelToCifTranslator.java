@@ -62,6 +62,9 @@ public abstract class ModelToCifTranslator {
     /** The translator for UML annotations (guards, updates, invariants, etc.). */
     protected final UmlAnnotationsToCif translator;
 
+    /** The purpose for which UML is translated to CIF. */
+    protected final UmlToCifTranslationPurpose translationPurpose;
+
     /**
      * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
      * input UML.
@@ -76,10 +79,14 @@ public abstract class ModelToCifTranslator {
      *     relate to the input UML.
      * @param purpose The translation purpose.
      */
-    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker, UmlToCifTranslationPurpose purpose) {
+    public ModelToCifTranslator(CifContext context, SynthesisChainTracking tracker,
+            UmlToCifTranslationPurpose purpose)
+    {
         this.context = context;
+        this.translationPurpose = purpose;
         this.synthesisTracker = tracker;
-        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker, purpose);
+        this.translator = new UmlAnnotationsToCif(context, enumMap, enumLiteralMap, variableMap, tracker,
+                translationPurpose);
     }
 
     /**
@@ -187,7 +194,8 @@ public abstract class ModelToCifTranslator {
      * @return The guard corresponding to the given CIF event.
      */
     public Expression getGuard(Event event) {
-        RedefinableElement element = synthesisTracker.getStartEventMap(UmlToCifTranslationPurpose.GUARD_COMPUTATION).get(event);
+        RedefinableElement element = synthesisTracker.getStartEventMap(UmlToCifTranslationPurpose.GUARD_COMPUTATION)
+                .get(event);
         Preconditions.checkNotNull(element,
                 "Expected a CIF event that has been translated for some UML element in the input UML model.");
         return getGuard(element);
