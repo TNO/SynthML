@@ -1616,8 +1616,8 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 }
 
                 case SYNTHESIS -> {
-                    if (synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose,
-                            activity))
+                    if (synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose, activity)
+                            || synthesisUmlElementsTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
