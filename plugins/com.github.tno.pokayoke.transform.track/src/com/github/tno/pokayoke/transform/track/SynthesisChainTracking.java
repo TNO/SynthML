@@ -286,7 +286,7 @@ public class SynthesisChainTracking {
                 .toList();
 
         // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
-        cifEvents.stream().forEach(e -> cifEventTraceInfo.remove(e));
+        cifEventTraceInfo.keySet().removeAll(cifEvents);
 
         // Collect the corresponding start events. Update the 'isEndEvent' field to 'true' of each atomic
         // non-deterministic start event.
