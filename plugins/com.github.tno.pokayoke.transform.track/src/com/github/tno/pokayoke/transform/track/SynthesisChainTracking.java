@@ -228,6 +228,38 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
+        // Find the unique CIF event with the input name.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
+        Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
+
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+                && eventInfo.isStartEvent();
+    }
+
+    /**
+     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
+        // Find the unique CIF event with the input name.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
+        Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
+
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+                && eventInfo.isEndEvent();
+    }
+
+    /**
      * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
