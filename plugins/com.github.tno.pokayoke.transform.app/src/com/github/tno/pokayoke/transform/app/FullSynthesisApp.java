@@ -297,11 +297,11 @@ public class FullSynthesisApp {
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> eventNames = events.stream().filter(
+        List<String> preservedEventNames = events.stream().filter(
                 event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        return String.join(",", eventNames);
+        return String.join(",", preservedEventNames);
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
