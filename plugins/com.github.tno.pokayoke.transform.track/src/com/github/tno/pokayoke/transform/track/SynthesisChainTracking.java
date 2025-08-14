@@ -272,8 +272,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Remove from the CIF event tracing map the end events contained in the given set. Update the
-     * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
+     * Remove from the CIF event tracing map the end events contained in the given set. Update the corresponding start
+     * events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
      *
      * @param cifEndEventNames The set of names of CIF end events.
      */
