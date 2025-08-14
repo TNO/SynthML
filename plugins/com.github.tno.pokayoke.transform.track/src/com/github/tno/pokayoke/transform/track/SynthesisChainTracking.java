@@ -58,8 +58,9 @@ public class SynthesisChainTracking {
      */
     public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()).collect(Collectors
-                        .toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a, LinkedHashMap::new));
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue().umlElement()),
+                        LinkedHashMap::putAll);
     }
 
     /**
@@ -110,7 +111,7 @@ public class SynthesisChainTracking {
 
         List<Event> eventsOfElement = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()
-                        && e.getValue().umlElement().equals(umlElement))
+                        && e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
                 .map(Map.Entry::getKey).toList();
 
         // Before vertical scaling, there should be only one event per UML element.
@@ -152,7 +153,7 @@ public class SynthesisChainTracking {
             Event startEvent = entry.getKey();
             RedefinableElement umlElement = entry.getValue();
 
-            if (isAtomicAction(umlElement)) {
+            if (umlElement == null || isAtomicAction(umlElement)) {
                 continue;
             }
 
@@ -168,8 +169,8 @@ public class SynthesisChainTracking {
 
     private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose))
-                .filter(e -> e.getValue().umlElement().equals(umlElement)).filter(e -> e.getValue().isEndEvent())
-                .map(e -> e.getKey()).toList();
+                .filter(e -> e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
+                .filter(e -> e.getValue().isEndEvent()).map(e -> e.getKey()).toList();
     }
 
     private boolean isAtomicAction(RedefinableElement umlElement) {
