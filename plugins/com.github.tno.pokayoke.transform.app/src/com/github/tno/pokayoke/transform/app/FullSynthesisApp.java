@@ -161,7 +161,7 @@ public class FullSynthesisApp {
                 tracker);
 
         // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace);
+        String preservedEvents = getPreservedEvents(cifStateSpace, tracker);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -290,7 +290,7 @@ public class FullSynthesisApp {
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker);
     }
 
-    private static String getPreservedEvents(Specification spec) {
+    private static String getPreservedEvents(Specification spec, SynthesisChainTracking tracker) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
@@ -298,7 +298,7 @@ public class FullSynthesisApp {
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
         List<String> eventNames = events.stream().filter(
-                event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
+                event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
         return String.join(",", eventNames);
