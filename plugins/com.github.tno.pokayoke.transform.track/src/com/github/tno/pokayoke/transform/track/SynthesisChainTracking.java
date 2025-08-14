@@ -174,6 +174,12 @@ public class SynthesisChainTracking {
     }
 
     private boolean isAtomicAction(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            // If the UML element is 'null', the related CIF event represents an internal event (e.g. control node),
+            // which is atomic by default.
+            return true;
+        }
+
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
             return PokaYokeUmlProfileUtil.isAtomic(umlElement);
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
@@ -217,6 +223,12 @@ public class SynthesisChainTracking {
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            // If the UML element is 'null', the related CIF event represents an internal event (e.g. control node),
+            // which is deterministic by default.
+            return true;
+        }
+
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
             return PokaYokeUmlProfileUtil.isDeterministic(umlElement);
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
