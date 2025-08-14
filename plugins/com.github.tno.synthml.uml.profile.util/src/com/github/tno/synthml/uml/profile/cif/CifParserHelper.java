@@ -101,7 +101,7 @@ public class CifParserHelper {
                 if (update instanceof AAssignmentUpdate assignment) {
                     assignments.add(assignment);
                 } else {
-                    throw new CustomSyntaxException("Activity arguments must contain only assignment expressions",
+                    throw new CustomSyntaxException("Call behavior arguments must be assignments",
                             TextPosition.createDummy(getLocation(callBehaviorAction)));
                 }
             }
