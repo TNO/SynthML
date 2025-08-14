@@ -104,7 +104,8 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking();
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS, tracker);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS,
+                tracker);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -156,7 +157,8 @@ public class FullSynthesisApp {
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
+                tracker);
 
         // Perform event-based automaton projection.
         String preservedEvents = getPreservedEvents(cifStateSpace);
