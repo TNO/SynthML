@@ -272,6 +272,34 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Remove from the CIF event to event tracing info map the end events contained in the input set. Update the
+     * corresponding start events tracing info with 'isStartEvent' and 'isEndEvent' both set to 'true'.
+     *
+     * @param cifEndEventNames The set of names of CIF end events.
+     */
+    public void updateEndAtomicNonDeterministic(Set<String> cifEndEventNames) {
+        // Find the CIF events with the same names.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> cifEndEventNames.contains(e.getName()))
+                .toList();
+
+        // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
+        cifEvents.stream().forEach(e -> cifEventTraceInfo.remove(e));
+
+        // Collect the corresponding start events. Update the 'isEndEvent' field to {@code true} of each atomic
+        // non-deterministic start event.
+        List<Event> startAtomicNonDeterministicEvents = cifEventTraceInfo.keySet().stream()
+                .filter(e -> isAtomicNonDeterministicStartEventName(e.getName())).toList();
+        for (Event startEvent: startAtomicNonDeterministicEvents) {
+            // Create a new EventTraceInfo with 'isEndEvent' set to 'true' and overwrite the CIF event to event info
+            // map.
+            EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
+            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
+                    oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
+            cifEventTraceInfo.put(startEvent, newEventTraceInfo);
+        }
+    }
+
+    /**
      * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
