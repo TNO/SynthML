@@ -58,7 +58,7 @@ public class CifScope {
             NamedTemplateParameter newParameter = new NamedTemplateParameter();
             newParameter.setName(paramName);
 
-            // During validation it should have been verified that the parameter is a 'DataType'
+            // The validation step ensures that the parameter is of type 'DataType'.
             newParameter.setType((DataType)parameterType);
 
             resultParameters.add(newParameter);

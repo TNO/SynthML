@@ -156,7 +156,7 @@ public class CifContext {
             // identifiers.
             addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
 
-            // Collect all template parameters that may be referenced within the context of this activity
+            // Collect all template parameters that may be referenced within the context of this activity.
             addNamedTemplateParameters(scope.getDeclaredTemplateParameters());
         }
     }
