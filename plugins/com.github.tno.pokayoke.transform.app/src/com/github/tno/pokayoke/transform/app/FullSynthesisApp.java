@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -300,6 +302,13 @@ public class FullSynthesisApp {
         List<String> preservedEventNames = events.stream().filter(
                 event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
+
+        // Get the removed events names (end of atomic non-deterministic actions) and update the synthesis chain
+        // tracker.
+        Set<String> removedEventNames = events.stream().filter(
+                event -> !event.getControllable() && tracker.isAtomicNonDeterministicEndEventName(event.getName()))
+                .map(e -> e.getName()).collect(Collectors.toSet());
+        tracker.updateEndAtomicNonDeterministic(removedEventNames);
 
         return String.join(",", preservedEventNames);
     }
