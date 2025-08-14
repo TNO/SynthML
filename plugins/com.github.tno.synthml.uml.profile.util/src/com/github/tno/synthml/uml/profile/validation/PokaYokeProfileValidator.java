@@ -789,7 +789,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         List<String> arguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
 
         if (arguments.size() > 1) {
-            error("Nondeterministic template assignments are not supported", null);
+            error("Nondeterministic template assignments are not supported.", null);
         }
 
         try {

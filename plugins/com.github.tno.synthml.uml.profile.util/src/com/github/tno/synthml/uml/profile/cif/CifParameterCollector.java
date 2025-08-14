@@ -89,7 +89,7 @@ public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplate
     protected Stream<NamedTemplateParameter> visit(Optional<String> invKind, List<String> events,
             TextPosition invariantPos, Stream<NamedTemplateParameter> predicate, CifContext ctx)
     {
-        return Stream.empty();
+        return predicate;
     }
 
     @Override
