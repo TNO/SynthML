@@ -37,7 +37,7 @@ public class SynthesisChainTracking {
      * purpose.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to relate to the CIF event.
+     * @param umlElement The UML element to relate to the CIF event. May be {@code null}.
      * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
@@ -51,10 +51,12 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding UML elements for the specified translation purpose.
+     * Gives the map from CIF start events to the corresponding UML elements (or {@code null}) for the specified
+     * translation purpose.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
+     * @return The map from CIF start events to their corresponding UML elements (or {@code null}) for the specified
+     *     translation purpose.
      */
     public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
@@ -86,7 +88,8 @@ public class SynthesisChainTracking {
     /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
-     * @param umlElements The set of UML elements, to find the related CIF events.
+     * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
+     *     non-{@code null}.
      * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the UML elements.
      */
@@ -100,7 +103,7 @@ public class SynthesisChainTracking {
      * Gives the list of CIF start events corresponding to the given UML element for the specified translation purpose.
      * Not yet supported for guard computation and language equivalence check.
      *
-     * @param umlElement The UML element.
+     * @param umlElement The non-{@code null} UML element.
      * @param purpose The translation purpose.
      * @return The list of CIF start events corresponding to the given UML element.
      */
@@ -122,11 +125,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the map from CIF end events to the corresponding UML elements and effect indexes. Only supported for the
-     * initial data-based synthesis phase.
+     * Returns the map from CIF end events to the corresponding UML elements (or {@code null}) and effect indexes. Only
+     * supported for the initial data-based synthesis phase.
      *
-     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements and
-     *     effect indexes.
+     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements (or
+     *     {@code null}) and effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         return cifEventTraceInfo.entrySet().stream().filter(
@@ -302,7 +305,7 @@ public class SynthesisChainTracking {
      * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
-     * @param umlElement The UML element that relates to the CIF event.
+     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
      * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
