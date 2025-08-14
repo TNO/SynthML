@@ -306,7 +306,7 @@ public class FullSynthesisApp {
         // Get the removed events names (end of atomic non-deterministic actions) and update the synthesis chain
         // tracker.
         Set<String> removedEventNames = events.stream().filter(
-                event -> !event.getControllable() && tracker.isAtomicNonDeterministicEndEventName(event.getName()))
+                event -> !preservedEventNames.contains(event.getName()))
                 .map(e -> e.getName()).collect(Collectors.toSet());
         tracker.updateEndAtomicNonDeterministic(removedEventNames);
 

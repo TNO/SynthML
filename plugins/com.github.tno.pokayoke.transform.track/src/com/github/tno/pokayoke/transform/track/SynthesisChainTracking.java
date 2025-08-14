@@ -153,7 +153,7 @@ public class SynthesisChainTracking {
             Event startEvent = entry.getKey();
             RedefinableElement umlElement = entry.getValue();
 
-            if (umlElement == null || isAtomicAction(umlElement)) {
+            if (isAtomicAction(umlElement)) {
                 continue;
             }
 
@@ -272,8 +272,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Remove from the CIF event to event tracing info map the end events contained in the input set. Update the
-     * corresponding start events tracing info with 'isStartEvent' and 'isEndEvent' both set to 'true'.
+     * Remove from the CIF event tracing map the end events contained in the given set. Update the
+     * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
      *
      * @param cifEndEventNames The set of names of CIF end events.
      */
@@ -285,13 +285,12 @@ public class SynthesisChainTracking {
         // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
         cifEvents.stream().forEach(e -> cifEventTraceInfo.remove(e));
 
-        // Collect the corresponding start events. Update the 'isEndEvent' field to {@code true} of each atomic
+        // Collect the corresponding start events. Update the 'isEndEvent' field to 'true' of each atomic
         // non-deterministic start event.
         List<Event> startAtomicNonDeterministicEvents = cifEventTraceInfo.keySet().stream()
                 .filter(e -> isAtomicNonDeterministicStartEventName(e.getName())).toList();
         for (Event startEvent: startAtomicNonDeterministicEvents) {
-            // Create a new EventTraceInfo with 'isEndEvent' set to 'true' and overwrite the CIF event to event info
-            // map.
+            // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
             EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
             EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
                     oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
