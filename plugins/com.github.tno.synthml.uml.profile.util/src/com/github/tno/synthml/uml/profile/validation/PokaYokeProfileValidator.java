@@ -799,10 +799,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Valid assignments are valid updates with restrictions.
             checkValidActivityArguments(updates, callAction);
 
-            // Ensure that no variable is assigned more than once.
+            // Ensure that no parameter is assigned more than once.
             checkUniqueAddressables(updates, new LinkedHashSet<>());
 
-            // Ensure that every variable is assigned.
+            // Ensure that every parameter is assigned.
             if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
                 throw new CustomSyntaxException("Not all parameters of the called activity have been assigned.", null);
             }
