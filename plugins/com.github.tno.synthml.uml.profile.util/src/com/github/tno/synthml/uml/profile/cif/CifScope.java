@@ -86,7 +86,13 @@ public class CifScope {
     public static List<ClassifierTemplateParameter> getClassifierTemplateParameters(Activity activity) {
         return activity.getOwnedElements().stream().filter(RedefinableTemplateSignature.class::isInstance)
                 .map(RedefinableTemplateSignature.class::cast)
-                .flatMap(signature -> signature.getOwnedParameters().stream())
+                .flatMap(signature -> getClassifierTemplateParameters(signature).stream()).toList();
+    }
+
+    public static List<ClassifierTemplateParameter>
+            getClassifierTemplateParameters(RedefinableTemplateSignature redefinableTemplateSignature)
+    {
+        return redefinableTemplateSignature.getOwnedParameters().stream()
                 .filter(ClassifierTemplateParameter.class::isInstance).map(ClassifierTemplateParameter.class::cast)
                 .toList();
     }

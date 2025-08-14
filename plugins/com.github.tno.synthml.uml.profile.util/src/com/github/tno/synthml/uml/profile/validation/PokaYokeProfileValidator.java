@@ -489,6 +489,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
+        // Check template parameters from the activity. Adding a check for 'RedefinableTemplateSignature' directly fails
+        // to print the error message to the Problems view.
+        checkValidRedefinableTemplateSignature(activity);
+
         Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
 
         Set<Constraint> preAndPostconditions = new LinkedHashSet<>();
@@ -502,27 +506,6 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!members.equals(Sets.union(preAndPostconditions, intervalConstraints))) {
             error("Activity should contain only precondition, postcondition, and interval constraint members.",
                     UMLPackage.Literals.NAMESPACE__MEMBER);
-        }
-
-        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
-
-        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
-                .allMatch(DataType.class::isInstance))
-        {
-            error("Activity parameters must be of primitive or enum type.", UMLPackage.Literals.ACTIVITY__NODE);
-        }
-
-        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
-                .allMatch(NamedElement.class::isInstance))
-        {
-            error("The template parameters must have a default of type 'NamedElement'.",
-                    UMLPackage.Literals.ACTIVITY__NODE);
-        }
-
-        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
-                .map(CifScope::getClassifierTemplateParameterName).allMatch(new HashSet<>()::add))
-        {
-            error("Activity parameters must have unique names.", UMLPackage.Literals.ACTIVITY__NODE);
         }
 
         if (activity.isAbstract()) {
@@ -551,6 +534,36 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .objectsOfKind(FlowFinalNode.class);
             if (!flowFinalNodes.isEmpty()) {
                 error("Flow final nodes are not supported.", activity, null);
+            }
+        }
+    }
+
+    private void checkValidRedefinableTemplateSignature(Activity activity) {
+        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+
+        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+                .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
+                        || PokaYokeTypeUtil.isEnumerationType(parameter))))
+        {
+            error("Activity parameters must be of primitive or enum type.", null);
+        }
+
+        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .allMatch(NamedElement.class::isInstance))
+        {
+            error("The template parameters must have a default of type 'NamedElement'.", null);
+        }
+
+        List<String> parameterNames = templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .map(CifScope::getClassifierTemplateParameterName).toList();
+        if (!parameterNames.stream().allMatch(new HashSet<>()::add)) {
+            error("Activity parameters must have unique names.", null);
+        }
+
+        CifContext globalContext = CifContext.createGlobal(activity);
+        for (String parameterName: parameterNames) {
+            if (globalContext.isVariable(parameterName)) {
+                error(String.format("'\s' was already already declared as a property.", parameterName), null);
             }
         }
     }
@@ -835,10 +848,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 String name = nameExpr.name.name;
                 NamedElement element = valueContext.getReferenceableElement(name);
                 if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
-                    error("Expected a constant or parameters of the calling activity, got: " + name, null);
+                    error("Expected a constant or a parameter of the calling activity, got: " + name, null);
                 }
             } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
-                error("Expected a constant or parameters of the calling activity", null);
+                error("Expected a constant or a parameter of the calling activity", null);
             }
         }
     }
