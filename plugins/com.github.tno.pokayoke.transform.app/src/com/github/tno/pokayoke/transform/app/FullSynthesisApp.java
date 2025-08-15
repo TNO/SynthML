@@ -164,7 +164,8 @@ public class FullSynthesisApp {
                 tracker);
 
         // Perform event-based automaton projection and update the synthesis tracker.
-        Pair<String, Set<String>> preservedAndRemovedEventNames = getPreservedAndRemovedEventNames(cifStateSpace, tracker);
+        Pair<String, Set<String>> preservedAndRemovedEventNames = getPreservedAndRemovedEventNames(cifStateSpace,
+                tracker);
         String preservedEventNames = preservedAndRemovedEventNames.left;
         Set<String> removedEventNames = preservedAndRemovedEventNames.right;
         tracker.updateEndAtomicNonDeterministic(removedEventNames);
