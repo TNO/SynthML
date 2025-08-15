@@ -37,7 +37,7 @@ public class SynthesisChainTracking {
      * purpose.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to relate to the CIF event.
+     * @param umlElement The UML element to relate to the CIF event. May be {@code null}.
      * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
@@ -51,15 +51,18 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events to the corresponding UML elements for the specified translation purpose.
+     * Gives the map from CIF start events to the corresponding UML elements (or {@code null}) for the specified
+     * translation purpose.
      *
      * @param purpose The translation purpose.
-     * @return The map from CIF start events to their corresponding UML elements for the specified translation purpose.
+     * @return The map from CIF start events to their corresponding UML elements (or {@code null}) for the specified
+     *     translation purpose.
      */
     public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()).collect(Collectors
-                        .toMap(Map.Entry::getKey, e -> e.getValue().umlElement(), (a, b) -> a, LinkedHashMap::new));
+                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue().umlElement()),
+                        LinkedHashMap::putAll);
     }
 
     /**
@@ -85,7 +88,8 @@ public class SynthesisChainTracking {
     /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
-     * @param umlElements The set of UML elements, to find the related CIF events.
+     * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
+     *     non-{@code null}.
      * @param purpose The translation purpose.
      * @return The list of CIF events corresponding to the UML elements.
      */
@@ -99,7 +103,7 @@ public class SynthesisChainTracking {
      * Gives the list of CIF start events corresponding to the given UML element for the specified translation purpose.
      * Not yet supported for guard computation and language equivalence check.
      *
-     * @param umlElement The UML element.
+     * @param umlElement The non-{@code null} UML element.
      * @param purpose The translation purpose.
      * @return The list of CIF start events corresponding to the given UML element.
      */
@@ -110,7 +114,7 @@ public class SynthesisChainTracking {
 
         List<Event> eventsOfElement = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()
-                        && e.getValue().umlElement().equals(umlElement))
+                        && e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
                 .map(Map.Entry::getKey).toList();
 
         // Before vertical scaling, there should be only one event per UML element.
@@ -121,11 +125,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the map from CIF end events to the corresponding UML elements and effect indexes. Only supported for the
-     * initial data-based synthesis phase.
+     * Returns the map from CIF end events to the corresponding UML elements (or {@code null}) and effect indexes. Only
+     * supported for the initial data-based synthesis phase.
      *
-     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements and
-     *     effect indexes.
+     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements (or
+     *     {@code null}) and effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         return cifEventTraceInfo.entrySet().stream().filter(
@@ -168,11 +172,17 @@ public class SynthesisChainTracking {
 
     private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose))
-                .filter(e -> e.getValue().umlElement().equals(umlElement)).filter(e -> e.getValue().isEndEvent())
-                .map(e -> e.getKey()).toList();
+                .filter(e -> e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
+                .filter(e -> e.getValue().isEndEvent()).map(e -> e.getKey()).toList();
     }
 
     private boolean isAtomicAction(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            // If the UML element is 'null', the related CIF event represents an internal event (e.g. control node),
+            // which is atomic by default.
+            return true;
+        }
+
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
             return PokaYokeUmlProfileUtil.isAtomic(umlElement);
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
@@ -216,6 +226,12 @@ public class SynthesisChainTracking {
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            // If the UML element is 'null', the related CIF event represents an internal event (e.g. control node),
+            // which is deterministic by default.
+            return true;
+        }
+
         if (PokaYokeUmlProfileUtil.isFormalElement(umlElement)) {
             return PokaYokeUmlProfileUtil.isDeterministic(umlElement);
         } else if (umlElement instanceof CallBehaviorAction cbAction) {
@@ -227,10 +243,69 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
+        // Find the unique CIF event with the input name.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
+        Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
+
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+                && eventInfo.isStartEvent();
+    }
+
+    /**
+     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     *
+     * @param eventName The name of the CIF event.
+     * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     */
+    public boolean isAtomicNonDeterministicEndEventName(String eventName) {
+        // Find the unique CIF event with the input name.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
+        Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
+
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+                && eventInfo.isEndEvent();
+    }
+
+    /**
+     * Remove from the CIF event tracing map the end events contained in the given set. Update the corresponding start
+     * events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
+     *
+     * @param cifEndEventNames The set of names of CIF end events.
+     */
+    public void updateEndAtomicNonDeterministic(Set<String> cifEndEventNames) {
+        // Find the CIF events with the same names.
+        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> cifEndEventNames.contains(e.getName()))
+                .toList();
+
+        // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
+        cifEventTraceInfo.keySet().removeAll(cifEvents);
+
+        // Collect the corresponding start events. Update the 'isEndEvent' field to 'true' of each atomic
+        // non-deterministic start event.
+        List<Event> startAtomicNonDeterministicEvents = cifEventTraceInfo.keySet().stream()
+                .filter(e -> isAtomicNonDeterministicStartEventName(e.getName())).toList();
+        for (Event startEvent: startAtomicNonDeterministicEvents) {
+            // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
+            EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
+            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
+                    oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
+            cifEventTraceInfo.put(startEvent, newEventTraceInfo);
+        }
+    }
+
+    /**
      * Tracing information related to a CIF event.
      *
      * @param purpose The translation purpose.
-     * @param umlElement The UML element that relates to the CIF event.
+     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
      * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
      *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.

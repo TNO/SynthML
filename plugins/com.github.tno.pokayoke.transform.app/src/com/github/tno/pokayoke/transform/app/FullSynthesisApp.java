@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +29,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
@@ -104,7 +107,8 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking();
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS, tracker);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS,
+                tracker);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -156,13 +160,18 @@ public class FullSynthesisApp {
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
+                tracker);
 
-        // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace);
+        // Perform event-based automaton projection and update the synthesis tracker.
+        Pair<String, Set<String>> preservedAndRemovedEventNames = getPreservedAndRemovedEventNames(cifStateSpace,
+                tracker);
+        String preservedEventNames = preservedAndRemovedEventNames.left;
+        Set<String> removedEventNames = preservedAndRemovedEventNames.right;
+        tracker.updateEndAtomicNonDeterministic(removedEventNames);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
-                "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
+                "--preserve=" + preservedEventNames, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
         AppStreams projectionAppStreams = new AppStreams(InputStream.nullInputStream(), projectionAppStream,
                 projectionAppStream, projectionAppStream);
@@ -288,18 +297,24 @@ public class FullSynthesisApp {
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker);
     }
 
-    private static String getPreservedEvents(Specification spec) {
+    private static Pair<String, Set<String>> getPreservedAndRemovedEventNames(Specification spec,
+            SynthesisChainTracking tracker)
+    {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> eventNames = events.stream().filter(
-                event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
+        List<String> preservedEventNames = events.stream().filter(
+                event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        return String.join(",", eventNames);
+        // Get the removed events names (end of atomic non-deterministic actions).
+        Set<String> removedEventNames = events.stream().filter(event -> !preservedEventNames.contains(event.getName()))
+                .map(e -> e.getName()).collect(Collectors.toSet());
+
+        return new Pair<>(String.join(",", preservedEventNames), removedEventNames);
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
