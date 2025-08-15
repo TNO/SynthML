@@ -164,9 +164,9 @@ public class FullSynthesisApp {
                 tracker);
 
         // Perform event-based automaton projection and update the synthesis tracker.
-        Pair<String, Set<String>> preservedAndRemovedEvents = getPreservedAndRemovedEventNames(cifStateSpace, tracker);
-        String preservedEvents = preservedAndRemovedEvents.left;
-        Set<String> removedEventNames = preservedAndRemovedEvents.right;
+        Pair<String, Set<String>> preservedAndRemovedEventNames = getPreservedAndRemovedEventNames(cifStateSpace, tracker);
+        String preservedEvents = preservedAndRemovedEventNames.left;
+        Set<String> removedEventNames = preservedAndRemovedEventNames.right;
         tracker.updateEndAtomicNonDeterministic(removedEventNames);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
