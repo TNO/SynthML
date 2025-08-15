@@ -164,7 +164,7 @@ public class FullSynthesisApp {
                 tracker);
 
         // Perform event-based automaton projection and update the synthesis tracker.
-        Pair<String, Set<String>> preservedAndRemovedEvents = getPreservedEvents(cifStateSpace, tracker);
+        Pair<String, Set<String>> preservedAndRemovedEvents = getPreservedAndRemovedEventNames(cifStateSpace, tracker);
         String preservedEvents = preservedAndRemovedEvents.left;
         Set<String> removedEventNames = preservedAndRemovedEvents.right;
         tracker.updateEndAtomicNonDeterministic(removedEventNames);
@@ -296,7 +296,7 @@ public class FullSynthesisApp {
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker);
     }
 
-    private static Pair<String, Set<String>> getPreservedEvents(Specification spec, SynthesisChainTracking tracker) {
+    private static Pair<String, Set<String>> getPreservedAndRemovedEventNames(Specification spec, SynthesisChainTracking tracker) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
