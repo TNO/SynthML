@@ -803,9 +803,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
             // Ensure that every parameter is assigned.
             if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
-                throw new CustomSyntaxException("Not all parameters of the called activity have been assigned.", null);
+                error("Not all parameters of the called activity have been assigned.", null);
             }
-        } catch (RuntimeException re) {
+        } catch (TypeException re) {
             String prefix = "Invalid parameter assignments: ";
             error(prefix + re.getLocalizedMessage(), null);
         }
