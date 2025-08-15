@@ -127,6 +127,6 @@ Park2_product := 0</effects>
 Park2_product := 2</effects>
   </SynthML:FormalElement>
   <SynthML:FormalCallBehaviorAction xmi:id="_jysR0FHPEfCaALiH7vZiQg" base_CallBehaviorAction="_PZ0YkDIwEfC0ZcoSb49rpw">
-    <activityArguments>productId := 1</activityArguments>
+    <arguments>productId := 1</arguments>
   </SynthML:FormalCallBehaviorAction>
 </xmi:XMI>

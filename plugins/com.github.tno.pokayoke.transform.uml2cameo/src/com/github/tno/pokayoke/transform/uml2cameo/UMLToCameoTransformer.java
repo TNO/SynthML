@@ -462,8 +462,8 @@ public class UMLToCameoTransformer {
     }
 
     private void transformCallBehaviorActionArguments(CallBehaviorAction callAction) {
-        List<AAssignmentUpdate> parsedAssignments = CifParserHelper.parseActivityArguments(callAction);
-        if (parsedAssignments.isEmpty()) {
+        List<AAssignmentUpdate> parsedArguments = CifParserHelper.parseArguments(callAction);
+        if (parsedArguments.isEmpty()) {
             return;
         }
 
@@ -471,9 +471,9 @@ public class UMLToCameoTransformer {
 
         List<String> translatedAssignments = new ArrayList<>();
         Set<String> arguments = new HashSet<>();
-        for (AAssignmentUpdate assignment: parsedAssignments) {
-            String adressable = ((ANameExpression)assignment.addressable).name.name;
-            String value = translator.translateExpression(assignment.value, cifScope);
+        for (AAssignmentUpdate argument: parsedArguments) {
+            String adressable = ((ANameExpression)argument.addressable).name.name;
+            String value = translator.translateExpression(argument.value, cifScope);
 
             translatedAssignments.add(PARAM_PREFIX + adressable + "=" + value);
             arguments.add(adressable);

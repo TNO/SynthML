@@ -87,23 +87,25 @@ public class CifParserHelper {
         return updatesParser.parseString(updates, getLocation(context));
     }
 
-    public static List<AAssignmentUpdate> parseActivityArguments(CallBehaviorAction callBehaviorAction)
-            throws SyntaxException
-    {
+    public static List<AAssignmentUpdate> parseArguments(CallBehaviorAction callBehaviorAction) throws SyntaxException {
         if (callBehaviorAction == null) {
             return null;
         }
-        List<String> effects = PokaYokeUmlProfileUtil.getActivityArguments(callBehaviorAction);
-        List<AAssignmentUpdate> assignments = new ArrayList<>(effects.size());
-        for (String effect: effects) {
-            List<AUpdate> updates = parseUpdates(effect, callBehaviorAction);
-            for (AUpdate update: updates) {
-                if (update instanceof AAssignmentUpdate assignment) {
-                    assignments.add(assignment);
-                } else {
-                    throw new CustomSyntaxException("Call behavior arguments must be assignments",
-                            TextPosition.createDummy(getLocation(callBehaviorAction)));
-                }
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callBehaviorAction);
+
+        if (arguments.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        List<AUpdate> updates = parseUpdates(arguments, callBehaviorAction);
+
+        List<AAssignmentUpdate> assignments = new ArrayList<>();
+        for (AUpdate update: updates) {
+            if (update instanceof AAssignmentUpdate assignment) {
+                assignments.add(assignment);
+            } else {
+                throw new CustomSyntaxException("Call behavior arguments must be assignments",
+                        TextPosition.createDummy(getLocation(callBehaviorAction)));
             }
         }
         return assignments;

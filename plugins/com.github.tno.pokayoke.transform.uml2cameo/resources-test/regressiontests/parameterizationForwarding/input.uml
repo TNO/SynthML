@@ -188,15 +188,15 @@ Park2_product := 0</effects>
 Park2_product := 2</effects>
   </SynthML:FormalElement>
   <SynthML:FormalCallBehaviorAction xmi:id="_PChlUFgAEfCypLFnyoOr-A" base_CallBehaviorAction="_J208gFgAEfCypLFnyoOr-A">
-    <activityArguments>productId := productId</activityArguments>
+    <arguments>productId := productId</arguments>
   </SynthML:FormalCallBehaviorAction>
   <SynthML:FormalCallBehaviorAction xmi:id="_E3iikFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_aYZRYFgAEfCypLFnyoOr-A">
-    <activityArguments>productId := T2</activityArguments>
+    <arguments>productId := T2</arguments>
   </SynthML:FormalCallBehaviorAction>
   <SynthML:FormalCallBehaviorAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A">
-    <activityArguments>T2 := 2</activityArguments>
+    <arguments>T2 := 2</arguments>
   </SynthML:FormalCallBehaviorAction>
   <SynthML:FormalCallBehaviorAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A">
-    <activityArguments>productId := 1</activityArguments>
+    <arguments>productId := 1</arguments>
   </SynthML:FormalCallBehaviorAction>
 </xmi:XMI>

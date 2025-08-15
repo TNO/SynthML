@@ -775,29 +775,28 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     /**
-     * Validates the {@link FormalCallBehaviorAction#getActivityArguments()} property if set.
+     * Validates the {@link FormalCallBehaviorAction#getArguments()} property if set.
      *
      * @param callAction The call action to validate.
      */
     @Check
-    private void checkValidActivityArguments(CallBehaviorAction callAction) {
+    private void checkValidArguments(CallBehaviorAction callAction) {
         if (!(callAction.getBehavior() instanceof Activity)) {
             return;
         }
 
         Behavior calledActivity = callAction.getBehavior();
-        List<String> arguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
 
-        if (arguments.size() > 1) {
-            error("Nondeterministic template assignments are not supported.", null);
+        if (arguments.isBlank()) {
+            return;
         }
 
         try {
-            List<AUpdate> updates = arguments.stream()
-                    .flatMap(argument -> CifParserHelper.parseUpdates(argument, calledActivity).stream()).toList();
+            List<AUpdate> updates = CifParserHelper.parseUpdates(arguments, calledActivity);
 
             // Valid assignments are valid updates with restrictions.
-            checkValidActivityArguments(updates, callAction);
+            checkValidArguments(updates, callAction);
 
             // Ensure that no parameter is assigned more than once.
             checkUniqueAddressables(updates, new LinkedHashSet<>());
@@ -816,7 +815,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         return namedElements.stream().anyMatch(p -> p.getName().equals(name));
     }
 
-    private void checkValidActivityArguments(List<AUpdate> updates, CallBehaviorAction callAction) {
+    private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction) {
         Behavior calledActivity = callAction.getBehavior();
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();

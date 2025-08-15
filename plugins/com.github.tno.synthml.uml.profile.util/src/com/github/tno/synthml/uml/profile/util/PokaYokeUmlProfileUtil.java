@@ -53,7 +53,7 @@ public class PokaYokeUmlProfileUtil {
     private static final String ST_FORMAL_CALL_BEHAVIOR_ACTION = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION
             .getName();
 
-    private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS
+    private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS
             .getName();
 
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
@@ -209,42 +209,39 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Returns the contents of the {@link FormalCallBehaviorAction#getActivityArguments() activityArguments} if the
+     * Returns the contents of the {@link FormalCallBehaviorAction#getArguments() activityArguments} if the
      * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty list otherwise. The
      * returned list is a copy of the values stored in the stereotype, and as such, modifications to the list are not
-     * reflected on the {@code element}. Instead, use the {@link #setActivityArguments(CallBehaviorAction, List)} method
-     * to set the new value on the {@code element}.
+     * reflected on the {@code element}. Instead, use the {@link #setArguments(CallBehaviorAction, String)} method to
+     * set the new value on the {@code element}.
      *
      * @param element The element to get the property from.
      * @return The new property value.
-     * @see #setActivityArguments(CallBehaviorAction, List)
+     * @see #setArguments(CallBehaviorAction, String)
      */
-    @SuppressWarnings("unchecked")
-    public static List<String> getActivityArguments(CallBehaviorAction element) {
+    public static String getArguments(CallBehaviorAction element) {
         return getAppliedStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE)
-                .map(st -> new ArrayList<>(
-                        (List<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS)))
-                .orElse(new ArrayList<>());
+                .map(st -> (String)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS)).orElse("");
     }
 
     /**
-     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getActivityArguments()
-     * activityArguments}. We are using a setter here to deal with the stereotype that is required to set the value. We
-     * do not want to implicitly create the stereotype on read, but explicitly create it on write.
+     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() activityArguments}. We
+     * are using a setter here to deal with the stereotype that is required to set the value. We do not want to
+     * implicitly create the stereotype on read, but explicitly create it on write.
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
     @SuppressWarnings("unchecked")
-    public static void setActivityArguments(CallBehaviorAction element, List<String> newValue) {
+    public static void setArguments(CallBehaviorAction element, String newValue) {
         if (newValue == null || newValue.isEmpty()) {
             PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE);
             return;
         }
         Stereotype st = applyStereotype(element,
                 getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_CALL_BEHAVIOR_ACTION));
-        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ACTIVITY_ARGUMENTS);
-        ECollections.setEList(value, newValue);
+        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS);
+        ECollections.setEList(value, List.of(newValue));
     }
 
     public static boolean isAtomic(RedefinableElement element) {
