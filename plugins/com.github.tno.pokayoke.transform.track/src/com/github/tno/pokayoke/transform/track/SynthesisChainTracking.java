@@ -349,4 +349,13 @@ public class SynthesisChainTracking {
             transitionsToEventsTraceInfo.put(t, cifEventTraceInfo.get(namesToCifEvents.get(t.getName().getText())));
         }
     }
+
+    public void removeLoopTransition() {
+        // Remove the transition(s) that is used as the self-loop for the final place in the Petri net.
+        // Nota: Using Cif2Petrify.LOOP_EVENT_NAME gives import cycles. Could move the string here.
+        Set<Transition> loopTransitions = transitionsToEventsTraceInfo.entrySet().stream()
+                .filter(e -> e.getKey().getName().getText().equals("__loop")).map(e -> e.getKey())
+                .collect(Collectors.toSet());
+        transitionsToEventsTraceInfo.keySet().removeAll(loopTransitions);
+    }
 }
