@@ -16,6 +16,8 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.Transition;
+
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
  * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petrinet actions, etc.
@@ -31,6 +33,9 @@ public class SynthesisChainTracking {
      * add events.
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
+
+    /** The map from Petri net transitions to their corresponding CIF event trace infos. */
+    private final Map<Transition, EventTraceInfo> transitionsToEventsTraceInfo = new LinkedHashMap<>();
 
     /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
