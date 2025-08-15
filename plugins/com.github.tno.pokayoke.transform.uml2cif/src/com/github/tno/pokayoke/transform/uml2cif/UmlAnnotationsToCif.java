@@ -218,7 +218,7 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
 
     @Override
     protected Expression visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
-        throw new RuntimeException("Template parameters are not supported.");
+        throw new RuntimeException("Translating template parameters to CIF is not supported.");
     }
 
     @Override

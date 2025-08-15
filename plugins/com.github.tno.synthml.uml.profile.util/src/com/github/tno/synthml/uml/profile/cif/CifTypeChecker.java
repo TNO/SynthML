@@ -57,7 +57,7 @@ public class CifTypeChecker extends ACifObjectWalker<Type> {
      *
      * @param addressable The expected addressable type.
      * @param value The value expression to evaluate.
-     * @throws TypeException If the {@code value} expression cannot be evaluated its the value type cannot be assigned
+     * @throws TypeException If the {@code value} expression cannot be evaluated or if the value type cannot be assigned
      *     to the {@code addressable} type.
      */
     public void checkAssignment(Type addressable, AExpression value) throws TypeException {

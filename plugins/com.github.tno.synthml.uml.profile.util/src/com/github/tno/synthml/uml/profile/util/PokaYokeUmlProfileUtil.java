@@ -209,14 +209,14 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Returns the contents of the {@link FormalCallBehaviorAction#getArguments() activityArguments} if the
-     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty list otherwise. The
-     * returned list is a copy of the values stored in the stereotype, and as such, modifications to the list are not
+     * Returns the contents of the {@link FormalCallBehaviorAction#getArguments() arguments} if the
+     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty string otherwise. The
+     * returned string is a copy of the values stored in the stereotype, and as such, modifications to the list are not
      * reflected on the {@code element}. Instead, use the {@link #setArguments(CallBehaviorAction, String)} method to
      * set the new value on the {@code element}.
      *
      * @param element The element to get the property from.
-     * @return The new property value.
+     * @return The argument assignments.
      * @see #setArguments(CallBehaviorAction, String)
      */
     public static String getArguments(CallBehaviorAction element) {
@@ -225,7 +225,7 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() activityArguments}. We
+     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() arguments}. We
      * are using a setter here to deal with the stereotype that is required to set the value. We do not want to
      * implicitly create the stereotype on read, but explicitly create it on write.
      *
