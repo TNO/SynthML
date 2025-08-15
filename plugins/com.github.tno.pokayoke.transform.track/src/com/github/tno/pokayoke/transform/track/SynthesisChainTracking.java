@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
 
+import fr.lip6.move.pnml.ptnet.PetriNet;
 import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
@@ -321,6 +322,31 @@ public class SynthesisChainTracking {
     {
         public EventTraceInfo {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
+        }
+    }
+
+    // Section dealing with Petri net transitions.
+
+    /**
+     * Creates the map from Petri net transitions to CIF events, provided that the map from CIF event to their tracing
+     * info is not empty.
+     *
+     * @param petriNet The Petri net.
+     */
+    public void addPetriNetTransitions(PetriNet petriNet) {
+        Verify.verify(!cifEventTraceInfo.isEmpty(), "The map from CIF event names to their tracing infos is empty.");
+
+        // Create a map from event names to CIF events, for better handling CIF event names.
+        Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
+                .collect(Collectors.toMap(e -> e.getName(), e -> e));
+
+        // Get Petri net transition list.
+        List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
+                .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
+
+        for (Transition t: petriNetTransitions) {
+            // Store the transition and the related CIF event tracing info.
+            transitionsToEventsTraceInfo.put(t, cifEventTraceInfo.get(namesToCifEvents.get(t.getName().getText())));
         }
     }
 }
