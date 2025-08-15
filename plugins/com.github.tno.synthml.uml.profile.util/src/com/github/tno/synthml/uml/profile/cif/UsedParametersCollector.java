@@ -13,9 +13,9 @@ import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.Property;
 
-/** Finds all template parameters in scope. */
-public class CifParameterCollector extends ACifObjectWalker<Stream<NamedTemplateParameter>> {
-    public CifParameterCollector() {
+/** Finds all template parameters used in the parse tree rooted at the provided element. */
+public class UsedParametersCollector extends ACifObjectWalker<Stream<NamedTemplateParameter>> {
+    public UsedParametersCollector() {
     }
 
     private static Stream<NamedTemplateParameter> concat(Stream<Stream<NamedTemplateParameter>> streams) {
