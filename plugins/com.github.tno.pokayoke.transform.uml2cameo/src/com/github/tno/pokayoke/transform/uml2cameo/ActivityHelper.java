@@ -405,8 +405,8 @@ public class ActivityHelper {
         endToFinalFlow.setTarget(finalNode);
 
         // Pass arguments to the newly created inner activities.
-        passVariablesToCallBehaviorAction(callStartNode, localVariables, null);
-        passVariablesToCallBehaviorAction(callEndNode, localVariables, null);
+        passArgumentsToCallBehaviorAction(callStartNode, localVariables, null);
+        passArgumentsToCallBehaviorAction(callEndNode, localVariables, null);
 
         return activity;
     }
@@ -705,7 +705,7 @@ public class ActivityHelper {
             String argumentName)
     {
         // Create an output pin on the assignment action and an input pin on the call action.
-        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.PARAM_PREFIX + argumentName,
+        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.ARGUMENT_PREFIX + argumentName,
                 null);
         InputPin inputPin = callAction.createArgument(argumentName, null);
 
@@ -720,22 +720,21 @@ public class ActivityHelper {
      * Passes variables as arguments to a {@link CallBehaviorAction} for calling a parameterized activity.
      *
      * @param callAction The {@link CallBehaviorAction}.
-     * @param variableNames The names of the variables that will be passed to the callAction.
-     * @param optionalAssignments An optional assignment of the variables. If not, the variables are pass through from
-     *     the parent activity.
+     * @param argumentNames The names of the arguments that will be passed to the callAction.
+     * @param optionalAssignments An optional assignment of the arguments. If not, the arguments are assumed to be
+     *     variables in the calling activity.
      */
-    public static void passVariablesToCallBehaviorAction(CallBehaviorAction callAction, Set<String> variableNames,
+    public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, Set<String> argumentNames,
             String optionalAssignments)
     {
-        if (variableNames.isEmpty()) {
+        if (argumentNames.isEmpty()) {
             return;
         }
 
         if (optionalAssignments == null) {
-            // Add the temp__ prefix variables.
             List<String> translatedAssignments = new ArrayList<>();
-            for (String argument: variableNames) {
-                translatedAssignments.add(UMLToCameoTransformer.PARAM_PREFIX + argument + "=" + argument);
+            for (String argument: argumentNames) {
+                translatedAssignments.add(UMLToCameoTransformer.ARGUMENT_PREFIX + argument + "=" + argument);
             }
 
             optionalAssignments = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
@@ -753,7 +752,7 @@ public class ActivityHelper {
         callAction.getIncomings().get(0).setTarget(assignmentAction);
 
         // For each assignment, create a data flow from the new action to the original call action.
-        for (String argumentName: variableNames) {
+        for (String argumentName: argumentNames) {
             passActivityArgument(callAction, assignmentAction, argumentName);
         }
     }

@@ -64,9 +64,9 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
-import com.github.tno.synthml.uml.profile.cif.CifParameterCollector;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
+import com.github.tno.synthml.uml.profile.cif.UsedParametersCollector;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.github.tno.synthml.uml.profile.util.UMLActivityUtils;
@@ -79,8 +79,11 @@ import com.google.common.base.Verify;
  * simulated using Cameo. The annotation language is assumed to be CIF.
  */
 public class UMLToCameoTransformer {
-    /** The prefix to use template variable assignments, which is 'temp__'. */
-    public static final String PARAM_PREFIX = "temp__";
+    /**
+     * The prefix for temporary variables that pass arguments to the 'CallBehaviorAction'. This avoids overriding local
+     * variables when assigning a different value on a call with a colliding argument name.
+     */
+    public static final String ARGUMENT_PREFIX = "temp__";
 
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
@@ -346,42 +349,42 @@ public class UMLToCameoTransformer {
                 "Expected opaque behaviors to not have owned elements.");
 
         // Translate the guard and effects of the given behavior.
-        Set<String> variables = getLocalVariableList(behavior);
-
         CifContext context = CifContext.createScoped(behavior);
         String guard = translateGuard(behavior, context);
         List<List<String>> effects = translateEffects(behavior, context);
 
         // Define a new activity that encodes the behavior of the action.
+        Set<String> usedParameters = getUsedParameters(behavior);
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
-                acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior), variables);
+                acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior), usedParameters);
 
         // Store the created activity as the single owned behavior of the given opaque behavior.
         behavior.getOwnedBehaviors().add(activity);
     }
 
     @SuppressWarnings("restriction")
-    private Set<String> getLocalVariableList(RedefinableElement behavior) {
+    private Set<String> getUsedParameters(RedefinableElement behavior) {
         CifContext context = CifContext.createScoped(behavior);
 
         List<List<AUpdate>> parsedEffects = CifParserHelper.parseEffects(behavior);
         AExpression combinedGuard = getCombinedGuard(behavior);
 
-        CifParameterCollector templateParameterCollector = new CifParameterCollector();
-        Stream<NamedTemplateParameter> guardParameters = combinedGuard == null ? Stream.empty()
-                : templateParameterCollector.collect(combinedGuard, context);
-        Stream<NamedTemplateParameter> effectParameters = parsedEffects.stream().flatMap(List::stream)
-                .flatMap(expr -> templateParameterCollector.collect(expr, context));
-        return Stream.concat(guardParameters, effectParameters).map(p -> p.getName()).collect(Collectors.toSet());
+        UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
+        Stream<NamedTemplateParameter> parametersUsedInGuards = combinedGuard == null ? Stream.empty()
+                : usedParametersCollector.collect(combinedGuard, context);
+        Stream<NamedTemplateParameter> oaranetersUsedinEffects = parsedEffects.stream().flatMap(List::stream)
+                .flatMap(expr -> usedParametersCollector.collect(expr, context));
+        return Stream.concat(parametersUsedInGuards, oaranetersUsedinEffects).map(p -> p.getName())
+                .collect(Collectors.toSet());
     }
 
-    private Set<String> getLocalVariableList(DecisionNode decisionNode) {
-        return decisionNode.getOutgoings().stream().flatMap(edge -> getLocalVariableList(edge).stream())
+    private Set<String> getUsedParameters(DecisionNode decisionNode) {
+        return decisionNode.getOutgoings().stream().flatMap(edge -> getUsedParameters(edge).stream())
                 .collect(Collectors.toSet());
     }
 
     @SuppressWarnings("restriction")
-    private Set<String> getLocalVariableList(ActivityEdge edge) {
+    private Set<String> getUsedParameters(ActivityEdge edge) {
         if (!(edge instanceof ControlFlow controlFlow)) {
             return Collections.EMPTY_SET;
         }
@@ -393,8 +396,8 @@ public class UMLToCameoTransformer {
             return Collections.EMPTY_SET;
         }
 
-        CifParameterCollector templateParameterCollector = new CifParameterCollector();
-        return templateParameterCollector.collect(incomingGuard, context).map(NamedTemplateParameter::getName)
+        UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
+        return usedParametersCollector.collect(incomingGuard, context).map(NamedTemplateParameter::getName)
                 .collect(Collectors.toSet());
     }
 
@@ -454,9 +457,9 @@ public class UMLToCameoTransformer {
     private void transformTemplateSignature(Activity activity, RedefinableTemplateSignature templateSignature) {
         for (TemplateParameter parameter: templateSignature.getParameters()) {
             if (parameter instanceof ClassifierTemplateParameter) {
-                String name = ((NamedElement)parameter.getParameteredElement()).getName();
+                String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
 
-                ActivityHelper.addParameterToActivity(activity, name);
+                ActivityHelper.addParameterToActivity(activity, parameterName);
             }
         }
     }
@@ -475,13 +478,13 @@ public class UMLToCameoTransformer {
             String adressable = ((ANameExpression)argument.addressable).name.name;
             String value = translator.translateExpression(argument.value, cifScope);
 
-            translatedAssignments.add(PARAM_PREFIX + adressable + "=" + value);
+            translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
             arguments.add(adressable);
         }
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
 
-        ActivityHelper.passVariablesToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
+        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
     }
 
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
@@ -518,7 +521,7 @@ public class UMLToCameoTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
-        Set<String> localVariables = getLocalVariableList(action);
+        Set<String> usedParameters = getUsedParameters(action);
 
         // Translate the guard and effects of the action.
         CifContext context = CifContext.createScoped(action);
@@ -528,7 +531,7 @@ public class UMLToCameoTransformer {
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
-                PokaYokeUmlProfileUtil.isAtomic(action), localVariables);
+                PokaYokeUmlProfileUtil.isAtomic(action), usedParameters);
 
         // Define the call behavior action that replaces the action in the activity.
         CallBehaviorAction replacementActionNode = FileHelper.FACTORY.createCallBehaviorAction();
@@ -546,7 +549,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
-        ActivityHelper.passVariablesToCallBehaviorAction(replacementActionNode, localVariables, null);
+        ActivityHelper.passArgumentsToCallBehaviorAction(replacementActionNode, usedParameters, null);
     }
 
     /**
@@ -615,12 +618,11 @@ public class UMLToCameoTransformer {
         decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
         evalActivity.setName("eval");
 
-        Set<String> localVariables = getLocalVariableList(decisionNode);
+        Set<String> usedParameters = getUsedParameters(decisionNode);
 
-        // Add template parameters to the newly created activity for local variables that are used in the program of the
-        // decision node.
-        for (String variableName: localVariables) {
-            ActivityHelper.addParameterToActivity(evalActivity, variableName);
+        // For each parameter used in the evaluation of the decision, add a parameter to the newly created activity.
+        for (String usedParameter: usedParameters) {
+            ActivityHelper.addParameterToActivity(evalActivity, usedParameter);
         }
 
         // Create the call behavior node that calls the activity we just created.
@@ -631,8 +633,8 @@ public class UMLToCameoTransformer {
         // Redirect the incoming edge into the decision node to go into the new evaluation node instead.
         decisionNode.getIncomings().get(0).setTarget(evalNode);
 
-        // Pass local variables to the activity.
-        ActivityHelper.passVariablesToCallBehaviorAction(evalNode, localVariables, null);
+        // Pass locally used parameters to the activity.
+        ActivityHelper.passArgumentsToCallBehaviorAction(evalNode, usedParameters, null);
 
         // Define the control flow from the new evaluator node to the decision node.
         ControlFlow evalToDecisionFlow = FileHelper.FACTORY.createControlFlow();
