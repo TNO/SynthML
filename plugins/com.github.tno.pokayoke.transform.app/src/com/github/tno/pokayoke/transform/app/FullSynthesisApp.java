@@ -29,6 +29,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
@@ -162,8 +163,11 @@ public class FullSynthesisApp {
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
                 tracker);
 
-        // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace, tracker);
+        // Perform event-based automaton projection and update the synthesis tracker.
+        Pair<String, Set<String>> preservedAndRemovedEvents = getPreservedEvents(cifStateSpace, tracker);
+        String preservedEvents = preservedAndRemovedEvents.left;
+        Set<String> removedEventNames = preservedAndRemovedEvents.right;
+        tracker.updateEndAtomicNonDeterministic(removedEventNames);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -292,7 +296,7 @@ public class FullSynthesisApp {
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker);
     }
 
-    private static String getPreservedEvents(Specification spec, SynthesisChainTracking tracker) {
+    private static Pair<String, Set<String>> getPreservedEvents(Specification spec, SynthesisChainTracking tracker) {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
@@ -307,9 +311,8 @@ public class FullSynthesisApp {
         // tracker.
         Set<String> removedEventNames = events.stream().filter(event -> !preservedEventNames.contains(event.getName()))
                 .map(e -> e.getName()).collect(Collectors.toSet());
-        tracker.updateEndAtomicNonDeterministic(removedEventNames);
 
-        return String.join(",", preservedEventNames);
+        return new Pair<>(String.join(",", preservedEventNames), removedEventNames);
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
