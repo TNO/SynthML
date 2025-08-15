@@ -330,10 +330,10 @@
           </style>
         </controls>
       </groups>
-      <groups name="PR_ActivityArgumentsGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_activityArguments" labelExpression="Activity Arguments" helpExpression="The arguments specified for the Called Activity" valueExpression="service:self.getActivityArguments()">
+      <groups name="PR_ArgumentsGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_arguments" labelExpression="Activity Arguments" helpExpression="The arguments specified for the Called Activity" valueExpression="service:self.getArguments()">
           <initialOperation>
-            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setActivityArguments(newValue)"/>
+            <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setArguments(newValue)"/>
           </initialOperation>
         </controls>
       </groups>

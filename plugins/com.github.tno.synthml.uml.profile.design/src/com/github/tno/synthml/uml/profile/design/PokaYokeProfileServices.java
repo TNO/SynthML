@@ -299,13 +299,13 @@ public class PokaYokeProfileServices {
         // directly.
         DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
 
-        List<String> activityArguments = PokaYokeUmlProfileUtil.getActivityArguments(callAction);
-        String stringArguments = String.join("", activityArguments).replaceAll("\s", "").replace("\n", "");
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
+        arguments = arguments.replaceAll("\s", "").replace("\n", "");
 
-        if (stringArguments.isEmpty()) {
+        if (arguments.isEmpty()) {
             return displaySwitch.caseCallBehaviorAction(callAction);
         } else {
-            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + stringArguments + ">";
+            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + arguments + ">";
         }
     }
 
@@ -384,20 +384,20 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Returns the {@link FormalCallBehaviorAction#getActivityArguments() arguments} property value if {@code element}
-     * is stereotyped, {@code null} otherwise.
+     * Returns the {@link FormalCallBehaviorAction#getArguments() arguments} property value if {@code element} is
+     * stereotyped, {@code null} otherwise.
      *
      * @param element The element to interrogate.
-     * @return The {@link FormalCallBehaviorAction#getActivityArguments() arguments} property value if {@code element}
-     *     is stereotyped, {@code null} otherwise.
+     * @return The {@link FormalCallBehaviorAction#getArguments() arguments} property value if {@code element} is
+     *     stereotyped, {@code null} otherwise.
      */
-    public String getActivityArguments(CallBehaviorAction element) {
-        return Joiner.on(EFFECTS_SEPARATOR).join(PokaYokeUmlProfileUtil.getActivityArguments(element));
+    public String getArguments(CallBehaviorAction element) {
+        return PokaYokeUmlProfileUtil.getArguments(element);
     }
 
     /**
      * Applies the {@link FormalCallBehaviorAction} stereotype and sets the
-     * {@link FormalCallBehaviorAction#getActivityArguments() arguments} property for {@code element}.
+     * {@link FormalCallBehaviorAction#getArguments() arguments} property for {@code element}.
      * <p>
      * The {@link FormalCallBehaviorAction} stereotype is removed if {@code newValue} is {@code null} or
      * {@link String#isEmpty() empty}.
@@ -406,13 +406,13 @@ public class PokaYokeProfileServices {
      * @param element The element to set the property on.
      * @param newValue The new property value.
      */
-    public void setActivityArguments(CallBehaviorAction element, String newValue) {
+    public void setArguments(CallBehaviorAction element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
             // Empty values are not allowed, so reset the value.
-            PokaYokeUmlProfileUtil.setActivityArguments(element, null);
+            PokaYokeUmlProfileUtil.setArguments(element, null);
         } else {
-            PokaYokeUmlProfileUtil.setActivityArguments(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
+            PokaYokeUmlProfileUtil.setArguments(element, newValue);
         }
 
         // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
@@ -420,8 +420,8 @@ public class PokaYokeProfileServices {
         refresh(element);
     }
 
-    public void unsetActivityArguments(CallBehaviorAction element) {
-        setActivityArguments(element, null);
+    public void unsetArguments(CallBehaviorAction element) {
+        setArguments(element, null);
     }
 
     /**
@@ -533,7 +533,7 @@ public class PokaYokeProfileServices {
             if (matcher.find()) {
                 editedLabelContent = matcher.group(1);
                 String generics = matcher.group(2) != null ? matcher.group(2) : "";
-                setActivityArguments(callAction, generics.replace(",", ",\n"));
+                setArguments(callAction, generics.replace(",", ",\n"));
             }
         }
 

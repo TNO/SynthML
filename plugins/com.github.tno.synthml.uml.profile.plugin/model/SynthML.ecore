@@ -19,8 +19,8 @@
         lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//ControlFlow"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FormalCallBehaviorAction">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="activityArguments" unique="false"
-        upperBound="-1" eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="arguments" ordered="false"
+        unique="false" eType="ecore:EDataType ../../org.eclipse.uml2.types/model/Types.ecore#//String"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="base_CallBehaviorAction"
         ordered="false" lowerBound="1" eType="ecore:EClass ../../org.eclipse.uml2.uml/model/UML.ecore#//CallBehaviorAction"/>
   </eClassifiers>

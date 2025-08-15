@@ -177,13 +177,13 @@ public interface SynthMLPackage extends EPackage {
 	int FORMAL_CALL_BEHAVIOR_ACTION = 2;
 
 	/**
-	 * The feature id for the '<em><b>Activity Arguments</b></em>' attribute list.
+	 * The feature id for the '<em><b>Arguments</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS = 0;
+	int FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS = 0;
 
 	/**
 	 * The feature id for the '<em><b>Base Call Behavior Action</b></em>' reference.
@@ -310,15 +310,15 @@ public interface SynthMLPackage extends EPackage {
 	EClass getFormalCallBehaviorAction();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link SynthML.FormalCallBehaviorAction#getActivityArguments <em>Activity Arguments</em>}'.
+	 * Returns the meta object for the attribute '{@link SynthML.FormalCallBehaviorAction#getArguments <em>Arguments</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Activity Arguments</em>'.
-	 * @see SynthML.FormalCallBehaviorAction#getActivityArguments()
+	 * @return the meta object for the attribute '<em>Arguments</em>'.
+	 * @see SynthML.FormalCallBehaviorAction#getArguments()
 	 * @see #getFormalCallBehaviorAction()
 	 * @generated
 	 */
-	EAttribute getFormalCallBehaviorAction_ActivityArguments();
+	EAttribute getFormalCallBehaviorAction_Arguments();
 
 	/**
 	 * Returns the meta object for the reference '{@link SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}'.
@@ -433,12 +433,12 @@ public interface SynthMLPackage extends EPackage {
 		EClass FORMAL_CALL_BEHAVIOR_ACTION = eINSTANCE.getFormalCallBehaviorAction();
 
 		/**
-		 * The meta object literal for the '<em><b>Activity Arguments</b></em>' attribute list feature.
+		 * The meta object literal for the '<em><b>Arguments</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS = eINSTANCE.getFormalCallBehaviorAction_ActivityArguments();
+		EAttribute FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS = eINSTANCE.getFormalCallBehaviorAction_Arguments();
 
 		/**
 		 * The meta object literal for the '<em><b>Base Call Behavior Action</b></em>' reference feature.

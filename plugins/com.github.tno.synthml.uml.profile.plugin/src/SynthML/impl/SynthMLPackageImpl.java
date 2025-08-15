@@ -209,7 +209,7 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getFormalCallBehaviorAction_ActivityArguments() {
+	public EAttribute getFormalCallBehaviorAction_Arguments() {
 		return (EAttribute)formalCallBehaviorActionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -263,7 +263,7 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		createEReference(formalControlFlowEClass, FORMAL_CONTROL_FLOW__BASE_CONTROL_FLOW);
 
 		formalCallBehaviorActionEClass = createEClass(FORMAL_CALL_BEHAVIOR_ACTION);
-		createEAttribute(formalCallBehaviorActionEClass, FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
+		createEAttribute(formalCallBehaviorActionEClass, FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS);
 		createEReference(formalCallBehaviorActionEClass, FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION);
 	}
 
@@ -312,7 +312,7 @@ public class SynthMLPackageImpl extends EPackageImpl implements SynthMLPackage {
 		initEReference(getFormalControlFlow_Base_ControlFlow(), theUMLPackage.getControlFlow(), null, "base_ControlFlow", null, 1, 1, FormalControlFlow.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(formalCallBehaviorActionEClass, FormalCallBehaviorAction.class, "FormalCallBehaviorAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getFormalCallBehaviorAction_ActivityArguments(), theTypesPackage.getString(), "activityArguments", null, 0, -1, FormalCallBehaviorAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFormalCallBehaviorAction_Arguments(), theTypesPackage.getString(), "arguments", null, 0, 1, FormalCallBehaviorAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEReference(getFormalCallBehaviorAction_Base_CallBehaviorAction(), theUMLPackage.getCallBehaviorAction(), null, "base_CallBehaviorAction", null, 1, 1, FormalCallBehaviorAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		// Create resource

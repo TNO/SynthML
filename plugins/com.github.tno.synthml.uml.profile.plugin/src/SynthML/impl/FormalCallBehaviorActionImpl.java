@@ -5,19 +5,13 @@ package SynthML.impl;
 import SynthML.FormalCallBehaviorAction;
 import SynthML.SynthMLPackage;
 
-import java.util.Collection;
-
 import org.eclipse.emf.common.notify.Notification;
-
-import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
-import org.eclipse.emf.ecore.util.EDataTypeEList;
 
 import org.eclipse.uml2.uml.CallBehaviorAction;
 
@@ -29,7 +23,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link SynthML.impl.FormalCallBehaviorActionImpl#getActivityArguments <em>Activity Arguments</em>}</li>
+ *   <li>{@link SynthML.impl.FormalCallBehaviorActionImpl#getArguments <em>Arguments</em>}</li>
  *   <li>{@link SynthML.impl.FormalCallBehaviorActionImpl#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
@@ -37,14 +31,24 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  */
 public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container implements FormalCallBehaviorAction {
 	/**
-	 * The cached value of the '{@link #getActivityArguments() <em>Activity Arguments</em>}' attribute list.
+	 * The default value of the '{@link #getArguments() <em>Arguments</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getActivityArguments()
+	 * @see #getArguments()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<String> activityArguments;
+	protected static final String ARGUMENTS_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getArguments() <em>Arguments</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getArguments()
+	 * @generated
+	 * @ordered
+	 */
+	protected String arguments = ARGUMENTS_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getBase_CallBehaviorAction() <em>Base Call Behavior Action</em>}' reference.
@@ -81,11 +85,21 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 	 * @generated
 	 */
 	@Override
-	public EList<String> getActivityArguments() {
-		if (activityArguments == null) {
-			activityArguments = new EDataTypeEList<String>(String.class, this, SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS);
-		}
-		return activityArguments;
+	public String getArguments() {
+		return arguments;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setArguments(String newArguments) {
+		String oldArguments = arguments;
+		arguments = newArguments;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS, oldArguments, arguments));
 	}
 
 	/**
@@ -136,8 +150,8 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS:
-				return getActivityArguments();
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS:
+				return getArguments();
 			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				if (resolve) return getBase_CallBehaviorAction();
 				return basicGetBase_CallBehaviorAction();
@@ -150,13 +164,11 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS:
-				getActivityArguments().clear();
-				getActivityArguments().addAll((Collection<? extends String>)newValue);
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS:
+				setArguments((String)newValue);
 				return;
 			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				setBase_CallBehaviorAction((CallBehaviorAction)newValue);
@@ -173,8 +185,8 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS:
-				getActivityArguments().clear();
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS:
+				setArguments(ARGUMENTS_EDEFAULT);
 				return;
 			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				setBase_CallBehaviorAction((CallBehaviorAction)null);
@@ -191,8 +203,8 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ACTIVITY_ARGUMENTS:
-				return activityArguments != null && !activityArguments.isEmpty();
+			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS:
+				return ARGUMENTS_EDEFAULT == null ? arguments != null : !ARGUMENTS_EDEFAULT.equals(arguments);
 			case SynthMLPackage.FORMAL_CALL_BEHAVIOR_ACTION__BASE_CALL_BEHAVIOR_ACTION:
 				return base_CallBehaviorAction != null;
 		}
@@ -209,8 +221,8 @@ public class FormalCallBehaviorActionImpl extends MinimalEObjectImpl.Container i
 		if (eIsProxy()) return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (activityArguments: ");
-		result.append(activityArguments);
+		result.append(" (arguments: ");
+		result.append(arguments);
 		result.append(')');
 		return result.toString();
 	}

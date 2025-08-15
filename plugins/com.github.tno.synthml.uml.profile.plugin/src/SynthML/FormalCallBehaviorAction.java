@@ -2,8 +2,6 @@
  */
 package SynthML;
 
-import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -17,7 +15,7 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link SynthML.FormalCallBehaviorAction#getActivityArguments <em>Activity Arguments</em>}</li>
+ *   <li>{@link SynthML.FormalCallBehaviorAction#getArguments <em>Arguments</em>}</li>
  *   <li>{@link SynthML.FormalCallBehaviorAction#getBase_CallBehaviorAction <em>Base Call Behavior Action</em>}</li>
  * </ul>
  *
@@ -27,16 +25,26 @@ import org.eclipse.uml2.uml.CallBehaviorAction;
  */
 public interface FormalCallBehaviorAction extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Activity Arguments</b></em>' attribute list.
-	 * The list contents are of type {@link java.lang.String}.
+	 * Returns the value of the '<em><b>Arguments</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Activity Arguments</em>' attribute list.
-	 * @see SynthML.SynthMLPackage#getFormalCallBehaviorAction_ActivityArguments()
-	 * @model unique="false" dataType="org.eclipse.uml2.types.String"
+	 * @return the value of the '<em>Arguments</em>' attribute.
+	 * @see #setArguments(String)
+	 * @see SynthML.SynthMLPackage#getFormalCallBehaviorAction_Arguments()
+	 * @model unique="false" dataType="org.eclipse.uml2.types.String" ordered="false"
 	 * @generated
 	 */
-	EList<String> getActivityArguments();
+	String getArguments();
+
+	/**
+	 * Sets the value of the '{@link SynthML.FormalCallBehaviorAction#getArguments <em>Arguments</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Arguments</em>' attribute.
+	 * @see #getArguments()
+	 * @generated
+	 */
+	void setArguments(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Base Call Behavior Action</b></em>' reference.
