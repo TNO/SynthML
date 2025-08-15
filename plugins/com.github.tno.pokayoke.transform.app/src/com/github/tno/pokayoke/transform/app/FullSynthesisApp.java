@@ -219,6 +219,14 @@ public class FullSynthesisApp {
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
+        // It is more convenient to use the Petri net after it has been synthesised, instead of storing each transition
+        // at the time of creation: in case a transition appears multiple times in a Petri net, Petrify distinguishes
+        // each duplicate by adding a postfix to the name of the transition (e.g., 'Transition_A/1' is a duplicate of
+        // 'Transition_A'), and these duplicates are not specified in the transition declarations, but only appear in
+        // the specification, and are handled separately. Directly using the final Petri net allows to just loop over
+        // the transitions, and store them in the synthesis tracker.
+        tracker.addPetriNetTransitions(petriNet);
+
         // Remove the self-loop that was added for petrification.
         Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
         PostProcessPNML.removeLoop(petriNet);
