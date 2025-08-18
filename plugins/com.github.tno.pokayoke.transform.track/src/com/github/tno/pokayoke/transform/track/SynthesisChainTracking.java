@@ -348,7 +348,10 @@ public class SynthesisChainTracking {
 
         for (Transition t: petriNetTransitions) {
             // Store the transition and the related CIF event tracing info.
-            transitionsToEventsTraceInfo.put(t, cifEventTraceInfo.get(namesToCifEvents.get(t.getName().getText())));
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(namesToCifEvents.get(t.getName().getText()));
+            Verify.verify(eventInfo != null,
+                    "Could not find event info for transition '" + t.getName().getText() + "'.");
+            transitionsToEventsTraceInfo.put(t, eventInfo);
         }
     }
 
