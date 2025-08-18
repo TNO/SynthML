@@ -1,0 +1,117 @@
+controllable flipProp2;
+controllable flipExtra;
+controllable __node__InitialNode__98__0;
+uncontrollable __node__MergeNode__100__0;
+uncontrollable __node__MergeNode__100__1;
+uncontrollable __node__DecisionNode__102__0;
+uncontrollable __node__DecisionNode__102__1;
+uncontrollable __node__DecisionNode__104__0;
+uncontrollable __node__DecisionNode__104__1;
+uncontrollable __node__MergeNode__106__0;
+uncontrollable __node__MergeNode__106__1;
+uncontrollable __node__ActivityFinalNode__108__0;
+uncontrollable __node__CallBehaviorAction__110;
+uncontrollable __node__CallBehaviorAction__112;
+uncontrollable __node__CallBehaviorAction__114;
+uncontrollable __node__CallBehaviorAction__116;
+uncontrollable __node__CallBehaviorAction__118;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet flipProp2, flipExtra, __node__InitialNode__98__0, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__DecisionNode__102__0, __node__DecisionNode__102__1, __node__DecisionNode__104__0, __node__DecisionNode__104__1, __node__MergeNode__106__0, __node__MergeNode__106__1, __node__ActivityFinalNode__108__0, __node__CallBehaviorAction__110, __node__CallBehaviorAction__112, __node__CallBehaviorAction__114, __node__CallBehaviorAction__116, __node__CallBehaviorAction__118, __start, __end;
+  @state(synthesis_state_space = "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space = "loc1")
+  location s2:
+    edge __node__InitialNode__98__0 goto s3;
+  @state(synthesis_state_space = "loc2")
+  location s3:
+    edge __node__MergeNode__100__1 goto s4;
+  @state(synthesis_state_space = "loc3")
+  location s4:
+    edge __node__DecisionNode__102__1 goto s5;
+    edge __node__DecisionNode__102__0 goto s6;
+  @state(synthesis_state_space = "loc5")
+  location s5:
+    edge __node__CallBehaviorAction__118 goto s8;
+  @state(synthesis_state_space = "loc4")
+  location s6:
+    edge __node__CallBehaviorAction__110 goto s7;
+  @state(synthesis_state_space = "loc6")
+  location s7:
+    edge __node__CallBehaviorAction__116 goto s9;
+  @state(synthesis_state_space = "loc7")
+  location s8:
+    edge __node__DecisionNode__104__1 goto s10;
+    edge __node__DecisionNode__104__0 goto s11;
+    edge flipProp2 goto s12;
+  @state(synthesis_state_space = "loc8")
+  location s9:
+    edge __node__MergeNode__106__1 goto s13;
+    edge flipProp2 goto s14;
+  @state(synthesis_state_space = "loc11")
+  location s10:
+    edge __node__CallBehaviorAction__114 goto s18;
+    edge flipProp2 goto s15;
+  @state(synthesis_state_space = "loc10")
+  location s11:
+    edge __node__CallBehaviorAction__112 goto s17;
+    edge flipProp2 goto s16;
+  @state(synthesis_state_space = "loc9")
+  location s12:
+    edge __node__DecisionNode__104__1 goto s15;
+    edge __node__DecisionNode__104__0 goto s16;
+  @state(synthesis_state_space = "loc13")
+  location s13:
+    edge __node__ActivityFinalNode__108__0 goto s20;
+    edge flipProp2 goto s19;
+  @state(synthesis_state_space = "loc12")
+  location s14:
+    edge __node__MergeNode__106__1 goto s19;
+  @state(synthesis_state_space = "loc15")
+  location s15:
+    edge __node__CallBehaviorAction__114 goto s22;
+  @state(synthesis_state_space = "loc14")
+  location s16:
+    edge __node__CallBehaviorAction__112 goto s21;
+  @state(synthesis_state_space = "loc16")
+  location s17:
+    edge __node__MergeNode__106__0 goto s13;
+    edge flipProp2 goto s21;
+  @state(synthesis_state_space = "loc17")
+  location s18:
+    edge __node__MergeNode__100__0 goto s4;
+  @state(synthesis_state_space = "loc18")
+  location s19:
+    edge __node__ActivityFinalNode__108__0 goto s23;
+  @state(synthesis_state_space = "loc19")
+  location s20:
+    edge flipProp2 goto s23;
+  @state(synthesis_state_space = "loc20")
+  location s21:
+    edge __node__MergeNode__106__0 goto s19;
+  @state(synthesis_state_space = "loc21")
+  location s22:
+    edge __node__MergeNode__100__0 goto s24;
+  @state(synthesis_state_space = "loc22")
+  location s23:
+    edge __end goto s25;
+  @state(synthesis_state_space = "loc23")
+  location s24:
+    edge __node__DecisionNode__102__1 goto s26;
+    edge __node__DecisionNode__102__0 goto s27;
+  @state(synthesis_state_space = "__done")
+  location s25:
+    marked;
+  @state(synthesis_state_space = "loc25")
+  location s26:
+    edge __node__CallBehaviorAction__118 goto s12;
+  @state(synthesis_state_space = "loc24")
+  location s27:
+    edge __node__CallBehaviorAction__110 goto s28;
+  @state(synthesis_state_space = "loc26")
+  location s28:
+    edge __node__CallBehaviorAction__116 goto s14;
+end

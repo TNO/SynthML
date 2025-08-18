@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:SynthML="https://github.com/TNO/SynthML/" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <uml:Model xmi:id="_sCbVwHaiEfC-Hb6DHVTTHg" name="NewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_t_02kHaiEfC-Hb6DHVTTHg" name="Class1" classifierBehavior="_xI118HaiEfC-Hb6DHVTTHg" isActive="true">
+      <ownedAttribute xmi:id="_0nZAcHaiEfC-Hb6DHVTTHg" name="property1">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3m3pUHaiEfC-Hb6DHVTTHg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3m3pUXaiEfC-Hb6DHVTTHg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_4YNmsHaiEfC-Hb6DHVTTHg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_1oLvEHaiEfC-Hb6DHVTTHg" name="property2">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4pVy8HaiEfC-Hb6DHVTTHg" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4pVy8XaiEfC-Hb6DHVTTHg" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_5IGLgHaiEfC-Hb6DHVTTHg">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_dZHDcHeIEfCNV79CNnqiJQ" name="extra">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_d_np0HeIEfCNV79CNnqiJQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_d_np0XeIEfCNV79CNnqiJQ" value="1"/>
+        <defaultValue xmi:type="uml:OpaqueExpression" xmi:id="_eqgZ4HeIEfCNV79CNnqiJQ">
+          <language>CIF</language>
+          <body>false</body>
+        </defaultValue>
+      </ownedAttribute>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_xI118HaiEfC-Hb6DHVTTHg" name="Activity1" isAbstract="true" postcondition="_IimxsHajEfC-Hb6DHVTTHg" precondition="_DEjNkHajEfC-Hb6DHVTTHg">
+        <ownedRule xmi:id="_DEjNkHajEfC-Hb6DHVTTHg" name="precondition1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_E8AecHajEfC-Hb6DHVTTHg" name="">
+            <body>not property1</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="_IimxsHajEfC-Hb6DHVTTHg" name="postcondition1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_KwUmcHajEfC-Hb6DHVTTHg" name="">
+            <body>property1 and extra</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_RpxxkHajEfC-Hb6DHVTTHg" name="ZeroCalls" constrainedElement="__Sw-AHaiEfC-Hb6DHVTTHg _ydTHcHaiEfC-Hb6DHVTTHg">
+          <specification xmi:type="uml:Interval" xmi:id="_T1PjkHajEfC-Hb6DHVTTHg" name="" max="_OFMQgHajEfC-Hb6DHVTTHg" min="_OFMQgHajEfC-Hb6DHVTTHg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="_ydTHcHaiEfC-Hb6DHVTTHg" name="Activity2" isAbstract="true" postcondition="_cbqm0HajEfC-Hb6DHVTTHg">
+        <ownedRule xmi:id="_cbqm0HajEfC-Hb6DHVTTHg" name="postcondition2">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="_gky_YHajEfC-Hb6DHVTTHg" name="">
+            <body>property2</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:type="uml:IntervalConstraint" xmi:id="_wP-e0HajEfC-Hb6DHVTTHg" name="ZeroCalls" constrainedElement="_6NDocHaiEfC-Hb6DHVTTHg">
+          <specification xmi:type="uml:Interval" xmi:id="_yJch4HajEfC-Hb6DHVTTHg" name="" max="_OFMQgHajEfC-Hb6DHVTTHg" min="_OFMQgHajEfC-Hb6DHVTTHg"/>
+        </ownedRule>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_6NDocHaiEfC-Hb6DHVTTHg" name="flipProp1"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="__Sw-AHaiEfC-Hb6DHVTTHg" name="flipProp2"/>
+      <ownedBehavior xmi:type="uml:OpaqueBehavior" xmi:id="_gculcHeIEfCNV79CNnqiJQ" name="flipExtra"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:LiteralInteger" xmi:id="_OFMQgHajEfC-Hb6DHVTTHg" name="LiteralZero"/>
+    <profileApplication xmi:id="_3mz-8HaiEfC-Hb6DHVTTHg">
+      <eAnnotations xmi:id="_3m2bMHaiEfC-Hb6DHVTTHg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="https://github.com/TNO/SynthML/#/"/>
+      </eAnnotations>
+      <appliedProfile href="platform:/plugin/com.github.tno.synthml.uml.profile.plugin/model/synthml.uml#_SOCIsMDxEe6C9dKnjVMyDQ"/>
+    </profileApplication>
+  </uml:Model>
+  <SynthML:FormalElement xmi:id="_7YVv0HaiEfC-Hb6DHVTTHg" guard="true" base_RedefinableElement="_6NDocHaiEfC-Hb6DHVTTHg" atomic="true">
+    <effects>property1 := not property1</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_AUdEgHajEfC-Hb6DHVTTHg" guard="property1" base_RedefinableElement="__Sw-AHaiEfC-Hb6DHVTTHg" atomic="true">
+    <effects>property2:=not property2</effects>
+  </SynthML:FormalElement>
+  <SynthML:FormalElement xmi:id="_hWOZQHeIEfCNV79CNnqiJQ" guard="not extra" base_RedefinableElement="_gculcHeIEfCNV79CNnqiJQ" atomic="true">
+    <effects>extra := not extra</effects>
+  </SynthML:FormalElement>
+</xmi:XMI>

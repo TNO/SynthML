@@ -1,0 +1,28 @@
+controllable flipProp1;
+controllable flipExtra;
+controllable __start;
+controllable __end;
+automaton projected:
+  alphabet flipProp1, flipExtra, __start, __end;
+  @state(synthesis_state_space = "__init")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(synthesis_state_space = "loc1")
+  location s2:
+    edge flipExtra goto s3;
+    edge flipProp1 goto s4;
+  @state(synthesis_state_space = "loc3")
+  location s3:
+    edge flipProp1 goto s5;
+  @state(synthesis_state_space = "loc2")
+  location s4:
+    edge flipExtra goto s5;
+    edge flipProp1 goto s2;
+  @state(synthesis_state_space = "loc4")
+  location s5:
+    edge __end goto s6;
+  @state(synthesis_state_space = "__done")
+  location s6:
+    marked;
+end

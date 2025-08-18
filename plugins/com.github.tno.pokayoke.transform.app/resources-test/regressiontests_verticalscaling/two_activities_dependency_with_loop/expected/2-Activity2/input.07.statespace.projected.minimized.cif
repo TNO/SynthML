@@ -1,0 +1,117 @@
+controllable flipProp2;
+controllable flipExtra;
+controllable __node__InitialNode__98__0;
+uncontrollable __node__MergeNode__100__0;
+uncontrollable __node__MergeNode__100__1;
+uncontrollable __node__DecisionNode__102__0;
+uncontrollable __node__DecisionNode__102__1;
+uncontrollable __node__DecisionNode__104__0;
+uncontrollable __node__DecisionNode__104__1;
+uncontrollable __node__MergeNode__106__0;
+uncontrollable __node__MergeNode__106__1;
+uncontrollable __node__ActivityFinalNode__108__0;
+uncontrollable __node__CallBehaviorAction__110;
+uncontrollable __node__CallBehaviorAction__112;
+uncontrollable __node__CallBehaviorAction__114;
+uncontrollable __node__CallBehaviorAction__116;
+uncontrollable __node__CallBehaviorAction__118;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet flipProp2, flipExtra, __node__InitialNode__98__0, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__DecisionNode__102__0, __node__DecisionNode__102__1, __node__DecisionNode__104__0, __node__DecisionNode__104__1, __node__MergeNode__106__0, __node__MergeNode__106__1, __node__ActivityFinalNode__108__0, __node__CallBehaviorAction__110, __node__CallBehaviorAction__112, __node__CallBehaviorAction__114, __node__CallBehaviorAction__116, __node__CallBehaviorAction__118, __start, __end;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected = "s2")
+  location s2:
+    edge __node__InitialNode__98__0 goto s8;
+  @state(projected = "s25")
+  location s3:
+    marked;
+  @state(projected = "s8")
+  location s4:
+    edge __node__DecisionNode__104__1 goto s5;
+    edge __node__DecisionNode__104__0 goto s6;
+    edge flipProp2 goto s7;
+  @state(projected = "s10")
+  location s5:
+    edge __node__CallBehaviorAction__114 goto s12;
+    edge flipProp2 goto s21;
+  @state(projected = "s11")
+  location s6:
+    edge __node__CallBehaviorAction__112 goto s14;
+    edge flipProp2 goto s16;
+  @state(projected = "s12")
+  location s7:
+    edge __node__DecisionNode__104__1 goto s21;
+    edge __node__DecisionNode__104__0 goto s16;
+  @state(projected = "s3")
+  location s8:
+    edge __node__MergeNode__100__1 goto s13;
+  @state(projected = "s9")
+  location s9:
+    edge __node__MergeNode__106__1 goto s10;
+    edge flipProp2 goto s11;
+  @state(projected = "s13")
+  location s10:
+    edge __node__ActivityFinalNode__108__0 goto s19;
+    edge flipProp2 goto s20;
+  @state(projected = "s14")
+  location s11:
+    edge __node__MergeNode__106__1 goto s20;
+  @state(projected = "s18")
+  location s12:
+    edge __node__MergeNode__100__0 goto s13;
+  @state(projected = "s4")
+  location s13:
+    edge __node__DecisionNode__102__1 goto s17;
+    edge __node__DecisionNode__102__0 goto s18;
+  @state(projected = "s17")
+  location s14:
+    edge __node__MergeNode__106__0 goto s10;
+    edge flipProp2 goto s15;
+  @state(projected = "s21")
+  location s15:
+    edge __node__MergeNode__106__0 goto s20;
+  @state(projected = "s16")
+  location s16:
+    edge __node__CallBehaviorAction__112 goto s15;
+  @state(projected = "s5")
+  location s17:
+    edge __node__CallBehaviorAction__118 goto s4;
+  @state(projected = "s6")
+  location s18:
+    edge __node__CallBehaviorAction__110 goto s23;
+  @state(projected = "s20")
+  location s19:
+    edge flipProp2 goto s22;
+  @state(projected = "s19")
+  location s20:
+    edge __node__ActivityFinalNode__108__0 goto s22;
+  @state(projected = "s15")
+  location s21:
+    edge __node__CallBehaviorAction__114 goto s24;
+  @state(projected = "s23")
+  location s22:
+    edge __end goto s3;
+  @state(projected = "s7")
+  location s23:
+    edge __node__CallBehaviorAction__116 goto s9;
+  @state(projected = "s22")
+  location s24:
+    edge __node__MergeNode__100__0 goto s28;
+  @state(projected = "s28")
+  location s25:
+    edge __node__CallBehaviorAction__116 goto s11;
+  @state(projected = "s27")
+  location s26:
+    edge __node__CallBehaviorAction__110 goto s25;
+  @state(projected = "s26")
+  location s27:
+    edge __node__CallBehaviorAction__118 goto s7;
+  @state(projected = "s24")
+  location s28:
+    edge __node__DecisionNode__102__1 goto s27;
+    edge __node__DecisionNode__102__0 goto s26;
+end

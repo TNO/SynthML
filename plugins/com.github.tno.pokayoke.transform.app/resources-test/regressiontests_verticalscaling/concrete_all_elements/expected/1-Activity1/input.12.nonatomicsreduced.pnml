@@ -1,0 +1,402 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="minimal" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <page id="minimal">
+      <transition id="__start">
+        <name>
+          <text>__start</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__118__0">
+        <name>
+          <text>__node__InitialNode__118__0</text>
+        </name>
+      </transition>
+      <transition id="__node__InitialNode__84__0">
+        <name>
+          <text>__node__InitialNode__84__0</text>
+        </name>
+      </transition>
+      <transition id="Initialize">
+        <name>
+          <text>Initialize</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__122">
+        <name>
+          <text>__node__OpaqueAction__122</text>
+        </name>
+      </transition>
+      <transition id="__node__ForkNode__92">
+        <name>
+          <text>__node__ForkNode__92</text>
+        </name>
+      </transition>
+      <transition id="Initialize__na_result_1">
+        <name>
+          <text>Initialize__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="__end">
+        <name>
+          <text>__end</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__86__0">
+        <name>
+          <text>__node__ActivityFinalNode__86__0</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__104__0">
+        <name>
+          <text>__node__DecisionNode__104__0</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__102">
+        <name>
+          <text>__node__CallBehaviorAction__102</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__88__na_result_1">
+        <name>
+          <text>__node__CallBehaviorAction__88__na_result_1</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__106">
+        <name>
+          <text>__node__OpaqueAction__106</text>
+        </name>
+      </transition>
+      <transition id="__node__CallBehaviorAction__88">
+        <name>
+          <text>__node__CallBehaviorAction__88</text>
+        </name>
+      </transition>
+      <transition id="__node__ActivityFinalNode__120__0">
+        <name>
+          <text>__node__ActivityFinalNode__120__0</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__90__0">
+        <name>
+          <text>__node__DecisionNode__90__0</text>
+        </name>
+      </transition>
+      <transition id="__node__DecisionNode__90__1">
+        <name>
+          <text>__node__DecisionNode__90__1</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__98__0">
+        <name>
+          <text>__node__MergeNode__98__0</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__105__0">
+        <name>
+          <text>__node__MergeNode__105__0</text>
+        </name>
+      </transition>
+      <transition id="__node__JoinNode__94">
+        <name>
+          <text>__node__JoinNode__94</text>
+        </name>
+      </transition>
+      <transition id="__node__MergeNode__98__1">
+        <name>
+          <text>__node__MergeNode__98__1</text>
+        </name>
+      </transition>
+      <transition id="__node__OpaqueAction__100">
+        <name>
+          <text>__node__OpaqueAction__100</text>
+        </name>
+      </transition>
+      <place id="p9">
+        <name>
+          <text>p9</text>
+        </name>
+      </place>
+      <arc id="Initialize__to__p9" source="Initialize" target="p9">
+      </arc>
+      <transition id="Initialize/1">
+        <name>
+          <text>Initialize</text>
+        </name>
+      </transition>
+      <place id="p3">
+        <name>
+          <text>p3</text>
+        </name>
+      </place>
+      <arc id="Initialize/1__to__p3" source="Initialize/1" target="p3">
+      </arc>
+      <transition id="Initialize/2">
+        <name>
+          <text>Initialize</text>
+        </name>
+      </transition>
+      <place id="p20">
+        <name>
+          <text>p20</text>
+        </name>
+      </place>
+      <arc id="Initialize/2__to__p20" source="Initialize/2" target="p20">
+      </arc>
+      <arc id="Initialize/2__to__p9" source="Initialize/2" target="p9">
+      </arc>
+      <place id="p7">
+        <name>
+          <text>p7</text>
+        </name>
+      </place>
+      <arc id="Initialize__na_result_1__to__p7" source="Initialize__na_result_1" target="p7">
+      </arc>
+      <transition id="Initialize__na_result_1/1">
+        <name>
+          <text>Initialize__na_result_1</text>
+        </name>
+      </transition>
+      <place id="p8">
+        <name>
+          <text>p8</text>
+        </name>
+      </place>
+      <arc id="Initialize__na_result_1/1__to__p7" source="Initialize__na_result_1/1" target="p7">
+      </arc>
+      <arc id="Initialize__na_result_1/1__to__p8" source="Initialize__na_result_1/1" target="p8">
+      </arc>
+      <place id="p14">
+        <name>
+          <text>p14</text>
+        </name>
+      </place>
+      <arc id="__end__to__p14" source="__end" target="p14">
+      </arc>
+      <arc id="__node__ActivityFinalNode__120__0__to__p8" source="__node__ActivityFinalNode__120__0" target="p8">
+      </arc>
+      <arc id="__node__ActivityFinalNode__86__0__to__p8" source="__node__ActivityFinalNode__86__0" target="p8">
+      </arc>
+      <place id="p16">
+        <name>
+          <text>p16</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__102__to__p16" source="__node__CallBehaviorAction__102" target="p16">
+      </arc>
+      <place id="p17">
+        <name>
+          <text>p17</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__88__to__p17" source="__node__CallBehaviorAction__88" target="p17">
+      </arc>
+      <place id="p21">
+        <name>
+          <text>p21</text>
+        </name>
+      </place>
+      <arc id="__node__CallBehaviorAction__88__na_result_1__to__p21" source="__node__CallBehaviorAction__88__na_result_1" target="p21">
+      </arc>
+      <transition id="__node__CallBehaviorAction__88__na_result_1/1">
+        <name>
+          <text>__node__CallBehaviorAction__88__na_result_1</text>
+        </name>
+      </transition>
+      <arc id="__node__CallBehaviorAction__88__na_result_1/1__to__p21" source="__node__CallBehaviorAction__88__na_result_1/1" target="p21">
+      </arc>
+      <arc id="__node__CallBehaviorAction__88__na_result_1/1__to__p7" source="__node__CallBehaviorAction__88__na_result_1/1" target="p7">
+      </arc>
+      <place id="p18">
+        <name>
+          <text>p18</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__104__0__to__p18" source="__node__DecisionNode__104__0" target="p18">
+      </arc>
+      <place id="p30">
+        <name>
+          <text>p30</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__90__0__to__p30" source="__node__DecisionNode__90__0" target="p30">
+      </arc>
+      <place id="p31">
+        <name>
+          <text>p31</text>
+        </name>
+      </place>
+      <arc id="__node__DecisionNode__90__1__to__p31" source="__node__DecisionNode__90__1" target="p31">
+      </arc>
+      <place id="p11">
+        <name>
+          <text>p11</text>
+        </name>
+      </place>
+      <place id="p12">
+        <name>
+          <text>p12</text>
+        </name>
+      </place>
+      <place id="p13">
+        <name>
+          <text>p13</text>
+        </name>
+      </place>
+      <arc id="__node__ForkNode__92__to__p11" source="__node__ForkNode__92" target="p11">
+      </arc>
+      <arc id="__node__ForkNode__92__to__p12" source="__node__ForkNode__92" target="p12">
+      </arc>
+      <arc id="__node__ForkNode__92__to__p13" source="__node__ForkNode__92" target="p13">
+      </arc>
+      <place id="p5">
+        <name>
+          <text>p5</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__118__0__to__p5" source="__node__InitialNode__118__0" target="p5">
+      </arc>
+      <arc id="__node__InitialNode__118__0__to__p9" source="__node__InitialNode__118__0" target="p9">
+      </arc>
+      <transition id="__node__InitialNode__118__0/1">
+        <name>
+          <text>__node__InitialNode__118__0</text>
+        </name>
+      </transition>
+      <place id="p4">
+        <name>
+          <text>p4</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__118__0/1__to__p4" source="__node__InitialNode__118__0/1" target="p4">
+      </arc>
+      <arc id="__node__InitialNode__118__0/1__to__p5" source="__node__InitialNode__118__0/1" target="p5">
+      </arc>
+      <place id="p6">
+        <name>
+          <text>p6</text>
+        </name>
+      </place>
+      <arc id="__node__InitialNode__84__0__to__p6" source="__node__InitialNode__84__0" target="p6">
+      </arc>
+      <place id="p23">
+        <name>
+          <text>p23</text>
+        </name>
+      </place>
+      <arc id="__node__JoinNode__94__to__p23" source="__node__JoinNode__94" target="p23">
+      </arc>
+      <place id="p26">
+        <name>
+          <text>p26</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__105__0__to__p26" source="__node__MergeNode__105__0" target="p26">
+      </arc>
+      <place id="p25">
+        <name>
+          <text>p25</text>
+        </name>
+      </place>
+      <arc id="__node__MergeNode__98__0__to__p25" source="__node__MergeNode__98__0" target="p25">
+      </arc>
+      <arc id="__node__MergeNode__98__1__to__p25" source="__node__MergeNode__98__1" target="p25">
+      </arc>
+      <place id="p27">
+        <name>
+          <text>p27</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__100__to__p27" source="__node__OpaqueAction__100" target="p27">
+      </arc>
+      <place id="p22">
+        <name>
+          <text>p22</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__106__to__p22" source="__node__OpaqueAction__106" target="p22">
+      </arc>
+      <place id="p10">
+        <name>
+          <text>p10</text>
+        </name>
+      </place>
+      <arc id="__node__OpaqueAction__122__to__p10" source="__node__OpaqueAction__122" target="p10">
+      </arc>
+      <place id="p2">
+        <name>
+          <text>p2</text>
+        </name>
+      </place>
+      <arc id="__start__to__p2" source="__start" target="p2">
+      </arc>
+      <place id="p1">
+        <name>
+          <text>p1</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <arc id="p1__to____start" source="p1" target="__start">
+      </arc>
+      <arc id="p11__to____node__CallBehaviorAction__102" source="p11" target="__node__CallBehaviorAction__102">
+      </arc>
+      <arc id="p12__to____node__CallBehaviorAction__88" source="p12" target="__node__CallBehaviorAction__88">
+      </arc>
+      <arc id="p13__to____node__DecisionNode__104__0" source="p13" target="__node__DecisionNode__104__0">
+      </arc>
+      <arc id="p15__to____node__ActivityFinalNode__120__0" source="p10" target="__node__ActivityFinalNode__120__0">
+      </arc>
+      <arc id="p17__to__Initialize/2" source="p17" target="Initialize/2">
+      </arc>
+      <arc id="p17__to____node__CallBehaviorAction__88__na_result_1/1" source="p17" target="__node__CallBehaviorAction__88__na_result_1/1">
+      </arc>
+      <arc id="p18__to____node__OpaqueAction__106" source="p18" target="__node__OpaqueAction__106">
+      </arc>
+      <arc id="p19__to____node__JoinNode__94" source="p16" target="__node__JoinNode__94">
+      </arc>
+      <arc id="p2__to__Initialize/1" source="p2" target="Initialize/1">
+      </arc>
+      <arc id="p2__to____node__InitialNode__118__0/1" source="p2" target="__node__InitialNode__118__0/1">
+      </arc>
+      <arc id="p2__to____node__InitialNode__84__0" source="p2" target="__node__InitialNode__84__0">
+      </arc>
+      <arc id="p20__to____node__CallBehaviorAction__88__na_result_1" source="p20" target="__node__CallBehaviorAction__88__na_result_1">
+      </arc>
+      <arc id="p21__to____node__JoinNode__94" source="p21" target="__node__JoinNode__94">
+      </arc>
+      <arc id="p23__to____node__MergeNode__98__1" source="p23" target="__node__MergeNode__98__1">
+      </arc>
+      <arc id="p24__to____node__MergeNode__105__0" source="p22" target="__node__MergeNode__105__0">
+      </arc>
+      <arc id="p25__to____node__OpaqueAction__100" source="p25" target="__node__OpaqueAction__100">
+      </arc>
+      <arc id="p26__to____node__JoinNode__94" source="p26" target="__node__JoinNode__94">
+      </arc>
+      <arc id="p28__to____node__DecisionNode__90__0" source="p27" target="__node__DecisionNode__90__0">
+      </arc>
+      <arc id="p29__to____node__DecisionNode__90__1" source="p27" target="__node__DecisionNode__90__1">
+      </arc>
+      <arc id="p3__to__Initialize__na_result_1/1" source="p3" target="Initialize__na_result_1/1">
+      </arc>
+      <arc id="p3__to____node__InitialNode__118__0" source="p3" target="__node__InitialNode__118__0">
+      </arc>
+      <arc id="p30__to____node__ActivityFinalNode__86__0" source="p30" target="__node__ActivityFinalNode__86__0">
+      </arc>
+      <arc id="p31__to____node__MergeNode__98__0" source="p31" target="__node__MergeNode__98__0">
+      </arc>
+      <arc id="p4__to__Initialize" source="p4" target="Initialize">
+      </arc>
+      <arc id="p5__to____node__OpaqueAction__122" source="p5" target="__node__OpaqueAction__122">
+      </arc>
+      <arc id="p6__to____node__ForkNode__92" source="p6" target="__node__ForkNode__92">
+      </arc>
+      <arc id="p7__to____end" source="p7" target="__end">
+      </arc>
+      <arc id="p8__to____end" source="p8" target="__end">
+      </arc>
+      <arc id="p9__to__Initialize__na_result_1" source="p9" target="Initialize__na_result_1">
+      </arc>
+    </page>
+  </net>
+</pnml>

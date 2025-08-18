@@ -1,0 +1,43 @@
+.model minimal
+.dummy __start __node__InitialNode__98__0 __node__DecisionNode__104__1 __node__DecisionNode__104__0 flipProp2 __node__CallBehaviorAction__114 __node__CallBehaviorAction__112 __node__MergeNode__100__1 __node__MergeNode__106__1 __node__ActivityFinalNode__108__0 __node__MergeNode__100__0 __node__DecisionNode__102__1 __node__DecisionNode__102__0 __node__MergeNode__106__0 __node__CallBehaviorAction__118 __node__CallBehaviorAction__110 __end __node__CallBehaviorAction__116 __loop
+.state graph
+s1 __start s2
+s2 __node__InitialNode__98__0 s8
+s4 __node__DecisionNode__104__1 s5
+s4 __node__DecisionNode__104__0 s6
+s4 flipProp2 s7
+s5 __node__CallBehaviorAction__114 s12
+s5 flipProp2 s21
+s6 __node__CallBehaviorAction__112 s14
+s6 flipProp2 s16
+s7 __node__DecisionNode__104__1 s21
+s7 __node__DecisionNode__104__0 s16
+s8 __node__MergeNode__100__1 s13
+s9 __node__MergeNode__106__1 s10
+s9 flipProp2 s11
+s10 __node__ActivityFinalNode__108__0 s19
+s10 flipProp2 s20
+s11 __node__MergeNode__106__1 s20
+s12 __node__MergeNode__100__0 s13
+s13 __node__DecisionNode__102__1 s17
+s13 __node__DecisionNode__102__0 s18
+s14 __node__MergeNode__106__0 s10
+s14 flipProp2 s15
+s15 __node__MergeNode__106__0 s20
+s16 __node__CallBehaviorAction__112 s15
+s17 __node__CallBehaviorAction__118 s4
+s18 __node__CallBehaviorAction__110 s23
+s19 flipProp2 s22
+s20 __node__ActivityFinalNode__108__0 s22
+s21 __node__CallBehaviorAction__114 s24
+s22 __end s3
+s23 __node__CallBehaviorAction__116 s9
+s24 __node__MergeNode__100__0 s28
+s25 __node__CallBehaviorAction__116 s11
+s26 __node__CallBehaviorAction__110 s25
+s27 __node__CallBehaviorAction__118 s7
+s28 __node__DecisionNode__102__1 s27
+s28 __node__DecisionNode__102__0 s26
+s3 __loop s3
+.marking {s1}
+.end

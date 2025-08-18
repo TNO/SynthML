@@ -1,0 +1,22 @@
+controllable flipProp1;
+controllable flipExtra;
+plant automaton Class1:
+  disc bool property1 = false;
+  disc bool property2 = false;
+  disc bool extra = false;
+  alg bool precondition1 = not property1;
+  alg bool __precondition = precondition1;
+  alg bool postcondition1 = property1 and extra;
+  alg bool __postcondition_without_structure = postcondition1;
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure;
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge flipProp1 when true do property1 := not property1;
+    edge flipExtra when not extra do extra := not extra;
+end
+requirement invariant Class1.__postcondition_without_structure disables flipProp1;
+requirement invariant Class1.__postcondition_without_structure disables flipExtra;

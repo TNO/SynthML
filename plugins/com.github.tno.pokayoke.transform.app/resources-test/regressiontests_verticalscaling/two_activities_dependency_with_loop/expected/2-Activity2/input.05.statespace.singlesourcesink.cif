@@ -1,0 +1,117 @@
+controllable flipProp2;
+controllable flipExtra;
+controllable __node__InitialNode__98__0;
+uncontrollable __node__MergeNode__100__0;
+uncontrollable __node__MergeNode__100__1;
+uncontrollable __node__DecisionNode__102__0;
+uncontrollable __node__DecisionNode__102__1;
+uncontrollable __node__DecisionNode__104__0;
+uncontrollable __node__DecisionNode__104__1;
+uncontrollable __node__MergeNode__106__0;
+uncontrollable __node__MergeNode__106__1;
+uncontrollable __node__ActivityFinalNode__108__0;
+uncontrollable __node__CallBehaviorAction__110;
+uncontrollable __node__CallBehaviorAction__112;
+uncontrollable __node__CallBehaviorAction__114;
+uncontrollable __node__CallBehaviorAction__116;
+uncontrollable __node__CallBehaviorAction__118;
+controllable __start;
+controllable __end;
+automaton synthesis_state_space:
+  alphabet flipProp2, flipExtra, __node__InitialNode__98__0, __node__MergeNode__100__0, __node__MergeNode__100__1, __node__DecisionNode__102__0, __node__DecisionNode__102__1, __node__DecisionNode__104__0, __node__DecisionNode__104__1, __node__MergeNode__106__0, __node__MergeNode__106__1, __node__ActivityFinalNode__108__0, __node__CallBehaviorAction__110, __node__CallBehaviorAction__112, __node__CallBehaviorAction__114, __node__CallBehaviorAction__116, __node__CallBehaviorAction__118, __start, __end;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location __init:
+    initial;
+    edge __start goto loc1;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc1:
+    edge __node__InitialNode__98__0 goto loc2;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = true, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc2:
+    edge __node__MergeNode__100__1 goto loc3;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = true, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc3:
+    edge __node__DecisionNode__102__0 goto loc4;
+    edge __node__DecisionNode__102__1 goto loc5;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = true, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc4:
+    edge __node__CallBehaviorAction__110 goto loc6;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = true, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc5:
+    edge __node__CallBehaviorAction__118 goto loc7;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = true, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc6:
+    edge __node__CallBehaviorAction__116 goto loc8;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = true, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc7:
+    edge flipProp2 goto loc9;
+    edge __node__DecisionNode__104__0 goto loc10;
+    edge __node__DecisionNode__104__1 goto loc11;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = true, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc8:
+    edge flipProp2 goto loc12;
+    edge __node__MergeNode__106__1 goto loc13;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = true, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc9:
+    edge __node__DecisionNode__104__0 goto loc14;
+    edge __node__DecisionNode__104__1 goto loc15;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = true, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc10:
+    edge flipProp2 goto loc14;
+    edge __node__CallBehaviorAction__112 goto loc16;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = true, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc11:
+    edge flipProp2 goto loc15;
+    edge __node__CallBehaviorAction__114 goto loc17;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = true, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc12:
+    edge __node__MergeNode__106__1 goto loc18;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = true, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc13:
+    edge flipProp2 goto loc18;
+    edge __node__ActivityFinalNode__108__0 goto loc19;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = true, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc14:
+    edge __node__CallBehaviorAction__112 goto loc20;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = true, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc15:
+    edge __node__CallBehaviorAction__114 goto loc21;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = true, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc16:
+    edge flipProp2 goto loc20;
+    edge __node__MergeNode__106__0 goto loc13;
+  @state(Class1 = "*", Class1.__controlflow__62 = true, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = false, sup = "*")
+  location loc17:
+    edge __node__MergeNode__100__0 goto loc3;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = true, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc18:
+    edge __node__ActivityFinalNode__108__0 goto loc22;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = false, sup = "*")
+  location loc19:
+    edge flipProp2 goto loc22;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = true, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc20:
+    edge __node__MergeNode__106__0 goto loc18;
+  @state(Class1 = "*", Class1.__controlflow__62 = true, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = true, sup = "*")
+  location loc21:
+    edge __node__MergeNode__100__0 goto loc23;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location loc22:
+    edge __end goto __done;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = true, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = true, sup = "*")
+  location loc23:
+    edge __node__DecisionNode__102__0 goto loc24;
+    edge __node__DecisionNode__102__1 goto loc25;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = true, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = true, sup = "*")
+  location loc24:
+    edge __node__CallBehaviorAction__110 goto loc26;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = true, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = false, Class1.property1 = false, Class1.property2 = true, sup = "*")
+  location loc25:
+    edge __node__CallBehaviorAction__118 goto loc9;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = true, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = false, Class1.property2 = true, sup = "*")
+  location loc26:
+    edge __node__CallBehaviorAction__116 goto loc12;
+  @state(Class1 = "*", Class1.__controlflow__62 = false, Class1.__controlflow__64 = false, Class1.__controlflow__68 = false, Class1.__controlflow__72 = false, Class1.__controlflow__74 = false, Class1.__controlflow__76 = false, Class1.__controlflow__80 = false, Class1.__controlflow__84 = false, Class1.__controlflow__86 = false, Class1.__controlflow__88 = false, Class1.__controlflow__90 = false, Class1.__controlflow__93 = false, Class1.extra = true, Class1.property1 = true, Class1.property2 = true, sup = "*")
+  location __done:
+    marked;
+end

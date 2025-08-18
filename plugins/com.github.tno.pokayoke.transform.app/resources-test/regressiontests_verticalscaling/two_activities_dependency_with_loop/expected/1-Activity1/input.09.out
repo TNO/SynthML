@@ -1,0 +1,19 @@
+.model minimal
+.dummy  __start flipExtra flipProp1 __end __loop
+.graph
+__end p6
+__loop p6
+__start p2
+flipExtra p3
+flipExtra/1 p5
+flipProp1 p2
+flipProp1/1 p5
+flipProp1/2 p4
+p1 __start
+p2 flipExtra flipProp1/2
+p3 flipProp1/1
+p4 flipExtra/1 flipProp1
+p5 __end
+p6 __loop
+.marking { p1 }
+.end

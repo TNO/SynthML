@@ -1,0 +1,677 @@
+controllable Initialize;
+uncontrollable Initialize__na_result_1;
+controllable __node__InitialNode__84__0;
+uncontrollable __node__ActivityFinalNode__86__0;
+uncontrollable __node__CallBehaviorAction__88;
+uncontrollable __node__CallBehaviorAction__88__na_result_1;
+uncontrollable __node__DecisionNode__90__0;
+uncontrollable __node__DecisionNode__90__1;
+uncontrollable __node__ForkNode__92;
+uncontrollable __node__JoinNode__94;
+uncontrollable __node__MergeNode__98__0;
+uncontrollable __node__MergeNode__98__1;
+uncontrollable __node__OpaqueAction__100;
+uncontrollable __node__OpaqueAction__100__na_result_1;
+uncontrollable __node__OpaqueAction__100__na_result_2;
+uncontrollable __node__CallBehaviorAction__102;
+uncontrollable __node__CallBehaviorAction__102__na_result_1;
+uncontrollable __node__CallBehaviorAction__102__na_result_2;
+uncontrollable __node__DecisionNode__104__0;
+uncontrollable __node__MergeNode__105__0;
+uncontrollable __node__OpaqueAction__106;
+uncontrollable __node__OpaqueAction__106__na_result_1;
+controllable __node__InitialNode__118__0;
+uncontrollable __node__ActivityFinalNode__120__0;
+uncontrollable __node__OpaqueAction__122;
+uncontrollable __node__OpaqueAction__122__na_result_1;
+controllable __start;
+controllable __end;
+automaton minimal:
+  alphabet Initialize, Initialize__na_result_1, __node__InitialNode__84__0, __node__ActivityFinalNode__86__0, __node__CallBehaviorAction__88, __node__CallBehaviorAction__88__na_result_1, __node__DecisionNode__90__0, __node__DecisionNode__90__1, __node__ForkNode__92, __node__JoinNode__94, __node__MergeNode__98__0, __node__MergeNode__98__1, __node__OpaqueAction__100, __node__OpaqueAction__100__na_result_1, __node__OpaqueAction__100__na_result_2, __node__CallBehaviorAction__102, __node__CallBehaviorAction__102__na_result_1, __node__CallBehaviorAction__102__na_result_2, __node__DecisionNode__104__0, __node__MergeNode__105__0, __node__OpaqueAction__106, __node__OpaqueAction__106__na_result_1, __node__InitialNode__118__0, __node__ActivityFinalNode__120__0, __node__OpaqueAction__122, __node__OpaqueAction__122__na_result_1, __start, __end;
+  @state(projected = "s1")
+  location s1:
+    initial;
+    edge __start goto s2;
+  @state(projected = "s2")
+  location s2:
+    edge __node__InitialNode__118__0 goto s4;
+    edge __node__InitialNode__84__0 goto s5;
+    edge Initialize goto s6;
+  @state(projected = "s10")
+  location s3:
+    marked;
+  @state(projected = "s3")
+  location s4:
+    edge __node__OpaqueAction__122 goto s9;
+    edge Initialize goto s7;
+  @state(projected = "s4")
+  location s5:
+    edge __node__ForkNode__92 goto s18;
+  @state(projected = "s5")
+  location s6:
+    edge __node__InitialNode__118__0 goto s7;
+    edge Initialize__na_result_1 goto s8;
+  @state(projected = "s6")
+  location s7:
+    edge __node__OpaqueAction__122 goto s40;
+    edge Initialize__na_result_1 goto s119;
+  @state(projected = "s7")
+  @state(projected = "s44")
+  @state(projected = "s197")
+  @state(projected = "s198")
+  @state(projected = "s205")
+  @state(projected = "s206")
+  location s8:
+    edge __end goto s3;
+  @state(projected = "s9")
+  location s9:
+    edge __node__OpaqueAction__122__na_result_1 goto s25;
+    edge Initialize goto s40;
+  @state(projected = "s185")
+  @state(projected = "s187")
+  @state(projected = "s199")
+  @state(projected = "s201")
+  location s10:
+    edge __node__ActivityFinalNode__86__0 goto s8;
+  @state(projected = "s193")
+  @state(projected = "s195")
+  location s11:
+    edge __node__ActivityFinalNode__86__0 goto s12;
+    edge Initialize__na_result_1 goto s10;
+  @state(projected = "s29")
+  @state(projected = "s203")
+  @state(projected = "s204")
+  location s12:
+    edge Initialize__na_result_1 goto s8;
+  @state(projected = "s15")
+  location s13:
+    edge __node__DecisionNode__104__0 goto s14;
+    edge __node__CallBehaviorAction__102 goto s15;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s16;
+    edge Initialize goto s17;
+  @state(projected = "s19")
+  location s14:
+    edge __node__OpaqueAction__106 goto s41;
+    edge __node__CallBehaviorAction__102 goto s28;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s42;
+    edge Initialize goto s21;
+  @state(projected = "s20")
+  location s15:
+    edge __node__DecisionNode__104__0 goto s28;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s29;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s29;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s30;
+    edge Initialize goto s22;
+  @state(projected = "s21")
+  @state(projected = "s47")
+  location s16:
+    edge __node__DecisionNode__104__0 goto s42;
+    edge __node__CallBehaviorAction__102 goto s30;
+  @state(projected = "s22")
+  location s17:
+    edge __node__DecisionNode__104__0 goto s21;
+    edge __node__CallBehaviorAction__102 goto s22;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s23;
+    edge Initialize__na_result_1 goto s24;
+  @state(projected = "s8")
+  location s18:
+    edge __node__DecisionNode__104__0 goto s19;
+    edge __node__CallBehaviorAction__102 goto s20;
+    edge __node__CallBehaviorAction__88 goto s13;
+  @state(projected = "s13")
+  location s19:
+    edge __node__OpaqueAction__106 goto s47;
+    edge __node__CallBehaviorAction__102 goto s33;
+    edge __node__CallBehaviorAction__88 goto s14;
+  @state(projected = "s14")
+  location s20:
+    edge __node__DecisionNode__104__0 goto s33;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s34;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s34;
+    edge __node__CallBehaviorAction__88 goto s15;
+  @state(projected = "s30")
+  location s21:
+    edge __node__OpaqueAction__106 goto s52;
+    edge __node__CallBehaviorAction__102 goto s37;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s53;
+    edge Initialize__na_result_1 goto s31;
+  @state(projected = "s31")
+  location s22:
+    edge __node__DecisionNode__104__0 goto s37;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s38;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s38;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s39;
+    edge Initialize__na_result_1 goto s32;
+  @state(projected = "s32")
+  location s23:
+    edge __node__DecisionNode__104__0 goto s53;
+    edge __node__CallBehaviorAction__102 goto s39;
+    edge Initialize__na_result_1 goto s16;
+  @state(projected = "s33")
+  location s24:
+    edge __node__DecisionNode__104__0 goto s31;
+    edge __node__CallBehaviorAction__102 goto s32;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s16;
+  @state(projected = "s16")
+  location s25:
+    edge __node__ActivityFinalNode__120__0 goto s26;
+    edge Initialize goto s27;
+  @state(projected = "s27")
+  location s26:
+    edge Initialize goto s12;
+  @state(projected = "s18")
+  location s27:
+    edge __node__ActivityFinalNode__120__0 goto s12;
+    edge Initialize__na_result_1 goto s120;
+  @state(projected = "s36")
+  location s28:
+    edge __node__OpaqueAction__106 goto s61;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s43;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s43;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s62;
+    edge Initialize goto s37;
+  @state(projected = "s38")
+  @state(projected = "s37")
+  location s29:
+    edge __node__DecisionNode__104__0 goto s43;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s44;
+    edge Initialize goto s38;
+  @state(projected = "s35")
+  @state(projected = "s67")
+  location s30:
+    edge __node__DecisionNode__104__0 goto s62;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s44;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s44;
+  @state(projected = "s45")
+  location s31:
+    edge __node__OpaqueAction__106 goto s66;
+    edge __node__CallBehaviorAction__102 goto s45;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s42;
+  @state(projected = "s46")
+  location s32:
+    edge __node__DecisionNode__104__0 goto s45;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s46;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s46;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s30;
+  @state(projected = "s23")
+  location s33:
+    edge __node__OpaqueAction__106 goto s71;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s48;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s48;
+    edge __node__CallBehaviorAction__88 goto s28;
+  @state(projected = "s25")
+  @state(projected = "s24")
+  location s34:
+    edge __node__DecisionNode__104__0 goto s48;
+    edge __node__CallBehaviorAction__88 goto s29;
+  @state(projected = "s182")
+  @state(projected = "s184")
+  location s35:
+    edge __node__DecisionNode__90__0 goto s11;
+    edge Initialize__na_result_1 goto s36;
+  @state(projected = "s176")
+  @state(projected = "s178")
+  @state(projected = "s190")
+  @state(projected = "s192")
+  location s36:
+    edge __node__DecisionNode__90__0 goto s10;
+  @state(projected = "s50")
+  location s37:
+    edge __node__OpaqueAction__106 goto s80;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s54;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s54;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s81;
+    edge Initialize__na_result_1 goto s45;
+  @state(projected = "s52")
+  @state(projected = "s51")
+  location s38:
+    edge __node__DecisionNode__104__0 goto s54;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s55;
+    edge Initialize__na_result_1 goto s46;
+  @state(projected = "s49")
+  location s39:
+    edge __node__DecisionNode__104__0 goto s81;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s55;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s55;
+    edge Initialize__na_result_1 goto s30;
+  @state(projected = "s11")
+  location s40:
+    edge __node__OpaqueAction__122__na_result_1 goto s27;
+    edge Initialize__na_result_1 goto s121;
+  @state(projected = "s39")
+  location s41:
+    edge __node__OpaqueAction__106__na_result_1 goto s56;
+    edge __node__CallBehaviorAction__102 goto s61;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s84;
+    edge Initialize goto s52;
+  @state(projected = "s34")
+  @state(projected = "s66")
+  location s42:
+    edge __node__OpaqueAction__106 goto s84;
+    edge __node__CallBehaviorAction__102 goto s62;
+  @state(projected = "s58")
+  @state(projected = "s59")
+  location s43:
+    edge __node__OpaqueAction__106 goto s63;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s64;
+    edge Initialize goto s54;
+  @state(projected = "s56")
+  @state(projected = "s55")
+  @state(projected = "s93")
+  @state(projected = "s92")
+  location s44:
+    edge __node__DecisionNode__104__0 goto s64;
+  @state(projected = "s68")
+  location s45:
+    edge __node__OpaqueAction__106 goto s91;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s67;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s67;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s62;
+  @state(projected = "s70")
+  @state(projected = "s69")
+  location s46:
+    edge __node__DecisionNode__104__0 goto s67;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s44;
+  @state(projected = "s26")
+  location s47:
+    edge __node__OpaqueAction__106__na_result_1 goto s68;
+    edge __node__CallBehaviorAction__102 goto s71;
+    edge __node__CallBehaviorAction__88 goto s41;
+  @state(projected = "s40")
+  @state(projected = "s41")
+  location s48:
+    edge __node__OpaqueAction__106 goto s72;
+    edge __node__CallBehaviorAction__88 goto s43;
+  @state(projected = "s181")
+  @state(projected = "s183")
+  location s49:
+    edge __node__DecisionNode__90__1 goto s50;
+    edge Initialize__na_result_1 goto s51;
+  @state(projected = "s194")
+  @state(projected = "s196")
+  location s50:
+    edge __node__MergeNode__98__0 goto s96;
+    edge Initialize__na_result_1 goto s65;
+  @state(projected = "s175")
+  @state(projected = "s177")
+  @state(projected = "s189")
+  @state(projected = "s191")
+  location s51:
+    edge __node__DecisionNode__90__1 goto s65;
+  @state(projected = "s53")
+  location s52:
+    edge __node__OpaqueAction__106__na_result_1 goto s60;
+    edge __node__CallBehaviorAction__102 goto s80;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s97;
+    edge Initialize__na_result_1 goto s66;
+  @state(projected = "s48")
+  location s53:
+    edge __node__OpaqueAction__106 goto s97;
+    edge __node__CallBehaviorAction__102 goto s81;
+    edge Initialize__na_result_1 goto s42;
+  @state(projected = "s76")
+  @state(projected = "s77")
+  location s54:
+    edge __node__OpaqueAction__106 goto s101;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s102;
+    edge Initialize__na_result_1 goto s67;
+  @state(projected = "s74")
+  @state(projected = "s73")
+  location s55:
+    edge __node__DecisionNode__104__0 goto s102;
+    edge Initialize__na_result_1 goto s44;
+  @state(projected = "s61")
+  location s56:
+    edge __node__MergeNode__105__0 goto s57;
+    edge __node__CallBehaviorAction__102 goto s58;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s59;
+    edge Initialize goto s60;
+  @state(projected = "s87")
+  location s57:
+    edge __node__CallBehaviorAction__102 goto s85;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s103;
+    edge Initialize goto s76;
+  @state(projected = "s86")
+  location s58:
+    edge __node__MergeNode__105__0 goto s85;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s86;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s86;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s87;
+    edge Initialize goto s77;
+  @state(projected = "s83")
+  @state(projected = "s119")
+  location s59:
+    edge __node__MergeNode__105__0 goto s103;
+    edge __node__CallBehaviorAction__102 goto s87;
+  @state(projected = "s79")
+  location s60:
+    edge __node__MergeNode__105__0 goto s76;
+    edge __node__CallBehaviorAction__102 goto s77;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s78;
+    edge Initialize__na_result_1 goto s79;
+  @state(projected = "s60")
+  location s61:
+    edge __node__OpaqueAction__106__na_result_1 goto s58;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s63;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s63;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s112;
+    edge Initialize goto s80;
+  @state(projected = "s54")
+  @state(projected = "s91")
+  location s62:
+    edge __node__OpaqueAction__106 goto s112;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s64;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s64;
+  @state(projected = "s84")
+  @state(projected = "s85")
+  location s63:
+    edge __node__OpaqueAction__106__na_result_1 goto s86;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s113;
+    edge Initialize goto s101;
+  @state(projected = "s80")
+  @state(projected = "s81")
+  @state(projected = "s116")
+  @state(projected = "s117")
+  location s64:
+    edge __node__OpaqueAction__106 goto s113;
+  @state(projected = "s186")
+  @state(projected = "s188")
+  @state(projected = "s200")
+  @state(projected = "s202")
+  location s65:
+    edge __node__MergeNode__98__0 goto s114;
+  @state(projected = "s71")
+  location s66:
+    edge __node__OpaqueAction__106__na_result_1 goto s79;
+    edge __node__CallBehaviorAction__102 goto s91;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s84;
+  @state(projected = "s95")
+  @state(projected = "s96")
+  location s67:
+    edge __node__OpaqueAction__106 goto s92;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s64;
+  @state(projected = "s43")
+  location s68:
+    edge __node__MergeNode__105__0 goto s69;
+    edge __node__CallBehaviorAction__102 goto s70;
+    edge __node__CallBehaviorAction__88 goto s56;
+  @state(projected = "s65")
+  location s69:
+    edge __node__CallBehaviorAction__102 goto s93;
+    edge __node__CallBehaviorAction__88 goto s57;
+  @state(projected = "s64")
+  location s70:
+    edge __node__MergeNode__105__0 goto s93;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s94;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s94;
+    edge __node__CallBehaviorAction__88 goto s58;
+  @state(projected = "s42")
+  location s71:
+    edge __node__OpaqueAction__106__na_result_1 goto s70;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s72;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s72;
+    edge __node__CallBehaviorAction__88 goto s61;
+  @state(projected = "s62")
+  @state(projected = "s63")
+  location s72:
+    edge __node__OpaqueAction__106__na_result_1 goto s94;
+    edge __node__CallBehaviorAction__88 goto s63;
+  @state(projected = "s155")
+  @state(projected = "s156")
+  location s73:
+    edge __node__JoinNode__94 goto s74;
+    edge Initialize__na_result_1 goto s75;
+  @state(projected = "s161")
+  @state(projected = "s162")
+  location s74:
+    edge __node__MergeNode__98__1 goto s96;
+    edge Initialize__na_result_1 goto s107;
+  @state(projected = "s148")
+  @state(projected = "s149")
+  @state(projected = "s159")
+  @state(projected = "s160")
+  location s75:
+    edge __node__JoinNode__94 goto s107;
+  @state(projected = "s106")
+  location s76:
+    edge __node__CallBehaviorAction__102 goto s98;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s109;
+    edge Initialize__na_result_1 goto s89;
+  @state(projected = "s105")
+  location s77:
+    edge __node__MergeNode__105__0 goto s98;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s106;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s106;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s110;
+    edge Initialize__na_result_1 goto s90;
+  @state(projected = "s102")
+  location s78:
+    edge __node__MergeNode__105__0 goto s109;
+    edge __node__CallBehaviorAction__102 goto s110;
+    edge Initialize__na_result_1 goto s59;
+  @state(projected = "s98")
+  location s79:
+    edge __node__MergeNode__105__0 goto s89;
+    edge __node__CallBehaviorAction__102 goto s90;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s59;
+  @state(projected = "s78")
+  location s80:
+    edge __node__OpaqueAction__106__na_result_1 goto s77;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s101;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s101;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s116;
+    edge Initialize__na_result_1 goto s91;
+  @state(projected = "s72")
+  location s81:
+    edge __node__OpaqueAction__106 goto s116;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s102;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s102;
+    edge Initialize__na_result_1 goto s62;
+  @state(projected = "s146")
+  @state(projected = "s147")
+  location s82:
+    edge __node__CallBehaviorAction__88__na_result_1 goto s73;
+    edge Initialize__na_result_1 goto s83;
+  @state(projected = "s153")
+  @state(projected = "s154")
+  location s83:
+    edge __node__CallBehaviorAction__88__na_result_1 goto s75;
+  @state(projected = "s57")
+  @state(projected = "s94")
+  location s84:
+    edge __node__OpaqueAction__106__na_result_1 goto s59;
+    edge __node__CallBehaviorAction__102 goto s112;
+  @state(projected = "s113")
+  location s85:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s88;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s88;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s104;
+    edge Initialize goto s98;
+  @state(projected = "s111")
+  @state(projected = "s112")
+  location s86:
+    edge __node__MergeNode__105__0 goto s88;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s105;
+    edge Initialize goto s106;
+  @state(projected = "s109")
+  @state(projected = "s138")
+  location s87:
+    edge __node__MergeNode__105__0 goto s104;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s105;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s105;
+  @state(projected = "s134")
+  @state(projected = "s135")
+  location s88:
+    edge __node__CallBehaviorAction__88__na_result_1 goto s75;
+    edge Initialize goto s82;
+  @state(projected = "s123")
+  location s89:
+    edge __node__CallBehaviorAction__102 goto s100;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s103;
+  @state(projected = "s122")
+  location s90:
+    edge __node__MergeNode__105__0 goto s100;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s108;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s108;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s87;
+  @state(projected = "s97")
+  location s91:
+    edge __node__OpaqueAction__106__na_result_1 goto s90;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s92;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s92;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s112;
+  @state(projected = "s120")
+  @state(projected = "s121")
+  location s92:
+    edge __node__OpaqueAction__106__na_result_1 goto s108;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s113;
+  @state(projected = "s90")
+  location s93:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s95;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s95;
+    edge __node__CallBehaviorAction__88 goto s85;
+  @state(projected = "s88")
+  @state(projected = "s89")
+  location s94:
+    edge __node__MergeNode__105__0 goto s95;
+    edge __node__CallBehaviorAction__88 goto s86;
+  @state(projected = "s114")
+  @state(projected = "s115")
+  location s95:
+    edge __node__CallBehaviorAction__88 goto s88;
+  @state(projected = "s167")
+  @state(projected = "s168")
+  location s96:
+    edge __node__OpaqueAction__100 goto s115;
+    edge Initialize__na_result_1 goto s114;
+  @state(projected = "s75")
+  location s97:
+    edge __node__OpaqueAction__106__na_result_1 goto s78;
+    edge __node__CallBehaviorAction__102 goto s116;
+    edge Initialize__na_result_1 goto s84;
+  @state(projected = "s130")
+  location s98:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s82;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s82;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s99;
+    edge Initialize__na_result_1 goto s100;
+  @state(projected = "s145")
+  location s99:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s73;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s73;
+    edge Initialize__na_result_1 goto s104;
+  @state(projected = "s142")
+  location s100:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s83;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s83;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s104;
+  @state(projected = "s103")
+  @state(projected = "s104")
+  location s101:
+    edge __node__OpaqueAction__106__na_result_1 goto s106;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s117;
+    edge Initialize__na_result_1 goto s92;
+  @state(projected = "s99")
+  @state(projected = "s100")
+  location s102:
+    edge __node__OpaqueAction__106 goto s117;
+    edge Initialize__na_result_1 goto s64;
+  @state(projected = "s110")
+  @state(projected = "s139")
+  location s103:
+    edge __node__CallBehaviorAction__102 goto s104;
+  @state(projected = "s133")
+  @state(projected = "s152")
+  location s104:
+    edge __node__CallBehaviorAction__102__na_result_2 goto s75;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s75;
+  @state(projected = "s131")
+  @state(projected = "s132")
+  @state(projected = "s150")
+  @state(projected = "s151")
+  location s105:
+    edge __node__MergeNode__105__0 goto s75;
+  @state(projected = "s128")
+  @state(projected = "s129")
+  location s106:
+    edge __node__MergeNode__105__0 goto s82;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s111;
+    edge Initialize__na_result_1 goto s108;
+  @state(projected = "s157")
+  @state(projected = "s158")
+  @state(projected = "s165")
+  @state(projected = "s166")
+  location s107:
+    edge __node__MergeNode__98__1 goto s114;
+  @state(projected = "s140")
+  @state(projected = "s141")
+  location s108:
+    edge __node__MergeNode__105__0 goto s83;
+    edge __node__CallBehaviorAction__88__na_result_1 goto s105;
+  @state(projected = "s127")
+  location s109:
+    edge __node__CallBehaviorAction__102 goto s99;
+    edge Initialize__na_result_1 goto s103;
+  @state(projected = "s126")
+  location s110:
+    edge __node__MergeNode__105__0 goto s99;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s111;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s111;
+    edge Initialize__na_result_1 goto s87;
+  @state(projected = "s143")
+  @state(projected = "s144")
+  location s111:
+    edge __node__MergeNode__105__0 goto s73;
+    edge Initialize__na_result_1 goto s105;
+  @state(projected = "s82")
+  @state(projected = "s118")
+  location s112:
+    edge __node__OpaqueAction__106__na_result_1 goto s87;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s113;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s113;
+  @state(projected = "s107")
+  @state(projected = "s108")
+  @state(projected = "s136")
+  @state(projected = "s137")
+  location s113:
+    edge __node__OpaqueAction__106__na_result_1 goto s105;
+  @state(projected = "s163")
+  @state(projected = "s164")
+  @state(projected = "s171")
+  @state(projected = "s172")
+  location s114:
+    edge __node__OpaqueAction__100 goto s118;
+  @state(projected = "s173")
+  @state(projected = "s174")
+  location s115:
+    edge __node__OpaqueAction__100__na_result_2 goto s49;
+    edge __node__OpaqueAction__100__na_result_1 goto s35;
+    edge Initialize__na_result_1 goto s118;
+  @state(projected = "s101")
+  location s116:
+    edge __node__OpaqueAction__106__na_result_1 goto s110;
+    edge __node__CallBehaviorAction__102__na_result_2 goto s117;
+    edge __node__CallBehaviorAction__102__na_result_1 goto s117;
+    edge Initialize__na_result_1 goto s112;
+  @state(projected = "s124")
+  @state(projected = "s125")
+  location s117:
+    edge __node__OpaqueAction__106__na_result_1 goto s111;
+    edge Initialize__na_result_1 goto s113;
+  @state(projected = "s169")
+  @state(projected = "s170")
+  @state(projected = "s179")
+  @state(projected = "s180")
+  location s118:
+    edge __node__OpaqueAction__100__na_result_2 goto s51;
+    edge __node__OpaqueAction__100__na_result_1 goto s36;
+  @state(projected = "s12")
+  location s119:
+    edge __node__OpaqueAction__122 goto s121;
+  @state(projected = "s28")
+  location s120:
+    edge __node__ActivityFinalNode__120__0 goto s8;
+  @state(projected = "s17")
+  location s121:
+    edge __node__OpaqueAction__122__na_result_1 goto s120;
+end

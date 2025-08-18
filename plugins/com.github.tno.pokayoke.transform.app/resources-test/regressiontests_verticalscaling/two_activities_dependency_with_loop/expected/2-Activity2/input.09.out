@@ -1,0 +1,60 @@
+.model minimal
+.dummy  __start __node__InitialNode__98__0 __node__DecisionNode__104__1 __node__DecisionNode__104__0 flipProp2 __node__CallBehaviorAction__114 __node__CallBehaviorAction__112 __node__MergeNode__100__1 __node__MergeNode__106__1 __node__ActivityFinalNode__108__0 __node__MergeNode__100__0 __node__DecisionNode__102__1 __node__DecisionNode__102__0 __node__MergeNode__106__0 __node__CallBehaviorAction__118 __node__CallBehaviorAction__110 __end __node__CallBehaviorAction__116 __loop
+.graph
+__end p20
+__loop p20
+__node__ActivityFinalNode__108__0 p19
+__node__CallBehaviorAction__110 p7
+__node__CallBehaviorAction__110/1 p25
+__node__CallBehaviorAction__112 p16
+__node__CallBehaviorAction__114 p21
+__node__CallBehaviorAction__114/1 p17
+__node__CallBehaviorAction__116 p15 p9
+__node__CallBehaviorAction__116/1 p10 p9
+__node__CallBehaviorAction__118 p13
+__node__CallBehaviorAction__118/1 p8
+__node__DecisionNode__102__0 p5
+__node__DecisionNode__102__0/1 p23
+__node__DecisionNode__102__1 p6
+__node__DecisionNode__102__1/1 p24
+__node__DecisionNode__104__0 p11 p15
+__node__DecisionNode__104__0/1 p10 p11
+__node__DecisionNode__104__1 p18
+__node__DecisionNode__104__1/1 p12
+__node__InitialNode__98__0 p3
+__node__MergeNode__100__0 p4
+__node__MergeNode__100__0/1 p22
+__node__MergeNode__100__1 p4
+__node__MergeNode__106__0 p14
+__node__MergeNode__106__1 p14
+__start p2
+flipProp2 p15
+flipProp2/1 p18
+flipProp2/2 p13
+p1 __start
+p10 flipProp2
+p11 __node__CallBehaviorAction__112
+p12 __node__CallBehaviorAction__114/1 flipProp2/1
+p13 __node__DecisionNode__104__0 __node__DecisionNode__104__1
+p14 __node__ActivityFinalNode__108__0
+p15 __end
+p16 __node__MergeNode__106__0
+p17 __node__MergeNode__100__0
+p18 __node__CallBehaviorAction__114
+p19 __end
+p2 __node__InitialNode__98__0
+p20 __loop
+p21 __node__MergeNode__100__0/1
+p22 __node__DecisionNode__102__0/1 __node__DecisionNode__102__1/1
+p23 __node__CallBehaviorAction__110/1
+p24 __node__CallBehaviorAction__118
+p25 __node__CallBehaviorAction__116
+p3 __node__MergeNode__100__1
+p4 __node__DecisionNode__102__0 __node__DecisionNode__102__1
+p5 __node__CallBehaviorAction__110
+p6 __node__CallBehaviorAction__118/1
+p7 __node__CallBehaviorAction__116/1
+p8 __node__DecisionNode__104__0/1 __node__DecisionNode__104__1/1 flipProp2/2
+p9 __node__MergeNode__106__1
+.marking { p1 }
+.end
