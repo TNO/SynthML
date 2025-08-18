@@ -343,8 +343,9 @@ public class SynthesisChainTracking {
                 .collect(Collectors.toMap(e -> e.getName(), e -> e));
 
         // Get Petri net transition list.
-        List<Transition> petriNetTransitions = petriNet.getPages().get(0).getObjects().stream()
-                .filter(o -> o instanceof Transition).map(Transition.class::cast).toList();
+        List<Transition> petriNetTransitions = petriNet.getPages().stream()
+                .flatMap(p -> p.getObjects().stream().filter(o -> o instanceof Transition).map(Transition.class::cast))
+                .toList();
 
         for (Transition t: petriNetTransitions) {
             // Store the transition and the related CIF event tracing info.
