@@ -219,20 +219,17 @@ public class FullSynthesisApp {
         PetriNet petriNet = PetrifyOutput2PNMLTranslator.transform(new ArrayList<>(petrifyOutput));
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithLoopOutputPath.toString());
 
+        // Remove the self-loop that was added for petrification.
+        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
+        PostProcessPNML.removeLoop(petriNet);
+        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
+
         // Store the Petri net transitions in the synthesis tracker. It is more convenient to use the Petri net after it
         // has been synthesised, instead of storing each transition at the time of creation: in case a transition
         // appears multiple times in a Petri net, Petrify distinguishes each duplicate by adding a postfix to the name
         // of the transition (e.g., 'Transition_A/1' is a duplicate of 'Transition_A'), and these duplicates are not
         // specified in the transition declarations, but only appear in the specification, and are handled separately.
         tracker.addPetriNetTransitions(petriNet);
-
-        // Remove the self-loop that was added for petrification.
-        Path pnmlWithoutLoopOutputPath = outputFolderPath.resolve(filePrefix + ".11.loopremoved.pnml");
-        PostProcessPNML.removeLoop(petriNet);
-        PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
-
-        // Remove self-loop transition from synthesis chain tracker.
-        tracker.removeLoopTransition();
 
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
         // that can be merged, replacing their start and end transitions by a single transition. These patterns'
