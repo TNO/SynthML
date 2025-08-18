@@ -225,9 +225,9 @@ public class PokaYokeUmlProfileUtil {
     }
 
     /**
-     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() arguments}. We
-     * are using a setter here to deal with the stereotype that is required to set the value. We do not want to
-     * implicitly create the stereotype on read, but explicitly create it on write.
+     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() arguments}. We are using
+     * a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly create
+     * the stereotype on read, but explicitly create it on write.
      *
      * @param element The element to set the property on.
      * @param newValue The new property value.
