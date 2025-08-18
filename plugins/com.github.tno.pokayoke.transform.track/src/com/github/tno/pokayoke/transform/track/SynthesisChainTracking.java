@@ -325,7 +325,9 @@ public class SynthesisChainTracking {
         }
     }
 
+    ///////////////////////////////////////////////////
     // Section dealing with Petri net transitions.
+    ///////////////////////////////////////////////////
 
     /**
      * Creates the map from Petri net transitions to CIF events, provided that the map from CIF event to their tracing
