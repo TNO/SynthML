@@ -222,7 +222,7 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-     // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
+        // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
@@ -277,33 +277,6 @@ public class SynthesisChainTracking {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
         return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
                 && eventInfo.isEndEvent();
-    }
-
-    /**
-     * Remove from the CIF event tracing map the end events contained in the given set. Update the corresponding start
-     * events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
-     *
-     * @param cifEndEventNames The set of names of CIF end events.
-     */
-    public void updateEndAtomicNonDeterministic(Set<String> cifEndEventNames) {
-        // Find the CIF events with the same names.
-        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> cifEndEventNames.contains(e.getName()))
-                .toList();
-
-        // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
-        cifEventTraceInfo.keySet().removeAll(cifEvents);
-
-        // Collect the corresponding start events. Update the 'isEndEvent' field to 'true' of each atomic
-        // non-deterministic start event.
-        List<Event> startAtomicNonDeterministicEvents = cifEventTraceInfo.keySet().stream()
-                .filter(e -> isAtomicNonDeterministicStartEventName(e.getName())).toList();
-        for (Event startEvent: startAtomicNonDeterministicEvents) {
-            // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
-            EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
-            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
-                    oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
-            cifEventTraceInfo.put(startEvent, newEventTraceInfo);
-        }
     }
 
     /**
