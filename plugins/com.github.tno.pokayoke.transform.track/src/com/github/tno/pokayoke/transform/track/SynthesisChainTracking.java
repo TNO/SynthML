@@ -183,28 +183,12 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonAtomicEvents(UmlToCifTranslationPurpose purpose) {
-        Map<Event, List<Event>> result = new LinkedHashMap<>();
-
-        // Get the map of all start events.
+        // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        // Get the end events for every non-atomic start event.
-        for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
-            Event startEvent = entry.getKey();
-            RedefinableElement umlElement = entry.getValue();
-
-            if (isAtomicAction(umlElement)) {
-                continue;
-            }
-
-            if (result.containsKey(startEvent)) {
-                throw new RuntimeException("Expected non-atomic actions to have a single start event.");
-            }
-
-            result.put(startEvent, getEndEventsOf(umlElement, purpose));
-        }
-
-        return result;
+        return startEndEventMap.entrySet().stream().filter(e -> !isAtomicAction(startEventMap.get(e.getKey())))
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
     private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
@@ -238,28 +222,12 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
-        Map<Event, List<Event>> result = new LinkedHashMap<>();
-
-        // Get the map of all start events.
+     // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        // Get the end events for every non-deterministic start event.
-        for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
-            Event startEvent = entry.getKey();
-            RedefinableElement umlElement = entry.getValue();
-
-            if (isDeterministicAction(umlElement)) {
-                continue;
-            }
-
-            if (result.containsKey(startEvent)) {
-                throw new RuntimeException("Expected non-deterministic actions to have a single start event.");
-            }
-
-            result.put(startEvent, getEndEventsOf(umlElement, purpose));
-        }
-
-        return result;
+        return startEndEventMap.entrySet().stream().filter(e -> !isDeterministicAction(startEventMap.get(e.getKey())))
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
