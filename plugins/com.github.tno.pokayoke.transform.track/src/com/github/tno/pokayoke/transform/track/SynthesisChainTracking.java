@@ -357,6 +357,7 @@ public class SynthesisChainTracking {
     {
         public EventTraceInfo {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
+            Verify.verify(effectIdx == null || isEndEvent, "Only end events can have non-null effect index.");
         }
     }
 
