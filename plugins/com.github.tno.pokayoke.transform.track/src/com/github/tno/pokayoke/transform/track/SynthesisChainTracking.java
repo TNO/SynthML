@@ -39,9 +39,9 @@ public class SynthesisChainTracking {
     /** The map from Petri net transitions to their corresponding CIF events. */
     private final Map<Transition, Event> transitionsToCifEvents = new LinkedHashMap<>();
 
-    ///////////////////////////////////////////////////
-    // Section dealing with CIF events.
-    ///////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with CIF events and the corresponding input UML elements.
+    /////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
@@ -185,11 +185,11 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
-        Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+        // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        return startEndEventMap.entrySet().stream().filter(e -> !isAtomicAction(startEventMap.get(e.getKey())))
+        return startEndEventMap.entrySet().stream()
+                .filter(e -> !isAtomicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
@@ -224,11 +224,11 @@ public class SynthesisChainTracking {
      * @return The map from CIF start events to their corresponding CIF end events.
      */
     public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
-        // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
-        Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+        // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        return startEndEventMap.entrySet().stream().filter(e -> !isDeterministicAction(startEventMap.get(e.getKey())))
+        return startEndEventMap.entrySet().stream()
+                .filter(e -> !isDeterministicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
@@ -360,9 +360,9 @@ public class SynthesisChainTracking {
         }
     }
 
-    ///////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with Petri net transitions.
-    ///////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Creates the map from Petri net transitions to CIF events, provided that the map from CIF event to their tracing
