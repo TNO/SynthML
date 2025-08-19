@@ -167,7 +167,8 @@ public class SynthesisChainTracking {
             RedefinableElement umlElement = entry.getValue();
 
             if (result.containsKey(startEvent)) {
-                throw new RuntimeException("Expected non-atomic actions to have a single start event.");
+                throw new RuntimeException(
+                        "Expected action '" + startEvent.getName() + "' to have a single start event.");
             }
 
             result.put(startEvent, getEndEventsOf(umlElement, purpose));
