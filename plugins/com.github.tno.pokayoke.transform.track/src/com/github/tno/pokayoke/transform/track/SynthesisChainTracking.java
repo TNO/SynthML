@@ -149,6 +149,33 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from CIF start events to their corresponding CIF end events.
+     */
+    public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+        Map<Event, List<Event>> result = new LinkedHashMap<>();
+
+        // Get the map of all start events.
+        Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
+
+        // Get the end events for every start event.
+        for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
+            Event startEvent = entry.getKey();
+            RedefinableElement umlElement = entry.getValue();
+
+            if (result.containsKey(startEvent)) {
+                throw new RuntimeException("Expected non-atomic actions to have a single start event.");
+            }
+
+            result.put(startEvent, getEndEventsOf(umlElement, purpose));
+        }
+
+        return result;
+    }
+
+    /**
      * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end events, for the specified
      * translation purpose.
      *
