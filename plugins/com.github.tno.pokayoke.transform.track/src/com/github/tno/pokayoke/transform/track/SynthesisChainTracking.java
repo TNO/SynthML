@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -212,8 +213,8 @@ public class SynthesisChainTracking {
             return isAtomicAction(cbAction.getBehavior());
         }
 
-        // If the element does not have the Poka Yoke profile applied nor is a call behavior, it is atomic.
-        return true;
+        // Control nodes are atomic by definition; otherwise, nodes are non-atomic by default.
+        return umlElement instanceof ControlNode;
     }
 
     /**
