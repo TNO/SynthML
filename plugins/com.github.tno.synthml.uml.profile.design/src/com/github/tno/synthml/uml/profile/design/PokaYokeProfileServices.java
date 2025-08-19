@@ -179,7 +179,6 @@ public class PokaYokeProfileServices {
         TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
         List<TemplateParameter> templateParameters = (ownedTemplateSignature != null)
                 ? ownedTemplateSignature.getOwnedParameters() : new ArrayList<>();
-
         List<String> parameterSignatures = new ArrayList<>();
         for (TemplateParameter templateParameter: templateParameters) {
             // Extract the name of the element.
@@ -208,7 +207,7 @@ public class PokaYokeProfileServices {
     }
 
     /**
-     * Inspired by {@link LabelServices#editUmlLabel(Element, String) editUMLLabel}. Updates an {@link Activity}s labels
+     * Inspired by {@link LabelServices#editUmlLabel(Element, String) editUMLLabel}. Updates an {@link Activity}s label
      * and adds, modifies or removes the {@link RedefinableTemplateSignature}.
      *
      * @param activity The element to interrogate.
@@ -225,7 +224,7 @@ public class PokaYokeProfileServices {
 
             List<Type> dataTypes = PokaYokeTypeUtil.getSupportedTypes(activity);
 
-            // Map the parameter name to corresponding type.
+            // Map the parameter names to corresponding types.
             Map<String, DataType> parameterNameToType = new LinkedHashMap<>();
 
             for (String part: generics.split(",")) {
@@ -258,13 +257,13 @@ public class PokaYokeProfileServices {
             EditLabelSwitch editLabel = new EditLabelSwitch();
 
             // Generate a label without type information. This allows generating a 'RedefinableTemplateSignature' using
-            // methods build into UML designer.
+            // methods built into UML designer.
             String genericString = parameterNameToType.isEmpty() ? ""
                     : ("<" + String.join(", ", parameterNameToType.keySet()) + ">");
             editLabel.setEditedLabelContent(baseLabel + genericString);
 
             // Below mimics how UML designer sets template parameters for classes.
-            // First 'EditLabelSwitch.parseInputLabel. is called. This method parses the label and updates the
+            // First 'EditLabelSwitch.parseInputLabel' is called. This method parses the label and updates the
             // underlying 'TemplateableElement'. Since this method is private we proxy it by calling
             // 'EditLabelSwitch.caseTemplateableElement'. Lastly call 'EditLabelSwitch.caseNamedElement' as normal.
             editLabel.caseTemplateableElement(activity);
@@ -291,7 +290,7 @@ public class PokaYokeProfileServices {
      *
      * @param callAction The element to interrogate.
      * @return The name of the activity, and optionally, if {@code callAction} is stereotyped, the arguments passed to
-     *     the activity
+     *     the activity.
      */
     public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
         // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching to
@@ -545,7 +544,7 @@ public class PokaYokeProfileServices {
     /**
      * Compute the label of the given element for direct edit. Overrides the
      * {@link ReusedDescriptionServices#computeUmlDirectEditLabel(Element) computeUmlDirectEditLabel} method in UML
-     * Designer. It adds the signature to the label of {@link CallBehaviorAction}, and it returns the name of an
+     * Designer. It adds the arguments to the label of {@link CallBehaviorAction}, and it returns the name of an
      * {@link ActivityEdge} without adding the stereotype name within angle brackets before it. The override occurs
      * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
      * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
