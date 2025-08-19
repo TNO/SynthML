@@ -290,7 +290,6 @@ public class SynthesisChainTracking {
      * @param cifEventNamesToRemove The set of names of CIF end events.
      * @param purpose The translation purpose.
      */
-    @SuppressWarnings("null")
     public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
@@ -306,10 +305,10 @@ public class SynthesisChainTracking {
         Set<Event> startEventsToUpdate = new LinkedHashSet<>();
         for (String eventName: cifEventNamesToRemove) {
             Event cifEvent = namesToCifEvents.get(eventName);
-            Verify.verify(cifEvent != null, "Could not find CIF event '" + eventName + "'.");
+            Verify.verifyNotNull(cifEvent, "Could not find CIF event '" + eventName + "'.");
 
             EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-            Verify.verify(eventInfo != null, "CIF event '" + eventName + "' does not have any tracing info.");
+            Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
             if (eventInfo.isStartEvent()) {
                 // Store the start event and corresponding end events to be removed.
                 eventsToRemove.add(cifEvent);
