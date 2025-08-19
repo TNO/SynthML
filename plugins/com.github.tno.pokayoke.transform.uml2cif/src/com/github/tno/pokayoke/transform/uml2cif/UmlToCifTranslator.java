@@ -914,7 +914,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
      * @return The action name of the given activity node.
      */
     private static String getActionNameForActivityNode(ActivityNode node) {
-        return String.format("%s__%s__%s", NODE_PREFIX, node.eClass().getName(), IDHelper.getID(node));
+        return String.format("%s_%s_%s", node.eClass().getName(), IDHelper.getID(node), node.getName());
     }
 
     /**
