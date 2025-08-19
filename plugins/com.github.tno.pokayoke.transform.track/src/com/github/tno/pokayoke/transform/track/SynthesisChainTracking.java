@@ -301,7 +301,7 @@ public class SynthesisChainTracking {
 
         // If the event is a start event, add it to the set of events to be removed, together with the corresponding end
         // events. If the event is an end event, add it to the set of event to be removed and store the corresponding
-        // start events for later handling.
+        // start event for later handling.
         Set<Event> eventsToRemove = new LinkedHashSet<>();
         Set<Event> startEventsToUpdate = new LinkedHashSet<>();
         for (String eventName: cifEventNamesToRemove) {
