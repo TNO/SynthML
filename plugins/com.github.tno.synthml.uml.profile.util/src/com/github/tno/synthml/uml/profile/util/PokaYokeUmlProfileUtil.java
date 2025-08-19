@@ -210,12 +210,10 @@ public class PokaYokeUmlProfileUtil {
 
     /**
      * Returns the contents of the {@link FormalCallBehaviorAction#getArguments() arguments} if the
-     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty string otherwise. The
-     * returned string is a copy of the values stored in the stereotype, and as such, modifications to the list are not
-     * reflected on the {@code element}. Instead, use the {@link #setArguments(CallBehaviorAction, String)} method to
-     * set the new value on the {@code element}.
+     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty string otherwise. Use the
+     * {@link #setArguments(CallBehaviorAction, String)} method to set the new value on the {@code element}.
      *
-     * @param element The element to get the property from.
+     * @param element The element to get the arguments from.
      * @return The argument assignments.
      * @see #setArguments(CallBehaviorAction, String)
      */
@@ -229,7 +227,7 @@ public class PokaYokeUmlProfileUtil {
      * a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly create
      * the stereotype on read, but explicitly create it on write.
      *
-     * @param element The element to set the property on.
+     * @param element The element to set the arguments on.
      * @param newValue The new property value.
      */
     @SuppressWarnings("unchecked")

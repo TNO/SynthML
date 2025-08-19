@@ -12,9 +12,7 @@ import org.eclipse.uml2.uml.internal.impl.NamedElementImpl;
  */
 @SuppressWarnings("restriction")
 public class NamedTemplateParameter extends NamedElementImpl {
-    /**
-     * The cached data type for the template parameter.
-     */
+    /** The type of the parameter. */
     protected DataType type;
 
     protected NamedTemplateParameter() {
@@ -22,9 +20,9 @@ public class NamedTemplateParameter extends NamedElementImpl {
     }
 
     /**
-     * Returns the type of the constraining classifier.
+     * Returns the type of the parameter.
      *
-     * @return The type of the constraining classifier.
+     * @return The type of the parameter.
      */
     public DataType getType() {
         return type;

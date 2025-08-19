@@ -107,7 +107,7 @@ public class CifContext {
     /**
      * Finds all declared elements in the {@code model}.
      *
-     * @param model The search root.
+     * @param model An {@link Element} contained in the model for which the context is created..
      * @return All declared elements in the {@code model}.
      */
     public static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
@@ -125,8 +125,7 @@ public class CifContext {
         List<Class> activeClasses = model.getOwnedElements().stream()
                 .filter(e -> e instanceof Class cls && cls.isActive()).map(cls -> (Class)cls).toList();
 
-        // Collect the referenceable elements that have a single identifier as their name. Elements that may have
-        // absolute names consisting of multiple identifiers collected separately later on.
+        // Collect the referenceable elements, as well as any duplicates.
         if (activeClasses.isEmpty()) {
             // No active class. The profile validator checks the number of classes. Here, consider all declared elements
             // as referenceable elements based on their single identifier names, to be able to still do some type
@@ -162,20 +161,21 @@ public class CifContext {
     }
 
     /**
-     * Creates a context containing only variables found in the scope of {@code model}.
+     * Creates a context containing all declared/referenceable elements found in the global scope of {@code model}.
      *
      * @param element An {@link Element} contained in the model for which the context is created.
-     * @return A {@code CifContext} containing only variables in the global scope.
+     * @return A {@code CifContext} containing all declared/referenceable elements in the global scope.
      */
     public static CifContext createGlobal(Element element) {
         return new CifContext(element, CifScope.global());
     }
 
     /**
-     * Creates a context containing the union of variables in the local scope and the global scope.
+     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
      *
-     * @param element The search root
-     * @return A {@link CifContext} containing the union of variables in the local scope and the global scope.
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
+     *     scope.
      */
     public static CifContext createScoped(Element element) {
         return new CifContext(element, new CifScope(element));
@@ -231,7 +231,7 @@ public class CifContext {
         for (NamedElement parameter: parameters) {
             String name = parameter.getName();
 
-            // Add property.
+            // Add parameter.
             referenceableElements.put(name, parameter);
             referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(parameter);
         }
