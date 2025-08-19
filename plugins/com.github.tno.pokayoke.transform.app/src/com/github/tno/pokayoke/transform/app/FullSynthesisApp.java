@@ -168,7 +168,7 @@ public class FullSynthesisApp {
                 tracker);
         String preservedEventNames = preservedAndRemovedEventNames.left;
         Set<String> removedEventNames = preservedAndRemovedEventNames.right;
-        tracker.updateEndAtomicNonDeterministic(removedEventNames);
+        tracker.removeAndUpdateEvents(removedEventNames, UmlToCifTranslationPurpose.SYNTHESIS);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
                 "--preserve=" + preservedEventNames, "--output=" + cifProjectedStateSpacePath.toString()};
@@ -239,7 +239,7 @@ public class FullSynthesisApp {
         // before them: in this case, the start of the action.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
-                tracker.getNonAtomicEvents(UmlToCifTranslationPurpose.SYNTHESIS));
+                tracker.getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose.SYNTHESIS));
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
