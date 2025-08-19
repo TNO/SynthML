@@ -282,14 +282,14 @@ public class SynthesisChainTracking {
 
     /**
      * Remove from the CIF event tracing map the events contained in the given set. If an event is a start event, also
-     * its corresponding end events are removed. If all end events of a start event are removed, it update the
+     * its corresponding end events are removed. If all end events of a start event are removed, it updates the
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
      * {@code true}.
      *
      * @param cifEventNames The set of names of CIF end events.
      * @param purpose The translation purpose.
      */
-    public void removeAndUpdateEvents(Set<String> cifEventNames, UmlToCifTranslationPurpose purpose) {
+    public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
         // Get the map from start events to the corresponding end events.
         Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
 
@@ -319,11 +319,11 @@ public class SynthesisChainTracking {
             }
         }
 
-        // Remove the CIF event trace info for the found events.
+        // Remove the CIF event trace info for the events that are to be removed.
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
 
         // Handle the start events to be updated: if all the corresponding end events have been removed, update its CIF
-        // event trace info 'isEndEvent' field to 'true'.
+        // event trace info to also make it an end event.
         for (Event startEvent: startEventsToUpdate) {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
