@@ -331,7 +331,7 @@
         </controls>
       </groups>
       <groups name="PR_ArgumentsGroup" labelExpression="Templating" semanticCandidateExpression="var:self">
-        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_arguments" labelExpression="Activity Arguments" helpExpression="The arguments specified for the Called Activity" valueExpression="service:self.getArguments()">
+        <controls xsi:type="properties:TextAreaDescription" name="PR_CB_arguments" labelExpression="Arguments" helpExpression="The arguments of the call behavior action" valueExpression="service:self.getArguments()>
           <initialOperation>
             <firstModelOperations xsi:type="tool_1:ChangeContext" browseExpression="service:self.setArguments(newValue)"/>
           </initialOperation>
