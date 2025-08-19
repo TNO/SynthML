@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -277,6 +278,62 @@ public class SynthesisChainTracking {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
         return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
                 && eventInfo.isEndEvent();
+    }
+
+    /**
+     * Remove from the CIF event tracing map the events contained in the given set. If an event is a start event, also
+     * its corresponding end events are removed. If all end events of a start event are removed, it update the
+     * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
+     * {@code true}.
+     *
+     * @param cifEventNames The set of names of CIF end events.
+     * @param purpose The translation purpose.
+     */
+    public void removeAndUpdateEvents(Set<String> cifEventNames, UmlToCifTranslationPurpose purpose) {
+        // Get the map from start events to the corresponding end events.
+        Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
+
+        // Create a map from event names to CIF events, for better handling CIF event names.
+        Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
+                .collect(Collectors.toMap(e -> e.getName(), e -> e));
+
+        // If the event is a start event, remove it together with the corresponding end events. If the event is an end
+        // event, remove it and store the corresponding start events for later handling.
+        Set<Event> eventsToRemove = new LinkedHashSet<>();
+        Set<Event> startEventsToUpdate = new LinkedHashSet<>();
+        for (String eventName: cifEventNames) {
+            Event cifEvent = namesToCifEvents.get(eventName);
+
+            if (cifEventTraceInfo.get(cifEvent).isStartEvent()) {
+                // Store the start event and corresponding end events to be removed.
+                eventsToRemove.add(cifEvent);
+                eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
+            } else if (cifEventTraceInfo.get(cifEvent).isEndEvent()) {
+                // Store the event to be removed, find the corresponding start event for later handling.
+                eventsToRemove.add(cifEvent);
+                List<Event> startToUpdate = startEndEventsMap.entrySet().stream()
+                        .filter(e -> e.getValue().contains(cifEvent)).map(e -> e.getKey()).toList();
+                Verify.verify(startToUpdate.size() == 1,
+                        String.format("Found %d start events for end event '%s'.", startToUpdate.size(), eventName));
+                startEventsToUpdate.add(startToUpdate.get(0));
+            }
+        }
+
+        // Remove the CIF event trace info for the found events.
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+
+        // Handle the start events to be updated: if all the corresponding end events have been removed, update its CIF
+        // event trace info 'isEndEvent' field to 'true'.
+        for (Event startEvent: startEventsToUpdate) {
+            // If all end events have been removed, update the CIF event trace info.
+            if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
+                EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
+                EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
+                        oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
+                cifEventTraceInfo.put(startEvent, newEventTraceInfo);
+            }
+        }
     }
 
     /**
