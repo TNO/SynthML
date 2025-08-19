@@ -104,6 +104,11 @@ public class FullSynthesisApp {
         // synthesised activity.
         SynthesisUmlElementTracking synthesisUmlElementsTracker = new SynthesisUmlElementTracking();
 
+        // Start timer for UML to CIF translation.
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("Synthesizing activity " + activity.getName());
+        long startUmlToCifTime = System.currentTimeMillis();
+
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, TranslationPurpose.SYNTHESIS,
                 synthesisUmlElementsTracker);
@@ -127,6 +132,12 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // End UML to CIF timer, start timer for data-based synthesis.
+        long endUmlToCifTime = System.currentTimeMillis();
+        System.out.println("UML to CIF translation took: "
+                + String.valueOf(((double)endUmlToCifTime - startUmlToCifTime) / 1000) + " seconds.");
+        long startSynthesisTime = System.currentTimeMillis();
+
         // Get CIF/BDD specification.
         CifDataSynthesisSettings settings = CIFDataSynthesisHelper.getSynthesisSettings();
         CifBddSpec cifBddSpec = CIFDataSynthesisHelper.getCifBddSpec(cifSpec, settings);
@@ -138,6 +149,12 @@ public class FullSynthesisApp {
         Path cifSynthesisPath = outputFolderPath.resolve(filePrefix + ".03.ctrlsys.cif");
         CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
+
+        // End data-based synthesis timer, start timer for state space exploration.
+        long endSynthesisTime = System.currentTimeMillis();
+        System.out.println("Data-based synthesis took: "
+                + String.valueOf(((double)endSynthesisTime - startSynthesisTime) / 1000) + " seconds.");
+        long startExplorerTime = System.currentTimeMillis();
 
         // Perform state space generation.
         Path cifStateSpacePath = outputFolderPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif");
@@ -152,6 +169,12 @@ public class FullSynthesisApp {
             throw new RuntimeException(
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
+
+        // End state space exploration timer, start timer for preparation to Petri net synthesis.
+        long endExplorerTime = System.currentTimeMillis();
+        System.out.println("State space exploration took: "
+                + String.valueOf(((double)endExplorerTime - startExplorerTime) / 1000) + " seconds.");
+        long startPNPreparationTime = System.currentTimeMillis();
 
         // Transform the state space by creating a single (initial) source and a single (marked) sink location. Update
         // the synthesis tracker with the two newly created events.
@@ -190,6 +213,12 @@ public class FullSynthesisApp {
             throw new RuntimeException("Non-zero exit code for DFA minimization: " + exitCode + "\n"
                     + dfaMinimizationAppStream.toString());
         }
+
+        // End timer for preparation to Petri net synthesis, start timer for Petri net synthesis.
+        long endPNPreparationTime = System.currentTimeMillis();
+        System.out.println("Preparation for Petri net synthesis took: "
+                + String.valueOf(((double)endPNPreparationTime - startPNPreparationTime) / 1000) + " seconds.");
+        long startPNSynthesisTime = System.currentTimeMillis();
 
         // Translate the CIF state space to Petrify input.
         Path petrifyInputPath = outputFolderPath.resolve(filePrefix + ".08.g");
@@ -236,6 +265,12 @@ public class FullSynthesisApp {
         nonAtomicPatternRewriter.findAndRewritePatterns(petriNet, synthesisUmlElementsTracker);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
+        // End timer for Petri net synthesis, start timer for finalization of synthesized UML file.
+        long endPNSynthesisTime = System.currentTimeMillis();
+        System.out.println("Petri net synthesis took: "
+                + String.valueOf(((double)endPNSynthesisTime - startPNSynthesisTime) / 1000) + " seconds.");
+        long startFinalizeUMLTime = System.currentTimeMillis();
+
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
         // action.
         Path umlOutputPath = outputFolderPath.resolve(filePrefix + ".13.uml");
@@ -270,6 +305,12 @@ public class FullSynthesisApp {
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
+        // End timer for finalization of synthesized UML file, start timer for guard computation UML to CIF translation.
+        long endFinalizeUMLTime = System.currentTimeMillis();
+        System.out.println("Finalization of UML file took: "
+                + String.valueOf(((double)endFinalizeUMLTime - startFinalizeUMLTime) / 1000) + " seconds.");
+        long startUmlToCifGuardComputationTime = System.currentTimeMillis();
+
         // Translating synthesized activity to CIF, for guard computation.
         Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
@@ -282,10 +323,23 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // End timer for guard computation UML to CIF translation, start timer for actual guard computation.
+        long endUmlToCifGuardComputationTime = System.currentTimeMillis();
+        System.out.println("Guard computation UML to CIF translation took: "
+                + String.valueOf(((double)endUmlToCifGuardComputationTime - startUmlToCifGuardComputationTime) / 1000)
+                + " seconds.");
+        long startGuardComputationTime = System.currentTimeMillis();
+
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
+
+        // End timer for guard computation, start timer for language equivalence check.
+        long endGuardComputationTime = System.currentTimeMillis();
+        System.out.println("Actual guard computation took: "
+                + String.valueOf(((double)endGuardComputationTime - startGuardComputationTime) / 1000) + " seconds.");
+        long startLECTime = System.currentTimeMillis();
 
         // Check the activity for non-deterministic choices.
         CheckNonDeterministicChoices.check(activity, umlToCifTranslator, warnings, cifBddSpec);
@@ -293,6 +347,11 @@ public class FullSynthesisApp {
         // Perform the language equivalence check between the CIF model generated by the state space exploration and the
         // translation to CIF of the final UML model. Throws a runtime error if models are non-equivalent.
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, synthesisUmlElementsTracker);
+
+        // End timer for language equivalence check.
+        long endLECTime = System.currentTimeMillis();
+        System.out.println("Language equivalence check took: "
+                + String.valueOf(((double)endLECTime - startLECTime) / 1000) + " seconds.");
     }
 
     private static String getPreservedEvents(Specification spec,
