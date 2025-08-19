@@ -286,7 +286,7 @@ public class SynthesisChainTracking {
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
      * {@code true}.
      *
-     * @param cifEventNames The set of names of CIF end events.
+     * @param cifEventNamesToRemove The set of names of CIF end events.
      * @param purpose The translation purpose.
      */
     public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
@@ -301,7 +301,7 @@ public class SynthesisChainTracking {
         // event, remove it and store the corresponding start events for later handling.
         Set<Event> eventsToRemove = new LinkedHashSet<>();
         Set<Event> startEventsToUpdate = new LinkedHashSet<>();
-        for (String eventName: cifEventNames) {
+        for (String eventName: cifEventNamesToRemove) {
             Event cifEvent = namesToCifEvents.get(eventName);
 
             if (cifEventTraceInfo.get(cifEvent).isStartEvent()) {
