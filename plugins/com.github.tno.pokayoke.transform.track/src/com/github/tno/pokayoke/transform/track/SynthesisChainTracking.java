@@ -38,6 +38,10 @@ public class SynthesisChainTracking {
     /** The map from Petri net transitions to their corresponding CIF events. */
     private final Map<Transition, Event> transitionsToCifEvents = new LinkedHashMap<>();
 
+    ///////////////////////////////////////////////////
+    // Section dealing with CIF events.
+    ///////////////////////////////////////////////////
+
     /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
      * purpose.
