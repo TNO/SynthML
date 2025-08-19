@@ -1801,6 +1801,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         && ((LiteralInteger)umlInterval.getMax()).getValue() == 0)
                 {
                     for (Element umlElement: umlConstraint.getConstrainedElements()) {
+                        // If the current activity cannot be called, the guard computation and language equivalence
+                        // check fail.
+                        if (umlElement.equals(this.activity)) {
+                            throw new RuntimeException(
+                                    "The current activity cannot be called due to an occurrence constraint.");
+                        }
+
                         zeroCallsElements.add((RedefinableElement)umlElement);
                     }
                 }
