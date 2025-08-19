@@ -221,7 +221,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
+    public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
      // Get the map from start events to the corresponding UML elements, and to the corresponding end events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
