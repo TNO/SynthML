@@ -163,6 +163,9 @@ public class PNML2UMLTranslator {
 
         // Indicate that the activity is no longer abstract.
         activity.setIsAbstract(false);
+
+        // Rename activity to reflect the synthesized state.
+        activity.setName("Synthesized_" + activity.getName());
     }
 
     private void translate(Transition transition, SynthesisUmlElementTracking synthesisUmlElementTracker) {
