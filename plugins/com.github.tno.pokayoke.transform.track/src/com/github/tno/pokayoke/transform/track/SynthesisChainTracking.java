@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.track;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,6 +16,9 @@ import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
+
+import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
@@ -31,6 +35,13 @@ public class SynthesisChainTracking {
      * add events.
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
+
+    /** The map from Petri net transitions to their corresponding CIF events. */
+    private final Map<Transition, Event> transitionsToCifEvents = new LinkedHashMap<>();
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with CIF events and the corresponding input UML elements.
+    /////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Registers that the given CIF event has been created for the given UML element for the indicated translation
@@ -139,35 +150,47 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end events, for the specified
-     * translation purpose.
+     * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
      *
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<Event, List<Event>> getNonAtomicEvents(UmlToCifTranslationPurpose purpose) {
+    public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
 
         // Get the map of all start events.
         Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
 
-        // Get the end events for every non-atomic start event.
+        // Get the end events for every start event.
         for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
             Event startEvent = entry.getKey();
             RedefinableElement umlElement = entry.getValue();
 
-            if (isAtomicAction(umlElement)) {
-                continue;
-            }
-
             if (result.containsKey(startEvent)) {
-                throw new RuntimeException("Expected non-atomic actions to have a single start event.");
+                throw new RuntimeException(
+                        "Expected action '" + startEvent.getName() + "' to have a single start event.");
             }
 
             result.put(startEvent, getEndEventsOf(umlElement, purpose));
         }
 
         return result;
+    }
+
+    /**
+     * Gives the map from CIF start events of non-atomic actions to the corresponding CIF end events, for the specified
+     * translation purpose.
+     *
+     * @param purpose The translation purpose.
+     * @return The map from CIF start events to their corresponding CIF end events.
+     */
+    public Map<Event, List<Event>> getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+        // Get the map from start events to the corresponding end events.
+        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
+
+        return startEndEventMap.entrySet().stream()
+                .filter(e -> !isAtomicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
     private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
@@ -200,29 +223,13 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<Event, List<Event>> getNonDeterministicEvents(UmlToCifTranslationPurpose purpose) {
-        Map<Event, List<Event>> result = new LinkedHashMap<>();
+    public Map<Event, List<Event>> getNonDeterministicStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+        // Get the map from start events to the corresponding end events.
+        Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
-        // Get the map of all start events.
-        Map<Event, RedefinableElement> startEventMap = getStartEventMap(purpose);
-
-        // Get the end events for every non-deterministic start event.
-        for (Entry<Event, RedefinableElement> entry: startEventMap.entrySet()) {
-            Event startEvent = entry.getKey();
-            RedefinableElement umlElement = entry.getValue();
-
-            if (isDeterministicAction(umlElement)) {
-                continue;
-            }
-
-            if (result.containsKey(startEvent)) {
-                throw new RuntimeException("Expected non-deterministic actions to have a single start event.");
-            }
-
-            result.put(startEvent, getEndEventsOf(umlElement, purpose));
-        }
-
-        return result;
+        return startEndEventMap.entrySet().stream()
+                .filter(e -> !isDeterministicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
     private boolean isDeterministicAction(RedefinableElement umlElement) {
@@ -275,29 +282,62 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Remove from the CIF event tracing map the end events contained in the given set. Update the corresponding start
-     * events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to {@code true}.
+     * Remove from the CIF event tracing map the events contained in the given set. If an event is a start event, also
+     * its corresponding end events are removed. If all end events of a start event are removed, it updates the
+     * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
+     * {@code true}.
      *
-     * @param cifEndEventNames The set of names of CIF end events.
+     * @param cifEventNamesToRemove The set of names of CIF end events.
+     * @param purpose The translation purpose.
      */
-    public void updateEndAtomicNonDeterministic(Set<String> cifEndEventNames) {
-        // Find the CIF events with the same names.
-        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> cifEndEventNames.contains(e.getName()))
-                .toList();
+    public void removeAndUpdateEvents(Set<String> cifEventNamesToRemove, UmlToCifTranslationPurpose purpose) {
+        // Get the map from start events to the corresponding end events.
+        Map<Event, List<Event>> startEndEventsMap = getStartEndEventMap(purpose);
 
-        // Remove the CIF event trace info referring to any end of atomic non-deterministic CIF event.
-        cifEventTraceInfo.keySet().removeAll(cifEvents);
+        // Create a map from event names to CIF events, for better handling CIF event names.
+        Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
+                .collect(Collectors.toMap(e -> e.getName(), e -> e));
 
-        // Collect the corresponding start events. Update the 'isEndEvent' field to 'true' of each atomic
-        // non-deterministic start event.
-        List<Event> startAtomicNonDeterministicEvents = cifEventTraceInfo.keySet().stream()
-                .filter(e -> isAtomicNonDeterministicStartEventName(e.getName())).toList();
-        for (Event startEvent: startAtomicNonDeterministicEvents) {
-            // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
-            EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
-            EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
-                    oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
-            cifEventTraceInfo.put(startEvent, newEventTraceInfo);
+        // If the event is a start event, add it to the set of events to be removed, together with the corresponding end
+        // events. If the event is an end event, add it to the set of event to be removed and store the corresponding
+        // start event for later handling.
+        Set<Event> eventsToRemove = new LinkedHashSet<>();
+        Set<Event> startEventsToUpdate = new LinkedHashSet<>();
+        for (String eventName: cifEventNamesToRemove) {
+            Event cifEvent = namesToCifEvents.get(eventName);
+            Verify.verifyNotNull(cifEvent, "Could not find CIF event '" + eventName + "'.");
+
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
+            if (eventInfo.isStartEvent()) {
+                // Store the start event and corresponding end events to be removed.
+                eventsToRemove.add(cifEvent);
+                eventsToRemove.addAll(startEndEventsMap.get(cifEvent));
+            } else if (eventInfo.isEndEvent()) {
+                // Store the event to be removed, find the corresponding start event for later handling.
+                eventsToRemove.add(cifEvent);
+                List<Event> startToUpdate = startEndEventsMap.entrySet().stream()
+                        .filter(e -> e.getValue().contains(cifEvent)).map(e -> e.getKey()).toList();
+                Verify.verify(startToUpdate.size() == 1,
+                        String.format("Found %d start events for end event '%s'.", startToUpdate.size(), eventName));
+                startEventsToUpdate.add(startToUpdate.get(0));
+            }
+        }
+
+        // Remove the CIF event trace info for the events that are to be removed.
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+
+        // Handle the start events to be updated: if all the corresponding end events have been removed, update its CIF
+        // event trace info to also make it an end event.
+        for (Event startEvent: startEventsToUpdate) {
+            // If all end events have been removed, update the CIF event trace info.
+            if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
+                // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
+                EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
+                EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
+                        oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
+                cifEventTraceInfo.put(startEvent, newEventTraceInfo);
+            }
         }
     }
 
@@ -316,6 +356,36 @@ public class SynthesisChainTracking {
     {
         public EventTraceInfo {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with Petri net transitions.
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Creates the map from Petri net transitions to CIF events, provided that the map from CIF event to their tracing
+     * info is not empty.
+     *
+     * @param petriNet The Petri net.
+     */
+    public void addPetriNetTransitions(PetriNet petriNet) {
+        Verify.verify(!cifEventTraceInfo.isEmpty(), "The map from CIF event names to their tracing infos is empty.");
+
+        // Create a map from event names to CIF events, for better handling CIF event names.
+        Map<String, Event> namesToCifEvents = cifEventTraceInfo.keySet().stream()
+                .collect(Collectors.toMap(e -> e.getName(), e -> e));
+
+        // Get Petri net transition list.
+        List<Transition> petriNetTransitions = petriNet.getPages().stream()
+                .flatMap(p -> p.getObjects().stream().filter(o -> o instanceof Transition).map(Transition.class::cast))
+                .toList();
+
+        for (Transition t: petriNetTransitions) {
+            // Store the transition and the related CIF event.
+            Event cifEvent = namesToCifEvents.get(t.getName().getText());
+            Verify.verify(cifEvent != null, "Could not find CIF event for transition '" + t.getName().getText() + "'.");
+            transitionsToCifEvents.put(t, cifEvent);
         }
     }
 }
