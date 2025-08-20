@@ -213,7 +213,7 @@ public class SynthesisChainTracking {
             return isAtomicAction(cbAction.getBehavior());
         }
 
-        // Control nodes are atomic by definition; otherwise, nodes are non-atomic by default.
+        // Control nodes are translated as atomic actions; otherwise, nodes are non-atomic by default.
         return umlElement instanceof ControlNode;
     }
 
