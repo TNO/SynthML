@@ -434,15 +434,15 @@ The \texttt{BitFlipper} CIF model provides two controllable events, \texttt{flip
 Two uncontrollable events denote the two nondeterministic results of the \texttt{bit} initialization.
 The boolean property \texttt{bit} is transformed into a discrete boolean (\texttt{disc bool}) variable, which is nondeterministically initialized (denoted \texttt{in any}), whereas \texttt{init} is initialized as \texttt{false}.
 The activity precondition and postcondition are translated into algebraic boolean variables.
-Then we define the initial state predicate \texttt{not init} to be the algebraic \texttt{precondition} variable, to indicate the initial states for performing synthesis.
-Moreover, we define the marked state predicate \texttt{marked} to be the algebraic \texttt{postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
+Then we define the initial state predicate to be the algebraic \texttt{\_\_precondition} variable, to indicate the initial states for performing synthesis.
+Moreover, we define the marked state predicate to be the algebraic \texttt{\_\_postcondition} variable, to indicate that a postcondition state must always be reachable in the controlled system.
 The auxiliary variable \texttt{\_\_activeAction} is used to connect the start and end events of atomic nondeterministic actions, in this case \texttt{initialize}.
 The atomic deterministic opaque behavior \texttt{flip} is translated into an edge with guards \texttt{init} and \texttt{\_\_activeAction = 0}, and a single update \texttt{bit := not bit}.
-The atomic non-deterministic opaque behavior \texttt{initialize} is translated into a series of edges.
+The atomic nondeterministic opaque behavior \texttt{initialize} is translated into three edges.
 First, an edge \texttt{initialize} is defined, with guard \texttt{not init and \_\_activeAction = 0}, whose effect is \texttt{\_\_activeAction := 1} (representing the atomic nondeterministic action starting).
 Next, two edges denote the two possible results of the nondeterministic action: \texttt{initialize\_\_result\_1} and \texttt{initialize\_\_result\_2} assign \texttt{true} and \texttt{false} to \texttt{bit}, respectively.
 At the same time, both edges assign \texttt{true} to \texttt{init} and \texttt{0} to \texttt{\_\_activeAction}, representing respectively the initialization of the system, and the end of the atomic nondeterministic action.
-Finally, four requirement invariants state that the postcondition disables all CIF events.
+Finally, four requirement invariants state that the overall postcondition disables all CIF events.
 In practice, these four requirements ensure that once the system reaches a state where the postcondition holds, no additional actions can be taken.
 \end{example*}
 
