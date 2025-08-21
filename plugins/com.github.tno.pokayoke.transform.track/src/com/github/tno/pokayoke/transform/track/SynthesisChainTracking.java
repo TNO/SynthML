@@ -37,8 +37,8 @@ public class SynthesisChainTracking {
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
-    /** The map from Petri net transitions to their corresponding CIF events. */
-    private final Map<Transition, Event> transitionEventTraceInfo = new LinkedHashMap<>();
+    /** The map from Petri net transitions to their corresponding tracing info. */
+    private final Map<Transition, TransitionTraceInfo> transitionEventTraceInfo = new LinkedHashMap<>();
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with CIF events and the corresponding input UML elements.
@@ -390,7 +390,8 @@ public class SynthesisChainTracking {
             // Store the transition and the related CIF event.
             Event cifEvent = namesToCifEvents.get(t.getName().getText());
             Verify.verify(cifEvent != null, "Could not find CIF event for transition '" + t.getName().getText() + "'.");
-            transitionEventTraceInfo.put(t, cifEvent);
+            TransitionTraceInfo transitionInfo = createTransitionTraceInfo(Set.of(cifEvent));
+            transitionEventTraceInfo.put(t, transitionInfo);
         }
     }
 
