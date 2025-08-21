@@ -393,4 +393,46 @@ public class SynthesisChainTracking {
             transitionsToCifEvents.put(t, cifEvent);
         }
     }
+
+    public TransitionTraceInfo createTransitionTraceInfo(Set<Event> cifEvents) {
+        Verify.verifyNotNull(cifEvents, "CIF event set cannot be null.");
+        Verify.verify(cifEvents.size() > 0, "CIF event set cannot be empty.");
+        Verify.verify(cifEvents.stream().allMatch(e -> cifEventTraceInfo.keySet().contains(e)),
+                "All CIF events must be contained in the CIF event tracing info map.");
+
+        if (cifEvents.size() > 1) {
+            // The events must compose a pattern: single start event, one or more end events, all referring to the same
+            // UML element.
+            List<Event> startEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isStartEvent()).toList();
+            Verify.verify(startEvents.size() == 1, String.format("Found %d start events within events '%s'.",
+                    startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+
+            List<Event> endEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isEndEvent()).toList();
+            Verify.verify(endEvents.size() >= 1, String.format("There must be at last one end event.",
+                    startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+
+            Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).umlElement())
+                    .collect(Collectors.toSet());
+            Verify.verify(umlElements.size() == 1,
+                    String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
+
+            Set<UmlToCifTranslationPurpose> purposes = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).purpose())
+                    .collect(Collectors.toSet());
+            Verify.verify(purposes.size() == 1,
+                    String.format("Events must have the same translation purpose, found %d.", purposes.size()));
+        }
+
+        return new TransitionTraceInfo(cifEvents);
+    }
+
+    /**
+     * Tracing information related to a Petri net transition. The creation of a TransitionTraceInfo should occur via
+     * {@link SynthesisChainTracking#createTransitionTraceInfo(Set)} to have correctness assertions.
+     *
+     * @param cifEvents The CIF events related to the Petri net transition. If the set contains only a single event,
+     *     this can be either a start or an end event. If the set contains multiple events, these must compose a
+     *     complete "pattern", i.e. one single start event along with all its related end events.
+     */
+    private record TransitionTraceInfo(Set<Event> cifEvents) {
+    }
 }
