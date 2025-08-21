@@ -265,8 +265,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-            }
-            else if (CifScope.getClassifierTemplateParameters(activity).size() > 0) {
+            } else if (CifScope.getClassifierTemplateParameters(activity).size() > 0) {
                 error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
@@ -835,15 +834,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         for (AUpdate update: updates) {
             // Ensure the update is an assignment update.
             if (!(update instanceof AAssignmentUpdate assignment)) {
-                error("Only assignment updates are supported.", null);
+                error("Invalid parameter assignment: Only assignment updates are supported.", null);
                 continue;
             }
 
             // Ensure the addressable part is a named expression.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
-                error("Only single names are allowed as addressables.", null);
+                error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
             } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
-                error("Unknown activity parameter name (of the called activity): " + addressable.name.name, null);
+                error("Invalid parameter assignment: Unknown activity parameter name (of the called activity): "
+                        + addressable.name.name, null);
             } else {
                 // Verify that the types match.
                 CifTypeChecker checker = new CifTypeChecker(valueContext);
@@ -856,10 +856,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 String name = nameExpr.name.name;
                 NamedElement element = valueContext.getReferenceableElement(name);
                 if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
-                    error("Expected a constant or a parameter of the calling activity, got: " + name, null);
+                    error("Invalid parameter assignment: Expected a constant or a parameter of the calling activity, got: "
+                            + name, null);
                 }
             } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
-                error("Expected a constant or a parameter of the calling activity", null);
+                error("Invalid parameter assignment: Expected a constant or a parameter of the calling activity", null);
             }
         }
     }
