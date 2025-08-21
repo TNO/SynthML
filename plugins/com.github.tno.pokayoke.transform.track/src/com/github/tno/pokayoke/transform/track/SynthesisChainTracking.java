@@ -347,8 +347,8 @@ public class SynthesisChainTracking {
      *
      * @param purpose The translation purpose.
      * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
-     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
-     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
+     * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as well
+     *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
      */
@@ -357,7 +357,10 @@ public class SynthesisChainTracking {
     {
         public EventTraceInfo {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
-            Verify.verify(effectIdx == null || isEndEvent, "Only end events can have non-null effect index.");
+            Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
+                    "Events that are both start and end events, as well as start-only events, must have null effect index. "
+                            + "End-only events must have integer effect index.");
+            Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
         }
     }
 
