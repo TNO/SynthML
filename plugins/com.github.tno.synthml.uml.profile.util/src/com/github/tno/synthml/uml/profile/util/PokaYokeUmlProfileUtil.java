@@ -230,7 +230,6 @@ public class PokaYokeUmlProfileUtil {
      * @param element The element to set the arguments on.
      * @param newValue The new property value.
      */
-    @SuppressWarnings("unchecked")
     public static void setArguments(CallBehaviorAction element, String newValue) {
         if (newValue == null || newValue.isEmpty()) {
             PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE);
@@ -238,8 +237,7 @@ public class PokaYokeUmlProfileUtil {
         }
         Stereotype st = applyStereotype(element,
                 getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_CALL_BEHAVIOR_ACTION));
-        EList<String> value = (EList<String>)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS);
-        ECollections.setEList(value, List.of(newValue));
+        element.setValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS, newValue);
     }
 
     public static boolean isAtomic(RedefinableElement element) {
