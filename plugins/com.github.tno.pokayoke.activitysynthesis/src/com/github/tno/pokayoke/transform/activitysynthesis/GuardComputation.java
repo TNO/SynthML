@@ -117,6 +117,7 @@ public class GuardComputation {
         synthesisFrees.remove(CifDataSynthesisFree.RESULT_CTRL_BEH);
         synthesisFrees.remove(CifDataSynthesisFree.SPEC_MARKED);
         synthesisFrees.remove(CifDataSynthesisFree.EDGE_GUARD);
+        synthesisFrees.remove(CifDataSynthesisFree.EDGE_ORIG_GUARD);
         settings.setSynthesisFrees(synthesisFrees);
 
         // Convert the CIF specification to a CIF/BDD specification.
