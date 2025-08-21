@@ -103,8 +103,7 @@ public class ActivityHelper {
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
 
-        // Add template parameters to the newly created activity for used local variables that are defined in the
-        // calling activity.
+        // Add template parameters to the newly created activity for local variables.
         for (String variableName: localVariables) {
             addParameterToActivity(activity, variableName);
         }
@@ -360,8 +359,7 @@ public class ActivityHelper {
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
 
-        // Add template parameters to the newly created activity for used local variables that are defined in the
-        // calling activity.
+        // Add template parameters to the newly created activity for local variables.
         for (String propertyName: localVariables) {
             addParameterToActivity(activity, propertyName);
         }
