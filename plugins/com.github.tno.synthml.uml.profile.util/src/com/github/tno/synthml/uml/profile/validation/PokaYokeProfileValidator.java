@@ -262,8 +262,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         } else {
-            if (!(clazz.getClassifierBehavior() instanceof Activity)) {
+            if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
+                        UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+            }
+            else if (CifScope.getClassifierTemplateParameters(activity).size() > 0) {
+                error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
 
@@ -540,6 +544,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidRedefinableTemplateSignature(Activity activity) {
         List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+
+        if (activity.isAbstract() && templateParameters.size() > 0) {
+            error("Activity parameters are disallowed on abstract activities.", null);
+            return; // Further checks do not provide the user with useful information
+        }
 
         if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
                 .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
