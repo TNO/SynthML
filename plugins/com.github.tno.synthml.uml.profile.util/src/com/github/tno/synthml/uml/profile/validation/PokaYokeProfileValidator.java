@@ -836,7 +836,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Ensure the update is an assignment update.
             if (!(update instanceof AAssignmentUpdate assignment)) {
                 error("Only assignment updates are supported.", null);
-                return;
+                continue;
             }
 
             // Ensure the addressable part is a named expression.
