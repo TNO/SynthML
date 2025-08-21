@@ -114,7 +114,7 @@ A high-level overview is presented below.
 	A deterministic finite automaton (DFA) is a finite automaton that is deterministic.
 	Any finite automaton that is nondeterministic is a nondeterministic finite automaton (NFA).
 
-	Rather than a single DFA or NFA, we typically consider multiple automata that interact, e.g., by means of synchronizing events.
+	Rather than a single DFA or NFA, we typically consider multiple automata that interact, by means of synchronizing events.
 	We will not give a full introduction of all these concepts here.
 
 	\item[Extended finite automata (EFA).]
@@ -122,10 +122,10 @@ A high-level overview is presented below.
 	The \emph{(execution) state} of an EFA typically refers to the current valuation of all data properties, plus the locations that are currently active.
 
 	The edges of EFAs have \emph{guards} which are state predicates, as well as \emph{updates} which are state transformers.
-	Semantically, an edge can be taken when its guard holds with respect to the state of the EFA are the current execution point, and this state is then updated (transformed) according to the edge update.
+	Semantically, an edge can be taken when its guard holds with respect to the state of the EFA at the current execution point, and this state is then updated (transformed) according to the edge update.
 
 	\item[UML models and activities.]
-	For our purposes we use a subset of the UML2 metamodel\footnote{See \url{https://www.omg.org/spec/UML/2.5.1} (Accessed 2024-08-28) for the full UML2 specification.}.
+	For our purposes we use a subset of the UML2 metamodel\footnote{See \url{https://www.omg.org/spec/UML/2.5.1} (Accessed 2025-08-21) for the full UML2 specification.}.
 	In our restricted scope, UML models consist of any number of UML enum declarations, and exactly one UML class.
 	A UML class contains:
 	\begin{itemize}
@@ -146,34 +146,35 @@ A high-level overview is presented below.
 			The atomicity of an action can be indicated in UML Designer via a checkbox in the Properties view.
 			If an action is indicated to be \emph{atomic}, then no other actions can be performed during the execution of the atomic action.
 			If an action is indicated to be \emph{nonatomic}, then other actions may be performed in-between the start and end of the nonatomic action.
-			A nonatomic action can only be started when its guard holds, and the effects of a nondeterministic action are applied when the action ends.
+			A nonatomic action can only be started when its guard holds, and the effects of a nonatomic action are applied when the action ends.
 		\end{itemize}
 		\item Any number of UML constraints that model the requirements for synthesis.
 		A UML constraint can be a state invariant that is expressed over the UML properties in the UML model.
-		A UML constraint can also be an action exclusion invariant, which indicates that the execution of some action requires the system to be in a certain state as expressed by a state invariant.
+		A UML constraint can also be an action exclusion invariant, which indicates that starting the execution of some action requires the system to be in a certain state as expressed by the state invariant.
 		\item Any number of UML activities, which can either be \emph{abstract} or \emph{concrete}.
 		\begin{itemize}
 			\item Abstract UML activities are `empty' in the sense that they contain no nodes nor control flows.
 			An abstract UML activity consists of preconditions, postconditions, and occurrence constraints.
 			The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
 			Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
-			Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
-			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flow rather than edges due to the possible ambiguity with automata edges.}.
-			A node can be a \emph{control node} (initial, final, fork, join, decision, or merge node), be an \emph{call opaque behavior node} which executes an action by calling an opaque behavior, or be an \emph{opaque action node} containing a guard and zero or more effects, thereby essentially `inlining' an action.
-			So likewise to UML opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
+			Occurrence constraints thus limit the number of times some action can be started, or the number of times some activity can be called, in a to-be-synthesized activity.
+			Note that occurrence constraints are temporary constructs and are intended to be removed later, which is future work.
+			\item A concrete UML activity is a finite directed graph consisting of \emph{nodes} and \emph{control flows}\footnote{The UML2 metamodel uses \textsf{ActivityNode} and \textsf{ActivityEdge}, but here it may be better to talk about control flows rather than edges due to the possible ambiguity with automata edges.}.
+			A node can be a:
+			\begin{itemize}
+				\item \emph{Control node}, i.e., an initial node, final node, fork node, join node, decision node, or merge node.
+				\item \emph{Call behavior action node}, which either calls an activity, or executes an action by calling an opaque behavior.
+				\item \emph{Opaque action node}, which is essentially an `inlined' action consisting of a guard and zero or more effects.
+				So likewise to opaque behaviors, also opaque action nodes are either deterministic or nondeterministic, and either atomic or nonatomic.
+			\end{itemize}
+			Likewise to abstract activities, also concrete activities may contain preconditions, postconditions, and occurrence constraints.
+			In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
+			If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
+			(Moreover, in principle it would also be possible to later use the preconditions and postconditions of concrete activities for verification, e.g., property checking.)
 		\end{itemize}
 	\end{itemize}
 
-	Both abstract and concrete UML activities may contain preconditions, postconditions, and occurrence constraints.
-	The preconditions and postconditions are state invariants that are expressed over the specified UML properties.
-	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ can be either an action or an activity.
-	Occurrence constraints thus limit the number of occurrences of some action, or calls to some activity, in a to-be-synthesized activity.
-	In the case of abstract activities, these constraints are used as input for synthesizing a concrete activity that adheres to these constraints.
-	If an abstract activity is allowed to call a concrete activity by its occurrence constraints, then the preconditions and postconditions of that concrete activity are used by the synthesis algorithm to determine when the concrete activity can be called by the to-be-synthesized activity, and once called, when the concrete activity has finished its execution.
-	(Moreover, in principle it would also be possible to later use the preconditions and postconditions of concrete activities for verification, e.g., property checking.)
-	Note that occurrence constraints are temporary constructs and are intended to be removed later, which is also future work.
-
-	The activity synthesis algorithm takes UML models as input, containing any number of abstract UML activities.
+	The activity synthesis algorithm takes UML models as input, containing any number of (concrete and abstract) UML activities.
 	The goal of activity synthesis is then to synthesize a concrete UML activity for every abstract UML activity, and update the UML model by replacing all abstract UML activities by the concrete synthesized ones.
 
 	We will only consider UML models that are \emph{valid} with respect to the Poka Yoke validator.
@@ -184,11 +185,11 @@ A high-level overview is presented below.
 	We consider \emph{elementary Petri Nets}, where (by definition) any place holds at most one \emph{token}.
 	Transitions in a Petri Net can be \emph{fired} to move tokens around between adjacent places.
 	If some transition can fire, we say that it is \emph{enabled}.
-	Any arc in a Petri Net must be connected to a place with a transition.
+	Any arc in a Petri Net must be connected to one place and one transition.
 	That is, there cannot be an arc from a place to some other place, or from a transition to some other transition.
-	Further details on Petri Nets and their semantics can be found in the standard literature.
+	Further details on Petri Nets and their semantics can be found in standard literature.
 
-	The activity synthesis algorithm may use a particular category of Petri Nets, namely \emph{free-choice Petri Nets}.
+	The activity synthesis algorithm uses a particular category of Petri Nets where possible, namely \emph{free-choice Petri Nets}.
 	This is because we have observed that free-choice Petri Nets can be translated to concrete UML activities that are more intuitive for users to understand than general Petri Nets.
 	Intuitively, free-choice means that all choices (i.e., places with multiple outgoing arcs) can be made without additional constraints (i.e., the target transitions of these outgoing arcs do not have additional token requirements).
 	Free-choice Petri Nets thus have simpler choice patterns compared to general Petri Nets, which may translate to more intuitive UML activities.
@@ -202,9 +203,9 @@ A brief overview is given below.
 
 \begin{description}
 	\item[CIF.]
-	CIF is a specification language for discrete event systems (as well as timed and hybrid ones), as well as a toolset that supports the development process of supervisory controllers.
-	CIF is part of the Eclipse ESCET toolkit, see \url{https://eclipse.dev/escet} (accessed 2024-07-31) for further details.
-	We use the data-based synthesis tool of CIF to do supervisory controller synthesis, and the CIF explorer tool for state space generation.
+	CIF is a specification language for discrete event systems, among other systems, as well as a toolset that supports the development process of supervisory controllers.
+	CIF is part of the Eclipse ESCET toolkit, see \url{https://eclipse.dev/escet} (accessed 20254-08-21) for further details.
+	We use the CIF data-based synthesis tool to do supervisory controller synthesis, and the CIF explorer tool for state space generation.
 	\item[Petrify.]
 	Petrify is a tool for Petri Net synthesis.
 	Given some state machine (or finite automaton), the goal of Petri Net synthesis is to synthesize a (minimal) Petri Net that is trace-equivalent to the input state machine.
@@ -213,14 +214,14 @@ A brief overview is given below.
 	This is because Petri Nets can more compactly represent concurrency, by forking/joining from a Petri Net transition.
 	In contrast, in state machines, concurrency is represented by explicit interleaving, i.e., as diamond patterns.
 	Petri Net synthesis can automatically turn such diamond patterns in the input state machine to more compact fork/join patterns in the resulting Petri Net.
-	Further information on Petrify can be found here: \url{https://www.cs.upc.edu/~jordicf/petrify} (accessed 2024-07-31).
+	Further information on Petrify can be found here: \url{https://www.cs.upc.edu/~jordicf/petrify} (accessed 2025-08-21).
 	\item[PNML.]
 	PNML stands for Petri Net Markup Language, and is an XML-based syntax for representing Petri Nets.
 	We use the PNML metamodel to represent Petri Nets internally in the code implementation.
-	Further information can be found here: \url{https://pnml.lip6.fr} (accessed 2024-07-31).
+	Further information can be found here: \url{https://pnml.lip6.fr} (accessed 2025-08-21).
 	\item[UML.]
-	We use the UML metamodel to represent UML models and UML activities in the code implementation.
-	Further information can be found here: \url{https://wiki.eclipse.org/MDT-UML2} (accessed 2024-07-31).
+	We use the UML2 metamodel to represent UML models and UML activities in the code implementation.
+	Further information can be found here: \url{https://wiki.eclipse.org/MDT-UML2} (accessed 2025-08-21).
 \end{description}
 
 \subsection{Algorithms for synthesis}
@@ -229,16 +230,16 @@ A brief overview is given below.
 The activity synthesis procedure internally uses two types of synthesis algorithms, namely supervisory controller synthesis (currently using CIF), and Petri Net synthesis (currently using Petrify).
 
 Supervisory controller synthesis is used to compute a minimally restrictive supervisor, which is essentially a state machine that describes all safe system behavior.
-After that, Petri Net synthesis is used to synthesize a (possibly free-choice) Petri Net from this state machine, which is then transformed to a concrete UML activity.
-The intermediate step of synthesizing a Petri Net is performed since Petri Nets are structurally much closer to UML activities compared to state machines, and thus easier to translate.
+After that, Petri Net synthesis is used to synthesize a (free-choice, if possible) Petri Net from this state machine, which is then transformed to a concrete UML activity.
+The intermediate step of synthesizing a Petri Net is performed since Petri Nets are structurally much closer to UML activities than state machines, and thus easier to translate.
 
 The field of Petri Net synthesis is developed around the \emph{theory of regions}.
 Intuitively, the idea is to find groups of locations in the input state machine that can be turned into single places in the output Petri Net.
 These groups are then called regions.
-Depending on the type of Petri Net you aim to synthesize (e.g., general or free-choice ones), there are slightly different requirements of what exactly constitutes a region.
-Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri Nets (among other kinds of Petri Nets).
+Depending on the type of Petri Net you aim to synthesize (e.g., elementary or free-choice ones), there are slightly different requirements of what exactly constitutes a region.
+Petrify is essentially an implementation of the theory of regions, and is able to synthesize both general and free-choice Petri Nets, among other kinds.
 
-We will not explain data-based synthesis and Petri Net synthesis here.
+We will not explain supervisory controller synthesis and Petri Net synthesis here.
 More information on these types of syntheses can be found on the webpages of Eclipse ESCET and Petrify linked above.
 
 \section{Activity Synthesis}
