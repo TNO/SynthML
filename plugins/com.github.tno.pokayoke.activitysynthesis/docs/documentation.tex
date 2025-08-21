@@ -269,7 +269,7 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 
 	\tcp{Synthesizes a concrete activity for the given abstract activity.}
 	\procedure{\synthSingle{\var{umlActivity_{abstr}}}}{
-		\tcp{Synthesize a CIF supervisor using data-based synthesis.}
+		\tcp{Synthesize a CIF supervisor using CIF data-based synthesis.}
 		\var{cifSpec} := \transformUmlToCif{\var{umlActivity_{abstr}}}\;
 		\var{cifSupervisor} := \dataBasedSynthesis{\var{cifSpec}}\;
 		\tcp{Generate the CIF state space as a minimal DFA.}
@@ -282,9 +282,9 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\tcp{Transform the Petri Net to an activity without control flow guards.}
 		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet}}\;
 		\var{umlActivity_{red}} := \reduceNonAtomicPatterns{\var{umlActivity}_{concr}}\;
-		\tcp{Compute the control flow guards for the UML decision nodes.}
+		\tcp{Compute the control flow guards for the decision nodes.}
 		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots}\;
-		\tcp{Post-process the synthesized UML activity.}
+		\tcp{Post-process the synthesized activity.}
 		\var{umlActivity_{post}} := \postprocessActivity{\var{umlActivity_{guards}}}\;
 		\Return \var{umlActivity_{post}}\;
 	}
@@ -320,16 +320,16 @@ The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\
 The \transformUmlToCif{\var{umlActivity_{abstr}}} operation translates a given abstract UML activity, \var{umlActivity_{abstr}}, together with all relevant context from the UML model (e.g., UML class properties, constraints, opaque behaviors, concrete activities that may be called, etc.) to a CIF specification to be used for supervisory controller synthesis.
 
 \paragraph{Motivation.}
-With respect to supervisory controller synthesis, the UML model of the abstract input activity \var{umlActivity_{abstr}} specifies the plant and requirements, i.e., the UML opaque behaviors and UML constraints.
+With respect to supervisory controller synthesis, the UML model of the abstract input activity \var{umlActivity_{abstr}} specifies the plant and requirements, i.e., the UML opaque behaviors, concrete UML activities, and UML constraints.
 Moreover, the abstract activity itself contains the name of the to-be-synthesized activity as well as its preconditions, postconditions, and occurrence constraints.
-These plant and requirement constructs are translated one-to-one to CIF, to enable running its data-based synthesis tool.
-In case the abstract activity may be able to call other concrete activities, then all nodes and control flows of these concrete activities are translated as well.
+These plant and requirement constructs are translated one-to-one to CIF, to enable running the CIF data-based synthesis tool.
+In case the to-be-synthesized abstract activity may be able to call other concrete activities, then all nodes and control flows of these concrete activities are translated as well.
 These concrete activities are then considered part of the plant specification for data-based synthesis.
 
 \paragraph{Preconditions.}
 This operation requires the UML model of the abstract input activity to be valid.
-Moreover, every occurrence constraint of \var{umlActivity_{abstr}} must be expressed over actions and/or activities.
-If the to-be-synthesized activity is able to call other activities by its occurrence constraints, then all these activities must be concrete, and are not allowed to call other activities (i.e., they must be flattened).
+Moreover, every occurrence constraint of \var{umlActivity_{abstr}} must be expressed over actions and/or activities in that UML model.
+If the to-be-synthesized activity is able to call other activities by its occurrence constraints, then all these activities must be concrete and must not call other activities (i.e., they must be flattened).
 
 \paragraph{Postconditions.}
 This operation produces a CIF specification that:
@@ -343,6 +343,7 @@ This operation produces a CIF specification that:
 	\item Contains CIF event declarations corresponding to all defined UML opaque behaviors.
 	All opaque behaviors that model actions that are both atomic and deterministic are translated as single controllable events.
 	All other opaque behaviors, that model nonatomic and/or nondeterministic actions, are translated to multiple CIF events, namely a controllable one for starting the action, and uncontrollable ones for each of their effects to end the action.
+	In that case, at least one uncontrollable end event will be created, even if the opaque behavior has no user-defined effects.
 	Such separate uncontrollable `end' events must be defined since:
 	\begin{itemize}
 		\item In case of a nonatomic action, we must allow other actions to be performed while executing the nonatomic action.
@@ -359,12 +360,12 @@ This operation produces a CIF specification that:
 		The active variable of a nonatomic action is a Boolean that indicates whether the action is currently being executed (\texttt{true}) or not (\texttt{false}).
 		The start event of a nonatomic action can only be performed when the active variable of that action is \texttt{false}, and performing it will set the active variable to \texttt{true}.
 		Any end event of a nonatomic action can only be performed when the active variable of the action is \texttt{true}, and performing it will set the active variable to \texttt{false}.
-		\item In case the UML model contains atomic nondeterministic actions, a single internal \emph{atomicity variable} is declared and maintained in the CIF specification, to ensure that no event may occur between the start and end event of the atomic nondeterministic action.
+		\item In case the UML model contains atomic nondeterministic actions, a single \emph{atomicity variable} is declared and maintained in the CIF specification, to ensure that no event may occur between the start and end event of the atomic nondeterministic action.
 		This atomicity variable is defined to be an integer between $0$ and $n$, with $n$ the total number of atomic nondeterministic actions.
 		If the atomicity variable is $0$, then no atomic nondeterministic action is being executed.
 		The start event of any atomic nondeterministic action will set the atomicity variable to be the index of that action.
-		If the atomicity variable is greater than $0$, then only an end event of the corresponding (indexed) action can be performed, and performing such an end event will reset the active variable to $0$.
-		We add necessary guards to all created CIF edges to ensure that indeed no other CIF event can be performed when the active variable is not $0$.
+		If the atomicity variable is greater than $0$, then only an end event of the corresponding (indexed) action can be performed, and performing such an end event will reset the atomicity variable to $0$.
+		We add necessary guards to all created CIF edges to ensure that indeed no other CIF event can be performed when the atomicity variable is not $0$.
 	\end{itemize}
 	\item For every concrete UML activity that can be called by the to-be-synthesized activity:
 	\begin{itemize}
@@ -385,22 +386,27 @@ This operation produces a CIF specification that:
 		Hence, we translate their preconditions as extra guards for executing the initial nodes.
 		Likewise, we translate their postconditions as extra guards for executing the final nodes.
 	\end{itemize}
-	\item Contains an `initial' predicate from the conjunction of all translated preconditions of the abstract UML activity.
-	There may be multiple preconditions defined for this activity.
-	Each of these preconditions are translated as Boolean algebraic variables in CIF, for better traceability.
-	The conjunction of all these Boolean algebraic variables then forms the activity precondition, for which an algebraic variable is created as well.
-	This algebraic variable is then used as the `initial' predicate, which limits the number of initial states to only the ones satisfying the precondition.
-	\item Contains a `marked' predicate from the conjunction of all translated postconditions of the abstract UML activity.
-	There may be multiple user-defined postconditions defined for this activity.
-	In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
-	Moreover, in case the abstract activity has occurrence constraints, extra postconditions are generated which express that that occurrence constraints must be satisfied, i.e., the actions/activities that are subject to occurrence constraints must have happened the specified number of times.
-	Furthermore, in case concrete activities were translated, extra postconditions are generated expressing that none of their control flows must have a token.
-	Each of these postconditions are translated as Boolean algebraic variables in CIF, for better traceability.
-	The conjunction of all these Boolean algebraic variables then forms the activity postcondition, for which an algebraic variable is created as well.
-	This algebraic variable is then used as the `marked' predicate.
-	Thus, a marked state is a state where the (combined) user-written activity postcondition is satisfied, where no nonatomic and nondeterministic actions are active, where every occurrence constraint is satisfied, and where no translated control flow holds a token.
-	\item Contains requirement invariants stating that the postcondition disables any CIF event.
-	In other words, if you would reach a system state where the activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
+	
+	\item Contains Boolean-typed algebraic variables for every translated precondition of the abstract activity.
+	Activities may have multiple preconditions.
+	Each of these preconditions are translated as algebraic variables in CIF, for better traceability.
+	The conjunction of all these algebraic variables then forms the overall activity precondition, for which an algebraic variable is created as well, named \texttt{\_\_precondition}.
+	\item Contains Boolean-typed algebraic variables for every translated postcondition of the abstract activity.
+	Activities may have multiple postconditions.
+	Each of these postconditions are translated as algebraic variables in CIF, for better traceability.
+	Apart from these, extra postconditions are generated as Boolean-typed algebraic variables in the following situations:
+	\begin{itemize}
+		\item In case any internal active variables or atomicity variable were declared as described earlier, extra postconditions are generated which express that no nonatomic and/or nondeterministic actions can be active.
+		\item In case the abstract activity has occurrence constraints, extra postconditions are generated which express that occurrence constraints must be satisfied, i.e., the actions and activities that are subject to occurrence constraints must have happened the specified number of times.
+		\item In case concrete activities were translated, extra postconditions are generated expressing that none of their control flows must have a token.
+	\end{itemize}
+	The conjunction of all these algebraic variables then forms the overall activity postcondition, for which an algebraic variable is created as well, named \texttt{\_\_postcondition}.
+	\item Contains an `initial' predicate which is defined as \texttt{\_\_precondition}, i.e., the conjunction of all translated preconditions of the abstract activity.
+	This predicate then limits the number of initial states to only the ones satisfying the overall activity precondition.
+	\item Contains a `marked' predicate which is defined as \texttt{\_\_postcondition}, i.e., the conjunction of all translated (user-defined and extra) postconditions of the abstract activity.
+	This predicate then limits the number of marked states to only the ones satisfying the overall activity postcondition.
+	\item Contains a requirement invariant for every created CIF event, which disables the CIF event in every state in which \texttt{\_\_postcondition} is satisfied.
+	In other words, if you would reach a system state where the overall activity postcondition holds, then no further actions would have to be taken as they will not contribute to coming closer to a postcondition state.
 	These requirements can be seen as an optimization for synthesis and later state space generation, to avoid considering unnecessary steps.
 	And they ensure that the synthesized UML activity will have no further actions after having reached a final node.
 	\item Contains an edge in the flower automaton plant for every defined CIF event declaration.
@@ -408,15 +414,15 @@ This operation produces a CIF specification that:
 	Every CIF event, and thereby also every CIF edge, corresponds to a translated action, i.e., a UML opaque behavior or a UML activity node.
 	The action guards are then translated to guards that are put on the edges of the corresponding `start' events of the action, and action effects are translated to edge updates for the `end' events (thereby taking into account that the `start' events of atomic deterministic actions also `end' the action).
 	Thus, we do not put user-written action guards on any edges corresponding to `end' events, since we don't want conditions on any `end' events, and by making them uncontrollable, any synthesized constraints are pushed back to the controllable events.
-	However, we do put guards and effects on the (un)controllable events to correctly handle and maintain the atomicity variable and the active variables.
+	However, we do put extra guards and effects on the events to correctly handle and maintain the atomicity variable and the active variables.
 
 	Furthermore, edges are guaranteed not to contain conditional `if'-updates, since these are not supported by data-based synthesis.
 	Any conditional updates have been eliminated from the CIF specification.
 	They are turned into conditional expressions, which are supported by data-based synthesis.
-	\item Contains requirement automata for the occurrence constraints defined for \var{umlActivity_{abstr}}.
-	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ refers either to an action or an activity.
+	\item Contains requirement automata for the occurrence constraints defined for the abstract activity.
+	Occurrence constraints are roughly of the form `$A$ must happen at least $M$ times and at most $N$ times' where $A$ refers either to an opaque behavior or an activity.
 	Such constraints are translated as requirement automata, containing a discrete variable that maintains how often the action has already occurred, or how often the activity has already been called, respectively.
-	In case $A$ is an action, this variable is incremented every time the action occurs.
+	In case $A$ is an opaque behavior, this variable is incremented every time that behavior is called.
 	In case $A$ is an activity, this variable is incremented every time the initial node of the activity has been executed.
 	The occurrence constraint can then be expressed in this requirement automaton (using edge guards and marked predicates).
 \end{itemize}
