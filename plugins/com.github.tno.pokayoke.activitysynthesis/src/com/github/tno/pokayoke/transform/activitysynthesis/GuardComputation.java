@@ -25,7 +25,6 @@ import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
-import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisFree;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
@@ -106,7 +105,6 @@ public class GuardComputation {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true); // Get correct and intuitive result.
         settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL); // Best performance.
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class)); // We do custom context-aware simplification.
 
         // Configure to not free certain BDDs, as we still need them after synthesis.
         Set<CifBddFree> cifBddFrees = EnumSet.allOf(CifBddFree.class);
@@ -119,6 +117,7 @@ public class GuardComputation {
         synthesisFrees.remove(CifDataSynthesisFree.RESULT_CTRL_BEH);
         synthesisFrees.remove(CifDataSynthesisFree.SPEC_MARKED);
         synthesisFrees.remove(CifDataSynthesisFree.EDGE_GUARD);
+        synthesisFrees.remove(CifDataSynthesisFree.EDGE_ORIG_GUARD);
         settings.setSynthesisFrees(synthesisFrees);
 
         // Convert the CIF specification to a CIF/BDD specification.

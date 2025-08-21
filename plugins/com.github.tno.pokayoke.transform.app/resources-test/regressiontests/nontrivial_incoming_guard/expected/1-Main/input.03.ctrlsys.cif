@@ -19,6 +19,8 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge left when not Context.field2 and not Context.field1;
-    edge right when not Context.field2 and Context.field1;
+    edge left when true;
+    edge right when true;
 end
+supervisor invariant Context.__postcondition disables left;
+supervisor invariant Context.__postcondition disables right;

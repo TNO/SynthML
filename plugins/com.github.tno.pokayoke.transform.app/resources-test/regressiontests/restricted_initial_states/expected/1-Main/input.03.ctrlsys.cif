@@ -16,9 +16,10 @@ plant automaton Context:
 end
 supervisor automaton sup:
   alphabet Action;
-  initial not Context.done and Context.position = Second;
+  initial Context.position = Second;
   location:
     initial;
     marked;
-    edge Action when not Context.done and Context.position = Second;
+    edge Action when true;
 end
+supervisor invariant Context.__postcondition disables Action;

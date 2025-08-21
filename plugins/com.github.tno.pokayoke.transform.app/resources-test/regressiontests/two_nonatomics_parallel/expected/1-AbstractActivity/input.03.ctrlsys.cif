@@ -50,6 +50,12 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge NonAtomicA when IntervalConstraintA__32__NonAtomicA__40.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0)) or (IntervalConstraintA__32__NonAtomicA__40.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1)) or IntervalConstraintA__32__NonAtomicA__40.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1)));
-    edge NonAtomicB when IntervalConstraintA__32__NonAtomicA__40.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0)) or (IntervalConstraintA__32__NonAtomicA__40.__occurrences = 1 and (not Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0)) or IntervalConstraintA__32__NonAtomicA__40.__occurrences = 1 and (Machine.__nonAtomicActive__NonAtomicA and not Machine.b_executed) and (not Machine.a_executed and (not Machine.__nonAtomicActive__NonAtomicB and IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0)));
+    edge NonAtomicA when true;
+    edge NonAtomicB when true;
 end
+supervisor invariant Machine.__postcondition disables NonAtomicA;
+supervisor invariant Machine.__postcondition disables NonAtomicA__na_result_1;
+supervisor invariant Machine.__postcondition disables NonAtomicA__na_result_2;
+supervisor invariant Machine.__postcondition disables NonAtomicB;
+supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_1;
+supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_2;
