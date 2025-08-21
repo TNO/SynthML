@@ -395,6 +395,14 @@ public class SynthesisChainTracking {
         }
     }
 
+    /**
+     * Create a new transition trace info record, after some validation checks. If the input CIF event set contains only
+     * a single event, this can be either a start or an end event. If the set contains multiple events, these must
+     * compose a complete "pattern", i.e. one single start event along with all its related end events.
+     *
+     * @param cifEvents The set of CIF events for the tracing info.
+     * @return A new transition tracing info record.
+     */
     public TransitionTraceInfo createTransitionTraceInfo(Set<Event> cifEvents) {
         Verify.verifyNotNull(cifEvents, "CIF event set cannot be null.");
         Verify.verify(cifEvents.size() > 0, "CIF event set cannot be empty.");
