@@ -403,7 +403,7 @@ public class SynthesisChainTracking {
 
         if (cifEvents.size() > 1) {
             // The events must compose a pattern: single start event, one or more end events, all referring to the same
-            // UML element.
+            // UML element, all with the same translation purpose.
             List<Event> startEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isStartEvent()).toList();
             Verify.verify(startEvents.size() == 1, String.format("Found %d start events within events '%s'.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
@@ -424,6 +424,35 @@ public class SynthesisChainTracking {
         }
 
         return new TransitionTraceInfo(cifEvents);
+    }
+
+    /**
+     * Merges the transitions composing a pattern. The end transitions' entries are removed from the tracker's internal
+     * map. The start transition's entry gets an updated tracing info, storing all the merged events.
+     *
+     * @param startEndTransitions The map from transition related to a start CIF event to the transitions related to the
+     *     corresponding CIF end events to be merged.
+     */
+    public void mergeTransitionPatterns(Map<Transition, List<Transition>> startEndTransitions) {
+        for (Entry<Transition, List<Transition>> startEndTransition: startEndTransitions.entrySet()) {
+            Transition startTransition = startEndTransition.getKey();
+            List<Transition> endTransitions = startEndTransition.getValue();
+
+            // Collect the start event and the end events.
+            Set<Event> patternEvents = new LinkedHashSet<>();
+            patternEvents.addAll(transitionEventTraceInfo.get(startTransition).cifEvents());
+            patternEvents.addAll(endTransitions.stream()
+                    .flatMap(t -> transitionEventTraceInfo.get(t).cifEvents().stream()).toList());
+
+            // Create a new transition tracing info.
+            TransitionTraceInfo mergedTransitionInfo = createTransitionTraceInfo(patternEvents);
+
+            // Remove end transitions' entries from the transition map.
+            transitionEventTraceInfo.keySet().removeAll(endTransitions);
+
+            // Update start transition entry with the merged transition tracing info.
+            transitionEventTraceInfo.put(startTransition, mergedTransitionInfo);
+        }
     }
 
     /**
