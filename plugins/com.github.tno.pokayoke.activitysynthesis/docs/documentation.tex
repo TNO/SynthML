@@ -451,31 +451,27 @@ In practice, these four requirements ensure that once the system reaches a state
 \subsection{Data-based synthesis with CIF}
 \label{sec:data-based-synthesis}
 
-The operation \dataBasedSynthesis{\var{cifSpec}} executes the data-based synthesis tool of CIF.
-Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}), and to do no BDD predicate simplification (i.e., removing all simplifications from \texttt{--bdd-simplify}).
-Forward reachability is done for performance reasons, and because it may lead to more readable results (in particular UML edge guards).
-And by disabling all simplifications, we ensure that the synthesized conditions fully capture under which conditions the controllable events are enabled in the controlled system.
+The operation \dataBasedSynthesis{\var{cifSpec}} executes the CIF data-based synthesis tool.
+Data-based synthesis is thereby configured to do forward reachability (\texttt{--forward-reach=true}), and to start with forward reachability in the fixed-point order (\texttt{--fixed-point-order=reach-nonblock-ctrl}).
+Enabling forward reachability may lead to more readable results, in particular UML control flow guards.
+We start the fixed-point order with a forward reachability search, since we generally expect this to be computationally cheaper than starting with a backward reachability search.
+To see why, consider a to-be-synthesized abstract activity that is able to call various concrete activities.
+In that case, a backward reachability search may consider many behaviors that can never actually occur, like (combinations of) intermediate execution states of concrete activities that might hypothetically be executing.
+A forward reachability search may find out early that many of these behaviors can never occur, for example since concrete activities can only be called in certain situations---when their preconditions hold.
+We have seen concrete synthesis examples where this helps significantly.
+We should later evaluate if, and how much, performing forward reachability helps in general.
 
 \paragraph{Motivation.}
-Our goal of performing data-based synthesis is to compute all extra restrictions on actions that must be considered by the to-be-synthesized activity to never violate specified requirements.
-Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity precondition, to a state that satisfies the postcondition, without violating requirements, running into blocking situations, etc.
+Our goal of performing data-based synthesis is to compute all extra restrictions on the execution of actions and the calls to activities that must be considered by the to-be-synthesized activity to never violate specified requirements.
+Data-based synthesis computes a minimally restrictive supervisor for going from a state that satisfies the activity preconditions, to a state that satisfies the postconditions, without violating requirements, running into blocking situations, etc.
 We will later make the behavior of this supervisor explicit (\autoref{sec:state-space-generation}), to be able to synthesize a compact Petri Net for it (\autoref{sec:petrinet-synthesis}) that is then transformed to a concrete activity (\autoref{sec:transform-petrinet-to-activity}).
-
-After this transformation, we need to separately compute the guards of the control flows that go out of UML decision nodes (\autoref{sec:compute-control-flow-guards}).
-This computation make use of the extra restrictions that are synthesized by data-based synthesis.
-Moreover, this computation requires that these extra restriction predicates are \emph{not} simplified, which CIF does by default, hence the extra configuration.
-
-Forward reachability is configured simply for performance reasons, and might make synthesized conditions smaller.
-We should later evaluate if, and how much, forward reachability actually contributes to that.
+After this transformation, we need to separately compute the incoming and outgoing guards of the control flows (\autoref{sec:compute-control-flow-guards}).
 
 \paragraph{Preconditions.}
-All preconditions of the data-based synthesis tool apply.
+All preconditions of the CIF data-based synthesis tool apply.
 
 \paragraph{Postconditions.}
-All guarantees of the data-based synthesis tool apply.
-Moreover, since BDD predicate simplification is disabled, the resulting CIF supervisor contains no requirement invariants.
-These requirements are instead included in the synthesized conditions.
-The guards of the supervisor automaton, for each controllable event, are the full/complete conditions under which these controllable events are enabled in the controlled system.
+All guarantees of the CIF data-based synthesis tool apply.
 
 \subsection{State space generation}
 \label{sec:state-space-generation}
