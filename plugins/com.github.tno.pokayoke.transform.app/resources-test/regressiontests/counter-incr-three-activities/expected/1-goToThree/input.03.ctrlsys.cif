@@ -55,7 +55,12 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge incr1 when not Context.__nonAtomicActive__initialize and (Context.count = 2 and occurrences_goToThree_once__42__initialize__26.__occurrences = 1) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and Context.init));
-    edge incr2 when not Context.__nonAtomicActive__initialize and (Context.count = 1 and occurrences_goToThree_once__42__initialize__26.__occurrences = 1) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and Context.init));
-    edge initialize when not Context.__nonAtomicActive__initialize and (Context.count = 0 and occurrences_goToThree_once__42__initialize__26.__occurrences = 0) and (occurrences_goToThree_once__42__incr1__28.__occurrences = 0 and (occurrences_goToThree_once__42__incr2__30.__occurrences = 0 and not Context.init));
+    edge incr1 when Context.count = 0 or (Context.count = 2 or Context.count = 4);
+    edge incr2 when Context.count = 1 or (Context.count = 3 or Context.count = 5);
+    edge initialize when true;
 end
+supervisor invariant Context.__postcondition disables initialize;
+supervisor invariant Context.__postcondition disables initialize__na_result_1;
+supervisor invariant Context.__postcondition disables initialize__na_result_2;
+supervisor invariant Context.__postcondition disables incr1;
+supervisor invariant Context.__postcondition disables incr2;

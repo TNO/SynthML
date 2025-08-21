@@ -42,6 +42,9 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge AtomicA when IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and not Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed)) or IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and not Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1 and (not Machine.__nonAtomicActive__NonAtomicB and Machine.b_executed)) or (IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and not Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1 and (Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed)) or (IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed)) or IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 1 and (Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed))));
-    edge NonAtomicB when IntervalConstraintA__32__AtomicA__40.__occurrences = 0 and not Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed)) or IntervalConstraintA__32__AtomicA__40.__occurrences = 1 and Machine.a_executed and (IntervalConstraintB__36__NonAtomicB__42.__occurrences = 0 and (not Machine.__nonAtomicActive__NonAtomicB and not Machine.b_executed));
+    edge AtomicA when true;
+    edge NonAtomicB when true;
 end
+supervisor invariant Machine.__postcondition disables AtomicA;
+supervisor invariant Machine.__postcondition disables NonAtomicB;
+supervisor invariant Machine.__postcondition disables NonAtomicB__na_result_1;
