@@ -397,8 +397,8 @@ public class SynthesisChainTracking {
 
     /**
      * Create a new transition trace info record, after some validation checks. If the input CIF event set contains only
-     * a single event, this can be either a start or an end event (or both). If the set contains multiple events, these must
-     * compose a complete "pattern", i.e. one single start event along with all its related end events.
+     * a single event, this can be either a start or an end event (or both). If the set contains multiple events, these
+     * must compose a complete "pattern", i.e. one single start event along with all its related end events.
      *
      * @param cifEvents The set of CIF events for the tracing info.
      * @return A new transition tracing info record.
@@ -410,15 +410,26 @@ public class SynthesisChainTracking {
                 "All CIF events must be contained in the CIF event tracing info map.");
 
         if (cifEvents.size() > 1) {
-            // The events must compose a pattern: single start event, one or more end events, all referring to the same
-            // UML element, all with the same translation purpose.
-            List<Event> startEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isStartEvent()).toList();
+            // The events must compose a pattern: single start-only event, one or more end-only events, all referring to
+            // the same UML element, all with the same translation purpose.
+            List<Event> startEvents = cifEvents.stream()
+                    .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && !cifEventTraceInfo.get(e).isEndEvent())
+                    .toList();
             Verify.verify(startEvents.size() == 1, String.format("Found %d start events within events '%s'.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
-            List<Event> endEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isEndEvent()).toList();
+            List<Event> endEvents = cifEvents.stream()
+                    .filter(e -> cifEventTraceInfo.get(e).isEndEvent() && !cifEventTraceInfo.get(e).isStartEvent())
+                    .toList();
             Verify.verify(endEvents.size() >= 1, String.format("There must be at last one end event.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+
+            List<Event> startEndEvents = cifEvents.stream()
+                    .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && cifEventTraceInfo.get(e).isEndEvent())
+                    .toList();
+            Verify.verify(startEndEvents.size() == 0,
+                    String.format("Events that are both start- and end-events are not supported for merged patterns.",
+                            startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
             Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).umlElement())
                     .collect(Collectors.toSet());
@@ -468,8 +479,8 @@ public class SynthesisChainTracking {
      * {@link #createTransitionTraceInfo} to have correctness assertions.
      *
      * @param cifEvents The CIF events related to the Petri net transition. If the set contains only a single event,
-     *     this can be either a start or an end event (or both). If the set contains multiple events, these must compose a
-     *     complete "pattern", i.e. one single start event along with all its related end events.
+     *     this can be either a start or an end event (or both). If the set contains multiple events, these must compose
+     *     a complete "pattern", i.e. one single start event along with all its related end events.
      */
     private record TransitionTraceInfo(Set<Event> cifEvents) {
     }
