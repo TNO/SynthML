@@ -441,8 +441,9 @@ public class SynthesisChainTracking {
                     "All events must have 'synthesis' translation purpose.");
 
             // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events tracing
-            // info effect indexes are the same numbers as the UML element's effects.
-            Set<Integer> eventsEffectIdxs = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).effectIdx())
+            // info effect indexes are the same numbers as the UML element's effects. Verify that there are no
+            // additional effect indexes.
+            Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> cifEventTraceInfo.get(e).effectIdx())
                     .collect(Collectors.toSet());
             int umlElemEffectSize = PokaYokeUmlProfileUtil
                     .getEffects(cifEventTraceInfo.get(cifEvents.iterator().next()).umlElement()).size();
@@ -450,7 +451,11 @@ public class SynthesisChainTracking {
                 Verify.verify(eventsEffectIdxs.contains(i),
                         String.format("Effect index %d of UML element '%s' is missing.", i,
                                 cifEventTraceInfo.get(cifEvents.iterator().next()).umlElement().getName()));
+                eventsEffectIdxs.remove(i);
             }
+            Verify.verify(eventsEffectIdxs.isEmpty(),
+                    String.format("The set of CIF events contains unexpected indexes: %s.",
+                            String.join(", ", eventsEffectIdxs.stream().map(i -> String.valueOf(i)).toList())));
         }
 
         return new TransitionTraceInfo(cifEvents);
