@@ -440,7 +440,7 @@ public class SynthesisChainTracking {
             Verify.verify(
                     cifEvents.stream().allMatch(
                             e -> cifEventTraceInfo.get(e).purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)),
-                    "All events must have synthesis translation purpose.");
+                    "All events must have 'synthesis' translation purpose.");
 
             // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events tracing
             // info effect indexes are the same numbers as the UML element's effects.
