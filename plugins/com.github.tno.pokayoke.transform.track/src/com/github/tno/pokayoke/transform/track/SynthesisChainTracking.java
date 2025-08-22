@@ -436,10 +436,10 @@ public class SynthesisChainTracking {
             Verify.verify(umlElements.size() == 1,
                     String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
 
-            Set<UmlToCifTranslationPurpose> purposes = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).purpose())
-                    .collect(Collectors.toSet());
-            Verify.verify(purposes.size() == 1,
-                    String.format("Events must have the same translation purpose, found %d.", purposes.size()));
+            Verify.verify(
+                    cifEvents.stream().allMatch(
+                            e -> cifEventTraceInfo.get(e).purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)),
+                    "All events must have synthesis translation purpose.");
         }
 
         return new TransitionTraceInfo(cifEvents);
