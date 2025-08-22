@@ -98,6 +98,28 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Indicates whether the CIF event is a start-only event, i.e., represents the start of an action but does not
+     * represent the end of the action.
+     *
+     * @param cifEvent The CIF event.
+     * @return {@code true} if the CIF event is a start-only event, {@code false} otherwise.
+     */
+    private boolean isStartOnlyEvent(Event cifEvent) {
+        return isStartEvent(cifEvent) && !isEndEvent(cifEvent);
+    }
+
+    /**
+     * Indicates whether the CIF event is a end-only event, i.e., represents the end of an action but does not represent
+     * the start of the action.
+     *
+     * @param cifEvent The CIF event.
+     * @return {@code true} if the CIF event is a end-only event, {@code false} otherwise.
+     */
+    private boolean isEndOnlyEvent(Event cifEvent) {
+        return !isStartEvent(cifEvent) && isEndEvent(cifEvent);
+    }
+
+    /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
@@ -413,15 +435,11 @@ public class SynthesisChainTracking {
             // The events must compose a pattern: single start-only event, one or more end-only events, all referring to
             // the same UML element, all with the same translation purpose, and the effect indexes that are coherent
             // with the UML element effects cardinality.
-            List<Event> startEvents = cifEvents.stream()
-                    .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && !cifEventTraceInfo.get(e).isEndEvent())
-                    .toList();
+            List<Event> startEvents = cifEvents.stream().filter(e -> isStartOnlyEvent(e)).toList();
             Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
-            List<Event> endEvents = cifEvents.stream()
-                    .filter(e -> cifEventTraceInfo.get(e).isEndEvent() && !cifEventTraceInfo.get(e).isStartEvent())
-                    .toList();
+            List<Event> endEvents = cifEvents.stream().filter(e -> isEndOnlyEvent(e)).toList();
             Verify.verify(endEvents.size() >= 1, "There must be at last one end-only event.");
 
             List<Event> startEndEvents = cifEvents.stream()
