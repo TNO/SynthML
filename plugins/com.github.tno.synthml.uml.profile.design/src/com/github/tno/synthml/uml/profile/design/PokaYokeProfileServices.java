@@ -59,11 +59,11 @@ import SynthML.FormalElement;
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
 
-    // A regex pattern for extracting the signature from a label.
-    private static final String LABEL_SIGNATURE_PATTERN = "^(.+?)\\s*(?:<([^>]+)>)?$";
+    /** A regex pattern for extracting the signature from the label of a possibly-parameterized activity. */
+    private static final String LABEL_SIGNATURE_PATTERN = "(\\w+)\\s*(?:<((?:\\w+:\\w+,?)+)>)?";
 
-    // A regex pattern for extracting the arguments from a label.
-    private static final String LABEL_ARGUMENTS_PATTERN = LABEL_SIGNATURE_PATTERN;
+    /** A regex pattern for extracting the arguments from the label of a call behavior action. */
+    private static final String LABEL_ARGUMENTS_PATTERN = "(\\w+)\\s*(?:<((?:\\w+:=\\w+,?)+)>)?";
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
@@ -218,7 +218,7 @@ public class PokaYokeProfileServices {
         Pattern pattern = Pattern.compile(LABEL_SIGNATURE_PATTERN);
         Matcher matcher = pattern.matcher(editedLabelContent);
 
-        if (matcher.find()) {
+        if (matcher.matches()) {
             String baseLabel = matcher.group(1);
             String generics = matcher.group(2) != null ? matcher.group(2) : "";
 
@@ -529,10 +529,12 @@ public class PokaYokeProfileServices {
             Matcher matcher = pattern.matcher(editedLabelContent);
 
             // Translate the 'CallBehaviorAction' argument notation to standard CIF notation.
-            if (matcher.find()) {
+            if (matcher.matches()) {
                 editedLabelContent = matcher.group(1);
                 String generics = matcher.group(2) != null ? matcher.group(2) : "";
                 setArguments(callAction, generics.replace(",", ",\n"));
+            } else {
+                setArguments(callAction, "");
             }
         }
 
