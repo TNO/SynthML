@@ -1589,23 +1589,27 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Determine which postcondition to use.
             PostConditionKind kind = switch (translationPurpose) {
                 case GUARD_COMPUTATION -> {
-                    if (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose)
-                            || !synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent, translationPurpose,
-                                    activity))
+                    if (!synthesisUmlElementsTracker.representsActivityInitialNode(cifEvent, translationPurpose)
+                            && (synthesisUmlElementsTracker.isInternal(cifEvent, translationPurpose)
+                                    || !synthesisUmlElementsTracker.belongsToSynthesizedActivity(cifEvent,
+                                            translationPurpose, activity)))
                     {
                         // We must allow internal actions after the user-defined postconditions etc hold, to ensure
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place. Similarly, if the CIF event relates to an
-                        // element within a called concrete activity.
+                        // element within a called concrete activity. The only exception is when a node represents the
+                        // start of an activity, which should not be called after reaching a marked state.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisUmlElementsTracker.isStartOpaqueBehavior(cifEvent, translationPurpose)
                             || synthesisUmlElementsTracker.isStartOpaqueAction(cifEvent, translationPurpose)
-                            || synthesisUmlElementsTracker.isStartCallBehavior(cifEvent, translationPurpose))
+                            || synthesisUmlElementsTracker.isStartCallBehavior(cifEvent, translationPurpose)
+                            || synthesisUmlElementsTracker.representsActivityInitialNode(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined. This case handles events that start such actions
                         // through a (concrete) call behavior, an opaque action, which only applies to non-atomic
                         // actions that couldn't be merged back to a call behavior to the original opaque behavior.
+                        // Similarly for calling another activity's initial node.
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // Sanity check: ensure the CIF event corresponds to an end action.
