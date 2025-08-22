@@ -415,13 +415,13 @@ public class SynthesisChainTracking {
             List<Event> startEvents = cifEvents.stream()
                     .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && !cifEventTraceInfo.get(e).isEndEvent())
                     .toList();
-            Verify.verify(startEvents.size() == 1, String.format("Found %d start events within events '%s'.",
+            Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
             List<Event> endEvents = cifEvents.stream()
                     .filter(e -> cifEventTraceInfo.get(e).isEndEvent() && !cifEventTraceInfo.get(e).isStartEvent())
                     .toList();
-            Verify.verify(endEvents.size() >= 1, String.format("There must be at last one end event.",
+            Verify.verify(endEvents.size() >= 1, String.format("There must be at last one end-only event.",
                     startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
             List<Event> startEndEvents = cifEvents.stream()
