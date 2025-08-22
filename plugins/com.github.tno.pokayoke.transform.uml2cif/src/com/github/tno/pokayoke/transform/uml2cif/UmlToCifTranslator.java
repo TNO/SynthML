@@ -577,9 +577,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Add its effect as an edge update.
             cifStartEdge.getUpdates().addAll(effects.get(0));
 
-            // Store the CIF event into the synthesis tracker as a start event with effects, hence set the effect index
-            // to zero.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, 0, translationPurpose, true, true);
+            // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
+            // the effect index to 'null'.
+            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, true);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -242,6 +244,11 @@ public class FullSynthesisApp {
                 tracker.getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose.SYNTHESIS));
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
+
+        // Update the synthesis tracker transition map with the rewritten non-atomic pattern.
+        Map<Transition, List<Transition>> rewrittenTransitions = nonAtomicPatterns.stream()
+                .collect(Collectors.toMap(p -> p.startTransition(), p -> p.endTransitions()));
+        tracker.mergeTransitionPatterns(rewrittenTransitions);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
         // action.
