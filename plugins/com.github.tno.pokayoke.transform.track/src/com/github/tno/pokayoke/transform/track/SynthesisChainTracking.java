@@ -422,15 +422,13 @@ public class SynthesisChainTracking {
             List<Event> endEvents = cifEvents.stream()
                     .filter(e -> cifEventTraceInfo.get(e).isEndEvent() && !cifEventTraceInfo.get(e).isStartEvent())
                     .toList();
-            Verify.verify(endEvents.size() >= 1, String.format("There must be at last one end-only event.",
-                    startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+            Verify.verify(endEvents.size() >= 1, "There must be at last one end-only event.");
 
             List<Event> startEndEvents = cifEvents.stream()
                     .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && cifEventTraceInfo.get(e).isEndEvent())
                     .toList();
             Verify.verify(startEndEvents.size() == 0,
-                    String.format("Events that are both start- and end-events are not supported for merged patterns.",
-                            startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+                    "Events that are both start- and end-events are not supported for merged patterns.");
 
             Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> cifEventTraceInfo.get(e).umlElement())
                     .collect(Collectors.toSet());
