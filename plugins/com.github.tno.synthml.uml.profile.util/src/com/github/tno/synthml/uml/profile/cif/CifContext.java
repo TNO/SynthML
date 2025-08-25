@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -276,6 +277,11 @@ public class CifContext {
 
     public List<Property> getAllDeclaredProperties() {
         return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
+    }
+
+    public List<ControlFlow> getAllControlFlows() {
+        return getDeclaredElements().stream().filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast)
+                .toList();
     }
 
     public boolean isEnumeration(String name) {
