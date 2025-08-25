@@ -789,17 +789,17 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidArguments(CallBehaviorAction callAction) {
-        Behavior behavior = callAction.getBehavior();
-        if (!(behavior instanceof Activity)) {
-            String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
-            error("A call behavior action with parameters must target an Activity, got: " + got, null);
-        }
-
         Behavior calledActivity = callAction.getBehavior();
         String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
 
         if (arguments.isBlank()) {
             return;
+        }
+
+        Behavior behavior = callAction.getBehavior();
+        if (!(behavior instanceof Activity)) {
+            String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
+            error("A call behavior action with parameters must target an Activity, got: " + got, null);
         }
 
         try {
@@ -853,6 +853,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
             // Ensure that the value expression is supported.
             if (assignment.value instanceof ANameExpression nameExpr) {
+                if (nameExpr.derivative) {
+                    error("Expected a non-derivative assignment.", null);
+                }
+
                 String name = nameExpr.name.name;
                 NamedElement element = valueContext.getReferenceableElement(name);
                 if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
