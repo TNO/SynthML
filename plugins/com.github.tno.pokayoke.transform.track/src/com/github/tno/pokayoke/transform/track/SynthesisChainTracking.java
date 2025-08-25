@@ -540,6 +540,10 @@ public class SynthesisChainTracking {
      *     a complete "pattern", i.e. one single start-only event along with all its related end-only events.
      */
     private record TransitionTraceInfo(Set<Event> cifEvents) {
+        public boolean isMerged() {
+            // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
+            return cifEvents.size() > 1;
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -559,22 +563,18 @@ public class SynthesisChainTracking {
      * @return An enumeration defining the kind of activity node the action should translate to.
      */
     public ActionKind getActionKind(OpaqueAction action) {
+        // Get the transition tracing info and the CIF event tracing info.
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-
-        // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
-        boolean isMerged = transitionInfo.cifEvents().size() > 1;
-
-        // Get the CIF event tracing info.
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
 
         if (eventInfo.umlElement() instanceof OpaqueBehavior) {
-            if (isMerged || isCompleteEvent(cifEvent)) {
+            if (transitionInfo.isMerged() || isCompleteEvent(cifEvent)) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (isStartOnlyEvent(cifEvent)) {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
