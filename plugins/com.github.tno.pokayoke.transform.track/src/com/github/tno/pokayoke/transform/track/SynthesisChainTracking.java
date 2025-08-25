@@ -111,6 +111,16 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Indicates whether the CIF event is a complete event, i.e., represents both the start and the end of an action.
+     *
+     * @param cifEvent The CIF event.
+     * @return {@code true} if the CIF event is both a start and an end event, {@code false} otherwise.
+     */
+    public boolean isCompleteEvent(Event cifEvent) {
+        return isStartEvent(cifEvent) && isEndEvent(cifEvent);
+    }
+
+    /**
      * Indicates whether the CIF event is a start-only event, i.e., represents the start of an action but does not
      * represent the end of the action.
      *
