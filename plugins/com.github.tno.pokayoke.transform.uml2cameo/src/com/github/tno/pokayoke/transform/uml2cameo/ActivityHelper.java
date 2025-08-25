@@ -707,7 +707,7 @@ public class ActivityHelper {
                 null);
         InputPin inputPin = callAction.createArgument(argumentName, null);
 
-        // Connect the output and input pins with an ObjectFlow.
+        // Connect the output and input pins with an object flow.
         ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
         dataFlow.setSource(outputPin);
         dataFlow.setTarget(inputPin);
@@ -717,10 +717,10 @@ public class ActivityHelper {
     /**
      * Passes variables as arguments to a {@link CallBehaviorAction} for calling a parameterized activity.
      *
-     * @param callAction The {@link CallBehaviorAction}.
-     * @param argumentNames The names of the arguments that will be passed to the callAction.
-     * @param optionalAssignments An optional assignment of the arguments. If not, the arguments are assumed to be
-     *     variables in the calling activity.
+     * @param callAction The call behavior action.
+     * @param argumentNames The names of the arguments that will be passed to the {@code callAction}.
+     * @param optionalAssignments An optional assignment of the arguments. If {@code null}, the arguments are assumed to
+     *     be variables in the calling activity.
      */
     public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, Set<String> argumentNames,
             String optionalAssignments)
