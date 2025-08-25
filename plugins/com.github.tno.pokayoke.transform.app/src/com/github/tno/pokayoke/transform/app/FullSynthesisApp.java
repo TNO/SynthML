@@ -257,6 +257,9 @@ public class FullSynthesisApp {
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
+        // Add the newly generated UML opaque actions and their corresponding transitions to the tracker.
+        tracker.addActions(petriNet2Activity.getTransitionMapping());
+
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
         // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
