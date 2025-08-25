@@ -565,6 +565,11 @@ public class SynthesisChainTracking {
     /////////////////////////////////////////////////////////////////////////////////////
 
     public void addActions(Map<Transition, Action> transitionActionMap) {
+        // Sanity check: ensure that there are no duplicate actions before reversing the map.
+        Verify.verify(
+                transitionActionMap.values().stream().collect(Collectors.toSet()).size() == transitionActionMap.size(),
+                "Found duplicate actions in the transition-action map.");
+
         transitionActionMap.entrySet().stream()
                 .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
     }
