@@ -548,24 +548,24 @@ isSuccessful = guard</body>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="256" incoming="234">
         <language>Python</language>
-        <outputValue xmi:id="257" name="temp__productId" outgoing="244"/>
-        <body>temp__productId=productId</body>
+        <outputValue xmi:id="257" name="arg__productId" outgoing="244"/>
+        <body>arg__productId=productId</body>
       </node>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="258" name="Output from Park1" outgoing="236" behavior="44">
         <argument xmi:id="259" name="T2" incoming="247"/>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="260" incoming="230">
         <language>Python</language>
-        <outputValue xmi:id="261" name="temp__T2" outgoing="247"/>
-        <body>temp__T2=T2</body>
+        <outputValue xmi:id="261" name="arg__T2" outgoing="247"/>
+        <body>arg__T2=T2</body>
       </node>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="262" name="Output from Park2" outgoing="238" behavior="89">
         <argument xmi:id="263" name="T2" incoming="248"/>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="264" incoming="232">
         <language>Python</language>
-        <outputValue xmi:id="265" name="temp__T2" outgoing="248"/>
-        <body>temp__T2=T2</body>
+        <outputValue xmi:id="265" name="arg__T2" outgoing="248"/>
+        <body>arg__T2=T2</body>
       </node>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="266" name="Remove from disp" incoming="242" outgoing="240" behavior="134"/>
       <node xmi:type="uml:ActivityParameterNode" xmi:id="267" name="productIdNode" parameter="228"/>
@@ -815,17 +815,17 @@ isSuccessful = guard</body>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="390" name="OpaqueAction1" incoming="367" outgoing="364" behavior="270"/>
       <node xmi:type="uml:OpaqueAction" xmi:id="391" incoming="368">
         <language>Python</language>
-        <outputValue xmi:id="392" name="temp__productId" outgoing="373"/>
-        <outputValue xmi:id="393" name="temp__T2" outgoing="374"/>
-        <body>temp__productId=2
-temp__T2=False</body>
+        <outputValue xmi:id="392" name="arg__productId" outgoing="373"/>
+        <outputValue xmi:id="393" name="arg__T2" outgoing="374"/>
+        <body>arg__productId=2
+arg__T2=False</body>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="394" incoming="369">
         <language>Python</language>
-        <outputValue xmi:id="395" name="temp__productId" outgoing="375"/>
-        <outputValue xmi:id="396" name="temp__T2" outgoing="376"/>
-        <body>temp__productId=1
-temp__T2=True</body>
+        <outputValue xmi:id="395" name="arg__productId" outgoing="375"/>
+        <outputValue xmi:id="396" name="arg__T2" outgoing="376"/>
+        <body>arg__productId=1
+arg__T2=True</body>
       </node>
       <node xmi:type="uml:ForkNode" xmi:id="397" incoming="377" outgoing="366 378"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="398" incoming="378" behavior="406"/>

@@ -537,8 +537,8 @@ isSuccessful = guard</body>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="247" incoming="227">
         <language>Python</language>
-        <outputValue xmi:id="248" name="temp__productId" outgoing="237"/>
-        <body>temp__productId=productId</body>
+        <outputValue xmi:id="248" name="arg__productId" outgoing="237"/>
+        <body>arg__productId=productId</body>
       </node>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="249" name="Output from Park1" incoming="223" outgoing="229" behavior="42"/>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="250" name="Output from Park2" incoming="225" outgoing="231" behavior="85"/>
@@ -775,8 +775,8 @@ isSuccessful = guard</body>
       </node>
       <node xmi:type="uml:OpaqueAction" xmi:id="361" incoming="350">
         <language>Python</language>
-        <outputValue xmi:id="362" name="temp__productId" outgoing="354"/>
-        <body>temp__productId=1</body>
+        <outputValue xmi:id="362" name="arg__productId" outgoing="354"/>
+        <body>arg__productId=1</body>
       </node>
       <node xmi:type="uml:CallBehaviorAction" xmi:id="363" name="OpaqueAction1" incoming="348" outgoing="350" behavior="254"/>
       <node xmi:type="uml:ForkNode" xmi:id="364" incoming="355" outgoing="348 356"/>

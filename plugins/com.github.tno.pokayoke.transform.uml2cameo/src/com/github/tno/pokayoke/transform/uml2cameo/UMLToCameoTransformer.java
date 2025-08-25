@@ -82,7 +82,7 @@ public class UMLToCameoTransformer {
      * The prefix for temporary variables that pass arguments to the 'CallBehaviorAction'. This avoids overriding local
      * variables when assigning a different value on a call with a colliding argument name.
      */
-    public static final String ARGUMENT_PREFIX = "temp__";
+    public static final String ARGUMENT_PREFIX = "arg__";
 
     /** Name for the lock class. */
     private static final String LOCK_CLASS_NAME = "Lock";
