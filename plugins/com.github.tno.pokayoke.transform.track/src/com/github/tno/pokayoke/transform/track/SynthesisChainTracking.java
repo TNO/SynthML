@@ -13,6 +13,7 @@ import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -39,6 +40,9 @@ public class SynthesisChainTracking {
 
     /** The map from Petri net transitions to their corresponding tracing info. */
     private final Map<Transition, TransitionTraceInfo> transitionEventTraceInfo = new LinkedHashMap<>();
+
+    /** The map from new UML opaque actions to their corresponding Petri net transitions. */
+    private final Map<OpaqueAction, Transition> actionToTransition = new LinkedHashMap<>();
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with CIF events and the corresponding input UML elements.
