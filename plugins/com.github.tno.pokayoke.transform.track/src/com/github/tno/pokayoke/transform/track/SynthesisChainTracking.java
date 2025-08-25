@@ -564,8 +564,8 @@ public class SynthesisChainTracking {
     // Section dealing with newly generated opaque actions.
     /////////////////////////////////////////////////////////////////////////////////////
 
-    public void addActions(Map<Transition, Action> transitonActionMap) {
-        transitonActionMap.entrySet().stream()
+    public void addActions(Map<Transition, Action> transitionActionMap) {
+        transitionActionMap.entrySet().stream()
                 .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
     }
 
