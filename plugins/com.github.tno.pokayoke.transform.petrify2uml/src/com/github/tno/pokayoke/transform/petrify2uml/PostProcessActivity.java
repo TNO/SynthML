@@ -196,10 +196,7 @@ public class PostProcessActivity {
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
                         // The action is the end of a non-merged non-atomic opaque behavior. Add its effects to the
-                        // opaque
-                        // action.
-
-                        // Find the UML element for the non-atomic action, and the index to the relevant effect.
+                        // opaque action. To do so, first find the index to the relevant effect.
                         int effectIdx = tracker.getEffectIdx(action);
 
                         // Rename the current action, set its guard to 'true', and retain the original relevant effect.
