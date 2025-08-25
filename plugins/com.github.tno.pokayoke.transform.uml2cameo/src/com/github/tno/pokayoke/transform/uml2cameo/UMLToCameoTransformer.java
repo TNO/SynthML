@@ -138,8 +138,7 @@ public class UMLToCameoTransformer {
 
         // Check that only outgoing edges from decision nodes have incoming guards, and only incoming edges to guarded
         // actions have outgoing guards.
-        Activity contextActivity = (Activity)contextClass.getClassifierBehavior();
-        for (Element activityElement: contextActivity.getOwnedElements()) {
+        for (Element activityElement: contextClass.getModel().getOwnedElements()) {
             if (activityElement instanceof ControlFlow controlFlow) {
                 AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
                 Preconditions.checkArgument(
@@ -372,9 +371,9 @@ public class UMLToCameoTransformer {
         UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
         Stream<NamedTemplateParameter> parametersUsedInGuards = combinedGuard == null ? Stream.empty()
                 : usedParametersCollector.collect(combinedGuard, context);
-        Stream<NamedTemplateParameter> oaranetersUsedinEffects = parsedEffects.stream().flatMap(List::stream)
+        Stream<NamedTemplateParameter> parametersUsedinEffects = parsedEffects.stream().flatMap(List::stream)
                 .flatMap(expr -> usedParametersCollector.collect(expr, context));
-        return Stream.concat(parametersUsedInGuards, oaranetersUsedinEffects).map(p -> p.getName())
+        return Stream.concat(parametersUsedInGuards, parametersUsedinEffects).map(p -> p.getName())
                 .collect(Collectors.toSet());
     }
 
