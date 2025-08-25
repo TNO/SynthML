@@ -41,7 +41,7 @@ public class SynthesisChainTracking {
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
     /** The map from Petri net transitions to their corresponding tracing info. */
-    private final Map<Transition, TransitionTraceInfo> transitionEventTraceInfo = new LinkedHashMap<>();
+    private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
 
     /**
      * The map from new (in the body of the abstract activity being synthesized) UML opaque actions to their
@@ -426,7 +426,7 @@ public class SynthesisChainTracking {
             Event cifEvent = namesToCifEvents.get(t.getName().getText());
             Verify.verify(cifEvent != null, "Could not find CIF event for transition '" + t.getName().getText() + "'.");
             TransitionTraceInfo transitionInfo = createTransitionTraceInfo(Set.of(cifEvent));
-            transitionEventTraceInfo.put(t, transitionInfo);
+            transitionTraceInfo.put(t, transitionInfo);
         }
     }
 
@@ -506,18 +506,18 @@ public class SynthesisChainTracking {
 
             // Collect the start event and the end events.
             Set<Event> patternEvents = new LinkedHashSet<>();
-            patternEvents.addAll(transitionEventTraceInfo.get(startTransition).cifEvents());
+            patternEvents.addAll(transitionTraceInfo.get(startTransition).cifEvents());
             patternEvents.addAll(endTransitions.stream()
-                    .flatMap(t -> transitionEventTraceInfo.get(t).cifEvents().stream()).toList());
+                    .flatMap(t -> transitionTraceInfo.get(t).cifEvents().stream()).toList());
 
             // Create a new transition tracing info.
             TransitionTraceInfo mergedTransitionInfo = createTransitionTraceInfo(patternEvents);
 
             // Remove end transitions' entries from the transition map.
-            transitionEventTraceInfo.keySet().removeAll(endTransitions);
+            transitionTraceInfo.keySet().removeAll(endTransitions);
 
             // Update start transition entry with the merged transition tracing info.
-            transitionEventTraceInfo.put(startTransition, mergedTransitionInfo);
+            transitionTraceInfo.put(startTransition, mergedTransitionInfo);
         }
     }
 
@@ -552,7 +552,7 @@ public class SynthesisChainTracking {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionEventTraceInfo.get(transition);
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
@@ -581,7 +581,7 @@ public class SynthesisChainTracking {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionEventTraceInfo.get(transition);
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.umlElement();
@@ -591,7 +591,7 @@ public class SynthesisChainTracking {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionEventTraceInfo.get(transition);
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.effectIdx();
