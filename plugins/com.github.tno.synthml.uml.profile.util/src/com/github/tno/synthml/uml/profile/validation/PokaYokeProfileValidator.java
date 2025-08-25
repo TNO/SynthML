@@ -492,8 +492,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
-        // Check template parameters from the activity. Adding a check for 'RedefinableTemplateSignature' directly fails
-        // to print the error message to the Problems view.
+        // Check template parameters of the activity. Adding a check directly on 'RedefinableTemplateSignature' fails
+        // to report the error message to the Problems view.
         checkValidRedefinableTemplateSignature(activity);
 
         Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
@@ -571,7 +571,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         CifContext globalContext = CifContext.createGlobal(activity);
         for (String parameterName: parameterNames) {
             if (globalContext.isVariable(parameterName)) {
-                error(String.format("'\s' was already already declared as a property.", parameterName), null);
+                error(String.format("'\s' was already declared as a property.", parameterName), null);
             }
         }
     }
@@ -813,7 +813,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
                 error("Not all parameters of the called activity have been assigned.", null);
             }
-        } catch (TypeException re) {
+        } catch (RuntimeException re) {
             String prefix = "Invalid parameter assignments: ";
             error(prefix + re.getLocalizedMessage(), null);
         }
@@ -838,7 +838,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 continue;
             }
 
-            // Ensure the addressable part is a named expression.
+            // Ensure the addressable part is a named expression referring to the name of a template parameter, and that the addressable and value have the same type.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
                 error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
             } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
@@ -852,6 +852,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                         assignment.position);
             }
 
+            // Ensure that the value expression is supported.
             if (assignment.value instanceof ANameExpression nameExpr) {
                 String name = nameExpr.name.name;
                 NamedElement element = valueContext.getReferenceableElement(name);
