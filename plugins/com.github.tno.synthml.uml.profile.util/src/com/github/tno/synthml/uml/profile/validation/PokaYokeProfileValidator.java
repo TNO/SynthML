@@ -265,7 +265,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-            } else if (CifScope.getClassifierTemplateParameters(activity).size() > 0) {
+            } else if (!CifScope.getClassifierTemplateParameters(activity).isEmpty()) {
                 error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
@@ -546,7 +546,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         if (activity.isAbstract() && templateParameters.size() > 0) {
             error("Activity parameters are disallowed on abstract activities.", null);
-            return; // Further checks do not provide the user with useful information
+            return; // Further checks do not provide the user with useful information.
         }
 
         if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
