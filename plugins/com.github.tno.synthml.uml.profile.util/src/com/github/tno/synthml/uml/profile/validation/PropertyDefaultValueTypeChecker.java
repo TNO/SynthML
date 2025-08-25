@@ -38,7 +38,7 @@ public class PropertyDefaultValueTypeChecker extends CifTypeChecker {
     }
 
     @Override
-    protected Type visit(NamedTemplateParameter operator, TextPosition operatorPos, CifContext ctx) {
-        throw new TypeException(MESSAGE, operatorPos);
+    protected Type visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
+        throw new TypeException(MESSAGE, parameterReferencePos);
     }
 }
