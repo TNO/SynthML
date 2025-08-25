@@ -857,7 +857,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 String name = nameExpr.name.name;
                 NamedElement element = valueContext.getReferenceableElement(name);
                 if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
-                    error("Invalid parameter assignment: Expected a constant or a parameter of the calling activity, got: "
+                    error("Invalid parameter assignment: Expected a literal or a parameter of the calling activity, got: "
                             + name, null);
                 }
             } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
