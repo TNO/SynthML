@@ -574,7 +574,7 @@ public class SynthesisChainTracking {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
 
         if (eventInfo.umlElement() instanceof OpaqueBehavior) {
-            if (isMerged || (isStartEvent(cifEvent) && isEndEvent(cifEvent))) {
+            if (isMerged || isCompleteEvent(cifEvent)) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (isStartOnlyEvent(cifEvent)) {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
