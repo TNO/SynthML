@@ -570,6 +570,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
         CifContext globalContext = CifContext.createGlobal(activity);
         for (String parameterName: parameterNames) {
+            // Check if the template parameter name matches a variable from an enclosing scope.
+            // Currently only properties declared in the global scope are considered.
             if (globalContext.isVariable(parameterName)) {
                 error(String.format("'\s' was already declared as a property.", parameterName), null);
             }

@@ -336,8 +336,34 @@ public class CifContext {
     public NamedElement getVariable(String name) {
         NamedElement element = referenceableElements.get(name);
 
-        if (element instanceof Property) {
+        if (element instanceof Property || element instanceof NamedTemplateParameter) {
             return element;
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the element is present in the context and represents an assignable variable, i.e. a {@link Property}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@code true} if the element is present and assignable in the context, and represents a variable, else
+     *     {@code false}.
+     */
+    public boolean isAssignableVariable(String name) {
+        return getAssignableVariable(name) != null;
+    }
+
+    /**
+     * Finds the assignable variable in the context, i.e. a {@link Property}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@link Property} if the variable is present in the context, else {@code null}.
+     */
+    public Property getAssignableVariable(String name) {
+        NamedElement element = referenceableElements.get(name);
+
+        if (element instanceof Property property) {
+            return property;
         }
         return null;
     }

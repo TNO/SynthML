@@ -65,8 +65,12 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         if (update.addressable instanceof ANameExpression addressable) {
             TextPosition assignmentPos = update.value.position;
             String name = addressable.name.name;
-            if (!ctx.isVariable(name)) {
-                throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
+            if (!ctx.isAssignableVariable(name)) {
+                if (ctx.isVariable(name)) {
+                    throw new CustomSyntaxException(String.format("'%s' cannot be assigned to", name), assignmentPos);
+                } else {
+                    throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
+                }
             }
             return visit(visit(addressable, ctx), assignmentPos, visit(update.value, ctx), ctx);
         }
