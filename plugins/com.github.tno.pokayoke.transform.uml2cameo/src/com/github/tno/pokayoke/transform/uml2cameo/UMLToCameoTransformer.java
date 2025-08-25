@@ -460,29 +460,6 @@ public class UMLToCameoTransformer {
         }
     }
 
-    private void transformCallBehaviorActionArguments(CallBehaviorAction callAction) {
-        List<AAssignmentUpdate> parsedArguments = CifParserHelper.parseArguments(callAction);
-        if (parsedArguments.isEmpty()) {
-            return;
-        }
-
-        CifContext cifScope = CifContext.createScoped(callAction);
-
-        List<String> translatedAssignments = new ArrayList<>();
-        Set<String> arguments = new HashSet<>();
-        for (AAssignmentUpdate argument: parsedArguments) {
-            String adressable = ((ANameExpression)argument.addressable).name.name;
-            String value = translator.translateExpression(argument.value, cifScope);
-
-            translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
-            arguments.add(adressable);
-        }
-
-        String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
-
-        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
-    }
-
     private void transformCallBehaviorAction(Activity activity, CallBehaviorAction action, Signal acquireSignal) {
         if (PokaYokeUmlProfileUtil.isGuardEffectsAction(action)) {
             transformAction(activity, action, acquireSignal);
@@ -510,6 +487,29 @@ public class UMLToCameoTransformer {
         }
 
         transformCallBehaviorActionArguments(action);
+    }
+
+    private void transformCallBehaviorActionArguments(CallBehaviorAction callAction) {
+        List<AAssignmentUpdate> parsedArguments = CifParserHelper.parseArguments(callAction);
+        if (parsedArguments.isEmpty()) {
+            return;
+        }
+
+        CifContext cifScope = CifContext.createScoped(callAction);
+
+        List<String> translatedAssignments = new ArrayList<>();
+        Set<String> arguments = new HashSet<>();
+        for (AAssignmentUpdate argument: parsedArguments) {
+            String adressable = ((ANameExpression)argument.addressable).name.name;
+            String value = translator.translateExpression(argument.value, cifScope);
+
+            translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
+            arguments.add(adressable);
+        }
+
+        String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+
+        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
