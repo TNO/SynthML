@@ -507,8 +507,8 @@ public class SynthesisChainTracking {
             // Collect the start event and the end events.
             Set<Event> patternEvents = new LinkedHashSet<>();
             patternEvents.addAll(transitionTraceInfo.get(startTransition).cifEvents());
-            patternEvents.addAll(endTransitions.stream()
-                    .flatMap(t -> transitionTraceInfo.get(t).cifEvents().stream()).toList());
+            patternEvents.addAll(
+                    endTransitions.stream().flatMap(t -> transitionTraceInfo.get(t).cifEvents().stream()).toList());
 
             // Create a new transition tracing info.
             TransitionTraceInfo mergedTransitionInfo = createTransitionTraceInfo(patternEvents);
@@ -582,6 +582,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.umlElement();
@@ -592,6 +595,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.effectIdx();
