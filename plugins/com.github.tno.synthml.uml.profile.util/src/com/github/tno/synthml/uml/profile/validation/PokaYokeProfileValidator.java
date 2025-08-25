@@ -789,8 +789,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidArguments(CallBehaviorAction callAction) {
-        if (!(callAction.getBehavior() instanceof Activity)) {
-            return;
+        Behavior behavior = callAction.getBehavior();
+        if (!(behavior instanceof Activity)) {
+            String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
+            error("A call behavior action with parameters must target an Activity, got: " + got,
+                    null);
         }
 
         Behavior calledActivity = callAction.getBehavior();
@@ -838,7 +841,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 continue;
             }
 
-            // Ensure the addressable part is a named expression referring to the name of a template parameter, and that the addressable and value have the same type.
+            // Ensure the addressable part is a named expression referring to the name of a template parameter, and that
+            // the addressable and value have the same type.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
                 error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
             } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
