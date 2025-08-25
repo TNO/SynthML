@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.OpaqueAction;
@@ -521,5 +522,14 @@ public class SynthesisChainTracking {
      *     a complete "pattern", i.e. one single start-only event along with all its related end-only events.
      */
     private record TransitionTraceInfo(Set<Event> cifEvents) {
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with newly generated opaque actions.
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void addActions(Map<Transition, Action> transitonActionMap) {
+        transitonActionMap.entrySet().stream()
+                .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
     }
 }
