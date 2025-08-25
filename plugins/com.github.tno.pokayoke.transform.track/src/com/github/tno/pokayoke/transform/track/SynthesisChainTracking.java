@@ -573,4 +573,14 @@ public class SynthesisChainTracking {
 
         return ActionKind.CONTROL_NODE;
     }
+
+    public RedefinableElement getUmlElement(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionEventTraceInfo.get(transition);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        return eventInfo.umlElement();
+    }
 }
