@@ -51,17 +51,20 @@ public class CifScope {
 
         // Create a corresponding named template parameter with the same name and type.
         for (ClassifierTemplateParameter classifierParameter: templateParameters) {
-            // Assumes the model has been validated and therefore should not throw exceptions.
+            if (!(classifierParameter.getDefault() instanceof NamedElement)) {
+                continue;
+            }
+
             String paramName = getClassifierTemplateParameterName(classifierParameter.getDefault());
             Type parameterType = getClassifierTemplateParameterType(classifierParameter);
 
             NamedTemplateParameter newParameter = new NamedTemplateParameter();
             newParameter.setName(paramName);
 
-            // The validation step ensures that the parameter is of type 'DataType'.
-            newParameter.setType((DataType)parameterType);
-
-            resultParameters.add(newParameter);
+            if (parameterType instanceof DataType parameterDataType) {
+                newParameter.setType(parameterDataType);
+                resultParameters.add(newParameter);
+            }
         }
 
         return resultParameters;
@@ -76,7 +79,7 @@ public class CifScope {
     }
 
     public static Type getClassifierTemplateParameterType(ClassifierTemplateParameter classifierParameter) {
-        return classifierParameter.getConstrainingClassifiers().get(0);
+        return classifierParameter.getConstrainingClassifiers().stream().findFirst().orElse(null);
     }
 
     public static String getClassifierTemplateParameterName(ParameterableElement classifierParameter) {
