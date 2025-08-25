@@ -548,6 +548,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
+        // Pass the arguments to the newly created 'CallBehaviorAction'.
         ActivityHelper.passArgumentsToCallBehaviorAction(replacementActionNode, usedParameters, null);
     }
 
@@ -617,9 +618,8 @@ public class UMLToCameoTransformer {
         decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
         evalActivity.setName("eval");
 
-        Set<String> usedParameters = getUsedParameters(decisionNode);
-
         // For each parameter used in the evaluation of the decision, add a parameter to the newly created activity.
+        Set<String> usedParameters = getUsedParameters(decisionNode);
         for (String usedParameter: usedParameters) {
             ActivityHelper.addParameterToActivity(evalActivity, usedParameter);
         }
