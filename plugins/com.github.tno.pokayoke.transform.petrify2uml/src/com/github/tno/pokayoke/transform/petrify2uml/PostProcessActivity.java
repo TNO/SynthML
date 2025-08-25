@@ -179,7 +179,7 @@ public class PostProcessActivity {
                         break;
                     }
                     case START_OPAQUE_BEHAVIOR -> {
-                        // The action is the start of a non-rewritten non-atomic opaque behavior. Add its guards to the
+                        // The action is the start of a non-merged non-atomic opaque behavior. Add its guards to the
                         // opaque action.
                         action.setName(umlElement.getName() + UmlToCifTranslator.START_ACTION_SUFFIX);
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
@@ -187,7 +187,7 @@ public class PostProcessActivity {
 
                         // Add a warning that the non-atomic start action has not been fully merged.
                         warnings.add(String.format(
-                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start event '%s'.",
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit start action '%s'.",
                                 umlElement.getName(), action.getName()));
 
                         break;
@@ -197,7 +197,7 @@ public class PostProcessActivity {
                         Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
-                        // The action is the end of a non-rewritten non-atomic action. Add its effects to the opaque
+                        // The action is the end of a non-merged non-atomic opaque behavior. Add its effects to the opaque
                         // action.
 
                         // Find the UML element for the non-atomic action, and the index to the relevant effect.
@@ -213,7 +213,7 @@ public class PostProcessActivity {
 
                         // Add a warning that the non-atomic end action has not been fully merged.
                         warnings.add(String.format(
-                                "Non-atomic action '%s' was not fully reduced, leading to an explicit end event '%s'.",
+                                "Non-atomic action '%s' was not fully reduced, leading to an explicit end action '%s'.",
                                 umlElement.getName(), action.getName()));
 
                         break;

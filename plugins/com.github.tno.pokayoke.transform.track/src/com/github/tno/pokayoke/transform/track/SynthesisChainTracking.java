@@ -539,10 +539,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the kind of activity node the input action should translate to, based on the UML element the action
-     * originates from, and whether it was merged during the synthesis chain.
+     * Returns the kind of activity node the given action should translate to, based on the UML element the action
+     * originates from, and whether its parts were merged back during the synthesis chain.
      *
-     * @param action The UML action created to fill the newly synthesised activity.
+     * @param action The UML action created in the body of the newly synthesized activity.
      * @return An enumeration defining the kind of activity node the action should translate to.
      */
     public ActionKind getActionKind(OpaqueAction action) {
@@ -556,7 +556,7 @@ public class SynthesisChainTracking {
         // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
         boolean isMerged = transitionInfo.cifEvents().size() > 1;
 
-        // Get the CIf event tracing info.
+        // Get the CIF event tracing info.
         Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
 
