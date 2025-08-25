@@ -150,7 +150,6 @@ public class PostProcessActivity {
      * @param warnings Any warnings to notify the user of, which is modified in-place.
      */
     public static void finalizeOpaqueActions(Activity activity, SynthesisChainTracking tracker, List<String> warnings) {
-        // Iterate over all nodes in the activity that start or end a non-atomic action, but haven't yet been rewritten.
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof OpaqueAction action) {
                 if (isInternalAction(action)) {
@@ -197,7 +196,8 @@ public class PostProcessActivity {
                         Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
-                        // The action is the end of a non-merged non-atomic opaque behavior. Add its effects to the opaque
+                        // The action is the end of a non-merged non-atomic opaque behavior. Add its effects to the
+                        // opaque
                         // action.
 
                         // Find the UML element for the non-atomic action, and the index to the relevant effect.
