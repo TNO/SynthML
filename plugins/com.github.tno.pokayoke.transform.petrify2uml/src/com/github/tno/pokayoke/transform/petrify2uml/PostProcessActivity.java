@@ -163,8 +163,7 @@ public class PostProcessActivity {
 
                 switch (actionKind) {
                     case COMPLETE_OPAQUE_BEHAVIOR -> {
-                        // The action represents an atomic opaque behavior, or the start of a rewritten non-atomic
-                        // action. Transform it to a call behavior.
+                        // The action represents a complete opaque behavior. Transform it to a call behavior.
                         CallBehaviorAction callAction = UML_FACTORY.createCallBehaviorAction();
                         callAction.setBehavior((OpaqueBehavior)umlElement);
                         callAction.setActivity(activity);
