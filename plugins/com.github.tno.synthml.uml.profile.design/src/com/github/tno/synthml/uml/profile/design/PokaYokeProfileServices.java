@@ -59,11 +59,19 @@ import SynthML.FormalElement;
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
 
-    /** A regex pattern for extracting the signature from the label of a possibly-parameterized activity. */
-    private static final String LABEL_SIGNATURE_PATTERN = "(\\w+)\\s*(?:<((?:\\w+:\\w+,?)+)>)?";
+    /**
+     * Regex pattern for extracting the signature from the label of a potentially parameterized {@link Activity}. Group
+     * 1 captures the main label, matching as broadly as the UML Designer label expression. Group 2 (optional) captures
+     * the content enclosed within angle brackets (< >), if present.
+     */
+    private static final String LABEL_SIGNATURE_PATTERN = "^(.*?)(?:<(.*)>)?$";
 
-    /** A regex pattern for extracting the arguments from the label of a call behavior action. */
-    private static final String LABEL_ARGUMENTS_PATTERN = "(\\w+)\\s*(?:<((?:\\w+:=\\w+,?)+)>)?";
+    /**
+     * Regex pattern for extracting potential arguments from the label of a {@link CallBehaviorAction}. Group 1 captures
+     * the main label, matching as broadly as the UML Designer label expression. Group 2 (optional) captures the content
+     * enclosed within angle brackets (< >), if present.
+     */
+    private static final String LABEL_ARGUMENTS_PATTERN = LABEL_SIGNATURE_PATTERN;
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
