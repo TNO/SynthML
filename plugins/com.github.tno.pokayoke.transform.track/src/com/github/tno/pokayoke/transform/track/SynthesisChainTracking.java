@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
 import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -44,6 +45,10 @@ public class SynthesisChainTracking {
 
     /** The map from new UML opaque actions to their corresponding Petri net transitions. */
     private final Map<OpaqueAction, Transition> actionToTransition = new LinkedHashMap<>();
+
+    public static enum ActionKind {
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, CONTROL_NODE;
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with CIF events and the corresponding input UML elements.
@@ -531,5 +536,41 @@ public class SynthesisChainTracking {
     public void addActions(Map<Transition, Action> transitonActionMap) {
         transitonActionMap.entrySet().stream()
                 .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
+    }
+
+    /**
+     * Returns the kind of activity node the input action should translate to, based on the UML element the action
+     * originates from, and whether it was merged during the synthesis chain.
+     *
+     * @param action The UML action created to fill the newly synthesised activity.
+     * @return An enumeration defining the kind of activity node the action should translate to.
+     */
+    public ActionKind getActionKind(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionEventTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
+        boolean isMerged = transitionInfo.cifEvents().size() > 1;
+
+        // Get the CIf event tracing info.
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+
+        if (eventInfo.umlElement() instanceof OpaqueBehavior) {
+            if (isMerged || (isStartEvent(cifEvent) && isEndEvent(cifEvent))) {
+                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
+            } else if (isStartOnlyEvent(cifEvent)) {
+                return ActionKind.START_OPAQUE_BEHAVIOR;
+            } else {
+                Verify.verify(isEndOnlyEvent(cifEvent), "Expected an end-only event.");
+                return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        return ActionKind.CONTROL_NODE;
     }
 }
