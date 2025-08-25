@@ -971,7 +971,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-            new CifTypeChecker(CifContext.createGlobal(constraint)).checkInvariant(invariant);
+            new CifTypeChecker(CifContext.createScoped(constraint)).checkInvariant(invariant);
 
             // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
