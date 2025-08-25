@@ -699,21 +699,6 @@ public class ActivityHelper {
         }
     }
 
-    private static void passActivityArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
-            String argumentName)
-    {
-        // Create an output pin on the assignment action and an input pin on the call action.
-        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.ARGUMENT_PREFIX + argumentName,
-                null);
-        InputPin inputPin = callAction.createArgument(argumentName, null);
-
-        // Connect the output and input pins with an object flow.
-        ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
-        dataFlow.setSource(outputPin);
-        dataFlow.setTarget(inputPin);
-        callAction.getActivity().getEdges().add(dataFlow);
-    }
-
     /**
      * Passes variables as arguments to a {@link CallBehaviorAction} for calling a parameterized activity.
      *
@@ -753,6 +738,21 @@ public class ActivityHelper {
         for (String argumentName: argumentNames) {
             passActivityArgument(callAction, assignmentAction, argumentName);
         }
+    }
+
+    private static void passActivityArgument(CallBehaviorAction callAction, OpaqueAction assignmentAction,
+            String argumentName)
+    {
+        // Create an output pin on the assignment action and an input pin on the call action.
+        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.ARGUMENT_PREFIX + argumentName,
+                null);
+        InputPin inputPin = callAction.createArgument(argumentName, null);
+
+        // Connect the output and input pins with an object flow.
+        ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
+        dataFlow.setSource(outputPin);
+        dataFlow.setTarget(inputPin);
+        callAction.getActivity().getEdges().add(dataFlow);
     }
 
     /**
