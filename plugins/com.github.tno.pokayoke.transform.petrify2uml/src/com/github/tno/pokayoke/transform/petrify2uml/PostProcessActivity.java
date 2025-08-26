@@ -195,11 +195,9 @@ public class PostProcessActivity {
                         Verify.verify(action.getName().contains(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX),
                                 "End of non-atomic action name does not contain the non-atomic outcome suffix.");
 
-                        // The action is the end of a non-merged non-atomic opaque behavior. Add its effects to the
-                        // opaque action. To do so, first find the index to the relevant effect.
+                        // The action is the end of a non-merged non-atomic opaque behavior. Rename the current action,
+                        // set its guard to 'true', and retain the original relevant effect.
                         int effectIdx = tracker.getEffectIdx(action);
-
-                        // Rename the current action, set its guard to 'true', and retain the original relevant effect.
                         action.setName(action.getName().replace(UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX,
                                 UmlToCifTranslator.END_ACTION_SUFFIX));
                         PokaYokeUmlProfileUtil.setAtomic(action, true);
