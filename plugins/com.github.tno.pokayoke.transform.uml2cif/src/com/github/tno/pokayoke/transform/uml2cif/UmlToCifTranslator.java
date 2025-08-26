@@ -264,25 +264,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements for
-     * which they were created, as well as the index of the corresponding effect of the end event.
-     *
-     * @return The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements and
-     *     the index of the corresponding effect of the end event.
-     */
-    public Map<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
-        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = synthesisTracker.getEndEventMap();
-
-        Map<String, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
-
-        for (var entry: endEventMap.entrySet()) {
-            result.put(entry.getKey().getName(), entry.getValue());
-        }
-
-        return result;
-    }
-
-    /**
      * Translates the UML synthesis specifications to a CIF specification.
      *
      * @return The translated CIF specification.

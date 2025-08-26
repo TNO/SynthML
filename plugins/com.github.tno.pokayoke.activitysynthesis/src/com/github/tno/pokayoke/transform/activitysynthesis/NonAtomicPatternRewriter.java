@@ -3,18 +3,15 @@ package com.github.tno.pokayoke.transform.activitysynthesis;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.uml2.uml.Action;
 
 import fr.lip6.move.pnml.ptnet.Arc;
 import fr.lip6.move.pnml.ptnet.Page;
@@ -189,29 +186,6 @@ public class NonAtomicPatternRewriter {
             // Remove end places.
             EcoreUtil.deleteAll(pattern.endPlaces, true);
         }
-    }
-
-    /**
-     * Finds all activity actions corresponding to start or end transitions in the given list of rewritten patterns.
-     *
-     * @param patterns The rewritten non-atomic patterns on Petri Net level.
-     * @param transitionMap The mapping from Petri Net transitions to corresponding UML actions.
-     * @return All activity actions corresponding to start or end transitions in the given list of rewritten patterns.
-     */
-    public static Set<Action> getRewrittenActions(List<NonAtomicPattern> patterns,
-            Map<Transition, Action> transitionMap)
-    {
-        Set<Action> rewrittenActions = new LinkedHashSet<>();
-
-        for (NonAtomicPattern pattern: patterns) {
-            rewrittenActions.add(transitionMap.get(pattern.startTransition()));
-
-            for (Transition endTransition: pattern.endTransitions()) {
-                rewrittenActions.add(transitionMap.get(endTransition));
-            }
-        }
-
-        return rewrittenActions;
     }
 
     private static <T extends PnObject> List<T> sorted(Stream<T> stream) {
