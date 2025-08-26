@@ -407,22 +407,48 @@ public class SynthesisChainTracking {
         /** {@code true} if the event represents an end event, {@code false} otherwise. */
         private final boolean isEndEvent;
 
+        /**
+         * Return the translation purpose of the CIF event.
+         *
+         * @return The translation purpose.
+         */
         public final UmlToCifTranslationPurpose getTranslationPurpose() {
             return purpose;
         }
 
+        /**
+         * Return The UML element that relates to the CIF event, or {@code null} if no such element exists.
+         *
+         * @return The related UML element.
+         */
         public RedefinableElement getUmlElement() {
             return umlElement;
         }
 
+        /**
+         * Return the effect index of the related UML element. It is {@code null} for events that are both start and end
+         * events, as well as for start-only events. End-only events must have a non-negative integer effect index.
+         *
+         * @return The effect index of the related UML element.
+         */
         public Integer getEffectIdx() {
             return effectIdx;
         }
 
+        /**
+         * Returns {@code true} if the event represents a start event, {@code false} otherwise.
+         *
+         * @return {@code true} if the event represents a start event, {@code false} otherwise.
+         */
         public boolean isStartEvent() {
             return isStartEvent;
         }
 
+        /**
+         * Return {@code true} if the event represents an end event, {@code false} otherwise.
+         *
+         * @return {@code true} if the event represents an end event, {@code false} otherwise.
+         */
         public boolean isEndEvent() {
             return isEndEvent;
         }
