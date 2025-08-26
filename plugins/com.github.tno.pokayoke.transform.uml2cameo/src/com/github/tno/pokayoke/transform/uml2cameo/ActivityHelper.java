@@ -700,7 +700,7 @@ public class ActivityHelper {
 
     /**
      * Inserts an {@link OpaqueAction} before a {@link CallBehaviorAction} to compute argument values and deliver them
-     * via {@link ObjectFlow} to the call’s input pins.
+     * via an {@link ObjectFlow} to the call's input pins.
      *
      * <p>
      * Creates one {@code OpaqueAction} in the same {@link Activity} as {@code callAction}. It populates that opaque
@@ -731,7 +731,7 @@ public class ActivityHelper {
 
         Activity parentActivity = callAction.getActivity();
 
-        // OpaqueAction that computes argument values and provides them to the call behavior action.
+        // Create an opaque action that computes argument values and provides them to the call behavior action.
         OpaqueAction assignmentAction = FileHelper.FACTORY.createOpaqueAction();
         assignmentAction.setActivity(parentActivity);
         assignmentAction.getBodies().add(optionalAssignments);
