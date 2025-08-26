@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -585,7 +586,7 @@ public class SynthesisChainTracking {
          * @return A copy of the CIF events.
          */
         public Set<Event> getCifEvents() {
-            return new LinkedHashSet<>(cifEvents);
+            return Collections.unmodifiableSet(cifEvents);
         }
 
         /**
