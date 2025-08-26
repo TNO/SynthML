@@ -14,10 +14,6 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gwl4QDCdEfCmLZSDnGIBLA" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gwmfUDCdEfCmLZSDnGIBLA" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="_0zlsgDCdEfCmLZSDnGIBLA" name="Parameter_Output_Product_Activity" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0zmTkDCdEfCmLZSDnGIBLA" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0zmTkTCdEfCmLZSDnGIBLA" value="1"/>
-      </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_D5B3EDCdEfCmLZSDnGIBLA" name="MoveProduct" node="_9ArCsDCdEfCmLZSDnGIBLA _ARSe4DCeEfCmLZSDnGIBLA _KUtEkDCeEfCmLZSDnGIBLA _M29l8DCeEfCmLZSDnGIBLA _WyBg4DCeEfCmLZSDnGIBLA _fBTPcDCeEfCmLZSDnGIBLA _jBVWYDCeEfCmLZSDnGIBLA">
         <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_h-FgoFHPEfCaALiH7vZiQg" parameter="_h-GuwFHPEfCaALiH7vZiQg">
           <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_h-GuwFHPEfCaALiH7vZiQg" default="_h-GuwVHPEfCaALiH7vZiQg" parameteredElement="_h-GuwVHPEfCaALiH7vZiQg" constrainingClassifier="_O59N4DCdEfCmLZSDnGIBLA">
@@ -126,7 +122,5 @@ Park2_product := 0</effects>
     <effects>Park1_product := 1,&#xD;
 Park2_product := 2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalCallBehaviorAction xmi:id="_jysR0FHPEfCaALiH7vZiQg" base_CallBehaviorAction="_PZ0YkDIwEfC0ZcoSb49rpw">
-    <arguments>productId := 1</arguments>
-  </SynthML:FormalCallBehaviorAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_jysR0FHPEfCaALiH7vZiQg" arguments="productId := 1" base_CallBehaviorAction="_PZ0YkDIwEfC0ZcoSb49rpw"/>
 </xmi:XMI>

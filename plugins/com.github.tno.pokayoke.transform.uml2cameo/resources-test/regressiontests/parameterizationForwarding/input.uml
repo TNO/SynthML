@@ -14,10 +14,6 @@
         <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gwl4QDCdEfCmLZSDnGIBLA" value="1"/>
         <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gwmfUDCdEfCmLZSDnGIBLA" value="1"/>
       </ownedAttribute>
-      <ownedAttribute xmi:id="_0zlsgDCdEfCmLZSDnGIBLA" name="Parameter_Output_Product_Activity" visibility="public" type="_O59N4DCdEfCmLZSDnGIBLA">
-        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0zmTkDCdEfCmLZSDnGIBLA" value="1"/>
-        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0zmTkTCdEfCmLZSDnGIBLA" value="1"/>
-      </ownedAttribute>
       <ownedBehavior xmi:type="uml:Activity" xmi:id="_D5B3EDCdEfCmLZSDnGIBLA" name="MoveProduct" node="_9ArCsDCdEfCmLZSDnGIBLA _ARSe4DCeEfCmLZSDnGIBLA _KUtEkDCeEfCmLZSDnGIBLA _M29l8DCeEfCmLZSDnGIBLA _WyBg4DCeEfCmLZSDnGIBLA _fBTPcDCeEfCmLZSDnGIBLA _jBVWYDCeEfCmLZSDnGIBLA">
         <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="_h-FgoFHPEfCaALiH7vZiQg" parameter="_h-GuwFHPEfCaALiH7vZiQg">
           <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="_h-GuwFHPEfCaALiH7vZiQg" default="_h-GuwVHPEfCaALiH7vZiQg" parameteredElement="_h-GuwVHPEfCaALiH7vZiQg" constrainingClassifier="_O59N4DCdEfCmLZSDnGIBLA">
@@ -187,16 +183,8 @@ Park2_product := 0</effects>
     <effects>Park1_product := 1,&#xD;
 Park2_product := 2</effects>
   </SynthML:FormalElement>
-  <SynthML:FormalCallBehaviorAction xmi:id="_PChlUFgAEfCypLFnyoOr-A" base_CallBehaviorAction="_J208gFgAEfCypLFnyoOr-A">
-    <arguments>productId := productId</arguments>
-  </SynthML:FormalCallBehaviorAction>
-  <SynthML:FormalCallBehaviorAction xmi:id="_E3iikFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_aYZRYFgAEfCypLFnyoOr-A">
-    <arguments>productId := T2</arguments>
-  </SynthML:FormalCallBehaviorAction>
-  <SynthML:FormalCallBehaviorAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A">
-    <arguments>T2 := 2</arguments>
-  </SynthML:FormalCallBehaviorAction>
-  <SynthML:FormalCallBehaviorAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A">
-    <arguments>productId := 1</arguments>
-  </SynthML:FormalCallBehaviorAction>
+  <SynthML:FormalCallBehaviorAction xmi:id="_PChlUFgAEfCypLFnyoOr-A" arguments="productId := productId" base_CallBehaviorAction="_J208gFgAEfCypLFnyoOr-A"/>
+  <SynthML:FormalCallBehaviorAction xmi:id="_E3iikFgBEfCypLFnyoOr-A" arguments="productId := T2" base_CallBehaviorAction="_aYZRYFgAEfCypLFnyoOr-A"/>
+  <SynthML:FormalCallBehaviorAction xmi:id="_gVDnoFgBEfCypLFnyoOr-A" arguments="T2 := 2" base_CallBehaviorAction="_Yr-WYFgBEfCypLFnyoOr-A"/>
+  <SynthML:FormalCallBehaviorAction xmi:id="_5ed8EFgBEfCypLFnyoOr-A" arguments="productId := 1" base_CallBehaviorAction="_3pVmcFgBEfCypLFnyoOr-A"/>
 </xmi:XMI>
