@@ -549,17 +549,23 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return; // Further checks do not provide the user with useful information.
         }
 
-        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
-                .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
-                        || PokaYokeTypeUtil.isEnumerationType(parameter))))
+        if (templateParameters.stream().map(ClassifierTemplateParameter::getConstrainingClassifiers)
+                .anyMatch(constrainingClassifiers -> constrainingClassifiers.size() != 1))
         {
-            error("Activity parameters must be of primitive or enum type.", null);
+            error("Activity parameters must have exactly one constraining classifier.", null);
         }
 
         if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
                 .allMatch(NamedElement.class::isInstance))
         {
-            error("The template parameters must have a default of type 'NamedElement'.", null);
+            error("Activity parameters must have a default of type 'NamedElement'.", null);
+        }
+
+        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+                .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
+                        || PokaYokeTypeUtil.isEnumerationType(parameter))))
+        {
+            error("Activity parameters must be of primitive or enumeration type.", null);
         }
 
         List<String> parameterNames = templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
