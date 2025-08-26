@@ -652,14 +652,14 @@ public class SynthesisChainTracking {
             return Collections.unmodifiableSet(cifEvents);
         }
 
-        public boolean isMerged() {
+        public boolean isMergedTransition() {
             // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
             return cifEvents.size() > 1;
         }
 
         public boolean isCompleteTransition() {
             Event cifEvent = cifEvents.iterator().next();
-            return isMerged() || isCompleteEvent(cifEvent);
+            return isMergedTransition() || isCompleteEvent(cifEvent);
         }
 
         public boolean isStartOnlyTransition() {
