@@ -660,7 +660,8 @@ public class SynthesisChainTracking {
         public boolean isCompleteTransition() {
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
             Event cifEvent = cifEvents.iterator().next();
-            return isMergedTransition() || isCompleteEvent(cifEvent);
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            return isMergedTransition() || eventInfo.isCompleteEvent();
         }
 
         public boolean isStartOnlyTransition() {
@@ -670,7 +671,8 @@ public class SynthesisChainTracking {
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
             Event cifEvent = cifEvents.iterator().next();
-            return isStartOnlyEvent(cifEvent);
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            return eventInfo.isStartOnlyEvent();
         }
 
         public boolean isEndOnlyTransition() {
@@ -680,7 +682,8 @@ public class SynthesisChainTracking {
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
             Event cifEvent = cifEvents.iterator().next();
-            return isEndOnlyEvent(cifEvent);
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            return eventInfo.isEndOnlyEvent();
         }
 
         public RedefinableElement getUmlElement() {
