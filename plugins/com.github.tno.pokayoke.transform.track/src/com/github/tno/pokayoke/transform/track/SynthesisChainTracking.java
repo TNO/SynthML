@@ -534,8 +534,8 @@ public class SynthesisChainTracking {
     public Event getSingleCifEvent(TransitionTraceInfo transitionInfo) {
         if (transitionInfo.cifEvents().size() > 1) {
             // Sanity check: all CIF event relate to the same UML element. This is a lightweight check, since the CIF
-            // events should already be compatible, if the transition tracing info has been created with {@link
-            // createTransitionTraceInfo}.
+            // events should already be compatible, if the transition tracing info has been created with
+            // 'createTransitionTraceInfo'.
             Set<RedefinableElement> umlElements = transitionInfo.cifEvents().stream()
                     .map(e -> cifEventTraceInfo.get(e).umlElement()).collect(Collectors.toSet());
             Verify.verify(umlElements.size() == 1,
