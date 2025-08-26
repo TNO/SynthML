@@ -435,7 +435,7 @@ public class SynthesisChainTracking {
             // Store the transition and the related CIF event.
             Event cifEvent = namesToCifEvents.get(t.getName().getText());
             Verify.verify(cifEvent != null, "Could not find CIF event for transition '" + t.getName().getText() + "'.");
-            TransitionTraceInfo transitionInfo = createTransitionTraceInfo(Set.of(cifEvent));
+            TransitionTraceInfo transitionInfo = new TransitionTraceInfo(Set.of(cifEvent));
             transitionTraceInfo.put(t, transitionInfo);
         }
     }
@@ -454,12 +454,12 @@ public class SynthesisChainTracking {
 
             // Collect the start event and the end events.
             Set<Event> patternEvents = new LinkedHashSet<>();
-            patternEvents.addAll(transitionTraceInfo.get(startTransition).cifEvents());
+            patternEvents.addAll(transitionTraceInfo.get(startTransition).getCifEvents());
             patternEvents.addAll(
-                    endTransitions.stream().flatMap(t -> transitionTraceInfo.get(t).cifEvents().stream()).toList());
+                    endTransitions.stream().flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).toList());
 
             // Create a new transition tracing info.
-            TransitionTraceInfo mergedTransitionInfo = createTransitionTraceInfo(patternEvents);
+            TransitionTraceInfo mergedTransitionInfo = new TransitionTraceInfo(patternEvents);
 
             // Remove end transitions' entries from the transition map.
             transitionTraceInfo.keySet().removeAll(endTransitions);
@@ -610,15 +610,13 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        RedefinableElement umlElement = getUmlElement(transitionInfo);
-
-        if (umlElement instanceof OpaqueBehavior) {
-            if (isCompleteTransition(transitionInfo)) {
+        if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
+            if (transitionInfo.isCompleteTransition()) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
-            } else if (isStartOnlyTransition(transitionInfo)) {
+            } else if (transitionInfo.isStartOnlyTransition()) {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
             } else {
-                Verify.verify(isEndOnlyTransition(transitionInfo), "Expected an end-only event.");
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
                 return ActionKind.END_OPAQUE_BEHAVIOR;
             }
         }
@@ -634,7 +632,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        return getUmlElement(transitionInfo);
+        return transitionInfo.getUmlElement();
     }
 
     public int getEffectIdx(OpaqueAction action) {
@@ -645,7 +643,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
+        Event cifEvent = transitionInfo.getCifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.effectIdx();
     }
