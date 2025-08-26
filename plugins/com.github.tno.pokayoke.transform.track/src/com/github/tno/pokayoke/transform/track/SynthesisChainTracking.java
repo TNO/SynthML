@@ -514,9 +514,7 @@ public class SynthesisChainTracking {
         }
     }
 
-    /**
-     * Tracing information related to a Petri net transition.
-     */
+    /** Tracing information related to a Petri net transition. */
     class TransitionTraceInfo {
         /**
          * The CIF events related to the Petri net transition. If the set contains only a single event, this can be
