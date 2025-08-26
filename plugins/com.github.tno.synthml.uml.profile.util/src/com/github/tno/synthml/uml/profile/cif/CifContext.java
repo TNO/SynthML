@@ -280,8 +280,8 @@ public class CifContext {
     }
 
     public List<ControlFlow> getAllControlFlows() {
-        return getDeclaredElements().stream().filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast)
-                .toList();
+        return getAllActivities().stream().map(Activity::getOwnedElements).flatMap(java.util.Collection::stream)
+                .filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast).toList();
     }
 
     public boolean isEnumeration(String name) {
