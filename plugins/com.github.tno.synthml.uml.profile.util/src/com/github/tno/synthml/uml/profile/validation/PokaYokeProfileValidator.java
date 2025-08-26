@@ -571,7 +571,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         CifContext globalContext = CifContext.createGlobal(activity);
         for (String parameterName: parameterNames) {
             // Check if the template parameter name matches a variable from an enclosing scope.
-            // Currently only properties declared in the global scope are considered.
+            // Currently this means that only properties declared in the global scope are found, so we can mention
+            // 'property' specifically in the error message.
             if (globalContext.isVariable(parameterName)) {
                 error(String.format("'\s' was already declared as a property.", parameterName), null);
             }
@@ -791,24 +792,24 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidArguments(CallBehaviorAction callAction) {
-        Behavior calledActivity = callAction.getBehavior();
         String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
-
         if (arguments.isBlank()) {
             return;
         }
 
         Behavior behavior = callAction.getBehavior();
-        if (!(behavior instanceof Activity)) {
+        if (!(behavior instanceof Activity calledActivity)) {
             String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
             error("A call behavior action with arguments must call an activity, got: " + got, null);
+            // No activity could be resolved, skip argument parsing of the behavior.
+            return;
         }
 
         try {
             List<AUpdate> updates = CifParserHelper.parseUpdates(arguments, calledActivity);
 
             // Valid assignments are valid updates with restrictions.
-            checkValidArguments(updates, callAction);
+            checkValidArguments(updates, callAction, calledActivity);
 
             // Ensure that no parameter is assigned more than once.
             checkUniqueAddressables(updates, new LinkedHashSet<>());
@@ -823,8 +824,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction) {
-        Behavior calledActivity = callAction.getBehavior();
+    private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction, Activity calledActivity) {
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
 
