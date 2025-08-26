@@ -658,21 +658,35 @@ public class SynthesisChainTracking {
         }
 
         public boolean isCompleteTransition() {
+            // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
             Event cifEvent = cifEvents.iterator().next();
             return isMergedTransition() || isCompleteEvent(cifEvent);
         }
 
         public boolean isStartOnlyTransition() {
+            if (isMergedTransition()) {
+                return false;
+            }
+
+            // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
             Event cifEvent = cifEvents.iterator().next();
             return isStartOnlyEvent(cifEvent);
         }
 
         public boolean isEndOnlyTransition() {
+            if (isMergedTransition()) {
+                return false;
+            }
+
+            // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
             Event cifEvent = cifEvents.iterator().next();
             return isEndOnlyEvent(cifEvent);
         }
 
         public RedefinableElement getUmlElement() {
+            // If the transition is not merged, it has a single CIF event, and we can query the UML element related to
+            // it. If the transition is merged, all CIF events are related to the same UML element, so we can query the
+            // first one.
             Event cifEvent = cifEvents.iterator().next();
             EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
             return eventInfo.getUmlElement();
@@ -682,6 +696,7 @@ public class SynthesisChainTracking {
             // Sanity check: the transition should be related to a end-only CIF event.
             Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
 
+            // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
             Event cifEvent = cifEvents.iterator().next();
             EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
             return eventInfo.getEffectIdx();
