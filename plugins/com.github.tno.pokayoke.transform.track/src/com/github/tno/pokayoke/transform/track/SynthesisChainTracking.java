@@ -621,9 +621,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-        return eventInfo.umlElement();
+        return getUmlElement(transitionInfo);
     }
 
     public int getEffectIdx(OpaqueAction action) {
