@@ -396,8 +396,8 @@ public class SynthesisChainTracking {
         private RedefinableElement umlElement;
 
         /**
-         * The effect index must be {@code null} if the CIF event is a start-only or a complete (both start and end) event. It
-         * is a non-negative integer if the CIF event is a end-only event.
+         * The effect index must be {@code null} if the CIF event is a start-only or a complete (both start and end)
+         * event. It is a non-negative integer if the CIF event is a end-only event.
          */
         private Integer effectIdx;
 
