@@ -801,7 +801,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Behavior behavior = callAction.getBehavior();
         if (!(behavior instanceof Activity)) {
             String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
-            error("A call behavior action with parameters must target an Activity, got: " + got, null);
+            error("A call behavior action with arguments must call an activity, got: " + got, null);
         }
 
         try {
@@ -866,7 +866,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                             + name, null);
                 }
             } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
-                error("Invalid parameter assignment: Expected a constant or a parameter of the calling activity", null);
+                error("Invalid parameter assignment: Expected a literal or a parameter of the calling activity", null);
             }
         }
     }
