@@ -469,27 +469,6 @@ public class SynthesisChainTracking {
         }
     }
 
-    public boolean isCompleteTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
-        return transitionInfo.isMerged() || isCompleteEvent(cifEvent);
-    }
-
-    public boolean isStartOnlyTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
-        return isStartOnlyEvent(cifEvent);
-    }
-
-    public boolean isEndOnlyTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
-        return isEndOnlyEvent(cifEvent);
-    }
-
-    public RedefinableElement getUmlElement(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = transitionInfo.cifEvents().iterator().next();
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-        return eventInfo.umlElement();
-    }
-
     /**
      * Tracing information related to a Petri net transition.
      */
@@ -568,6 +547,27 @@ public class SynthesisChainTracking {
         public boolean isMerged() {
             // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
             return cifEvents.size() > 1;
+        }
+
+        public boolean isCompleteTransition() {
+            Event cifEvent = cifEvents.iterator().next();
+            return isMerged() || isCompleteEvent(cifEvent);
+        }
+
+        public boolean isStartOnlyTransition() {
+            Event cifEvent = cifEvents.iterator().next();
+            return isStartOnlyEvent(cifEvent);
+        }
+
+        public boolean isEndOnlyTransition() {
+            Event cifEvent = cifEvents.iterator().next();
+            return isEndOnlyEvent(cifEvent);
+        }
+
+        public RedefinableElement getUmlElement() {
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            return eventInfo.umlElement();
         }
     }
 
