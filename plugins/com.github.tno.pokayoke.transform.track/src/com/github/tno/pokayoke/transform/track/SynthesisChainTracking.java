@@ -390,24 +390,24 @@ public class SynthesisChainTracking {
     /** Tracing information related to a CIF event. */
     class EventTraceInfo {
         /** The translation purpose of the CIF event. */
-        private UmlToCifTranslationPurpose purpose;
+        private final UmlToCifTranslationPurpose purpose;
 
         /** The UML element related to the CIF event, or {@code null} if no such element exists. */
-        private RedefinableElement umlElement;
+        private final RedefinableElement umlElement;
 
         /**
          * The effect index must be {@code null} if the CIF event is a start-only or a complete (both start and end)
          * event. It is a non-negative integer if the CIF event is a end-only event.
          */
-        private Integer effectIdx;
+        private final Integer effectIdx;
 
         /** {@code true} if the event represents a start event, {@code false} otherwise. */
-        private boolean isStartEvent;
+        private final boolean isStartEvent;
 
         /** {@code true} if the event represents an end event, {@code false} otherwise. */
-        private boolean isEndEvent;
+        private final boolean isEndEvent;
 
-        public UmlToCifTranslationPurpose getTranslationPurpose() {
+        public final UmlToCifTranslationPurpose getTranslationPurpose() {
             return purpose;
         }
 
@@ -551,7 +551,7 @@ public class SynthesisChainTracking {
          * either a start or an end event (or both). If the set contains multiple events, these must compose a complete
          * "pattern", i.e. one single start-only event along with all its related end-only events.
          */
-        private Set<Event> cifEvents = new LinkedHashSet<>();
+        private final Set<Event> cifEvents;
 
         /**
          * Gets a copy of the CIF events linked to the transition.
