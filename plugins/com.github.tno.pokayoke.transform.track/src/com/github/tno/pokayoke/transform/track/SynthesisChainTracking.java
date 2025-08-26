@@ -387,25 +387,70 @@ public class SynthesisChainTracking {
         }
     }
 
-    /**
-     * Tracing information related to a CIF event.
-     *
-     * @param purpose The translation purpose.
-     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
-     * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as well
-     *     as for start-only events. End-only events must have a non-negative integer effect index.
-     * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
-     * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
-     */
-    private record EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-            boolean isStartEvent, boolean isEndEvent)
-    {
-        public EventTraceInfo {
+    /** Tracing information related to a CIF event. */
+    class EventTraceInfo {
+        /** The translation purpose of the CIF event. */
+        private UmlToCifTranslationPurpose purpose;
+
+        /** The UML element related to the CIF event. */
+        private RedefinableElement umlElement;
+
+        /**
+         * The effect index must be null if the CIF event is a start-only or a complete (both start and end event). It
+         * is a non-negative integer if the CIF event is a end-only event.
+         */
+        private Integer effectIdx;
+
+        /** {@code true} if the event represents a start event, {@code false} otherwise. */
+        private boolean isStartEvent;
+
+        /** {@code true} if the event represents an end event, {@code false} otherwise. */
+        private boolean isEndEvent;
+
+        public UmlToCifTranslationPurpose getTranslationPurpose() {
+            return purpose;
+        }
+
+        public RedefinableElement getUmlElement() {
+            return umlElement;
+        }
+
+        public Integer getEffectIdx() {
+            return effectIdx;
+        }
+
+        public boolean isStartEvent() {
+            return isStartEvent;
+        }
+
+        public boolean isEndEvent() {
+            return isEndEvent;
+        }
+
+        /**
+         * Constructor of a CIF event tracing info.
+         *
+         * @param purpose The translation purpose.
+         * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
+         * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as
+         *     well as for start-only events. End-only events must have a non-negative integer effect index.
+         * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
+         * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+         */
+        public EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
+                boolean isStartEvent, boolean isEndEvent)
+        {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
             Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
                     "Events that are both start and end events, as well as start-only events, must have null effect index. "
                             + "End-only events must have integer effect index.");
             Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
+
+            this.purpose = purpose;
+            this.umlElement = umlElement;
+            this.effectIdx = effectIdx;
+            this.isStartEvent = isStartEvent;
+            this.isEndEvent = isEndEvent;
         }
     }
 
