@@ -392,11 +392,11 @@ public class SynthesisChainTracking {
         /** The translation purpose of the CIF event. */
         private UmlToCifTranslationPurpose purpose;
 
-        /** The UML element related to the CIF event. */
+        /** The UML element related to the CIF event, or {@code null} if no such element exists. */
         private RedefinableElement umlElement;
 
         /**
-         * The effect index must be null if the CIF event is a start-only or a complete (both start and end event). It
+         * The effect index must be {@code null} if the CIF event is a start-only or a complete (both start and end) event. It
          * is a non-negative integer if the CIF event is a end-only event.
          */
         private Integer effectIdx;
