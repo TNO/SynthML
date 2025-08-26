@@ -531,32 +531,18 @@ public class SynthesisChainTracking {
         }
     }
 
-    public Event getSingleCifEvent(TransitionTraceInfo transitionInfo) {
-        if (transitionInfo.cifEvents().size() > 1) {
-            // Sanity check: all CIF event relate to the same UML element. This is a lightweight check, since the CIF
-            // events should already be compatible, if the transition tracing info has been created with
-            // 'createTransitionTraceInfo'.
-            Set<RedefinableElement> umlElements = transitionInfo.cifEvents().stream()
-                    .map(e -> cifEventTraceInfo.get(e).umlElement()).collect(Collectors.toSet());
-            Verify.verify(umlElements.size() == 1,
-                    String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
-        }
-
-        return transitionInfo.cifEvents().iterator().next();
-    }
-
     public boolean isCompleteTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = getSingleCifEvent(transitionInfo);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
         return transitionInfo.isMerged() || isCompleteEvent(cifEvent);
     }
 
     public boolean isStartOnlyTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = getSingleCifEvent(transitionInfo);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
         return isStartOnlyEvent(cifEvent);
     }
 
     public boolean isEndOnlyTransition(TransitionTraceInfo transitionInfo) {
-        Event cifEvent = getSingleCifEvent(transitionInfo);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
         return isEndOnlyEvent(cifEvent);
     }
 
@@ -635,7 +621,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = getSingleCifEvent(transitionInfo);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.umlElement();
     }
@@ -648,7 +634,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = getSingleCifEvent(transitionInfo);
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
         return eventInfo.effectIdx();
     }
