@@ -396,8 +396,8 @@ public class SynthesisChainTracking {
         private final RedefinableElement umlElement;
 
         /**
-         * The effect index must be {@code null} if the CIF event is a start-only or a complete (both start and end)
-         * event. It is a non-negative integer if the CIF event is a end-only event.
+         * The effect index. It is {@code null} for events that are both start and end events, as well as for start-only
+         * events. End-only events must have a non-negative integer effect index.
          */
         private final Integer effectIdx;
 
@@ -432,8 +432,8 @@ public class SynthesisChainTracking {
          *
          * @param purpose The translation purpose.
          * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
-         * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as
-         *     well as for start-only events. End-only events must have a non-negative integer effect index.
+         * @param effectIdx The effect index. It is {@code null} for events that are both start and end events, as well
+         *     as for start-only events. End-only events must have a non-negative integer effect index.
          * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
          * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
          */
