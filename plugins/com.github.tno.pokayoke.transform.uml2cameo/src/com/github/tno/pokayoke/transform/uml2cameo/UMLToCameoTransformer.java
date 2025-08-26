@@ -152,7 +152,7 @@ public class UMLToCameoTransformer {
                     "Expected outgoing guards only for edges that reach a call behavior or opaque action node.");
         }
 
-        // Collect integer bounds and set default values for all class properties
+        // Collect integer bounds and set default values for all class properties.
         propertyBounds.clear();
         for (Property property: contextClass.getOwnedAttributes()) {
             // Collect the bounds for integer properties, they will be validated later.
@@ -279,7 +279,7 @@ public class UMLToCameoTransformer {
         forkToLockHandlerFlow.setSource(forkNode);
         forkToLockHandlerFlow.setTarget(lockHandlerNode);
 
-        // Remove the Poka Yoke UML profile as all its contents has been transformed
+        // Remove the Poka Yoke UML profile as all its contents has been transformed.
         Profile pokaYokeUmlProfile = model.getAppliedProfile(PokaYokeUmlProfileUtil.POKA_YOKE_PROFILE);
         if (pokaYokeUmlProfile != null) {
             model.unapplyProfile(pokaYokeUmlProfile);
