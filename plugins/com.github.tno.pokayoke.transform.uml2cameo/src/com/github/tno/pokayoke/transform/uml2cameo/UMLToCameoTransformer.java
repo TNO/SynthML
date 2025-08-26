@@ -368,9 +368,9 @@ public class UMLToCameoTransformer {
         UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
         Stream<NamedTemplateParameter> parametersUsedInGuards = combinedGuard == null ? Stream.empty()
                 : usedParametersCollector.collect(combinedGuard, context);
-        Stream<NamedTemplateParameter> parametersUsedinEffects = parsedEffects.stream().flatMap(List::stream)
+        Stream<NamedTemplateParameter> parametersUsedInEffects = parsedEffects.stream().flatMap(List::stream)
                 .flatMap(expr -> usedParametersCollector.collect(expr, context));
-        return Stream.concat(parametersUsedInGuards, parametersUsedinEffects).map(p -> p.getName())
+        return Stream.concat(parametersUsedInGuards, parametersUsedInEffects).map(p -> p.getName())
                 .collect(Collectors.toSet());
     }
 
