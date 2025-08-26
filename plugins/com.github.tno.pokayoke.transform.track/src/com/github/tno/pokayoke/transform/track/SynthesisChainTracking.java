@@ -578,6 +578,15 @@ public class SynthesisChainTracking {
             EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
             return eventInfo.umlElement();
         }
+
+        public int getEffectIdx() {
+            // Sanity check: the transition should be related to a end-only CIF event.
+            Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
+
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            return eventInfo.effectIdx();
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
@@ -643,8 +652,6 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = transitionInfo.getCifEvents().iterator().next();
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
-        return eventInfo.effectIdx();
+        return transitionInfo.getEffectIdx();
     }
 }
