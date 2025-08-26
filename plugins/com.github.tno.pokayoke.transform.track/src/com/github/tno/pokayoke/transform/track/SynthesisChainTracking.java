@@ -550,6 +550,22 @@ public class SynthesisChainTracking {
         return transitionInfo.isMerged() || isCompleteEvent(cifEvent);
     }
 
+    public boolean isStartOnlyTransition(TransitionTraceInfo transitionInfo) {
+        Event cifEvent = getSingleCifEvent(transitionInfo);
+        return isStartOnlyEvent(cifEvent);
+    }
+
+    public boolean isEndOnlyTransition(TransitionTraceInfo transitionInfo) {
+        Event cifEvent = getSingleCifEvent(transitionInfo);
+        return isEndOnlyEvent(cifEvent);
+    }
+
+    public RedefinableElement getUmlElement(TransitionTraceInfo transitionInfo) {
+        Event cifEvent = transitionInfo.cifEvents().iterator().next();
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        return eventInfo.umlElement();
+    }
+
     /**
      * Tracing information related to a Petri net transition. The creation of a TransitionTraceInfo should occur via
      * {@link #createTransitionTraceInfo} to have correctness assertions.
@@ -595,16 +611,15 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
-        Event cifEvent = getSingleCifEvent(transitionInfo);
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        RedefinableElement umlElement = getUmlElement(transitionInfo);
 
-        if (eventInfo.umlElement() instanceof OpaqueBehavior) {
+        if (umlElement instanceof OpaqueBehavior) {
             if (isCompleteTransition(transitionInfo)) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
-            } else if (isStartOnlyEvent(cifEvent)) {
+            } else if (isStartOnlyTransition(transitionInfo)) {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
             } else {
-                Verify.verify(isEndOnlyEvent(cifEvent), "Expected an end-only event.");
+                Verify.verify(isEndOnlyTransition(transitionInfo), "Expected an end-only event.");
                 return ActionKind.END_OPAQUE_BEHAVIOR;
             }
         }
