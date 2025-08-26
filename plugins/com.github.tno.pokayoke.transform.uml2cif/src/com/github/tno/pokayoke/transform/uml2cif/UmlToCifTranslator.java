@@ -560,11 +560,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
             // the effect index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, true);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, false);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
 
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
@@ -610,7 +610,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifEndEvent, umlElement, i, translationPurpose, false, true);
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
             }
         }
 

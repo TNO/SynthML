@@ -62,15 +62,15 @@ public class SynthesisChainTracking {
      * purpose.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to relate to the CIF event. May be {@code null}.
-     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
-     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
+     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
+     * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as well
+     *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
      */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
-            UmlToCifTranslationPurpose purpose, boolean isStartEvent, boolean isEndEvent)
+    public void addCifEvent(Event cifEvent, UmlToCifTranslationPurpose purpose, RedefinableElement umlElement,
+            Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
     {
         cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
     }
