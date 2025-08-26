@@ -545,6 +545,11 @@ public class SynthesisChainTracking {
         return transitionInfo.cifEvents().iterator().next();
     }
 
+    public boolean isCompleteTransition(TransitionTraceInfo transitionInfo) {
+        Event cifEvent = getSingleCifEvent(transitionInfo);
+        return transitionInfo.isMerged() || isCompleteEvent(cifEvent);
+    }
+
     /**
      * Tracing information related to a Petri net transition. The creation of a TransitionTraceInfo should occur via
      * {@link #createTransitionTraceInfo} to have correctness assertions.
@@ -594,7 +599,7 @@ public class SynthesisChainTracking {
         EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
 
         if (eventInfo.umlElement() instanceof OpaqueBehavior) {
-            if (transitionInfo.isMerged() || isCompleteEvent(cifEvent)) {
+            if (isCompleteTransition(transitionInfo)) {
                 return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
             } else if (isStartOnlyEvent(cifEvent)) {
                 return ActionKind.START_OPAQUE_BEHAVIOR;
