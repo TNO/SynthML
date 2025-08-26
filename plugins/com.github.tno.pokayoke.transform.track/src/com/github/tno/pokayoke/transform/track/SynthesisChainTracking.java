@@ -644,9 +644,9 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Gets a copy of the CIF events linked to the transition.
+         * Return the set of CIF events linked to the transition.
          *
-         * @return A copy of the CIF events.
+         * @return The CIF events.
          */
         public Set<Event> getCifEvents() {
             return Collections.unmodifiableSet(cifEvents);
