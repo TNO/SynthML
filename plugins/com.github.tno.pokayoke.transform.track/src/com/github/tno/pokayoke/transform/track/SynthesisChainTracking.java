@@ -548,9 +548,8 @@ public class SynthesisChainTracking {
 
             if (cifEvents.size() > 1) {
                 // The events must compose a pattern: single start-only event, one or more end-only events, all
-                // referring to
-                // the same UML element, all with the same translation purpose, and the effect indexes that are coherent
-                // with the UML element effects cardinality.
+                // referring to the same UML element, all with the same translation purpose, and the effect indexes that
+                // are coherent with the UML element effects cardinality.
                 List<Event> startEvents = cifEvents.stream().filter(e -> isStartOnlyEvent(e)).toList();
                 Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
                         startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
@@ -576,9 +575,8 @@ public class SynthesisChainTracking {
                         "All events must have 'synthesis' translation purpose.");
 
                 // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events
-                // tracing
-                // info effect indexes are the same numbers as the UML element's effects. Verify that there are no
-                // additional effect indexes.
+                // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
+                // no additional effect indexes.
                 Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> cifEventTraceInfo.get(e).getEffectIdx())
                         .collect(Collectors.toSet());
                 int umlElemEffectSize = PokaYokeUmlProfileUtil
