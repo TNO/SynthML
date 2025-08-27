@@ -55,16 +55,16 @@ public class ActivityHelper {
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param isAtomic Whether the activity to create should be atomic.
-     * @param localVariables The variables that are defined in the scope of the calling activity.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> localVariables)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> forwardedParameters)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, localVariables);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, localVariables);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         }
     }
 
@@ -77,12 +77,12 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param localVariables The variables that are defined in the scope of the calling activity.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> localVariables)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
@@ -103,8 +103,8 @@ public class ActivityHelper {
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
 
-        // Add template parameters to the newly created activity for local variables.
-        for (String variableName: localVariables) {
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String variableName: forwardedParameters) {
             addParameterToActivity(activity, variableName);
         }
 
@@ -341,16 +341,16 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
-     * @param localVariables The variables that are defined in the scope of the calling activity.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> localVariables)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
         Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
-                localVariables);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, localVariables);
+                forwardedParameters);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, forwardedParameters);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
@@ -358,8 +358,8 @@ public class ActivityHelper {
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
 
-        // Add template parameters to the newly created activity for local variables.
-        for (String propertyName: localVariables) {
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String propertyName: forwardedParameters) {
             addParameterToActivity(activity, propertyName);
         }
 
@@ -402,8 +402,8 @@ public class ActivityHelper {
         endToFinalFlow.setTarget(finalNode);
 
         // Pass arguments to the newly created inner activities.
-        passArgumentsToCallBehaviorAction(callStartNode, localVariables, null);
-        passArgumentsToCallBehaviorAction(callEndNode, localVariables, null);
+        passArgumentsToCallBehaviorAction(callStartNode, forwardedParameters, null);
+        passArgumentsToCallBehaviorAction(callEndNode, forwardedParameters, null);
 
         return activity;
     }
