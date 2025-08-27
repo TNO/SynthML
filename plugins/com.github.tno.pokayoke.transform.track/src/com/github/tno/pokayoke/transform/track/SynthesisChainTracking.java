@@ -144,6 +144,20 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return the event tracing info related to the input CIF event.
+     *
+     * @param cifEvent The CIF event.
+     * @return The CIF event tracing info.
+     *
+     */
+    public EventTraceInfo getEventTraceInfo(Event cifEvent) {
+        // Sanity check: CIF event must be stored.
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(eventInfo, "CIF event '" + cifEvent.getName() + "' does not have any tracing info.");
+        return eventInfo;
+    }
+
+    /**
      * Returns the events corresponding to the given set of UML elements, based on the indicated translation purpose.
      *
      * @param umlElements The set of UML elements, to find the related CIF events. Each UML element must be
@@ -389,7 +403,7 @@ public class SynthesisChainTracking {
     }
 
     /** Tracing information related to a CIF event. */
-    class EventTraceInfo {
+    public class EventTraceInfo {
         /** The translation purpose of the CIF event. */
         private final UmlToCifTranslationPurpose purpose;
 
@@ -598,11 +612,13 @@ public class SynthesisChainTracking {
                 // The events must compose a pattern: single start-only event, one or more end-only events, all
                 // referring to the same UML element, all with the same translation purpose, and the effect indexes that
                 // are coherent with the UML element effects cardinality.
-                List<Event> startEvents = cifEvents.stream().filter(e -> isStartOnlyEvent(e)).toList();
+                List<Event> startEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isStartOnlyEvent())
+                        .toList();
                 Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
                         startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
-                List<Event> endEvents = cifEvents.stream().filter(e -> isEndOnlyEvent(e)).toList();
+                List<Event> endEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isEndOnlyEvent())
+                        .toList();
                 Verify.verify(endEvents.size() >= 1, "There must be at last one end-only event.");
 
                 List<Event> startEndEvents = cifEvents.stream()
