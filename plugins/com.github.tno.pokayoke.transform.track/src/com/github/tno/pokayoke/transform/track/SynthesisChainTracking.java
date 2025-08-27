@@ -92,58 +92,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Indicates whether the CIF event is a start event, i.e., represents the start of an action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is a start event, {@code false} otherwise.
-     */
-    public boolean isStartEvent(Event cifEvent) {
-        return cifEventTraceInfo.get(cifEvent).isStartEvent();
-    }
-
-    /**
-     * Indicates whether the CIF event is an end event, i.e., represents the end of an action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is an end event, {@code false} otherwise.
-     */
-    public boolean isEndEvent(Event cifEvent) {
-        return cifEventTraceInfo.get(cifEvent).isEndEvent();
-    }
-
-    /**
-     * Indicates whether the CIF event is a complete event, i.e., represents both the start and the end of an action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is both a start and an end event, {@code false} otherwise.
-     */
-    public boolean isCompleteEvent(Event cifEvent) {
-        return isStartEvent(cifEvent) && isEndEvent(cifEvent);
-    }
-
-    /**
-     * Indicates whether the CIF event is a start-only event, i.e., represents the start of an action but does not
-     * represent the end of the action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is a start-only event, {@code false} otherwise.
-     */
-    private boolean isStartOnlyEvent(Event cifEvent) {
-        return isStartEvent(cifEvent) && !isEndEvent(cifEvent);
-    }
-
-    /**
-     * Indicates whether the CIF event is a end-only event, i.e., represents the end of an action but does not represent
-     * the start of the action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is a end-only event, {@code false} otherwise.
-     */
-    private boolean isEndOnlyEvent(Event cifEvent) {
-        return !isStartEvent(cifEvent) && isEndEvent(cifEvent);
-    }
-
-    /**
      * Return the event tracing info related to the input CIF event.
      *
      * @param cifEvent The CIF event.
