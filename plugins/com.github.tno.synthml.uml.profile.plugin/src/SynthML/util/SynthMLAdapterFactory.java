@@ -76,6 +76,10 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 				return createFormalControlFlowAdapter();
 			}
 			@Override
+			public Adapter caseFormalCallBehaviorAction(FormalCallBehaviorAction object) {
+				return createFormalCallBehaviorActionAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -120,6 +124,20 @@ public class SynthMLAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createFormalControlFlowAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link SynthML.FormalCallBehaviorAction <em>Formal Call Behavior Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see SynthML.FormalCallBehaviorAction
+	 * @generated
+	 */
+	public Adapter createFormalCallBehaviorActionAdapter() {
 		return null;
 	}
 

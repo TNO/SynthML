@@ -52,6 +52,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectToString;
@@ -87,7 +88,7 @@ public class CompositeDataTypeFlattener {
     public static void flattenCompositeDataTypes(Model model) {
         // Only perform flattening if there are any composite data types. This not only prevents unnecessary work, but
         // also prevents normalizing expressions/updates.
-        CifContext context = new CifContext(model);
+        CifContext context = CifContext.createGlobal(model);
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
         if (!dataTypes.isEmpty()) {
             Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);
@@ -609,6 +610,9 @@ public class CompositeDataTypeFlattener {
                 unfoldConstraint(constraint, propertyToLeaves, absoluteToFlatNames);
             } else if (ownedElement instanceof ActivityNode) {
                 // Nodes in activities should not refer to properties.
+                continue;
+            } else if (ownedElement instanceof RedefinableTemplateSignature) {
+                // Template signatures of parameterized activities should not refer to properties.
                 continue;
             } else {
                 throw new RuntimeException(String.format("Unfolding elements of class '%s' not supported",

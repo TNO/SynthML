@@ -43,6 +43,7 @@ import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectWalker;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.base.Verify;
 
@@ -222,6 +223,11 @@ public class UmlAnnotationsToCif extends ACifObjectWalker<Object> {
     protected Expression visit(Property property, TextPosition propertyPos, CifContext ctx) {
         DiscVariable cifVariable = variableMap.get(property);
         return CifConstructors.newDiscVariableExpression(null, EcoreUtil.copy(cifVariable.getType()), cifVariable);
+    }
+
+    @Override
+    protected Expression visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx) {
+        throw new RuntimeException("Translating template parameters to CIF is not supported.");
     }
 
     @Override

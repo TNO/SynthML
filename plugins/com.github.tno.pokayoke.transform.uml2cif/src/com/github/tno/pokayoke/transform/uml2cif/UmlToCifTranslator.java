@@ -148,8 +148,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
-    public UmlToCifTranslator(Activity activity, UmlToCifTranslationPurpose purpose, SynthesisChainTracking tracker) {
-        super(new CifContext(activity.getModel()), tracker, purpose);
+    public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
+            SynthesisChainTracking tracker)
+    {
+        super(context, tracker, purpose);
         this.activity = activity;
     }
 
@@ -277,6 +279,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // to be improved in the future.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
 
         // Flatten UML activities and normalize IDs.

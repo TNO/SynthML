@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Constraint;
+import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
@@ -107,7 +108,7 @@ public class CifContext {
     /**
      * Finds all declared elements in the {@code model}.
      *
-     * @param model The search root.
+     * @param model An {@link Element} contained in the model for which the context is created..
      * @return All declared elements in the {@code model}.
      */
     public static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
@@ -115,7 +116,7 @@ public class CifContext {
                 .asType(NamedElement.class);
     }
 
-    public CifContext(Element element) {
+    private CifContext(Element element, CifScope scope) {
         this.model = element.getModel();
 
         // Collect declared elements as set.
@@ -125,8 +126,7 @@ public class CifContext {
         List<Class> activeClasses = model.getOwnedElements().stream()
                 .filter(e -> e instanceof Class cls && cls.isActive()).map(cls -> (Class)cls).toList();
 
-        // Collect the referenceable elements that have a single identifier as their name. Elements that may have
-        // absolute names consisting of multiple identifiers collected separately later on.
+        // Collect the referenceable elements, as well as any duplicates.
         if (activeClasses.isEmpty()) {
             // No active class. The profile validator checks the number of classes. Here, consider all declared elements
             // as referenceable elements based on their single identifier names, to be able to still do some type
@@ -145,7 +145,7 @@ public class CifContext {
             // Collect all referenceable elements that are always referred to by a single identifier.
             for (NamedElement declaredElement: declaredElements) {
                 String elementName = declaredElement.getName();
-                if (!(declaredElement instanceof Property)) {
+                if (!(declaredElement instanceof Property || declaredElement.eClass() == UMLPackage.Literals.CLASS)) {
                     referenceableElements.put(elementName, declaredElement);
                     referenceableElementsInclDuplicates.computeIfAbsent(elementName, k -> new LinkedList<>())
                             .add(declaredElement);
@@ -155,7 +155,31 @@ public class CifContext {
             // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
             // identifiers.
             addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
+
+            // Collect all template parameters that may be referenced within the context of this activity.
+            addNamedTemplateParameters(scope.getDeclaredTemplateParameters());
         }
+    }
+
+    /**
+     * Creates a context containing all declared/referenceable elements found in the global scope of {@code model}.
+     *
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @return A {@code CifContext} containing all declared/referenceable elements in the global scope.
+     */
+    public static CifContext createGlobal(Element element) {
+        return new CifContext(element, CifScope.global());
+    }
+
+    /**
+     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
+     *
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
+     *     scope.
+     */
+    public static CifContext createScoped(Element element) {
+        return new CifContext(element, new CifScope(element));
     }
 
     /**
@@ -199,16 +223,27 @@ public class CifContext {
         }
     }
 
+    /**
+     * Add template parameters to {@link #referenceableElements} and {@link #referenceableElementsInclDuplicates}.
+     *
+     * @param parameters The template parameters to add.
+     */
+    private void addNamedTemplateParameters(Collection<NamedTemplateParameter> parameters) {
+        for (NamedElement parameter: parameters) {
+            String name = parameter.getName();
+
+            // Add parameter.
+            referenceableElements.put(name, parameter);
+            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(parameter);
+        }
+    }
+
     protected Collection<NamedElement> getDeclaredElements() {
         return Collections.unmodifiableCollection(declaredElements);
     }
 
-    protected NamedElement getReferenceableElement(String name) {
+    public NamedElement getReferenceableElement(String name) {
         return referenceableElements.get(name);
-    }
-
-    public Map<String, NamedElement> getReferenceableElements() {
-        return Collections.unmodifiableMap(referenceableElements);
     }
 
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
@@ -242,6 +277,11 @@ public class CifContext {
 
     public List<Property> getAllDeclaredProperties() {
         return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
+    }
+
+    public List<ControlFlow> getAllControlFlows() {
+        return getAllActivities().stream().map(Activity::getOwnedElements).flatMap(java.util.Collection::stream)
+                .filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast).toList();
     }
 
     public boolean isEnumeration(String name) {
@@ -281,12 +321,54 @@ public class CifContext {
                 .toList();
     }
 
+    /**
+     * Checks if the element is present in the context and represents a variable, i.e. a {@link Property} or a
+     * {@link NamedTemplateParameter}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@code true} if the element is present in the context and represents a variable, else {@code false}.
+     */
     public boolean isVariable(String name) {
-        return referenceableElements.get(name) instanceof Property;
+        return getVariable(name) != null;
     }
 
-    public Property getVariable(String name) {
-        if (referenceableElements.get(name) instanceof Property property) {
+    /**
+     * Finds the variable in the context, i.e. a {@link Property} or a {@link NamedTemplateParameter}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@link Property} or {@link NamedTemplateParameter} if the variable is present in the context, else
+     *     {@code null}.
+     */
+    public NamedElement getVariable(String name) {
+        NamedElement element = referenceableElements.get(name);
+
+        if (element instanceof Property || element instanceof NamedTemplateParameter) {
+            return element;
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the element is present in the context and represents an assignable variable, i.e. a {@link Property}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@code true} if the element is present and assignable in the context, and represents a variable, else
+     *     {@code false}.
+     */
+    public boolean isAssignableVariable(String name) {
+        return getAssignableVariable(name) != null;
+    }
+
+    /**
+     * Finds the assignable variable in the context, i.e. a {@link Property}.
+     *
+     * @param name The name of the declared entity.
+     * @return {@link Property} if the variable is present in the context, else {@code null}.
+     */
+    public Property getAssignableVariable(String name) {
+        NamedElement element = referenceableElements.get(name);
+
+        if (element instanceof Property property) {
             return property;
         }
         return null;
@@ -336,5 +418,10 @@ public class CifContext {
 
     public boolean hasAbstractActivities() {
         return getDeclaredElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
+    }
+
+    public boolean hasParameterizedActivities() {
+        return getDeclaredElements().stream()
+                .anyMatch(e -> e instanceof Activity a && !a.getOwnedParameters().isEmpty());
     }
 }

@@ -31,6 +31,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.google.common.base.Strings;
 
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
 import SynthML.SynthMLPackage;
@@ -49,12 +50,22 @@ public class PokaYokeUmlProfileUtil {
     private static final String PROP_FORMAL_CONTROL_FLOW_OUTGOING_GUARD = SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD
             .getName();
 
+    private static final String ST_FORMAL_CALL_BEHAVIOR_ACTION = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION
+            .getName();
+
+    private static final String PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS = SynthMLPackage.Literals.FORMAL_CALL_BEHAVIOR_ACTION__ARGUMENTS
+            .getName();
+
     /** Qualified name for the {@link SynthMLPackage Poka Yoke} profile. */
     public static final String POKA_YOKE_PROFILE = SynthMLPackage.eNAME;
 
     /** Qualified name for the {@link FormalElement} stereotype. */
     public static final String FORMAL_ELEMENT_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
             + ST_FORMAL_ELEMENT;
+
+    /** Qualified name for the {@link FormalCallBehaviorAction} stereotype. */
+    public static final String FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
+            + ST_FORMAL_CALL_BEHAVIOR_ACTION;
 
     /** Qualified name for the {@link FormalControlFlow} stereotype. */
     public static final String FORMAL_CONTROL_FLOW_STEREOTYPE = POKA_YOKE_PROFILE + NamedElement.SEPARATOR
@@ -195,6 +206,38 @@ public class PokaYokeUmlProfileUtil {
         } else {
             ECollections.setEList(value, newValue);
         }
+    }
+
+    /**
+     * Returns the contents of the {@link FormalCallBehaviorAction#getArguments() arguments} if the
+     * {@link FormalCallBehaviorAction} stereotype is applied on {@code element}, and an empty string otherwise. Use the
+     * {@link #setArguments(CallBehaviorAction, String)} method to set the new value on the {@code element}.
+     *
+     * @param element The element to get the arguments from.
+     * @return The argument assignments.
+     * @see #setArguments(CallBehaviorAction, String)
+     */
+    public static String getArguments(CallBehaviorAction element) {
+        return getAppliedStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE)
+                .map(st -> (String)element.getValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS)).orElse("");
+    }
+
+    /**
+     * Sets {@code newValue} as contents of the {@link FormalCallBehaviorAction#getArguments() arguments}. We are using
+     * a setter here to deal with the stereotype that is required to set the value. We do not want to implicitly create
+     * the stereotype on read, but explicitly create it on write.
+     *
+     * @param element The element to set the arguments on.
+     * @param newValue The new property value.
+     */
+    public static void setArguments(CallBehaviorAction element, String newValue) {
+        if (newValue == null || newValue.isEmpty()) {
+            PokaYokeUmlProfileUtil.unapplyStereotype(element, FORMAL_CALL_BEHAVIOR_ACTION_STEREOTYPE);
+            return;
+        }
+        Stereotype st = applyStereotype(element,
+                getPokaYokeProfile(element).getOwnedStereotype(ST_FORMAL_CALL_BEHAVIOR_ACTION));
+        element.setValue(st, PROP_FORMAL_CALL_BEHAVIOR_ACTION_ARGUMENTS, newValue);
     }
 
     public static boolean isAtomic(RedefinableElement element) {

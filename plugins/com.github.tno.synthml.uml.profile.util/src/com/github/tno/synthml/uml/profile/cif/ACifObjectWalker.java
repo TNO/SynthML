@@ -65,8 +65,12 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
         if (update.addressable instanceof ANameExpression addressable) {
             TextPosition assignmentPos = update.value.position;
             String name = addressable.name.name;
-            if (!ctx.isVariable(name)) {
-                throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
+            if (!ctx.isAssignableVariable(name)) {
+                if (ctx.isVariable(name)) {
+                    throw new CustomSyntaxException(String.format("'%s' cannot be assigned to", name), assignmentPos);
+                } else {
+                    throw new CustomSyntaxException(String.format("unresolved variable '%s'", name), assignmentPos);
+                }
             }
             return visit(visit(addressable, ctx), assignmentPos, visit(update.value, ctx), ctx);
         }
@@ -129,6 +133,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
             return visit(literal, expr.position, ctx);
         } else if (element instanceof Property property) {
             return visit(property, expr.position, ctx);
+        } else if (element instanceof NamedTemplateParameter parameter) {
+            return visit(parameter, expr.position, ctx);
         } else {
             throw new CustomSyntaxException(String.format("unresolved name '%s'", name), expr.position);
         }
@@ -137,6 +143,8 @@ public abstract class ACifObjectWalker<T> extends ACifObjectVisitor<T, CifContex
     protected abstract T visit(EnumerationLiteral literal, TextPosition literalPos, CifContext ctx);
 
     protected abstract T visit(Property property, TextPosition propertyPos, CifContext ctx);
+
+    protected abstract T visit(NamedTemplateParameter parameter, TextPosition parameterReferencePos, CifContext ctx);
 
     @Override
     protected T visit(AUnaryExpression expr, CifContext ctx) {

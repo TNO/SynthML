@@ -65,7 +65,7 @@ public class CreateDiagramsHelper {
 
             // Setting viewpoint
             UserSession userSession = UserSession.from(session);
-            Display.getDefault().syncExec(() -> userSession.selectViewpoint("PokaYoke"));
+            Display.getDefault().syncExec(() -> userSession.selectViewpoint("A_SynthML"));
             subMonitor.worked(1);
 
             // Creating diagrams
