@@ -96,7 +96,6 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event.
      * @return The CIF event tracing info.
-     *
      */
     public EventTraceInfo getEventTraceInfo(Event cifEvent) {
         // Sanity check: CIF event must be stored.
