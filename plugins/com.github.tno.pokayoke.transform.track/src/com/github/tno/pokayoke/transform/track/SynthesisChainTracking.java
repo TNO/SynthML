@@ -444,9 +444,9 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return The UML element that relates to the CIF event, or {@code null} if no such element exists.
+         * Return the UML element that relates to the CIF event, or {@code null} if no such element exists.
          *
-         * @return The related UML element.
+         * @return The related UML element, or {@code null}.
          */
         public RedefinableElement getUmlElement() {
             return umlElement;
@@ -456,7 +456,7 @@ public class SynthesisChainTracking {
          * Return the effect index of the related UML element. It is {@code null} for events that are both start and end
          * events, as well as for start-only events. End-only events must have a non-negative integer effect index.
          *
-         * @return The effect index of the related UML element.
+         * @return The effect index of the related UML element, or {@code null}.
          */
         public Integer getEffectIdx() {
             return effectIdx;
