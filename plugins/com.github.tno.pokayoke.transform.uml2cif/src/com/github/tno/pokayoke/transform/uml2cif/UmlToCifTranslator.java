@@ -560,11 +560,11 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
 
             // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
             // the effect index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, true);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, false);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
 
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
@@ -610,7 +610,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifEndEvent, umlElement, i, translationPurpose, false, true);
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
             }
         }
 
@@ -780,7 +780,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
@@ -796,7 +796,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
@@ -1637,8 +1637,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            Verify.verify(
-                                    synthesisTracker.isEndEvent(cifEvent) && !synthesisTracker.isStartEvent(cifEvent),
+                            Verify.verify(synthesisTracker.getEventTraceInfo(cifEvent).isEndOnlyEvent(),
                                     "Event '" + cifEvent.getName() + "' is not an end-only event.");
                         }
                         yield PostConditionKind.WITH_STRUCTURE;
