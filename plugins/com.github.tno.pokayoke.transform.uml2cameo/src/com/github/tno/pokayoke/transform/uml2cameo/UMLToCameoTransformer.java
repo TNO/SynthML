@@ -517,8 +517,6 @@ public class UMLToCameoTransformer {
     }
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
-        Set<String> usedParameters = getUsedParameters(action);
-
         // Translate the guard and effects of the action.
         CifContext context = CifContext.createScoped(action);
         String guard = translateGuard(action, context);
@@ -526,6 +524,7 @@ public class UMLToCameoTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
+        Set<String> usedParameters = getUsedParameters(action);
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
                 PokaYokeUmlProfileUtil.isAtomic(action), usedParameters);
 
