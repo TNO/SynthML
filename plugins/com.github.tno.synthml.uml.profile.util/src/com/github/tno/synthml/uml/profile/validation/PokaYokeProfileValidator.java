@@ -848,6 +848,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // the addressable and value have the same type.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
                 error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
+            } else if (addressable.derivative) {
+                error("Invalid parameter assignment: Expected a non-derivative parameter name.", null);
             } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
                 error("Invalid parameter assignment: Unknown activity parameter name (of the called activity): "
                         + addressable.name.name, null);
