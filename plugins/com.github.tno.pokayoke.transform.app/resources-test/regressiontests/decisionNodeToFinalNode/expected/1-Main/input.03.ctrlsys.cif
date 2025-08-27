@@ -23,5 +23,8 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge action when Context.__activeAction = 0 and not Context.field;
+    edge action when true;
 end
+supervisor invariant Context.__postcondition disables action;
+supervisor invariant Context.__postcondition disables action__result_1;
+supervisor invariant Context.__postcondition disables action__result_2;

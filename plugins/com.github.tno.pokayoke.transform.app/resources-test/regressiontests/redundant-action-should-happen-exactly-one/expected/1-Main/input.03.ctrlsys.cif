@@ -48,7 +48,10 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge flip when at_most_once__36__left__24.__occurrences = 0 and not Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and exactly_once__40__flip__28.__occurrences = 0) or (at_most_once__36__left__24.__occurrences = 0 and Context.field2 and (at_most_once__36__right__26.__occurrences = 1 and exactly_once__40__flip__28.__occurrences = 0) or at_most_once__36__left__24.__occurrences = 1 and Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and exactly_once__40__flip__28.__occurrences = 0));
-    edge left when at_most_once__36__left__24.__occurrences = 0 and not Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and not Context.field1) or at_most_once__36__left__24.__occurrences = 0 and Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and (exactly_once__40__flip__28.__occurrences = 0 and not Context.field1));
-    edge right when at_most_once__36__left__24.__occurrences = 0 and not Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and Context.field1) or at_most_once__36__left__24.__occurrences = 0 and Context.field2 and (at_most_once__36__right__26.__occurrences = 0 and (exactly_once__40__flip__28.__occurrences = 0 and Context.field1));
+    edge flip when true;
+    edge left when true;
+    edge right when true;
 end
+supervisor invariant Context.__postcondition disables left;
+supervisor invariant Context.__postcondition disables right;
+supervisor invariant Context.__postcondition disables flip;

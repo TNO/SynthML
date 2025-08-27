@@ -7,6 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +30,7 @@ import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.app.framework.io.AppStream;
 import org.eclipse.escet.common.app.framework.io.AppStreams;
 import org.eclipse.escet.common.app.framework.io.MemAppStream;
+import org.eclipse.escet.common.java.Pair;
 import org.eclipse.escet.common.java.PathPair;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Model;
@@ -49,13 +53,15 @@ import com.github.tno.pokayoke.transform.petrify2uml.PNMLUMLFileHelper;
 import com.github.tno.pokayoke.transform.petrify2uml.PetrifyOutput2PNMLTranslator;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessActivity;
 import com.github.tno.pokayoke.transform.petrify2uml.PostProcessPNML;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
-import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator.TranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import fr.lip6.move.pnml.ptnet.PetriNet;
+import fr.lip6.move.pnml.ptnet.Transition;
 
 /** Application that performs full synthesis. */
 public class FullSynthesisApp {
@@ -102,9 +108,13 @@ public class FullSynthesisApp {
     public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
+        // Instantiate the tracker that indicates how results from intermediate steps of the activity synthesis chain
+        // relate to the input UML.
+        SynthesisChainTracking tracker = new SynthesisChainTracking();
+
         // Translate the UML specification to a CIF specification.
         UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity), activity,
-                TranslationPurpose.SYNTHESIS);
+                UmlToCifTranslationPurpose.SYNTHESIS, tracker);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -156,13 +166,18 @@ public class FullSynthesisApp {
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
         Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
-        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath);
+        CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
+                tracker);
 
-        // Perform event-based automaton projection.
-        String preservedEvents = getPreservedEvents(cifStateSpace);
+        // Perform event-based automaton projection and update the synthesis tracker.
+        Pair<String, Set<String>> preservedAndRemovedEventNames = getPreservedAndRemovedEventNames(cifStateSpace,
+                tracker);
+        String preservedEventNames = preservedAndRemovedEventNames.left;
+        Set<String> removedEventNames = preservedAndRemovedEventNames.right;
+        tracker.removeAndUpdateEvents(removedEventNames, UmlToCifTranslationPurpose.SYNTHESIS);
         Path cifProjectedStateSpacePath = outputFolderPath.resolve(filePrefix + ".06.statespace.projected.cif");
         String[] projectionArgs = new String[] {cifStatespaceWithSingleSourceSink.toString(),
-                "--preserve=" + preservedEvents, "--output=" + cifProjectedStateSpacePath.toString()};
+                "--preserve=" + preservedEventNames, "--output=" + cifProjectedStateSpacePath.toString()};
         AppStream projectionAppStream = new MemAppStream();
         AppStreams projectionAppStreams = new AppStreams(InputStream.nullInputStream(), projectionAppStream,
                 projectionAppStream, projectionAppStream);
@@ -215,6 +230,13 @@ public class FullSynthesisApp {
         PostProcessPNML.removeLoop(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlWithoutLoopOutputPath.toString());
 
+        // Store the Petri net transitions in the synthesis tracker. It is more convenient to use the Petri net after it
+        // has been synthesised, instead of storing each transition at the time of creation: in case a transition
+        // appears multiple times in a Petri net, Petrify distinguishes each duplicate by adding a postfix to the name
+        // of the transition (e.g., 'Transition_A/1' is a duplicate of 'Transition_A'), and these duplicates are not
+        // specified in the transition declarations, but only appear in the specification, and are handled separately.
+        tracker.addPetriNetTransitions(petriNet);
+
         // Rewrite all rewritable non-atomic patterns in the Petri Net. The rewriting merges the non-atomic patterns
         // that can be merged, replacing their start and end transitions by a single transition. These patterns'
         // intermediate control flows cannot have guards and we can safely merge them, since 1) the patterns have no
@@ -223,9 +245,14 @@ public class FullSynthesisApp {
         // before them: in this case, the start of the action.
         Path pnmlNonAtomicsReducedOutputPath = outputFolderPath.resolve(filePrefix + ".12.nonatomicsreduced.pnml");
         NonAtomicPatternRewriter nonAtomicPatternRewriter = new NonAtomicPatternRewriter(
-                umlToCifTranslator.getNonAtomicEvents());
+                tracker.getNonAtomicStartEndEventMap(UmlToCifTranslationPurpose.SYNTHESIS));
         List<NonAtomicPattern> nonAtomicPatterns = nonAtomicPatternRewriter.findAndRewritePatterns(petriNet);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
+
+        // Update the synthesis tracker transition map with the rewritten non-atomic pattern.
+        Map<Transition, List<Transition>> rewrittenTransitions = nonAtomicPatterns.stream()
+                .collect(Collectors.toMap(p -> p.startTransition(), p -> p.endTransitions()));
+        tracker.mergeTransitionPatterns(rewrittenTransitions);
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
         // action.
@@ -234,15 +261,15 @@ public class FullSynthesisApp {
         petriNet2Activity.translate(petriNet);
         FileHelper.storeModel(activity.getModel(), umlOutputPath.toString());
 
+        // Add the newly generated UML opaque actions and their corresponding transitions to the tracker.
+        tracker.addActions(petriNet2Activity.getTransitionMapping());
+
         // Finalize the opaque actions of the activity. Transform opaque actions into call behaviors when they
         // correspond to atomic opaque behaviors or non-atomic ones that have been re-written in the previous step. For
         // non-atomic ones that couldn't be rewritten, add guards (for start action) and effects (for end actions).
         Path opaqueActionsFinalizedOutputPath = outputFolderPath
                 .resolve(filePrefix + ".14.opaque_actions_finalized.uml");
-        PostProcessActivity.finalizeOpaqueActions(activity,
-                NonAtomicPatternRewriter.getRewrittenActions(nonAtomicPatterns,
-                        petriNet2Activity.getTransitionMapping()),
-                umlToCifTranslator.getEndEventNameMap(), UmlToCifTranslator.NONATOMIC_OUTCOME_SUFFIX, warnings);
+        PostProcessActivity.finalizeOpaqueActions(activity, tracker, warnings);
         FileHelper.storeModel(activity.getModel(), opaqueActionsFinalizedOutputPath.toString());
 
         // Remove the internal actions that were added in CIF specification and petrification.
@@ -264,7 +291,7 @@ public class FullSynthesisApp {
         // Translating synthesized activity to CIF, for guard computation.
         Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
         UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity),
-                activity, TranslationPurpose.GUARD_COMPUTATION);
+                activity, UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();
@@ -275,7 +302,8 @@ public class FullSynthesisApp {
         }
 
         // Computing guards.
-        new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity, umlActivityToCifPath);
+        new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
+                umlActivityToCifPath);
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
@@ -284,34 +312,40 @@ public class FullSynthesisApp {
 
         // Perform the language equivalence check between the CIF model generated by the state space exploration and the
         // translation to CIF of the final UML model. Throws a runtime error if models are non-equivalent.
-        performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator);
+        performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, tracker);
     }
 
-    private static String getPreservedEvents(Specification spec) {
+    private static Pair<String, Set<String>> getPreservedAndRemovedEventNames(Specification spec,
+            SynthesisChainTracking tracker)
+    {
         List<Event> events = CifCollectUtils.collectEvents(spec, new ArrayList<>());
 
         // Preserve controllable events and all events that are *not* the end of an atomic non-deterministic action.
         // This merges (folds) the non-deterministic result events of an atomic action into the single start event. The
         // choice is based on the nodes name: in the future we might want to refer directly to the nodes instead of
         // using a string comparison.
-        List<String> eventNames = events.stream().filter(
-                event -> event.getControllable() || !event.getName().contains(UmlToCifTranslator.ATOMIC_OUTCOME_SUFFIX))
+        List<String> preservedEventNames = events.stream().filter(
+                event -> event.getControllable() || !tracker.isAtomicNonDeterministicEndEventName(event.getName()))
                 .map(event -> CifTextUtils.getAbsName(event, false)).toList();
 
-        return String.join(",", eventNames);
+        // Get the removed events names (end of atomic non-deterministic actions).
+        Set<String> removedEventNames = events.stream().filter(event -> !preservedEventNames.contains(event.getName()))
+                .map(e -> e.getName()).collect(Collectors.toSet());
+
+        return new Pair<>(String.join(",", preservedEventNames), removedEventNames);
     }
 
     private static void performLanguageEquivalenceCheck(String filePrefix, Path localOutputPath,
-            UmlToCifTranslator translator) throws CoreException
+            UmlToCifTranslator translator, SynthesisChainTracking tracker) throws CoreException
     {
         // Load state space UML file.
         Specification stateSpaceGenerated = CifFileHelper
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
         // Translate final UML model to CIF and get its state space.
-        Activity activity = translator.getActivity();
-        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(CifContext.createGlobal(activity),
-                activity, TranslationPurpose.LANGUAGE_EQUIVALENCE);
+        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(
+                CifContext.createGlobal(translator.getActivity()), translator.getActivity(),
+                UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE, tracker);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");
         try {

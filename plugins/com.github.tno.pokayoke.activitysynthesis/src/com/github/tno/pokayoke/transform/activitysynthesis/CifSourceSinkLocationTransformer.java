@@ -20,6 +20,8 @@ import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.java.PathPair;
 
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.google.common.base.Preconditions;
 
 /**
@@ -42,15 +44,19 @@ public class CifSourceSinkLocationTransformer {
     }
 
     /**
-     * Transforms the given specification (as described for {@link #transform(Specification)}) and writes the
-     * transformed specification to the indicated file path.
+     * Transforms the given specification (as described for {@link #transform(Specification, SynthesisChainTracking)})
+     * and writes the transformed specification to the indicated file path.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
      * @param outputFilePath The path to the output file to write the transformation result to.
      * @param outputFolderPath The path to the folder in which the transformation result is to be written.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath) {
-        transform(specification);
+    public static void transform(Specification specification, Path outputFilePath, Path outputFolderPath,
+            SynthesisChainTracking tracker)
+    {
+        transform(specification, tracker);
 
         try {
             AppEnv.registerSimple();
@@ -67,8 +73,10 @@ public class CifSourceSinkLocationTransformer {
      * and a new sink (marked) location.
      *
      * @param specification The input specification to transform, which should contain exactly one automaton.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public static void transform(Specification specification) {
+    public static void transform(Specification specification, SynthesisChainTracking tracker) {
         // Make sure the input specification does not contain any complex component with separate initials or markeds.
         Preconditions.checkArgument(
                 CifCollectUtils.getComplexComponentsStream(specification).allMatch(c -> c.getInitials().isEmpty()),
@@ -158,5 +166,9 @@ public class CifSourceSinkLocationTransformer {
             location.getEdges().add(edge);
             location.getMarkeds().clear();
         }
+
+        // Update the synthesis tracker with the new start and end events.
+        tracker.addCifEvent(startEvent, null, null, UmlToCifTranslationPurpose.SYNTHESIS, true, false);
+        tracker.addCifEvent(endEvent, null, null, UmlToCifTranslationPurpose.SYNTHESIS, true, false);
     }
 }

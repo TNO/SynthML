@@ -49,7 +49,10 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge flip when not Context.field2 and occurrences__44__left__32.__occurrences = 0 and (occurrences__44__right__34.__occurrences = 0 and occurrences__44__flip__36.__occurrences = 0) or (Context.field2 and occurrences__44__left__32.__occurrences = 0 and (occurrences__44__right__34.__occurrences = 1 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)) or Context.field2 and occurrences__44__left__32.__occurrences = 1 and (occurrences__44__right__34.__occurrences = 0 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)));
-    edge left when not Context.field1 and (not Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)) or (not Context.field1 and (not Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (Context.flipped and occurrences__44__flip__36.__occurrences = 1)) or not Context.field1 and (Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)));
-    edge right when Context.field1 and (not Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)) or (Context.field1 and (not Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (Context.flipped and occurrences__44__flip__36.__occurrences = 1)) or Context.field1 and (Context.field2 and occurrences__44__left__32.__occurrences = 0) and (occurrences__44__right__34.__occurrences = 0 and (not Context.flipped and occurrences__44__flip__36.__occurrences = 0)));
+    edge flip when true;
+    edge left when true;
+    edge right when true;
 end
+supervisor invariant Context.__postcondition disables left;
+supervisor invariant Context.__postcondition disables right;
+supervisor invariant Context.__postcondition disables flip;

@@ -27,5 +27,6 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge change when Class.element = First and happens_at_most_once__28__change__16.__occurrences = 0;
+    edge change when true;
 end
+supervisor invariant Class.__postcondition disables change;

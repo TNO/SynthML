@@ -25,7 +25,6 @@ import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
 import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
-import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisFree;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
@@ -52,6 +51,8 @@ import org.eclipse.uml2.uml.RedefinableElement;
 import com.github.javabdd.BDD;
 import com.github.javabdd.BDDFactory;
 import com.github.javabdd.BDDVarSet;
+import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
+import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.pokayoke.transform.uml2cif.UmlToCifTranslator;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Verify;
@@ -64,19 +65,29 @@ public class GuardComputation {
     private final UmlToCifTranslator translator;
 
     /**
+     * The tracker that indicates how results from intermediate steps of the activity synthesis chain relate to the
+     * input UML.
+     */
+    private final SynthesisChainTracking synthesisTracker;
+
+    /**
      * Constructs a new {@link GuardComputation}.
      *
      * @param translator The UML-to-CIF translator to use for guard computation.
+     * @param tracker The tracker that indicates how results from intermediate steps of the activity synthesis chain
+     *     relate to the input UML.
      */
-    public GuardComputation(UmlToCifTranslator translator) {
+    public GuardComputation(UmlToCifTranslator translator, SynthesisChainTracking tracker) {
         this.translator = translator;
+        this.synthesisTracker = tracker;
     }
 
     public void computeGuards(Specification specification, Path specPath) {
         // Obtain the mapping from UML (activity) elements to all the CIF start events created for them. Note that we
         // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
         // flows.
-        Map<RedefinableElement, List<Event>> startEventMap = reverse(translator.getStartEventMap());
+        Map<RedefinableElement, List<Event>> startEventMap = reverse(
+                synthesisTracker.getStartEventMap(UmlToCifTranslationPurpose.GUARD_COMPUTATION));
 
         // Helper function for obtaining the single CIF start event of a given UML element.
         Function<RedefinableElement, Event> getSingleStartEvent = element -> {
@@ -94,7 +105,6 @@ public class GuardComputation {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true); // Get correct and intuitive result.
         settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL); // Best performance.
-        settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class)); // We do custom context-aware simplification.
 
         // Configure to not free certain BDDs, as we still need them after synthesis.
         Set<CifBddFree> cifBddFrees = EnumSet.allOf(CifBddFree.class);
@@ -107,6 +117,7 @@ public class GuardComputation {
         synthesisFrees.remove(CifDataSynthesisFree.RESULT_CTRL_BEH);
         synthesisFrees.remove(CifDataSynthesisFree.SPEC_MARKED);
         synthesisFrees.remove(CifDataSynthesisFree.EDGE_GUARD);
+        synthesisFrees.remove(CifDataSynthesisFree.EDGE_ORIG_GUARD);
         settings.setSynthesisFrees(synthesisFrees);
 
         // Convert the CIF specification to a CIF/BDD specification.

@@ -59,7 +59,8 @@ public class ActivityHelper {
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic, Set<String> forwardedParameters)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic,
+            Set<String> forwardedParameters)
     {
         if (isAtomic) {
             return createAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
@@ -350,7 +351,8 @@ public class ActivityHelper {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
         Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
                 forwardedParameters);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire, forwardedParameters);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire,
+                forwardedParameters);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
