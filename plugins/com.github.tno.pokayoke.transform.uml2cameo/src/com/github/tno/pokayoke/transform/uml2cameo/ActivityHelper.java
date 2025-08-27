@@ -105,8 +105,8 @@ public class ActivityHelper {
         activity.setName(name);
 
         // Add template parameters to the newly created activity for forwarded parameters.
-        for (String variableName: forwardedParameters) {
-            addParameterToActivity(activity, variableName);
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
         }
 
         // Define the initial node.
@@ -361,8 +361,8 @@ public class ActivityHelper {
         activity.setName(name);
 
         // Add template parameters to the newly created activity for forwarded parameters.
-        for (String propertyName: forwardedParameters) {
-            addParameterToActivity(activity, propertyName);
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
         }
 
         // Define the initial node.
