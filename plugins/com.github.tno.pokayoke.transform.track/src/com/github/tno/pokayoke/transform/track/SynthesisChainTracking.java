@@ -439,7 +439,7 @@ public class SynthesisChainTracking {
          *
          * @return The translation purpose.
          */
-        public final UmlToCifTranslationPurpose getTranslationPurpose() {
+        public UmlToCifTranslationPurpose getTranslationPurpose() {
             return purpose;
         }
 
