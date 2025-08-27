@@ -197,7 +197,7 @@ public class SynthesisChainTracking {
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
         return startEndEventMap.entrySet().stream()
-                .filter(e -> !isAtomicAction(cifEventTraceInfo.get(e.getKey()).getUmlElement()))
+                .filter(e -> !isAtomicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
@@ -236,7 +236,7 @@ public class SynthesisChainTracking {
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
         return startEndEventMap.entrySet().stream()
-                .filter(e -> !isDeterministicAction(cifEventTraceInfo.get(e.getKey()).getUmlElement()))
+                .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
@@ -268,7 +268,7 @@ public class SynthesisChainTracking {
         List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
         Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
 
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvents.get(0));
         return isAtomicAction(eventInfo.getUmlElement()) && !(isDeterministicAction(eventInfo.getUmlElement()))
                 && eventInfo.isStartEvent();
     }
@@ -284,7 +284,7 @@ public class SynthesisChainTracking {
         List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
         Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
 
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvents.get(0));
         return isAtomicAction(eventInfo.getUmlElement()) && !(isDeterministicAction(eventInfo.getUmlElement()))
                 && eventInfo.isEndEvent();
     }
@@ -315,7 +315,7 @@ public class SynthesisChainTracking {
             Event cifEvent = namesToCifEvents.get(eventName);
             Verify.verifyNotNull(cifEvent, "Could not find CIF event '" + eventName + "'.");
 
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
             if (eventInfo.isStartEvent()) {
                 // Store the start event and corresponding end events to be removed.
@@ -341,7 +341,7 @@ public class SynthesisChainTracking {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
                 // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
-                EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
+                EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
                 EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
                         oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true);
                 cifEventTraceInfo.put(startEvent, newEventTraceInfo);
@@ -559,43 +559,41 @@ public class SynthesisChainTracking {
                 // The events must compose a pattern: single start-only event, one or more end-only events, all
                 // referring to the same UML element, all with the same translation purpose, and the effect indexes that
                 // are coherent with the UML element effects cardinality.
-                List<Event> startEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isStartOnlyEvent())
+                List<Event> startEvents = cifEvents.stream().filter(e -> getEventTraceInfo(e).isStartOnlyEvent())
                         .toList();
                 Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
                         startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
-                List<Event> endEvents = cifEvents.stream().filter(e -> cifEventTraceInfo.get(e).isEndOnlyEvent())
-                        .toList();
+                List<Event> endEvents = cifEvents.stream().filter(e -> getEventTraceInfo(e).isEndOnlyEvent()).toList();
                 Verify.verify(endEvents.size() >= 1, "There must be at last one end-only event.");
 
                 List<Event> startEndEvents = cifEvents.stream()
-                        .filter(e -> cifEventTraceInfo.get(e).isStartEvent() && cifEventTraceInfo.get(e).isEndEvent())
-                        .toList();
+                        .filter(e -> getEventTraceInfo(e).isStartEvent() && getEventTraceInfo(e).isEndEvent()).toList();
                 Verify.verify(startEndEvents.size() == 0,
                         "Events that are both start- and end-events are not supported for merged patterns.");
 
-                Set<RedefinableElement> umlElements = cifEvents.stream()
-                        .map(e -> cifEventTraceInfo.get(e).getUmlElement()).collect(Collectors.toSet());
+                Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> getEventTraceInfo(e).getUmlElement())
+                        .collect(Collectors.toSet());
                 Verify.verify(umlElements.size() == 1,
                         String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
 
                 Verify.verify(
                         cifEvents.stream()
-                                .allMatch(e -> cifEventTraceInfo.get(e).getTranslationPurpose()
+                                .allMatch(e -> getEventTraceInfo(e).getTranslationPurpose()
                                         .equals(UmlToCifTranslationPurpose.SYNTHESIS)),
                         "All events must have 'synthesis' translation purpose.");
 
                 // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events
                 // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
                 // no additional effect indexes.
-                Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> cifEventTraceInfo.get(e).getEffectIdx())
+                Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
                         .collect(Collectors.toSet());
                 int umlElemEffectSize = PokaYokeUmlProfileUtil
-                        .getEffects(cifEventTraceInfo.get(cifEvents.iterator().next()).getUmlElement()).size();
+                        .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
                 for (int i = 0; i < umlElemEffectSize; i++) {
                     Verify.verify(eventsEffectIdxs.contains(i),
                             String.format("Effect index %d of UML element '%s' is missing.", i,
-                                    cifEventTraceInfo.get(cifEvents.iterator().next()).getUmlElement().getName()));
+                                    getEventTraceInfo(cifEvents.iterator().next()).getUmlElement().getName()));
                     eventsEffectIdxs.remove(i);
                 }
                 Verify.verify(eventsEffectIdxs.isEmpty(),
@@ -635,7 +633,7 @@ public class SynthesisChainTracking {
         public boolean isCompleteTransition() {
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
             Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return isMergedTransition() || eventInfo.isCompleteEvent();
         }
 
@@ -652,7 +650,7 @@ public class SynthesisChainTracking {
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
             Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return eventInfo.isStartOnlyEvent();
         }
 
@@ -669,7 +667,7 @@ public class SynthesisChainTracking {
 
             // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
             Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return eventInfo.isEndOnlyEvent();
         }
 
@@ -683,7 +681,7 @@ public class SynthesisChainTracking {
             // it. If the transition is merged, all CIF events are related to the same UML element, so we can query the
             // first one.
             Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return eventInfo.getUmlElement();
         }
 
@@ -700,7 +698,7 @@ public class SynthesisChainTracking {
 
             // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
             Event cifEvent = cifEvents.iterator().next();
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             return eventInfo.getEffectIdx();
         }
     }
