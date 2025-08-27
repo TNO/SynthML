@@ -787,4 +787,29 @@ public class SynthesisChainTracking {
 
         return transitionInfo.getEffectIdx();
     }
+
+    /**
+     * Remove the internal actions created for petrification in the internal mappings. Specifically targeted at the
+     * single source and single sink "__start" and "__end" events.
+     */
+    public void removeInternalActions() {
+        // Removes internal actions created for petrification. Store the related transitions.
+        Set<Action> actionsToRemove = new LinkedHashSet<>();
+        Set<Transition> transitionsToRemove = new LinkedHashSet<>();
+        for (Entry<OpaqueAction, Transition> entry: actionToTransition.entrySet()) {
+            if (entry.getKey().getName().contains("__") && getUmlElement(entry.getKey()) == null) {
+                actionsToRemove.add(entry.getKey());
+                transitionsToRemove.add(entry.getValue());
+            }
+        }
+        actionToTransition.keySet().removeAll(actionsToRemove);
+
+        // Remove the transitions corresponding to internal actions. Store the corresponding CIF events.
+        Set<Event> eventsToRemove = transitionsToRemove.stream()
+                .flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).collect(Collectors.toSet());
+        transitionTraceInfo.keySet().removeAll(transitionsToRemove);
+
+        // Remove the corresponding CIF events.
+        cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+    }
 }
