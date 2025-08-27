@@ -652,11 +652,23 @@ public class SynthesisChainTracking {
             return Collections.unmodifiableSet(cifEvents);
         }
 
+        /**
+         * Indicates whether the transition relates to a merged (rewritten) non-atomic pattern.
+         *
+         * @return {@code true} if the transition is merged, {@code false} otherwise.
+         */
         public boolean isMergedTransition() {
             // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
             return cifEvents.size() > 1;
         }
 
+        /**
+         * Indicates whether the transition relates to a CIF event that is both a start and end event (e.g. related to
+         * an atomic behavior) or if the transition relates to a merged (rewritten) non-atomic pattern.
+         *
+         * @return {@code true} if the transition is merged or is related to a start and end CIF event, {@code false}
+         *     otherwise.
+         */
         public boolean isCompleteTransition() {
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
             Event cifEvent = cifEvents.iterator().next();
@@ -664,6 +676,12 @@ public class SynthesisChainTracking {
             return isMergedTransition() || eventInfo.isCompleteEvent();
         }
 
+        /**
+         * Indicates whether the transition relates to a CIF event that is a start-only event, i.e., represents the
+         * start of an action but does not represent the end of the action.
+         *
+         * @return {@code true} if the transition is start-only, {@code false} otherwise.
+         */
         public boolean isStartOnlyTransition() {
             if (isMergedTransition()) {
                 return false;
@@ -675,6 +693,12 @@ public class SynthesisChainTracking {
             return eventInfo.isStartOnlyEvent();
         }
 
+        /**
+         * Indicates whether the transition relates to a CIF event that is a end-only event, i.e., represents the end of
+         * an action but does not represent the start of the action.
+         *
+         * @return {@code true} if the transition is end-only, {@code false} otherwise.
+         */
         public boolean isEndOnlyTransition() {
             if (isMergedTransition()) {
                 return false;
@@ -686,6 +710,11 @@ public class SynthesisChainTracking {
             return eventInfo.isEndOnlyEvent();
         }
 
+        /**
+         * Return the UML element originally related to the transition, or {@code null} if no such element exists.
+         *
+         * @return The related UML element, or {@code null}.
+         */
         public RedefinableElement getUmlElement() {
             // If the transition is not merged, it has a single CIF event, and we can query the UML element related to
             // it. If the transition is merged, all CIF events are related to the same UML element, so we can query the
@@ -695,6 +724,13 @@ public class SynthesisChainTracking {
             return eventInfo.getUmlElement();
         }
 
+        /**
+         * Return the effect index of the UML element originally related to the transition. It is {@code null} for
+         * events that are both start and end events, as well as for start-only events. End-only events must have a
+         * non-negative integer effect index.
+         *
+         * @return The effect index of the related UML element, or {@code null}.
+         */
         public int getEffectIdx() {
             // Sanity check: the transition should be related to a end-only CIF event.
             Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
@@ -710,6 +746,11 @@ public class SynthesisChainTracking {
     // Section dealing with newly generated opaque actions.
     /////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Store the newly generated UML actions and the Petri net transitions they originate from.
+     *
+     * @param transitionActionMap The map from Petri net transitions to UML actions.
+     */
     public void addActions(Map<Transition, Action> transitionActionMap) {
         // Sanity check: ensure that there are no duplicate actions before reversing the map.
         Verify.verify(
@@ -750,6 +791,12 @@ public class SynthesisChainTracking {
         return ActionKind.CONTROL_NODE;
     }
 
+    /**
+     * Return the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     *
+     * @param action The opaque action.
+     * @return The related UML element, or {@code null}.
+     */
     public RedefinableElement getUmlElement(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
@@ -761,6 +808,14 @@ public class SynthesisChainTracking {
         return transitionInfo.getUmlElement();
     }
 
+    /**
+     * Return the effect index of the UML element originally related to the opaque action. It is {@code null} for events
+     * that are both start and end events, as well as for start-only events. End-only events must have a non-negative
+     * integer effect index.
+     *
+     * @param action The opaque action.
+     * @return The effect index of the related UML element, or {@code null}.
+     */
     public int getEffectIdx(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
