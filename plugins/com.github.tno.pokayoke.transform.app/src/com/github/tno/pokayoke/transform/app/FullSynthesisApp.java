@@ -1,11 +1,15 @@
 
 package com.github.tno.pokayoke.transform.app;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -85,6 +89,23 @@ public class FullSynthesisApp {
                     orderer.getCycleDescription()));
         }
 
+        // Initial string containing the macro-steps of the synthesis chain that are being measured.
+        List<String> activityTimeLog = new ArrayList<>();
+        String timeLog = ", UML to CIF, Synthesis, Exploration, Petri net prep, Petri net synthesis, "
+                + "Finalize UML, UML to CIF (GC), Guard Computation, LEC";
+        activityTimeLog.add(timeLog);
+
+        // Store the time logs in the output ("expected") folder.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy HH-mm-ss");
+        Date date = new Date();
+        String timeLogFileName = outputFolderPath + "\\time_log_" + dateFormat.format(date) + ".csv";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(timeLogFileName));
+        for (String line: activityTimeLog) {
+            writer.write(line);
+            writer.newLine();
+        }
+        writer.close();
+
         for (int i = 0; i < activities.size(); i++) {
             Activity activity = activities.get(i);
             Preconditions.checkArgument(!Strings.isNullOrEmpty(activity.getName()), "Expected activities to be named.");
@@ -93,16 +114,30 @@ public class FullSynthesisApp {
             Path localOutputPath = outputFolderPath
                     .resolve(String.format("%s-%s", formattedNumber, activity.getName()));
             Files.createDirectories(localOutputPath);
-            performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
+            String execTimes = performFullSynthesis(activity, filePrefix, localOutputPath, warnings);
+            activityTimeLog.add(execTimes);
+
+            // Write (update) the execution times for the current activity.
+            try (FileWriter writerUpdate = new FileWriter(timeLogFileName, true)) {
+                // true for append mode
+                writerUpdate.write(execTimes);
+                writerUpdate.write("\n");
+            } catch (IOException e) {
+                System.out.println("An error occurred while appending" + " to the file: " + e.getMessage());
+            }
         }
     }
 
-    public static void performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
+    public static String performFullSynthesis(Activity activity, String filePrefix, Path outputFolderPath,
             List<String> warnings) throws IOException, CoreException
     {
         // Create the synthesis chain tracker object to store all the translations from the initial UML model to the
         // synthesised activity.
         SynthesisUmlElementTracking synthesisUmlElementsTracker = new SynthesisUmlElementTracking();
+
+        // List to store the activity synthesis times.
+        List<String> timeLog = new ArrayList<>();
+        timeLog.add(activity.getName());
 
         // Start timer for UML to CIF translation.
         System.out.println("----------------------------------------------------------------");
@@ -132,10 +167,11 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // End UML to CIF timer, start timer for data-based synthesis.
+        // End UML to CIF timer, start timer for data-based synthesis, store the execution time.
         long endUmlToCifTime = System.currentTimeMillis();
-        System.out.println("UML to CIF translation took: "
-                + String.valueOf(((double)endUmlToCifTime - startUmlToCifTime) / 1000) + " seconds.");
+        double execTime = ((double)endUmlToCifTime - startUmlToCifTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("UML to CIF translation took: " + String.valueOf(execTime) + " seconds.");
         long startSynthesisTime = System.currentTimeMillis();
 
         // Get CIF/BDD specification.
@@ -150,10 +186,11 @@ public class FullSynthesisApp {
         CIFDataSynthesisHelper.convertSynthesisResultToCif(cifSpec, cifSynthesisResult, cifSynthesisPath.toString(),
                 outputFolderPath.toString());
 
-        // End data-based synthesis timer, start timer for state space exploration.
+        // End data-based synthesis timer, start timer for state space exploration, and store the execution time.
         long endSynthesisTime = System.currentTimeMillis();
-        System.out.println("Data-based synthesis took: "
-                + String.valueOf(((double)endSynthesisTime - startSynthesisTime) / 1000) + " seconds.");
+        execTime = ((double)endSynthesisTime - startSynthesisTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Data-based synthesis took: " + String.valueOf(execTime) + " seconds.");
         long startExplorerTime = System.currentTimeMillis();
 
         // Perform state space generation.
@@ -170,10 +207,12 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
-        // End state space exploration timer, start timer for preparation to Petri net synthesis.
+        // End state space exploration timer, start timer for preparation to Petri net synthesis, and store the
+        // execution time.
         long endExplorerTime = System.currentTimeMillis();
-        System.out.println("State space exploration took: "
-                + String.valueOf(((double)endExplorerTime - startExplorerTime) / 1000) + " seconds.");
+        execTime = ((double)endExplorerTime - startExplorerTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("State space exploration took: " + String.valueOf(execTime) + " seconds.");
         long startPNPreparationTime = System.currentTimeMillis();
 
         // Transform the state space by creating a single (initial) source and a single (marked) sink location. Update
@@ -214,10 +253,12 @@ public class FullSynthesisApp {
                     + dfaMinimizationAppStream.toString());
         }
 
-        // End timer for preparation to Petri net synthesis, start timer for Petri net synthesis.
+        // End timer for preparation to Petri net synthesis, start timer for Petri net synthesis, and store the
+        // execution time.
         long endPNPreparationTime = System.currentTimeMillis();
-        System.out.println("Preparation for Petri net synthesis took: "
-                + String.valueOf(((double)endPNPreparationTime - startPNPreparationTime) / 1000) + " seconds.");
+        execTime = ((double)endPNPreparationTime - startPNPreparationTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Preparation for Petri net synthesis took: " + String.valueOf(execTime) + " seconds.");
         long startPNSynthesisTime = System.currentTimeMillis();
 
         // Translate the CIF state space to Petrify input.
@@ -265,10 +306,12 @@ public class FullSynthesisApp {
         nonAtomicPatternRewriter.findAndRewritePatterns(petriNet, synthesisUmlElementsTracker);
         PNMLUMLFileHelper.writePetriNet(petriNet, pnmlNonAtomicsReducedOutputPath.toString());
 
-        // End timer for Petri net synthesis, start timer for finalization of synthesized UML file.
+        // End timer for Petri net synthesis, start timer for finalization of synthesized UML file, and store the
+        // execution time.
         long endPNSynthesisTime = System.currentTimeMillis();
-        System.out.println("Petri net synthesis took: "
-                + String.valueOf(((double)endPNSynthesisTime - startPNSynthesisTime) / 1000) + " seconds.");
+        execTime = ((double)endPNSynthesisTime - startPNSynthesisTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Petri net synthesis took: " + String.valueOf(execTime) + " seconds.");
         long startFinalizeUMLTime = System.currentTimeMillis();
 
         // Translate PNML into UML activity. The translation translates every Petri Net transition to a UML opaque
@@ -305,10 +348,12 @@ public class FullSynthesisApp {
         PostProcessActivity.removeNodesEdgesNames(activity);
         FileHelper.storeModel(activity.getModel(), umlLabelsRemovedOutputPath.toString());
 
-        // End timer for finalization of synthesized UML file, start timer for guard computation UML to CIF translation.
+        // End timer for finalization of synthesized UML file, start timer for guard computation UML to CIF translation,
+        // and store the execution time.
         long endFinalizeUMLTime = System.currentTimeMillis();
-        System.out.println("Finalization of UML file took: "
-                + String.valueOf(((double)endFinalizeUMLTime - startFinalizeUMLTime) / 1000) + " seconds.");
+        execTime = ((double)endFinalizeUMLTime - startFinalizeUMLTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Finalization of UML file took: " + String.valueOf(execTime) + " seconds.");
         long startUmlToCifGuardComputationTime = System.currentTimeMillis();
 
         // Translating synthesized activity to CIF, for guard computation.
@@ -323,11 +368,12 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
-        // End timer for guard computation UML to CIF translation, start timer for actual guard computation.
+        // End timer for guard computation UML to CIF translation, start timer for actual guard computation, and store
+        // the execution time.
         long endUmlToCifGuardComputationTime = System.currentTimeMillis();
-        System.out.println("Guard computation UML to CIF translation took: "
-                + String.valueOf(((double)endUmlToCifGuardComputationTime - startUmlToCifGuardComputationTime) / 1000)
-                + " seconds.");
+        execTime = ((double)endUmlToCifGuardComputationTime - startUmlToCifGuardComputationTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Guard computation UML to CIF translation took: " + String.valueOf(execTime) + " seconds.");
         long startGuardComputationTime = System.currentTimeMillis();
 
         // Computing guards.
@@ -335,10 +381,11 @@ public class FullSynthesisApp {
         Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
-        // End timer for guard computation, start timer for language equivalence check.
+        // End timer for guard computation, start timer for language equivalence check, and store the execution time.
         long endGuardComputationTime = System.currentTimeMillis();
-        System.out.println("Actual guard computation took: "
-                + String.valueOf(((double)endGuardComputationTime - startGuardComputationTime) / 1000) + " seconds.");
+        execTime = ((double)endGuardComputationTime - startGuardComputationTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Actual guard computation took: " + String.valueOf(execTime) + " seconds.");
         long startLECTime = System.currentTimeMillis();
 
         // Check the activity for non-deterministic choices.
@@ -348,10 +395,14 @@ public class FullSynthesisApp {
         // translation to CIF of the final UML model. Throws a runtime error if models are non-equivalent.
         performLanguageEquivalenceCheck(filePrefix, outputFolderPath, umlToCifTranslator, synthesisUmlElementsTracker);
 
-        // End timer for language equivalence check.
+        // End timer for language equivalence check, and store the execution time.
         long endLECTime = System.currentTimeMillis();
-        System.out.println("Language equivalence check took: "
-                + String.valueOf(((double)endLECTime - startLECTime) / 1000) + " seconds.");
+        execTime = ((double)endLECTime - startLECTime) / 1000;
+        timeLog.add(String.valueOf(execTime));
+        System.out.println("Language equivalence check took: " + String.valueOf(execTime) + " seconds.");
+
+        // Join the times and the activity name, and return the string for later storage.
+        return String.join(", ", timeLog);
     }
 
     private static String getPreservedEvents(Specification spec,
