@@ -151,7 +151,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
             SynthesisChainTracking tracker)
     {
-        super((context), tracker, purpose);
+        super(context, tracker, purpose);
         this.activity = activity;
     }
 
@@ -279,6 +279,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // to be improved in the future.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
 
         // Flatten UML activities and normalize IDs.
