@@ -50,6 +50,9 @@ public class SynthesisChainTracking {
      */
     private final Map<OpaqueAction, Transition> actionToTransition = new LinkedHashMap<>();
 
+    /** The map from the finalized UML elements to the non-finalized opaque actions they originate from. */
+    private final Map<RedefinableElement, OpaqueAction> finalizedElementToAction = new LinkedHashMap<>();
+
     public static enum ActionKind {
         START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, CONTROL_NODE;
     }
@@ -811,5 +814,19 @@ public class SynthesisChainTracking {
 
         // Remove the corresponding CIF events.
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with finalized UML elements.
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
+        // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
+        Verify.verify(!finalizedElementToAction.keySet().contains(finalizedElement),
+                String.format("Element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
+        Verify.verify(!finalizedElementToAction.values().contains(action),
+                String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
+
+        finalizedElementToAction.put(finalizedElement, action);
     }
 }
