@@ -29,7 +29,9 @@ public class CIFDataSynthesisHelper {
     public static CifDataSynthesisSettings getSynthesisSettings() {
         CifDataSynthesisSettings settings = new CifDataSynthesisSettings();
         settings.setDoForwardReach(true);
-        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
+//        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL);
+        // Default in ESCET
+        settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.NONBLOCK_CTRL_REACH);
         settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class));
         return settings;
     }
