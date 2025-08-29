@@ -787,6 +787,40 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
+     */
+    public boolean isStartOnlyAction(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        return transitionInfo.isStartOnlyTransition();
+    }
+
+    /**
+     * Return {@code true} if the Petri net transition related to the opaque action is a complete transition.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
+     */
+    public boolean isCompleteAction(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        return transitionInfo.isCompleteTransition();
+    }
+
+    /**
      * Remove the internal actions created for petrification in the internal mappings. Specifically targeted at the
      * single source and single sink "__start" and "__end" events.
      */
@@ -823,5 +857,59 @@ public class SynthesisChainTracking {
                 String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
 
         finalizedElementToAction.put(finalizedElement, action);
+    }
+
+    /**
+     * Return the UML element originally related to the finalized UML element, or {@code null} if no such element
+     * exists.
+     *
+     * @param finalizedUmlElement The finalized UML element.
+     * @return The related UML element, or {@code null}.
+     */
+    public RedefinableElement getUmlElement(RedefinableElement finalizedUmlElement) {
+        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
+        return (action == null) ? null : getUmlElement(action);
+    }
+
+    /**
+     * Return {@code true} if the opaque action related to the finalized UML element is a start-only action.
+     *
+     * @param finalizedUmlElement The finalized UML element.
+     * @return {@code true} if the finalized UML element is related to a start-only action, {@code false} otherwise.
+     */
+    public boolean isStartOnlyElement(RedefinableElement finalizedUmlElement) {
+        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
+        Verify.verifyNotNull(action,
+                String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
+                        finalizedUmlElement.getName()));
+        return isStartOnlyAction(action);
+    }
+
+    /**
+     * Return {@code true} if the opaque action related to the finalized UML element is a complete action.
+     *
+     * @param finalizedUmlElement The finalized UML element.
+     * @return {@code true} if the finalized UML element is related to a complete action, {@code false} otherwise.
+     */
+    public boolean isCompleteElement(RedefinableElement finalizedUmlElement) {
+        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
+        Verify.verifyNotNull(action,
+                String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
+                        finalizedUmlElement.getName()));
+        return isCompleteAction(action);
+    }
+
+    /**
+     * Return {@code true} if the opaque action related to the finalized UML element is a start action.
+     *
+     * @param finalizedUmlElement The finalized UML element.
+     * @return {@code true} if the finalized UML element is related to a start action, {@code false} otherwise.
+     */
+    public boolean isStartElement(RedefinableElement finalizedUmlElement) {
+        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
+        Verify.verifyNotNull(action,
+                String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
+                        finalizedUmlElement.getName()));
+        return isStartOnlyAction(action) || isCompleteAction(action);
     }
 }
