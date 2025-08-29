@@ -166,7 +166,8 @@ public class SynthesisChainTracking {
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
                         (isOriginalStartOnlyElement(e.getValue().getUmlElement())
-                                || isOriginalCompleteElement(e.getValue().getUmlElement()) && e.getValue().isStartEvent()))
+                                || isOriginalCompleteElement(e.getValue().getUmlElement())
+                                        && e.getValue().isStartEvent()))
                 .map(Map.Entry::getKey).toList();
 
         return filteredEvents;
