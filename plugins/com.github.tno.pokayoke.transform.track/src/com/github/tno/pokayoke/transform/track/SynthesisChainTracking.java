@@ -998,10 +998,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the opaque action related to the finalized UML element is a start-only action.
+     * Return {@code true} if the finalized UML element is related to a start-only original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
-     * @return {@code true} if the finalized UML element is related to a start-only action, {@code false} otherwise.
+     * @return {@code true} if the finalized UML element is related to a start-only original CIF event, {@code false}
+     *     otherwise.
      */
     public boolean isStartOnlyElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
@@ -1012,10 +1013,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the opaque action related to the finalized UML element is an end-only action.
+     * Return {@code true} if the finalized UML element is related to an end-only original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
-     * @return {@code true} if the finalized UML element is related to an end-only action, {@code false} otherwise.
+     * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
+     *     otherwise.
      */
     public boolean isEndOnlyElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
@@ -1026,10 +1028,12 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the opaque action related to the finalized UML element is a complete action.
+     * Return {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
+     * event.
      *
      * @param finalizedUmlElement The finalized UML element.
-     * @return {@code true} if the finalized UML element is related to a complete action, {@code false} otherwise.
+     * @return {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
+     *     event, {@code false} otherwise.
      */
     public boolean isCompleteElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
@@ -1040,10 +1044,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the opaque action related to the finalized UML element is a start action.
+     * Return {@code true} if the finalized UML element is related to a start original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
-     * @return {@code true} if the finalized UML element is related to a start action, {@code false} otherwise.
+     * @return {@code true} if the finalized UML element is related to a start original CIF event, {@code false}
+     *     otherwise.
      */
     public boolean isStartElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
