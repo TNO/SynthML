@@ -160,9 +160,9 @@ public class SynthesisChainTracking {
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
                         // Avoid null UML elements, e.g. for events related to control nodes.
-                        && getUmlElement(e.getValue().getUmlElement()) != null
+                        && getOriginalUmlElement(e.getValue().getUmlElement()) != null
                         // Same original UML element.
-                        && getUmlElement(e.getValue().getUmlElement()).equals(originalUmlElement) &&
+                        && getOriginalUmlElement(e.getValue().getUmlElement()).equals(originalUmlElement) &&
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
                         (isStartOnlyElement(e.getValue().getUmlElement())
@@ -898,7 +898,7 @@ public class SynthesisChainTracking {
      * @param finalizedUmlElement The finalized UML element.
      * @return The related UML element, or {@code null}.
      */
-    public RedefinableElement getUmlElement(RedefinableElement finalizedUmlElement) {
+    public RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         return (action == null) ? null : getUmlElement(action);
     }
