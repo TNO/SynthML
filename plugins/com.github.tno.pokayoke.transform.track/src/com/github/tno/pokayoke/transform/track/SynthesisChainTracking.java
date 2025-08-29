@@ -180,7 +180,7 @@ public class SynthesisChainTracking {
      * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements (or
      *     {@code null}) and effect indexes.
      */
-    public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
+    private Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
         return cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
                         && e.getValue().isEndEvent())
@@ -194,7 +194,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The map from CIF start events to their corresponding CIF end events.
      */
-    public Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
+    private Map<Event, List<Event>> getStartEndEventMap(UmlToCifTranslationPurpose purpose) {
         Map<Event, List<Event>> result = new LinkedHashMap<>();
 
         // Get the map of all start events.
@@ -294,7 +294,7 @@ public class SynthesisChainTracking {
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
      */
-    public boolean isAtomicNonDeterministicStartEventName(String eventName) {
+    private boolean isAtomicNonDeterministicStartEventName(String eventName) {
         // Find the unique CIF event with the input name.
         List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
         Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
@@ -487,7 +487,7 @@ public class SynthesisChainTracking {
          * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
          * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
          */
-        public EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
+        private EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
                 boolean isStartEvent, boolean isEndEvent)
         {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
@@ -508,7 +508,7 @@ public class SynthesisChainTracking {
          *
          * @return The translation purpose.
          */
-        public UmlToCifTranslationPurpose getTranslationPurpose() {
+        private UmlToCifTranslationPurpose getTranslationPurpose() {
             return purpose;
         }
 
@@ -517,7 +517,7 @@ public class SynthesisChainTracking {
          *
          * @return The related UML element, or {@code null}.
          */
-        public RedefinableElement getUmlElement() {
+        private RedefinableElement getUmlElement() {
             return umlElement;
         }
 
@@ -527,7 +527,7 @@ public class SynthesisChainTracking {
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
-        public Integer getEffectIdx() {
+        private Integer getEffectIdx() {
             return effectIdx;
         }
 
@@ -545,7 +545,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the event represents an end event, {@code false} otherwise.
          */
-        public boolean isEndEvent() {
+        private boolean isEndEvent() {
             return isEndEvent;
         }
 
@@ -555,7 +555,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the CIF event is both a start and an end event, {@code false} otherwise.
          */
-        public boolean isCompleteEvent() {
+        private boolean isCompleteEvent() {
             return isStartEvent() && isEndEvent();
         }
 
@@ -565,7 +565,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the CIF event is a start-only event, {@code false} otherwise.
          */
-        public boolean isStartOnlyEvent() {
+        private boolean isStartOnlyEvent() {
             return isStartEvent() && !isEndEvent();
         }
 
@@ -575,7 +575,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the CIF event is a end-only event, {@code false} otherwise.
          */
-        public boolean isEndOnlyEvent() {
+        private boolean isEndOnlyEvent() {
             return !isStartEvent() && isEndEvent();
         }
     }
@@ -657,7 +657,7 @@ public class SynthesisChainTracking {
          *
          * @param cifEvents The set of CIF events for the tracing info.
          */
-        public TransitionTraceInfo(Set<Event> cifEvents) {
+        private TransitionTraceInfo(Set<Event> cifEvents) {
             Verify.verifyNotNull(cifEvents, "CIF event set cannot be null.");
             Verify.verify(cifEvents.size() > 0, "CIF event set cannot be empty.");
             Verify.verify(cifEventTraceInfo.keySet().containsAll(cifEvents),
@@ -717,7 +717,7 @@ public class SynthesisChainTracking {
          *
          * @return The CIF events.
          */
-        public Set<Event> getCifEvents() {
+        private Set<Event> getCifEvents() {
             return Collections.unmodifiableSet(cifEvents);
         }
 
@@ -726,7 +726,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the transition is merged, {@code false} otherwise.
          */
-        public boolean isMergedTransition() {
+        private boolean isMergedTransition() {
             // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
             return cifEvents.size() > 1;
         }
@@ -738,7 +738,7 @@ public class SynthesisChainTracking {
          * @return {@code true} if the transition is merged or is related to a start and end CIF event, {@code false}
          *     otherwise.
          */
-        public boolean isCompleteTransition() {
+        private boolean isCompleteTransition() {
             // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
             Event cifEvent = cifEvents.iterator().next();
             EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
@@ -751,7 +751,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the transition is start-only, {@code false} otherwise.
          */
-        public boolean isStartOnlyTransition() {
+        private boolean isStartOnlyTransition() {
             if (isMergedTransition()) {
                 return false;
             }
@@ -768,7 +768,7 @@ public class SynthesisChainTracking {
          *
          * @return {@code true} if the transition is end-only, {@code false} otherwise.
          */
-        public boolean isEndOnlyTransition() {
+        private boolean isEndOnlyTransition() {
             if (isMergedTransition()) {
                 return false;
             }
@@ -784,7 +784,7 @@ public class SynthesisChainTracking {
          *
          * @return The related UML element, or {@code null}.
          */
-        public RedefinableElement getUmlElement() {
+        private RedefinableElement getUmlElement() {
             // If the transition is not merged, it has a single CIF event, and we can query the UML element related to
             // it. If the transition is merged, all CIF events are related to the same UML element, so we can query the
             // first one.
@@ -800,7 +800,7 @@ public class SynthesisChainTracking {
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
-        public int getEffectIdx() {
+        private int getEffectIdx() {
             // Sanity check: the transition should be related to a end-only CIF event.
             Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
 
@@ -902,7 +902,7 @@ public class SynthesisChainTracking {
      * @param action The opaque action.
      * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
      */
-    public boolean isStartOnlyAction(OpaqueAction action) {
+    private boolean isStartOnlyAction(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
@@ -919,7 +919,7 @@ public class SynthesisChainTracking {
      * @param action The opaque action.
      * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
      */
-    public boolean isEndOnlyAction(OpaqueAction action) {
+    private boolean isEndOnlyAction(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
@@ -936,7 +936,7 @@ public class SynthesisChainTracking {
      * @param action The opaque action.
      * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
      */
-    public boolean isCompleteAction(OpaqueAction action) {
+    private boolean isCompleteAction(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
@@ -993,7 +993,7 @@ public class SynthesisChainTracking {
      * @param finalizedUmlElement The finalized UML element.
      * @return The related UML element, or {@code null}.
      */
-    public RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
+    private RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         return (action == null) ? null : getUmlElement(action);
     }
@@ -1005,7 +1005,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a start-only original CIF event, {@code false}
      *     otherwise.
      */
-    public boolean isOriginalStartOnlyElement(RedefinableElement finalizedUmlElement) {
+    private boolean isOriginalStartOnlyElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
@@ -1020,7 +1020,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
      *     otherwise.
      */
-    public boolean isOriginalEndOnlyElement(RedefinableElement finalizedUmlElement) {
+    private boolean isOriginalEndOnlyElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
@@ -1036,7 +1036,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
      *     event, {@code false} otherwise.
      */
-    public boolean isOriginalCompleteElement(RedefinableElement finalizedUmlElement) {
+    private boolean isOriginalCompleteElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
@@ -1051,7 +1051,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a start original CIF event, {@code false}
      *     otherwise.
      */
-    public boolean isOriginalStartElement(RedefinableElement finalizedUmlElement) {
+    private boolean isOriginalStartElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
