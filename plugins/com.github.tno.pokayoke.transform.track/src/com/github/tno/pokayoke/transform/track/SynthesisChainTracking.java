@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.common.java.Pair;
 import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
@@ -174,21 +173,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the map from CIF end events to the corresponding UML elements (or {@code null}) and effect indexes. Only
-     * supported for the initial data-based synthesis phase.
-     *
-     * @return The map from CIF end events generated for the initial synthesis to their corresponding UML elements (or
-     *     {@code null}) and effect indexes.
-     */
-    private Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && e.getValue().isEndEvent())
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        e -> new Pair<>(e.getValue().getUmlElement(), e.getValue().getEffectIdx())));
-    }
-
-    /**
      * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
      *
      * @param purpose The translation purpose.
@@ -286,22 +270,6 @@ public class SynthesisChainTracking {
 
         // If the element does not have the Poka Yoke profile applied nor is a call behavior, it is deterministic.
         return true;
-    }
-
-    /**
-     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
-     *
-     * @param eventName The name of the CIF event.
-     * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
-     */
-    private boolean isAtomicNonDeterministicStartEventName(String eventName) {
-        // Find the unique CIF event with the input name.
-        List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
-        Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
-
-        EventTraceInfo eventInfo = getEventTraceInfo(cifEvents.get(0));
-        return isAtomicAction(eventInfo.getUmlElement()) && !(isDeterministicAction(eventInfo.getUmlElement()))
-                && eventInfo.isStartEvent();
     }
 
     /**
@@ -1042,20 +1010,5 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
                         finalizedUmlElement.getName()));
         return isCompleteAction(action);
-    }
-
-    /**
-     * Return {@code true} if the finalized UML element is related to a start original CIF event.
-     *
-     * @param finalizedUmlElement The finalized UML element.
-     * @return {@code true} if the finalized UML element is related to a start original CIF event, {@code false}
-     *     otherwise.
-     */
-    private boolean isOriginalStartElement(RedefinableElement finalizedUmlElement) {
-        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
-        Verify.verifyNotNull(action,
-                String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
-                        finalizedUmlElement.getName()));
-        return isStartOnlyAction(action) || isCompleteAction(action);
     }
 }
