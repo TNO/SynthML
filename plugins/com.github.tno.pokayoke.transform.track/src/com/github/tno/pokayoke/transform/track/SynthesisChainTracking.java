@@ -141,6 +141,38 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Gives the list of CIF start events corresponding to the given UML element, considered as the original UML
+     * element, for the specified translation purpose.
+     *
+     * @param originalUmlElement The non-{@code null} UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF start events corresponding to the given UML element.
+     */
+    public List<Event> getOriginalStartEventsOf(RedefinableElement originalUmlElement,
+            UmlToCifTranslationPurpose purpose)
+    {
+        // Sanity check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // Get the list of CIf events whose translation purpose is the input one, whose original UML element is equal to
+        // the input one and is related to a start event.
+        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                        // Avoid null UML elements, e.g. for events related to control nodes.
+                        && getUmlElement(e.getValue().getUmlElement()) != null
+                        // Same original UML element.
+                        && getUmlElement(e.getValue().getUmlElement()).equals(originalUmlElement) &&
+                        // Either the original CIF event is start-only, or, if the transition is part of a merged
+                        // pattern, check that the current CIF event is a start event.
+                        (isStartOnlyElement(e.getValue().getUmlElement())
+                                || isCompleteElement(e.getValue().getUmlElement()) && e.getValue().isStartEvent()))
+                .map(Map.Entry::getKey).toList();
+
+        return filteredEvents;
+    }
+
+    /**
      * Returns the map from CIF end events to the corresponding UML elements (or {@code null}) and effect indexes. Only
      * supported for the initial data-based synthesis phase.
      *
