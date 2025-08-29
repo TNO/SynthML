@@ -1050,7 +1050,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a start original CIF event, {@code false}
      *     otherwise.
      */
-    public boolean isStartElement(RedefinableElement finalizedUmlElement) {
+    public boolean isOriginalStartElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
