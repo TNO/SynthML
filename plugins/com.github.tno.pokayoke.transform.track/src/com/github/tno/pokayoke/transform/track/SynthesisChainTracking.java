@@ -431,6 +431,31 @@ public class SynthesisChainTracking {
                         || (isCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
+    /**
+     * Return {@code true} if the CIF event corresponds to an end-only event in the original UML model. If the related
+     * pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for guard
+     * computation and language equivalence.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to an original end-only event.
+     */
+    public boolean isOriginalEndOnly(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Sanity check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // CIF events in relation to the original UML elements. Check if the event is start-only for the
+        // original UML element, or if the event is merged, check that it is the start of the finalized
+        // event tracing info.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        return isEndOnlyElement(finalizedUmlElement)
+                || (isCompleteElement(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
+    }
+
     /** Tracing information related to a CIF event. */
     public class EventTraceInfo {
         /** The translation purpose of the CIF event. */
@@ -888,6 +913,23 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Return {@code true} if the Petri net transition related to the opaque action is an end-only transition.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
+     */
+    public boolean isEndOnlyAction(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        return transitionInfo.isEndOnlyTransition();
+    }
+
+    /**
      * Return {@code true} if the Petri net transition related to the opaque action is a complete transition.
      *
      * @param action The opaque action.
@@ -967,6 +1009,20 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
                         finalizedUmlElement.getName()));
         return isStartOnlyAction(action);
+    }
+
+    /**
+     * Return {@code true} if the opaque action related to the finalized UML element is an end-only action.
+     *
+     * @param finalizedUmlElement The finalized UML element.
+     * @return {@code true} if the finalized UML element is related to an end-only action, {@code false} otherwise.
+     */
+    public boolean isEndOnlyElement(RedefinableElement finalizedUmlElement) {
+        OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
+        Verify.verifyNotNull(action,
+                String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
+                        finalizedUmlElement.getName()));
+        return isEndOnlyAction(action);
     }
 
     /**
