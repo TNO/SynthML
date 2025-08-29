@@ -1607,17 +1607,9 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
-                        if (startEventMap.containsKey(cifEvent)) {
-                            // End of a non-deterministic opaque behavior that couldn't be merged back to a call
-                            // behavior to the original opaque behavior, but instead is left as an opaque action.
-                            RedefinableElement umlElem = startEventMap.get(cifEvent);
-                            Verify.verify(umlElem instanceof OpaqueAction, cifEvent.getName());
-                            Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
-                        } else {
-                            // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            Verify.verify(synthesisTracker.getEventTraceInfo(cifEvent).isEndOnlyEvent(),
-                                    "Event '" + cifEvent.getName() + "' is not an end-only event.");
-                        }
+                        Verify.verify(synthesisTracker.isOriginalEndOnly(cifEvent, translationPurpose),
+                                "Event '" + cifEvent.getName() + "' is not an end-only event.");
+
                         yield PostConditionKind.WITH_STRUCTURE;
                     }
                 }
