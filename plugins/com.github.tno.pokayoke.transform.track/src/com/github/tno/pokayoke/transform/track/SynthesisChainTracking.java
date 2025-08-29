@@ -379,6 +379,58 @@ public class SynthesisChainTracking {
         }
     }
 
+    /**
+     * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque behavior. If the
+     * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
+     * guard computation and language equivalence.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of an opaque behavior.
+     */
+    public boolean isOriginalStartOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Sanity check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // CIF events in relation to the original UML elements. Check if the event is start-only for the
+        // original UML element, or if the event is merged, check that it is the start of the finalized
+        // event tracing info.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
+                && (isStartOnlyElement(finalizedUmlElement)
+                        || (isCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+    }
+
+    /**
+     * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque action. If the
+     * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
+     * guard computation and language equivalence.
+     *
+     * @param cifEvent The CIF event.
+     * @param purpose The translation purpose.
+     * @return {@code true} if the CIF event corresponds to the start of an opaque action.
+     */
+    public boolean isOriginalStartOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+        // Sanity check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+
+        // CIF events in relation to the original UML elements. Check if the event is start-only for the
+        // original UML element, or if the event is merged, check that it is the start of the finalized
+        // event tracing info.
+        EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(finalizedEventInfo, String.format(
+                "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
+                && (isStartOnlyElement(finalizedUmlElement)
+                        || (isCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+    }
+
     /** Tracing information related to a CIF event. */
     public class EventTraceInfo {
         /** The translation purpose of the CIF event. */
