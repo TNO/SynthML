@@ -515,7 +515,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         Event cifStartEvent = CifConstructors.newEvent();
         cifStartEvent.setControllable(controllableStartEvent);
         cifStartEvent.setName(name);
-        startEventMap.put(cifStartEvent, umlElement);
 
         // Add the start event to the normalized name to event map.
         if (umlElement instanceof CallBehaviorAction || umlElement instanceof OpaqueAction

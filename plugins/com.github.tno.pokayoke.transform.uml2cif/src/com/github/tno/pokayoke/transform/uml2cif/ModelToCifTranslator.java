@@ -2,9 +2,7 @@
 package com.github.tno.pokayoke.transform.uml2cif;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.escet.cif.common.CifValueUtils;
 import org.eclipse.escet.cif.metamodel.cif.InvKind;
@@ -52,9 +50,6 @@ public abstract class ModelToCifTranslator {
 
     /** The mapping from UML properties to corresponding translated CIF discrete variables. */
     protected final BiMap<Property, DiscVariable> variableMap = HashBiMap.create();
-
-    /** The mapping from translated CIF start events to their corresponding UML elements for which they were created. */
-    protected final Map<Event, RedefinableElement> startEventMap = new LinkedHashMap<>();
 
     /** The context for querying the input UML model. */
     protected final CifContext context;
