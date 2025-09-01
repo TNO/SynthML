@@ -36,7 +36,7 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.collect.Sets;
 
 /** Symbol table of the UML model, with all its declared and referenceable named elements. */
-public class CifContext {
+public class CifGlobalContext {
     /**
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
@@ -116,7 +116,7 @@ public class CifContext {
                 .asType(NamedElement.class);
     }
 
-    CifContext(Element element, CifScope scope) {
+    CifGlobalContext(Element element, CifScope scope) {
         this.model = element.getModel();
 
         // Collect declared elements as set.

@@ -17,7 +17,7 @@ import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 
 /** Symbol table of a scope, containing the named elements only available within this scope. */
-public class CifScope {
+public class CifScopedContext {
     /**
      * Contains all declared named elements defined within the scope that are supported by our subset of UML. Note that
      * properties that are declared in composite data types may be referenced in different ways when they are
@@ -25,11 +25,11 @@ public class CifScope {
      */
     private final Set<NamedTemplateParameter> declaredElements;
 
-    public CifScope(Element element) {
+    public CifScopedContext(Element element) {
         declaredElements = getDeclaredTemplateParameters(element);
     }
 
-    private CifScope() {
+    private CifScopedContext() {
         declaredElements = Collections.EMPTY_SET;
     }
 
