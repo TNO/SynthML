@@ -2,6 +2,7 @@
 package com.github.tno.pokayoke.transform.petrify2uml;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -39,11 +40,11 @@ public class PostProcessActivity {
      * Remove the internal actions that were added in CIF specification and petrification.
      *
      * @param activity The activity in which actions to be removed.
-     * @param tracker The synthesis chain tracker.
+     * @param actionsToRemove The opaque actions to remove.
      */
-    public static void removeInternalActions(Activity activity, SynthesisChainTracking tracker) {
+    public static void removeInternalActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
         // Remove all internal opaque actions.
-        for (OpaqueAction internalAction: tracker.getInternalActions()) {
+        for (OpaqueAction internalAction: actionsToRemove) {
             removeOpaqueActions(internalAction, activity);
         }
     }
@@ -152,6 +153,8 @@ public class PostProcessActivity {
                         callAction.setName(action.getName());
 
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                        Verify.verify(action.getIncomings().size() == 1 && action.getOutgoings().size() == 1,
+                                "Opaque actions must have a single incoming and outgoing edge.");
                         action.getIncomings().get(0).setTarget(callAction);
                         action.getOutgoings().get(0).setSource(callAction);
                         action.destroy();
