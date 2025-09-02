@@ -92,7 +92,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the event tracing info related to the input CIF event.
+     * Returns the event tracing info related to the input CIF event.
      *
      * @param cifEvent The CIF event.
      * @return The CIF event tracing info.
@@ -258,7 +258,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     * Returns {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
@@ -274,7 +274,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     * Returns {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
@@ -370,7 +370,7 @@ public class SynthesisChainTracking {
         private final boolean isEndEvent;
 
         /**
-         * Constructor of a CIF event tracing info.
+         * Constructs a new {@link EventTraceInfo}.
          *
          * @param purpose The translation purpose.
          * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
@@ -398,7 +398,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the translation purpose of the CIF event.
+         * Returns the translation purpose of the CIF event.
          *
          * @return The translation purpose.
          */
@@ -407,7 +407,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the UML element that relates to the CIF event, or {@code null} if no such element exists.
+         * Returns the UML element that relates to the CIF event, or {@code null} if no such element exists.
          *
          * @return The related UML element, or {@code null}.
          */
@@ -416,8 +416,8 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the effect index of the related UML element. It is {@code null} for events that are both start and end
-         * events, as well as for start-only events. End-only events must have a non-negative integer effect index.
+         * Returns the effect index of the related UML element. It is {@code null} for events that are both start and
+         * end events, as well as for start-only events. End-only events must have a non-negative integer effect index.
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
@@ -435,7 +435,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return {@code true} if the event represents an end event, {@code false} otherwise.
+         * Returns {@code true} if the event represents an end event, {@code false} otherwise.
          *
          * @return {@code true} if the event represents an end event, {@code false} otherwise.
          */
@@ -605,7 +605,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the set of CIF events linked to the transition.
+         * Returns the set of CIF events linked to the transition.
          *
          * @return The CIF events.
          */
@@ -672,7 +672,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the UML element originally related to the transition, or {@code null} if no such element exists.
+         * Returns the UML element originally related to the transition, or {@code null} if no such element exists.
          *
          * @return The related UML element, or {@code null}.
          */
@@ -686,11 +686,10 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the effect index of the UML element originally related to the transition. It is {@code null} for
-         * events that are both start and end events, as well as for start-only events. End-only events must have a
-         * non-negative integer effect index.
+         * Returns the effect index of the UML element originally related to the transition, if it is end-only. End-only
+         * events must have a non-negative integer effect index.
          *
-         * @return The effect index of the related UML element, or {@code null}.
+         * @return The effect index of the related UML element.
          */
         public int getEffectIdx() {
             // Sanity check: the transition should be related to a end-only CIF event.
@@ -753,7 +752,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     * Returns the UML element originally related to the opaque action, or {@code null} if no such element exists.
      *
      * @param action The opaque action.
      * @return The related UML element, or {@code null}.
@@ -770,9 +769,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the effect index of the UML element originally related to the opaque action. It is {@code null} for events
-     * that are both start and end events, as well as for start-only events. End-only events must have a non-negative
-     * integer effect index.
+     * Returns the effect index of the UML element originally related to the opaque action. It is {@code null} for
+     * events that are both start and end events, as well as for start-only events. End-only events must have a
+     * non-negative integer effect index.
      *
      * @param action The opaque action.
      * @return The effect index of the related UML element, or {@code null}.
@@ -789,7 +788,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
      *
      * @param action The opaque action.
      * @return {@code true} if the action is internal, {@code false} otherwise.
