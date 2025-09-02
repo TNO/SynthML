@@ -796,4 +796,14 @@ public class SynthesisChainTracking {
         // Internal actions (e.g. control nodes) do not have any UML element to refer to.
         return getUmlElement(action) == null;
     }
+
+    /**
+     * Returns the set of internal actions.
+     *
+     * @return The set of internal actions.
+     */
+    public Set<OpaqueAction> getInternalActions() {
+        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 }
