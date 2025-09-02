@@ -953,12 +953,13 @@ public class SynthesisChainTracking {
 
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
-        Verify.verify(!finalizedElementToAction.keySet().contains(finalizedElement),
+        Verify.verify(!finalizedElementToAction.containsKey(finalizedElement),
                 String.format("Element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
         Verify.verify(!finalizedElementToAction.values().contains(action),
                 String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
 
-        finalizedElementToAction.put(finalizedElement, action);
+        Verify.verify(finalizedElementToAction.put(finalizedElement, action) == null,
+                String.format("Element '%s' is already contained in the tracking map.", finalizedElement.getName()));
     }
 
     /**
