@@ -39,7 +39,7 @@ public class PostProcessActivity {
     /**
      * Remove the internal actions that were added in CIF specification and petrification.
      *
-     * @param activity The activity in which actions to be removed.
+     * @param activity The activity from which to remove the actions.
      * @param actionsToRemove The opaque actions to remove.
      */
     public static void removeInternalActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
@@ -64,7 +64,7 @@ public class PostProcessActivity {
 
         List<ActivityEdge> outgoingEdges = action.getOutgoings();
         Preconditions.checkArgument(outgoingEdges.size() == 1,
-                "Expected that an opaque action has exactly one ougoing edge.");
+                "Expected that an opaque action has exactly one outgoing edge.");
         ActivityEdge outgoingEdge = outgoingEdges.get(0);
 
         Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
