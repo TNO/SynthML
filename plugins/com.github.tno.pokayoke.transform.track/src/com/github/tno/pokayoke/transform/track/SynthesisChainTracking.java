@@ -388,7 +388,7 @@ public class SynthesisChainTracking {
                             + "End-only events must have integer effect index.");
             Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
             Verify.verify(effectIdx == null || umlElement != null,
-                    "UML element cannot be 'null' if effect index is not 'null'.");
+                    "UML element must be non-'null' if effect index is non-'null'.");
 
             this.purpose = purpose;
             this.umlElement = umlElement;
@@ -416,8 +416,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Returns the effect index of the related UML element. It is {@code null} for events that are both start and
-         * end events, as well as for start-only events. End-only events must have a non-negative integer effect index.
+         * Returns the effect index of the UML element originally related to the transition. This transition must be an end-only transition, which then always has a non-negative integer effect index.
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
