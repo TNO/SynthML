@@ -154,6 +154,13 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
+        // Check that the input original UML element is indeed an original UML element.
+        Set<RedefinableElement> originalUmlElements = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
+                .map(e -> e.getValue().getUmlElement()).collect(Collectors.toSet());
+        Verify.verify(originalUmlElements.contains(originalUmlElement),
+                "The input UML element is not an original UML element.");
+
         // Get the list of CIf events whose translation purpose is the input one, whose original UML element is equal to
         // the input one and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
