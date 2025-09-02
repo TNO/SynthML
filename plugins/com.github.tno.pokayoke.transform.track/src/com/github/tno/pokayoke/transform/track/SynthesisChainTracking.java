@@ -785,4 +785,9 @@ public class SynthesisChainTracking {
 
         return transitionInfo.getEffectIdx();
     }
+
+    public boolean isInternalAction(OpaqueAction action) {
+        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+        return getUmlElement(action) == null;
+    }
 }
