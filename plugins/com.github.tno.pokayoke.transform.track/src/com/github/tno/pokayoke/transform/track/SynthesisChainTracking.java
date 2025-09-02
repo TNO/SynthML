@@ -786,6 +786,12 @@ public class SynthesisChainTracking {
         return transitionInfo.getEffectIdx();
     }
 
+    /**
+     * Return {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is internal, {@code false} otherwise.
+     */
     public boolean isInternalAction(OpaqueAction action) {
         // Internal actions (e.g. control nodes) do not have any UML element to refer to.
         return getUmlElement(action) == null;
