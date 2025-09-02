@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,11 +17,16 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.bdd.conversion.BddToCif;
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
+import org.eclipse.escet.cif.bdd.settings.CifBddFree;
 import org.eclipse.escet.cif.bdd.spec.CifBddEdge;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
+import org.eclipse.escet.cif.bdd.utils.BddUtils;
 import org.eclipse.escet.cif.common.CifTextUtils;
+import org.eclipse.escet.cif.datasynth.CifDataSynthesis;
+import org.eclipse.escet.cif.datasynth.CifDataSynthesisResult;
+import org.eclipse.escet.cif.datasynth.CifDataSynthesisTiming;
 import org.eclipse.escet.cif.datasynth.settings.BddSimplify;
+import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisFree;
 import org.eclipse.escet.cif.datasynth.settings.CifDataSynthesisSettings;
 import org.eclipse.escet.cif.datasynth.settings.FixedPointComputationsOrder;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
@@ -30,6 +36,7 @@ import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 import org.eclipse.escet.common.java.Lists;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.escet.common.java.Termination;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityNode;
@@ -66,7 +73,7 @@ public class GuardComputation {
         this.translator = translator;
     }
 
-    public void computeGuards(Specification specification) {
+    public void computeGuards(Specification specification, Path specPath) {
         // Obtain the mapping from UML (activity) elements to all the CIF start events created for them. Note that we
         // can have multiple of them in case we have 'or'-type nodes with multiple incoming and/or outgoing control
         // flows.
@@ -91,10 +98,24 @@ public class GuardComputation {
         settings.setFixedPointComputationsOrder(FixedPointComputationsOrder.REACH_NONBLOCK_CTRL); // Best performance.
         settings.setBddSimplifications(EnumSet.noneOf(BddSimplify.class)); // We do custom context-aware simplification.
 
+        // Configure to not free certain BDDs, as we still need them after synthesis.
+        Set<CifBddFree> cifBddFrees = EnumSet.allOf(CifBddFree.class);
+        cifBddFrees.remove(CifBddFree.EDGE_UPDATE_GUARD);
+        cifBddFrees.remove(CifBddFree.EDGE_UPDATE_GUARD_SUPPORT);
+        settings.setCifBddFrees(cifBddFrees);
+
+        Set<CifDataSynthesisFree> synthesisFrees = EnumSet.allOf(CifDataSynthesisFree.class);
+        synthesisFrees.remove(CifDataSynthesisFree.SPEC_INITIAL_PLANT_INV);
+        synthesisFrees.remove(CifDataSynthesisFree.RESULT_CTRL_BEH);
+        synthesisFrees.remove(CifDataSynthesisFree.SPEC_MARKED);
+        synthesisFrees.remove(CifDataSynthesisFree.EDGE_GUARD);
+        settings.setSynthesisFrees(synthesisFrees);
+
         // Convert the CIF specification to a CIF/BDD specification.
-        CifToBddConverter.preprocess(specification, settings.getWarnOutput(), settings.getDoPlantsRefReqsWarn());
-        BDDFactory factory = CifToBddConverter.createFactory(settings, new ArrayList<>(), new ArrayList<>());
         CifToBddConverter converter = new CifToBddConverter("Guard computation");
+        converter.preprocess(specification, specPath.toAbsolutePath().toString(), settings.getWarnOutput(),
+                settings.getDoPlantsRefReqsWarn(), Termination.NEVER);
+        BDDFactory factory = CifToBddConverter.createFactory(settings, new ArrayList<>(), new ArrayList<>());
         CifBddSpec cifBddSpec = converter.convert(specification, settings, factory);
 
         // Helper function for obtaining the corresponding single CIF/BDD edge of a CIF event.
@@ -106,7 +127,9 @@ public class GuardComputation {
         };
 
         // Find all controlled system states.
-        BDD controlledStates = GuardComputationHelper.computeControlledBehavior(cifBddSpec);
+        CifDataSynthesisResult synthResult = CifDataSynthesis.synthesize(cifBddSpec, settings,
+                new CifDataSynthesisTiming());
+        BDD controlledStates = synthResult.ctrlBeh;
 
         // Obtain the set of all internal BDD variables.
         BDDVarSet internalVars = getInternalBDDVars(cifBddSpec);
@@ -175,6 +198,15 @@ public class GuardComputation {
                 throw new RuntimeException("Unknown activity node: " + node);
             }
         }
+
+        // Cleanup all BDDs that haven't yet been freed.
+        BddUtils.free(cifBddSpec.initialPlantInv);
+        BddUtils.free(cifBddSpec.marked);
+        BddUtils.free(synthResult.ctrlBeh);
+
+        for (CifBddEdge edge: cifBddSpec.edges) {
+            edge.freeBDDs();
+        }
     }
 
     /**
@@ -193,11 +225,11 @@ public class GuardComputation {
         // length of the execution trace. We thus stay within the controlled system behavior.
 
         // Now, for the computation of the guard of 'edge'. Let us consider all controlled system states where the
-        // uncontrolled system guard of 'edge' holds. Of these system states, we must only keep the ones from which the
-        // application of 'edge' ends up in a controlled system state. We can compute the guard of 'edge' as described
-        // above, from these two sets of states.
-        BDD uncontrolledGuard = controlledStates.and(edge.guard);
-        BDD controlledGuard = GuardComputationHelper.applyBackward(edge, controlledStates.id(), controlledStates);
+        // uncontrolled system (i.e. user-specified, the original) guard of 'edge' holds. Of these system states, we
+        // must only keep the ones from which the application of 'edge' ends up in a controlled system state. We can
+        // compute the guard of 'edge' as described above, from these two sets of states.
+        BDD uncontrolledGuard = edge.origGuard.and(controlledStates);
+        BDD controlledGuard = edge.guard.and(controlledStates);
         BDD guard = computeGuard(uncontrolledGuard, controlledGuard, internalVars);
 
         // Free intermediate BDDs.
@@ -270,11 +302,8 @@ public class GuardComputation {
                 variable);
 
         // Convert this CIF constraint to a BDD predicate.
-        try {
-            return CifToBddConverter.convertPred(constraint, false, cifBddSpec);
-        } catch (UnsupportedPredicateException e) {
-            throw new RuntimeException("Unsupported predicate: " + e.getMessage());
-        }
+        CifToBddConverter converter = new CifToBddConverter("SynthML");
+        return converter.convertPred(constraint, false, cifBddSpec);
     }
 
     /**
@@ -347,7 +376,7 @@ public class GuardComputation {
     private BDDVarSet getVarSetOf(DiscVariable variable, CifBddSpec cifBddSpec) {
         int index = CifToBddConverter.getDiscVarIdx(cifBddSpec.variables, variable);
         Verify.verify(0 <= index, "Expected a non-negative variable index.");
-        return cifBddSpec.variables[index].domain.set();
+        return cifBddSpec.variables[index].domain.makeVarSet();
     }
 
     /**

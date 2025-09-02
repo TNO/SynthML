@@ -14,7 +14,6 @@ import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.java.CifConstructors;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.StateAnnotationHelper;
 import com.google.common.base.Verify;
 
 /**

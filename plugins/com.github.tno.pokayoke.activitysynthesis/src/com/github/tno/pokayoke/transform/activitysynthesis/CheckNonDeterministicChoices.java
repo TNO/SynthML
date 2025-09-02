@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter;
-import org.eclipse.escet.cif.bdd.conversion.CifToBddConverter.UnsupportedPredicateException;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
-import org.eclipse.escet.cif.common.CifTextUtils;
 import org.eclipse.escet.cif.metamodel.cif.expressions.Expression;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -59,18 +57,11 @@ public class CheckNonDeterministicChoices {
 
         // Check every edge against every other edge. An edge is not checked against itself. A warning is printed for
         // each pair only once, so not for commuted pairs.
+        CifToBddConverter converter = new CifToBddConverter("SynthML");
         for (ActivityEdge edge: node.getOutgoings()) {
             // Get the guard of the edge as a BDD.
             Expression cifGuard = translator.getIncomingGuard(edge);
-            BDD bddGuard;
-            try {
-                bddGuard = CifToBddConverter.convertPred(cifGuard, false, bddSpec);
-            } catch (UnsupportedPredicateException e) {
-                throw new RuntimeException(
-                        String.format("Failed to convert CIF expression into BDD, with predicate \"%s\".",
-                                CifTextUtils.exprToStr(cifGuard)),
-                        e);
-            }
+            BDD bddGuard = converter.convertPred(cifGuard, false, bddSpec);
 
             // Check the current edge against the previous ones, registering a warning in case of guard overlap.
             for (var entry: edgeGuardMap.entrySet()) {
