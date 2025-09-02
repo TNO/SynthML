@@ -37,54 +37,43 @@ public class PostProcessActivity {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
     /**
-     * Remove the internal actions that were added in CIF specification and petrification.
+     * Remove the opaque actions from the activity.
      *
      * @param activity The activity from which to remove the actions.
      * @param actionsToRemove The opaque actions to remove.
      */
-    public static void removeInternalActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
-        // Remove all internal opaque actions.
-        for (OpaqueAction internalAction: actionsToRemove) {
-            removeOpaqueAction(internalAction, activity);
+    public static void removeOpaqueActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
+        for (OpaqueAction action: actionsToRemove) {
+            List<ActivityEdge> incomingEdges = action.getIncomings();
+            Preconditions.checkArgument(incomingEdges.size() == 1,
+                    "Expected that an opaque action has exactly one incoming edge.");
+            ActivityEdge incomingEdge = incomingEdges.get(0);
+
+            List<ActivityEdge> outgoingEdges = action.getOutgoings();
+            Preconditions.checkArgument(outgoingEdges.size() == 1,
+                    "Expected that an opaque action has exactly one outgoing edge.");
+            ActivityEdge outgoingEdge = outgoingEdges.get(0);
+
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
+                    "Expected no incoming guard for incoming edge to opaque action to remove.");
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge)),
+                    "Expected no outgoing guard for incoming edge to opaque action to remove.");
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge)),
+                    "Expected no incoming guard for outgoing edge from opaque action to remove.");
+            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge)),
+                    "Expected no outgoing guard for outgoing edge from opaque action to remove.");
+
+            ActivityNode source = incomingEdge.getSource();
+            ActivityNode target = outgoingEdge.getTarget();
+
+            // Add a new control flow from source to target.
+            PNML2UMLTranslator.createControlFlow(activity, source, target);
+
+            // Destroy the action and its incoming and outgoing edges.
+            incomingEdge.destroy();
+            outgoingEdge.destroy();
+            action.destroy();
         }
-    }
-
-    /**
-     * Remove the opaque action from the activity.
-     *
-     * @param action The opaque action to remove.
-     * @param activity The activity from which to remove the action.
-     */
-    public static void removeOpaqueAction(OpaqueAction action, Activity activity) {
-        List<ActivityEdge> incomingEdges = action.getIncomings();
-        Preconditions.checkArgument(incomingEdges.size() == 1,
-                "Expected that an opaque action has exactly one incoming edge.");
-        ActivityEdge incomingEdge = incomingEdges.get(0);
-
-        List<ActivityEdge> outgoingEdges = action.getOutgoings();
-        Preconditions.checkArgument(outgoingEdges.size() == 1,
-                "Expected that an opaque action has exactly one outgoing edge.");
-        ActivityEdge outgoingEdge = outgoingEdges.get(0);
-
-        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
-                "Expected no incoming guard for incoming edge to opaque action to remove.");
-        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge)),
-                "Expected no outgoing guard for incoming edge to opaque action to remove.");
-        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge)),
-                "Expected no incoming guard for outgoing edge from opaque action to remove.");
-        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge)),
-                "Expected no outgoing guard for outgoing edge from opaque action to remove.");
-
-        ActivityNode source = incomingEdge.getSource();
-        ActivityNode target = outgoingEdge.getTarget();
-
-        // Add a new control flow from source to target.
-        PNML2UMLTranslator.createControlFlow(activity, source, target);
-
-        // Destroy the action and its incoming and outgoing edges.
-        incomingEdge.destroy();
-        outgoingEdge.destroy();
-        action.destroy();
     }
 
     private static boolean isNullOrTriviallyTrue(String s) {

@@ -127,7 +127,7 @@ public class PNML2UMLTranslator {
                 .toList();
         Set<OpaqueAction> actionsToRemove = internalNodes.stream().filter(OpaqueAction.class::isInstance)
                 .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
-        PostProcessActivity.removeInternalActions(activity, actionsToRemove);
+        PostProcessActivity.removeOpaqueActions(activity, actionsToRemove);
 
         // Write the UML activity to the output file.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
