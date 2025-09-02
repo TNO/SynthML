@@ -45,18 +45,17 @@ public class PostProcessActivity {
     public static void removeInternalActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
         // Remove all internal opaque actions.
         for (OpaqueAction internalAction: actionsToRemove) {
-            removeOpaqueActions(internalAction, activity);
+            removeOpaqueAction(internalAction, activity);
         }
     }
 
     /**
-     * Remove opaque actions from activity.
+     * Remove the opaque action from the activity.
      *
-     * @param action The opaque actions to remove.
-     * @param activity The activity from which to remove the actions.
-     *
+     * @param action The opaque action to remove.
+     * @param activity The activity from which to remove the action.
      */
-    public static void removeOpaqueActions(OpaqueAction action, Activity activity) {
+    public static void removeOpaqueAction(OpaqueAction action, Activity activity) {
         List<ActivityEdge> incomingEdges = action.getIncomings();
         Preconditions.checkArgument(incomingEdges.size() == 1,
                 "Expected that an opaque action has exactly one incoming edge.");
