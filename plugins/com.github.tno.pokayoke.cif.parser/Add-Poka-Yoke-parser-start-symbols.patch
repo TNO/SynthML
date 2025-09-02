@@ -2,7 +2,7 @@ diff --git a/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/c
 index ce8a9e6..49b93bb 100644
 --- a/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext
 +++ b/cif/org.eclipse.escet.cif.parser/src/org/eclipse/escet/cif/parser/cif.setext
-@@ -231,6 +231,11 @@
+@@ -235,6 +235,11 @@
  
  @main Specification: org.eclipse.escet.cif.parser.CifParser;
  
