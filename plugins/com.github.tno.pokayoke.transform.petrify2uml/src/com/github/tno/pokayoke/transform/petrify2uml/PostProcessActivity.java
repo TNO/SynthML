@@ -1,10 +1,7 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -42,65 +39,52 @@ public class PostProcessActivity {
      * Remove the internal actions that were added in CIF specification and petrification.
      *
      * @param activity The activity in which actions to be removed.
+     * @param tracker The synthesis chain tracker.
      */
-    public static void removeInternalActions(Activity activity) {
-        // Find all names of internal actions in the activity, which are the opaque actions whose name contain '__'.
-        Set<String> internalActionNames = activity.getNodes().stream()
-                .filter(node -> node instanceof OpaqueAction && node.getName().contains("__"))
-                .map(node -> node.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
-
-        // Remove all internal opaque actions that were found.
-        for (String internalActionName: internalActionNames) {
-            removeOpaqueActions(internalActionName, activity);
+    public static void removeInternalActions(Activity activity, SynthesisChainTracking tracker) {
+        // Remove all internal opaque actions.
+        for (OpaqueAction internalAction: tracker.getInternalActions()) {
+            removeOpaqueActions(internalAction, activity);
         }
     }
 
     /**
      * Remove opaque actions from activity.
      *
-     * @param actionName The name of the opaque actions to remove.
+     * @param action The opaque actions to remove.
      * @param activity The activity from which to remove the actions.
-     * @return Number of actions that were removed.
+     *
      */
-    public static int removeOpaqueActions(String actionName, Activity activity) {
-        List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
-                .filter(node -> node.getName().equals(actionName)).toList();
-        List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
-                .toList();
-        int numberOfActions = actions.size();
+    public static void removeOpaqueActions(OpaqueAction action, Activity activity) {
+        List<ActivityEdge> incomingEdges = action.getIncomings();
+        Preconditions.checkArgument(incomingEdges.size() == 1,
+                "Expected that an opaque action has exactly one incoming edge.");
+        ActivityEdge incomingEdge = incomingEdges.get(0);
 
-        for (OpaqueAction action: actions) {
-            List<ActivityEdge> incomingEdges = action.getIncomings();
-            Preconditions.checkArgument(incomingEdges.size() == 1,
-                    "Expected that an opaque action has exactly one incoming edge.");
-            ActivityEdge incomingEdge = incomingEdges.get(0);
+        List<ActivityEdge> outgoingEdges = action.getOutgoings();
+        Preconditions.checkArgument(outgoingEdges.size() == 1,
+                "Expected that an opaque action has exactly one ougoing edge.");
+        ActivityEdge outgoingEdge = outgoingEdges.get(0);
 
-            List<ActivityEdge> outgoingEdges = action.getOutgoings();
-            Preconditions.checkArgument(outgoingEdges.size() == 1,
-                    "Expected that an opaque action has exactly one ougoing edge.");
-            ActivityEdge outgoingEdge = outgoingEdges.get(0);
+        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
+                "Expected no incoming guard for incoming edge to opaque action to remove.");
+        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge)),
+                "Expected no outgoing guard for incoming edge to opaque action to remove.");
+        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge)),
+                "Expected no incoming guard for outgoing edge from opaque action to remove.");
+        Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge)),
+                "Expected no outgoing guard for outgoing edge from opaque action to remove.");
 
-            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
-                    "Expected no incoming guard for incoming edge to opaque action to remove.");
-            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(incomingEdge)),
-                    "Expected no outgoing guard for incoming edge to opaque action to remove.");
-            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(outgoingEdge)),
-                    "Expected no incoming guard for outgoing edge from opaque action to remove.");
-            Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getOutgoingGuard(outgoingEdge)),
-                    "Expected no outgoing guard for outgoing edge from opaque action to remove.");
+        ActivityNode source = incomingEdge.getSource();
+        ActivityNode target = outgoingEdge.getTarget();
 
-            ActivityNode source = incomingEdge.getSource();
-            ActivityNode target = outgoingEdge.getTarget();
+        // Add a new control flow from source to target.
+        PNML2UMLTranslator.createControlFlow(activity, source, target);
 
-            // Add a new control flow from source to target.
-            PNML2UMLTranslator.createControlFlow(activity, source, target);
-
-            // Destroy the action and its incoming and outgoing edges.
-            incomingEdge.destroy();
-            outgoingEdge.destroy();
-            action.destroy();
-        }
-        return numberOfActions;
+        // Destroy the action and its incoming and outgoing edges.
+        incomingEdge.destroy();
+        outgoingEdge.destroy();
+        action.destroy();
     }
 
     private static boolean isNullOrTriviallyTrue(String s) {
