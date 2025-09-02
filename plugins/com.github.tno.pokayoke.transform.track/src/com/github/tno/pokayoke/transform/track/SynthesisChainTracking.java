@@ -165,10 +165,10 @@ public class SynthesisChainTracking {
         // the input one and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
-                        // Avoid null UML elements, e.g. for events related to control nodes.
-                        && getOriginalUmlElement(e.getValue().getUmlElement()) != null
+                        // Check that the returned element is a redefinable element (avoid 'null' for control nodes).
+                        && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                         // Same original UML element.
-                        && getOriginalUmlElement(e.getValue().getUmlElement()).equals(originalUmlElement) &&
+                        && umlElement.equals(originalUmlElement) &&
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
                         (isOriginalStartOnlyElement(e.getValue().getUmlElement())
