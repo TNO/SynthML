@@ -8,8 +8,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +26,7 @@ import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.JoinNode;
 import org.eclipse.uml2.uml.LiteralBoolean;
 import org.eclipse.uml2.uml.Model;
+import org.eclipse.uml2.uml.OpaqueAction;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
@@ -117,7 +121,13 @@ public class PNML2UMLTranslator {
         // Translate the input Petri Net to a UML activity.
         PetriNet petriNet = PNMLUMLFileHelper.readPetriNet(inputPath.toString());
         translate(petriNet);
-        PostProcessActivity.removeInternalActions(activity);
+
+        // Find the internal actions, and remove them.
+        List<ActivityNode> internalNodes = activity.getNodes().stream().filter(node -> node.getName().contains("__"))
+                .toList();
+        Set<OpaqueAction> actionsToRemove = internalNodes.stream().filter(OpaqueAction.class::isInstance)
+                .map(OpaqueAction.class::cast).collect(Collectors.toCollection(LinkedHashSet::new));
+        PostProcessActivity.removeInternalActions(activity, actionsToRemove);
 
         // Write the UML activity to the output file.
         String filePrefix = FilenameUtils.removeExtension(inputPath.getFileName().toString());
