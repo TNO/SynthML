@@ -141,7 +141,7 @@ public class SynthesisChainTracking {
 
     /**
      * Gives the list of CIF start events corresponding to the given UML element, considered as the original UML
-     * element, for the specified translation purpose.
+     * element, for the specified translation purpose. Valid only for guard computation and language equivalence.
      *
      * @param originalUmlElement The non-{@code null} UML element.
      * @param purpose The translation purpose.
@@ -150,7 +150,7 @@ public class SynthesisChainTracking {
     public List<Event> getOriginalStartEventsOf(RedefinableElement originalUmlElement,
             UmlToCifTranslationPurpose purpose)
     {
-        // Sanity check.
+        // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
@@ -365,7 +365,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to the start of an opaque behavior.
      */
     public boolean isOriginalStartOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Sanity check.
+        // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
@@ -391,7 +391,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to the start of an opaque action.
      */
     public boolean isOriginalStartOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Sanity check.
+        // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
@@ -417,7 +417,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the CIF event corresponds to an original end-only event.
      */
     public boolean isOriginalEndOnly(Event cifEvent, UmlToCifTranslationPurpose purpose) {
-        // Sanity check.
+        // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
