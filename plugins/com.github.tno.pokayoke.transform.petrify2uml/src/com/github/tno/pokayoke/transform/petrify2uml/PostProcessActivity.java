@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -22,7 +21,6 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -152,7 +150,7 @@ public class PostProcessActivity {
     public static void finalizeOpaqueActions(Activity activity, SynthesisChainTracking tracker, List<String> warnings) {
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof OpaqueAction action) {
-                if (isInternalAction(action)) {
+                if (tracker.isInternalAction(action)) {
                     // If the action is internal, skip the current action.
                     continue;
                 }
@@ -222,10 +220,5 @@ public class PostProcessActivity {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
-    }
-
-    private static boolean isInternalAction(Action action) {
-        return action.getName().equals(CifSourceSinkLocationTransformer.START_EVENT_NAME)
-                || action.getName().equals(CifSourceSinkLocationTransformer.END_EVENT_NAME);
     }
 }
