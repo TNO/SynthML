@@ -9,24 +9,18 @@ import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
 
 /**
- * Caches {@link CifContext} instances to avoid redundant recreation.
- * The class maintains a global context and scoped contexts per {@link Activity}.
+ * Caches {@link CifContext} instances to avoid redundant recreation. The class maintains a global context and scoped
+ * contexts per {@link Activity}.
  */
 public class CifContextManager {
-
     /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifContext}. */
     private Map<Activity, CifContext> contextCache;
 
     private CifContext globalContext;
 
-    /**
-     * Initializes the context manager with a global context derived from the given element.
-     *
-     * @param element The {@link Element} used to initialize the global context.
-     */
     public CifContextManager(Element element) {
         contextCache = new HashMap<>();
-        globalContext = CifContext.createGlobal(element);
+        globalContext = new CifContext(element, CifScope.global());
     }
 
     public CifContext getScopedContext(Element element) {
@@ -35,13 +29,24 @@ public class CifContextManager {
         if (activity == null) {
             return globalContext;
         } else {
-            contextCache.computeIfAbsent(activity, CifContext::createScoped);
+            contextCache.computeIfAbsent(activity, CifContextManager::createScoped);
             return contextCache.get(activity);
         }
     }
 
     public CifContext getGlobalContext() {
         return globalContext;
+    }
+
+    /**
+     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
+     *
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
+     *     scope.
+     */
+    private static CifContext createScoped(Element element) {
+        return new CifContext(element, new CifScope(element));
     }
 
     private Activity getActivity(Element element) {

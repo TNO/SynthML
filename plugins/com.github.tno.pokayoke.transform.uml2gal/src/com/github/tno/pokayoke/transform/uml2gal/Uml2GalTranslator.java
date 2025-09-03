@@ -43,6 +43,7 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -112,8 +113,10 @@ public class Uml2GalTranslator {
      * @throws CoreException Thrown when {@code model} cannot be transformed.
      */
     public Specification translate(Model model) throws CoreException {
+        CifContextManager ctxManager = new CifContextManager(model);
+
         // Flatten composite data types, and normalize the XMI IDs.
-        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model, ctxManager);
         FileHelper.normalizeIds(model);
 
         // Validate and flatten the model.
@@ -131,7 +134,7 @@ public class Uml2GalTranslator {
         transitionTracing.clear();
 
         // Translate with a global context, parameterized activities are not supported.
-        CifContext cifContext = CifContext.createGlobal(model);
+        CifContext cifContext = new CifContextManager(model).getGlobalContext();
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Check transformation preconditions.

@@ -65,6 +65,7 @@ import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
@@ -99,6 +100,26 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
          * {@link PokaYokeProfileValidator#IDENTIFIER_PATTERN}.
          */
         IDENTIFIER
+    }
+
+    private CifContextManager getContextManager(Element element) {
+        Map<Object, Object> validationContext = getContext().getValidationContext();
+
+        if (validationContext == null) {
+            return new CifContextManager(element);
+        }
+
+        validationContext.computeIfAbsent("CifContextManager", __ -> new CifContextManager(element));
+
+        return (CifContextManager)validationContext.get("CifContextManager");
+    }
+
+    private CifContext getGlobalContext(Element element) {
+        return getContextManager(element).getGlobalContext();
+    }
+
+    private CifContext getScopedContext(Element element) {
+        return getContextManager(element).getScopedContext(element);
     }
 
     /**
@@ -184,7 +205,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
-        CifContext ctx = CifContext.createGlobal(model);
+        CifContext ctx = getGlobalContext(model);
         Map<String, List<NamedElement>> referenceableElementsInclDuplicates = ctx
                 .getReferenceableElementsInclDuplicates();
         for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
@@ -369,8 +390,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            new PropertyDefaultValueTypeChecker(CifContext.createScoped(property)).checkAssignment(propType,
-                    propDefaultExpr);
+            new PropertyDefaultValueTypeChecker(getScopedContext(property)).checkAssignment(propType, propDefaultExpr);
 
             if (PokaYokeTypeUtil.isIntegerType(propType)) {
                 // Default value is set and valid, thus can be parsed into an integer
@@ -574,7 +594,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Activity parameters must have unique names.", null);
         }
 
-        CifContext globalContext = CifContext.createGlobal(activity);
+        CifContext globalContext = getGlobalContext(activity);
         for (String parameterName: parameterNames) {
             // Check if the template parameter name matches a variable from an enclosing scope.
             // Currently this means that only properties declared in the global scope are found, so we can mention
@@ -739,7 +759,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(RedefinableElement element) {
-        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
+        CifTypeChecker typeChecker = new CifTypeChecker(getScopedContext(element));
         if (element instanceof ControlFlow controlFlow) {
             try {
                 AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
@@ -834,8 +854,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
 
-        CifContext addressableContext = CifContext.createScoped(calledActivity);
-        CifContext valueContext = CifContext.createScoped(callAction);
+        CifContext addressableContext = getScopedContext(calledActivity);
+        CifContext valueContext = getScopedContext(callAction);
 
         for (AUpdate update: updates) {
             // Ensure the update is an assignment update.
@@ -885,7 +905,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidUpdates(List<AUpdate> updates, Element element) {
         // Type check all updates.
-        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
+        CifTypeChecker typeChecker = new CifTypeChecker(getScopedContext(element));
 
         for (AUpdate update: updates) {
             typeChecker.checkUpdate(update);
@@ -979,7 +999,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-            new CifTypeChecker(CifContext.createScoped(constraint)).checkInvariant(invariant);
+            new CifTypeChecker(getScopedContext(constraint)).checkInvariant(invariant);
 
             // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
@@ -994,8 +1014,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidClassConstraint(Constraint constraint) {
         try {
-            new CifTypeChecker(CifContext.createGlobal(constraint))
-                    .checkInvariant(CifParserHelper.parseInvariant(constraint));
+            new CifTypeChecker(getGlobalContext(constraint)).checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
@@ -1034,7 +1053,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 return;
             }
 
-            CifContext context = CifContext.createGlobal(constraint);
+            CifContext context = getGlobalContext(constraint);
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {
