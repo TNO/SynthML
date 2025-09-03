@@ -388,7 +388,7 @@ public class SynthesisChainTracking {
                             + "End-only events must have integer effect index.");
             Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
             Verify.verify(effectIdx == null || umlElement != null,
-                    "UML element must be non-'null' if effect index is non-'null'.");
+                    "UML element must be non-null if effect index is non-null.");
 
             this.purpose = purpose;
             this.umlElement = umlElement;
