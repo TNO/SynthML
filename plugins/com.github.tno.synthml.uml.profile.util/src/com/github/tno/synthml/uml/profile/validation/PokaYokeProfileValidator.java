@@ -580,7 +580,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Currently this means that only properties declared in the global scope are found, so we can mention
             // 'property' specifically in the error message.
             if (globalContext.isVariable(parameterName)) {
-                error(String.format("'\s' was already declared as a property.", parameterName), null);
+                error(String.format("'%s' was already declared as a property.", parameterName), null);
             }
         }
     }
