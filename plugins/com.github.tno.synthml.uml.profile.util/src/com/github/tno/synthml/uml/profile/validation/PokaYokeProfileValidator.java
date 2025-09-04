@@ -69,7 +69,7 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
-import com.github.tno.synthml.uml.profile.cif.CifScope;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.TypeException;
@@ -119,7 +119,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         return getContextManager(element).getGlobalContext();
     }
 
-    private CifContext getScopedContext(Element element) {
+    private CifScopedContext getScopedContext(Element element) {
         return getContextManager(element).getScopedContext(element);
     }
 
@@ -287,7 +287,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-            } else if (!CifScope.getClassifierTemplateParameters(activity).isEmpty()) {
+            } else if (!CifScopedContext.getClassifierTemplateParameters(activity).isEmpty()) {
                 error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
@@ -563,7 +563,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidTemplateSignature(Activity activity) {
-        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+        List<ClassifierTemplateParameter> templateParameters = CifScopedContext
+                .getClassifierTemplateParameters(activity);
 
         if (activity.isAbstract() && templateParameters.size() > 0) {
             error("Activity parameters are disallowed on abstract activities.", null);
@@ -589,7 +590,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Activity parameters must have a default of type 'NamedElement'.", null);
         }
 
-        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+        if (!templateParameters.stream().map(CifScopedContext::getClassifierTemplateParameterType)
                 .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
                         || PokaYokeTypeUtil.isEnumerationType(parameter))))
         {
@@ -597,7 +598,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         List<String> parameterNames = templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
-                .map(CifScope::getClassifierTemplateParameterName).toList();
+                .map(CifScopedContext::getClassifierTemplateParameterName).toList();
         if (!parameterNames.stream().allMatch(new HashSet<>()::add)) {
             error("Activity parameters must have unique names.", null);
         }
@@ -849,7 +850,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkUniqueAddressables(updates, new LinkedHashSet<>());
 
             // Ensure that every parameter is assigned.
-            if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+            if (updates.size() != getScopedContext(calledActivity).getDeclaredTemplateParameters().size()) {
                 error("Not all parameters of the called activity have been assigned.", null);
             }
         } catch (RuntimeException re) {
@@ -859,11 +860,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction, Activity calledActivity) {
-        List<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
-                .getDeclaredTemplateParameters();
-
-        CifContext addressableContext = getScopedContext(calledActivity);
+        CifScopedContext addressableContext = getScopedContext(calledActivity);
         CifContext valueContext = getScopedContext(callAction);
+
+        List<NamedTemplateParameter> declaredTemplateParameters = addressableContext.getDeclaredTemplateParameters();
 
         for (AUpdate update: updates) {
             // Ensure the update is an assignment update.

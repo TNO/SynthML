@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.internal.impl.NamedElementImpl;
 
 /**
  * Encapsulates template information normally stored in the object tree of a {@link ClassifierTemplateParameter}.
- * Implements {@link NamedElement} to provide unified access through {@link CifScope}.
+ * Implements {@link NamedElement} to provide unified access through {@link CifScopedContext}.
  */
 @SuppressWarnings("restriction")
 public class NamedTemplateParameter extends NamedElementImpl {

@@ -14,11 +14,11 @@ import org.eclipse.uml2.uml.Model;
  * contexts per {@link Activity}.
  */
 public class CifContextManager {
-    /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifContext}. */
-    private final Map<Activity, CifContext> contextCache;
+    /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifScopedContext}. */
+    private final Map<Activity, CifScopedContext> contextCache;
 
     /** Cached global {@link CifContext}. */
-    private CifContext globalContext;
+    private CifGlobalContext globalContext;
 
     /**
      * Initializes the context manager with a global context for the model that contains the given element.
@@ -27,26 +27,21 @@ public class CifContextManager {
      */
     public CifContextManager(Element element) {
         contextCache = new HashMap<>();
-        globalContext = new CifContext(element, CifScope.global());
+        globalContext = new CifGlobalContext(element);
     }
 
-    public CifContext getScopedContext(Element element) {
+    public CifScopedContext getScopedContext(Element element) {
         Activity activity = getActivity(element);
-
-        if (activity == null) {
-            return globalContext;
-        } else {
-            return contextCache.computeIfAbsent(activity, CifContextManager::createScoped);
-        }
+        return contextCache.computeIfAbsent(activity, this::createScoped);
     }
 
     public void refresh() {
         contextCache.clear();
         Model model = globalContext.getModel();
-        globalContext = new CifContext(model, CifScope.global());
+        globalContext = new CifGlobalContext(model);
     }
 
-    public CifContext getGlobalContext() {
+    public CifGlobalContext getGlobalContext() {
         return globalContext;
     }
 
@@ -57,18 +52,14 @@ public class CifContextManager {
      * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
      *     scope.
      */
-    private static CifContext createScoped(Element element) {
-        return new CifContext(element, new CifScope(element));
+    private CifScopedContext createScoped(Element element) {
+        return new CifScopedContext(element, globalContext);
     }
 
     private Activity getActivity(Element element) {
         EObject current = element;
         while (current != null) {
             if (current instanceof Activity activity) {
-                if (CifScope.getClassifierTemplateParameters(activity).isEmpty()) {
-                    return null;
-                }
-
                 return activity;
             }
 

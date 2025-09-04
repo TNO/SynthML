@@ -63,7 +63,7 @@ import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
-import com.github.tno.synthml.uml.profile.cif.CifScope;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.UsedParametersCollector;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -452,7 +452,7 @@ public class UMLToCameoTransformer {
     }
 
     private void transformTemplateSignature(Activity activity) {
-        for (ClassifierTemplateParameter parameter: CifScope.getClassifierTemplateParameters(activity)) {
+        for (ClassifierTemplateParameter parameter: CifScopedContext.getClassifierTemplateParameters(activity)) {
             String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
             ActivityHelper.addParameterToActivity(activity, parameterName);
         }
@@ -493,13 +493,11 @@ public class UMLToCameoTransformer {
             return;
         }
 
-        CifContext cifScope = ctxManager.getScopedContext(callAction);
-
         List<String> translatedAssignments = new ArrayList<>();
         Set<String> arguments = new LinkedHashSet<>();
         for (AAssignmentUpdate argument: parsedArguments) {
             String adressable = ((ANameExpression)argument.addressable).name.name;
-            String value = translator.translateExpression(argument.value, cifScope);
+            String value = translator.translateExpression(argument.value, ctxManager.getScopedContext(callAction));
 
             translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
             arguments.add(adressable);
