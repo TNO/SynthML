@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,8 +79,8 @@ import com.google.common.base.Verify;
  */
 public class UMLToCameoTransformer {
     /**
-     * The prefix for temporary variables that pass arguments to the 'CallBehaviorAction'. This avoids overriding local
-     * variables when assigning a different value on a call with a colliding argument name.
+     * The prefix for temporary variables that pass arguments to the {@link CallBehaviorAction}. This avoids overriding
+     * local variables when assigning a different value on a call with a colliding argument name.
      */
     public static final String ARGUMENT_PREFIX = "arg__";
 
@@ -371,7 +371,7 @@ public class UMLToCameoTransformer {
         Stream<NamedTemplateParameter> parametersUsedInEffects = parsedEffects.stream().flatMap(List::stream)
                 .flatMap(expr -> usedParametersCollector.collect(expr, context));
         return Stream.concat(parametersUsedInGuards, parametersUsedInEffects).map(p -> p.getName())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<String> getUsedParameters(DecisionNode decisionNode) {
@@ -394,7 +394,7 @@ public class UMLToCameoTransformer {
 
         UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
         return usedParametersCollector.collect(incomingGuard, context).map(NamedTemplateParameter::getName)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -498,7 +498,7 @@ public class UMLToCameoTransformer {
         CifContext cifScope = CifContext.createScoped(callAction);
 
         List<String> translatedAssignments = new ArrayList<>();
-        Set<String> arguments = new HashSet<>();
+        Set<String> arguments = new LinkedHashSet<>();
         for (AAssignmentUpdate argument: parsedArguments) {
             String adressable = ((ANameExpression)argument.addressable).name.name;
             String value = translator.translateExpression(argument.value, cifScope);
@@ -509,7 +509,7 @@ public class UMLToCameoTransformer {
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
 
-        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
+        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, arguments, pythonBody);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
@@ -544,7 +544,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
-        // Pass the arguments to the newly created 'CallBehaviorAction'.
+        // Pass the arguments to the newly created call behavior action.
         ActivityHelper.passArgumentsToCallBehaviorAction(replacementActionNode, usedParameters, null);
     }
 
@@ -605,7 +605,7 @@ public class UMLToCameoTransformer {
                 .map(entry -> entry.getValue() + " = " + entry.getKey()).toList();
 
         // Add these pre-state assignments to the front of every translated effect, and return the result.
-        return translatedEffects.stream().map(effects -> Lists.concat(prestateAssignments, effects)).toList();
+        return translatedEffects.stream().map(effect -> Lists.concat(prestateAssignments, effect)).toList();
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {
