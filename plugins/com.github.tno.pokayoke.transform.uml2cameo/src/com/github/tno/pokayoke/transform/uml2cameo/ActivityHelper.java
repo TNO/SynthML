@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -738,7 +739,9 @@ public class ActivityHelper {
         assignmentAction.getBodies().add(optionalAssignments);
         assignmentAction.getLanguages().add("Python");
 
-        callAction.getIncomings().get(0).setTarget(assignmentAction);
+        for (ActivityEdge incoming: callAction.getIncomings()) {
+            incoming.setTarget(assignmentAction);
+        }
 
         // For each assignment, create a data flow from the new action to the original call action.
         for (String argumentName: argumentNames) {
