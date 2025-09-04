@@ -145,9 +145,6 @@ public class CifGlobalContext implements CifContext {
             // Collect all referenceable elements that may be referred to by an absolute name consisting of multiple
             // identifiers.
             addProperties(activeClass.getOwnedAttributes(), null, new LinkedHashSet<>());
-
-            // Collect all template parameters that may be referenced within the context of this activity.
-            addNamedTemplateParameters(scope.getDeclaredTemplateParameters());
         }
     }
 
@@ -190,21 +187,6 @@ public class CifGlobalContext implements CifContext {
                     hierarchy.remove(propertyType);
                 }
             }
-        }
-    }
-
-    /**
-     * Add template parameters to {@link #referenceableElements} and {@link #referenceableElementsInclDuplicates}.
-     *
-     * @param parameters The template parameters to add.
-     */
-    private void addNamedTemplateParameters(Collection<NamedTemplateParameter> parameters) {
-        for (NamedElement parameter: parameters) {
-            String name = parameter.getName();
-
-            // Add parameter.
-            referenceableElements.put(name, parameter);
-            referenceableElementsInclDuplicates.computeIfAbsent(name, k -> new LinkedList<>()).add(parameter);
         }
     }
 

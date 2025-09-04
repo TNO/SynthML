@@ -2,23 +2,29 @@
 package com.github.tno.synthml.uml.profile.cif;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 
-/** Symbol table of a scope, containing the named elements only available within this scope. */
-public class CifScopedContext {
+/** Symbol table of a scope, containing the named elements available within this scope. */
+public class CifScopedContext implements CifContext {
     /**
      * Contains all declared named elements defined within the scope that are supported by our subset of UML. Note that
      * properties that are declared in composite data types may be referenced in different ways when they are
@@ -26,16 +32,20 @@ public class CifScopedContext {
      */
     private final List<NamedTemplateParameter> declaredTemplateParameters;
 
-    public CifScopedContext(Element element) {
-        declaredTemplateParameters = getDeclaredTemplateParameters(element);
-    }
+    private final Map<String, NamedTemplateParameter> referenceableTemplateParameters;
 
-    private CifScopedContext() {
-        declaredTemplateParameters = Collections.EMPTY_LIST;
+    private final CifContext delegate;
+
+    @SuppressWarnings("restriction")
+    protected CifScopedContext(Element element, CifContext context) {
+        declaredTemplateParameters = getDeclaredTemplateTemplateParameters(element);
+        referenceableTemplateParameters = declaredTemplateParameters.stream()
+                .collect(Collectors.toMap(NamedTemplateParameter::getName, Function.identity()));
+        delegate = context;
     }
 
     @SuppressWarnings("restriction")
-    private List<NamedTemplateParameter> getDeclaredTemplateParameters(Element inputElement) {
+    private List<NamedTemplateParameter> getDeclaredTemplateTemplateParameters(Element inputElement) {
         EObject current = inputElement;
 
         while (!(current instanceof Activity activity)) {
@@ -75,10 +85,6 @@ public class CifScopedContext {
         return Collections.unmodifiableList(declaredTemplateParameters);
     }
 
-    public static CifScope global() {
-        return new CifScope();
-    }
-
     public static Type getClassifierTemplateParameterType(ClassifierTemplateParameter classifierParameter) {
         return classifierParameter.getConstrainingClassifiers().stream().findFirst().orElse(null);
     }
@@ -102,5 +108,41 @@ public class CifScopedContext {
     {
         return templateSignature.getOwnedParameters().stream().filter(ClassifierTemplateParameter.class::isInstance)
                 .map(ClassifierTemplateParameter.class::cast).toList();
+    }
+
+    @Override
+    public Model getModel() {
+        return delegate.getModel();
+    }
+
+    @Override
+    public NamedElement getReferenceableElement(String name) {
+        if (referenceableTemplateParameters.containsKey(name)) {
+            return referenceableTemplateParameters.get(name);
+        }
+        return delegate.getReferenceableElement(name);
+    }
+
+    @SuppressWarnings("restriction")
+    @Override
+    public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
+        Map<String, List<NamedElement>> referenceableElementsInclDuplicates = new HashMap<>();
+
+        for (Entry<String, List<NamedElement>> e: delegate.getReferenceableElementsInclDuplicates().entrySet()) {
+            referenceableElementsInclDuplicates.computeIfAbsent(e.getKey(), k -> new LinkedList<>())
+                    .addAll(e.getValue());
+        }
+
+        for (NamedTemplateParameter parameter: declaredTemplateParameters) {
+            referenceableElementsInclDuplicates.computeIfAbsent(parameter.getName(), k -> new LinkedList<>())
+                    .add(parameter);
+        }
+
+        return referenceableElementsInclDuplicates;
+    }
+
+    @Override
+    public Collection<NamedElement> getDeclaredElements() {
+        return delegate.getDeclaredElements();
     }
 }

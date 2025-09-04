@@ -36,7 +36,7 @@ public interface CifContext {
      * @return A {@code CifContext} containing all declared/referenceable elements in the global scope.
      */
     public static CifGlobalContext createGlobal(Element element) {
-        return new CifGlobalContext(element, CifScopedContext.global());
+        return new CifGlobalContext(element);
     }
 
     /**
