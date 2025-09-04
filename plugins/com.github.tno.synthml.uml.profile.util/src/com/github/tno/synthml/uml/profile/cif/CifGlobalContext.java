@@ -101,7 +101,7 @@ public class CifGlobalContext implements CifContext {
      * @param model An {@link Element} contained in the model for which the context is created..
      * @return All declared elements in the {@code model}.
      */
-    public static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
+    private static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
         return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
                 .asType(NamedElement.class);
     }

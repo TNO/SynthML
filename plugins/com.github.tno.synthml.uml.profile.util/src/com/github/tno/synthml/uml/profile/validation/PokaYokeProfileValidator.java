@@ -3,6 +3,7 @@ package com.github.tno.synthml.uml.profile.validation;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -858,7 +859,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction, Activity calledActivity) {
-        Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
+        List<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
 
         CifContext addressableContext = getScopedContext(calledActivity);
@@ -877,7 +878,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
             } else if (addressable.derivative) {
                 error("Invalid parameter assignment: Expected a non-derivative parameter name.", null);
-            } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
+            } else if (!isNameInNamedElements(addressable.name.name, declaredTemplateParameters)) {
                 error("Invalid parameter assignment: Unknown activity parameter name (of the called activity): "
                         + addressable.name.name, null);
             } else {
@@ -906,7 +907,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> namedElements) {
+    private static boolean isNameInNamedElements(String name, List<? extends NamedElement> namedElements) {
         return namedElements.stream().anyMatch(p -> p.getName().equals(name));
     }
 
@@ -1122,7 +1123,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkReservedKeywords(Model model) {
-        QueryableIterable<NamedElement> elements = CifContext.getDeclaredElements(model);
+        Collection<NamedElement> elements = CifContext.createGlobal(model).getDeclaredElements();
 
         for (NamedElement element: elements) {
             // Primitive integer types are bounded between a min and a max value. These automatically generate

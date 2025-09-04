@@ -1,6 +1,7 @@
 
 package com.github.tno.synthml.uml.profile.cif;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,23 +24,23 @@ public class CifScopedContext {
      * properties that are declared in composite data types may be referenced in different ways when they are
      * instantiated multiple times.
      */
-    private final Set<NamedTemplateParameter> declaredElements;
+    private final List<NamedTemplateParameter> declaredTemplateParameters;
 
     public CifScopedContext(Element element) {
-        declaredElements = getDeclaredTemplateParameters(element);
+        declaredTemplateParameters = getDeclaredTemplateParameters(element);
     }
 
     private CifScopedContext() {
-        declaredElements = Collections.EMPTY_SET;
+        declaredTemplateParameters = Collections.EMPTY_LIST;
     }
 
     @SuppressWarnings("restriction")
-    private Set<NamedTemplateParameter> getDeclaredTemplateParameters(Element inputElement) {
+    private List<NamedTemplateParameter> getDeclaredTemplateParameters(Element inputElement) {
         EObject current = inputElement;
 
         while (!(current instanceof Activity activity)) {
             if (current == null) {
-                return Collections.EMPTY_SET;
+                return Collections.EMPTY_LIST;
             }
 
             current = current.eContainer();
@@ -47,7 +48,7 @@ public class CifScopedContext {
 
         List<ClassifierTemplateParameter> templateParameters = getClassifierTemplateParameters(activity);
 
-        Set<NamedTemplateParameter> resultParameters = new LinkedHashSet<>();
+        List<NamedTemplateParameter> resultParameters = new ArrayList<>();
 
         // Create a corresponding named template parameter with the same name and type.
         for (ClassifierTemplateParameter classifierParameter: templateParameters) {
@@ -70,8 +71,8 @@ public class CifScopedContext {
         return resultParameters;
     }
 
-    public Set<NamedTemplateParameter> getDeclaredTemplateParameters() {
-        return Collections.unmodifiableSet(declaredElements);
+    public List<NamedTemplateParameter> getDeclaredTemplateParameters() {
+        return Collections.unmodifiableList(declaredTemplateParameters);
     }
 
     public static CifScope global() {
