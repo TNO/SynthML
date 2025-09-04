@@ -554,7 +554,7 @@ public class ActivityHelper {
      *
      * @param decisionNode The decision node.
      * @param translator The translator for translating incoming guards to Python expressions.
-     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
      * @return The created activity.
      */
     public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode, CifToPythonTranslator translator,

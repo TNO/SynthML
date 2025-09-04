@@ -16,8 +16,14 @@ public class CifContextManager {
     /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifContext}. */
     private Map<Activity, CifContext> contextCache;
 
+    /** Cached global {@link CifContext}. */
     private CifContext globalContext;
 
+    /**	
+     * Initializes the context manager with a global context for the model that contains the given element.	
+     *	
+     * @param element The {@link Element} of the model for which to create the global context.	
+     */
     public CifContextManager(Element element) {
         contextCache = new HashMap<>();
         globalContext = new CifContext(element, CifScope.global());

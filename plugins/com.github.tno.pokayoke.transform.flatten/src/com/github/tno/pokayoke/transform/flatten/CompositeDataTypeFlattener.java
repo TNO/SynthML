@@ -85,7 +85,7 @@ public class CompositeDataTypeFlattener {
      * composite data types, and remove all composite data types.
      *
      * @param model The UML model.
-     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
      */
     public static void flattenCompositeDataTypes(Model model, CifContextManager ctxManager) {
         // Only perform flattening if there are any composite data types. This not only prevents unnecessary work, but
