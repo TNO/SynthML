@@ -9,25 +9,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.lsat.common.queries.QueryableIterable;
-import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
-import org.eclipse.uml2.uml.Constraint;
-import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Enumeration;
-import org.eclipse.uml2.uml.EnumerationLiteral;
-import org.eclipse.uml2.uml.IntervalConstraint;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.OpaqueBehavior;
-import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -35,8 +25,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.google.common.collect.Sets;
 
-/** Symbol table of the UML model, with all its declared and referenceable named elements. */
-public class CifGlobalContext {
+/** Symbol table of the UML model, with all declared and named elements referencable from any scope. */
+public class CifGlobalContext implements CifContext {
     /**
      * All elements are {@link EClass#isSuperTypeOf(EClass) derived} from
      * {@link org.eclipse.uml2.uml.UMLPackage.Literals#NAMED_ELEMENT}.
@@ -116,7 +106,7 @@ public class CifGlobalContext {
                 .asType(NamedElement.class);
     }
 
-    CifGlobalContext(Element element, CifScope scope) {
+    CifGlobalContext(Element element) {
         this.model = element.getModel();
 
         // Collect declared elements as set.
@@ -166,6 +156,7 @@ public class CifGlobalContext {
      *
      * @return The UML model whose context to consider.
      */
+    @Override
     public Model getModel() {
         return model;
     }
@@ -217,190 +208,18 @@ public class CifGlobalContext {
         }
     }
 
-    protected Collection<NamedElement> getDeclaredElements() {
+    @Override
+    public Collection<NamedElement> getDeclaredElements() {
         return Collections.unmodifiableCollection(declaredElements);
     }
 
+    @Override
     public NamedElement getReferenceableElement(String name) {
         return referenceableElements.get(name);
     }
 
+    @Override
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
         return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
-    }
-
-    public List<Class> getAllClasses(Predicate<Class> predicate) {
-        return getDeclaredElements().stream().filter(e -> e instanceof Class c && predicate.test(c))
-                .map(Class.class::cast).toList();
-    }
-
-    public List<Activity> getAllActivities() {
-        return getDeclaredElements().stream().filter(Activity.class::isInstance).map(Activity.class::cast).toList();
-    }
-
-    public List<Activity> getAllAbstractActivities() {
-        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && a.isAbstract())
-                .map(Activity.class::cast).toList();
-    }
-
-    public List<DataType> getAllCompositeDataTypes() {
-        return getDeclaredElements().stream()
-                .filter(e -> e instanceof DataType d && PokaYokeTypeUtil.isCompositeDataType(d))
-                .map(DataType.class::cast).toList();
-    }
-
-    public List<Activity> getAllConcreteActivities() {
-        return getDeclaredElements().stream().filter(e -> e instanceof Activity a && !a.isAbstract())
-                .map(Activity.class::cast).toList();
-    }
-
-    public List<Property> getAllDeclaredProperties() {
-        return getDeclaredElements().stream().filter(e -> e instanceof Property).map(Property.class::cast).toList();
-    }
-
-    public List<ControlFlow> getAllControlFlows() {
-        return getAllActivities().stream().map(Activity::getOwnedElements).flatMap(Collection::stream)
-                .filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast).toList();
-    }
-
-    public boolean isEnumeration(String name) {
-        return referenceableElements.get(name) instanceof Enumeration;
-    }
-
-    public Enumeration getEnumeration(String name) {
-        if (referenceableElements.get(name) instanceof Enumeration enumeration) {
-            return enumeration;
-        }
-        return null;
-    }
-
-    public List<Enumeration> getAllEnumerations() {
-        return getDeclaredElements().stream().filter(Enumeration.class::isInstance).map(Enumeration.class::cast)
-                .toList();
-    }
-
-    public boolean isEnumerationLiteral(String name) {
-        return referenceableElements.get(name) instanceof EnumerationLiteral;
-    }
-
-    public EnumerationLiteral getEnumerationLiteral(String name) {
-        if (referenceableElements.get(name) instanceof EnumerationLiteral literal) {
-            return literal;
-        }
-        return null;
-    }
-
-    public List<EnumerationLiteral> getAllEnumerationLiterals() {
-        return getDeclaredElements().stream().filter(EnumerationLiteral.class::isInstance)
-                .map(EnumerationLiteral.class::cast).toList();
-    }
-
-    public List<OpaqueBehavior> getAllOpaqueBehaviors() {
-        return getDeclaredElements().stream().filter(OpaqueBehavior.class::isInstance).map(OpaqueBehavior.class::cast)
-                .toList();
-    }
-
-    /**
-     * Checks if the element is present in the context and represents a variable, i.e. a {@link Property} or a
-     * {@link NamedTemplateParameter}.
-     *
-     * @param name The name of the declared entity.
-     * @return {@code true} if the element is present in the context and represents a variable, else {@code false}.
-     */
-    public boolean isVariable(String name) {
-        return getVariable(name) != null;
-    }
-
-    /**
-     * Finds the variable in the context, i.e. a {@link Property} or a {@link NamedTemplateParameter}.
-     *
-     * @param name The name of the declared entity.
-     * @return {@link Property} or {@link NamedTemplateParameter} if the variable is present in the context, else
-     *     {@code null}.
-     */
-    public NamedElement getVariable(String name) {
-        NamedElement element = referenceableElements.get(name);
-
-        if (element instanceof Property || element instanceof NamedTemplateParameter) {
-            return element;
-        }
-        return null;
-    }
-
-    /**
-     * Checks if the element is present in the context and represents an assignable variable, i.e. a {@link Property}.
-     *
-     * @param name The name of the declared entity.
-     * @return {@code true} if the element is present and assignable in the context, and represents a variable, else
-     *     {@code false}.
-     */
-    public boolean isAssignableVariable(String name) {
-        return getAssignableVariable(name) != null;
-    }
-
-    /**
-     * Finds the assignable variable in the context, i.e. a {@link Property}.
-     *
-     * @param name The name of the declared entity.
-     * @return {@link Property} if the variable is present in the context, else {@code null}.
-     */
-    public Property getAssignableVariable(String name) {
-        NamedElement element = referenceableElements.get(name);
-
-        if (element instanceof Property property) {
-            return property;
-        }
-        return null;
-    }
-
-    /**
-     * Checks whether the given element is declared in the UML model.
-     *
-     * @param element The element to check.
-     * @return {@code true} if the element is declared in the UML model, {@code false} otherwise.
-     */
-    public boolean isDeclaredElement(Element element) {
-        return getDeclaredElements().contains(element);
-    }
-
-    public boolean hasOpaqueBehaviors() {
-        return getDeclaredElements().stream().anyMatch(OpaqueBehavior.class::isInstance);
-    }
-
-    public OpaqueBehavior getOpaqueBehavior(String name) {
-        if (referenceableElements.get(name) instanceof OpaqueBehavior behavior) {
-            return behavior;
-        }
-        return null;
-    }
-
-    public boolean hasConstraints(Predicate<Constraint> predicate) {
-        return getDeclaredElements().stream().anyMatch(e -> e instanceof Constraint c && predicate.test(c));
-    }
-
-    public static boolean isActivityPrePostconditionConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity a
-                && (a.getPreconditions().contains(constraint) || a.getPostconditions().contains(constraint));
-    }
-
-    public static boolean isClassConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Class clazz && !(clazz instanceof Behavior);
-    }
-
-    public static boolean isOccurrenceConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof Activity && constraint instanceof IntervalConstraint;
-    }
-
-    public static boolean isPrimitiveTypeConstraint(Constraint constraint) {
-        return constraint.getContext() instanceof PrimitiveType;
-    }
-
-    public boolean hasAbstractActivities() {
-        return getDeclaredElements().stream().anyMatch(e -> e instanceof Activity a && a.isAbstract());
-    }
-
-    public boolean hasParameterizedActivities() {
-        return getDeclaredElements().stream()
-                .anyMatch(e -> e instanceof Activity a && !a.getOwnedParameters().isEmpty());
     }
 }
