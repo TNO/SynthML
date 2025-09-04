@@ -52,7 +52,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
+import org.eclipse.uml2.uml.TemplateSignature;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectToString;
@@ -611,7 +611,7 @@ public class CompositeDataTypeFlattener {
             } else if (ownedElement instanceof ActivityNode) {
                 // Nodes in activities should not refer to properties.
                 continue;
-            } else if (ownedElement instanceof RedefinableTemplateSignature) {
+            } else if (ownedElement instanceof TemplateSignature) {
                 // Template signatures of parameterized activities should not refer to properties.
                 continue;
             } else {

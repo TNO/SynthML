@@ -492,9 +492,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
-        // Check template parameters of the activity. Adding a check directly on 'RedefinableTemplateSignature' fails
+        // Check template parameters of the activity. Adding a check directly on 'TemplateSignature' fails
         // to report the error message to the Problems view.
-        checkValidRedefinableTemplateSignature(activity);
+        checkValidTemplateSignature(activity);
 
         Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
 
@@ -541,12 +541,18 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidRedefinableTemplateSignature(Activity activity) {
+    private void checkValidTemplateSignature(Activity activity) {
         List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
 
         if (activity.isAbstract() && templateParameters.size() > 0) {
             error("Activity parameters are disallowed on abstract activities.", null);
             return; // Further checks do not provide the user with useful information.
+        }
+
+        if (!activity.getOwnedTemplateSignature().getParameters().stream()
+                .allMatch(ClassifierTemplateParameter.class::isInstance))
+        {
+            error("Activity parameters must be of type 'ClassifierTemplateParameter'.", null);
         }
 
         if (templateParameters.stream().map(ClassifierTemplateParameter::getConstrainingClassifiers)

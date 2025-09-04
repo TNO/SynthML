@@ -52,10 +52,8 @@ import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
-import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
@@ -64,6 +62,7 @@ import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.UsedParametersCollector;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -445,18 +444,14 @@ public class UMLToCameoTransformer {
             }
         }
 
-        if (activity.getOwnedTemplateSignature() instanceof RedefinableTemplateSignature templateSignature) {
-            transformTemplateSignature(activity, templateSignature);
-        }
+        transformTemplateSignature(activity);
     }
 
-    private void transformTemplateSignature(Activity activity, RedefinableTemplateSignature templateSignature) {
-        for (TemplateParameter parameter: templateSignature.getParameters()) {
-            if (parameter instanceof ClassifierTemplateParameter) {
-                String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
+    private void transformTemplateSignature(Activity activity) {
+        for (ClassifierTemplateParameter parameter: CifScope.getClassifierTemplateParameters(activity)) {
+            String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
 
-                ActivityHelper.addParameterToActivity(activity, parameterName);
-            }
+            ActivityHelper.addParameterToActivity(activity, parameterName);
         }
     }
 

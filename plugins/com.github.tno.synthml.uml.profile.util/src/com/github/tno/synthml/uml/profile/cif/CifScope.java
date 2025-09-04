@@ -13,7 +13,7 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.ParameterableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
+import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 
 /** Symbol table of a scope, containing the named elements only available within this scope. */
@@ -87,15 +87,13 @@ public class CifScope {
     }
 
     public static List<ClassifierTemplateParameter> getClassifierTemplateParameters(Activity activity) {
-        return activity.getOwnedElements().stream().filter(RedefinableTemplateSignature.class::isInstance)
-                .map(RedefinableTemplateSignature.class::cast)
-                .flatMap(signature -> getClassifierTemplateParameters(signature).stream()).toList();
+        return getClassifierTemplateParameters(activity.getOwnedTemplateSignature());
     }
 
     public static List<ClassifierTemplateParameter>
-            getClassifierTemplateParameters(RedefinableTemplateSignature redefinableTemplateSignature)
+            getClassifierTemplateParameters(TemplateSignature templateSignature)
     {
-        return redefinableTemplateSignature.getOwnedParameters().stream()
+        return templateSignature.getOwnedParameters().stream()
                 .filter(ClassifierTemplateParameter.class::isInstance).map(ClassifierTemplateParameter.class::cast)
                 .toList();
     }
