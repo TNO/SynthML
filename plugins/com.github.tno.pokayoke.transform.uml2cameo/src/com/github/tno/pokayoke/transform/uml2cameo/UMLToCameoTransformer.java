@@ -375,12 +375,12 @@ public class UMLToCameoTransformer {
     }
 
     private Set<String> getUsedParameters(DecisionNode decisionNode) {
-        return decisionNode.getOutgoings().stream().flatMap(edge -> getUsedParameters(edge).stream())
-                .collect(Collectors.toSet());
+        return decisionNode.getOutgoings().stream().flatMap(edge -> getUsedDecisionParameters(edge).stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @SuppressWarnings("restriction")
-    private Set<String> getUsedParameters(ActivityEdge edge) {
+    private Set<String> getUsedDecisionParameters(ActivityEdge edge) {
         if (!(edge instanceof ControlFlow controlFlow)) {
             return Collections.EMPTY_SET;
         }
