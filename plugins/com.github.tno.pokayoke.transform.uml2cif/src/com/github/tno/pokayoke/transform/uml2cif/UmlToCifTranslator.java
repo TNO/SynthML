@@ -1598,7 +1598,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // that the token can still pass through merge/join/etc nodes and the token can still reach
                         // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
-                    } else if (synthesisTracker.isOriginalStartOpaqueBehavior(cifEvent, translationPurpose)
+                    } else if (synthesisTracker.isStartOfOriginalOpaqueBehavior(cifEvent, translationPurpose)
                             || synthesisTracker.isOriginalStartOpaqueAction(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
