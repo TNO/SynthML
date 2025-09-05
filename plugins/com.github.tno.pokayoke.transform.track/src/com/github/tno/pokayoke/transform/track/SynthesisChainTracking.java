@@ -156,7 +156,7 @@ public class SynthesisChainTracking {
         Verify.verify(isOriginalUmlElement(originalUmlElement),
                 "The input UML element is not an original UML element.");
 
-        // Get the list of CIf events whose translation purpose is the input one, whose original UML element is equal to
+        // Get the list of CIF events whose translation purpose is the input one, whose original UML element is equal to
         // the input one and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
@@ -167,8 +167,8 @@ public class SynthesisChainTracking {
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
                         (isOriginalStartOnlyElement(e.getValue().getUmlElement())
-                                || isOriginalCompleteElement(e.getValue().getUmlElement())
-                                        && e.getValue().isStartEvent()))
+                                || (isOriginalCompleteElement(e.getValue().getUmlElement())
+                                        && e.getValue().isStartEvent())))
                 .map(Map.Entry::getKey).toList();
 
         return filteredEvents;
