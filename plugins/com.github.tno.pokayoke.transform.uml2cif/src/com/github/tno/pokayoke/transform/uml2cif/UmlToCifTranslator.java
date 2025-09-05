@@ -1599,7 +1599,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         // the incoming control flow to the final place.
                         yield PostConditionKind.WITH_STRUCTURE;
                     } else if (synthesisTracker.isStartOfOriginalOpaqueBehavior(cifEvent, translationPurpose)
-                            || synthesisTracker.isOriginalStartOpaqueAction(cifEvent, translationPurpose))
+                            || synthesisTracker.isStartOfOriginalOpaqueAction(cifEvent, translationPurpose))
                     {
                         // As soon as the user-defined postconditions etc hold, we should no longer allow starting any
                         // of the actions that the user defined.
