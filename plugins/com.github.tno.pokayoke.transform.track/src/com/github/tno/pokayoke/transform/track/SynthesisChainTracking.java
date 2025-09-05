@@ -880,20 +880,29 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     * Returns the Petri net transition tracing info corresponding to the input opaque action.
      *
      * @param action The opaque action.
-     * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
+     * @return The transition tracing info related to the opaque action.
      */
-    private boolean isStartOnlyAction(OpaqueAction action) {
+    private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
         Transition transition = actionToTransition.get(action);
         Verify.verifyNotNull(transition, String
                 .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
         TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
         Verify.verifyNotNull(transitionInfo,
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+        return transitionInfo;
+    }
 
-        return transitionInfo.isStartOnlyTransition();
+    /**
+     * Return {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
+     */
+    private boolean isStartOnlyAction(OpaqueAction action) {
+        return getTransitionTraceInfo(action).isStartOnlyTransition();
     }
 
     /**
@@ -903,14 +912,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
      */
     private boolean isEndOnlyAction(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-
-        return transitionInfo.isEndOnlyTransition();
+        return getTransitionTraceInfo(action).isEndOnlyTransition();
     }
 
     /**
@@ -920,14 +922,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
      */
     private boolean isCompleteAction(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-
-        return transitionInfo.isCompleteTransition();
+        return getTransitionTraceInfo(action).isCompleteTransition();
     }
 
     /**
