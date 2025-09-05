@@ -166,7 +166,7 @@ public class SynthesisChainTracking {
                         && umlElement.equals(originalUmlElement) &&
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
-                        (isOriginalStartOnlyElement(e.getValue().getUmlElement())
+                        (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
                                 || (isOriginalCompleteElement(e.getValue().getUmlElement())
                                         && e.getValue().isStartEvent())))
                 .map(Map.Entry::getKey).toList();
@@ -385,7 +385,7 @@ public class SynthesisChainTracking {
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
-                && (isOriginalStartOnlyElement(finalizedUmlElement)
+                && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                         || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
@@ -411,7 +411,7 @@ public class SynthesisChainTracking {
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
-                && (isOriginalStartOnlyElement(finalizedUmlElement)
+                && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                         || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
@@ -985,7 +985,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a start-only original CIF event, {@code false}
      *     otherwise.
      */
-    private boolean isOriginalStartOnlyElement(RedefinableElement finalizedUmlElement) {
+    private boolean isRelatedToOriginalStartOnlyEvent(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
