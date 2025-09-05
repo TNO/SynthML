@@ -167,7 +167,7 @@ public class SynthesisChainTracking {
                         // Either the original CIF event is start-only, or, if the transition is part of a merged
                         // pattern, check that the current CIF event is a start event.
                         (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
-                                || (isOriginalCompleteElement(e.getValue().getUmlElement())
+                                || (isRelatedToOriginalCompleteEvent(e.getValue().getUmlElement())
                                         && e.getValue().isStartEvent())))
                 .map(Map.Entry::getKey).toList();
 
@@ -386,7 +386,7 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
                 && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
-                        || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+                        || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
     /**
@@ -412,7 +412,7 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
                 && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
-                        || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+                        || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
     /**
@@ -437,7 +437,7 @@ public class SynthesisChainTracking {
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
-                || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
+                || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
     }
 
     /** Tracing information related to a CIF event. */
@@ -1016,7 +1016,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
      *     event, {@code false} otherwise.
      */
-    private boolean isOriginalCompleteElement(RedefinableElement finalizedUmlElement) {
+    private boolean isRelatedToOriginalCompleteEvent(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
