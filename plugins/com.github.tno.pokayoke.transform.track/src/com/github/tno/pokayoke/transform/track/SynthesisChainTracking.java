@@ -94,7 +94,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the event tracing info related to the input CIF event.
+     * Returns the event tracing info related to the input CIF event.
      *
      * @param cifEvent The CIF event.
      * @return The CIF event tracing info.
@@ -175,7 +175,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Check whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
+     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
      *
      * @param umlElement The UML element to check.
      * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
@@ -288,7 +288,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     * Returns {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
@@ -304,7 +304,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Remove from the CIF event tracing map the events contained in the given set. If an event is a start event, also
+     * Removes from the CIF event tracing map the events contained in the given set. If an event is a start event, also
      * its corresponding end events are removed. If all end events of a start event are removed, it updates the
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
      * {@code true}.
@@ -364,7 +364,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque behavior. If the
+     * Returns {@code true} if the CIF event corresponds to the start event of an (original) opaque behavior. If the
      * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
      * guard computation and language equivalence check.
      *
@@ -390,7 +390,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque action. If the
+     * Returns {@code true} if the CIF event corresponds to the start event of an (original) opaque action. If the
      * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
      * guard computation and language equivalence check.
      *
@@ -416,7 +416,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the CIF event corresponds to an end-only event in the original UML model. If the related
+     * Returns {@code true} if the CIF event corresponds to an end-only event in the original UML model. If the related
      * pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for guard
      * computation and language equivalence check.
      *
@@ -487,7 +487,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the translation purpose of the CIF event.
+         * Returns the translation purpose of the CIF event.
          *
          * @return The translation purpose.
          */
@@ -496,7 +496,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the UML element that relates to the CIF event, or {@code null} if no such element exists.
+         * Returns the UML element that relates to the CIF event, or {@code null} if no such element exists.
          *
          * @return The related UML element, or {@code null}.
          */
@@ -505,8 +505,8 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the effect index of the related UML element. It is {@code null} for events that are both start and end
-         * events, as well as for start-only events. End-only events must have a non-negative integer effect index.
+         * Returns the effect index of the related UML element. It is {@code null} for events that are both start and
+         * end events, as well as for start-only events. End-only events must have a non-negative integer effect index.
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
@@ -524,7 +524,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return {@code true} if the event represents an end event, {@code false} otherwise.
+         * Returns {@code true} if the event represents an end event, {@code false} otherwise.
          *
          * @return {@code true} if the event represents an end event, {@code false} otherwise.
          */
@@ -696,7 +696,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the set of CIF events linked to the transition.
+         * Returns the set of CIF events linked to the transition.
          *
          * @return The CIF events.
          */
@@ -763,7 +763,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the UML element originally related to the transition, or {@code null} if no such element exists.
+         * Returns the UML element originally related to the transition, or {@code null} if no such element exists.
          *
          * @return The related UML element, or {@code null}.
          */
@@ -777,7 +777,7 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Return the effect index of the UML element originally related to the transition. It is {@code null} for
+         * Returns the effect index of the UML element originally related to the transition. It is {@code null} for
          * events that are both start and end events, as well as for start-only events. End-only events must have a
          * non-negative integer effect index.
          *
@@ -799,7 +799,7 @@ public class SynthesisChainTracking {
     /////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Store the newly generated UML actions and the Petri net transitions they originate from.
+     * Stores the newly generated UML actions and the Petri net transitions they originate from.
      *
      * @param transitionActionMap The map from Petri net transitions to UML actions.
      */
@@ -844,7 +844,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     * Returns the UML element originally related to the opaque action, or {@code null} if no such element exists.
      *
      * @param action The opaque action.
      * @return The related UML element, or {@code null}.
@@ -861,9 +861,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the effect index of the UML element originally related to the opaque action. It is {@code null} for events
-     * that are both start and end events, as well as for start-only events. End-only events must have a non-negative
-     * integer effect index.
+     * Returns the effect index of the UML element originally related to the opaque action. It is {@code null} for
+     * events that are both start and end events, as well as for start-only events. End-only events must have a
+     * non-negative integer effect index.
      *
      * @param action The opaque action.
      * @return The effect index of the related UML element, or {@code null}.
@@ -896,7 +896,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the Petri net transition related to the opaque action is a start-only transition.
+     * Returns {@code true} if the Petri net transition related to the opaque action is a start-only transition.
      *
      * @param action The opaque action.
      * @return {@code true} if the action is related to a start-only transition, {@code false} otherwise.
@@ -906,7 +906,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the Petri net transition related to the opaque action is an end-only transition.
+     * Returns {@code true} if the Petri net transition related to the opaque action is an end-only transition.
      *
      * @param action The opaque action.
      * @return {@code true} if the action is related to an end-only transition, {@code false} otherwise.
@@ -916,7 +916,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the Petri net transition related to the opaque action is a complete transition.
+     * Returns {@code true} if the Petri net transition related to the opaque action is a complete transition.
      *
      * @param action The opaque action.
      * @return {@code true} if the action is related to a complete transition, {@code false} otherwise.
@@ -926,7 +926,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Remove the internal actions created for petrification in the internal mappings. Specifically targeted at the
+     * Removes the internal actions created for petrification in the internal mappings. Specifically targeted at the
      * single source and single sink "__start" and "__end" events.
      */
     public void removeInternalActions() {
@@ -950,9 +950,10 @@ public class SynthesisChainTracking {
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    // Section dealing with finalized UML elements.
-    /////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with finalized UML elements, i.e. elements that belong to the synthesized activity, with their
+    // guards and effects (if needed).
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
@@ -966,7 +967,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return the UML element originally related to the finalized UML element, or {@code null} if no such element
+     * Returns the UML element originally related to the finalized UML element, or {@code null} if no such element
      * exists.
      *
      * @param finalizedUmlElement The finalized UML element.
@@ -978,7 +979,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the finalized UML element is related to a start-only original CIF event.
+     * Returns {@code true} if the finalized UML element is related to a start-only original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
      * @return {@code true} if the finalized UML element is related to a start-only original CIF event, {@code false}
@@ -993,7 +994,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the finalized UML element is related to an end-only original CIF event.
+     * Returns {@code true} if the finalized UML element is related to an end-only original CIF event.
      *
      * @param finalizedUmlElement The finalized UML element.
      * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
@@ -1008,7 +1009,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
+     * Returns {@code true} if the finalized UML element is related to a complete (both start and end) original CIF
      * event.
      *
      * @param finalizedUmlElement The finalized UML element.
