@@ -40,6 +40,15 @@ public interface SynthMLFactory extends EFactory {
 	FormalControlFlow createFormalControlFlow();
 
 	/**
+	 * Returns a new object of class '<em>Formal Call Behavior Action</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Formal Call Behavior Action</em>'.
+	 * @generated
+	 */
+	FormalCallBehaviorAction createFormalCallBehaviorAction();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -8,11 +8,13 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.escet.cif.parser.ast.AInvariant;
+import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.common.java.TextPosition;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.escet.setext.runtime.exceptions.SyntaxException;
+import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.Element;
@@ -83,6 +85,30 @@ public class CifParserHelper {
         }
         CifUpdatesParser updatesParser = new CifUpdatesParser();
         return updatesParser.parseString(updates, getLocation(context));
+    }
+
+    public static List<AAssignmentUpdate> parseArguments(CallBehaviorAction callBehaviorAction) throws SyntaxException {
+        if (callBehaviorAction == null) {
+            return null;
+        }
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callBehaviorAction);
+
+        if (arguments.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        List<AUpdate> updates = parseUpdates(arguments, callBehaviorAction);
+
+        List<AAssignmentUpdate> assignments = new ArrayList<>();
+        for (AUpdate update: updates) {
+            if (update instanceof AAssignmentUpdate assignment) {
+                assignments.add(assignment);
+            } else {
+                throw new CustomSyntaxException("Call behavior arguments must be assignments",
+                        TextPosition.createDummy(getLocation(callBehaviorAction)));
+            }
+        }
+        return assignments;
     }
 
     public static List<List<AUpdate>> parseEffects(RedefinableElement element) throws SyntaxException {

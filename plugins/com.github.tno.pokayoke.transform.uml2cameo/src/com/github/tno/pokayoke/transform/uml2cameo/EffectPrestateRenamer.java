@@ -26,7 +26,7 @@ public class EffectPrestateRenamer extends CifExpressionRenamer {
      * @param context The context to determine.
      */
     public EffectPrestateRenamer(CifContext context) {
-        super(name -> context.isVariable(name) ? PREFIX + name : name);
+        super(name -> context.isAssignableVariable(name) ? PREFIX + name : name);
     }
 
     @Override

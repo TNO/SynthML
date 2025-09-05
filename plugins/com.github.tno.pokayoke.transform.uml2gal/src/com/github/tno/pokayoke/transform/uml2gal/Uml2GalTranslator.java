@@ -130,7 +130,8 @@ public class Uml2GalTranslator {
         variableTracing.clear();
         transitionTracing.clear();
 
-        CifContext cifContext = new CifContext(model);
+        // Translate with a global context, parameterized activities are not supported.
+        CifContext cifContext = CifContext.createGlobal(model);
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Check transformation preconditions.
@@ -138,6 +139,8 @@ public class Uml2GalTranslator {
         Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasParameterizedActivities(),
+                "Parameterized activities are unsupported.");
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);

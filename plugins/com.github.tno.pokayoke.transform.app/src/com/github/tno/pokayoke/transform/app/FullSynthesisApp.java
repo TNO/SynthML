@@ -77,19 +77,23 @@ public class FullSynthesisApp {
         // Load UML specification.
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlSpec);
+        CifContext context = CifContext.createGlobal(umlSpec);
 
         // Flatten composite data types.
         CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec);
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
-        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(
-                new CifContext(umlSpec).getAllActivities());
+        AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
         if (activities == null) {
             throw new RuntimeException(String.format(
                     "Expected to find no cyclic dependencies in the activities to synthesize, but found '%s'.",
                     orderer.getCycleDescription()));
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Synthesis of parameterized activities is unsupported.");
         }
 
         for (int i = 0; i < activities.size(); i++) {
@@ -109,8 +113,8 @@ public class FullSynthesisApp {
         SynthesisChainTracking tracker = new SynthesisChainTracking();
 
         // Translate the UML specification to a CIF specification.
-        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(activity, UmlToCifTranslationPurpose.SYNTHESIS,
-                tracker);
+        UmlToCifTranslator umlToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity), activity,
+                UmlToCifTranslationPurpose.SYNTHESIS, tracker);
         Specification cifSpec = umlToCifTranslator.translate();
         Path cifSpecPath = outputFolderPath.resolve(filePrefix + ".01.cif");
         try {
@@ -271,7 +275,7 @@ public class FullSynthesisApp {
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeInternalActions(activity);
+        PostProcessActivity.removeOpaqueActions(activity, tracker.getInternalActions());
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Remove internal actions from the synthesis chain tracker.
@@ -289,8 +293,8 @@ public class FullSynthesisApp {
 
         // Translating synthesized activity to CIF, for guard computation.
         Path umlActivityToCifPath = outputFolderPath.resolve(filePrefix + ".18.guardcomputation.cif");
-        UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(activity,
-                UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
+        UmlToCifTranslator umlActivityToCifTranslator = new UmlToCifTranslator(CifContext.createGlobal(activity),
+                activity, UmlToCifTranslationPurpose.GUARD_COMPUTATION, tracker);
         Specification cifTranslatedActivity = umlActivityToCifTranslator.translate();
         try {
             AppEnv.registerSimple();
@@ -342,7 +346,8 @@ public class FullSynthesisApp {
                 .loadCifSpec(localOutputPath.resolve(filePrefix + ".04.ctrlsys.statespace.cif"));
 
         // Translate final UML model to CIF and get its state space.
-        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(translator.getActivity(),
+        UmlToCifTranslator umlToCifTranslatorPostSynth = new UmlToCifTranslator(
+                CifContext.createGlobal(translator.getActivity()), translator.getActivity(),
                 UmlToCifTranslationPurpose.LANGUAGE_EQUIVALENCE, tracker);
         Specification cifSpec = umlToCifTranslatorPostSynth.translate();
         Path cifSpecPath = localOutputPath.resolve(filePrefix + ".99.01.finalUmlToCif.cif");

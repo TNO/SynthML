@@ -386,7 +386,8 @@ public class SynthesisChainTracking {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
                 && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
-                        || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+                        || (isRelatedToOriginalCompleteEvent(finalizedUmlElement)
+                                && finalizedEventInfo.isStartEvent()));
     }
 
     /**
@@ -410,9 +411,9 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction
-                && (isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
-                        || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
+        return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueAction && (isRelatedToOriginalStartOnlyEvent(
+                finalizedUmlElement)
+                || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent()));
     }
 
     /**
@@ -461,7 +462,7 @@ public class SynthesisChainTracking {
         private final boolean isEndEvent;
 
         /**
-         * Constructor of a CIF event tracing info.
+         * Constructs a new {@link EventTraceInfo}.
          *
          * @param purpose The translation purpose.
          * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
@@ -478,6 +479,8 @@ public class SynthesisChainTracking {
                     "Events that are both start and end events, as well as start-only events, must have null effect index. "
                             + "End-only events must have integer effect index.");
             Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
+            Verify.verify(effectIdx == null || umlElement != null,
+                    "UML element must be non-null if effect index is non-null.");
 
             this.purpose = purpose;
             this.umlElement = umlElement;
@@ -505,8 +508,8 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Returns the effect index of the related UML element. It is {@code null} for events that are both start and
-         * end events, as well as for start-only events. End-only events must have a non-negative integer effect index.
+         * Returns the effect index of the UML element originally related to the transition. This transition must be an
+         * end-only transition, which then always has a non-negative integer effect index.
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
@@ -656,11 +659,9 @@ public class SynthesisChainTracking {
                         startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
 
                 List<Event> endEvents = cifEvents.stream().filter(e -> getEventTraceInfo(e).isEndOnlyEvent()).toList();
-                Verify.verify(endEvents.size() >= 1, "There must be at last one end-only event.");
+                Verify.verify(endEvents.size() >= 1, "There must be at least one end-only event.");
 
-                List<Event> startEndEvents = cifEvents.stream()
-                        .filter(e -> getEventTraceInfo(e).isStartEvent() && getEventTraceInfo(e).isEndEvent()).toList();
-                Verify.verify(startEndEvents.size() == 0,
+                Verify.verify(startEvents.size() + endEvents.size() == cifEvents.size(),
                         "Events that are both start- and end-events are not supported for merged patterns.");
 
                 Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> getEventTraceInfo(e).getUmlElement())
@@ -777,11 +778,10 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Returns the effect index of the UML element originally related to the transition. It is {@code null} for
-         * events that are both start and end events, as well as for start-only events. End-only events must have a
-         * non-negative integer effect index.
+         * Returns the effect index of the UML element originally related to the transition, if it is end-only. End-only
+         * events must have a non-negative integer effect index.
          *
-         * @return The effect index of the related UML element, or {@code null}.
+         * @return The effect index of the related UML element.
          */
         private int getEffectIdx() {
             // Sanity check: the transition should be related to a end-only CIF event.
@@ -1022,5 +1022,27 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
                         finalizedUmlElement.getName()));
         return isCompleteAction(action);
+    }
+
+    /**
+     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is internal, {@code false} otherwise.
+     */
+
+    public boolean isInternalAction(OpaqueAction action) {
+        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+        return getUmlElement(action) == null;
+    }
+
+    /**
+     * Returns the set of internal actions.
+     *
+     * @return The set of internal actions.
+     */
+    public Set<OpaqueAction> getInternalActions() {
+        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

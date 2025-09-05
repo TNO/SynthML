@@ -18,7 +18,9 @@ import org.eclipse.escet.cif.parser.ast.automata.AAssignmentUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AElifUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AIfUpdate;
 import org.eclipse.escet.cif.parser.ast.automata.AUpdate;
+import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
+import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
@@ -30,6 +32,7 @@ import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.ControlFlow;
 import org.eclipse.uml2.uml.ControlNode;
@@ -37,6 +40,7 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.DecisionNode;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
 import org.eclipse.uml2.uml.FlowFinalNode;
 import org.eclipse.uml2.uml.ForkNode;
 import org.eclipse.uml2.uml.InitialNode;
@@ -53,6 +57,7 @@ import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
@@ -61,13 +66,16 @@ import org.espilce.periksa.validation.ContextAwareDeclarativeValidator;
 import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
+import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.TypeException;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalElement;
 import SynthML.SynthMLPackage;
 
@@ -176,7 +184,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         if (!isPokaYokeUmlProfileApplied(model)) {
             return;
         }
-        CifContext ctx = new CifContext(model);
+        CifContext ctx = CifContext.createGlobal(model);
         Map<String, List<NamedElement>> referenceableElementsInclDuplicates = ctx
                 .getReferenceableElementsInclDuplicates();
         for (Map.Entry<String, List<NamedElement>> entry: referenceableElementsInclDuplicates.entrySet()) {
@@ -241,6 +249,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return;
         }
 
+        if (clazz.getOwner() instanceof TemplateParameter) {
+            // This class is used to name a template parameter. Skip the next validations.
+            return;
+        }
+
         if (!clazz.isActive()) {
             error("Class must be active, not passive.", UMLPackage.Literals.CLASS__IS_ACTIVE);
         }
@@ -249,8 +262,11 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Required classifier behavior not set.",
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         } else {
-            if (!(clazz.getClassifierBehavior() instanceof Activity)) {
+            if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
+                        UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
+            } else if (!CifScope.getClassifierTemplateParameters(activity).isEmpty()) {
+                error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
 
@@ -353,7 +369,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (propDefaultExpr == null) {
                 return;
             }
-            new PropertyDefaultValueTypeChecker(property).checkAssignment(propType, propDefaultExpr);
+            new PropertyDefaultValueTypeChecker(CifContext.createScoped(property)).checkAssignment(propType,
+                    propDefaultExpr);
 
             if (PokaYokeTypeUtil.isIntegerType(propType)) {
                 // Default value is set and valid, thus can be parsed into an integer
@@ -475,6 +492,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
+        // Check template parameters of the activity. Adding a check directly on 'RedefinableTemplateSignature' fails
+        // to report the error message to the Problems view.
+        checkValidRedefinableTemplateSignature(activity);
+
         Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
 
         Set<Constraint> preAndPostconditions = new LinkedHashSet<>();
@@ -516,6 +537,50 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     .objectsOfKind(FlowFinalNode.class);
             if (!flowFinalNodes.isEmpty()) {
                 error("Flow final nodes are not supported.", activity, null);
+            }
+        }
+    }
+
+    private void checkValidRedefinableTemplateSignature(Activity activity) {
+        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+
+        if (activity.isAbstract() && templateParameters.size() > 0) {
+            error("Activity parameters are disallowed on abstract activities.", null);
+            return; // Further checks do not provide the user with useful information.
+        }
+
+        if (templateParameters.stream().map(ClassifierTemplateParameter::getConstrainingClassifiers)
+                .anyMatch(constrainingClassifiers -> constrainingClassifiers.size() != 1))
+        {
+            error("Activity parameters must have exactly one constraining classifier.", null);
+        }
+
+        if (!templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .allMatch(NamedElement.class::isInstance))
+        {
+            error("Activity parameters must have a default of type 'NamedElement'.", null);
+        }
+
+        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+                .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
+                        || PokaYokeTypeUtil.isEnumerationType(parameter))))
+        {
+            error("Activity parameters must be of primitive or enumeration type.", null);
+        }
+
+        List<String> parameterNames = templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
+                .map(CifScope::getClassifierTemplateParameterName).toList();
+        if (!parameterNames.stream().allMatch(new HashSet<>()::add)) {
+            error("Activity parameters must have unique names.", null);
+        }
+
+        CifContext globalContext = CifContext.createGlobal(activity);
+        for (String parameterName: parameterNames) {
+            // Check if the template parameter name matches a variable from an enclosing scope.
+            // Currently this means that only properties declared in the global scope are found, so we can mention
+            // 'property' specifically in the error message.
+            if (globalContext.isVariable(parameterName)) {
+                error(String.format("'\s' was already declared as a property.", parameterName), null);
             }
         }
     }
@@ -674,11 +739,12 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidGuard(RedefinableElement element) {
+        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
         if (element instanceof ControlFlow controlFlow) {
             try {
                 AExpression incomingGuardExpr = CifParserHelper.parseIncomingGuard(controlFlow);
                 if (incomingGuardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(incomingGuardExpr);
+                    typeChecker.checkBooleanAssignment(incomingGuardExpr);
                 }
             } catch (RuntimeException e) {
                 error("Invalid incoming guard: " + e.getLocalizedMessage(), UMLPackage.Literals.ACTIVITY_EDGE__GUARD);
@@ -687,20 +753,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             try {
                 AExpression outgoingGuardExpr = CifParserHelper.parseOutgoingGuard(controlFlow);
                 if (outgoingGuardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(outgoingGuardExpr);
+                    typeChecker.checkBooleanAssignment(outgoingGuardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid outgoing guard: " + e.getLocalizedMessage(),
-                        SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
+                error("Invalid outgoing guard: " + e.getLocalizedMessage(), null);
             }
         } else {
             try {
                 AExpression guardExpr = CifParserHelper.parseGuard(element);
                 if (guardExpr != null) {
-                    new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
+                    typeChecker.checkBooleanAssignment(guardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid guard: " + e.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__GUARD);
+                error("Invalid guard: " + e.getLocalizedMessage(), null);
             }
         }
     }
@@ -721,14 +786,106 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (effects.size() > 1) {
                     prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
                 }
-                error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+                error(prefix + re.getLocalizedMessage(), null);
             }
         }
     }
 
+    /**
+     * Validates the {@link FormalCallBehaviorAction#getArguments()} property if set.
+     *
+     * @param callAction The call action to validate.
+     */
+    @Check
+    private void checkValidArguments(CallBehaviorAction callAction) {
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
+        if (arguments.isBlank()) {
+            return;
+        }
+
+        Behavior behavior = callAction.getBehavior();
+        if (!(behavior instanceof Activity calledActivity)) {
+            String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
+            error("A call behavior action with arguments must call an activity, got: " + got, null);
+            // No activity could be resolved, skip argument parsing of the behavior.
+            return;
+        }
+
+        try {
+            List<AUpdate> updates = CifParserHelper.parseUpdates(arguments, calledActivity);
+
+            // Valid assignments are valid updates with restrictions.
+            checkValidArguments(updates, callAction, calledActivity);
+
+            // Ensure that no parameter is assigned more than once.
+            checkUniqueAddressables(updates, new LinkedHashSet<>());
+
+            // Ensure that every parameter is assigned.
+            if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+                error("Not all parameters of the called activity have been assigned.", null);
+            }
+        } catch (RuntimeException re) {
+            String prefix = "Invalid parameter assignments: ";
+            error(prefix + re.getLocalizedMessage(), null);
+        }
+    }
+
+    private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction, Activity calledActivity) {
+        Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
+                .getDeclaredTemplateParameters();
+
+        CifContext addressableContext = CifContext.createScoped(calledActivity);
+        CifContext valueContext = CifContext.createScoped(callAction);
+
+        for (AUpdate update: updates) {
+            // Ensure the update is an assignment update.
+            if (!(update instanceof AAssignmentUpdate assignment)) {
+                error("Invalid parameter assignment: Only assignment updates are supported.", null);
+                continue;
+            }
+
+            // Ensure the addressable part is a named expression referring to the name of a template parameter, and that
+            // the addressable and value have the same type.
+            if (!(assignment.addressable instanceof ANameExpression addressable)) {
+                error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
+            } else if (addressable.derivative) {
+                error("Invalid parameter assignment: Expected a non-derivative parameter name.", null);
+            } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
+                error("Invalid parameter assignment: Unknown activity parameter name (of the called activity): "
+                        + addressable.name.name, null);
+            } else {
+                // Verify that the types match.
+                CifTypeChecker checker = new CifTypeChecker(valueContext);
+
+                checker.checkArgumentAssignment(addressable, addressableContext, assignment.value, valueContext,
+                        assignment.position);
+            }
+
+            // Ensure that the value expression is supported.
+            if (assignment.value instanceof ANameExpression nameExpr) {
+                if (nameExpr.derivative) {
+                    error("Expected a non-derivative assignment.", null);
+                }
+
+                String name = nameExpr.name.name;
+                NamedElement element = valueContext.getReferenceableElement(name);
+                if (!(element instanceof EnumerationLiteral || element instanceof NamedTemplateParameter)) {
+                    error("Invalid parameter assignment: Expected a literal or a parameter of the calling activity, got: "
+                            + name, null);
+                }
+            } else if (!(assignment.value instanceof ABoolExpression || assignment.value instanceof AIntExpression)) {
+                error("Invalid parameter assignment: Expected a literal or a parameter of the calling activity", null);
+            }
+        }
+    }
+
+    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> namedElements) {
+        return namedElements.stream().anyMatch(p -> p.getName().equals(name));
+    }
+
     private void checkValidUpdates(List<AUpdate> updates, Element element) {
         // Type check all updates.
-        CifTypeChecker typeChecker = new CifTypeChecker(element);
+        CifTypeChecker typeChecker = new CifTypeChecker(CifContext.createScoped(element));
 
         for (AUpdate update: updates) {
             typeChecker.checkUpdate(update);
@@ -822,7 +979,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidActivityPrePostconditionConstraint(Constraint constraint) {
         try {
             AInvariant invariant = CifParserHelper.parseInvariant(constraint);
-            new CifTypeChecker(constraint).checkInvariant(invariant);
+            new CifTypeChecker(CifContext.createScoped(constraint)).checkInvariant(invariant);
 
             // Activity preconditions and postconditions are constraints and therefore parsed as invariants.
             // Make sure that they are state invariants.
@@ -837,7 +994,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
 
     private void checkValidClassConstraint(Constraint constraint) {
         try {
-            new CifTypeChecker(constraint).checkInvariant(CifParserHelper.parseInvariant(constraint));
+            new CifTypeChecker(CifContext.createGlobal(constraint))
+                    .checkInvariant(CifParserHelper.parseInvariant(constraint));
         } catch (RuntimeException e) {
             error("Invalid invariant: " + e.getLocalizedMessage(), UMLPackage.Literals.CONSTRAINT__SPECIFICATION);
         }
@@ -876,7 +1034,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 return;
             }
 
-            CifContext context = new CifContext(constraint);
+            CifContext context = CifContext.createGlobal(constraint);
 
             for (Element element: constraint.getConstrainedElements()) {
                 if (element instanceof OpaqueBehavior || element instanceof Activity) {
