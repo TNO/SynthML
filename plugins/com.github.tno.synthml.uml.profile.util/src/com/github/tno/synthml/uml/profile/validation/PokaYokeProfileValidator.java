@@ -109,9 +109,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return new CifContextManager(element);
         }
 
-        validationContext.computeIfAbsent("CifContextManager", __ -> new CifContextManager(element));
-
-        return (CifContextManager)validationContext.get("CifContextManager");
+        return (CifContextManager)validationContext.computeIfAbsent("CifContextManager",
+                __ -> new CifContextManager(element));
     }
 
     private CifContext getGlobalContext(Element element) {

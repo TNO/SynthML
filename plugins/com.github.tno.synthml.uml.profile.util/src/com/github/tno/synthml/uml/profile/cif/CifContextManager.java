@@ -14,15 +14,15 @@ import org.eclipse.uml2.uml.Element;
  */
 public class CifContextManager {
     /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifContext}. */
-    private Map<Activity, CifContext> contextCache;
+    private final Map<Activity, CifContext> contextCache;
 
     /** Cached global {@link CifContext}. */
     private CifContext globalContext;
 
-    /**	
-     * Initializes the context manager with a global context for the model that contains the given element.	
-     *	
-     * @param element The {@link Element} of the model for which to create the global context.	
+    /**
+     * Initializes the context manager with a global context for the model that contains the given element.
+     *
+     * @param element The {@link Element} of the model for which to create the global context.
      */
     public CifContextManager(Element element) {
         contextCache = new HashMap<>();
@@ -35,8 +35,7 @@ public class CifContextManager {
         if (activity == null) {
             return globalContext;
         } else {
-            contextCache.computeIfAbsent(activity, CifContextManager::createScoped);
-            return contextCache.get(activity);
+            return contextCache.computeIfAbsent(activity, CifContextManager::createScoped);
         }
     }
 
