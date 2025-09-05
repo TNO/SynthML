@@ -951,10 +951,17 @@ public class SynthesisChainTracking {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Section dealing with finalized UML elements, i.e. elements that belong to the synthesized activity, with their
-    // guards and effects (if needed).
+    // Section dealing with finalized UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Registers that the given finalized UML element has been created, as the result of the finalization of the given
+     * opaque action. A finalized UML element represents an element belonging to the synthesized activity, that is an
+     * instance of its final class, that has guard and effects (if relevant).
+     *
+     * @param finalizedElement The finalized UML element.
+     * @param action The opaque action.
+     */
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
         Verify.verify(!finalizedElementToAction.containsKey(finalizedElement),
