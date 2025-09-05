@@ -58,6 +58,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.TemplateParameter;
+import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
@@ -549,8 +550,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return; // Further checks do not provide the user with useful information.
         }
 
-        if (!activity.getOwnedTemplateSignature().getParameters().stream()
-                .allMatch(ClassifierTemplateParameter.class::isInstance))
+        TemplateSignature templateSignature = activity.getOwnedTemplateSignature();
+        if (templateSignature != null
+                && !templateSignature.getParameters().stream().allMatch(ClassifierTemplateParameter.class::isInstance))
         {
             error("Activity parameters must be of type 'ClassifierTemplateParameter'.", null);
         }

@@ -87,14 +87,19 @@ public class CifScope {
     }
 
     public static List<ClassifierTemplateParameter> getClassifierTemplateParameters(Activity activity) {
-        return getClassifierTemplateParameters(activity.getOwnedTemplateSignature());
+        TemplateSignature templateSignature = activity.getOwnedTemplateSignature();
+
+        if (templateSignature == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return getClassifierTemplateParameters(templateSignature);
     }
 
     public static List<ClassifierTemplateParameter>
             getClassifierTemplateParameters(TemplateSignature templateSignature)
     {
-        return templateSignature.getOwnedParameters().stream()
-                .filter(ClassifierTemplateParameter.class::isInstance).map(ClassifierTemplateParameter.class::cast)
-                .toList();
+        return templateSignature.getOwnedParameters().stream().filter(ClassifierTemplateParameter.class::isInstance)
+                .map(ClassifierTemplateParameter.class::cast).toList();
     }
 }

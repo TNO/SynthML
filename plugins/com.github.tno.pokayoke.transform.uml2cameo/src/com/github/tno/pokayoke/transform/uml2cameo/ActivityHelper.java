@@ -739,7 +739,7 @@ public class ActivityHelper {
         assignmentAction.getBodies().add(optionalAssignments);
         assignmentAction.getLanguages().add("Python");
 
-        for (ActivityEdge incoming: callAction.getIncomings()) {
+        for (ActivityEdge incoming: List.copyOf(callAction.getIncomings())) {
             incoming.setTarget(assignmentAction);
         }
 
