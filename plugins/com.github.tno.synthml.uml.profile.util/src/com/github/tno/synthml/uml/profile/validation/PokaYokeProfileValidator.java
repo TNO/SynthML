@@ -691,7 +691,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 }
             } catch (RuntimeException e) {
                 error("Invalid outgoing guard: " + e.getLocalizedMessage(),
-                        SynthMLPackage.Literals.FORMAL_CONTROL_FLOW__OUTGOING_GUARD);
+                        null);
             }
         } else {
             try {
@@ -700,7 +700,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     new CifTypeChecker(element).checkBooleanAssignment(guardExpr);
                 }
             } catch (RuntimeException e) {
-                error("Invalid guard: " + e.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__GUARD);
+                error("Invalid guard: " + e.getLocalizedMessage(), null);
             }
         }
     }
@@ -721,7 +721,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 if (effects.size() > 1) {
                     prefix = String.format("Invalid effects (%d of %d): ", i + 1, effects.size());
                 }
-                error(prefix + re.getLocalizedMessage(), SynthMLPackage.Literals.FORMAL_ELEMENT__EFFECTS);
+                error(prefix + re.getLocalizedMessage(), null);
             }
         }
     }
