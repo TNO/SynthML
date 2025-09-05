@@ -141,7 +141,7 @@ public class SynthesisChainTracking {
 
     /**
      * Gives the list of CIF start events corresponding to the given UML element, considered as the original UML
-     * element, for the specified translation purpose. Valid only for guard computation and language equivalence.
+     * element, for the specified translation purpose. Valid only for guard computation and language equivalence check.
      *
      * @param originalUmlElement The non-{@code null} UML element.
      * @param purpose The translation purpose.
@@ -358,7 +358,7 @@ public class SynthesisChainTracking {
     /**
      * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque behavior. If the
      * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
-     * guard computation and language equivalence.
+     * guard computation and language equivalence check.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -384,7 +384,7 @@ public class SynthesisChainTracking {
     /**
      * Return {@code true} if the CIF event corresponds to the start event of an (original) opaque action. If the
      * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
-     * guard computation and language equivalence.
+     * guard computation and language equivalence check.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -410,7 +410,7 @@ public class SynthesisChainTracking {
     /**
      * Return {@code true} if the CIF event corresponds to an end-only event in the original UML model. If the related
      * pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for guard
-     * computation and language equivalence.
+     * computation and language equivalence check.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
