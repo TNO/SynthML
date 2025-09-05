@@ -450,7 +450,6 @@ public class UMLToCameoTransformer {
     private void transformTemplateSignature(Activity activity) {
         for (ClassifierTemplateParameter parameter: CifScope.getClassifierTemplateParameters(activity)) {
             String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
-
             ActivityHelper.addParameterToActivity(activity, parameterName);
         }
     }
