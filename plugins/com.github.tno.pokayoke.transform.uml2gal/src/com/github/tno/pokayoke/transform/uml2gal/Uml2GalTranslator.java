@@ -117,6 +117,7 @@ public class Uml2GalTranslator {
 
         // Flatten composite data types, and normalize the XMI IDs.
         CompositeDataTypeFlattener.flattenCompositeDataTypes(model, ctxManager);
+        ctxManager.refresh();
         FileHelper.normalizeIds(model);
 
         // Validate and flatten the model.
@@ -134,7 +135,7 @@ public class Uml2GalTranslator {
         transitionTracing.clear();
 
         // Translate with a global context, parameterized activities are not supported.
-        CifContext cifContext = new CifContextManager(model).getGlobalContext();
+        CifContext cifContext = ctxManager.getGlobalContext();
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Check transformation preconditions.

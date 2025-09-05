@@ -7,6 +7,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Model;
 
 /**
  * Caches {@link CifContext} instances to avoid redundant recreation. The class maintains a global context and scoped
@@ -37,6 +38,12 @@ public class CifContextManager {
         } else {
             return contextCache.computeIfAbsent(activity, CifContextManager::createScoped);
         }
+    }
+
+    public void refresh() {
+        contextCache.clear();
+        Model model = globalContext.getModel();
+        globalContext = new CifContext(model, CifScope.global());
     }
 
     public CifContext getGlobalContext() {

@@ -79,12 +79,13 @@ public class FullSynthesisApp {
         Model umlSpec = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlSpec);
         CifContextManager ctxManager = new CifContextManager(umlSpec);
-        CifContext context = ctxManager.getGlobalContext();
 
         // Flatten composite data types.
         CompositeDataTypeFlattener.flattenCompositeDataTypes(umlSpec, ctxManager);
+        ctxManager.refresh();
 
         // Synthesize all abstract activities in the loaded UML specification in the proper order.
+        CifContext context = ctxManager.getGlobalContext();
         AbstractActivityDependencyOrderer orderer = new AbstractActivityDependencyOrderer(context.getAllActivities());
         List<Activity> activities = orderer.computeOrder();
 
