@@ -436,7 +436,7 @@ public class SynthesisChainTracking {
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return isOriginalEndOnlyElement(finalizedUmlElement)
+        return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
                 || (isOriginalCompleteElement(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
     }
 
@@ -1000,7 +1000,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the finalized UML element is related to an end-only original CIF event, {@code false}
      *     otherwise.
      */
-    private boolean isOriginalEndOnlyElement(RedefinableElement finalizedUmlElement) {
+    private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         Verify.verifyNotNull(action,
                 String.format("Element '%s' does not have a corresponding non-finalized opaque action.",
