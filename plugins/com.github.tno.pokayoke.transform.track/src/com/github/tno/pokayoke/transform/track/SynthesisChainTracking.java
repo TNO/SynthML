@@ -416,7 +416,8 @@ public class SynthesisChainTracking {
         }
 
         /**
-         * Returns the effect index of the UML element originally related to the transition. This transition must be an end-only transition, which then always has a non-negative integer effect index.
+         * Returns the effect index of the UML element originally related to the transition. This transition must be an
+         * end-only transition, which then always has a non-negative integer effect index.
          *
          * @return The effect index of the related UML element, or {@code null}.
          */
