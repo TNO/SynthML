@@ -26,7 +26,12 @@ import fr.lip6.move.pnml.ptnet.Transition;
 
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
- * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petrinet actions, etc.
+ * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petri net transitions,
+ * actions, etc. The UML elements of the input model and CIF event created in the first step of the synthesis chain are
+ * named 'original', to distinguish them from the UML elements in the synthesized activity (named 'non-finalized' for
+ * placeholder opaque actions, and 'finalized' for their finalized version, see also
+ * {@link #addFinalizedUmlElement(RedefinableElement, OpaqueAction)}) and from the CIF events created for guard
+ * computation or language equivalence check phases of the synthesis chain.
  * <p>
  * This tracking storage contains only 'global' tracing information from transformations in the synthesis chain that is
  * needed by other transformations. Any other 'local' tracing information which is not needed by other transformations
@@ -812,9 +817,12 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the non-finalized UML opaque actions and the Petri net transitions they originate from. The synthesis
-     * tracker stores the non-finalized opaque actions even when they might be destroyed in the finalization synthesis
-     * chain step, and might no longer be present in the intermediate and final UML models.
+     * Stores the non-finalized UML opaque actions and the Petri net transitions they originate from. A non-finalized
+     * opaque action represents a 'placeholder' UML element, that will later be finalized in the synthesis chain. It has
+     * no guard nor effects. It can be finalized into an opaque action with guard and/or effects, or into a call
+     * behavior action. The synthesis tracker stores the non-finalized opaque actions even when they might be destroyed
+     * in the finalization synthesis chain step, and might no longer be present in the intermediate and final UML
+     * models.
      *
      * @param transitionActionMap The map from Petri net transitions to UML actions.
      */
