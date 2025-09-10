@@ -966,8 +966,12 @@ public class SynthesisChainTracking {
 
     /**
      * Registers that the given finalized UML element has been created, as the result of the finalization of the given
-     * opaque action. A finalized UML element represents an element belonging to the synthesized activity, that is an
-     * instance of its final class, that has guard and effects (if relevant).
+     * opaque action. A finalized UML element represents an element belonging to the synthesized activity, and can be of
+     * two kinds:
+     * <ul>
+     * <li>it is an opaque action including guard and effects, if it represents a start-only or end-only event</li>
+     * <li>it is a call behavior, if it represents a complete event</li>
+     * </ul>
      *
      * @param finalizedElement The finalized UML element.
      * @param action The opaque action.
