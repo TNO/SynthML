@@ -809,7 +809,9 @@ public class SynthesisChainTracking {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Stores the newly generated UML actions and the Petri net transitions they originate from.
+     * Stores the non-finalized UML opaque actions and the Petri net transitions they originate from. The synthesis
+     * tracker stores the non-finalized opaque actions even when they might be destroyed in the finalization synthesis
+     * chain step, and might no longer be present in the intermediate and final UML models.
      *
      * @param transitionActionMap The map from Petri net transitions to UML actions.
      */
