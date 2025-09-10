@@ -370,7 +370,7 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an opaque behavior.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior.
      */
     public boolean isStartOfOriginalOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -397,7 +397,7 @@ public class SynthesisChainTracking {
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an opaque action.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque action.
      */
     public boolean isStartOfOriginalOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -991,7 +991,7 @@ public class SynthesisChainTracking {
      * element exists.
      *
      * @param finalizedUmlElement The finalized UML element.
-     * @return The related UML element, or {@code null}.
+     * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     private RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
