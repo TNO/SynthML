@@ -369,9 +369,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event corresponds to the start event of an (original) opaque behavior. If the
-     * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
-     * guard computation and language equivalence check.
+     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
+     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents the
+     * start-only event of an opaque behavior. If the finalized UML element originates from a rewritten (merged) Petri
+     * net pattern, check that the CIF event generated for guard computation or language equivalence check is a
+     * start-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -396,9 +398,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event corresponds to the start event of an (original) opaque action. If the
-     * related pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for
-     * guard computation and language equivalence check.
+     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
+     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents the
+     * start-only event of an opaque action. If the finalized UML element originates from a rewritten (merged) Petri net
+     * pattern, check that the CIF event generated for guard computation or language equivalence check is a start-only
+     * event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -422,9 +426,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event corresponds to an end-only event in the original UML model. If the related
-     * pattern is merged during the synthesis chain, consider also the finalized UML element. Valid solely for guard
-     * computation and language equivalence check.
+     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
+     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents an
+     * end-only event. If the finalized UML element originates from a rewritten (merged) Petri net pattern, check that
+     * the CIF event generated for guard computation or language equivalence check is an end-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
