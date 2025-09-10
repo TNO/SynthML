@@ -140,8 +140,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the list of CIF start events corresponding to the given UML element, considered as the original UML
-     * element, for the specified translation purpose. Valid only for guard computation and language equivalence check.
+     * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
+     * equivalence check phase, that corresponds to the given original UML element.
      *
      * @param originalUmlElement The non-{@code null} UML element.
      * @param purpose The translation purpose.
