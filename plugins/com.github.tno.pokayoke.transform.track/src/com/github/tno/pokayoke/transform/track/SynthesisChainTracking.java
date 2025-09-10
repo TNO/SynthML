@@ -985,8 +985,7 @@ public class SynthesisChainTracking {
         Verify.verify(!finalizedElementToAction.values().contains(action),
                 String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
 
-        Verify.verify(finalizedElementToAction.put(finalizedElement, action) == null,
-                String.format("Element '%s' is already contained in the tracking map.", finalizedElement.getName()));
+        finalizedElementToAction.put(finalizedElement, action);
     }
 
     /**
