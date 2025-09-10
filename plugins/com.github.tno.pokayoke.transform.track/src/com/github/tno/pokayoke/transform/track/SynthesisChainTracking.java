@@ -164,8 +164,11 @@ public class SynthesisChainTracking {
                         && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                         // Same original UML element.
                         && umlElement.equals(originalUmlElement) &&
-                        // Either the original CIF event is start-only, or, if the transition is part of a merged
-                        // pattern, check that the current CIF event is a start event.
+                        // If the finalized UML element originates from a non-merged non-atomic pattern, check that the
+                        // related original CIF event is start-only.
+                        // Otherwise, if the finalized UML element originates from a merged pattern, the related
+                        // original CIF event is complete (both start and end); so check if the current CIF event is a
+                        // start event.
                         (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
                                 || (isRelatedToOriginalCompleteEvent(e.getValue().getUmlElement())
                                         && e.getValue().isStartEvent())))
