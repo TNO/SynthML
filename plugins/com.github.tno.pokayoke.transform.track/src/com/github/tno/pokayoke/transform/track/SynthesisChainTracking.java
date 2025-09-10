@@ -175,12 +175,17 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
+     * Checks whether the non-'null' input UML element belongs to the elements contained in the pre-synthesis UML model.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
+     * @return {@code true} if the input element is not 'null' and belongs to the pre-synthesis UML model, {@code false}
+     *     otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            return false;
+        }
+
         Set<RedefinableElement> originalUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
                 .map(e -> e.getValue().getUmlElement()).collect(Collectors.toSet());
@@ -974,12 +979,18 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the synthesized UML activity.
+     * Checks whether the non-'null' input UML element belongs to the elements contained in the synthesized UML
+     * activity.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
+     * @return {@code true} if the input element is not 'null' and belongs to the synthesized activity, {@code false}
+     *     otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
+        if (umlElement == null) {
+            return false;
+        }
+
         Set<RedefinableElement> finalizedUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> !e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
                 .map(e -> e.getValue().getUmlElement()).collect(Collectors.toSet());
