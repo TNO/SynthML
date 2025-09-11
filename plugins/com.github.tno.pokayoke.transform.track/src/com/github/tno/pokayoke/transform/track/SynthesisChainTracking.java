@@ -183,16 +183,14 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
+     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model. Throws an
+     * exception if the input element is 'null'.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not {@code null} and belongs to the pre-synthesis UML model,
-     *     {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
-        if (umlElement == null) {
-            return false;
-        }
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
         Set<RedefinableElement> originalUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
@@ -1003,16 +1001,14 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the synthesized UML activity.
+     * Checks whether the input UML element belongs to the elements contained in the synthesized UML activity. Throws an
+     * exception if the input element is 'null'.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not {@code null} and belongs to the synthesized activity,
-     *     {@code false} otherwise.
+     * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
-        if (umlElement == null) {
-            return false;
-        }
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
         Set<RedefinableElement> finalizedUmlElements = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> !e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
