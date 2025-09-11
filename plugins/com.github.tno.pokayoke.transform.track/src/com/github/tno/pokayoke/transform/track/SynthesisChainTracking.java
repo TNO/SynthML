@@ -390,9 +390,8 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
-        // CIF events in relation to the original UML elements. Check if the event is start-only for the
-        // original UML element, or if the event is merged, check that it is the start of the finalized
-        // event tracing info.
+        // Check if the event is start-only for the original UML element, or if the event is merged, check that it is
+        // the start of the finalized event tracing info.
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
@@ -420,9 +419,8 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
-        // CIF events in relation to the original UML elements. Check if the event is start-only for the
-        // original UML element, or if the event is merged, check that it is the start of the finalized
-        // event tracing info.
+        // Check if the event is start-only for the original UML element, or if the event is merged, check that it is
+        // the start of the finalized event tracing info.
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
@@ -448,9 +446,8 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
-        // CIF events in relation to the original UML elements. Check if the event is start-only for the
-        // original UML element, or if the event is merged, check that it is the start of the finalized
-        // event tracing info.
+        // Check if the event is start-only for the original UML element, or if the event is merged, check that it is
+        // the start of the finalized event tracing info.
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
@@ -1090,7 +1087,6 @@ public class SynthesisChainTracking {
      * @param action The opaque action.
      * @return {@code true} if the action is internal, {@code false} otherwise.
      */
-
     public boolean isInternalAction(OpaqueAction action) {
         // Internal actions (e.g. control nodes) do not have any UML element to refer to.
         return getUmlElement(action) == null;
