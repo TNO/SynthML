@@ -27,7 +27,7 @@ import fr.lip6.move.pnml.ptnet.Transition;
 /**
  * Tracks the activity synthesis chain transformations from the UML elements of the input model, to their translation to
  * different formalisms throughout the various steps of the synthesis chain, such as CIF event, Petri net transitions,
- * actions, etc. The UML elements of the input model and CIF event created in the first step of the synthesis chain are
+ * actions, etc. The UML elements of the input model and CIF events created in the first step of the synthesis chain are
  * named 'original', to distinguish them from the UML elements in the synthesized activity (named 'non-finalized' for
  * placeholder opaque actions, and 'finalized' for their finalized version, see also
  * {@link #addFinalizedUmlElement(RedefinableElement, OpaqueAction)}) and from the CIF events created for guard
@@ -183,10 +183,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-'null' input UML element belongs to the elements contained in the pre-synthesis UML model.
+     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not 'null' and belongs to the pre-synthesis UML model, {@code false}
+     * @return {@code true} if the input element is not {@code null} and belongs to the pre-synthesis UML model, {@code false}
      *     otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
@@ -377,15 +377,15 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
-     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents the
-     * start-only event of an opaque behavior. If the finalized UML element originates from a rewritten (merged) Petri
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard computation or
+     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents the
+     * start-only event of an original opaque behavior. If the finalized UML element originates from a rewritten (merged) Petri
      * net pattern, check that the CIF event generated for guard computation or language equivalence check is a
      * start-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, {@code false} otherwise.
      */
     public boolean isStartOfOriginalOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -406,15 +406,15 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
-     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents the
+     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation or
+     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents the
      * start-only event of an opaque action. If the finalized UML element originates from a rewritten (merged) Petri net
      * pattern, check that the CIF event generated for guard computation or language equivalence check is a start-only
      * event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque action.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque action, {@code false} otherwise.
      */
     public boolean isStartOfOriginalOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -434,8 +434,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the CIF event created for any finalized UML element during the guard computation or
-     * language equivalence check phase, corresponds to a CIF event created for the synthesis phase that represents an
+     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation or
+     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents an
      * end-only event. If the finalized UML element originates from a rewritten (merged) Petri net pattern, check that
      * the CIF event generated for guard computation or language equivalence check is an end-only event.
      *
@@ -1000,11 +1000,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-'null' input UML element belongs to the elements contained in the synthesized UML
+     * Checks whether the input UML element belongs to the elements contained in the synthesized UML
      * activity.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not 'null' and belongs to the synthesized activity, {@code false}
+     * @return {@code true} if the input element is not {@code null} and belongs to the synthesized activity, {@code false}
      *     otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
