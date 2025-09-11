@@ -192,10 +192,9 @@ public class SynthesisChainTracking {
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
-        Set<RedefinableElement> originalUmlElements = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
-                .map(e -> e.getValue().getUmlElement()).collect(Collectors.toSet());
-        return originalUmlElements.contains(umlElement);
+        return cifEventTraceInfo.values().stream()
+                .anyMatch(info -> info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && info.getUmlElement().equals(umlElement));
     }
 
     /**
@@ -1010,10 +1009,9 @@ public class SynthesisChainTracking {
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
-        Set<RedefinableElement> finalizedUmlElements = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> !e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS))
-                .map(e -> e.getValue().getUmlElement()).collect(Collectors.toSet());
-        return finalizedUmlElements.contains(umlElement);
+        return cifEventTraceInfo.values().stream()
+                .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && info.getUmlElement().equals(umlElement));
     }
 
     /**
