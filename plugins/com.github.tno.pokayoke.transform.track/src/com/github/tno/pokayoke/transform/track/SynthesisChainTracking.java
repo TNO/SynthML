@@ -186,8 +186,8 @@ public class SynthesisChainTracking {
      * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not {@code null} and belongs to the pre-synthesis UML model, {@code false}
-     *     otherwise.
+     * @return {@code true} if the input element is not {@code null} and belongs to the pre-synthesis UML model,
+     *     {@code false} otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
         if (umlElement == null) {
@@ -377,15 +377,16 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard computation or
-     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents the
-     * start-only event of an original opaque behavior. If the finalized UML element originates from a rewritten (merged) Petri
-     * net pattern, check that the CIF event generated for guard computation or language equivalence check is a
-     * start-only event.
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
+     * that represents the start-only event of an original opaque behavior. If the finalized UML element originates from
+     * a rewritten (merged) Petri net pattern, check that the CIF event generated for guard computation or language
+     * equivalence check is a start-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, {@code false} otherwise.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque behavior, {@code false}
+     *     otherwise.
      */
     public boolean isStartOfOriginalOpaqueBehavior(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -406,15 +407,16 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation or
-     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents the
-     * start-only event of an opaque action. If the finalized UML element originates from a rewritten (merged) Petri net
-     * pattern, check that the CIF event generated for guard computation or language equivalence check is a start-only
-     * event.
+     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
+     * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
+     * represents the start-only event of an opaque action. If the finalized UML element originates from a rewritten
+     * (merged) Petri net pattern, check that the CIF event generated for guard computation or language equivalence
+     * check is a start-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to the start of an original opaque action, {@code false} otherwise.
+     * @return {@code true} if the CIF event corresponds to the start of an original opaque action, {@code false}
+     *     otherwise.
      */
     public boolean isStartOfOriginalOpaqueAction(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -434,14 +436,15 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation or
-     * language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that represents an
-     * end-only event. If the finalized UML element originates from a rewritten (merged) Petri net pattern, check that
-     * the CIF event generated for guard computation or language equivalence check is an end-only event.
+     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
+     * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
+     * represents an end-only event. If the finalized UML element originates from a rewritten (merged) Petri net
+     * pattern, check that the CIF event generated for guard computation or language equivalence check is an end-only
+     * event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
-     * @return {@code true} if the CIF event corresponds to an original end-only event.
+     * @return {@code true} if the CIF event corresponds to an original end-only event, {@code false} otherwise.
      */
     public boolean isEndOnlyEventOfOriginalUmlElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
@@ -1000,12 +1003,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the synthesized UML
-     * activity.
+     * Checks whether the input UML element belongs to the elements contained in the synthesized UML activity.
      *
      * @param umlElement The UML element to check.
-     * @return {@code true} if the input element is not {@code null} and belongs to the synthesized activity, {@code false}
-     *     otherwise.
+     * @return {@code true} if the input element is not {@code null} and belongs to the synthesized activity,
+     *     {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
         if (umlElement == null) {
