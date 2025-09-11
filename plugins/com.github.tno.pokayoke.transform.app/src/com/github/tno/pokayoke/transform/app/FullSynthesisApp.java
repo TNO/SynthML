@@ -371,6 +371,19 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Post-process the CIF specification to eliminate all if-updates.
+        ElimIfUpdates elimIfUpdatesGuardComputation = new ElimIfUpdates();
+        elimIfUpdatesGuardComputation.transform(cifTranslatedActivity);
+        Path cifPostProcessedGuardComputation = outputFolderPath
+                .resolve(filePrefix + ".19.guardcomputation.postprocessed.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(cifPostProcessedGuardComputation),
+                    outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
         // End timer for guard computation UML to CIF translation, start timer for actual guard computation, and store
         // the execution time.
         long endUmlToCifGuardComputationTime = System.currentTimeMillis();
@@ -381,7 +394,7 @@ public class FullSynthesisApp {
 
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator).computeGuards(cifTranslatedActivity, umlActivityToCifPath);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // End timer for guard computation, start timer for language equivalence check, and store the execution time.
