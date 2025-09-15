@@ -183,10 +183,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the pre-synthesis UML model. Throws an
+     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the pre-synthesis UML model. Throws an
      * exception if the input element is 'null'.
      *
-     * @param umlElement The UML element to check.
+     * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
@@ -997,10 +997,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the input UML element belongs to the elements contained in the synthesized UML activity. Throws an
+     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the synthesized UML activity. Throws an
      * exception if the input element is 'null'.
      *
-     * @param umlElement The UML element to check.
+     * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
