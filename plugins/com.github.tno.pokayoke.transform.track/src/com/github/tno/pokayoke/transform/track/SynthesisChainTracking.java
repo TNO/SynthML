@@ -183,8 +183,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the pre-synthesis UML model. Throws an
-     * exception if the input element is 'null'.
+     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the pre-synthesis UML
+     * model.
      *
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
@@ -997,8 +997,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the synthesized UML activity. Throws an
-     * exception if the input element is 'null'.
+     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the synthesized UML
+     * activity.
      *
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
