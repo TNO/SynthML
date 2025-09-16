@@ -61,6 +61,7 @@ import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.pokayoke.transform.common.ValidationHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
@@ -88,12 +89,15 @@ public class UMLToCameoTransformer {
 
     private final Model model;
 
+    private final CifContextManager ctxManager;
+
     private final CifToPythonTranslator translator;
 
     private final Map<String, Range<Integer>> propertyBounds;
 
     public UMLToCameoTransformer(Model model) {
         this.model = model;
+        this.ctxManager = new CifContextManager(model);
         this.translator = new CifToPythonTranslator();
         this.propertyBounds = new LinkedHashMap<>();
     }
@@ -110,7 +114,7 @@ public class UMLToCameoTransformer {
         String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
         Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
         Model model = FileHelper.loadModel(sourcePath.toString());
-        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model, new CifContextManager(model));
         new UMLToCameoTransformer(model).transformModel();
         FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
@@ -119,7 +123,7 @@ public class UMLToCameoTransformer {
         // 1. Check whether the model has the expected structure and obtain relevant information from it.
         ValidationHelper.validateModel(model);
 
-        CifContext cifContext = CifContext.createGlobal(model);
+        CifContext cifContext = ctxManager.getGlobalContext();
 
         Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
@@ -169,7 +173,7 @@ public class UMLToCameoTransformer {
                 OpaqueExpression newDefaultValue = FileHelper.FACTORY.createOpaqueExpression();
                 newDefaultValue.getLanguages().add("Python");
                 String translatedLiteral = translator.translateExpression(cifExpression,
-                        CifContext.createScoped(property));
+                        ctxManager.getScopedContext(property));
                 newDefaultValue.getBodies().add(translatedLiteral);
                 property.setDefaultValue(newDefaultValue);
             } else if (propertyRange != null /* i.e. PokaYokeTypeUtil.isIntegerType(property.getType()) */) {
@@ -344,7 +348,7 @@ public class UMLToCameoTransformer {
                 "Expected opaque behaviors to not have owned elements.");
 
         // Translate the guard and effects of the given behavior.
-        CifContext context = CifContext.createScoped(behavior);
+        CifContext context = ctxManager.getScopedContext(behavior);
         String guard = translateGuard(behavior, context);
         List<List<String>> effects = translateEffects(behavior, context);
 
@@ -359,7 +363,7 @@ public class UMLToCameoTransformer {
 
     @SuppressWarnings("restriction")
     private Set<String> getUsedParameters(RedefinableElement behavior) {
-        CifContext context = CifContext.createScoped(behavior);
+        CifContext context = ctxManager.getScopedContext(behavior);
 
         List<List<AUpdate>> parsedEffects = CifParserHelper.parseEffects(behavior);
         AExpression combinedGuard = getCombinedGuard(behavior);
@@ -384,7 +388,7 @@ public class UMLToCameoTransformer {
             return Collections.EMPTY_SET;
         }
 
-        CifContext context = CifContext.createScoped(edge);
+        CifContext context = ctxManager.getScopedContext(edge);
         AExpression incomingGuard = CifParserHelper.parseIncomingGuard(controlFlow);
 
         if (incomingGuard == null) {
@@ -489,7 +493,7 @@ public class UMLToCameoTransformer {
             return;
         }
 
-        CifContext cifScope = CifContext.createScoped(callAction);
+        CifContext cifScope = ctxManager.getScopedContext(callAction);
 
         List<String> translatedAssignments = new ArrayList<>();
         Set<String> arguments = new LinkedHashSet<>();
@@ -512,7 +516,7 @@ public class UMLToCameoTransformer {
 
     private void transformAction(Activity activity, Action action, Signal acquireSignal) {
         // Translate the guard and effects of the action.
-        CifContext context = CifContext.createScoped(action);
+        CifContext context = ctxManager.getScopedContext(action);
         String guard = translateGuard(action, context);
         List<List<String>> effects = translateEffects(action, context);
 
@@ -604,7 +608,7 @@ public class UMLToCameoTransformer {
 
     private void transformDecisionNode(DecisionNode decisionNode) {
         // Create the activity that evaluates the incoming guards of the outgoing control flows of the decision node.
-        Activity evalActivity = ActivityHelper.createDecisionEvaluationActivity(decisionNode, translator);
+        Activity evalActivity = ActivityHelper.createDecisionEvaluationActivity(decisionNode, translator, ctxManager);
         decisionNode.getActivity().getOwnedBehaviors().add(evalActivity);
         evalActivity.setName("eval");
 

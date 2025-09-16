@@ -22,6 +22,7 @@ import com.github.tno.pokayoke.transform.tests.common.RegressionTest;
 import com.github.tno.pokayoke.transform.track.SynthesisChainTracking;
 import com.github.tno.pokayoke.transform.track.UmlToCifTranslationPurpose;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -52,7 +53,7 @@ public class Uml2CifRegressionTest extends RegressionTest {
         // Load UML synthesis specification.
         Model umlModel = FileHelper.loadModel(inputPath.toString());
         FileHelper.normalizeIds(umlModel);
-        CifContext context = CifContext.createGlobal(umlModel);
+        CifContext context = new CifContextManager(umlModel).getGlobalContext();
 
         // Find and translate every abstract UML activity in the loaded UML model to a separate CIF specification.
         List<Activity> activities = context.getAllAbstractActivities();

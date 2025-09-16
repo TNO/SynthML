@@ -116,7 +116,7 @@ public class CifContext {
                 .asType(NamedElement.class);
     }
 
-    private CifContext(Element element, CifScope scope) {
+    CifContext(Element element, CifScope scope) {
         this.model = element.getModel();
 
         // Collect declared elements as set.
@@ -159,27 +159,6 @@ public class CifContext {
             // Collect all template parameters that may be referenced within the context of this activity.
             addNamedTemplateParameters(scope.getDeclaredTemplateParameters());
         }
-    }
-
-    /**
-     * Creates a context containing all declared/referenceable elements found in the global scope of {@code model}.
-     *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @return A {@code CifContext} containing all declared/referenceable elements in the global scope.
-     */
-    public static CifContext createGlobal(Element element) {
-        return new CifContext(element, CifScope.global());
-    }
-
-    /**
-     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
-     *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
-     *     scope.
-     */
-    public static CifContext createScoped(Element element) {
-        return new CifContext(element, new CifScope(element));
     }
 
     /**

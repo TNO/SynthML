@@ -57,6 +57,7 @@ import org.eclipse.uml2.uml.TemplateSignature;
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.cif.ACifObjectToString;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -75,7 +76,7 @@ public class CompositeDataTypeFlattener {
         String filePrefix = FilenameUtils.removeExtension(sourcePath.getFileName().toString());
         Path umlOutputFilePath = targetPath.resolve(filePrefix + ".uml");
         Model model = FileHelper.loadModel(sourcePath.toString());
-        flattenCompositeDataTypes(model);
+        flattenCompositeDataTypes(model, new CifContextManager(model));
         FileHelper.storeModel(model, umlOutputFilePath.toString());
     }
 
@@ -84,11 +85,12 @@ public class CompositeDataTypeFlattener {
      * composite data types, and remove all composite data types.
      *
      * @param model The UML model.
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
      */
-    public static void flattenCompositeDataTypes(Model model) {
+    public static void flattenCompositeDataTypes(Model model, CifContextManager ctxManager) {
         // Only perform flattening if there are any composite data types. This not only prevents unnecessary work, but
         // also prevents normalizing expressions/updates.
-        CifContext context = CifContext.createGlobal(model);
+        CifContext context = ctxManager.getGlobalContext();
         List<DataType> dataTypes = context.getAllCompositeDataTypes();
         if (!dataTypes.isEmpty()) {
             Class activeClass = context.getAllClasses(c -> !(c instanceof Behavior) && c.isActive()).get(0);

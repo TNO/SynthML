@@ -35,6 +35,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
@@ -554,10 +555,11 @@ public class ActivityHelper {
      *
      * @param decisionNode The decision node.
      * @param translator The translator for translating incoming guards to Python expressions.
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
      * @return The created activity.
      */
-    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode,
-            CifToPythonTranslator translator)
+    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode, CifToPythonTranslator translator,
+            CifContextManager ctxManager)
     {
         // Create the activity.
         Activity activity = FileHelper.FACTORY.createActivity();
@@ -594,7 +596,7 @@ public class ActivityHelper {
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
             ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
             String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge),
-                    CifContext.createScoped(decisionNode));
+                    ctxManager.getScopedContext(decisionNode));
             evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
