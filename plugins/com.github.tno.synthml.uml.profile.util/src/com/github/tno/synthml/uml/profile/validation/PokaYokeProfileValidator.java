@@ -58,6 +58,7 @@ import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.TemplateParameter;
+import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.espilce.periksa.validation.Check;
@@ -492,9 +493,9 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                     UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
         }
 
-        // Check template parameters of the activity. Adding a check directly on 'RedefinableTemplateSignature' fails
+        // Check template parameters of the activity. Adding a check directly on 'TemplateSignature' fails
         // to report the error message to the Problems view.
-        checkValidRedefinableTemplateSignature(activity);
+        checkValidTemplateSignature(activity);
 
         Set<NamedElement> members = new LinkedHashSet<>(activity.getMembers());
 
@@ -541,12 +542,19 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidRedefinableTemplateSignature(Activity activity) {
+    private void checkValidTemplateSignature(Activity activity) {
         List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
 
         if (activity.isAbstract() && templateParameters.size() > 0) {
             error("Activity parameters are disallowed on abstract activities.", null);
             return; // Further checks do not provide the user with useful information.
+        }
+
+        TemplateSignature templateSignature = activity.getOwnedTemplateSignature();
+        if (templateSignature != null
+                && !templateSignature.getParameters().stream().allMatch(ClassifierTemplateParameter.class::isInstance))
+        {
+            error("Activity parameters must be of type 'ClassifierTemplateParameter'.", null);
         }
 
         if (templateParameters.stream().map(ClassifierTemplateParameter::getConstrainingClassifiers)
@@ -580,7 +588,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             // Currently this means that only properties declared in the global scope are found, so we can mention
             // 'property' specifically in the error message.
             if (globalContext.isVariable(parameterName)) {
-                error(String.format("'\s' was already declared as a property.", parameterName), null);
+                error(String.format("'%s' was already declared as a property.", parameterName), null);
             }
         }
     }
