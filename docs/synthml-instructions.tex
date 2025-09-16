@@ -23,7 +23,7 @@ A snapshot of the main screen is shown in Fig.~\ref{fig:SynthML-environment}, wi
 In order to create a new UML model,
 \begin{enumerate}
     \item Right click in the `Model Explorer' View $\to$ New $\to$ UML Project, and give it a name.
-    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `SynthML'.
+    \item Right click on the project $\to$ Viewpoints Selection $\to$ Check `A\_SynthML'.
     This enables all the SynthML features, such as the addition of guards and effects to opaque behaviors.
 \end{enumerate}
 
@@ -67,7 +67,8 @@ Alternatively, you may create a class from the `Class Diagram' view. To this end
 \subsection{Create a Property}
 \label{subsec:property}
 
-Properties represent the variables of a model. The supported types are boolean, enumeration and ranged integers (besides composite data types, see \S\ref{subsec:data-types}).
+Properties represent the variables of a model.
+The supported types are booleans, enumerations and ranged integers (besides composite data types, see \S\ref{subsec:data-types}).
 To create a boolean-typed property:
 \begin{enumerate}
 \item Right click on the Class $\to$ New Child $\to$ Owned Attribute $\to$ Property.
@@ -208,6 +209,22 @@ Concrete activities can be visualized via an activity diagram (see \S\ref{subsec
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsubsection{Parameterize a Concrete Activity}
+\label{subsubsec:parameterize-activity}
+
+After having created an activity, parameterizing it can be achieved by
+\begin{enumerate}
+    \item Open the activity diagram.
+    \item Left click once on the activity label in the top center to start direct editing.
+    \item Postfix the activity name with angle brackets containing the parameters, for example \newline
+    \verb#MyActivity<ParamName1:Type1, ParamName2:Type2, ...>#.
+\end{enumerate}
+
+The supported types are booleans, enumerations and ranged integers.
+See \ref{subsubsec:add-arguments-call} to learn how to call such an activity.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsubsection{Create a Control Node}
 \label{subsubsec:control-node}
 
@@ -264,6 +281,29 @@ When a call behavior node represents a call to an activity, we may abstract the 
 This is informally denoted as `shadowed' call behavior.
 The execution of this node skips the actual call to the underlying activity, which is instead substituted by the the guard and effects.
 Note that a shadowed call is allowed only when the called behavior is an activity, and forbidden when the called behavior is an opaque behavior.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Add arguments to a Call Behavior Node}
+\label{subsubsec:add-arguments-call}
+
+After having created a call behavior node (see \ref{subsubsec:call-behave-node}), passing arguments to a parameterized activity can be achieved by
+\begin{enumerate}
+    \item Left click on the call behavior node.
+    \item In the `Properties' view, `SynthML' tab, under `Arguments', add arguments as assignments, for example \newline
+    \verb#ParamName1:=value1, ParamName2:=value2, ...#
+\end{enumerate}
+
+\paragraph*{Graphical Approach.}
+After having created the call behavior node, go to the activity diagram
+\begin{enumerate}
+    \item Left click once on the call behavior node label to start direct editing.
+    \item Postfix the name with angle brackets containing the arguments, for example \newline
+    \verb#CalledActivity<ParamName1:=value1, ParamName2:=value2, ...>#.
+\end{enumerate}
+
+Only literals and parameters of the calling activity can be passed as arguments.
+See \ref{subsubsec:parameterize-activity} to learn how to add parameters to an activity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

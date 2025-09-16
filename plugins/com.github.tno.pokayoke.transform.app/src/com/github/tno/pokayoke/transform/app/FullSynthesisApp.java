@@ -278,7 +278,7 @@ public class FullSynthesisApp {
         // Remove the internal actions that were added in CIF specification and petrification.
         Path internalActionsRemovedUMLOutputPath = outputFolderPath
                 .resolve(filePrefix + ".15.internalactionsremoved.uml");
-        PostProcessActivity.removeInternalActions(activity);
+        PostProcessActivity.removeOpaqueActions(activity, tracker.getInternalActions());
         FileHelper.storeModel(activity.getModel(), internalActionsRemovedUMLOutputPath.toString());
 
         // Post-process the activity to simplify it.
@@ -304,10 +304,23 @@ public class FullSynthesisApp {
             AppEnv.unregisterApplication();
         }
 
+        // Post-process the CIF specification to eliminate all if-updates.
+        ElimIfUpdates elimIfUpdatesGuardComputation = new ElimIfUpdates();
+        elimIfUpdatesGuardComputation.transform(cifTranslatedActivity);
+        Path cifPostProcessedGuardComputation = outputFolderPath
+                .resolve(filePrefix + ".19.guardcomputation.postprocessed.cif");
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(cifTranslatedActivity, makePathPair(cifPostProcessedGuardComputation),
+                    outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
         // Computing guards.
         new GuardComputation(umlActivityToCifTranslator, tracker).computeGuards(cifTranslatedActivity,
                 umlActivityToCifPath);
-        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".19.guardsadded.uml");
+        Path umlGuardsOutputPath = outputFolderPath.resolve(filePrefix + ".20.guardsadded.uml");
         FileHelper.storeModel(umlActivityToCifTranslator.getActivity().getModel(), umlGuardsOutputPath.toString());
 
         // Check the activity for non-deterministic choices.

@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,10 +52,8 @@ import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.Profile;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
-import org.eclipse.uml2.uml.RedefinableTemplateSignature;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
-import org.eclipse.uml2.uml.TemplateParameter;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
@@ -65,6 +63,7 @@ import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
+import com.github.tno.synthml.uml.profile.cif.CifScope;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.UsedParametersCollector;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
@@ -80,8 +79,8 @@ import com.google.common.base.Verify;
  */
 public class UMLToCameoTransformer {
     /**
-     * The prefix for temporary variables that pass arguments to the 'CallBehaviorAction'. This avoids overriding local
-     * variables when assigning a different value on a call with a colliding argument name.
+     * The prefix for temporary variables that pass arguments to the {@link CallBehaviorAction}. This avoids overriding
+     * local variables when assigning a different value on a call with a colliding argument name.
      */
     public static final String ARGUMENT_PREFIX = "arg__";
 
@@ -375,16 +374,16 @@ public class UMLToCameoTransformer {
         Stream<NamedTemplateParameter> parametersUsedInEffects = parsedEffects.stream().flatMap(List::stream)
                 .flatMap(expr -> usedParametersCollector.collect(expr, context));
         return Stream.concat(parametersUsedInGuards, parametersUsedInEffects).map(p -> p.getName())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<String> getUsedParameters(DecisionNode decisionNode) {
-        return decisionNode.getOutgoings().stream().flatMap(edge -> getUsedParameters(edge).stream())
-                .collect(Collectors.toSet());
+        return decisionNode.getOutgoings().stream().flatMap(edge -> getUsedDecisionParameters(edge).stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @SuppressWarnings("restriction")
-    private Set<String> getUsedParameters(ActivityEdge edge) {
+    private Set<String> getUsedDecisionParameters(ActivityEdge edge) {
         if (!(edge instanceof ControlFlow controlFlow)) {
             return Collections.EMPTY_SET;
         }
@@ -398,7 +397,7 @@ public class UMLToCameoTransformer {
 
         UsedParametersCollector usedParametersCollector = new UsedParametersCollector();
         return usedParametersCollector.collect(incomingGuard, context).map(NamedTemplateParameter::getName)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -449,18 +448,13 @@ public class UMLToCameoTransformer {
             }
         }
 
-        if (activity.getOwnedTemplateSignature() instanceof RedefinableTemplateSignature templateSignature) {
-            transformTemplateSignature(activity, templateSignature);
-        }
+        transformTemplateSignature(activity);
     }
 
-    private void transformTemplateSignature(Activity activity, RedefinableTemplateSignature templateSignature) {
-        for (TemplateParameter parameter: templateSignature.getParameters()) {
-            if (parameter instanceof ClassifierTemplateParameter) {
-                String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
-
-                ActivityHelper.addParameterToActivity(activity, parameterName);
-            }
+    private void transformTemplateSignature(Activity activity) {
+        for (ClassifierTemplateParameter parameter: CifScope.getClassifierTemplateParameters(activity)) {
+            String parameterName = ((NamedElement)parameter.getParameteredElement()).getName();
+            ActivityHelper.addParameterToActivity(activity, parameterName);
         }
     }
 
@@ -502,7 +496,7 @@ public class UMLToCameoTransformer {
         CifContext cifScope = ctxManager.getScopedContext(callAction);
 
         List<String> translatedAssignments = new ArrayList<>();
-        Set<String> arguments = new HashSet<>();
+        Set<String> arguments = new LinkedHashSet<>();
         for (AAssignmentUpdate argument: parsedArguments) {
             String adressable = ((ANameExpression)argument.addressable).name.name;
             String value = translator.translateExpression(argument.value, cifScope);
@@ -513,7 +507,7 @@ public class UMLToCameoTransformer {
 
         String pythonBody = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
 
-        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, new HashSet<>(arguments), pythonBody);
+        ActivityHelper.passArgumentsToCallBehaviorAction(callAction, arguments, pythonBody);
     }
 
     private void transformOpaqueAction(Activity activity, OpaqueAction action, Signal acquireSignal) {
@@ -548,7 +542,7 @@ public class UMLToCameoTransformer {
         action.destroy();
         activity.getOwnedBehaviors().add(newActivity);
 
-        // Pass the arguments to the newly created 'CallBehaviorAction'.
+        // Pass the arguments to the newly created call behavior action.
         ActivityHelper.passArgumentsToCallBehaviorAction(replacementActionNode, usedParameters, null);
     }
 
@@ -609,7 +603,7 @@ public class UMLToCameoTransformer {
                 .map(entry -> entry.getValue() + " = " + entry.getKey()).toList();
 
         // Add these pre-state assignments to the front of every translated effect, and return the result.
-        return translatedEffects.stream().map(effects -> Lists.concat(prestateAssignments, effects)).toList();
+        return translatedEffects.stream().map(effect -> Lists.concat(prestateAssignments, effect)).toList();
     }
 
     private void transformDecisionNode(DecisionNode decisionNode) {

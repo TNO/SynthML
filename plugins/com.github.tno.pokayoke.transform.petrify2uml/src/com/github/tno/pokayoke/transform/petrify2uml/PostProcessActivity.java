@@ -1,12 +1,9 @@
 
 package com.github.tno.pokayoke.transform.petrify2uml;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
@@ -22,7 +19,6 @@ import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 import org.eclipse.uml2.uml.UMLFactory;
 
-import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocationTransformer;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.DoubleMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.EquivalentActionsIntoMergePattern;
 import com.github.tno.pokayoke.transform.petrify2uml.patterns.RedundantDecisionForkMergePattern;
@@ -41,37 +37,13 @@ public class PostProcessActivity {
     private static final UMLFactory UML_FACTORY = UMLFactory.eINSTANCE;
 
     /**
-     * Remove the internal actions that were added in CIF specification and petrification.
+     * Remove the opaque actions from the activity.
      *
-     * @param activity The activity in which actions to be removed.
-     */
-    public static void removeInternalActions(Activity activity) {
-        // Find all names of internal actions in the activity, which are the opaque actions whose name contain '__'.
-        Set<String> internalActionNames = activity.getNodes().stream()
-                .filter(node -> node instanceof OpaqueAction && node.getName().contains("__"))
-                .map(node -> node.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
-
-        // Remove all internal opaque actions that were found.
-        for (String internalActionName: internalActionNames) {
-            removeOpaqueActions(internalActionName, activity);
-        }
-    }
-
-    /**
-     * Remove opaque actions from activity.
-     *
-     * @param actionName The name of the opaque actions to remove.
      * @param activity The activity from which to remove the actions.
-     * @return Number of actions that were removed.
+     * @param actionsToRemove The opaque actions to remove.
      */
-    public static int removeOpaqueActions(String actionName, Activity activity) {
-        List<ActivityNode> nodes = activity.getNodes().stream().filter(node -> node.getName() != null)
-                .filter(node -> node.getName().equals(actionName)).toList();
-        List<OpaqueAction> actions = nodes.stream().filter(OpaqueAction.class::isInstance).map(OpaqueAction.class::cast)
-                .toList();
-        int numberOfActions = actions.size();
-
-        for (OpaqueAction action: actions) {
+    public static void removeOpaqueActions(Activity activity, Set<OpaqueAction> actionsToRemove) {
+        for (OpaqueAction action: actionsToRemove) {
             List<ActivityEdge> incomingEdges = action.getIncomings();
             Preconditions.checkArgument(incomingEdges.size() == 1,
                     "Expected that an opaque action has exactly one incoming edge.");
@@ -79,7 +51,7 @@ public class PostProcessActivity {
 
             List<ActivityEdge> outgoingEdges = action.getOutgoings();
             Preconditions.checkArgument(outgoingEdges.size() == 1,
-                    "Expected that an opaque action has exactly one ougoing edge.");
+                    "Expected that an opaque action has exactly one outgoing edge.");
             ActivityEdge outgoingEdge = outgoingEdges.get(0);
 
             Verify.verify(isNullOrTriviallyTrue(PokaYokeUmlProfileUtil.getIncomingGuard(incomingEdge)),
@@ -102,7 +74,6 @@ public class PostProcessActivity {
             outgoingEdge.destroy();
             action.destroy();
         }
-        return numberOfActions;
     }
 
     private static boolean isNullOrTriviallyTrue(String s) {
@@ -152,7 +123,7 @@ public class PostProcessActivity {
     public static void finalizeOpaqueActions(Activity activity, SynthesisChainTracking tracker, List<String> warnings) {
         for (ActivityNode node: List.copyOf(activity.getNodes())) {
             if (node instanceof OpaqueAction action) {
-                if (isInternalAction(action)) {
+                if (tracker.isInternalAction(action)) {
                     // If the action is internal, skip the current action.
                     continue;
                 }
@@ -170,6 +141,8 @@ public class PostProcessActivity {
                         callAction.setName(action.getName());
 
                         // Redirect the incoming/outgoing control flow edges, and destroy the original action.
+                        Verify.verify(action.getIncomings().size() == 1 && action.getOutgoings().size() == 1,
+                                "Opaque actions must have a single incoming and outgoing edge.");
                         action.getIncomings().get(0).setTarget(callAction);
                         action.getOutgoings().get(0).setSource(callAction);
                         action.destroy();
@@ -222,10 +195,5 @@ public class PostProcessActivity {
                 throw new RuntimeException("Found unexpected node type: " + node.getClass().getSimpleName());
             }
         }
-    }
-
-    private static boolean isInternalAction(Action action) {
-        return action.getName().equals(CifSourceSinkLocationTransformer.START_EVENT_NAME)
-                || action.getName().equals(CifSourceSinkLocationTransformer.END_EVENT_NAME);
     }
 }

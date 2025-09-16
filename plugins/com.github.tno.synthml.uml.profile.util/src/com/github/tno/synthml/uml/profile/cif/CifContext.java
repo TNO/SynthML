@@ -259,7 +259,7 @@ public class CifContext {
     }
 
     public List<ControlFlow> getAllControlFlows() {
-        return getAllActivities().stream().map(Activity::getOwnedElements).flatMap(java.util.Collection::stream)
+        return getAllActivities().stream().map(Activity::getOwnedElements).flatMap(Collection::stream)
                 .filter(ControlFlow.class::isInstance).map(ControlFlow.class::cast).toList();
     }
 
