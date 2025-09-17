@@ -698,6 +698,22 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the Petri net transition tracing info corresponding to the input opaque action.
+     *
+     * @param action The opaque action.
+     * @return The transition tracing info related to the opaque action.
+     */
+    private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+        return transitionInfo;
+    }
+
+    /**
      * Returns the kind of activity node the given action should translate to, based on the UML element the action
      * originates from, and whether its parts were merged back during the synthesis chain.
      *
@@ -761,22 +777,6 @@ public class SynthesisChainTracking {
                 String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
 
         return transitionInfo.getEffectIdx();
-    }
-
-    /**
-     * Returns the Petri net transition tracing info corresponding to the input opaque action.
-     *
-     * @param action The opaque action.
-     * @return The transition tracing info related to the opaque action.
-     */
-    private TransitionTraceInfo getTransitionTraceInfo(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-        return transitionInfo;
     }
 
     /**
