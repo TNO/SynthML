@@ -145,44 +145,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
-     * equivalence check phase, that corresponds to the given original UML element.
-     *
-     * @param originalUmlElement The non-{@code null} UML element.
-     * @param purpose The translation purpose.
-     * @return The list of CIF start events corresponding to the given UML element.
-     */
-    public List<Event> getOriginalStartEventsOf(RedefinableElement originalUmlElement,
-            UmlToCifTranslationPurpose purpose)
-    {
-        // Precondition check.
-        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
-                "Reference to original UML element is undefined for synthesis translation.");
-        Verify.verify(isOriginalUmlElement(originalUmlElement),
-                "The input UML element is not an original UML element.");
-
-        // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
-        // the given one, and is related to a start event.
-        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
-                        // Check that the returned element is a redefinable element (avoid 'null' for control nodes).
-                        && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
-                        // Same original UML element.
-                        && umlElement.equals(originalUmlElement) &&
-                        // If the finalized UML element originates from a non-merged non-atomic pattern, check that the
-                        // related original CIF event is start-only.
-                        // Otherwise, if the finalized UML element originates from a merged pattern, the related
-                        // original CIF event is complete (both start and end); so check if the current CIF event is a
-                        // start event.
-                        (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
-                                || (isRelatedToOriginalCompleteEvent(e.getValue().getUmlElement())
-                                        && e.getValue().isStartEvent())))
-                .map(Map.Entry::getKey).toList();
-
-        return filteredEvents;
-    }
-
-    /**
      * Checks whether the given non-{@code null} UML element belongs to the elements contained in the pre-synthesis UML
      * model.
      *
@@ -1100,5 +1062,43 @@ public class SynthesisChainTracking {
     public Set<OpaqueAction> getInternalActions() {
         return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
+     * equivalence check phase, that corresponds to the given original UML element.
+     *
+     * @param originalUmlElement The non-{@code null} UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF start events corresponding to the given UML element.
+     */
+    public List<Event> getOriginalStartEventsOf(RedefinableElement originalUmlElement,
+            UmlToCifTranslationPurpose purpose)
+    {
+        // Precondition check.
+        Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
+                "Reference to original UML element is undefined for synthesis translation.");
+        Verify.verify(isOriginalUmlElement(originalUmlElement),
+                "The input UML element is not an original UML element.");
+
+        // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
+        // the given one, and is related to a start event.
+        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                        // Check that the returned element is a redefinable element (avoid 'null' for control nodes).
+                        && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
+                        // Same original UML element.
+                        && umlElement.equals(originalUmlElement) &&
+                        // If the finalized UML element originates from a non-merged non-atomic pattern, check that the
+                        // related original CIF event is start-only.
+                        // Otherwise, if the finalized UML element originates from a merged pattern, the related
+                        // original CIF event is complete (both start and end); so check if the current CIF event is a
+                        // start event.
+                        (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
+                                || (isRelatedToOriginalCompleteEvent(e.getValue().getUmlElement())
+                                        && e.getValue().isStartEvent())))
+                .map(Map.Entry::getKey).toList();
+
+        return filteredEvents;
     }
 }
