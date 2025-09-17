@@ -948,7 +948,7 @@ public class SynthesisChainTracking {
      * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
      * @return {@code true} if the given UML element is related to an original CIF end event, {@code false} otherwise.
      */
-    private boolean isRelatedToOriginalEndEvent(EventTraceInfo finalizedEventInfo) {
+    private boolean isRelatedToEndOnlyEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
@@ -1098,6 +1098,6 @@ public class SynthesisChainTracking {
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
-        return isRelatedToOriginalEndEvent(finalizedEventInfo);
+        return isRelatedToEndOnlyEvent(finalizedEventInfo);
     }
 }
