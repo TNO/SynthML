@@ -111,8 +111,14 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             return new CifContextManager(element);
         }
 
-        return (CifContextManager)validationContext.computeIfAbsent("CifContextManager",
-                __ -> new CifContextManager(element));
+        return (CifContextManager)validationContext.compute(CifContextManager.class, (__, v) -> {
+            CifContextManager ctxManager = (CifContextManager)v;
+            if (ctxManager == null || ctxManager.getGlobalContext().getModel() != element.getModel()) {
+                return new CifContextManager(element);
+            }
+
+            return ctxManager;
+        });
     }
 
     private CifContext getGlobalContext(Element element) {
