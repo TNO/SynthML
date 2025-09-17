@@ -815,6 +815,27 @@ public class SynthesisChainTracking {
         cifEventTraceInfo.keySet().removeAll(eventsToRemove);
     }
 
+    /**
+     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is internal, {@code false} otherwise.
+     */
+    public boolean isInternalAction(OpaqueAction action) {
+        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+        return getUmlElement(action) == null;
+    }
+
+    /**
+     * Returns the set of internal actions.
+     *
+     * @return The set of internal actions.
+     */
+    public Set<OpaqueAction> getInternalActions() {
+        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with finalized UML elements.
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -941,27 +962,6 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         OpaqueAction action = getOpaqueAction(finalizedUmlElement);
         return isCompleteAction(action);
-    }
-
-    /**
-     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
-     *
-     * @param action The opaque action.
-     * @return {@code true} if the action is internal, {@code false} otherwise.
-     */
-    public boolean isInternalAction(OpaqueAction action) {
-        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
-        return getUmlElement(action) == null;
-    }
-
-    /**
-     * Returns the set of internal actions.
-     *
-     * @return The set of internal actions.
-     */
-    public Set<OpaqueAction> getInternalActions() {
-        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
