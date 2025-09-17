@@ -895,7 +895,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given finalized UML was created, or {@code null} if no such
+     * Returns the original UML element for which the given finalized UML element was created, or {@code null} if no such
      * element exists.
      *
      * @param finalizedUmlElement The finalized UML element.
@@ -1034,7 +1034,7 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
      * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents the start-only event of an original opaque behavior.
+     * that represents the start event of an original opaque behavior.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -1058,7 +1058,7 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
      * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
-     * represents the start-only event of an opaque action.
+     * represents the start event of an opaque action.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
