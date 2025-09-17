@@ -145,21 +145,6 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the pre-synthesis UML
-     * model.
-     *
-     * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the given element belongs to the pre-synthesis UML model, {@code false} otherwise.
-     */
-    private boolean isOriginalUmlElement(RedefinableElement umlElement) {
-        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
-
-        return cifEventTraceInfo.values().stream()
-                .anyMatch(info -> info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement().equals(umlElement));
-    }
-
-    /**
      * Gives the map from CIF start events to the corresponding CIF end events, for the specified translation purpose.
      *
      * @param purpose The translation purpose.
@@ -970,6 +955,21 @@ public class SynthesisChainTracking {
 
         return cifEventTraceInfo.values().stream()
                 .anyMatch(info -> !info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && info.getUmlElement().equals(umlElement));
+    }
+
+    /**
+     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the pre-synthesis UML
+     * model.
+     *
+     * @param umlElement The non-{@code null} UML element to check.
+     * @return {@code true} if the given element belongs to the pre-synthesis UML model, {@code false} otherwise.
+     */
+    private boolean isOriginalUmlElement(RedefinableElement umlElement) {
+        Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
+
+        return cifEventTraceInfo.values().stream()
+                .anyMatch(info -> info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
                         && info.getUmlElement().equals(umlElement));
     }
 
