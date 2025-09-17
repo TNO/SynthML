@@ -1610,7 +1610,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                         yield PostConditionKind.WITHOUT_STRUCTURE;
                     } else {
                         // We must allow finishing non-atomic/non-deterministic actions.
-                        Verify.verify(synthesisTracker.isEndOnlyEventOfOriginalUmlElement(cifEvent, translationPurpose),
+                        Verify.verify(synthesisTracker.isEndOnlyOfOriginalUmlElement(cifEvent, translationPurpose),
                                 "Event '%s' is not an end-only event.", cifEvent.getName());
 
                         yield PostConditionKind.WITH_STRUCTURE;
