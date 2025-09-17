@@ -161,8 +161,8 @@ public class SynthesisChainTracking {
         Verify.verify(isOriginalUmlElement(originalUmlElement),
                 "The input UML element is not an original UML element.");
 
-        // Get the list of CIF events whose translation purpose is the input one, whose original UML element is equal to
-        // the input one and is related to a start event.
+        // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
+        // the given one, and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
                         // Check that the returned element is a redefinable element (avoid 'null' for control nodes).
@@ -183,11 +183,11 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the pre-synthesis UML
+     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the pre-synthesis UML
      * model.
      *
      * @param umlElement The non-{@code null} UML element to check.
-     * @return {@code true} if the input element belongs to the pre-synthesis UML model, {@code false} otherwise.
+     * @return {@code true} if the given element belongs to the pre-synthesis UML model, {@code false} otherwise.
      */
     private boolean isOriginalUmlElement(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
@@ -997,7 +997,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Checks whether the non-{@code null} input UML element belongs to the elements contained in the synthesized UML
+     * Checks whether the given non-{@code null} UML element belongs to the elements contained in the synthesized UML
      * activity.
      *
      * @param umlElement The non-{@code null} UML element to check.
@@ -1026,7 +1026,7 @@ public class SynthesisChainTracking {
     /**
      * Returns the non-finalized opaque action corresponding to the input finalized UML element.
      *
-     * @param umlElement The (finalized) UML element.
+     * @param umlElement The finalized UML element.
      * @return The corresponding opaque action.
      */
     private OpaqueAction getOpaqueAction(RedefinableElement umlElement) {
