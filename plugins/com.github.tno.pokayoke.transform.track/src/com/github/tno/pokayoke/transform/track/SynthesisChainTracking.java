@@ -721,7 +721,6 @@ public class SynthesisChainTracking {
      * @return An enumeration defining the kind of activity node the action should translate to.
      */
     public ActionKind getActionKind(OpaqueAction action) {
-        // Get the transition tracing info and the CIF event tracing info.
         TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
 
         if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
@@ -895,8 +894,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given finalized UML element was created, or {@code null} if no such
-     * element exists.
+     * Returns the original UML element for which the given finalized UML element was created, or {@code null} if no
+     * such element exists.
      *
      * @param finalizedUmlElement The finalized UML element.
      * @return The related original UML element, or {@code null} if no such UML element exists.
