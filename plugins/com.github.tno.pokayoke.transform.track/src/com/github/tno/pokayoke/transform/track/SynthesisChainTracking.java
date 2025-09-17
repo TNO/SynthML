@@ -970,7 +970,8 @@ public class SynthesisChainTracking {
 
         return cifEventTraceInfo.values().stream()
                 .anyMatch(info -> info.getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
-                        && info.getUmlElement().equals(umlElement));
+                        && info.getUmlElement() instanceof RedefinableElement cifEventUmlElement
+                        && cifEventUmlElement.equals(umlElement));
     }
 
     /**
