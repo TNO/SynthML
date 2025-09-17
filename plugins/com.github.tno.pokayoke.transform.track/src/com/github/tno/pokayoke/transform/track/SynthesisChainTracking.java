@@ -935,9 +935,24 @@ public class SynthesisChainTracking {
     private boolean isRelatedToOriginalStartEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
-                String.format("Element '%s' is not a finlized UML element.", finalizedUmlElement.getName()));
+                String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
         return isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent());
+    }
+
+    /**
+     * Returns {@code true} if the finalized UML element contained in the given event trace info is related to an
+     * original CIF end event.
+     *
+     * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
+     * @return {@code true} if the given UML element is related to an original CIF end event, {@code false} otherwise.
+     */
+    private boolean isRelatedToOriginalEndEvent(EventTraceInfo finalizedEventInfo) {
+        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
+        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+                String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
+        return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
+                || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
     }
 
     /**
@@ -1078,13 +1093,10 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
-        // Check if the event is start-only for the original UML element, or if the event is merged, check that it is
-        // the start of the finalized event tracing info.
+        // Check if the event is related to the end of an original element.
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
-        RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
-                || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
+        return isRelatedToOriginalEndEvent(finalizedEventInfo);
     }
 }
