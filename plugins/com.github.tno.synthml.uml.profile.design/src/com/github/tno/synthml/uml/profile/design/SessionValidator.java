@@ -2,11 +2,13 @@
 package com.github.tno.synthml.uml.profile.design;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.Diagnostician;
@@ -45,12 +47,20 @@ public class SessionValidator {
         }
         SiriusMarkerNavigationProvider.deleteMarkers(sessionFile);
 
+        Diagnostician diagnostician = new Diagnostician() {
+            @Override
+            public String getObjectLabel(EObject eObject) {
+                return eObject == null ? null : EMFCoreUtil.getQualifiedName(eObject, true);
+            }
+        };
+        Map<Object, Object> context = diagnostician.createDefaultContext();
         MultiStatus status = new MultiStatus(SessionValidator.class, 0, "Validated diagrams");
+
         for (DRepresentationDescriptor representation: QueryableIterable.from(session.getOwnedViews())
                 .collect(DView::getOwnedRepresentationDescriptors))
         {
             try {
-                validateDiagram(representation, session);
+                validateDiagram(representation, session, diagnostician, context);
             } catch (Exception e) {
                 status.add(new Status(IStatus.ERROR, SessionValidator.class, String.format(
                         "Failed to validate diagram '%s': %s", representation.getName(), e.getLocalizedMessage()), e));
@@ -59,18 +69,16 @@ public class SessionValidator {
         return status;
     }
 
-    private static void validateDiagram(DRepresentationDescriptor representationDesc, Session session) {
+    private static void validateDiagram(DRepresentationDescriptor representationDesc, Session session,
+            Diagnostician diagnostician, Map<Object, Object> context)
+    {
         IFile sessionFile = WorkspaceSynchronizer.getFile(session.getSessionResource());
         String diagramDescriptorURI = EcoreUtil.getURI(representationDesc).toString();
 
         // Validating root element of diagram
-        Diagnostician diagnostician = new Diagnostician() {
-            @Override
-            public String getObjectLabel(EObject eObject) {
-                return eObject == null ? null : EMFCoreUtil.getQualifiedName(eObject, true);
-            }
-        };
-        Diagnostic validationResult = diagnostician.validate(representationDesc.getTarget());
+        EObject eObject = representationDesc.getTarget();
+        BasicDiagnostic validationResult = diagnostician.createDefaultDiagnostic(eObject);
+        diagnostician.validate(eObject, validationResult, context);
 
         // Reporting validation messages
         for (Diagnostic diagnostic: validationResult.getChildren()) {
