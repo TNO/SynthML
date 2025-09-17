@@ -722,12 +722,7 @@ public class SynthesisChainTracking {
      */
     public ActionKind getActionKind(OpaqueAction action) {
         // Get the transition tracing info and the CIF event tracing info.
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+        TransitionTraceInfo transitionInfo = getTransitionTraceInfo(action);
 
         if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
             if (transitionInfo.isCompleteTransition()) {
@@ -750,14 +745,7 @@ public class SynthesisChainTracking {
      * @return The related UML element, or {@code null}.
      */
     public RedefinableElement getUmlElement(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-
-        return transitionInfo.getUmlElement();
+        return getTransitionTraceInfo(action).getUmlElement();
     }
 
     /**
@@ -769,14 +757,7 @@ public class SynthesisChainTracking {
      * @return The effect index of the related UML element, or {@code null}.
      */
     public int getEffectIdx(OpaqueAction action) {
-        Transition transition = actionToTransition.get(action);
-        Verify.verifyNotNull(transition, String
-                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
-        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
-        Verify.verifyNotNull(transitionInfo,
-                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
-
-        return transitionInfo.getEffectIdx();
+        return getTransitionTraceInfo(action).getEffectIdx();
     }
 
     /**
