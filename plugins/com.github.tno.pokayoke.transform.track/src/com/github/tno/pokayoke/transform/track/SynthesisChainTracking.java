@@ -902,6 +902,10 @@ public class SynthesisChainTracking {
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     private RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
+        // Precondition check.
+        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+                String.format("UML element '%s' is not a finalized element.", finalizedUmlElement.getName()));
+
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
         return (action == null) ? null : getUmlElement(action);
     }
