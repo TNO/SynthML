@@ -1072,7 +1072,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return The list of CIF start events corresponding to the given UML element.
      */
-    public List<Event> getOriginalStartEventsOf(RedefinableElement originalUmlElement,
+    public List<Event> getFinalizedElementStartEventsForOriginalElement(RedefinableElement originalUmlElement,
             UmlToCifTranslationPurpose purpose)
     {
         // Precondition check.

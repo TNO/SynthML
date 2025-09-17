@@ -1253,7 +1253,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                     } else if (translationPurpose == UmlToCifTranslationPurpose.GUARD_COMPUTATION) {
                         // For guard computation, get the CIF events that refer to the opaque behavior as the original
                         // UML element.
-                        cifStartEvents = synthesisTracker.getOriginalStartEventsOf(umlOpaqueBehavior,
+                        cifStartEvents = synthesisTracker.getFinalizedElementStartEventsForOriginalElement(umlOpaqueBehavior,
                                 translationPurpose);
 
                         // We don't check whether we found at least one start event. In case of unused actions, these
