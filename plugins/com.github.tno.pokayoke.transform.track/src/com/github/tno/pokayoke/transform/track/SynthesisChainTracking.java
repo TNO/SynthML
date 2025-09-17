@@ -1084,16 +1084,17 @@ public class SynthesisChainTracking {
         // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
         // the given one, and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
+                // Filter to only events with given translation purpose.
                 .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
-                        // Check that the returned element is a redefinable element (avoid 'null' for control nodes).
+                        // Filter to only redefinable elements (avoid 'null' for control nodes).
                         && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
-                        // Same original UML element.
+                        // Filter to only UML elements that are equal to the original UML element.
                         && umlElement.equals(originalUmlElement) &&
-                        // If the finalized UML element originates from a non-merged non-atomic pattern, check that the
-                        // related original CIF event is start-only.
+                        // If the finalized UML element originates from a non-merged non-atomic pattern, filter to only
+                        // original CIF event which are start-only.
                         // Otherwise, if the finalized UML element originates from a merged pattern, the related
-                        // original CIF event is complete (both start and end); so check if the current CIF event is a
-                        // start event.
+                        // original CIF event is complete (both start and end); so filter current CIF events which are
+                        // start events.
                         (isRelatedToOriginalStartOnlyEvent(e.getValue().getUmlElement())
                                 || (isRelatedToOriginalCompleteEvent(e.getValue().getUmlElement())
                                         && e.getValue().isStartEvent())))
