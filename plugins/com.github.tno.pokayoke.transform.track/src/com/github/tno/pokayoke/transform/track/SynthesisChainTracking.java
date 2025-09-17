@@ -1024,9 +1024,7 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
      * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
-     * that represents the start-only event of an original opaque behavior. If the finalized UML element originates from
-     * a rewritten (merged) Petri net pattern, check that the CIF event generated for guard computation or language
-     * equivalence check is a start-only event.
+     * that represents the start-only event of an original opaque behavior.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -1053,9 +1051,7 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
      * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
-     * represents the start-only event of an opaque action. If the finalized UML element originates from a rewritten
-     * (merged) Petri net pattern, check that the CIF event generated for guard computation or language equivalence
-     * check is a start-only event.
+     * represents the start-only event of an opaque action.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
@@ -1081,9 +1077,7 @@ public class SynthesisChainTracking {
     /**
      * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
      * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
-     * represents an end-only event. If the finalized UML element originates from a rewritten (merged) Petri net
-     * pattern, check that the CIF event generated for guard computation or language equivalence check is an end-only
-     * event.
+     * represents an end-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
