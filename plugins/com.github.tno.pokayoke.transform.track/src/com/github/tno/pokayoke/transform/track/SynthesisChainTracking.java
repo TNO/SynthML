@@ -857,6 +857,8 @@ public class SynthesisChainTracking {
                 String.format("Element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
         Verify.verify(!finalizedElementToAction.values().contains(action),
                 String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
+        Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
+                "Expected a finalized UML element to be either an opaque action or a call behavior action.");
 
         finalizedElementToAction.put(finalizedElement, action);
     }
