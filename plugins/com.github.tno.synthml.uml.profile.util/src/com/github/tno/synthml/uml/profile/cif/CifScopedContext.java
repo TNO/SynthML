@@ -34,22 +34,20 @@ public class CifScopedContext implements CifContext {
 
     private final Map<String, NamedTemplateParameter> referenceableTemplateParameters;
 
-    private final CifContext delegate;
+    private final CifContext parent;
 
     /**
-     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
+     * Constructs a context containing all declared/referenceable elements from the local scope and the global scope.
      *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @param context An {@link CifGlobalContext} that adds the global properties.
-     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
-     *     scope.
+     * @param element An {@link Element} contained in the activity for which the context is created.
+     * @param parent A {@link CifGlobalContext} that is the parent of this scoped context.
      */
     @SuppressWarnings("restriction")
-    protected CifScopedContext(Element element, CifGlobalContext context) {
+    protected CifScopedContext(Element element, CifGlobalContext parent) {
         declaredTemplateParameters = getDeclaredTemplateParameters(element);
         referenceableTemplateParameters = declaredTemplateParameters.stream()
                 .collect(Collectors.toMap(NamedTemplateParameter::getName, Function.identity()));
-        delegate = context;
+        this.parent = parent;
     }
 
     @SuppressWarnings("restriction")
@@ -120,13 +118,13 @@ public class CifScopedContext implements CifContext {
 
     @Override
     public Model getModel() {
-        return delegate.getModel();
+        return parent.getModel();
     }
 
     @Override
     public NamedElement getReferenceableElement(String name) {
         NamedElement templateParameter = referenceableTemplateParameters.get(name);
-        return (templateParameter != null) ? templateParameter : delegate.getReferenceableElement(name);
+        return (templateParameter != null) ? templateParameter : parent.getReferenceableElement(name);
     }
 
     @SuppressWarnings("restriction")
@@ -134,7 +132,7 @@ public class CifScopedContext implements CifContext {
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
         Map<String, List<NamedElement>> referenceableElementsInclDuplicates = new LinkedHashMap<>();
 
-        for (Entry<String, List<NamedElement>> e: delegate.getReferenceableElementsInclDuplicates().entrySet()) {
+        for (Entry<String, List<NamedElement>> e: parent.getReferenceableElementsInclDuplicates().entrySet()) {
             referenceableElementsInclDuplicates.computeIfAbsent(e.getKey(), k -> new LinkedList<>())
                     .addAll(e.getValue());
         }
@@ -149,6 +147,6 @@ public class CifScopedContext implements CifContext {
 
     @Override
     public Collection<NamedElement> getDeclaredElements() {
-        return delegate.getDeclaredElements();
+        return parent.getDeclaredElements();
     }
 }
