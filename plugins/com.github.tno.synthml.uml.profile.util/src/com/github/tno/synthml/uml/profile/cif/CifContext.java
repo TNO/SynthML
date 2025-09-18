@@ -37,14 +37,19 @@ public interface CifContext {
     Model getModel();
 
     /**
-     * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
-     * that are declared in composite data types may be referenced in different ways when they are instantiated multiple
-     * times.
+     * Returns all declared named elements in the context that are supported by our subset of UML.
+     *
+     * <p>
+     * Note that properties that are declared in composite data types may be referenced in different ways when they are
+     * instantiated multiple times.
+     * </p>
+     *
+     * @return The collection of declared named elements.
      */
     Collection<NamedElement> getDeclaredElements();
 
     /**
-     * Per absolute name of a referenceable element, the element that is referenced.
+     * Returns the element referenced by the given name in the context.
      *
      * <p>
      * For elements that are not properties, the names are single identifiers. For properties, which are recursively
@@ -61,11 +66,14 @@ public interface CifContext {
      * their single identifier names. If the UML model has multiple active classes, only the first active class is
      * considered.
      * </p>
+     *
+     * @param name The absolute name of the referenced element.
+     * @return The referenced element for the given name if present in the context, else {@code null}.
      */
     NamedElement getReferenceableElement(String name);
 
     /**
-     * Per absolute name of a referenceable element, the elements that are referenced.
+     * Returns all referenceable elements, grouped by their absolute names.
      *
      * <p>
      * For elements that are not properties, the names are single identifiers. For properties, which are recursively
@@ -81,6 +89,8 @@ public interface CifContext {
      * their single identifier names. If the UML model has multiple active classes, only the first active class is
      * considered.
      * </p>
+     *
+     * @return The mapping from absolute names to a list of referenceable elements with that name.
      */
     Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates();
 
