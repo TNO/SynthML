@@ -1129,7 +1129,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkReservedKeywords(Model model) {
-        Collection<NamedElement> elements = CifContext.createGlobal(model).getDeclaredElements();
+        Collection<NamedElement> elements = getGlobalContext(model).getDeclaredElements();
 
         for (NamedElement element: elements) {
             // Primitive integer types are bounded between a min and a max value. These automatically generate

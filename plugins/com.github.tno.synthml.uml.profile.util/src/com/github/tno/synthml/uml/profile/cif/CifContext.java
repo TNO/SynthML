@@ -1,6 +1,3 @@
-/**
- *
- */
 
 package com.github.tno.synthml.uml.profile.cif;
 
@@ -29,31 +26,6 @@ import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 
 /** Symbol table of the UML model, with all its declared and referenceable named elements from the scope for which it is created. */
 public interface CifContext {
-    /**
-     * Creates a context containing all declared/referenceable elements found in the global scope of {@code model}.
-     *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @return A {@code CifContext} containing all declared/referenceable elements in the global scope.
-     */
-    public static CifGlobalContext createGlobal(Element element) {
-        return new CifGlobalContext(element);
-    }
-
-    /**
-     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
-     *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
-     *     scope.
-     */
-    public static CifScopedContext createScoped(Element element) {
-        return createScoped(element, new CifGlobalContext(element));
-    }
-
-    public static CifScopedContext createScoped(Element element, CifGlobalContext context) {
-        return new CifScopedContext(element, context);
-    }
-
     /**
      * Gives the UML model whose context to consider.
      *
