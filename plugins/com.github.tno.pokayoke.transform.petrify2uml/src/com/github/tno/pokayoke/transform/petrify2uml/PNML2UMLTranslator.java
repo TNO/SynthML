@@ -300,12 +300,16 @@ public class PNML2UMLTranslator {
                 Preconditions.checkArgument(!node.getOutgoings().isEmpty(), "Expected at least one outgoing edge.");
 
                 // Introduce a join node in case there are multiple incoming control flows.
-                if (node.getIncomings().size() > 1) {
+                if (node.getIncomings().size() > 1
+                        && !(tracker.getUmlElementInfo(node).getUmlElement() instanceof JoinNode))
+                {
                     introduceJoinNode(node);
                 }
 
                 // Introduce a fork node in case there are multiple outgoing control flows.
-                if (node.getOutgoings().size() > 1) {
+                if (node.getOutgoings().size() > 1
+                        && !(tracker.getUmlElementInfo(node).getUmlElement() instanceof ForkNode))
+                {
                     introduceForkNode(node);
                 }
             }
