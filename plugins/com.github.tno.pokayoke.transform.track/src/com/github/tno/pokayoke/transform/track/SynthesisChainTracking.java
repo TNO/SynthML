@@ -880,6 +880,16 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns {@code true} if the given UML element is a finalized element, {@code false} otherwise.
+     *
+     * @param umlElement The UML element.
+     * @return {@code true} if the given UML element is a finalized element, {@code false} otherwise.
+     */
+    private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
+        return finalizedElementToAction.keySet().contains(umlElement);
+    }
+
+    /**
      * Checks whether the given non-{@code null} UML element belongs to the elements contained in the pre-synthesis UML
      * model.
      *
@@ -935,7 +945,7 @@ public class SynthesisChainTracking {
      */
     private boolean isRelatedToOriginalStartEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
+        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
         return isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent());
@@ -1018,17 +1028,15 @@ public class SynthesisChainTracking {
 
         // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
         // the given one, and is related to a start event.
-        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
-                .filter(e ->
-                        // Filter to only events with given translation purpose.
-                        e.getValue().getTranslationPurpose().equals(purpose)
-                        // Filter to only redefinable elements (avoid 'null' for control nodes).
-                        && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
-                        // Filter to only UML elements that are equal to the original UML element.
-                        && umlElement.equals(originalUmlElement) &&
-                        // Filter to only CIF events related to an original start event.
-                        isRelatedToOriginalStartEvent(e.getValue()))
-                .map(Map.Entry::getKey).toList();
+        List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream().filter(e ->
+        // Filter to only events with given translation purpose.
+        e.getValue().getTranslationPurpose().equals(purpose)
+                // Filter to only redefinable elements (avoid 'null' for control nodes).
+                && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
+                // Filter to only UML elements that are equal to the original UML element.
+                && umlElement.equals(originalUmlElement) &&
+                // Filter to only CIF events related to an original start event.
+                isRelatedToOriginalStartEvent(e.getValue())).map(Map.Entry::getKey).toList();
 
         return filteredEvents;
     }
