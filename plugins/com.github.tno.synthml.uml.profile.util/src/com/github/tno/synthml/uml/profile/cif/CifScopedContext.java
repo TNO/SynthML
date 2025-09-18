@@ -4,7 +4,7 @@ package com.github.tno.synthml.uml.profile.cif;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public class CifScopedContext implements CifContext {
     @SuppressWarnings("restriction")
     @Override
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
-        Map<String, List<NamedElement>> referenceableElementsInclDuplicates = new HashMap<>();
+        Map<String, List<NamedElement>> referenceableElementsInclDuplicates = new LinkedHashMap<>();
 
         for (Entry<String, List<NamedElement>> e: delegate.getReferenceableElementsInclDuplicates().entrySet()) {
             referenceableElementsInclDuplicates.computeIfAbsent(e.getKey(), k -> new LinkedList<>())
@@ -138,7 +138,7 @@ public class CifScopedContext implements CifContext {
                     .add(parameter);
         }
 
-        return referenceableElementsInclDuplicates;
+        return Collections.unmodifiableMap(referenceableElementsInclDuplicates);
     }
 
     @Override
