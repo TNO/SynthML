@@ -870,7 +870,7 @@ public class SynthesisChainTracking {
      * @param umlElement The non-{@code null} UML element to check.
      * @return {@code true} if the input element belongs to the synthesized activity, {@code false} otherwise.
      */
-    private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
+    private boolean belongsToSynthesizedActivity(RedefinableElement umlElement) {
         Verify.verifyNotNull(umlElement, "Element cannot be 'null'.");
 
         return cifEventTraceInfo.values().stream()
@@ -904,7 +904,7 @@ public class SynthesisChainTracking {
      */
     private RedefinableElement getOriginalUmlElement(RedefinableElement finalizedUmlElement) {
         // Precondition check.
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("UML element '%s' is not a finalized element.", finalizedUmlElement.getName()));
 
         OpaqueAction action = finalizedElementToAction.get(finalizedUmlElement);
@@ -918,7 +918,7 @@ public class SynthesisChainTracking {
      * @return The corresponding opaque action.
      */
     private OpaqueAction getOpaqueAction(RedefinableElement umlElement) {
-        Verify.verify(isFinalizedUmlElement(umlElement),
+        Verify.verify(belongsToSynthesizedActivity(umlElement),
                 String.format("Element '%s' is not a finalized element.", umlElement.getName()));
         OpaqueAction action = finalizedElementToAction.get(umlElement);
         Verify.verifyNotNull(action, String.format(
@@ -935,7 +935,7 @@ public class SynthesisChainTracking {
      */
     private boolean isRelatedToOriginalStartEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
         return isRelatedToOriginalStartOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isStartEvent());
@@ -950,7 +950,7 @@ public class SynthesisChainTracking {
      */
     private boolean isRelatedToEndOnlyEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
         return isRelatedToOriginalEndOnlyEvent(finalizedUmlElement)
                 || (isRelatedToOriginalCompleteEvent(finalizedUmlElement) && finalizedEventInfo.isEndOnlyEvent());
@@ -964,7 +964,7 @@ public class SynthesisChainTracking {
      *     otherwise.
      */
     private boolean isRelatedToOriginalStartOnlyEvent(RedefinableElement finalizedUmlElement) {
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         OpaqueAction action = getOpaqueAction(finalizedUmlElement);
         return isStartOnlyAction(action);
@@ -978,7 +978,7 @@ public class SynthesisChainTracking {
      *     otherwise.
      */
     private boolean isRelatedToOriginalEndOnlyEvent(RedefinableElement finalizedUmlElement) {
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         OpaqueAction action = getOpaqueAction(finalizedUmlElement);
         return isEndOnlyAction(action);
@@ -993,7 +993,7 @@ public class SynthesisChainTracking {
      *     event, {@code false} otherwise.
      */
     private boolean isRelatedToOriginalCompleteEvent(RedefinableElement finalizedUmlElement) {
-        Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
+        Verify.verify(belongsToSynthesizedActivity(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized element.", finalizedUmlElement.getName()));
         OpaqueAction action = getOpaqueAction(finalizedUmlElement);
         return isCompleteAction(action);
