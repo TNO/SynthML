@@ -37,15 +37,15 @@ public class CifScopedContext implements CifContext {
     private final CifContext delegate;
 
     @SuppressWarnings("restriction")
-    protected CifScopedContext(Element element, CifGlobalContext parent) {
-        declaredTemplateParameters = getDeclaredTemplateTemplateParameters(element);
+    protected CifScopedContext(Element element, CifGlobalContext context) {
+        declaredTemplateParameters = getDeclaredTemplateParameters(element);
         referenceableTemplateParameters = declaredTemplateParameters.stream()
                 .collect(Collectors.toMap(NamedTemplateParameter::getName, Function.identity()));
         delegate = context;
     }
 
     @SuppressWarnings("restriction")
-    private List<NamedTemplateParameter> getDeclaredTemplateTemplateParameters(Element inputElement) {
+    private List<NamedTemplateParameter> getDeclaredTemplateParameters(Element inputElement) {
         EObject current = inputElement;
 
         while (!(current instanceof Activity activity)) {
