@@ -24,7 +24,10 @@ import org.eclipse.uml2.uml.Property;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 
-/** Symbol table of the UML model, with all its declared and referenceable named elements from the scope for which it is created. */
+/**
+ * Symbol table of the UML model, with all its declared and referenceable named elements from the scope for which it is
+ * created.
+ */
 public interface CifContext {
     /**
      * Gives the UML model whose context to consider.
