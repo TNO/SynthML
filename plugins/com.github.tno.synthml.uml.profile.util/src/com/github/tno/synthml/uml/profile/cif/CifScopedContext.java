@@ -37,7 +37,7 @@ public class CifScopedContext implements CifContext {
     private final CifContext delegate;
 
     @SuppressWarnings("restriction")
-    protected CifScopedContext(Element element, CifContext context) {
+    protected CifScopedContext(Element element, CifGlobalContext parent) {
         declaredTemplateParameters = getDeclaredTemplateTemplateParameters(element);
         referenceableTemplateParameters = declaredTemplateParameters.stream()
                 .collect(Collectors.toMap(NamedTemplateParameter::getName, Function.identity()));

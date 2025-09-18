@@ -14,10 +14,10 @@ import org.eclipse.uml2.uml.Model;
  * contexts per {@link Activity}.
  */
 public class CifContextManager {
-    /** Cache mapping {@link Activity} instances to their corresponding scoped {@link CifScopedContext}. */
+    /** Cache mapping {@link Activity} instances to their corresponding {@link CifScopedContext}. */
     private final Map<Activity, CifScopedContext> contextCache;
 
-    /** Cached global {@link CifContext}. */
+    /** Cached {@link CifGlobalContext}. */
     private CifGlobalContext globalContext;
 
     /**
