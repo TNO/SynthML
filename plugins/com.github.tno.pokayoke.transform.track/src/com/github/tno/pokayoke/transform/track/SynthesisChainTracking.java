@@ -886,7 +886,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the given UML element is a finalized element, {@code false} otherwise.
      */
     private boolean isFinalizedUmlElement(RedefinableElement umlElement) {
-        return finalizedElementToAction.keySet().contains(umlElement);
+        return finalizedElementToAction.containsKey(umlElement);
     }
 
     /**
