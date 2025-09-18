@@ -26,9 +26,7 @@ import org.eclipse.uml2.uml.Type;
 /** Symbol table of a scope, containing the named elements available within this scope. */
 public class CifScopedContext implements CifContext {
     /**
-     * Contains all declared named elements defined within the scope that are supported by our subset of UML. Note that
-     * properties that are declared in composite data types may be referenced in different ways when they are
-     * instantiated multiple times.
+     * Contains all template parameters declared within the activity that owns the element given in the constructor.
      */
     private final List<NamedTemplateParameter> declaredTemplateParameters;
 

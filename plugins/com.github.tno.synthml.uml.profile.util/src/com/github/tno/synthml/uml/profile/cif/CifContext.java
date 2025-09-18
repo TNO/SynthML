@@ -36,10 +36,52 @@ public interface CifContext {
      */
     Model getModel();
 
+    /**
+     * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
+     * that are declared in composite data types may be referenced in different ways when they are instantiated multiple
+     * times.
+     */
     Collection<NamedElement> getDeclaredElements();
 
+    /**
+     * Per absolute name of a referenceable element, the element that is referenced.
+     *
+     * <p>
+     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
+     * instantiated starting at the active class as a root, the names are absolute names.
+     * </p>
+     *
+     * <p>
+     * In case of duplicate names, entries are overwritten and thus only one referenced element with that absolute name
+     * is stored.
+     * </p>
+     *
+     * <p>
+     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
+     * their single identifier names. If the UML model has multiple active classes, only the first active class is
+     * considered.
+     * </p>
+     */
     NamedElement getReferenceableElement(String name);
 
+    /**
+     * Per absolute name of a referenceable element, the elements that are referenced.
+     *
+     * <p>
+     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
+     * instantiated starting at the active class as a root, the names are absolute names.
+     * </p>
+     *
+     * <p>
+     * All referenceable elements with the same name are stored in a list.
+     * </p>
+     *
+     * <p>
+     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
+     * their single identifier names. If the UML model has multiple active classes, only the first active class is
+     * considered.
+     * </p>
+     */
     Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates();
 
     default List<Class> getAllClasses(Predicate<Class> predicate) {

@@ -47,60 +47,15 @@ public class CifGlobalContext implements CifContext {
     /** The UML model whose context to consider. */
     private final Model model;
 
-    /**
-     * Contains all declared named elements of the model that are supported by our subset of UML. Note that properties
-     * that are declared in composite data types may be referenced in different ways when they are instantiated multiple
-     * times.
-     */
+    /** See {@link CifContext#getDeclaredElements()}. */
     private final Set<NamedElement> declaredElements;
 
-    /**
-     * Per absolute name of a referenceable element, the element that is referenced.
-     *
-     * <p>
-     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
-     * instantiated starting at the active class as a root, the names are absolute names.
-     * </p>
-     *
-     * <p>
-     * In case of duplicate names, entries are overwritten and thus only one referenced element with that absolute name
-     * is stored.
-     * </p>
-     *
-     * <p>
-     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
-     * their single identifier names. If the UML model has multiple active classes, only the first active class is
-     * considered.
-     * </p>
-     */
+    /** See {@link CifContext#getReferenceableElement(String)}. */
     private final Map<String, NamedElement> referenceableElements;
 
-    /**
-     * Per absolute name of a referenceable element, the elements that are referenced.
-     *
-     * <p>
-     * For elements that are not properties, the names are single identifiers. For properties, which are recursively
-     * instantiated starting at the active class as a root, the names are absolute names.
-     * </p>
-     *
-     * <p>
-     * All referenceable elements with the same name are stored in a list.
-     * </p>
-     *
-     * <p>
-     * If the UML model has no active class, all declared named elements are considered referenceable elements based on
-     * their single identifier names. If the UML model has multiple active classes, only the first active class is
-     * considered.
-     * </p>
-     */
+    /** See {@link CifContext#getReferenceableElementsInclDuplicates()}. */
     private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
 
-    /**
-     * Finds all declared elements in the {@code model}.
-     *
-     * @param model An {@link Element} contained in the model for which the context is created..
-     * @return All declared elements in the {@code model}.
-     */
     private static QueryableIterable<NamedElement> getDeclaredElements(Model model) {
         return QueryableIterable.from(model.eAllContents()).union(model).select(e -> CONTEXT_TYPES.contains(e.eClass()))
                 .asType(NamedElement.class);
