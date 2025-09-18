@@ -117,10 +117,8 @@ public class CifScopedContext implements CifContext {
 
     @Override
     public NamedElement getReferenceableElement(String name) {
-        if (referenceableTemplateParameters.containsKey(name)) {
-            return referenceableTemplateParameters.get(name);
-        }
-        return delegate.getReferenceableElement(name);
+        NamedElement templateParameter = referenceableTemplateParameters.get(name);
+        return (templateParameter != null) ? templateParameter : delegate.getReferenceableElement(name);
     }
 
     @SuppressWarnings("restriction")
