@@ -1019,8 +1019,9 @@ public class SynthesisChainTracking {
         // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
         // the given one, and is related to a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream()
-                // Filter to only events with given translation purpose.
-                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                .filter(e ->
+                        // Filter to only events with given translation purpose.
+                        e.getValue().getTranslationPurpose().equals(purpose)
                         // Filter to only redefinable elements (avoid 'null' for control nodes).
                         && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                         // Filter to only UML elements that are equal to the original UML element.
@@ -1070,7 +1071,7 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
 
-        // Check if the event is related to the end of an original element.
+        // Check if the event is related to the end-only of an original element.
         EventTraceInfo finalizedEventInfo = cifEventTraceInfo.get(cifEvent);
         Verify.verifyNotNull(finalizedEventInfo, String.format(
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
