@@ -36,6 +36,14 @@ public class CifScopedContext implements CifContext {
 
     private final CifContext delegate;
 
+    /**
+     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
+     *
+     * @param element An {@link Element} contained in the model for which the context is created.
+     * @param context An {@link CifGlobalContext} that adds the global properties.
+     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
+     *     scope.
+     */
     @SuppressWarnings("restriction")
     protected CifScopedContext(Element element, CifGlobalContext context) {
         declaredTemplateParameters = getDeclaredTemplateParameters(element);

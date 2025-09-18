@@ -50,14 +50,6 @@ public interface CifContext {
         return createScoped(element, new CifGlobalContext(element));
     }
 
-    /**
-     * Creates a context containing all declared/referenceable elements from the local scope and the global scope.
-     *
-     * @param element An {@link Element} contained in the model for which the context is created.
-     * @param context An {@link CifGlobalContext} that adds the global properties.
-     * @return A {@link CifContext} containing all declared/referenceable elements from the local scope and the global
-     *     scope.
-     */
     public static CifScopedContext createScoped(Element element, CifGlobalContext context) {
         return new CifScopedContext(element, context);
     }
