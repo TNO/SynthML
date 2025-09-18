@@ -14,11 +14,11 @@ import org.eclipse.uml2.uml.Model;
  * contexts per {@link Activity}.
  */
 public class CifContextManager {
-    /** Cache mapping {@link Activity} instances to their corresponding {@link CifScopedContext}. */
-    private final Map<Activity, CifScopedContext> contextCache;
-
     /** Cached {@link CifGlobalContext}. */
     private CifGlobalContext globalContext;
+
+    /** Cache mapping {@link Activity} instances to their corresponding {@link CifScopedContext}. */
+    private final Map<Activity, CifScopedContext> contextCache;
 
     /**
      * Initializes the context manager with a global context for the model that contains the given element.
@@ -30,6 +30,10 @@ public class CifContextManager {
         globalContext = new CifGlobalContext(element);
     }
 
+    public CifGlobalContext getGlobalContext() {
+        return globalContext;
+    }
+
     public CifScopedContext getScopedContext(Element element) {
         Activity activity = getActivity(element);
         return contextCache.computeIfAbsent(activity, this::createScoped);
@@ -39,10 +43,6 @@ public class CifContextManager {
         contextCache.clear();
         Model model = globalContext.getModel();
         globalContext = new CifGlobalContext(model);
-    }
-
-    public CifGlobalContext getGlobalContext() {
-        return globalContext;
     }
 
     /**

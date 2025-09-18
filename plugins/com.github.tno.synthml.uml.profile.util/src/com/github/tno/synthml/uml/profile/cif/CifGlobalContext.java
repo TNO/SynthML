@@ -149,16 +149,6 @@ public class CifGlobalContext implements CifContext {
     }
 
     /**
-     * Gives the UML model whose context to consider.
-     *
-     * @return The UML model whose context to consider.
-     */
-    @Override
-    public Model getModel() {
-        return model;
-    }
-
-    /**
      * Add instantiated properties, recursively, to {@link #referenceableElements} and
      * {@link #referenceableElementsInclDuplicates}.
      *
@@ -188,6 +178,16 @@ public class CifGlobalContext implements CifContext {
                 }
             }
         }
+    }
+
+    /**
+     * Gives the UML model whose context to consider.
+     *
+     * @return The UML model whose context to consider.
+     */
+    @Override
+    public Model getModel() {
+        return model;
     }
 
     @Override
