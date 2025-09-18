@@ -938,12 +938,14 @@ public class SynthesisChainTracking {
 
     /**
      * Returns {@code true} if the finalized UML element contained in the given event trace info is related to an
-     * original CIF start event.
+     * original CIF start-only event or if it is related to a merged patterns and it is related to a current CIF start
+     * event' {@code false} otherwise.
      *
      * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
-     * @return {@code true} if the given UML element is related to an original CIF start event, {@code false} otherwise.
+     * @return {@code true} if the given UML element is related to an original CIF start-only event or if it is related
+     *     to a merged patterns and it is related to a current CIF start event, {@code false} otherwise.
      */
-    private boolean isRelatedToOriginalStartEvent(EventTraceInfo finalizedEventInfo) {
+    private boolean isRelatedToOriginalStartOnlyOrIsStartEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
@@ -1036,7 +1038,7 @@ public class SynthesisChainTracking {
                 // Filter to only UML elements that are equal to the original UML element.
                 && umlElement.equals(originalUmlElement) &&
                 // Filter to only CIF events related to an original start event.
-                isRelatedToOriginalStartEvent(e.getValue())).map(Map.Entry::getKey).toList();
+                isRelatedToOriginalStartOnlyOrIsStartEvent(e.getValue())).map(Map.Entry::getKey).toList();
 
         return filteredEvents;
     }
@@ -1062,7 +1064,7 @@ public class SynthesisChainTracking {
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
-                && isRelatedToOriginalStartEvent(finalizedEventInfo);
+                && isRelatedToOriginalStartOnlyOrIsStartEvent(finalizedEventInfo);
     }
 
     /**
