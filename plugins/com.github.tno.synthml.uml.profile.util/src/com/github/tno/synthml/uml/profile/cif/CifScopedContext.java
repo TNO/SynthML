@@ -145,6 +145,9 @@ public class CifScopedContext implements CifContext {
 
     @Override
     public Collection<NamedElement> getDeclaredElements() {
-        return parent.getDeclaredElements();
+        ArrayList<NamedElement> declaredElements = new ArrayList<>();
+        declaredElements.addAll(declaredTemplateParameters);
+        declaredElements.addAll(parent.getDeclaredElements());
+        return Collections.unmodifiableCollection(declaredElements);
     }
 }
