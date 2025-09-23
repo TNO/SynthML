@@ -22,6 +22,7 @@ import org.eclipse.escet.cif.parser.ast.expressions.ABoolExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.AIntExpression;
 import org.eclipse.escet.cif.parser.ast.expressions.ANameExpression;
+import org.eclipse.escet.common.java.Lists;
 import org.eclipse.escet.setext.runtime.exceptions.CustomSyntaxException;
 import org.eclipse.lsat.common.queries.QueryableIterable;
 import org.eclipse.uml2.uml.Action;
@@ -831,30 +832,27 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidArguments(CallBehaviorAction callAction) {
-        String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
-        if (arguments.isBlank()) {
-            return;
-        }
-
-        Behavior behavior = callAction.getBehavior();
-        if (!(behavior instanceof Activity calledActivity)) {
-            String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
-            error("A call behavior action with arguments must call an activity, got: " + got, null);
-            // No activity could be resolved, skip argument parsing of the behavior.
-            return;
-        }
-
         try {
-            List<AUpdate> updates = CifParserHelper.parseUpdates(arguments, calledActivity);
+            List<AAssignmentUpdate> assignments = CifParserHelper.parseArguments(callAction);
+
+            Behavior behavior = callAction.getBehavior();
+            if (!(behavior instanceof Activity calledActivity)) {
+                if (!assignments.isEmpty()) {
+                    String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
+                    error("A call behavior action with arguments must call an activity, got: " + got, null);
+                }
+                // No activity could be resolved, skip argument parsing of the behavior.
+                return;
+            }
 
             // Valid assignments are valid updates with restrictions.
-            checkValidArguments(updates, callAction, calledActivity);
+            checkValidArguments(assignments, callAction, calledActivity);
 
             // Ensure that no parameter is assigned more than once.
-            checkUniqueAddressables(updates, new LinkedHashSet<>());
+            checkUniqueAddressables(Lists.cast(assignments), new LinkedHashSet<>());
 
             // Ensure that every parameter is assigned.
-            if (updates.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+            if (assignments.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
                 error("Not all parameters of the called activity have been assigned.", null);
             }
         } catch (RuntimeException re) {
@@ -863,20 +861,16 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private void checkValidArguments(List<AUpdate> updates, CallBehaviorAction callAction, Activity calledActivity) {
+    private void checkValidArguments(List<AAssignmentUpdate> assignments, CallBehaviorAction callAction,
+            Activity calledActivity)
+    {
         Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
                 .getDeclaredTemplateParameters();
 
         CifContext addressableContext = getScopedContext(calledActivity);
         CifContext valueContext = getScopedContext(callAction);
 
-        for (AUpdate update: updates) {
-            // Ensure the update is an assignment update.
-            if (!(update instanceof AAssignmentUpdate assignment)) {
-                error("Invalid parameter assignment: Only assignment updates are supported.", null);
-                continue;
-            }
-
+        for (AAssignmentUpdate assignment: assignments) {
             // Ensure the addressable part is a named expression referring to the name of a template parameter, and that
             // the addressable and value have the same type.
             if (!(assignment.addressable instanceof ANameExpression addressable)) {
