@@ -47,13 +47,13 @@ public class CifGlobalContext implements CifContext {
     /** The UML model whose context to consider. */
     private final Model model;
 
-    /** See {@link CifContext#getDeclaredElements()}. */
+    /** See {@link CifContext#getDeclaredElements}. */
     private final Set<NamedElement> declaredElements;
 
-    /** See {@link CifContext#getReferenceableElement(String)}. */
+    /** See {@link CifContext#getReferenceableElement}. */
     private final Map<String, NamedElement> referenceableElements;
 
-    /** See {@link CifContext#getReferenceableElementsInclDuplicates()}. */
+    /** See {@link CifContext#getReferenceableElementsInclDuplicates}. */
     private final Map<String, List<NamedElement>> referenceableElementsInclDuplicates;
 
     private static QueryableIterable<NamedElement> getDeclaredElements(Model model) {

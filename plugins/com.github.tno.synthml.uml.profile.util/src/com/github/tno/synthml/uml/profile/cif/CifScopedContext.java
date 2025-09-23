@@ -26,7 +26,7 @@ import org.eclipse.uml2.uml.Type;
 /** Symbol table of a scope, containing the named elements available within this scope. */
 public class CifScopedContext implements CifContext {
     /**
-     * Contains all template parameters declared within the activity that owns the element given in the constructor.
+     * The declared template parameters of the activity of this scope.
      */
     private final List<NamedTemplateParameter> declaredTemplateParameters;
 
@@ -145,7 +145,7 @@ public class CifScopedContext implements CifContext {
 
     @Override
     public Collection<NamedElement> getDeclaredElements() {
-        ArrayList<NamedElement> declaredElements = new ArrayList<>();
+        List<NamedElement> declaredElements = new ArrayList<>();
         declaredElements.addAll(declaredTemplateParameters);
         declaredElements.addAll(parent.getDeclaredElements());
         return Collections.unmodifiableCollection(declaredElements);
