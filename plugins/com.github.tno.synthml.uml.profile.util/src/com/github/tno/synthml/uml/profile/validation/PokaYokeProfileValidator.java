@@ -832,11 +832,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkValidArguments(CallBehaviorAction callAction) {
-        Behavior behavior = callAction.getBehavior();
-
         try {
             List<AAssignmentUpdate> assignments = CifParserHelper.parseArguments(callAction);
 
+            Behavior behavior = callAction.getBehavior();
             if (!(behavior instanceof Activity calledActivity)) {
                 if (!assignments.isEmpty()) {
                     String got = (behavior == null) ? "null" : behavior.getClass().getSimpleName();
