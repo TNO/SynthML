@@ -3,6 +3,7 @@ package com.github.tno.synthml.uml.profile.validation;
 
 import static org.eclipse.lsat.common.queries.QueryableIterable.from;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -69,7 +70,7 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
 import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
-import com.github.tno.synthml.uml.profile.cif.CifScope;
+import com.github.tno.synthml.uml.profile.cif.CifScopedContext;
 import com.github.tno.synthml.uml.profile.cif.CifTypeChecker;
 import com.github.tno.synthml.uml.profile.cif.NamedTemplateParameter;
 import com.github.tno.synthml.uml.profile.cif.TypeException;
@@ -125,7 +126,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         return getContextManager(element).getGlobalContext();
     }
 
-    private CifContext getScopedContext(Element element) {
+    private CifScopedContext getScopedContext(Element element) {
         return getContextManager(element).getScopedContext(element);
     }
 
@@ -293,7 +294,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             if (!(clazz.getClassifierBehavior() instanceof Activity activity)) {
                 error("Classifier behavior must be an activity.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
-            } else if (!CifScope.getClassifierTemplateParameters(activity).isEmpty()) {
+            } else if (!CifScopedContext.getClassifierTemplateParameters(activity).isEmpty()) {
                 error("The classifier behavior activity must not have parameters.",
                         UMLPackage.Literals.BEHAVIORED_CLASSIFIER__CLASSIFIER_BEHAVIOR);
             }
@@ -569,7 +570,8 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     }
 
     private void checkValidTemplateSignature(Activity activity) {
-        List<ClassifierTemplateParameter> templateParameters = CifScope.getClassifierTemplateParameters(activity);
+        List<ClassifierTemplateParameter> templateParameters = CifScopedContext
+                .getClassifierTemplateParameters(activity);
 
         if (activity.isAbstract() && templateParameters.size() > 0) {
             error("Activity parameters are disallowed on abstract activities.", null);
@@ -595,7 +597,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             error("Activity parameters must have a default of type 'NamedElement'.", null);
         }
 
-        if (!templateParameters.stream().map(CifScope::getClassifierTemplateParameterType)
+        if (!templateParameters.stream().map(CifScopedContext::getClassifierTemplateParameterType)
                 .allMatch(parameter -> parameter instanceof DataType && (PokaYokeTypeUtil.isPrimitiveType(parameter)
                         || PokaYokeTypeUtil.isEnumerationType(parameter))))
         {
@@ -603,7 +605,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
 
         List<String> parameterNames = templateParameters.stream().map(ClassifierTemplateParameter::getDefault)
-                .map(CifScope::getClassifierTemplateParameterName).toList();
+                .map(CifScopedContext::getClassifierTemplateParameterName).toList();
         if (!parameterNames.stream().allMatch(new HashSet<>()::add)) {
             error("Activity parameters must have unique names.", null);
         }
@@ -852,7 +854,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
             checkUniqueAddressables(Lists.cast(assignments), new LinkedHashSet<>());
 
             // Ensure that every parameter is assigned.
-            if (assignments.size() != new CifScope(calledActivity).getDeclaredTemplateParameters().size()) {
+            if (assignments.size() != getScopedContext(calledActivity).getDeclaredTemplateParameters().size()) {
                 error("Not all parameters of the called activity have been assigned.", null);
             }
         } catch (RuntimeException re) {
@@ -864,11 +866,10 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
     private void checkValidArguments(List<AAssignmentUpdate> assignments, CallBehaviorAction callAction,
             Activity calledActivity)
     {
-        Set<NamedTemplateParameter> declaredTemplateParameters = new CifScope(calledActivity)
-                .getDeclaredTemplateParameters();
-
-        CifContext addressableContext = getScopedContext(calledActivity);
+        CifScopedContext addressableContext = getScopedContext(calledActivity);
         CifContext valueContext = getScopedContext(callAction);
+
+        List<NamedTemplateParameter> declaredTemplateParameters = addressableContext.getDeclaredTemplateParameters();
 
         for (AAssignmentUpdate assignment: assignments) {
             // Ensure the addressable part is a named expression referring to the name of a template parameter, and that
@@ -877,7 +878,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
                 error("Invalid parameter assignment: Only single names are allowed as addressables.", null);
             } else if (addressable.derivative) {
                 error("Invalid parameter assignment: Expected a non-derivative parameter name.", null);
-            } else if (!isNameInNameSet(addressable.name.name, declaredTemplateParameters)) {
+            } else if (!isNameInNamedElements(addressable.name.name, declaredTemplateParameters)) {
                 error("Invalid parameter assignment: Unknown activity parameter name (of the called activity): "
                         + addressable.name.name, null);
             } else {
@@ -906,7 +907,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
         }
     }
 
-    private static boolean isNameInNameSet(String name, Set<? extends NamedElement> namedElements) {
+    private static boolean isNameInNamedElements(String name, List<? extends NamedElement> namedElements) {
         return namedElements.stream().anyMatch(p -> p.getName().equals(name));
     }
 
@@ -1122,7 +1123,7 @@ public class PokaYokeProfileValidator extends ContextAwareDeclarativeValidator {
      */
     @Check
     private void checkReservedKeywords(Model model) {
-        QueryableIterable<NamedElement> elements = CifContext.getDeclaredElements(model);
+        Collection<NamedElement> elements = getGlobalContext(model).getDeclaredElements();
 
         for (NamedElement element: elements) {
             // Primitive integer types are bounded between a min and a max value. These automatically generate
