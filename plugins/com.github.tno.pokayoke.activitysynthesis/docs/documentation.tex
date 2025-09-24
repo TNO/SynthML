@@ -577,19 +577,19 @@ Therefore, we perform event-based projection on the CIF state space, to restore 
 We do not eliminate the uncontrollable end events of nonatomic actions since no atomicity constraints are imposed on such actions, i.e., their diamond patterns are still intact.
 
 Note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--hide} to hide a list of given events.
-We used this option in earlier versions of our implementation instead of doing event-based projection on the level of CIF.
+We used this option in earlier versions of our SynthML implementation instead of doing event-based projection on the level of CIF.
 However, Petrify's hiding option seems broken, in the sense that we observed that Petrify does not always hide all events in the specified list.
 This further motivates doing hiding/projection on the level of CIF instead.
 
 \paragraph{Preconditions.}
-Since \eventBasedProjectionLabel{} uses the automaton projection tool that comes with CIF\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/projection.html} (accessed 2024-08-01).}, all preconditions from that tool apply.
+Since \eventBasedProjectionLabel{} uses the automaton projection tool that comes with CIF\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/projection.html} (accessed 2025-09-24).}, all preconditions from that tool apply.
 Notably, the input should be a valid CIF specification, e.g., it does not accept automata where some locations have state annotations and some do not.
 The input CIF specification must contain a single automaton, which in our case is the CIF state space, which in turn must have exactly one initial location.
 
 \paragraph{Postconditions.}
 All guarantees of the automaton projection tool from CIF apply.
-Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is trace-equivalent to the input specification with respect to those events.
-In our case, this means that the resulting CIF specification no longer contains the uncontrollable events of atomic nondeterministic actions, and is trace-equivalent to the input modulo those events.
+Notably, event-based projection guarantees that the resulting automaton after projection is a DFA that contains only the projected events, and that is trace-equivalent to the input specification with respect to these events.
+In our case, this means that the resulting CIF specification no longer contains the uncontrollable end events of atomic nondeterministic actions, and is trace-equivalent to the input modulo these events.
 The resulting DFA is not guaranteed to be minimal.
 We will minimize it in the next step.
 
@@ -599,15 +599,15 @@ We will minimize it in the next step.
 The \dfaMinimization{\var{cifStatespace_{proj}}} operation minimizes the single deterministic automaton in the given CIF specification, \var{cifStatespace_{proj}}.
 
 \paragraph{Motivation.}
-We use DFA minimization to minimize the input for Petri Net synthesis, such that we get the smallest possible UML activity that is still optimal.
-
-Moreover, note that Petrify, which is the tool we use for Petri Net synthesis, also has a built-in option \texttt{--mints} to minimize the input graph modulo trace equivalence.
+We use DFA minimization to minimize the input for Petri Net synthesis.
+Minimizing the DFA is not strictly required to be able to apply Petrify, but might help the Petri Net synthesis algorithm so that it does not have to reason about nondistinguishable DFA states.
+Note that Petrify also has a built-in option \texttt{--mints} to minimize the input graph modulo trace equivalence, as a pre-processing step.
 From the documentation of Petrify\footnote{Which is included in the distribution that can be downloaded from the Petrify webpage.} this option seems to have some interaction with the \texttt{--hide} option.
 However, as explained in \autoref{sec:event-based-projection}, \texttt{--hide} does not seem to always work.
-Therefore, in addition to event-based projection, we also do the minimization on the level of CIF.
+Therefore, in addition to event-based projection, we also do the DFA minimization on the level of CIF.
 
 \paragraph{Preconditions.}
-Since \dfaMinimizationLabel{} uses the event-based DFA minimization tool that comes with CIF\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/dfa-minimize.html}(accessed 2024-08-01).}, all preconditions from that tool apply.
+Since \dfaMinimizationLabel{} uses the event-based DFA minimization tool that comes with CIF\footnote{See \url{https://eclipse.dev/escet/cif/tools/eventbased/dfa-minimize.html} (accessed 2025-09-24).}, all preconditions from that tool apply.
 
 Notably, the input should be a CIF specification containing exactly one deterministic automaton with exactly one initial location.
 In our case this is the projected CIF state space.
@@ -623,9 +623,7 @@ To see why, suppose that event-based projection and/or DFA minimization would so
 Let us take two of them and refer to these locations as $m_1$ and $m_2$.
 Neither $m_1$ nor $m_2$ can have outgoing edges.
 But then there can be no word in the automaton language that would distinguish $m_1$ and $m_2$.
-Hence they must be the same location.
-
-
+Hence they must be the same location since the automaton is minimal.
 
 \begin{example*}[Running Example]
 The minimized CIF model is shown in Listing~\ref{lst:bitflipper-minimized-cif}.
