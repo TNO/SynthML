@@ -25,9 +25,7 @@ import org.eclipse.uml2.uml.Type;
 
 /** Symbol table of a scope, containing the named elements available within this scope. */
 public class CifScopedContext implements CifContext {
-    /**
-     * The declared template parameters of the activity of this scope.
-     */
+    /** The declared template parameters of the activity of this scope. */
     private final List<NamedTemplateParameter> declaredTemplateParameters;
 
     private final Map<String, NamedTemplateParameter> referenceableTemplateParameters;
