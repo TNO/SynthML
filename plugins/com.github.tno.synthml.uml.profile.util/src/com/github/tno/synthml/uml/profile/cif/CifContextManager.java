@@ -18,7 +18,7 @@ public class CifContextManager {
     private CifGlobalContext globalContext;
 
     /** Cache mapping {@link Activity} instances to their corresponding {@link CifScopedContext}. */
-    private final Map<Activity, CifScopedContext> contextCache;
+    private final Map<Activity, CifScopedContext> scopedContexts;
 
     /**
      * Initializes the context manager with a global context for the model that contains the given element.
@@ -26,7 +26,7 @@ public class CifContextManager {
      * @param element The {@link Element} of the model for which to create the global context.
      */
     public CifContextManager(Element element) {
-        contextCache = new HashMap<>();
+        scopedContexts = new HashMap<>();
         globalContext = new CifGlobalContext(element);
     }
 
@@ -36,11 +36,11 @@ public class CifContextManager {
 
     public CifScopedContext getScopedContext(Element element) {
         Activity activity = getActivity(element);
-        return contextCache.computeIfAbsent(activity, this::createScoped);
+        return scopedContexts.computeIfAbsent(activity, this::createScoped);
     }
 
     public void refresh() {
-        contextCache.clear();
+        scopedContexts.clear();
         Model model = globalContext.getModel();
         globalContext = new CifGlobalContext(model);
     }
