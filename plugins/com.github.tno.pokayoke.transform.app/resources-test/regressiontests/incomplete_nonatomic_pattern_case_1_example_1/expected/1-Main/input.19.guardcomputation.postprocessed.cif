@@ -1,0 +1,94 @@
+controllable __node__OpaqueAction__55;
+controllable __node__OpaqueAction__56;
+controllable __node__OpaqueAction__57;
+controllable __node__DecisionNode__59__0;
+controllable __node__DecisionNode__59__1;
+controllable __node__DecisionNode__60__0;
+controllable __node__DecisionNode__60__1;
+controllable __node__CallBehaviorAction__62;
+controllable __node__CallBehaviorAction__63;
+controllable __node__MergeNode__64__0;
+controllable __node__MergeNode__64__1;
+controllable __node__MergeNode__64__2;
+plant automaton Context:
+  disc bool done_a in any;
+  disc bool done_b in any;
+  disc bool __controlflow__40;
+  disc bool __controlflow__42;
+  disc bool __controlflow__44;
+  disc bool __controlflow__45;
+  disc bool __controlflow__47;
+  disc bool __controlflow__49;
+  disc bool __controlflow__50;
+  disc bool __controlflow__51;
+  disc bool __controlflow__52;
+  disc bool __controlflow__53 = true;
+  disc bool __controlflow__54;
+  alg bool Pre = not done_a and not done_b;
+  alg bool __token_on_first_controlflow = __controlflow__53;
+  alg bool __precondition = Pre and __token_on_first_controlflow;
+  alg bool Post = done_b;
+  alg bool __postcondition_without_structure__occurrences__36__do_a__22 = occurrences__36__do_a__22.__occurrences >= 0;
+  alg bool __postcondition_without_structure__occurrences__36__do_b__24 = occurrences__36__do_b__24.__occurrences >= 0;
+  alg bool __postcondition_without_structure = Post and (__postcondition_without_structure__occurrences__36__do_a__22 and __postcondition_without_structure__occurrences__36__do_b__24);
+  alg bool __postcondition_with_structure__without_structure = __postcondition_without_structure;
+  alg bool __postcondition_with_structure__controlflow__40 = not __controlflow__40;
+  alg bool __postcondition_with_structure__controlflow__42 = not __controlflow__42;
+  alg bool __postcondition_with_structure__controlflow__44 = not __controlflow__44;
+  alg bool __postcondition_with_structure__controlflow__45 = not __controlflow__45;
+  alg bool __postcondition_with_structure__controlflow__47 = not __controlflow__47;
+  alg bool __postcondition_with_structure__controlflow__49 = not __controlflow__49;
+  alg bool __postcondition_with_structure__controlflow__50 = not __controlflow__50;
+  alg bool __postcondition_with_structure__controlflow__51 = not __controlflow__51;
+  alg bool __postcondition_with_structure__controlflow__53 = not __controlflow__53;
+  alg bool __postcondition_with_structure__controlflow__54 = not __controlflow__54;
+  alg bool __token_on_last_controlflow = __controlflow__52;
+  alg bool __postcondition_with_structure = __postcondition_with_structure__without_structure and (__postcondition_with_structure__controlflow__40 and __postcondition_with_structure__controlflow__42) and (__postcondition_with_structure__controlflow__44 and (__postcondition_with_structure__controlflow__45 and __postcondition_with_structure__controlflow__47)) and (__postcondition_with_structure__controlflow__49 and (__postcondition_with_structure__controlflow__50 and __postcondition_with_structure__controlflow__51) and (__postcondition_with_structure__controlflow__53 and (__postcondition_with_structure__controlflow__54 and __token_on_last_controlflow)));
+  initial __precondition;
+  marked __postcondition_with_structure;
+  location:
+    initial;
+    marked;
+    edge __node__OpaqueAction__55 when not done_b, __controlflow__44, not __controlflow__51 do __controlflow__44 := false, __controlflow__51 := true;
+    edge __node__OpaqueAction__56 when not done_b, __controlflow__42, not __controlflow__49 do __controlflow__42 := false, __controlflow__49 := true;
+    edge __node__OpaqueAction__57 when true, __controlflow__54, not __controlflow__52 do done_b := true, __controlflow__54 := false, __controlflow__52 := true;
+    edge __node__DecisionNode__59__0 when true, __controlflow__53, not __controlflow__40, true do __controlflow__53 := false, __controlflow__40 := true;
+    edge __node__DecisionNode__59__1 when true, __controlflow__53, not __controlflow__42, true do __controlflow__53 := false, __controlflow__42 := true;
+    edge __node__DecisionNode__60__0 when true, __controlflow__49, not __controlflow__45, true do __controlflow__49 := false, __controlflow__45 := true;
+    edge __node__DecisionNode__60__1 when true, __controlflow__49, not __controlflow__47, true do __controlflow__49 := false, __controlflow__47 := true;
+    edge __node__CallBehaviorAction__62 when not done_a and not done_b, __controlflow__40, not __controlflow__44 do done_a := true, __controlflow__40 := false, __controlflow__44 := true;
+    edge __node__CallBehaviorAction__63 when not done_a and not done_b, __controlflow__45, not __controlflow__50 do done_a := true, __controlflow__45 := false, __controlflow__50 := true;
+    edge __node__MergeNode__64__0 when true, __controlflow__47, not __controlflow__54 do __controlflow__47 := false, __controlflow__54 := true;
+    edge __node__MergeNode__64__1 when true, __controlflow__50, not __controlflow__54 do __controlflow__50 := false, __controlflow__54 := true;
+    edge __node__MergeNode__64__2 when true, __controlflow__51, not __controlflow__54 do __controlflow__51 := false, __controlflow__54 := true;
+end
+requirement automaton occurrences__36__do_a__22:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__CallBehaviorAction__62 when __occurrences < 1 do __occurrences := __occurrences + 1;
+    edge __node__CallBehaviorAction__63 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement automaton occurrences__36__do_b__24:
+  disc int[0..1] __occurrences;
+  marked __occurrences >= 0;
+  location:
+    initial;
+    marked;
+    edge __node__OpaqueAction__55 when __occurrences < 1 do __occurrences := __occurrences + 1;
+    edge __node__OpaqueAction__56 when __occurrences < 1 do __occurrences := __occurrences + 1;
+end
+requirement invariant Context.__postcondition_without_structure disables __node__OpaqueAction__55;
+requirement invariant Context.__postcondition_without_structure disables __node__OpaqueAction__56;
+requirement invariant Context.__postcondition_with_structure disables __node__OpaqueAction__57;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__59__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__59__1;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__60__0;
+requirement invariant Context.__postcondition_with_structure disables __node__DecisionNode__60__1;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__62;
+requirement invariant Context.__postcondition_without_structure disables __node__CallBehaviorAction__63;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__64__0;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__64__1;
+requirement invariant Context.__postcondition_with_structure disables __node__MergeNode__64__2;

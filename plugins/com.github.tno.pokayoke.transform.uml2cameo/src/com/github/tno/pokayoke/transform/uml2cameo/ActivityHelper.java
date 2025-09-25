@@ -4,10 +4,12 @@ package com.github.tno.pokayoke.transform.uml2cameo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
 import org.eclipse.uml2.uml.Activity;
+import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityFinalNode;
 import org.eclipse.uml2.uml.ActivityParameterNode;
 import org.eclipse.uml2.uml.CallBehaviorAction;
@@ -29,8 +31,11 @@ import org.eclipse.uml2.uml.SendSignalAction;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.SignalEvent;
 import org.eclipse.uml2.uml.Trigger;
+import org.eclipse.uml2.uml.UMLFactory;
 
 import com.github.tno.pokayoke.transform.common.FileHelper;
+import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.UmlPrimitiveType;
 import com.google.common.base.Preconditions;
@@ -52,15 +57,17 @@ public class ActivityHelper {
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
      * @param isAtomic Whether the activity to create should be atomic.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity.
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic,
+            Set<String> forwardedParameters)
     {
         if (isAtomic) {
-            return createAtomicActivity(name, guard, effects, propertyBounds, acquire);
+            return createAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         } else {
-            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire);
+            return createNonAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
         }
     }
 
@@ -73,11 +80,12 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      *
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
@@ -97,6 +105,11 @@ public class ActivityHelper {
         // Define a new activity that encodes the guard and effect.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.setName(name);
+
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -305,6 +318,23 @@ public class ActivityHelper {
     }
 
     /**
+     * Adds a parameter to an activity.
+     *
+     * @param activity The activity to which the parameter is added.
+     * @param parameterName The name of the parameter to create.
+     */
+    public static void addParameterToActivity(Activity activity, String parameterName) {
+        Parameter inputParameter = UMLFactory.eINSTANCE.createParameter();
+        inputParameter.setName(parameterName);
+        activity.getOwnedParameters().add(inputParameter);
+
+        ActivityParameterNode parameterNode = UMLFactory.eINSTANCE.createActivityParameterNode();
+        parameterNode.setName(parameterName + "Node");
+        parameterNode.setParameter(inputParameter);
+        parameterNode.setActivity(activity);
+    }
+
+    /**
      * Creates an activity that waits until the specified guard becomes {@code true} and then executes one of the
      * specified effects. The evaluation of the guard and possible execution of the effect happen non-atomically, as two
      * separate steps (which themselves are atomic).
@@ -314,20 +344,28 @@ public class ActivityHelper {
      * @param effects The list of effects. Every effect must be a list of single-line Python programs.
      * @param propertyBounds The integer properties in the model with their bounds.
      * @param acquire The signal for acquiring the lock.
+     * @param forwardedParameters The names of the parameters forwarded to the activity.
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
-        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire);
-        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire);
+        Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
+                forwardedParameters);
+        Activity end = createAtomicActivity(name + "__end", "True", effects, propertyBounds, acquire,
+                forwardedParameters);
 
         // Create the activity that calls the start and end activities in sequence.
         Activity activity = FileHelper.FACTORY.createActivity();
         activity.getOwnedBehaviors().add(start);
         activity.getOwnedBehaviors().add(end);
         activity.setName(name);
+
+        // Add template parameters to the newly created activity for forwarded parameters.
+        for (String parameterName: forwardedParameters) {
+            addParameterToActivity(activity, parameterName);
+        }
 
         // Define the initial node.
         InitialNode initNode = FileHelper.FACTORY.createInitialNode();
@@ -366,6 +404,10 @@ public class ActivityHelper {
         endToFinalFlow.setActivity(activity);
         endToFinalFlow.setSource(callEndNode);
         endToFinalFlow.setTarget(finalNode);
+
+        // Pass arguments to the newly created inner activities.
+        passArgumentsToCallBehaviorAction(callStartNode, forwardedParameters, null);
+        passArgumentsToCallBehaviorAction(callEndNode, forwardedParameters, null);
 
         return activity;
     }
@@ -513,10 +555,11 @@ public class ActivityHelper {
      *
      * @param decisionNode The decision node.
      * @param translator The translator for translating incoming guards to Python expressions.
+     * @param ctxManager The context manager for creating and retrieving instances of {@link CifContext}.
      * @return The created activity.
      */
-    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode,
-            CifToPythonTranslator translator)
+    public static Activity createDecisionEvaluationActivity(DecisionNode decisionNode, CifToPythonTranslator translator,
+            CifContextManager ctxManager)
     {
         // Create the activity.
         Activity activity = FileHelper.FACTORY.createActivity();
@@ -552,7 +595,8 @@ public class ActivityHelper {
         // Get the incoming guard of the outgoing edges.
         for (int i = 0; i < decisionNode.getOutgoings().size(); i++) {
             ControlFlow edge = (ControlFlow)decisionNode.getOutgoings().get(i);
-            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge));
+            String translatedGuard = translator.translateExpression(CifParserHelper.parseIncomingGuard(edge),
+                    ctxManager.getScopedContext(decisionNode));
             evalProgram.append("if " + translatedGuard + ": branches.append(" + i + ")\n");
         }
 
@@ -657,6 +701,77 @@ public class ActivityHelper {
             return String.format("if guard:\n%s", CifToPythonTranslator
                     .mergeAll(CifToPythonTranslator.increaseIndentation(extendedEffects), "\n").get());
         }
+    }
+
+    /**
+     * Inserts an {@link OpaqueAction} before a {@link CallBehaviorAction} to compute argument values and deliver them
+     * via an {@link ObjectFlow} to the call's input pins.
+     * <p>
+     * Creates one {@link OpaqueAction} in the same {@link Activity} as {@code callAction}. It populates that opaque
+     * action with Python assignments for each argument. For each argument it adds an {@link OutputPin} on the
+     * {@link OpaqueAction}, an {@link InputPin} on the call, and connects them with an {@link ObjectFlow}.
+     * </p>
+     *
+     * @param callAction The call behavior action.
+     * @param argumentNames The names of the arguments.
+     * @param optionalAssignments An optional assignment of the arguments. If {@code null}, the arguments are assumed to
+     *     be variables in the calling activity.
+     */
+    public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, Set<String> argumentNames,
+            String optionalAssignments)
+    {
+        if (argumentNames.isEmpty()) {
+            return;
+        }
+
+        if (optionalAssignments == null) {
+            List<String> translatedAssignments = new ArrayList<>();
+            for (String argument: argumentNames) {
+                translatedAssignments.add(UMLToCameoTransformer.ARGUMENT_PREFIX + argument + "=" + argument);
+            }
+
+            optionalAssignments = CifToPythonTranslator.mergeAll(translatedAssignments, "\n").get();
+        }
+
+        Activity parentActivity = callAction.getActivity();
+
+        // Create an opaque action that computes argument values and provides them to the call behavior action.
+        OpaqueAction assignmentAction = FileHelper.FACTORY.createOpaqueAction();
+        assignmentAction.setActivity(parentActivity);
+        assignmentAction.getBodies().add(optionalAssignments);
+        assignmentAction.getLanguages().add("Python");
+
+        for (ActivityEdge incoming: List.copyOf(callAction.getIncomings())) {
+            incoming.setTarget(assignmentAction);
+        }
+
+        // For each assignment, create a data flow from the new action to the original call action.
+        for (String argumentName: argumentNames) {
+            linkArgumentAssignmentToCallBehaviorAction(callAction, assignmentAction, argumentName);
+        }
+    }
+
+    /**
+     * Constructs an object flow within the parent {@link Activity} of the call behavior action that transfers a value
+     * generated by the {@code assignmentAction} to the call behavior action as an argument for an activity parameter.
+     *
+     * @param callBehaviorAction The {@link CallBehaviorAction} receiving the argument.
+     * @param assignmentAction The {@link OpaqueAction} computing the argument value.
+     * @param argumentName The name of the {@link Parameter} to bind the value to.
+     */
+    private static void linkArgumentAssignmentToCallBehaviorAction(CallBehaviorAction callBehaviorAction,
+            OpaqueAction assignmentAction, String argumentName)
+    {
+        // Create an output pin on the assignment action and an input pin on the call action.
+        OutputPin outputPin = assignmentAction.createOutputValue(UMLToCameoTransformer.ARGUMENT_PREFIX + argumentName,
+                null);
+        InputPin inputPin = callBehaviorAction.createArgument(argumentName, null);
+
+        // Connect the output and input pins with an object flow.
+        ObjectFlow dataFlow = UMLFactory.eINSTANCE.createObjectFlow();
+        dataFlow.setSource(outputPin);
+        dataFlow.setTarget(inputPin);
+        callBehaviorAction.getActivity().getEdges().add(dataFlow);
     }
 
     /**

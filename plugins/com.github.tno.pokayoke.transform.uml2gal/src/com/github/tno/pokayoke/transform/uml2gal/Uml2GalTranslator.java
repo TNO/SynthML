@@ -43,6 +43,7 @@ import com.github.tno.pokayoke.transform.common.NameHelper;
 import com.github.tno.pokayoke.transform.flatten.CompositeDataTypeFlattener;
 import com.github.tno.pokayoke.transform.flatten.FlattenUMLActivity;
 import com.github.tno.synthml.uml.profile.cif.CifContext;
+import com.github.tno.synthml.uml.profile.cif.CifContextManager;
 import com.github.tno.synthml.uml.profile.cif.CifParserHelper;
 import com.github.tno.synthml.uml.profile.util.PokaYokeTypeUtil;
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -112,8 +113,11 @@ public class Uml2GalTranslator {
      * @throws CoreException Thrown when {@code model} cannot be transformed.
      */
     public Specification translate(Model model) throws CoreException {
+        CifContextManager ctxManager = new CifContextManager(model);
+
         // Flatten composite data types, and normalize the XMI IDs.
-        CompositeDataTypeFlattener.flattenCompositeDataTypes(model);
+        CompositeDataTypeFlattener.flattenCompositeDataTypes(model, ctxManager);
+        ctxManager.refresh();
         FileHelper.normalizeIds(model);
 
         // Validate and flatten the model.
@@ -130,7 +134,8 @@ public class Uml2GalTranslator {
         variableTracing.clear();
         transitionTracing.clear();
 
-        CifContext cifContext = new CifContext(model);
+        // Translate with a global context, parameterized activities are not supported.
+        CifContext cifContext = ctxManager.getGlobalContext();
         expressionTranslator = new CifToGalExpressionTranslator(cifContext, specificationBuilder, typeBuilder);
 
         // Check transformation preconditions.
@@ -138,6 +143,8 @@ public class Uml2GalTranslator {
         Preconditions.checkArgument(!cifContext.hasConstraints(c -> !CifContext.isPrimitiveTypeConstraint(c)),
                 "Only type constraints are supported.");
         Preconditions.checkArgument(!cifContext.hasAbstractActivities(), "Abstract activities are unsupported.");
+        Preconditions.checkArgument(!cifContext.hasParameterizedActivities(),
+                "Parameterized activities are unsupported.");
 
         // Translate the given model by visiting and translating all its elements.
         translateModel(model);

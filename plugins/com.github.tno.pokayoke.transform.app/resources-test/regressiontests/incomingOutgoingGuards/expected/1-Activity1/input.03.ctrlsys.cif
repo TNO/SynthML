@@ -50,5 +50,15 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge __node__InitialNode__56__0 when Class1.__activeAction = 0 and not Class1.init and (not Class1.__controlflow__35 and not Class1.__controlflow__47) and (not Class1.__controlflow__30 and not Class1.__controlflow__39 and (not Class1.__controlflow__43 and not Class1.__controlflow__52));
+    edge __node__InitialNode__56__0 when true;
 end
+supervisor invariant Class1.__postcondition disables __node__InitialNode__56__0;
+supervisor invariant Class1.__postcondition disables __node__ActivityFinalNode__58__0;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__60;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__62;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__62__result_1;
+supervisor invariant Class1.__postcondition disables __node__OpaqueAction__62__result_2;
+supervisor invariant Class1.__postcondition disables __node__MergeNode__64__0;
+supervisor invariant Class1.__postcondition disables __node__MergeNode__64__1;
+supervisor invariant Class1.__postcondition disables __node__DecisionNode__66__0;
+supervisor invariant Class1.__postcondition disables __node__DecisionNode__66__1;

@@ -1,23 +1,40 @@
 
 package com.github.tno.synthml.uml.profile.design;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
+import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
+import org.eclipse.uml2.uml.CallBehaviorAction;
+import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.ClassifierTemplateParameter;
 import org.eclipse.uml2.uml.ControlFlow;
+import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.ParameterableElement;
 import org.eclipse.uml2.uml.PrimitiveType;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.RedefinableElement;
+import org.eclipse.uml2.uml.RedefinableTemplateSignature;
+import org.eclipse.uml2.uml.TemplateParameter;
+import org.eclipse.uml2.uml.TemplateSignature;
 import org.eclipse.uml2.uml.Type;
 import org.obeonetwork.dsl.uml2.core.api.services.ReusedDescriptionServices;
 import org.obeonetwork.dsl.uml2.core.internal.services.DirectEditLabelSwitch;
+import org.obeonetwork.dsl.uml2.core.internal.services.DisplayLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.EditLabelSwitch;
 import org.obeonetwork.dsl.uml2.core.internal.services.LabelServices;
 
@@ -28,6 +45,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
+import SynthML.FormalCallBehaviorAction;
 import SynthML.FormalControlFlow;
 import SynthML.FormalElement;
 
@@ -40,6 +58,20 @@ import SynthML.FormalElement;
  */
 public class PokaYokeProfileServices {
     private static final String GUARD_EFFECTS_LAYER = "PY_GuardsEffects";
+
+    /**
+     * Regex pattern for extracting the signature from the label of a potentially parameterized {@link Activity}. Group
+     * 1 captures the main label, matching as broadly as the UML Designer label expression. Group 2 (optional) captures
+     * the content enclosed within angle brackets (< >), if present.
+     */
+    private static final String LABEL_SIGNATURE_PATTERN = "^(.*?)(?:<(.*)>)?$";
+
+    /**
+     * Regex pattern for extracting potential arguments from the label of a {@link CallBehaviorAction}. Group 1 captures
+     * the main label, matching as broadly as the UML Designer label expression. Group 2 (optional) captures the content
+     * enclosed within angle brackets (< >), if present.
+     */
+    private static final String LABEL_ARGUMENTS_PATTERN = LABEL_SIGNATURE_PATTERN;
 
     private static final String EFFECTS_SEPARATOR = System.lineSeparator() + "~~~" + System.lineSeparator();
 
@@ -139,6 +171,152 @@ public class PokaYokeProfileServices {
     }
 
     /**
+     * Returns the activity name, and optionally a string representation of the template signature if {@code activity}
+     * is stereotyped.
+     *
+     * @param activity The element to interrogate.
+     * @return The activity name, and optionally a string representation of the template signature if {@code activity}
+     *     is stereotyped.
+     */
+    public String getActivityLabel(Activity activity) {
+        // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching
+        // to forward a 'DisplayLabelSwitch.doSwitch' call to specialized methods.
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+        String activityLabel = displaySwitch.caseBehavior(activity);
+
+        TemplateSignature ownedTemplateSignature = activity.getOwnedTemplateSignature();
+        List<TemplateParameter> templateParameters = (ownedTemplateSignature != null)
+                ? ownedTemplateSignature.getOwnedParameters() : new ArrayList<>();
+        List<String> parameterSignatures = new ArrayList<>();
+        for (TemplateParameter templateParameter: templateParameters) {
+            // Extract the name of the element.
+            ParameterableElement parameterableElement = templateParameter.getOwnedDefault();
+            if (!(parameterableElement instanceof NamedElement namedParameterableElement)) {
+                continue;
+            }
+
+            // Add the type signature if it can be determined.
+            String parameterSignature = namedParameterableElement.getName();
+            if (templateParameter instanceof ClassifierTemplateParameter classifier) {
+                var firstClassifier = classifier.getConstrainingClassifiers().stream().findFirst();
+                if (firstClassifier.isPresent()) {
+                    parameterSignature += ":" + firstClassifier.get().getName();
+                }
+            }
+
+            parameterSignatures.add(parameterSignature);
+        }
+
+        if (parameterSignatures.isEmpty()) {
+            return activityLabel;
+        }
+
+        return activityLabel + "<" + String.join(",", parameterSignatures) + ">";
+    }
+
+    /**
+     * Inspired by {@link LabelServices#editUmlLabel(Element, String) editUMLLabel}. Updates an {@link Activity}s label
+     * and adds, modifies or removes the {@link RedefinableTemplateSignature}.
+     *
+     * @param activity The element to interrogate.
+     * @param editedLabelContent The new label content, which may include template signature information.
+     */
+    public void setActivityLabel(Activity activity, String editedLabelContent) {
+        // Parse the label.
+        Pattern pattern = Pattern.compile(LABEL_SIGNATURE_PATTERN);
+        Matcher matcher = pattern.matcher(editedLabelContent);
+
+        if (matcher.matches()) {
+            String baseLabel = matcher.group(1);
+            String generics = matcher.group(2) != null ? matcher.group(2) : "";
+
+            List<Type> dataTypes = PokaYokeTypeUtil.getSupportedTypes(activity);
+
+            // Map the parameter names to corresponding types.
+            Map<String, DataType> parameterNameToType = new LinkedHashMap<>();
+
+            for (String part: generics.split(",")) {
+                part = part.trim();
+
+                if (part.isEmpty()) {
+                    continue;
+                }
+
+                String[] split = part.split(":");
+                if (split.length == 2) {
+                    String name = split[0].trim();
+                    String typeName = split[1].trim();
+
+                    Optional<Type> type = dataTypes.stream().filter(dt -> dt.getName().equals(typeName)).findFirst();
+
+                    if (type.isPresent() && type.get() instanceof DataType dataType) {
+                        parameterNameToType.put(name, dataType);
+                    } else {
+                        return;
+                    }
+                } else {
+                    return;
+                }
+            }
+
+            // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching
+            // to forward an 'EditLabelSwitch.doSwitch' call to specialized methods. We directly call these
+            // specialized methods.
+            EditLabelSwitch editLabel = new EditLabelSwitch();
+
+            // Generate a label without type information. This allows generating a 'RedefinableTemplateSignature' using
+            // methods built into UML designer.
+            String genericString = parameterNameToType.isEmpty() ? ""
+                    : ("<" + String.join(", ", parameterNameToType.keySet()) + ">");
+            editLabel.setEditedLabelContent(baseLabel + genericString);
+
+            // Below mimics how UML designer sets template parameters for classes.
+            // First 'EditLabelSwitch.parseInputLabel' is called. This method parses the label and updates the
+            // underlying 'TemplateableElement'. Since this method is private we proxy it by calling
+            // 'EditLabelSwitch.caseTemplateableElement'. Lastly call 'EditLabelSwitch.caseNamedElement' as normal.
+            editLabel.caseTemplateableElement(activity);
+            editLabel.caseNamedElement(activity);
+
+            // Add type information to the newly created template parameters.
+            for (TemplateParameter parameter: activity.getOwnedTemplateSignature().getParameters()) {
+                if (parameter instanceof ClassifierTemplateParameter classifier) {
+                    String name = ((NamedElement)parameter.getParameteredElement()).getName();
+
+                    EList<Classifier> constrainingClassifiers = classifier.getConstrainingClassifiers();
+
+                    // Clear any pre-existing type information from the parameter.
+                    constrainingClassifiers.clear();
+                    constrainingClassifiers.add(parameterNameToType.get(name));
+                }
+            }
+        }
+    }
+
+    /**
+     * Inspired by {@link DisplayLabelSwitch#caseClass(org.eclipse.uml2.uml.Class) caseClass}. Returns the name of the
+     * activity, and optionally, if {@code callAction} is stereotyped, the arguments passed to the activity.
+     *
+     * @param callAction The element to interrogate.
+     * @return The name of the activity, and optionally, if {@code callAction} is stereotyped, the arguments passed to
+     *     the activity.
+     */
+    public String getCallBehaviorActionLabel(CallBehaviorAction callAction) {
+        // The switch is an implementation of the visitor pattern without double dispatch. It uses pattern matching to
+        // forward a 'DisplayLabelSwitch.doSwitch' call to specialized methods. We call those specialized methods
+        // directly.
+        DisplayLabelSwitch displaySwitch = new DisplayLabelSwitch();
+
+        String arguments = PokaYokeUmlProfileUtil.getArguments(callAction);
+        arguments = arguments.replaceAll("\s", "").replace("\n", "");
+
+        if (arguments.isEmpty()) {
+            return displaySwitch.caseCallBehaviorAction(callAction);
+        } else {
+            return displaySwitch.caseCallBehaviorAction(callAction) + "<" + arguments + ">";
+        }
+    }
+
+    /**
      * Applies the {@link FormalControlFlow} stereotype and sets the {@link FormalControlFlow#setOutgoingGuard(String)
      * guard} property for {@code controlFlow}.
      * <p>
@@ -193,7 +371,7 @@ public class PokaYokeProfileServices {
     public void setEffects(RedefinableElement element, String newValue) {
         PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
         if (Strings.isNullOrEmpty(newValue)) {
-            // Empty values are not allowed, so reset the value
+            // Empty values are not allowed, so reset the value.
             PokaYokeUmlProfileUtil.setEffects(element, null);
         } else {
             PokaYokeUmlProfileUtil.setEffects(element, Splitter.on(EFFECTS_SEPARATOR).splitToList(newValue));
@@ -210,6 +388,47 @@ public class PokaYokeProfileServices {
 
     public boolean isSetEffects(RedefinableElement element) {
         return PokaYokeUmlProfileUtil.isSetEffects(element);
+    }
+
+    /**
+     * Returns the {@link FormalCallBehaviorAction#getArguments() arguments} property value if {@code element} is
+     * stereotyped, an empty string otherwise.
+     *
+     * @param element The element to interrogate.
+     * @return The {@link FormalCallBehaviorAction#getArguments() arguments} property value if {@code element} is
+     *     stereotyped, an empty string otherwise.
+     */
+    public String getArguments(CallBehaviorAction element) {
+        return PokaYokeUmlProfileUtil.getArguments(element);
+    }
+
+    /**
+     * Applies the {@link FormalCallBehaviorAction} stereotype and sets the
+     * {@link FormalCallBehaviorAction#getArguments() arguments} property for {@code element}.
+     * <p>
+     * The {@link FormalCallBehaviorAction} stereotype is removed if {@code newValue} is {@code null} or
+     * {@link String#isEmpty() empty}.
+     * </p>
+     *
+     * @param element The element to set the property on.
+     * @param newValue The new property value.
+     */
+    public void setArguments(CallBehaviorAction element, String newValue) {
+        PokaYokeUmlProfileUtil.applyPokaYokeProfile(element);
+        if (Strings.isNullOrEmpty(newValue)) {
+            // Empty values are not allowed, so reset the value.
+            PokaYokeUmlProfileUtil.setArguments(element, null);
+        } else {
+            PokaYokeUmlProfileUtil.setArguments(element, newValue);
+        }
+
+        // Unapplying the stereotype does not refresh the viewer, not even when 'associated elements expression'
+        // is used in the odesign file. So we trigger the refresh here.
+        refresh(element);
+    }
+
+    public void unsetArguments(CallBehaviorAction element) {
+        setArguments(element, null);
     }
 
     /**
@@ -297,7 +516,8 @@ public class PokaYokeProfileServices {
 
     /**
      * Overrides the {@link LabelServices#editUmlLabel(Element, String) editUmlLabel} method in UML Designer. This
-     * implementation changes only the name of an 'ActivityEdge' without altering its guard. The override occurs
+     * implementation allows arguments to be changed for {@link CallBehaviorAction} to parameterized activities. It also
+     * changes the name of an {@link ActivityEdge activity edge} without altering its guard. The override occurs
      * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
      * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *
@@ -311,6 +531,19 @@ public class PokaYokeProfileServices {
             // 'ActivityEdge'. This implementation only changes the name.
             setName(edge, editedLabelContent);
             return edge;
+        } else if (context instanceof CallBehaviorAction callAction) {
+            // Parse the colon to specify the type.
+            Pattern pattern = Pattern.compile(LABEL_ARGUMENTS_PATTERN);
+            Matcher matcher = pattern.matcher(editedLabelContent);
+
+            // Translate the 'CallBehaviorAction' argument notation to standard CIF notation.
+            if (matcher.matches()) {
+                editedLabelContent = matcher.group(1);
+                String generics = matcher.group(2) != null ? matcher.group(2) : "";
+                setArguments(callAction, generics.replace(",", ",\n"));
+            } else {
+                setArguments(callAction, "");
+            }
         }
 
         EditLabelSwitch editLabel = new EditLabelSwitch();
@@ -321,10 +554,10 @@ public class PokaYokeProfileServices {
     /**
      * Compute the label of the given element for direct edit. Overrides the
      * {@link ReusedDescriptionServices#computeUmlDirectEditLabel(Element) computeUmlDirectEditLabel} method in UML
-     * Designer. This implementation returns only the name of an 'ActivityEdge' without adding the stereotype name
-     * within angle brackets before it. The override occurs implicitly because {@link PokaYokeProfileServices} is added
-     * to the viewpoint. This method is called through Activity Diagram defined in the uml2core.odesign file in the UML
-     * Designer project.
+     * Designer. It adds the arguments to the label of {@link CallBehaviorAction}, and it returns the name of an
+     * {@link ActivityEdge} without adding the stereotype name within angle brackets before it. The override occurs
+     * implicitly because {@link PokaYokeProfileServices} is added to the viewpoint. This method is called through
+     * Activity Diagram defined in the uml2core.odesign file in the UML Designer project.
      *
      * @param element The {@link Element} for which to retrieve a label.
      * @return The computed label.
@@ -332,8 +565,10 @@ public class PokaYokeProfileServices {
     public String computeUmlDirectEditLabel(Element element) {
         if (element instanceof ActivityEdge edge) {
             // The implementation in UML Designer uses 'doSwitch' to return both the name of an 'ActivityEdge' and
-            // the name of its stereotype. This implementation only returns the name.
+            // and the stereotypes applied to it. This implementation only returns the name.
             return edge.getName();
+        } else if (element instanceof CallBehaviorAction callAction) {
+            return getCallBehaviorActionLabel(callAction);
         }
 
         final DirectEditLabelSwitch directEditLabel = new DirectEditLabelSwitch();

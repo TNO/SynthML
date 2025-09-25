@@ -1,6 +1,7 @@
 
 package com.github.tno.pokayoke.transform.track;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,8 +12,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
 import org.eclipse.escet.common.java.Pair;
+import org.eclipse.uml2.uml.Action;
 import org.eclipse.uml2.uml.CallBehaviorAction;
 import org.eclipse.uml2.uml.ControlNode;
+import org.eclipse.uml2.uml.OpaqueAction;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.RedefinableElement;
 
 import com.github.tno.synthml.uml.profile.util.PokaYokeUmlProfileUtil;
@@ -37,8 +41,18 @@ public class SynthesisChainTracking {
      */
     private final Map<Event, EventTraceInfo> cifEventTraceInfo = new LinkedHashMap<>();
 
-    /** The map from Petri net transitions to their corresponding CIF events. */
-    private final Map<Transition, Event> transitionsToCifEvents = new LinkedHashMap<>();
+    /** The map from Petri net transitions to their corresponding tracing info. */
+    private final Map<Transition, TransitionTraceInfo> transitionTraceInfo = new LinkedHashMap<>();
+
+    /**
+     * The map from new (in the body of the abstract activity being synthesized) UML opaque actions to their
+     * corresponding Petri net transitions.
+     */
+    private final Map<OpaqueAction, Transition> actionToTransition = new LinkedHashMap<>();
+
+    public static enum ActionKind {
+        START_OPAQUE_BEHAVIOR, END_OPAQUE_BEHAVIOR, COMPLETE_OPAQUE_BEHAVIOR, CONTROL_NODE;
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Section dealing with CIF events and the corresponding input UML elements.
@@ -49,15 +63,15 @@ public class SynthesisChainTracking {
      * purpose.
      *
      * @param cifEvent The CIF event to relate to the UML element.
-     * @param umlElement The UML element to relate to the CIF event. May be {@code null}.
-     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
-     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
      * @param purpose The translation purpose.
+     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
+     * @param effectIdx The effect index. It must be {@code null} for events that are both start and end events, as well
+     *     as for start-only events. End-only events must have a non-negative integer effect index.
      * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
      * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
      */
-    public void addCifEvent(Event cifEvent, RedefinableElement umlElement, Integer effectIdx,
-            UmlToCifTranslationPurpose purpose, boolean isStartEvent, boolean isEndEvent)
+    public void addCifEvent(Event cifEvent, UmlToCifTranslationPurpose purpose, RedefinableElement umlElement,
+            Integer effectIdx, boolean isStartEvent, boolean isEndEvent)
     {
         cifEventTraceInfo.put(cifEvent, new EventTraceInfo(purpose, umlElement, effectIdx, isStartEvent, isEndEvent));
     }
@@ -72,29 +86,22 @@ public class SynthesisChainTracking {
      */
     public Map<Event, RedefinableElement> getStartEventMap(UmlToCifTranslationPurpose purpose) {
         return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent())
-                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue().umlElement()),
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isStartEvent())
+                .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue().getUmlElement()),
                         LinkedHashMap::putAll);
     }
 
     /**
-     * Indicates whether the CIF event is a start event, i.e., represents the start of an action.
+     * Returns the event tracing info related to the input CIF event.
      *
      * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is a start event, {@code false} otherwise.
+     * @return The CIF event tracing info.
      */
-    public boolean isStartEvent(Event cifEvent) {
-        return cifEventTraceInfo.get(cifEvent).isStartEvent();
-    }
-
-    /**
-     * Indicates whether the CIF event is an end event, i.e., represents the end of an action.
-     *
-     * @param cifEvent The CIF event.
-     * @return {@code true} if the CIF event is an end event, {@code false} otherwise.
-     */
-    public boolean isEndEvent(Event cifEvent) {
-        return cifEventTraceInfo.get(cifEvent).isEndEvent();
+    public EventTraceInfo getEventTraceInfo(Event cifEvent) {
+        // Sanity check: CIF event must be stored.
+        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+        Verify.verifyNotNull(eventInfo, "CIF event '" + cifEvent.getName() + "' does not have any tracing info.");
+        return eventInfo;
     }
 
     /**
@@ -106,9 +113,8 @@ public class SynthesisChainTracking {
      * @return The list of CIF events corresponding to the UML elements.
      */
     public List<Event> getEventsOf(Set<? extends RedefinableElement> umlElements, UmlToCifTranslationPurpose purpose) {
-        return cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && umlElements.contains(e.getValue().umlElement()))
-                .map(Map.Entry::getKey).toList();
+        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose)
+                && umlElements.contains(e.getValue().getUmlElement())).map(Map.Entry::getKey).toList();
     }
 
     /**
@@ -125,8 +131,8 @@ public class SynthesisChainTracking {
         }
 
         List<Event> eventsOfElement = cifEventTraceInfo.entrySet().stream()
-                .filter(e -> e.getValue().purpose().equals(purpose) && e.getValue().isStartEvent()
-                        && e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
+                .filter(e -> e.getValue().getTranslationPurpose().equals(purpose) && e.getValue().isStartEvent()
+                        && e.getValue().getUmlElement() != null && e.getValue().getUmlElement().equals(umlElement))
                 .map(Map.Entry::getKey).toList();
 
         // Before vertical scaling, there should be only one event per UML element.
@@ -144,10 +150,11 @@ public class SynthesisChainTracking {
      *     {@code null}) and effect indexes.
      */
     public Map<Event, Pair<RedefinableElement, Integer>> getEndEventMap() {
-        return cifEventTraceInfo.entrySet().stream().filter(
-                e -> e.getValue().purpose().equals(UmlToCifTranslationPurpose.SYNTHESIS) && e.getValue().isEndEvent())
+        return cifEventTraceInfo.entrySet().stream()
+                .filter(e -> e.getValue().getTranslationPurpose().equals(UmlToCifTranslationPurpose.SYNTHESIS)
+                        && e.getValue().isEndEvent())
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        e -> new Pair<>(e.getValue().umlElement(), e.getValue().effectIdx())));
+                        e -> new Pair<>(e.getValue().getUmlElement(), e.getValue().getEffectIdx())));
     }
 
     /**
@@ -190,13 +197,13 @@ public class SynthesisChainTracking {
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
         return startEndEventMap.entrySet().stream()
-                .filter(e -> !isAtomicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
+                .filter(e -> !isAtomicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
     private List<Event> getEndEventsOf(RedefinableElement umlElement, UmlToCifTranslationPurpose purpose) {
-        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().purpose().equals(purpose))
-                .filter(e -> e.getValue().umlElement() != null && e.getValue().umlElement().equals(umlElement))
+        return cifEventTraceInfo.entrySet().stream().filter(e -> e.getValue().getTranslationPurpose().equals(purpose))
+                .filter(e -> e.getValue().getUmlElement() != null && e.getValue().getUmlElement().equals(umlElement))
                 .filter(e -> e.getValue().isEndEvent()).map(e -> e.getKey()).toList();
     }
 
@@ -229,7 +236,7 @@ public class SynthesisChainTracking {
         Map<Event, List<Event>> startEndEventMap = getStartEndEventMap(purpose);
 
         return startEndEventMap.entrySet().stream()
-                .filter(e -> !isDeterministicAction(cifEventTraceInfo.get(e.getKey()).umlElement()))
+                .filter(e -> !isDeterministicAction(getEventTraceInfo(e.getKey()).getUmlElement()))
                 .collect(LinkedHashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), LinkedHashMap::putAll);
     }
 
@@ -251,7 +258,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
+     * Returns {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the start of an atomic non-deterministic UML element.
@@ -261,13 +268,13 @@ public class SynthesisChainTracking {
         List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
         Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
 
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
-        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvents.get(0));
+        return isAtomicAction(eventInfo.getUmlElement()) && !(isDeterministicAction(eventInfo.getUmlElement()))
                 && eventInfo.isStartEvent();
     }
 
     /**
-     * Return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
+     * Returns {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
      *
      * @param eventName The name of the CIF event.
      * @return {@code true} if the event name corresponds to the end of an atomic non-deterministic UML element.
@@ -277,8 +284,8 @@ public class SynthesisChainTracking {
         List<Event> cifEvents = cifEventTraceInfo.keySet().stream().filter(e -> e.getName().equals(eventName)).toList();
         Verify.verify(cifEvents.size() == 1, "Found more than one CIF event with name: '" + eventName + "'.");
 
-        EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvents.get(0));
-        return isAtomicAction(eventInfo.umlElement()) && !(isDeterministicAction(eventInfo.umlElement()))
+        EventTraceInfo eventInfo = getEventTraceInfo(cifEvents.get(0));
+        return isAtomicAction(eventInfo.getUmlElement()) && !(isDeterministicAction(eventInfo.getUmlElement()))
                 && eventInfo.isEndEvent();
     }
 
@@ -308,7 +315,7 @@ public class SynthesisChainTracking {
             Event cifEvent = namesToCifEvents.get(eventName);
             Verify.verifyNotNull(cifEvent, "Could not find CIF event '" + eventName + "'.");
 
-            EventTraceInfo eventInfo = cifEventTraceInfo.get(cifEvent);
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
             Verify.verifyNotNull(eventInfo, "CIF event '" + eventName + "' does not have any tracing info.");
             if (eventInfo.isStartEvent()) {
                 // Store the start event and corresponding end events to be removed.
@@ -334,30 +341,136 @@ public class SynthesisChainTracking {
             // If all end events have been removed, update the CIF event trace info.
             if (startEndEventsMap.get(startEvent).stream().allMatch(e -> eventsToRemove.contains(e))) {
                 // Create a new 'EventTraceInfo' with 'isEndEvent' set to 'true' and overwrite the info in the map.
-                EventTraceInfo oldEventTraceInfo = cifEventTraceInfo.get(startEvent);
-                EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.purpose(),
-                        oldEventTraceInfo.umlElement(), oldEventTraceInfo.effectIdx(), true, true);
+                EventTraceInfo oldEventTraceInfo = getEventTraceInfo(startEvent);
+                EventTraceInfo newEventTraceInfo = new EventTraceInfo(oldEventTraceInfo.getTranslationPurpose(),
+                        oldEventTraceInfo.getUmlElement(), oldEventTraceInfo.getEffectIdx(), true, true);
                 cifEventTraceInfo.put(startEvent, newEventTraceInfo);
             }
         }
     }
 
-    /**
-     * Tracing information related to a CIF event.
-     *
-     * @param purpose The translation purpose.
-     * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
-     * @param effectIdx The effect index, which can either be a non-negative integer when relevant, or {@code null} when
-     *     irrelevant (e.g., in case the CIF event is a start event of a non-atomic action).
-     * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
-     * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
-     */
-    private record EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
-            boolean isStartEvent, boolean isEndEvent)
-    {
-        public EventTraceInfo {
+    /** Tracing information related to a CIF event. */
+    public class EventTraceInfo {
+        /** The translation purpose of the CIF event. */
+        private final UmlToCifTranslationPurpose purpose;
+
+        /** The UML element related to the CIF event, or {@code null} if no such element exists. */
+        private final RedefinableElement umlElement;
+
+        /**
+         * The effect index. It is {@code null} for events that are both start and end events, as well as for start-only
+         * events. End-only events must have a non-negative integer effect index.
+         */
+        private final Integer effectIdx;
+
+        /** {@code true} if the event represents a start event, {@code false} otherwise. */
+        private final boolean isStartEvent;
+
+        /** {@code true} if the event represents an end event, {@code false} otherwise. */
+        private final boolean isEndEvent;
+
+        /**
+         * Constructs a new {@link EventTraceInfo}.
+         *
+         * @param purpose The translation purpose.
+         * @param umlElement The UML element that relates to the CIF event, or {@code null} if no such element exists.
+         * @param effectIdx The effect index. It is {@code null} for events that are both start and end events, as well
+         *     as for start-only events. End-only events must have a non-negative integer effect index.
+         * @param isStartEvent {@code true} if the event represents a start event, {@code false} otherwise.
+         * @param isEndEvent {@code true} if the event represents an end event, {@code false} otherwise.
+         */
+        public EventTraceInfo(UmlToCifTranslationPurpose purpose, RedefinableElement umlElement, Integer effectIdx,
+                boolean isStartEvent, boolean isEndEvent)
+        {
             Verify.verify(isStartEvent || isEndEvent, "Event must be a either start event, or an end event, or both.");
-            Verify.verify(effectIdx == null || isEndEvent, "Only end events can have non-null effect index.");
+            Verify.verify((effectIdx != null) == (!isStartEvent && isEndEvent),
+                    "Events that are both start and end events, as well as start-only events, must have null effect index. "
+                            + "End-only events must have integer effect index.");
+            Verify.verify(effectIdx == null || effectIdx >= 0, "Effect index must not be negative.");
+            Verify.verify(effectIdx == null || umlElement != null,
+                    "UML element must be non-null if effect index is non-null.");
+
+            this.purpose = purpose;
+            this.umlElement = umlElement;
+            this.effectIdx = effectIdx;
+            this.isStartEvent = isStartEvent;
+            this.isEndEvent = isEndEvent;
+        }
+
+        /**
+         * Returns the translation purpose of the CIF event.
+         *
+         * @return The translation purpose.
+         */
+        public UmlToCifTranslationPurpose getTranslationPurpose() {
+            return purpose;
+        }
+
+        /**
+         * Returns the UML element that relates to the CIF event, or {@code null} if no such element exists.
+         *
+         * @return The related UML element, or {@code null}.
+         */
+        public RedefinableElement getUmlElement() {
+            return umlElement;
+        }
+
+        /**
+         * Returns the effect index of the UML element originally related to the transition. This transition must be an
+         * end-only transition, which then always has a non-negative integer effect index.
+         *
+         * @return The effect index of the related UML element, or {@code null}.
+         */
+        public Integer getEffectIdx() {
+            return effectIdx;
+        }
+
+        /**
+         * Returns {@code true} if the event represents a start event, {@code false} otherwise.
+         *
+         * @return {@code true} if the event represents a start event, {@code false} otherwise.
+         */
+        public boolean isStartEvent() {
+            return isStartEvent;
+        }
+
+        /**
+         * Returns {@code true} if the event represents an end event, {@code false} otherwise.
+         *
+         * @return {@code true} if the event represents an end event, {@code false} otherwise.
+         */
+        public boolean isEndEvent() {
+            return isEndEvent;
+        }
+
+        /**
+         * Indicates whether the CIF event is a complete event, i.e., represents both the start and the end of an
+         * action.
+         *
+         * @return {@code true} if the CIF event is both a start and an end event, {@code false} otherwise.
+         */
+        public boolean isCompleteEvent() {
+            return isStartEvent() && isEndEvent();
+        }
+
+        /**
+         * Indicates whether the CIF event is a start-only event, i.e., represents the start of an action but does not
+         * represent the end of the action.
+         *
+         * @return {@code true} if the CIF event is a start-only event, {@code false} otherwise.
+         */
+        public boolean isStartOnlyEvent() {
+            return isStartEvent() && !isEndEvent();
+        }
+
+        /**
+         * Indicates whether the CIF event is a end-only event, i.e., represents the end of an action but does not
+         * represent the start of the action.
+         *
+         * @return {@code true} if the CIF event is a end-only event, {@code false} otherwise.
+         */
+        public boolean isEndOnlyEvent() {
+            return !isStartEvent() && isEndEvent();
         }
     }
 
@@ -387,7 +500,311 @@ public class SynthesisChainTracking {
             // Store the transition and the related CIF event.
             Event cifEvent = namesToCifEvents.get(t.getName().getText());
             Verify.verify(cifEvent != null, "Could not find CIF event for transition '" + t.getName().getText() + "'.");
-            transitionsToCifEvents.put(t, cifEvent);
+            TransitionTraceInfo transitionInfo = new TransitionTraceInfo(Set.of(cifEvent));
+            transitionTraceInfo.put(t, transitionInfo);
         }
+    }
+
+    /**
+     * Merges the transitions composing a pattern. The end transitions' entries are removed from the tracker's internal
+     * map. The start transition's entry gets an updated tracing info, storing all the merged events.
+     *
+     * @param startEndTransitions The map from transition related to a start CIF event to the transitions related to the
+     *     corresponding CIF end events to be merged.
+     */
+    public void mergeTransitionPatterns(Map<Transition, List<Transition>> startEndTransitions) {
+        for (Entry<Transition, List<Transition>> startEndTransition: startEndTransitions.entrySet()) {
+            Transition startTransition = startEndTransition.getKey();
+            List<Transition> endTransitions = startEndTransition.getValue();
+
+            // Collect the start event and the end events.
+            Set<Event> patternEvents = new LinkedHashSet<>();
+            patternEvents.addAll(transitionTraceInfo.get(startTransition).getCifEvents());
+            patternEvents.addAll(
+                    endTransitions.stream().flatMap(t -> transitionTraceInfo.get(t).getCifEvents().stream()).toList());
+
+            // Create a new transition tracing info.
+            TransitionTraceInfo mergedTransitionInfo = new TransitionTraceInfo(patternEvents);
+
+            // Remove end transitions' entries from the transition map.
+            transitionTraceInfo.keySet().removeAll(endTransitions);
+
+            // Update start transition entry with the merged transition tracing info.
+            transitionTraceInfo.put(startTransition, mergedTransitionInfo);
+        }
+    }
+
+    /** Tracing information related to a Petri net transition. */
+    class TransitionTraceInfo {
+        /**
+         * The CIF events related to the Petri net transition. If the set contains only a single event, this can be
+         * either a start or an end event (or both). If the set contains multiple events, these must compose a complete
+         * "pattern", i.e. one single start-only event along with all its related end-only events.
+         */
+        private final Set<Event> cifEvents;
+
+        /**
+         * Create a new transition trace info, after some validation checks. If the input CIF event set contains only a
+         * single event, this can be either a start or an end event (or both). If the set contains multiple events,
+         * these must compose a complete "pattern", i.e. one single start-only event along with all its related end-only
+         * events.
+         *
+         * @param cifEvents The set of CIF events for the tracing info.
+         */
+        public TransitionTraceInfo(Set<Event> cifEvents) {
+            Verify.verifyNotNull(cifEvents, "CIF event set cannot be null.");
+            Verify.verify(cifEvents.size() > 0, "CIF event set cannot be empty.");
+            Verify.verify(cifEventTraceInfo.keySet().containsAll(cifEvents),
+                    "All CIF events must be contained in the CIF event tracing info map.");
+
+            if (cifEvents.size() > 1) {
+                // The events must compose a pattern: single start-only event, one or more end-only events, all
+                // referring to the same UML element, all with the same translation purpose, and the effect indexes that
+                // are coherent with the UML element effects cardinality.
+                List<Event> startEvents = cifEvents.stream().filter(e -> getEventTraceInfo(e).isStartOnlyEvent())
+                        .toList();
+                Verify.verify(startEvents.size() == 1, String.format("Found %d start-only events within events '%s'.",
+                        startEvents.size(), String.join(",", cifEvents.stream().map(e -> e.getName()).toList())));
+
+                List<Event> endEvents = cifEvents.stream().filter(e -> getEventTraceInfo(e).isEndOnlyEvent()).toList();
+                Verify.verify(endEvents.size() >= 1, "There must be at least one end-only event.");
+
+                Verify.verify(startEvents.size() + endEvents.size() == cifEvents.size(),
+                        "Events that are both start- and end-events are not supported for merged patterns.");
+
+                Set<RedefinableElement> umlElements = cifEvents.stream().map(e -> getEventTraceInfo(e).getUmlElement())
+                        .collect(Collectors.toSet());
+                Verify.verify(umlElements.size() == 1,
+                        String.format("Events must refer to a single UML element, found %d.", umlElements.size()));
+
+                Verify.verify(
+                        cifEvents.stream()
+                                .allMatch(e -> getEventTraceInfo(e).getTranslationPurpose()
+                                        .equals(UmlToCifTranslationPurpose.SYNTHESIS)),
+                        "All events must have 'synthesis' translation purpose.");
+
+                // Collect all effect indexes and the number of effects of the UML element. Check if the CIF events
+                // tracing info effect indexes are the same numbers as the UML element's effects. Verify that there are
+                // no additional effect indexes.
+                Set<Integer> eventsEffectIdxs = endEvents.stream().map(e -> getEventTraceInfo(e).getEffectIdx())
+                        .collect(Collectors.toSet());
+                int umlElemEffectSize = PokaYokeUmlProfileUtil
+                        .getEffects(getEventTraceInfo(cifEvents.iterator().next()).getUmlElement()).size();
+                for (int i = 0; i < umlElemEffectSize; i++) {
+                    Verify.verify(eventsEffectIdxs.contains(i),
+                            String.format("Effect index %d of UML element '%s' is missing.", i,
+                                    getEventTraceInfo(cifEvents.iterator().next()).getUmlElement().getName()));
+                    eventsEffectIdxs.remove(i);
+                }
+                Verify.verify(eventsEffectIdxs.isEmpty(),
+                        String.format("The set of CIF events contains unexpected indexes: %s.",
+                                String.join(", ", eventsEffectIdxs.stream().map(i -> String.valueOf(i)).toList())));
+            }
+
+            this.cifEvents = cifEvents;
+        }
+
+        /**
+         * Returns the set of CIF events linked to the transition.
+         *
+         * @return The CIF events.
+         */
+        public Set<Event> getCifEvents() {
+            return Collections.unmodifiableSet(cifEvents);
+        }
+
+        /**
+         * Indicates whether the transition relates to a merged (rewritten) non-atomic pattern.
+         *
+         * @return {@code true} if the transition is merged, {@code false} otherwise.
+         */
+        public boolean isMergedTransition() {
+            // If the transition tracing info contains more than one event, it represent a merged (rewritten) pattern.
+            return cifEvents.size() > 1;
+        }
+
+        /**
+         * Indicates whether the transition relates to a CIF event that is both a start and end event (e.g. related to
+         * an atomic behavior) or if the transition relates to a merged (rewritten) non-atomic pattern.
+         *
+         * @return {@code true} if the transition is merged or is related to a start and end CIF event, {@code false}
+         *     otherwise.
+         */
+        public boolean isCompleteTransition() {
+            // If the transition is not merged, it has a single CIF event, and we can query if that is complete.
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            return isMergedTransition() || eventInfo.isCompleteEvent();
+        }
+
+        /**
+         * Indicates whether the transition relates to a CIF event that is a start-only event, i.e., represents the
+         * start of an action but does not represent the end of the action.
+         *
+         * @return {@code true} if the transition is start-only, {@code false} otherwise.
+         */
+        public boolean isStartOnlyTransition() {
+            if (isMergedTransition()) {
+                return false;
+            }
+
+            // If the transition is not merged, it has a single CIF event, and we can query if that is start-only.
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            return eventInfo.isStartOnlyEvent();
+        }
+
+        /**
+         * Indicates whether the transition relates to a CIF event that is a end-only event, i.e., represents the end of
+         * an action but does not represent the start of the action.
+         *
+         * @return {@code true} if the transition is end-only, {@code false} otherwise.
+         */
+        public boolean isEndOnlyTransition() {
+            if (isMergedTransition()) {
+                return false;
+            }
+
+            // If the transition is not merged, it has a single CIF event, and we can query if that is end-only.
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            return eventInfo.isEndOnlyEvent();
+        }
+
+        /**
+         * Returns the UML element originally related to the transition, or {@code null} if no such element exists.
+         *
+         * @return The related UML element, or {@code null}.
+         */
+        public RedefinableElement getUmlElement() {
+            // If the transition is not merged, it has a single CIF event, and we can query the UML element related to
+            // it. If the transition is merged, all CIF events are related to the same UML element, so we can query the
+            // first one.
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            return eventInfo.getUmlElement();
+        }
+
+        /**
+         * Returns the effect index of the UML element originally related to the transition, if it is end-only. End-only
+         * events must have a non-negative integer effect index.
+         *
+         * @return The effect index of the related UML element.
+         */
+        public int getEffectIdx() {
+            // Sanity check: the transition should be related to a end-only CIF event.
+            Verify.verify(isEndOnlyTransition(), "Effect index is valid exlusively for end-only CIF events.");
+
+            // The transition is not merged, thus it has a single CIF event, and we query its related effect index.
+            Event cifEvent = cifEvents.iterator().next();
+            EventTraceInfo eventInfo = getEventTraceInfo(cifEvent);
+            return eventInfo.getEffectIdx();
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Section dealing with newly generated opaque actions.
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Store the newly generated UML actions and the Petri net transitions they originate from.
+     *
+     * @param transitionActionMap The map from Petri net transitions to UML actions.
+     */
+    public void addActions(Map<Transition, Action> transitionActionMap) {
+        // Sanity check: ensure that there are no duplicate actions before reversing the map.
+        Verify.verify(
+                transitionActionMap.values().stream().collect(Collectors.toSet()).size() == transitionActionMap.size(),
+                "Found duplicate actions in the transition-action map.");
+
+        transitionActionMap.entrySet().stream()
+                .forEach(e -> actionToTransition.put((OpaqueAction)e.getValue(), e.getKey()));
+    }
+
+    /**
+     * Returns the kind of activity node the given action should translate to, based on the UML element the action
+     * originates from, and whether its parts were merged back during the synthesis chain.
+     *
+     * @param action The UML action created in the body of the newly synthesized activity.
+     * @return An enumeration defining the kind of activity node the action should translate to.
+     */
+    public ActionKind getActionKind(OpaqueAction action) {
+        // Get the transition tracing info and the CIF event tracing info.
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        if (transitionInfo.getUmlElement() instanceof OpaqueBehavior) {
+            if (transitionInfo.isCompleteTransition()) {
+                return ActionKind.COMPLETE_OPAQUE_BEHAVIOR;
+            } else if (transitionInfo.isStartOnlyTransition()) {
+                return ActionKind.START_OPAQUE_BEHAVIOR;
+            } else {
+                Verify.verify(transitionInfo.isEndOnlyTransition(), "Expected an end-only event.");
+                return ActionKind.END_OPAQUE_BEHAVIOR;
+            }
+        }
+
+        return ActionKind.CONTROL_NODE;
+    }
+
+    /**
+     * Returns the UML element originally related to the opaque action, or {@code null} if no such element exists.
+     *
+     * @param action The opaque action.
+     * @return The related UML element, or {@code null}.
+     */
+    public RedefinableElement getUmlElement(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        return transitionInfo.getUmlElement();
+    }
+
+    /**
+     * Returns the effect index of the UML element originally related to the opaque action. It is {@code null} for
+     * events that are both start and end events, as well as for start-only events. End-only events must have a
+     * non-negative integer effect index.
+     *
+     * @param action The opaque action.
+     * @return The effect index of the related UML element, or {@code null}.
+     */
+    public int getEffectIdx(OpaqueAction action) {
+        Transition transition = actionToTransition.get(action);
+        Verify.verifyNotNull(transition, String
+                .format("Opaque action '%s' does not have a corresponding Petri net transition.", action.getName()));
+        TransitionTraceInfo transitionInfo = transitionTraceInfo.get(transition);
+        Verify.verifyNotNull(transitionInfo,
+                String.format("Transition '%s' does not have any tracing info.", transition.getName().getText()));
+
+        return transitionInfo.getEffectIdx();
+    }
+
+    /**
+     * Returns {@code true} if the opaque action is internal, i.e. the corresponding UML element is {@code null}.
+     *
+     * @param action The opaque action.
+     * @return {@code true} if the action is internal, {@code false} otherwise.
+     */
+    public boolean isInternalAction(OpaqueAction action) {
+        // Internal actions (e.g. control nodes) do not have any UML element to refer to.
+        return getUmlElement(action) == null;
+    }
+
+    /**
+     * Returns the set of internal actions.
+     *
+     * @return The set of internal actions.
+     */
+    public Set<OpaqueAction> getInternalActions() {
+        return actionToTransition.keySet().stream().filter(a -> isInternalAction(a))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

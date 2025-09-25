@@ -26,6 +26,10 @@ supervisor automaton sup:
   location:
     initial;
     marked;
-    edge flip when ActiveClass.__activeAction = 0 and (ActiveClass.init and not ActiveClass.bit);
-    edge initialize when ActiveClass.__activeAction = 0 and not ActiveClass.init;
+    edge flip when true;
+    edge initialize when true;
 end
+supervisor invariant ActiveClass.__postcondition disables flip;
+supervisor invariant ActiveClass.__postcondition disables initialize;
+supervisor invariant ActiveClass.__postcondition disables initialize__result_1;
+supervisor invariant ActiveClass.__postcondition disables initialize__result_2;

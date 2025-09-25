@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="1" name="Parameterization">
+  <packagedElement xmi:type="uml:Class" xmi:id="2" name="System" classifierBehavior="249" isActive="true">
+    <ownedAttribute xmi:id="3" name="Park1_product" visibility="public" type="403">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="4" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="5" value="1"/>
+      <defaultValue xmi:type="uml:LiteralInteger" xmi:id="6"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="7" name="Park2_product" visibility="public" type="403">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="8" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="9" value="1"/>
+      <defaultValue xmi:type="uml:LiteralInteger" xmi:id="10"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="11" name="Disp_product" visibility="public" type="403">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="12" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="13" value="1"/>
+      <defaultValue xmi:type="uml:LiteralInteger" xmi:id="14"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="15" name="active" isStatic="true">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="16" value=""/>
+    </ownedAttribute>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="17" name="MoveProduct" node="236 237 238 239 240 243 245 246 247 248">
+      <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="18" parameter="19">
+        <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="19" default="20" parameteredElement="20" constrainingClassifier="403">
+          <ownedDefault xmi:type="uml:Class" xmi:id="20" name="productId" templateParameter="19"/>
+        </ownedParameter>
+      </ownedTemplateSignature>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="21" name="eval" node="31 32 33 35 36 37">
+        <ownedParameter xmi:id="22" name="branch" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+        </ownedParameter>
+        <ownedParameter xmi:id="23" name="productId"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="24" target="32" source="31"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="25" target="33" source="32"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="26" target="35" source="34"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="27" target="32" source="35">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="28">
+            <language>Python</language>
+            <body>branch == -1</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="29" target="36" source="35">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="30">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="31" outgoing="24"/>
+        <node xmi:type="uml:MergeNode" xmi:id="32" incoming="24 27" outgoing="25"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="33" incoming="25">
+          <language>Python</language>
+          <outputValue xmi:id="34" name="branch" outgoing="26">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+          </outputValue>
+          <body>import random
+branches = []
+if (Park1_product) == (productId): branches.append(0)
+if (Park2_product) == (productId): branches.append(1)
+branch = random.choice(branches) if len(branches) > 0 else -1
+</body>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="35" incoming="26" outgoing="27 29"/>
+        <node xmi:type="uml:ActivityParameterNode" xmi:id="36" incoming="29" parameter="22">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+        </node>
+        <node xmi:type="uml:ActivityParameterNode" xmi:id="37" name="productIdNode" parameter="23"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="38" name="Output from Park1" node="62 63 64 66 67 69 71 72 73 76 77 79 80">
+        <edge xmi:type="uml:ControlFlow" xmi:id="39" target="63" source="62"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="40" target="64" source="63"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="41" target="66" source="64"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="42" target="66" source="65"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="43" target="63" source="66">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="44">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="45" target="69" source="66">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="46">
+            <language>Python</language>
+            <body>doesGuardHold</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="47" target="71" source="70"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="48" target="68" source="71"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="49" target="72" source="71"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="50" target="74" source="72"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="51" target="76" source="75"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="52" target="77" source="76">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="53">
+            <language>Python</language>
+            <body>active == requester</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="54" target="72" source="76">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="55">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="56" target="79" source="77"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="57" target="79" source="78"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="58" target="80" source="79">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="59">
+            <language>Python</language>
+            <body>isSuccessful</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="60" target="63" source="79">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="61">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="62" outgoing="39"/>
+        <node xmi:type="uml:MergeNode" xmi:id="63" incoming="39 43 60" outgoing="40"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="64" incoming="40" outgoing="41">
+          <language>Python</language>
+          <outputValue xmi:id="65" name="doesGuardHold" outgoing="42">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </outputValue>
+          <body>(Disp_product) == (0)</body>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="66" incoming="41 42" outgoing="43 45"/>
+        <node xmi:type="uml:SendSignalAction" xmi:id="67" signal="437">
+          <argument xmi:id="68" name="requester" incoming="48">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </argument>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="69" incoming="45">
+          <language>Python</language>
+          <outputValue xmi:id="70" name="requester" outgoing="47">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </outputValue>
+          <body>import uuid&#xD;
+requester = 'Output from Park1_' + str(uuid.uuid4())</body>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="71" incoming="47" outgoing="48 49"/>
+        <node xmi:type="uml:MergeNode" xmi:id="72" incoming="49 54" outgoing="50"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="73">
+          <inputValue xmi:id="74" name="requester" incoming="50">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </inputValue>
+          <outputValue xmi:id="75" name="requester" outgoing="51">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </outputValue>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="76" incoming="51" outgoing="52 54"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="77" incoming="52" outgoing="56">
+          <language>Python</language>
+          <outputValue xmi:id="78" name="isSuccessful" outgoing="57">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </outputValue>
+          <body>guard = (Disp_product) == (0)
+if guard:
+	pre__Park1_product = Park1_product
+	Disp_product = pre__Park1_product
+	Park1_product = 0
+if guard:
+	if not (0 &lt;= Park1_product &lt;= 4):
+		print(&quot;Expected 'Park1_product' to stay between 0 and 4, but got &quot; + str(Park1_product))
+	if not (0 &lt;= Park2_product &lt;= 4):
+		print(&quot;Expected 'Park2_product' to stay between 0 and 4, but got &quot; + str(Park2_product))
+	if not (0 &lt;= Disp_product &lt;= 4):
+		print(&quot;Expected 'Disp_product' to stay between 0 and 4, but got &quot; + str(Disp_product))
+active = ''
+isSuccessful = guard</body>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="79" incoming="56 57" outgoing="58 60"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="80" incoming="58"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="81" name="Output from Park2" node="105 106 107 109 110 112 114 115 116 119 120 122 123">
+        <edge xmi:type="uml:ControlFlow" xmi:id="82" target="106" source="105"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="83" target="107" source="106"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="84" target="109" source="107"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="85" target="109" source="108"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="86" target="106" source="109">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="87">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="88" target="112" source="109">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="89">
+            <language>Python</language>
+            <body>doesGuardHold</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="90" target="114" source="113"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="91" target="111" source="114"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="92" target="115" source="114"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="93" target="117" source="115"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="94" target="119" source="118"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="95" target="120" source="119">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="96">
+            <language>Python</language>
+            <body>active == requester</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="97" target="115" source="119">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="98">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="99" target="122" source="120"/>
+        <edge xmi:type="uml:ObjectFlow" xmi:id="100" target="122" source="121"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="101" target="123" source="122">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="102">
+            <language>Python</language>
+            <body>isSuccessful</body>
+          </guard>
+        </edge>
+        <edge xmi:type="uml:ControlFlow" xmi:id="103" target="106" source="122">
+          <guard xmi:type="uml:OpaqueExpression" xmi:id="104">
+            <language>Python</language>
+            <body>else</body>
+          </guard>
+        </edge>
+        <node xmi:type="uml:InitialNode" xmi:id="105" outgoing="82"/>
+        <node xmi:type="uml:MergeNode" xmi:id="106" incoming="82 86 103" outgoing="83"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="107" incoming="83" outgoing="84">
+          <language>Python</language>
+          <outputValue xmi:id="108" name="doesGuardHold" outgoing="85">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </outputValue>
+          <body>(Disp_product) == (0)</body>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="109" incoming="84 85" outgoing="86 88"/>
+        <node xmi:type="uml:SendSignalAction" xmi:id="110" signal="437">
+          <argument xmi:id="111" name="requester" incoming="91">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </argument>
+        </node>
+        <node xmi:type="uml:OpaqueAction" xmi:id="112" incoming="88">
+          <language>Python</language>
+          <outputValue xmi:id="113" name="requester" outgoing="90">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </outputValue>
+          <body>import uuid&#xD;
+requester = 'Output from Park2_' + str(uuid.uuid4())</body>
+        </node>
+        <node xmi:type="uml:ForkNode" xmi:id="114" incoming="90" outgoing="91 92"/>
+        <node xmi:type="uml:MergeNode" xmi:id="115" incoming="92 97" outgoing="93"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="116">
+          <inputValue xmi:id="117" name="requester" incoming="93">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </inputValue>
+          <outputValue xmi:id="118" name="requester" outgoing="94">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          </outputValue>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="119" incoming="94" outgoing="95 97"/>
+        <node xmi:type="uml:OpaqueAction" xmi:id="120" incoming="95" outgoing="99">
+          <language>Python</language>
+          <outputValue xmi:id="121" name="isSuccessful" outgoing="100">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          </outputValue>
+          <body>guard = (Disp_product) == (0)
+if guard:
+	pre__Park2_product = Park2_product
+	Disp_product = pre__Park2_product
+	Park2_product = 0
+if guard:
+	if not (0 &lt;= Park1_product &lt;= 4):
+		print(&quot;Expected 'Park1_product' to stay between 0 and 4, but got &quot; + str(Park1_product))
+	if not (0 &lt;= Park2_product &lt;= 4):
+		print(&quot;Expected 'Park2_product' to stay between 0 and 4, but got &quot; + str(Park2_product))
+	if not (0 &lt;= Disp_product &lt;= 4):
+		print(&quot;Expected 'Disp_product' to stay between 0 and 4, but got &quot; + str(Disp_product))
+active = ''
+isSuccessful = guard</body>
+        </node>
+        <node xmi:type="uml:DecisionNode" xmi:id="122" incoming="99 100" outgoing="101 103"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="123" incoming="101"/>
+      </ownedBehavior>
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="124" name="Remove from disp" node="214 215 216 217">
+        <ownedBehavior xmi:type="uml:Activity" xmi:id="125" name="Remove from disp__start" node="149 150 151 153 154 156 158 159 160 163 164 166 167">
+          <edge xmi:type="uml:ControlFlow" xmi:id="126" target="150" source="149"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="127" target="151" source="150"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="128" target="153" source="151"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="129" target="153" source="152"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="130" target="150" source="153">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="131">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="132" target="156" source="153">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="133">
+              <language>Python</language>
+              <body>doesGuardHold</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="134" target="158" source="157"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="135" target="155" source="158"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="136" target="159" source="158"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="137" target="161" source="159"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="138" target="163" source="162"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="139" target="164" source="163">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="140">
+              <language>Python</language>
+              <body>active == requester</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="141" target="159" source="163">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="142">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="143" target="166" source="164"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="144" target="166" source="165"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="145" target="167" source="166">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="146">
+              <language>Python</language>
+              <body>isSuccessful</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="147" target="150" source="166">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="148">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <node xmi:type="uml:InitialNode" xmi:id="149" outgoing="126"/>
+          <node xmi:type="uml:MergeNode" xmi:id="150" incoming="126 130 147" outgoing="127"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="151" incoming="127" outgoing="128">
+            <language>Python</language>
+            <outputValue xmi:id="152" name="doesGuardHold" outgoing="129">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>True</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="153" incoming="128 129" outgoing="130 132"/>
+          <node xmi:type="uml:SendSignalAction" xmi:id="154" signal="437">
+            <argument xmi:id="155" name="requester" incoming="135">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </argument>
+          </node>
+          <node xmi:type="uml:OpaqueAction" xmi:id="156" incoming="132">
+            <language>Python</language>
+            <outputValue xmi:id="157" name="requester" outgoing="134">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+            <body>import uuid&#xD;
+requester = 'Remove from disp__start_' + str(uuid.uuid4())</body>
+          </node>
+          <node xmi:type="uml:ForkNode" xmi:id="158" incoming="134" outgoing="135 136"/>
+          <node xmi:type="uml:MergeNode" xmi:id="159" incoming="136 141" outgoing="137"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="160">
+            <inputValue xmi:id="161" name="requester" incoming="137">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </inputValue>
+            <outputValue xmi:id="162" name="requester" outgoing="138">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="163" incoming="138" outgoing="139 141"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="164" incoming="139" outgoing="143">
+            <language>Python</language>
+            <outputValue xmi:id="165" name="isSuccessful" outgoing="144">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>guard = True
+pass
+active = ''
+isSuccessful = guard</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="166" incoming="143 144" outgoing="145 147"/>
+          <node xmi:type="uml:ActivityFinalNode" xmi:id="167" incoming="145"/>
+        </ownedBehavior>
+        <ownedBehavior xmi:type="uml:Activity" xmi:id="168" name="Remove from disp__end" node="192 193 194 196 197 199 201 202 203 206 207 209 210">
+          <edge xmi:type="uml:ControlFlow" xmi:id="169" target="193" source="192"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="170" target="194" source="193"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="171" target="196" source="194"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="172" target="196" source="195"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="173" target="193" source="196">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="174">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="175" target="199" source="196">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="176">
+              <language>Python</language>
+              <body>doesGuardHold</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="177" target="201" source="200"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="178" target="198" source="201"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="179" target="202" source="201"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="180" target="204" source="202"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="181" target="206" source="205"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="182" target="207" source="206">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="183">
+              <language>Python</language>
+              <body>active == requester</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="184" target="202" source="206">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="185">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="186" target="209" source="207"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="187" target="209" source="208"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="188" target="210" source="209">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="189">
+              <language>Python</language>
+              <body>isSuccessful</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="190" target="193" source="209">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="191">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <node xmi:type="uml:InitialNode" xmi:id="192" outgoing="169"/>
+          <node xmi:type="uml:MergeNode" xmi:id="193" incoming="169 173 190" outgoing="170"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="194" incoming="170" outgoing="171">
+            <language>Python</language>
+            <outputValue xmi:id="195" name="doesGuardHold" outgoing="172">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>True</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="196" incoming="171 172" outgoing="173 175"/>
+          <node xmi:type="uml:SendSignalAction" xmi:id="197" signal="437">
+            <argument xmi:id="198" name="requester" incoming="178">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </argument>
+          </node>
+          <node xmi:type="uml:OpaqueAction" xmi:id="199" incoming="175">
+            <language>Python</language>
+            <outputValue xmi:id="200" name="requester" outgoing="177">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+            <body>import uuid&#xD;
+requester = 'Remove from disp__end_' + str(uuid.uuid4())</body>
+          </node>
+          <node xmi:type="uml:ForkNode" xmi:id="201" incoming="177" outgoing="178 179"/>
+          <node xmi:type="uml:MergeNode" xmi:id="202" incoming="179 184" outgoing="180"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="203">
+            <inputValue xmi:id="204" name="requester" incoming="180">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </inputValue>
+            <outputValue xmi:id="205" name="requester" outgoing="181">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="206" incoming="181" outgoing="182 184"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="207" incoming="182" outgoing="186">
+            <language>Python</language>
+            <outputValue xmi:id="208" name="isSuccessful" outgoing="187">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>guard = True
+if guard:
+	Disp_product = 0
+if guard:
+	if not (0 &lt;= Park1_product &lt;= 4):
+		print(&quot;Expected 'Park1_product' to stay between 0 and 4, but got &quot; + str(Park1_product))
+	if not (0 &lt;= Park2_product &lt;= 4):
+		print(&quot;Expected 'Park2_product' to stay between 0 and 4, but got &quot; + str(Park2_product))
+	if not (0 &lt;= Disp_product &lt;= 4):
+		print(&quot;Expected 'Disp_product' to stay between 0 and 4, but got &quot; + str(Disp_product))
+active = ''
+isSuccessful = guard</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="209" incoming="186 187" outgoing="188 190"/>
+          <node xmi:type="uml:ActivityFinalNode" xmi:id="210" incoming="188"/>
+        </ownedBehavior>
+        <edge xmi:type="uml:ControlFlow" xmi:id="211" target="215" source="214"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="212" target="216" source="215"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="213" target="217" source="216"/>
+        <node xmi:type="uml:InitialNode" xmi:id="214" outgoing="211"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="215" name="Remove from disp__start" incoming="211" outgoing="212" behavior="125"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="216" name="Remove from disp__end" incoming="212" outgoing="213" behavior="168"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="217" incoming="213"/>
+      </ownedBehavior>
+      <ownedParameter xmi:id="218" name="productId"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="219" target="245" source="237">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="220">
+          <language>Python</language>
+          <body>branch == 0</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="221" name="" target="246" source="237">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="222">
+          <language>Python</language>
+          <body>branch == 1</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="223" target="243" source="236">
+        <guard xmi:type="uml:LiteralNull" xmi:id="224"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="225" target="238" source="245">
+        <guard xmi:type="uml:LiteralNull" xmi:id="226"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="227" target="238" source="246">
+        <guard xmi:type="uml:LiteralNull" xmi:id="228"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="229" target="239" source="247">
+        <guard xmi:type="uml:LiteralNull" xmi:id="230"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="231" target="247" source="238">
+        <guard xmi:type="uml:LiteralNull" xmi:id="232"/>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="233" target="241" source="244"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="234" target="237" source="240"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="235" target="237" source="242"/>
+      <node xmi:type="uml:InitialNode" xmi:id="236" name="" outgoing="223"/>
+      <node xmi:type="uml:DecisionNode" xmi:id="237" name="Product on which station" incoming="234 235" outgoing="219 221"/>
+      <node xmi:type="uml:MergeNode" xmi:id="238" name="" incoming="225 227" outgoing="231"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="239" name="" incoming="229"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="240" outgoing="234" behavior="21">
+        <argument xmi:id="241" name="productId" incoming="233"/>
+        <result xmi:id="242" name="branch" outgoing="235">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+        </result>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="243" incoming="223">
+        <language>Python</language>
+        <outputValue xmi:id="244" name="arg__productId" outgoing="233"/>
+        <body>arg__productId=productId</body>
+      </node>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="245" name="Output from Park1" incoming="219" outgoing="225" behavior="38"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="246" name="Output from Park2" incoming="221" outgoing="227" behavior="81"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="247" name="Remove from disp" incoming="231" outgoing="229" behavior="124"/>
+      <node xmi:type="uml:ActivityParameterNode" xmi:id="248" name="productIdNode" parameter="218"/>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="249" name="Environment" node="357 358 359 361 362 364 366 367 369 371 372">
+      <ownedBehavior xmi:type="uml:Activity" xmi:id="250" name="OpaqueAction1" node="340 341 342 343">
+        <ownedBehavior xmi:type="uml:Activity" xmi:id="251" name="OpaqueAction1__start" node="275 276 277 279 280 282 284 285 286 289 290 292 293">
+          <edge xmi:type="uml:ControlFlow" xmi:id="252" target="276" source="275"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="253" target="277" source="276"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="254" target="279" source="277"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="255" target="279" source="278"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="256" target="276" source="279">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="257">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="258" target="282" source="279">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="259">
+              <language>Python</language>
+              <body>doesGuardHold</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="260" target="284" source="283"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="261" target="281" source="284"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="262" target="285" source="284"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="263" target="287" source="285"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="264" target="289" source="288"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="265" target="290" source="289">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="266">
+              <language>Python</language>
+              <body>active == requester</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="267" target="285" source="289">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="268">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="269" target="292" source="290"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="270" target="292" source="291"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="271" target="293" source="292">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="272">
+              <language>Python</language>
+              <body>isSuccessful</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="273" target="276" source="292">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="274">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <node xmi:type="uml:InitialNode" xmi:id="275" outgoing="252"/>
+          <node xmi:type="uml:MergeNode" xmi:id="276" incoming="252 256 273" outgoing="253"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="277" incoming="253" outgoing="254">
+            <language>Python</language>
+            <outputValue xmi:id="278" name="doesGuardHold" outgoing="255">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>True</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="279" incoming="254 255" outgoing="256 258"/>
+          <node xmi:type="uml:SendSignalAction" xmi:id="280" signal="437">
+            <argument xmi:id="281" name="requester" incoming="261">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </argument>
+          </node>
+          <node xmi:type="uml:OpaqueAction" xmi:id="282" incoming="258">
+            <language>Python</language>
+            <outputValue xmi:id="283" name="requester" outgoing="260">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+            <body>import uuid&#xD;
+requester = 'OpaqueAction1__start_' + str(uuid.uuid4())</body>
+          </node>
+          <node xmi:type="uml:ForkNode" xmi:id="284" incoming="260" outgoing="261 262"/>
+          <node xmi:type="uml:MergeNode" xmi:id="285" incoming="262 267" outgoing="263"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="286">
+            <inputValue xmi:id="287" name="requester" incoming="263">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </inputValue>
+            <outputValue xmi:id="288" name="requester" outgoing="264">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="289" incoming="264" outgoing="265 267"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="290" incoming="265" outgoing="269">
+            <language>Python</language>
+            <outputValue xmi:id="291" name="isSuccessful" outgoing="270">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>guard = True
+pass
+active = ''
+isSuccessful = guard</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="292" incoming="269 270" outgoing="271 273"/>
+          <node xmi:type="uml:ActivityFinalNode" xmi:id="293" incoming="271"/>
+        </ownedBehavior>
+        <ownedBehavior xmi:type="uml:Activity" xmi:id="294" name="OpaqueAction1__end" node="318 319 320 322 323 325 327 328 329 332 333 335 336">
+          <edge xmi:type="uml:ControlFlow" xmi:id="295" target="319" source="318"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="296" target="320" source="319"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="297" target="322" source="320"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="298" target="322" source="321"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="299" target="319" source="322">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="300">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="301" target="325" source="322">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="302">
+              <language>Python</language>
+              <body>doesGuardHold</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="303" target="327" source="326"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="304" target="324" source="327"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="305" target="328" source="327"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="306" target="330" source="328"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="307" target="332" source="331"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="308" target="333" source="332">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="309">
+              <language>Python</language>
+              <body>active == requester</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="310" target="328" source="332">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="311">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="312" target="335" source="333"/>
+          <edge xmi:type="uml:ObjectFlow" xmi:id="313" target="335" source="334"/>
+          <edge xmi:type="uml:ControlFlow" xmi:id="314" target="336" source="335">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="315">
+              <language>Python</language>
+              <body>isSuccessful</body>
+            </guard>
+          </edge>
+          <edge xmi:type="uml:ControlFlow" xmi:id="316" target="319" source="335">
+            <guard xmi:type="uml:OpaqueExpression" xmi:id="317">
+              <language>Python</language>
+              <body>else</body>
+            </guard>
+          </edge>
+          <node xmi:type="uml:InitialNode" xmi:id="318" outgoing="295"/>
+          <node xmi:type="uml:MergeNode" xmi:id="319" incoming="295 299 316" outgoing="296"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="320" incoming="296" outgoing="297">
+            <language>Python</language>
+            <outputValue xmi:id="321" name="doesGuardHold" outgoing="298">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>True</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="322" incoming="297 298" outgoing="299 301"/>
+          <node xmi:type="uml:SendSignalAction" xmi:id="323" signal="437">
+            <argument xmi:id="324" name="requester" incoming="304">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </argument>
+          </node>
+          <node xmi:type="uml:OpaqueAction" xmi:id="325" incoming="301">
+            <language>Python</language>
+            <outputValue xmi:id="326" name="requester" outgoing="303">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+            <body>import uuid&#xD;
+requester = 'OpaqueAction1__end_' + str(uuid.uuid4())</body>
+          </node>
+          <node xmi:type="uml:ForkNode" xmi:id="327" incoming="303" outgoing="304 305"/>
+          <node xmi:type="uml:MergeNode" xmi:id="328" incoming="305 310" outgoing="306"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="329">
+            <inputValue xmi:id="330" name="requester" incoming="306">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </inputValue>
+            <outputValue xmi:id="331" name="requester" outgoing="307">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+            </outputValue>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="332" incoming="307" outgoing="308 310"/>
+          <node xmi:type="uml:OpaqueAction" xmi:id="333" incoming="308" outgoing="312">
+            <language>Python</language>
+            <outputValue xmi:id="334" name="isSuccessful" outgoing="313">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+            </outputValue>
+            <body>guard = True
+if guard:
+	Park1_product = 1
+	Park2_product = 2
+if guard:
+	if not (0 &lt;= Park1_product &lt;= 4):
+		print(&quot;Expected 'Park1_product' to stay between 0 and 4, but got &quot; + str(Park1_product))
+	if not (0 &lt;= Park2_product &lt;= 4):
+		print(&quot;Expected 'Park2_product' to stay between 0 and 4, but got &quot; + str(Park2_product))
+	if not (0 &lt;= Disp_product &lt;= 4):
+		print(&quot;Expected 'Disp_product' to stay between 0 and 4, but got &quot; + str(Disp_product))
+active = ''
+isSuccessful = guard</body>
+          </node>
+          <node xmi:type="uml:DecisionNode" xmi:id="335" incoming="312 313" outgoing="314 316"/>
+          <node xmi:type="uml:ActivityFinalNode" xmi:id="336" incoming="314"/>
+        </ownedBehavior>
+        <edge xmi:type="uml:ControlFlow" xmi:id="337" target="341" source="340"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="338" target="342" source="341"/>
+        <edge xmi:type="uml:ControlFlow" xmi:id="339" target="343" source="342"/>
+        <node xmi:type="uml:InitialNode" xmi:id="340" outgoing="337"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="341" name="OpaqueAction1__start" incoming="337" outgoing="338" behavior="251"/>
+        <node xmi:type="uml:CallBehaviorAction" xmi:id="342" name="OpaqueAction1__end" incoming="338" outgoing="339" behavior="294"/>
+        <node xmi:type="uml:ActivityFinalNode" xmi:id="343" incoming="339"/>
+      </ownedBehavior>
+      <edge xmi:type="uml:ControlFlow" xmi:id="344" name="" target="358" source="366">
+        <guard xmi:type="uml:LiteralNull" xmi:id="345"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="346" target="361" source="371"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="347" target="366" source="361"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="348" target="367" source="358"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="349" target="369" source="358"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="350" target="359" source="364"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="351" target="359" source="362"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="352" target="361" source="359"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="353" target="363" source="368"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="354" target="365" source="370"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="355" target="371" source="357"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="356" target="372" source="371"/>
+      <node xmi:type="uml:InitialNode" xmi:id="357" name="" outgoing="355"/>
+      <node xmi:type="uml:ForkNode" xmi:id="358" name="Fork1" incoming="344" outgoing="348 349"/>
+      <node xmi:type="uml:JoinNode" xmi:id="359" name="Join1" incoming="350 351" outgoing="352">
+        <joinSpec xmi:type="uml:LiteralBoolean" xmi:id="360" name="Join1" value="true"/>
+      </node>
+      <node xmi:type="uml:MergeNode" xmi:id="361" name="Merge1" incoming="346 352" outgoing="347"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="362" name="Proxy2" outgoing="351" behavior="388">
+        <argument xmi:id="363" name="T2" incoming="353"/>
+      </node>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="364" name="Proxy1" outgoing="350" behavior="373">
+        <argument xmi:id="365" name="productId" incoming="354"/>
+      </node>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="366" name="OpaqueAction1" incoming="347" outgoing="344" behavior="250"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="367" incoming="348">
+        <language>Python</language>
+        <outputValue xmi:id="368" name="arg__T2" outgoing="353"/>
+        <body>arg__T2=2</body>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="369" incoming="349">
+        <language>Python</language>
+        <outputValue xmi:id="370" name="arg__productId" outgoing="354"/>
+        <body>arg__productId=1</body>
+      </node>
+      <node xmi:type="uml:ForkNode" xmi:id="371" incoming="355" outgoing="346 356"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="372" incoming="356" behavior="410"/>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="373" name="Proxy1" node="381 382 383 385 387">
+      <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="374" parameter="375">
+        <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="375" default="376" parameteredElement="376" constrainingClassifier="403">
+          <ownedDefault xmi:type="uml:Class" xmi:id="376" name="productId" templateParameter="375"/>
+        </ownedParameter>
+      </ownedTemplateSignature>
+      <ownedParameter xmi:id="377" name="productId"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="378" target="385" source="381"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="379" target="382" source="383"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="380" target="384" source="386"/>
+      <node xmi:type="uml:InitialNode" xmi:id="381" name="Initial1" outgoing="378"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="382" name="ActivityFinal1" incoming="379"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="383" name="Calling" outgoing="379" behavior="17">
+        <argument xmi:id="384" name="productId" incoming="380"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="385" incoming="378">
+        <language>Python</language>
+        <outputValue xmi:id="386" name="arg__productId" outgoing="380"/>
+        <body>arg__productId=productId</body>
+      </node>
+      <node xmi:type="uml:ActivityParameterNode" xmi:id="387" name="productIdNode" parameter="377"/>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="388" name="Proxy2" node="396 397 399 400 402">
+      <ownedTemplateSignature xmi:type="uml:RedefinableTemplateSignature" xmi:id="389" parameter="390">
+        <ownedParameter xmi:type="uml:ClassifierTemplateParameter" xmi:id="390" default="391" parameteredElement="391" constrainingClassifier="403">
+          <ownedDefault xmi:type="uml:Class" xmi:id="391" name="T2" templateParameter="390"/>
+        </ownedParameter>
+      </ownedTemplateSignature>
+      <ownedParameter xmi:id="392" name="T2"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="393" target="400" source="396"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="394" target="399" source="397"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="395" target="398" source="401"/>
+      <node xmi:type="uml:InitialNode" xmi:id="396" name="Initial1" outgoing="393"/>
+      <node xmi:type="uml:CallBehaviorAction" xmi:id="397" name="MoveProduct" outgoing="394" behavior="17">
+        <argument xmi:id="398" name="productId" incoming="395"/>
+      </node>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="399" name="ActivityFinal1" incoming="394"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="400" incoming="393">
+        <language>Python</language>
+        <outputValue xmi:id="401" name="arg__productId" outgoing="395"/>
+        <body>arg__productId=T2</body>
+      </node>
+      <node xmi:type="uml:ActivityParameterNode" xmi:id="402" name="T2Node" parameter="392"/>
+    </ownedBehavior>
+  </packagedElement>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="403" name="ProductId" visibility="public">
+    <ownedRule xmi:id="404" name="min">
+      <specification xmi:type="uml:LiteralInteger" xmi:id="405"/>
+    </ownedRule>
+    <ownedRule xmi:id="406" name="max">
+      <specification xmi:type="uml:LiteralInteger" xmi:id="407" value="4"/>
+    </ownedRule>
+    <generalization xmi:id="408">
+      <general xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+    </generalization>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="409" name="Lock">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="410" name="lockhandler" node="423 424 425 428 431 433 434 436">
+      <edge xmi:type="uml:ControlFlow" xmi:id="411" target="424" source="423"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="412" target="425" source="424"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="413" target="429" source="426"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="414" target="432" source="430"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="415" target="433" source="431"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="416" target="434" source="433"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="417" target="436" source="434"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="418" target="436" source="435"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="419" target="424" source="436">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="420">
+          <language>Python</language>
+          <body>isReleased</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="421" target="433" source="436">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="422">
+          <language>Python</language>
+          <body>else</body>
+        </guard>
+      </edge>
+      <node xmi:type="uml:InitialNode" xmi:id="423" outgoing="411"/>
+      <node xmi:type="uml:MergeNode" xmi:id="424" incoming="411 419" outgoing="412"/>
+      <node xmi:type="uml:AcceptEventAction" xmi:id="425" incoming="412">
+        <result xmi:id="426" name="msg" outgoing="413" type="437" isOrdered="true" isUnique="false"/>
+        <trigger xmi:id="427" event="439"/>
+      </node>
+      <node xmi:type="uml:ReadStructuralFeatureAction" xmi:id="428" structuralFeature="438">
+        <object xmi:id="429" name="msg" incoming="413" type="437"/>
+        <result xmi:id="430" name="requester" outgoing="414">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </result>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="431" outgoing="415">
+        <inputValue xmi:id="432" name="requester" incoming="414">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </inputValue>
+        <language>Python</language>
+        <body>active = requester</body>
+      </node>
+      <node xmi:type="uml:MergeNode" xmi:id="433" incoming="415 421" outgoing="416"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="434" incoming="416" outgoing="417">
+        <language>Python</language>
+        <outputValue xmi:id="435" name="isReleased" outgoing="418">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+        </outputValue>
+        <body>active == ''</body>
+      </node>
+      <node xmi:type="uml:DecisionNode" xmi:id="436" incoming="417 418" outgoing="419 421"/>
+    </ownedBehavior>
+    <nestedClassifier xmi:type="uml:Signal" xmi:id="437" name="acquire">
+      <ownedAttribute xmi:id="438" name="requester">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+    </nestedClassifier>
+  </packagedElement>
+  <packagedElement xmi:type="uml:SignalEvent" xmi:id="439" visibility="public" signal="437"/>
+</uml:Model>

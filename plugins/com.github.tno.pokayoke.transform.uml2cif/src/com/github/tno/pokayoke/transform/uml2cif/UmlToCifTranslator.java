@@ -148,8 +148,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     /** The mapping between pairs of incoming/outgoing edges of 'or'-type nodes and their corresponding start events. */
     private final BiMap<Pair<ActivityEdge, ActivityEdge>, Event> activityOrNodeMapping = HashBiMap.create();
 
-    public UmlToCifTranslator(Activity activity, UmlToCifTranslationPurpose purpose, SynthesisChainTracking tracker) {
-        super(new CifContext(activity.getModel()), tracker, purpose);
+    public UmlToCifTranslator(CifContext context, Activity activity, UmlToCifTranslationPurpose purpose,
+            SynthesisChainTracking tracker)
+    {
+        super(context, tracker, purpose);
         this.activity = activity;
     }
 
@@ -264,25 +266,6 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
     }
 
     /**
-     * Gives a mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements for
-     * which they were created, as well as the index of the corresponding effect of the end event.
-     *
-     * @return The mapping from non-atomic/non-deterministic CIF end event names to their corresponding UML elements and
-     *     the index of the corresponding effect of the end event.
-     */
-    public Map<String, Pair<RedefinableElement, Integer>> getEndEventNameMap() {
-        Map<Event, Pair<RedefinableElement, Integer>> endEventMap = synthesisTracker.getEndEventMap();
-
-        Map<String, Pair<RedefinableElement, Integer>> result = new LinkedHashMap<>();
-
-        for (var entry: endEventMap.entrySet()) {
-            result.put(entry.getKey().getName(), entry.getValue());
-        }
-
-        return result;
-    }
-
-    /**
      * Translates the UML synthesis specifications to a CIF specification.
      *
      * @return The translated CIF specification.
@@ -296,6 +279,10 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
         // to be improved in the future.
         if (translationPurpose == UmlToCifTranslationPurpose.SYNTHESIS) {
             ValidationHelper.validateModel(activity.getModel());
+        }
+
+        if (context.hasParameterizedActivities()) {
+            throw new RuntimeException("Translating parameterized activities to CIF is unsupported.");
         }
 
         // Flatten UML activities and normalize IDs.
@@ -577,13 +564,13 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
             // Add its effect as an edge update.
             cifStartEdge.getUpdates().addAll(effects.get(0));
 
-            // Store the CIF event into the synthesis tracker as a start event with effects, hence set the effect index
-            // to zero.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, 0, translationPurpose, true, true);
+            // Store the CIF event into the synthesis tracker as a start and end event with all its effects, hence set
+            // the effect index to 'null'.
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, true);
         } else {
             // Store the CIF event into the synthesis tracker as a start event without effects, hence set the effect
             // index to 'null'.
-            synthesisTracker.addCifEvent(cifStartEvent, umlElement, null, translationPurpose, true, false);
+            synthesisTracker.addCifEvent(cifStartEvent, translationPurpose, umlElement, null, true, false);
 
             // In all other cases, add uncontrollable events and edges to end the action. Make an uncontrollable event
             // and corresponding edge for every effect (there is at least one).
@@ -629,7 +616,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 newEventEdges.put(cifEndEvent, cifEndEdge);
 
                 // Store the CIF event into the synthesis tracker.
-                synthesisTracker.addCifEvent(cifEndEvent, umlElement, i, translationPurpose, false, true);
+                synthesisTracker.addCifEvent(cifEndEvent, translationPurpose, umlElement, i, false, true);
             }
         }
 
@@ -799,7 +786,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all preconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint precondition: node.getActivity().getPreconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(precondition));
                     }
@@ -815,7 +802,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                 Edge cifEdge = entry.getValue();
 
                 // If the current CIF event is a start event, then add all postconditions to its edge as extra guards.
-                if (synthesisTracker.isStartEvent(cifEvent)) {
+                if (synthesisTracker.getEventTraceInfo(cifEvent).isStartEvent()) {
                     for (Constraint postcondition: node.getActivity().getPostconditions()) {
                         cifEdge.getGuards().add(getStateInvariant(postcondition));
                     }
@@ -1656,8 +1643,7 @@ public class UmlToCifTranslator extends ModelToCifTranslator {
                             Verify.verify(umlElem.getName().contains(END_ACTION_SUFFIX), cifEvent.getName());
                         } else {
                             // End event of a call behavior to a non-atomic/non-deterministic opaque behavior.
-                            Verify.verify(
-                                    synthesisTracker.isEndEvent(cifEvent) && !synthesisTracker.isStartEvent(cifEvent),
+                            Verify.verify(synthesisTracker.getEventTraceInfo(cifEvent).isEndOnlyEvent(),
                                     "Event '" + cifEvent.getName() + "' is not an end-only event.");
                         }
                         yield PostConditionKind.WITH_STRUCTURE;
