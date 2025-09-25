@@ -353,7 +353,7 @@ public class UMLToCameoTransformer {
         List<List<String>> effects = translateEffects(behavior, context);
 
         // Define a new activity that encodes the behavior of the action.
-        Set<String> usedParameters = getUsedParameters(behavior);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(behavior));
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
                 acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior), usedParameters);
 
@@ -518,7 +518,7 @@ public class UMLToCameoTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
-        Set<String> usedParameters = getUsedParameters(action);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(action));
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
                 PokaYokeUmlProfileUtil.isAtomic(action), usedParameters);
 
@@ -609,7 +609,7 @@ public class UMLToCameoTransformer {
         evalActivity.setName("eval");
 
         // For each parameter used in the evaluation of the decision, add a parameter to the newly created activity.
-        Set<String> usedParameters = getUsedParameters(decisionNode);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(decisionNode));
         for (String usedParameter: usedParameters) {
             ActivityHelper.addParameterToActivity(evalActivity, usedParameter);
         }
