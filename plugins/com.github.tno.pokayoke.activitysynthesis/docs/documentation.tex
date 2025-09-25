@@ -46,7 +46,7 @@
 \newcommand{\dfaMinimizationLabel}[0]{\keyw{dfa-minimization}}
 \newcommand{\petrinetSynthesisLabel}[0]{\keyw{petrinet-synthesis}}
 \newcommand{\transformToActivityLabel}[0]{\keyw{transform-to-activity}}
-\newcommand{\reduceNonAtomicPatternsLabel}[0]{\keyw{reduce-non-atomic-patterns}}
+\newcommand{\rewriteNonAtomicPatternsLabel}[0]{\keyw{rewrite-nonatomic-patterns}}
 \newcommand{\computeEdgeGuardsLabel}[0]{\keyw{compute-edge-guards}}
 \newcommand{\postprocessActivityLabel}[0]{\keyw{postprocess-activity}}
 
@@ -59,7 +59,7 @@
 \newcommand{\dfaMinimization}[1]{\dfaMinimizationLabel(\ensuremath{#1})}
 \newcommand{\petrinetSynthesis}[1]{\petrinetSynthesisLabel(\ensuremath{#1})}
 \newcommand{\transformToActivity}[1]{\transformToActivityLabel(\ensuremath{#1})}
-\newcommand{\reduceNonAtomicPatterns}[1]{\reduceNonAtomicPatternsLabel(\ensuremath{#1})}
+\newcommand{\reduceNonAtomicPatterns}[1]{\rewriteNonAtomicPatternsLabel(\ensuremath{#1})}
 \newcommand{\computeEdgeGuards}[1]{\computeEdgeGuardsLabel(\ensuremath{#1})}
 \newcommand{\postprocessActivity}[1]{\postprocessActivityLabel(\ensuremath{#1})}
 
@@ -278,10 +278,10 @@ In case any cycles are detected in these dependencies, then the synthesis algori
 		\var{cifStatespace_{proj}} := \eventBasedProjection{\var{cifStatespace}}\;
 		\var{cifStatespace_{min}} := \dfaMinimization{\var{cifStatespace_{proj}}}\;
 		\tcp{Synthesize a minimal Petri Net.}
-		$(\var{petriNet}, \var{regionMapping})$ := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
+		\var{petriNet} := \petrinetSynthesis{\var{cifStatespace_{min}}}\;
+		\var{petriNet_{red}} := \reduceNonAtomicPatterns{\var{petriNet}}\;
 		\tcp{Transform the Petri Net to an activity without control flow guards.}
-		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet}}\;
-		\var{umlActivity_{red}} := \reduceNonAtomicPatterns{\var{umlActivity}_{concr}}\;
+		\var{umlActivity_{concr}} := \transformToActivity{\var{petriNet_{red}}}\;
 		\tcp{Compute the control flow guards for the decision nodes.}
 		\var{umlActivity_{guards}} := \computeEdgeGuards{\var{umlActivity_{red}}, \, \dots}\;
 		\tcp{Post-process the synthesized activity.}
@@ -772,7 +772,7 @@ To give another example of a pattern that cannot occur: it is not possible for t
 \subsection{Reducing nonatomic patterns}
 \label{sec:reducing-non-atomic-patterns}
 
-The operation \reduceNonAtomicPatternsLabel{} merges any nonatomic patterns in the input concrete UML activity that can be merged.
+The operation \rewriteNonAtomicPatternsLabel{} merges any nonatomic patterns in the input concrete UML activity that can be merged.
 
 Note that, in the code implementation, this reduction step is actually done on the Petri Net level rather than the UML level, as well as the next step of computing control flow guards, described in \autoref{sec:compute-control-flow-guards}.
 This is done for technical reasons that for now are too detailed for the purpose of this document, which is why we chose to explain this (and the next) step on the UML level instead.
@@ -783,14 +783,14 @@ Moreover, we have to reduce nonatomic patterns before computing control flow gua
 Recall that in the UML-to-CIF transformation (\autoref{sec:transform-uml-to-cif}) we created separate controllable start events and uncontrollable end events for nonatomic and atomic nondeterministic actions.
 Then, in the earlier event-based projection step (\autoref{sec:event-based-projection}) we got rid of the end events of the atomic nondeterministic actions, by projecting those out.
 However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri Net specifications, and thus also in the UML activity specifications.
-The \reduceNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions back to single call behavior actions wherever possible.
+The \rewriteNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions back to single call behavior actions wherever possible.
 
 \begin{figure}[t!]
 	\begin{center}
 		\includegraphics[scale=0.6]{images/non_atomic_pattern}
 	\end{center}
 	\caption{Left: a nonatomic pattern for a nonatomic nondeterministic action \textsf{A} with two nondeterministic effects, presented on UML activity level.
-	Right: the same pattern, but rewritten by \reduceNonAtomicPatternsLabel{}.}
+	Right: the same pattern, but rewritten by \rewriteNonAtomicPatternsLabel{}.}
 	\label{fig:non-atomic-pattern}
 \end{figure}
 
@@ -830,7 +830,7 @@ These cases are further handled during activity post-processing (\autoref{sec:ac
 
 \paragraph{Preconditions.}
 This operation requires a concrete UML activity resulting from the previous step (the code implementation actually requires its earlier Petri Net representation).
-This model should not use the string \tauLabel{} in any of its identifiers, as \reduceNonAtomicPatternsLabel{} will use it to represent rewritten end points of nonatomic patterns.
+This model should not use the string \tauLabel{} in any of its identifiers, as \rewriteNonAtomicPatternsLabel{} will use it to represent rewritten end points of nonatomic patterns.
 
 \paragraph{Postconditions.}
 This operation returns the input activity, where all nonatomic patterns have been rewritten as shown on the right in \autoref{fig:non-atomic-pattern}.
@@ -962,7 +962,7 @@ So if the operation terminates, then the choice guards do not use internal varia
 
 The operation \postprocessActivity{\var{umlActivity_{guards}}} post-processes the synthesized activity \var{umlActivity_{guards}}, to:
 \begin{itemize}
-	\item Rewrite any leftover nonatomic actions that were not merged earlier by \reduceNonAtomicPatternsLabel{}.
+	\item Rewrite any leftover nonatomic actions that were not merged earlier by \rewriteNonAtomicPatternsLabel{}.
 	\item Remove any internal actions have been introduced in earlier steps, like the opaque \startLabel{}, \stopLabel{}, and \tauLabel{} actions.
 	\item Further simplify the synthesized activity.
 	\item Remove some names from UML control nodes and control flows, for better readability in UML Designer.
