@@ -491,10 +491,17 @@ public class UMLToCameoTransformer {
             return;
         }
 
+        // Obtain the order in which parameters are defined in the model
+        CifScopedContext targetContext = ctxManager.getScopedContext(callAction.getBehavior());
+        List<NamedTemplateParameter> parameters = targetContext.getDeclaredTemplateParameters();
+
+        Map<String, AAssignmentUpdate> argumentMap = parsedArguments.stream()
+                .collect(Collectors.toMap(arg -> ((ANameExpression)arg.addressable).name.name, arg -> arg));
+        List<String> arguments = new ArrayList<>();
         List<String> translatedAssignments = new ArrayList<>();
-        Set<String> arguments = new LinkedHashSet<>();
-        for (AAssignmentUpdate argument: parsedArguments) {
-            String adressable = ((ANameExpression)argument.addressable).name.name;
+        for (NamedTemplateParameter parameter: parameters) {
+            String adressable = parameter.getName();
+            AAssignmentUpdate argument = argumentMap.get(adressable);
             String value = translator.translateExpression(argument.value, ctxManager.getScopedContext(callAction));
 
             translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
