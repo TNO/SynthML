@@ -646,7 +646,6 @@ This state space is the input to Petrify, that synthesizes a Petri Net from it.
 
 The operation \petrinetSynthesis{\var{cifStatespace_{min}}} performs Petri Net synthesis to compute a minimal Petri Net whose behavior is trace-equivalent to the single automaton in the given CIF specification, \var{cifStatespace_{min}}.
 This operation attempts to synthesize a free-choice Petri Net, and if that fails, it synthesizes an ordinary Petri Net instead.
-Moreover, this operation produces a \emph{region mapping}, which is a mapping that relates the input specification \var{cifStatespace_{min}} to the synthesized Petri Net.
 
 We use the Petrify tool for performing Petri Net synthesis.
 We thereby use the following options of Petrify: \texttt{-opt} to try to find the best possible result; \texttt{-fc} to synthesize a free-choice Petri Net;
@@ -655,10 +654,6 @@ If synthesis fails with the \texttt{-fc} option, Petrify will be invoked again w
 
 In our activity synthesis algorithm, we use PNML as the intermediate format for representing Petri Nets.
 Therefore, part of the \petrinetSynthesisLabel{} operation is to translate \var{cifStatespace_{min}} to the input language of Petrify, and transforming the output of Petrify to PNML.
-
-Moreover, although Petrify constructs a region mapping internally, there is no way to retrieve this region mapping by, e.g., some command-line option.
-The developers of Petrify recommended us to write a separate algorithm to `recover' this region mapping, by co-simulating the input and output of Petrify to find out which CIF locations correspond to which Petri Net places.
-Therefore, the implementation of \petrinetSynthesisLabel{} also requires recovering this region mapping, at least as long a Petrify is being used.
 
 \paragraph{Motivation.}
 By having computed a (projected and minimal) CIF state space, \var{cifStatespace_{min}}, we are still quite distant from a concrete UML activity.
@@ -675,17 +670,9 @@ Moreover, there are particular classes of Petri Nets, like \emph{free-choice} Pe
 We haven't yet done an extensive study or comparison to see whether this is always the case.)
 Therefore we attempt to synthesize a free-choice Petri Net whenever possible.
 
-However, translating a Petri Net to a UML activity structure is not yet sufficient: we then still need to compute the control flow guards for the decision nodes of the synthesized UML activity.
-These control flow guards are needed, since without them any UML decision node could freely follow any of its outgoing control flows, leading to executions that are not allowed by the synthesized CIF supervisor.
-This step must be done separately (in \autoref{sec:compute-control-flow-guards}), since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
-Therefore, we must be able to relate the output of Petri Net synthesis to the input specification, \var{cifStatespace_{min}}.
-Such a relation is (or should be) produced by the Petri Net synthesis algorithm, and is called a \emph{region mapping}.
-The reason for this, is that Petri Net synthesis is based on the \emph{theory of regions}.
-Without going too deep into this theory; the main idea is to group locations from \var{cifStatespace_{min}} together so that every such group (roughly) corresponds to a Petri Net place.
-These groups are then called \emph{regions}.
-So the Petri Net algorithm can produce a mapping from Petri Net places to the regions from which they are formed, thereby providing an input-output relation.
-With this relation, we can later find the relevant data/state and synthesized guards on the level of CIF, for the Petri Net places that will become UML decision nodes, and from those calculate the control flow guards.
-\autoref{sec:compute-control-flow-guards} explains this further.
+However, just translating a Petri Net to a UML activity structure is not yet sufficient: we then still need to account for the data which had been eliminated in the CIF state space generation step (\autoref{sec:state-space-generation}).
+In particular, (incoming and outgoing) control flow guards are needed, for example for the decision nodes of the synthesized UML activity, since without such guards, any control flow could freely be taken, leading to executions that would not be allowed by the synthesized CIF supervisor.
+This step is done separately (in \autoref{sec:compute-control-flow-guards}) since to the best of our knowledge, Petri Net synthesis with data/state is an open research field for which tooling is not available.
 
 \paragraph{Preconditions.}
 Since Petrify is used for Petri Net synthesis, all preconditions from that tool apply.
@@ -729,22 +716,19 @@ This is needed since Petrify seems able to produce nondeterministic results in t
 But these different results are the same modulo names of places.
 We therefore normalize synthesized Petri Nets, for example to allow proper regression testing.
 
-Furthermore, a region mapping is computed that indicates how Petri Net places correspond to locations in the input CIF automaton.
-This region mapping is thus a mapping from Petri Net places to sets of automaton locations.
-
 \begin{example*}[Running example]
-The Petrify output is depicted in Fig.~\ref{fig:petrify-out}.
-Notice that the end event \texttt{\_\_end} has been split into two separate transitions that will be merged together (in fact, as a UML merge node) in a following step.
-Further, the final place \texttt{p5} is equipped with a self loop, which will also be removed in one of the post-processing steps.
+The Petrify output is depicted in \autoref{fig:petrify-out}.
+Notice that the end event \texttt{\_\_end} has been split into two separate transitions due to label splitting.
+These two transitions will be merged together in the conversion step to a UML activity, and be turned into a UML merge node.
+Further, the `final' place \texttt{p4} is equipped with a self-loop, which will be removed when converting this Petri Net to PNML format.
 \end{example*}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{images/bitflipper_petrify.png}
-    \caption{The Petrify output model.}
-    \label{fig:petrify-out}
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/bitflipper_petrify.png}
+	\caption{The Petrify output model.}
+	\label{fig:petrify-out}
 \end{figure}
-
 
 \subsection{Transforming the Petri Net to an activity}
 \label{sec:transform-petrinet-to-activity}
