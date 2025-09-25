@@ -361,7 +361,6 @@ public class UMLToCameoTransformer {
         behavior.getOwnedBehaviors().add(activity);
     }
 
-    @SuppressWarnings("restriction")
     private Set<String> getUsedParameters(RedefinableElement behavior) {
         CifContext context = ctxManager.getScopedContext(behavior);
 
@@ -382,7 +381,6 @@ public class UMLToCameoTransformer {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    @SuppressWarnings("restriction")
     private Set<String> getUsedDecisionParameters(ActivityEdge edge) {
         if (!(edge instanceof ControlFlow controlFlow)) {
             return Collections.EMPTY_SET;
