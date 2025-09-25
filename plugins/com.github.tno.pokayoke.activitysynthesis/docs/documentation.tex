@@ -307,7 +307,7 @@ The opaque behavior \texttt{initialize} turns \texttt{init} from \texttt{false} 
 The model outline in the PokaYoke UML Designer environment is depicted in Fig.~\ref{fig:bitflipper-uml-designer}.
 \end{example*}
 
-\begin{figure}
+\begin{figure}[t!]
     \centering
     \includegraphics[width=0.75\linewidth]{images/bitflipper_uml.png}
     \caption{The \texttt{BitFlipper} model visualized within the PokaYoke UML Designer environment.}
@@ -785,7 +785,7 @@ Then, in the earlier event-based projection step (\autoref{sec:event-based-proje
 However, the end events of nonatomic actions are still in the CIF specifications, and thus also in the Petri Net specifications, and thus also in the UML activity specifications.
 The \reduceNonAtomicPatternsLabel{} operation will attempt to merge the starts and ends of nonatomic actions back to single call behavior actions wherever possible.
 
-\begin{figure}[t]
+\begin{figure}[t!]
 	\begin{center}
 		\includegraphics[scale=0.6]{images/non_atomic_pattern}
 	\end{center}
@@ -1000,7 +1000,7 @@ If \texttt{bit} is \texttt{true}, the flow can go directly to the final node (sh
 The two \texttt{\_\_end} transitions have been translated into a merge node, and finally place \texttt{p5} is transformed into the final node.
 \end{example*}
 
-\begin{figure}
+\begin{figure}[t!]
     \centering
     \includegraphics[width=0.5\linewidth]{images/bitflipper_activitysynthesised.png}
     \caption{The synthesized activity.}
