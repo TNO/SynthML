@@ -496,7 +496,7 @@ public class UMLToCameoTransformer {
         CifScopedContext targetContext = ctxManager.getScopedContext(callAction.getBehavior());
         List<NamedTemplateParameter> parameters = targetContext.getDeclaredTemplateParameters();
 
-        // Build a map for accessing the arguments by name
+        // Build a map for accessing the arguments by name.
         Map<String, AAssignmentUpdate> argumentMap = parsedArguments.stream()
                 .collect(Collectors.toMap(arg -> ((ANameExpression)arg.addressable).name.name, arg -> arg));
 
