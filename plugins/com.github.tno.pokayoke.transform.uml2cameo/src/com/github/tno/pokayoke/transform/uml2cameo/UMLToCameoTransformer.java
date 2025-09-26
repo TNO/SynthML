@@ -491,7 +491,7 @@ public class UMLToCameoTransformer {
             return;
         }
 
-        // Obtain the order in which parameters are defined in the model
+        // Obtain the order in which parameters are defined in the model.
         CifScopedContext targetContext = ctxManager.getScopedContext(callAction.getBehavior());
         List<NamedTemplateParameter> parameters = targetContext.getDeclaredTemplateParameters();
 

@@ -21,13 +21,13 @@ public class NamedTemplateParameter extends NamedElementImpl {
 
     @Override
     public String getName() {
-        // Override only to suppress discourages access warnings.
+        // Override only to suppress discouraged access warnings when calling this method.
         return super.getName();
     }
 
     @Override
     public void setName(String name) {
-        // Override only to suppress discourages access warnings.
+        // Override only to suppress discouraged access warnings when calling this method.
         super.setName(name);
     }
 
