@@ -491,12 +491,16 @@ public class UMLToCameoTransformer {
             return;
         }
 
-        // Obtain the order in which parameters are defined in the model.
+        // Obtain the order in which parameters are defined in the model because Cameo requires arguments and parameters
+        // to be defined in the same order.
         CifScopedContext targetContext = ctxManager.getScopedContext(callAction.getBehavior());
         List<NamedTemplateParameter> parameters = targetContext.getDeclaredTemplateParameters();
 
+        // Build a map for accessing the arguments by name
         Map<String, AAssignmentUpdate> argumentMap = parsedArguments.stream()
                 .collect(Collectors.toMap(arg -> ((ANameExpression)arg.addressable).name.name, arg -> arg));
+
+        // Iterate in the order of the parameters.
         List<String> arguments = new ArrayList<>();
         List<String> translatedAssignments = new ArrayList<>();
         for (NamedTemplateParameter parameter: parameters) {
