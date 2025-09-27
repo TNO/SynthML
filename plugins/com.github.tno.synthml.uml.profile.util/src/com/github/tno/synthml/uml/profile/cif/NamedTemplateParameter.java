@@ -19,6 +19,18 @@ public class NamedTemplateParameter extends NamedElementImpl {
         super();
     }
 
+    @Override
+    public String getName() {
+        // Override only to suppress discouraged access warnings when calling this method.
+        return super.getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        // Override only to suppress discouraged access warnings when calling this method.
+        super.setName(name);
+    }
+
     /**
      * Returns the type of the parameter.
      *

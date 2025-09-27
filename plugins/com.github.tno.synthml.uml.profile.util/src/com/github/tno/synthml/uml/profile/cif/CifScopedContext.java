@@ -38,7 +38,6 @@ public class CifScopedContext implements CifContext {
      * @param element An {@link Element} contained in the activity for which the context is created.
      * @param parent A {@link CifGlobalContext} that is the parent of this scoped context.
      */
-    @SuppressWarnings("restriction")
     protected CifScopedContext(Element element, CifGlobalContext parent) {
         declaredTemplateParameters = getDeclaredTemplateParameters(element);
         referenceableTemplateParameters = declaredTemplateParameters.stream()
@@ -46,7 +45,6 @@ public class CifScopedContext implements CifContext {
         this.parent = parent;
     }
 
-    @SuppressWarnings("restriction")
     private List<NamedTemplateParameter> getDeclaredTemplateParameters(Element inputElement) {
         EObject current = inputElement;
 
@@ -123,7 +121,6 @@ public class CifScopedContext implements CifContext {
         return (templateParameter != null) ? templateParameter : parent.getReferenceableElement(name);
     }
 
-    @SuppressWarnings("restriction")
     @Override
     public Map<String, List<NamedElement>> getReferenceableElementsInclDuplicates() {
         Map<String, List<NamedElement>> referenceableElementsInclDuplicates = new LinkedHashMap<>();

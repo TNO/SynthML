@@ -353,7 +353,7 @@ public class UMLToCameoTransformer {
         List<List<String>> effects = translateEffects(behavior, context);
 
         // Define a new activity that encodes the behavior of the action.
-        Set<String> usedParameters = getUsedParameters(behavior);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(behavior));
         Activity activity = ActivityHelper.createActivity(behavior.getName(), guard, effects, propertyBounds,
                 acquireSignal, PokaYokeUmlProfileUtil.isAtomic(behavior), usedParameters);
 
@@ -361,7 +361,6 @@ public class UMLToCameoTransformer {
         behavior.getOwnedBehaviors().add(activity);
     }
 
-    @SuppressWarnings("restriction")
     private Set<String> getUsedParameters(RedefinableElement behavior) {
         CifContext context = ctxManager.getScopedContext(behavior);
 
@@ -382,7 +381,6 @@ public class UMLToCameoTransformer {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    @SuppressWarnings("restriction")
     private Set<String> getUsedDecisionParameters(ActivityEdge edge) {
         if (!(edge instanceof ControlFlow controlFlow)) {
             return Collections.EMPTY_SET;
@@ -493,10 +491,21 @@ public class UMLToCameoTransformer {
             return;
         }
 
+        // Obtain the order in which parameters are defined in the model because Cameo requires arguments and parameters
+        // to be defined in the same order.
+        CifScopedContext targetContext = ctxManager.getScopedContext(callAction.getBehavior());
+        List<NamedTemplateParameter> parameters = targetContext.getDeclaredTemplateParameters();
+
+        // Build a map for accessing the arguments by name.
+        Map<String, AAssignmentUpdate> argumentMap = parsedArguments.stream()
+                .collect(Collectors.toMap(arg -> ((ANameExpression)arg.addressable).name.name, arg -> arg));
+
+        // Iterate in the order of the parameters.
+        List<String> arguments = new ArrayList<>();
         List<String> translatedAssignments = new ArrayList<>();
-        Set<String> arguments = new LinkedHashSet<>();
-        for (AAssignmentUpdate argument: parsedArguments) {
-            String adressable = ((ANameExpression)argument.addressable).name.name;
+        for (NamedTemplateParameter parameter: parameters) {
+            String adressable = parameter.getName();
+            AAssignmentUpdate argument = argumentMap.get(adressable);
             String value = translator.translateExpression(argument.value, ctxManager.getScopedContext(callAction));
 
             translatedAssignments.add(ARGUMENT_PREFIX + adressable + "=" + value);
@@ -520,7 +529,7 @@ public class UMLToCameoTransformer {
 
         // Define a new activity that encodes the behavior of the action.
         String actionName = action.getName();
-        Set<String> usedParameters = getUsedParameters(action);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(action));
         Activity newActivity = ActivityHelper.createActivity(actionName, guard, effects, propertyBounds, acquireSignal,
                 PokaYokeUmlProfileUtil.isAtomic(action), usedParameters);
 
@@ -611,7 +620,7 @@ public class UMLToCameoTransformer {
         evalActivity.setName("eval");
 
         // For each parameter used in the evaluation of the decision, add a parameter to the newly created activity.
-        Set<String> usedParameters = getUsedParameters(decisionNode);
+        List<String> usedParameters = new ArrayList<>(getUsedParameters(decisionNode));
         for (String usedParameter: usedParameters) {
             ActivityHelper.addParameterToActivity(evalActivity, usedParameter);
         }
