@@ -61,7 +61,7 @@ public class CheckNonDeterministicChoices {
         for (ActivityEdge edge: node.getOutgoings()) {
             // Get the guard of the edge as a BDD.
             Expression cifGuard = translator.getIncomingGuard(edge);
-            BDD bddGuard = converter.convertPred(cifGuard, false, bddSpec);
+            BDD bddGuard = converter.convertPred(cifGuard, false, bddSpec, null);
 
             // Check the current edge against the previous ones, registering a warning in case of guard overlap.
             for (var entry: edgeGuardMap.entrySet()) {
