@@ -854,9 +854,9 @@ public class SynthesisChainTracking {
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
         Verify.verify(!finalizedElementToAction.containsKey(finalizedElement),
-                String.format("Element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
+                String.format("Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
         Verify.verify(!finalizedElementToAction.values().contains(action),
-                String.format("Action '%s' is already contained in the tracker mapping.", action.getName()));
+                String.format("Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
         Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
                 "Expected a finalized UML element to be either an opaque action or a call behavior action.");
 
@@ -906,10 +906,10 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given UML element was created, or {@code null} if no such element
+     * Returns the original UML element for which the given UML element in the synthesized activity was created, or {@code null} if no such element
      * exists.
      *
-     * @param umlElement The UML element.
+     * @param umlElement The UML element in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
      */
     private RedefinableElement getOriginalUmlElement(RedefinableElement umlElement) {
@@ -922,7 +922,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the non-finalized opaque action corresponding to the input finalized UML element.
+     * Returns the non-finalized opaque action corresponding to the given finalized UML element.
      *
      * @param umlElement The finalized UML element.
      * @return The corresponding opaque action.
@@ -1017,9 +1017,9 @@ public class SynthesisChainTracking {
      * Gives the list of CIF start events created for any finalized UML element during the guard computation or language
      * equivalence check phase, that corresponds to the given original UML element.
      *
-     * @param originalUmlElement The non-{@code null} UML element.
+     * @param originalUmlElement The non-{@code null} original UML element.
      * @param purpose The translation purpose.
-     * @return The list of CIF start events corresponding to the given UML element.
+     * @return The list of CIF start events of finalized UML elements corresponding to the given original UML element.
      */
     public List<Event> getFinalizedElementStartEventsForOriginalElement(RedefinableElement originalUmlElement,
             UmlToCifTranslationPurpose purpose)
@@ -1028,7 +1028,7 @@ public class SynthesisChainTracking {
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
         Verify.verify(isOriginalUmlElement(originalUmlElement),
-                "The input UML element is not an original UML element.");
+                "The given UML element is not an original UML element.");
 
         // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
         // the given one, and is related to a start event.
@@ -1070,7 +1070,7 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event is created for a finalized UML element during the guard computation
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard computation
      * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
      * represents an end-only event.
      *
