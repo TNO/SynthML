@@ -1040,7 +1040,9 @@ public class SynthesisChainTracking {
                 // Filter to only UML elements that are equal to the original UML element.
                 && umlElement.equals(originalUmlElement)
                 // Filter to only CIF events related to an original start event.
-                && isRelatedToOriginalStartOnlyOrIsStartEvent(e.getValue())).map(Map.Entry::getKey).toList();
+                && isRelatedToOriginalStartOnlyOrIsStartEvent(e.getValue()))
+                // Collect the CIF events.
+                .map(Map.Entry::getKey).toList();
 
         return filteredEvents;
     }
