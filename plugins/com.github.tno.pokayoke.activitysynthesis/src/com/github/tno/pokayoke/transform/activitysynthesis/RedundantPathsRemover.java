@@ -192,8 +192,8 @@ public class RedundantPathsRemover {
             NodeInfo currentNodeInfo = queue.poll();
 
             Set<NodeInfo> children = currentNodeInfo.getChildren();
-            int minChildSubGraphSize = Integer.MAX_VALUE;
-            Set<NodeInfo> chosenChildren = new LinkedHashSet<>();
+            int minControllableChildSubGraphSize = Integer.MAX_VALUE;
+            Set<NodeInfo> chosenControllableChildren = new LinkedHashSet<>();
 
             // All minimum sub-graphs have the same size: get the size of the first one (could be zero if empty set).
             int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).cardinality();
@@ -216,11 +216,11 @@ public class RedundantPathsRemover {
                         // TODO
                     } else {
                         // Choose the child with smallest sub-graph.
-                        if (minChildSubGraphSize > currentChildMinSubGraphSize) {
-                            chosenChildren = new LinkedHashSet<>();
-                            chosenChildren.add(child);
-                        } else if (minChildSubGraphSize == currentChildMinSubGraphSize) {
-                            chosenChildren.add(child);
+                        if (minControllableChildSubGraphSize > currentChildMinSubGraphSize) {
+                            chosenControllableChildren = new LinkedHashSet<>();
+                            chosenControllableChildren.add(child);
+                        } else if (minControllableChildSubGraphSize == currentChildMinSubGraphSize) {
+                            chosenControllableChildren.add(child);
                         }
                     }
                 }
@@ -229,7 +229,7 @@ public class RedundantPathsRemover {
             // Add sub-graph of the chosen controllable children to the current node info.
             List<BitSet> allUpdatedMinSubGraphsList = new ArrayList<>();
             for (BitSet currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
-                for (NodeInfo child: chosenChildren) {
+                for (NodeInfo child: chosenControllableChildren) {
                     for (BitSet childMinSubGraph: child.getMinSubGraphs()) {
                         BitSet updatedMinSubGraph = new BitSet(statesAndEdgesToIndex.size());
                         updatedMinSubGraph.or(currentMinSubGraph); // Copy current min sub-graph.
