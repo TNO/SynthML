@@ -236,10 +236,24 @@ public class RedundantPathsRemover {
                 }
             }
 
-            // Add sub-graph of the chosen controllable children to the current node info.
+            // Pick the children with the smallest subgraph: either uncontrollable, controllable, or both (if they have
+            // the same size). Only consider the set of children that are not empty.
+            Set<NodeInfo> chosenChildren = new LinkedHashSet<>();
+            if (minControllableChildSubGraphSize < maxUncontrollableChildGraphSize
+                    || chosenUncontrollableChildren.isEmpty())
+            {
+                chosenChildren.addAll(chosenControllableChildren);
+            } else if (maxUncontrollableChildGraphSize < minControllableChildSubGraphSize) {
+                chosenChildren.addAll(chosenUncontrollableChildren);
+            } else if (minControllableChildSubGraphSize == maxUncontrollableChildGraphSize) {
+                chosenChildren.addAll(chosenControllableChildren);
+                chosenChildren.addAll(chosenUncontrollableChildren);
+            }
+
+            // Add sub-graph of the chosen children to the current node info.
             List<BitSet> allUpdatedMinSubGraphsList = new ArrayList<>();
             for (BitSet currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
-                for (NodeInfo child: chosenControllableChildren) {
+                for (NodeInfo child: chosenChildren) {
                     for (BitSet childMinSubGraph: child.getMinSubGraphs()) {
                         BitSet updatedMinSubGraph = new BitSet(statesAndEdgesToIndex.size());
                         updatedMinSubGraph.or(currentMinSubGraph); // Copy current min sub-graph.
