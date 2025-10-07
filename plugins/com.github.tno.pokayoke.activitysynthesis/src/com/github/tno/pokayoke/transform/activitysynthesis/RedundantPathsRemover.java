@@ -199,8 +199,9 @@ public class RedundantPathsRemover {
             int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).cardinality();
 
             // For each child, get its minimum sub-graph and compare it with the current NodeInfo sub-graph.
-            // A) If the edge connecting the two states is uncontrollable, perform the union of the sub-graphs, since we
-            // must consider each uncontrollable edge for all states. Otherwise,
+            // A) If the edge connecting the two states is uncontrollable, store the largest sub-graph, since we must
+            // consider the maximum length (worst-case) path stemming from an uncontrollable edge for all states.
+            // Otherwise,
             // B) If the edge is controllable, compare the size of the sub-graph and choose the children with the
             // minimum sub-graph; update the current NodeInfo considering the smallest sub-graph of its children.
             for (NodeInfo child: children) {
@@ -211,14 +212,8 @@ public class RedundantPathsRemover {
                     List<Event> events = new ArrayList<>(CifEventUtils.getEvents(childEdge));
 
                     if (!events.get(0).getControllable()) {
-                        // Union of the current node sub-graphs and the child's sub-graphs.
-                        for (BitSet currentMinSubGraph: currentNodeInfo.getMinSubGraphs()) {
-                            for (BitSet childMinSubGraph: childMinSubGraphs) {
-                                currentMinSubGraph.set(statesAndEdgesToIndex.get(child.getLocation()));
-                                currentMinSubGraph.set(statesAndEdgesToIndex.get(childEdge));
-                                currentMinSubGraph.or(childMinSubGraph); // Add the children bitset to the current one.
-                            }
-                        }
+                        // Choose the child with the largest sub-graph.
+                        // TODO
                     } else {
                         // Choose the child with smallest sub-graph.
                         if (minChildSubGraphSize > currentChildMinSubGraphSize) {
