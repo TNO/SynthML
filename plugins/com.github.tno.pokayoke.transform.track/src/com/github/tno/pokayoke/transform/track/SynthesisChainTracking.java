@@ -277,6 +277,33 @@ public class SynthesisChainTracking {
     }
 
     /**
+     * Returns the CIF start events whose corresponding original UML element is called as the given name.
+     *
+     * @param umlElementName The name of the UML element.
+     * @param purpose The translation purpose.
+     * @return The list of CIF start events whose corresponding original UML element name matches the given name.
+     */
+    public List<Event> getStartEventsCorrespondingToOriginalUmlElementName(String umlElementName,
+            UmlToCifTranslationPurpose purpose)
+    {
+        List<Event> cifEvents;
+        if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
+            cifEvents = getStartEventMap(purpose)
+                    .entrySet().stream().filter(e -> e.getValue() instanceof RedefinableElement element
+                            && element.getName() != null && element.getName().equals(umlElementName))
+                    .map(Map.Entry::getKey).toList();
+        } else {
+            cifEvents = getStartEventMap(purpose).entrySet().stream()
+                    .filter(e -> e.getValue() instanceof RedefinableElement element
+                            // Check the original UML element's name.
+                            && getOriginalUmlElement(element) != null
+                            && getOriginalUmlElement(element).getName().equals(umlElementName))
+                    .map(Map.Entry::getKey).toList();
+        }
+        return cifEvents;
+    }
+
+    /**
      * Removes from the CIF event tracing map the events contained in the given set. If an event is a start event, also
      * its corresponding end events are removed. If all end events of a start event are removed, it updates the
      * corresponding start events tracing info with {@code isStartEvent} and {@code isEndEvent} both set to
