@@ -955,7 +955,7 @@ public class SynthesisChainTracking {
 
     /**
      * Returns {@code true} if the finalized UML element contained in the given event trace info is related to an
-     * original CIF end-only event or if it is related to a merged pattern and it is related to a current CIF end
+     * original CIF end-only event or if it is related to a merged pattern and it is related to a current CIF end-only
      * event; {@code false} otherwise.
      *
      * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
