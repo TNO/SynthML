@@ -853,10 +853,10 @@ public class SynthesisChainTracking {
      */
     public void addFinalizedUmlElement(RedefinableElement finalizedElement, OpaqueAction action) {
         // Sanity check: ensure that the finalized UML element and the opaque action are not present in the map.
-        Verify.verify(!finalizedElementToAction.containsKey(finalizedElement),
-                String.format("Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
-        Verify.verify(!finalizedElementToAction.values().contains(action),
-                String.format("Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
+        Verify.verify(!finalizedElementToAction.containsKey(finalizedElement), String.format(
+                "Finalized UML element '%s' is already contained in the tracker mapping.", finalizedElement.getName()));
+        Verify.verify(!finalizedElementToAction.values().contains(action), String.format(
+                "Action '%s' is already contained in the finalized UML element tracker mapping.", action.getName()));
         Verify.verify(finalizedElement instanceof OpaqueAction || finalizedElement instanceof CallBehaviorAction,
                 "Expected a finalized UML element to be either an opaque action or a call behavior action.");
 
@@ -906,8 +906,8 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the original UML element for which the given UML element in the synthesized activity was created, or {@code null} if no such element
-     * exists.
+     * Returns the original UML element for which the given UML element in the synthesized activity was created, or
+     * {@code null} if no such element exists.
      *
      * @param umlElement The UML element in the synthesized activity.
      * @return The related original UML element, or {@code null} if no such UML element exists.
@@ -1070,9 +1070,9 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard computation
-     * or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase that
-     * represents an end-only event.
+     * Returns {@code true} if the given CIF event has been created for a finalized UML element during the guard
+     * computation or language equivalence check phase, which corresponds to a CIF event created for the synthesis phase
+     * that represents an end-only event.
      *
      * @param cifEvent The CIF event.
      * @param purpose The translation purpose.
