@@ -1031,7 +1031,7 @@ public class SynthesisChainTracking {
                 "The given UML element is not an original UML element.");
 
         // Get the list of CIF events whose translation purpose is the given one, whose original UML element is equal to
-        // the given one, and is related to a start event.
+        // the given one, and is related to an original start event or is a start event.
         List<Event> filteredEvents = cifEventTraceInfo.entrySet().stream().filter(e ->
         // Filter to only events with given translation purpose.
         e.getValue().getTranslationPurpose().equals(purpose)
@@ -1039,7 +1039,7 @@ public class SynthesisChainTracking {
                 && getOriginalUmlElement(e.getValue().getUmlElement()) instanceof RedefinableElement umlElement
                 // Filter to only UML elements that are equal to the original UML element.
                 && umlElement.equals(originalUmlElement)
-                // Filter to only CIF events related to an original start event.
+                // Filter to only CIF events related to an original start event or are start events.
                 && isRelatedToOriginalStartOnlyOrIsStartEvent(e.getValue()))
                 // Collect the CIF events.
                 .map(Map.Entry::getKey).toList();
