@@ -219,6 +219,7 @@ public class RedundantPathsRemover {
                         if (maxUncontrollableChildGraphSize < currentChildMinSubGraphSize) {
                             chosenUncontrollableChildren = new LinkedHashSet<>();
                             chosenUncontrollableChildren.add(child);
+                            maxUncontrollableChildGraphSize = currentChildMinSubGraphSize;
                         } else if (maxUncontrollableChildGraphSize == currentChildMinSubGraphSize) {
                             chosenUncontrollableChildren.add(child);
                         }
@@ -227,6 +228,7 @@ public class RedundantPathsRemover {
                         if (minControllableChildSubGraphSize > currentChildMinSubGraphSize) {
                             chosenControllableChildren = new LinkedHashSet<>();
                             chosenControllableChildren.add(child);
+                            minControllableChildSubGraphSize = currentChildMinSubGraphSize;
                         } else if (minControllableChildSubGraphSize == currentChildMinSubGraphSize) {
                             chosenControllableChildren.add(child);
                         }
