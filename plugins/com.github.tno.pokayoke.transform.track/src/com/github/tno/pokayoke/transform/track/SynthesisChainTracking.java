@@ -938,12 +938,12 @@ public class SynthesisChainTracking {
 
     /**
      * Returns {@code true} if the finalized UML element contained in the given event trace info is related to an
-     * original CIF start-only event or if it is related to a merged patterns and it is related to a current CIF start
+     * original CIF start-only event or if it is related to a merged pattern and it is related to a current CIF start
      * event; {@code false} otherwise.
      *
      * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
      * @return {@code true} if the given UML element is related to an original CIF start-only event or if it is related
-     *     to a merged patterns and it is related to a current CIF start event, {@code false} otherwise.
+     *     to a merged pattern and it is related to a current CIF start event, {@code false} otherwise.
      */
     private boolean isRelatedToOriginalStartOnlyOrIsStartEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
@@ -955,12 +955,12 @@ public class SynthesisChainTracking {
 
     /**
      * Returns {@code true} if the finalized UML element contained in the given event trace info is related to an
-     * original CIF end-only event or if it is related to a merged patterns and it is related to a current CIF end
+     * original CIF end-only event or if it is related to a merged pattern and it is related to a current CIF end
      * event; {@code false} otherwise.
      *
      * @param finalizedEventInfo The event trace info corresponding to the finalized UML element.
      * @return {@code true} if the given UML element is related to an original CIF end-only event or if it is related to
-     *     a merged patterns and it is related to a current CIF end event, {@code false} otherwise.
+     *     a merged pattern and it is related to a current CIF end event, {@code false} otherwise.
      */
     private boolean isRelatedToOriginalEndOnlyOrIsEndOnlyEvent(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
