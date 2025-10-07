@@ -194,6 +194,8 @@ public class RedundantPathsRemover {
             Set<NodeInfo> children = currentNodeInfo.getChildren();
             int minControllableChildSubGraphSize = Integer.MAX_VALUE;
             Set<NodeInfo> chosenControllableChildren = new LinkedHashSet<>();
+            int maxUncontrollableChildGraphSize = -1;
+            Set<NodeInfo> chosenUncontrollableChildren = new LinkedHashSet<>();
 
             // All minimum sub-graphs have the same size: get the size of the first one (could be zero if empty set).
             int sizePreUnion = currentNodeInfo.getMinSubGraphs().get(0).cardinality();
@@ -212,8 +214,14 @@ public class RedundantPathsRemover {
                     List<Event> events = new ArrayList<>(CifEventUtils.getEvents(childEdge));
 
                     if (!events.get(0).getControllable()) {
-                        // Choose the child with the largest sub-graph.
-                        // TODO
+                        // Choose the child with the largest sub-graph, if the current uncontrollable child has a larger
+                        // sub graph than the stored one.
+                        if (maxUncontrollableChildGraphSize < currentChildMinSubGraphSize) {
+                            chosenUncontrollableChildren = new LinkedHashSet<>();
+                            chosenUncontrollableChildren.add(child);
+                        } else if (maxUncontrollableChildGraphSize == currentChildMinSubGraphSize) {
+                            chosenUncontrollableChildren.add(child);
+                        }
                     } else {
                         // Choose the child with smallest sub-graph.
                         if (minControllableChildSubGraphSize > currentChildMinSubGraphSize) {
