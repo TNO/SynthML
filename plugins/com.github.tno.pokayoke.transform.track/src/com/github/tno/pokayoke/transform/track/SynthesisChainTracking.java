@@ -1073,7 +1073,7 @@ public class SynthesisChainTracking {
      * @param purpose The translation purpose.
      * @return {@code true} if the CIF event corresponds to an original end-only event, {@code false} otherwise.
      */
-    public boolean isEndOnlyOfOriginalUmlElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
+    public boolean isRelatedToEndOnlyOfOriginalElement(Event cifEvent, UmlToCifTranslationPurpose purpose) {
         // Precondition check.
         Verify.verify(purpose != UmlToCifTranslationPurpose.SYNTHESIS,
                 "Reference to original UML element is undefined for synthesis translation.");
