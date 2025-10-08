@@ -972,7 +972,7 @@ public class SynthesisChainTracking {
      * @return {@code true} if the given UML element is related to an original CIF start-only event or if it is related
      *     to a merged pattern and it is related to a current CIF start event, {@code false} otherwise.
      */
-    private boolean isRelatedToOriginalStartOnlyOrIsStartEvent(EventTraceInfo finalizedEventInfo) {
+    private boolean isRelatedToStartOfOriginalElement(EventTraceInfo finalizedEventInfo) {
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         Verify.verify(isFinalizedUmlElement(finalizedUmlElement),
                 String.format("Element '%s' is not a finalized UML element.", finalizedUmlElement.getName()));
@@ -1061,7 +1061,7 @@ public class SynthesisChainTracking {
                 "Event '%s' does not have any tracing info referring to the finalized UML model.", cifEvent.getName()));
         RedefinableElement finalizedUmlElement = finalizedEventInfo.getUmlElement();
         return getOriginalUmlElement(finalizedUmlElement) instanceof OpaqueBehavior
-                && isRelatedToOriginalStartOnlyOrIsStartEvent(finalizedEventInfo);
+                && isRelatedToStartOfOriginalElement(finalizedEventInfo);
     }
 
     /**
@@ -1112,7 +1112,7 @@ public class SynthesisChainTracking {
                 // Filter to only UML elements that are equal to the original UML element.
                 && umlElement.equals(originalUmlElement)
                 // Filter to only CIF events related to an original start event or are start events.
-                && isRelatedToOriginalStartOnlyOrIsStartEvent(e.getValue()))
+                && isRelatedToStartOfOriginalElement(e.getValue()))
                 // Collect the CIF events.
                 .map(Map.Entry::getKey).toList();
 
