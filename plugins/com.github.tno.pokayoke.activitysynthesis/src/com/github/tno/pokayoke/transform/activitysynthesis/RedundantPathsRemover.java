@@ -4,7 +4,6 @@
 
 package com.github.tno.pokayoke.transform.activitysynthesis;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedHashMap;
@@ -19,13 +18,11 @@ import java.util.stream.Collectors;
 import org.eclipse.escet.cif.bdd.spec.CifBddSpec;
 import org.eclipse.escet.cif.common.CifEdgeUtils;
 import org.eclipse.escet.cif.common.CifEventUtils;
-import org.eclipse.escet.cif.io.CifWriter;
 import org.eclipse.escet.cif.metamodel.cif.Specification;
 import org.eclipse.escet.cif.metamodel.cif.automata.Automaton;
 import org.eclipse.escet.cif.metamodel.cif.automata.Edge;
 import org.eclipse.escet.cif.metamodel.cif.automata.Location;
 import org.eclipse.escet.cif.metamodel.cif.declarations.Event;
-import org.eclipse.escet.common.app.framework.AppEnv;
 import org.eclipse.escet.common.position.metamodel.position.PositionObject;
 
 import com.google.common.base.Verify;
@@ -68,10 +65,9 @@ public class RedundantPathsRemover {
      *
      * @param model The input CIF specification, generated from the state space exploration.
      * @param bddSpec The CIF-BDD specification.
-     * @param outputFilePath The path to the output file to write the transformation result to.
-     * @param outputFolderPath The path to the folder in which the transformation result is to be written.
+     * @return The reduced CIF state space model.
      */
-    public void simplify(Specification model, CifBddSpec bddSpec, Path outputFilePath, Path outputFolderPath) {
+    public Specification simplify(Specification model, CifBddSpec bddSpec) {
         // Sanity check: the CIF model should contain only one automaton.
         Verify.verify(model.getComponents().size() == 1, "Found more than one component.");
         Verify.verify(model.getComponents().get(0) instanceof Automaton, "Component is not an automaton.");
@@ -104,13 +100,7 @@ public class RedundantPathsRemover {
         // Remove every non-essential, redundant element.
         removeRedundantElements(stateSpace);
 
-        // Write the essential model.
-        try {
-            AppEnv.registerSimple();
-            CifWriter.writeCifSpec(model, outputFilePath.toString(), outputFolderPath.toString());
-        } finally {
-            AppEnv.unregisterApplication();
-        }
+        return model;
     }
 
     private void findInitialAndMarkedStates(Automaton stateSpace) {
