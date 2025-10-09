@@ -277,27 +277,26 @@ public class SynthesisChainTracking {
     }
 
     /**
-     * Returns the CIF start events whose corresponding original UML element is called as the given name.
+     * Returns the CIF start events whose corresponding original UML element matches the given one.
      *
-     * @param umlElementName The name of the UML element.
+     * @param umlElement The UML element.
      * @param purpose The translation purpose.
-     * @return The list of CIF start events whose corresponding original UML element name matches the given name.
+     * @return The list of CIF start events whose corresponding original UML element matches the given one.
      */
-    public List<Event> getStartEventsCorrespondingToOriginalUmlElementName(String umlElementName,
+    public List<Event> getStartEventsCorrespondingToOriginalUmlElement(RedefinableElement umlElement,
             UmlToCifTranslationPurpose purpose)
     {
         List<Event> cifEvents;
         if (purpose == UmlToCifTranslationPurpose.SYNTHESIS) {
-            cifEvents = getStartEventMap(purpose)
-                    .entrySet().stream().filter(e -> e.getValue() instanceof RedefinableElement element
-                            && element.getName() != null && element.getName().equals(umlElementName))
+            cifEvents = getStartEventMap(purpose).entrySet().stream()
+                    .filter(e -> e.getValue() instanceof RedefinableElement element && element.equals(umlElement))
                     .map(Map.Entry::getKey).toList();
         } else {
             cifEvents = getStartEventMap(purpose).entrySet().stream()
                     .filter(e -> e.getValue() instanceof RedefinableElement element
-                            // Check the original UML element's name.
+                            // Check the original UML element.
                             && getOriginalUmlElement(element) != null
-                            && getOriginalUmlElement(element).getName().equals(umlElementName))
+                            && getOriginalUmlElement(element).equals(umlElement))
                     .map(Map.Entry::getKey).toList();
         }
         return cifEvents;
