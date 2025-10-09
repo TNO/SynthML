@@ -4,7 +4,6 @@ package com.github.tno.pokayoke.transform.uml2cameo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.Range;
 import org.eclipse.uml2.uml.AcceptEventAction;
@@ -62,7 +61,7 @@ public class ActivityHelper {
      */
     public static Activity createActivity(String name, String guard, List<List<String>> effects,
             Map<String, Range<Integer>> propertyBounds, Signal acquire, boolean isAtomic,
-            Set<String> forwardedParameters)
+            List<String> forwardedParameters)
     {
         if (isAtomic) {
             return createAtomicActivity(name, guard, effects, propertyBounds, acquire, forwardedParameters);
@@ -85,7 +84,7 @@ public class ActivityHelper {
      * @return The created activity that executes atomically.
      */
     public static Activity createAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, List<String> forwardedParameters)
     {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(guard),
                 "Argument guard cannot be null nor an empty string.");
@@ -348,7 +347,7 @@ public class ActivityHelper {
      * @return The created activity that executes non-atomically.
      */
     public static Activity createNonAtomicActivity(String name, String guard, List<List<String>> effects,
-            Map<String, Range<Integer>> propertyBounds, Signal acquire, Set<String> forwardedParameters)
+            Map<String, Range<Integer>> propertyBounds, Signal acquire, List<String> forwardedParameters)
     {
         // Split the non-atomic activity into two atomic parts: one to check the guard and one to perform the effects.
         Activity start = createAtomicActivity(name + "__start", guard, List.of(), propertyBounds, acquire,
@@ -717,7 +716,7 @@ public class ActivityHelper {
      * @param optionalAssignments An optional assignment of the arguments. If {@code null}, the arguments are assumed to
      *     be variables in the calling activity.
      */
-    public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, Set<String> argumentNames,
+    public static void passArgumentsToCallBehaviorAction(CallBehaviorAction callAction, List<String> argumentNames,
             String optionalAssignments)
     {
         if (argumentNames.isEmpty()) {

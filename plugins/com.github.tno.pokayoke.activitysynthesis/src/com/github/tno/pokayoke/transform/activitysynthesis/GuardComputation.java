@@ -313,7 +313,7 @@ public class GuardComputation {
 
         // Convert this CIF constraint to a BDD predicate.
         CifToBddConverter converter = new CifToBddConverter("SynthML");
-        return converter.convertPred(constraint, false, cifBddSpec);
+        return converter.convertPred(constraint, false, cifBddSpec, null);
     }
 
     /**

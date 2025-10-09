@@ -17,7 +17,7 @@
             <unit id="org.apache.commons.commons-io" version="0.0.0"/>
         </location>
         <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-            <repository location="https://download.eclipse.org/escet/v8.0/update-site/"/>
+            <repository location="https://download.eclipse.org/escet/v9.0/update-site/"/>
             <unit id="org.eclipse.escet.cif.feature.feature.group" version="0.0.0"/>
             <unit id="org.eclipse.escet.tooldef.feature.feature.group" version="0.0.0"/>
         </location>
