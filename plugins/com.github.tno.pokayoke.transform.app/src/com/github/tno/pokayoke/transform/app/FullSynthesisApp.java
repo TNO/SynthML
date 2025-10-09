@@ -42,6 +42,7 @@ import com.github.tno.pokayoke.transform.activitysynthesis.CifSourceSinkLocation
 import com.github.tno.pokayoke.transform.activitysynthesis.GuardComputation;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter;
 import com.github.tno.pokayoke.transform.activitysynthesis.NonAtomicPatternRewriter.NonAtomicPattern;
+import com.github.tno.pokayoke.transform.activitysynthesis.RedundantPathsRemover;
 import com.github.tno.pokayoke.transform.app.StateAwareWeakLanguageEquivalenceHelper.ModelPreparationResult;
 import com.github.tno.pokayoke.transform.cif2petrify.Cif2Petrify;
 import com.github.tno.pokayoke.transform.cif2petrify.CifFileHelper;
@@ -165,10 +166,25 @@ public class FullSynthesisApp {
                     "Non-zero exit code for state space generation: " + exitCode + "\n" + explorerAppStream.toString());
         }
 
+        // Remove redundant paths from the CIF state space.
+        Path essentialModelPath = outputFolderPath.resolve(filePrefix + ".045.statespace.essential.cif");
+        RedundantPathsRemover redundantPathsCleaner = new RedundantPathsRemover();
+        Specification reducedStateSpaceSpec = redundantPathsCleaner
+                .simplify(CifFileHelper.loadCifSpec(cifStateSpacePath), cifBddSpec);
+
+        // Write the essential model.
+        try {
+            AppEnv.registerSimple();
+            CifWriter.writeCifSpec(reducedStateSpaceSpec, makePathPair(essentialModelPath),
+                    outputFolderPath.toString());
+        } finally {
+            AppEnv.unregisterApplication();
+        }
+
         // Transform the state space by creating a single (initial) source and a single (marked) sink location.
         Path cifStatespaceWithSingleSourceSink = outputFolderPath
                 .resolve(filePrefix + ".05.statespace.singlesourcesink.cif");
-        Specification cifStateSpace = CifFileHelper.loadCifSpec(cifStateSpacePath);
+        Specification cifStateSpace = CifFileHelper.loadCifSpec(essentialModelPath);
         CifSourceSinkLocationTransformer.transform(cifStateSpace, cifStatespaceWithSingleSourceSink, outputFolderPath,
                 tracker);
 
